@@ -2,7 +2,7 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "a99ca93987670db88f8515a9772524b314ed1fba",
+  "audited_head": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
   "counts": {
     "verified-pushed": 71,
     "thin": 3,
@@ -4248,7 +4248,14 @@
         "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
         "test_path": "tests/modules/test_m19_business_360_399.py",
         "test_case": "tests/modules/test_m19_business_360_399.py::test_metric_rows[388-",
-        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted."
+        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted.",
+        "alternate_implementation": {
+          "commit": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+          "implementation_path": "backend/app/modules/m16_executive_dashboard/planning.py",
+          "test_path": "tests/modules/test_m16_planning_388_399.py",
+          "frontend_path": "frontend/components/PlanningBoard.tsx",
+          "caveats": "ICE ease is inverse effort; velocity counts closed sprints; ideal burndown is linear; statistics are fixed-horizon; measurements enter through API rather than event ingestion; WIP limits are not yet tenant-configurable; schema uses create_all pending migrations."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4264,7 +4271,14 @@
         "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
         "test_path": "tests/modules/test_m19_business_360_399.py",
         "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[389-",
-        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted."
+        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted.",
+        "alternate_implementation": {
+          "commit": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+          "implementation_path": "backend/app/modules/m16_executive_dashboard/planning.py",
+          "test_path": "tests/modules/test_m16_planning_388_399.py",
+          "frontend_path": "frontend/components/PlanningBoard.tsx",
+          "caveats": "ICE ease is inverse effort; velocity counts closed sprints; ideal burndown is linear; statistics are fixed-horizon; measurements enter through API rather than event ingestion; WIP limits are not yet tenant-configurable; schema uses create_all pending migrations."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4280,7 +4294,14 @@
         "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
         "test_path": "tests/modules/test_m19_business_360_399.py",
         "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[390-",
-        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted."
+        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted.",
+        "alternate_implementation": {
+          "commit": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+          "implementation_path": "backend/app/modules/m16_executive_dashboard/planning.py",
+          "test_path": "tests/modules/test_m16_planning_388_399.py",
+          "frontend_path": "frontend/components/PlanningBoard.tsx",
+          "caveats": "ICE ease is inverse effort; velocity counts closed sprints; ideal burndown is linear; statistics are fixed-horizon; measurements enter through API rather than event ingestion; WIP limits are not yet tenant-configurable; schema uses create_all pending migrations."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4296,7 +4317,14 @@
         "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
         "test_path": "tests/modules/test_m19_business_360_399.py",
         "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[391-",
-        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted."
+        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted.",
+        "alternate_implementation": {
+          "commit": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+          "implementation_path": "backend/app/modules/m16_executive_dashboard/planning.py",
+          "test_path": "tests/modules/test_m16_planning_388_399.py",
+          "frontend_path": "frontend/components/PlanningBoard.tsx",
+          "caveats": "ICE ease is inverse effort; velocity counts closed sprints; ideal burndown is linear; statistics are fixed-horizon; measurements enter through API rather than event ingestion; WIP limits are not yet tenant-configurable; schema uses create_all pending migrations."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4312,7 +4340,14 @@
         "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
         "test_path": "tests/modules/test_m19_business_360_399.py",
         "test_case": "tests/modules/test_m19_business_360_399.py::test_metric_rows[392-",
-        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted."
+        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted.",
+        "alternate_implementation": {
+          "commit": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+          "implementation_path": "backend/app/modules/m16_executive_dashboard/planning.py",
+          "test_path": "tests/modules/test_m16_planning_388_399.py",
+          "frontend_path": "frontend/components/PlanningBoard.tsx",
+          "caveats": "ICE ease is inverse effort; velocity counts closed sprints; ideal burndown is linear; statistics are fixed-horizon; measurements enter through API rather than event ingestion; WIP limits are not yet tenant-configurable; schema uses create_all pending migrations."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4328,7 +4363,14 @@
         "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
         "test_path": "tests/modules/test_m19_business_360_399.py",
         "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[393-",
-        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted."
+        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted.",
+        "alternate_implementation": {
+          "commit": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+          "implementation_path": "backend/app/modules/m16_executive_dashboard/planning.py",
+          "test_path": "tests/modules/test_m16_planning_388_399.py",
+          "frontend_path": "frontend/components/PlanningBoard.tsx",
+          "caveats": "ICE ease is inverse effort; velocity counts closed sprints; ideal burndown is linear; statistics are fixed-horizon; measurements enter through API rather than event ingestion; WIP limits are not yet tenant-configurable; schema uses create_all pending migrations."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4344,7 +4386,14 @@
         "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
         "test_path": "tests/modules/test_m19_business_360_399.py",
         "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[394-",
-        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted."
+        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted.",
+        "alternate_implementation": {
+          "commit": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+          "implementation_path": "backend/app/modules/m16_executive_dashboard/planning.py",
+          "test_path": "tests/modules/test_m16_planning_388_399.py",
+          "frontend_path": "frontend/components/PlanningBoard.tsx",
+          "caveats": "ICE ease is inverse effort; velocity counts closed sprints; ideal burndown is linear; statistics are fixed-horizon; measurements enter through API rather than event ingestion; WIP limits are not yet tenant-configurable; schema uses create_all pending migrations."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4360,7 +4409,14 @@
         "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
         "test_path": "tests/modules/test_m19_business_360_399.py",
         "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[395-",
-        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted."
+        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted.",
+        "alternate_implementation": {
+          "commit": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+          "implementation_path": "backend/app/modules/m16_executive_dashboard/planning.py",
+          "test_path": "tests/modules/test_m16_planning_388_399.py",
+          "frontend_path": "frontend/components/PlanningBoard.tsx",
+          "caveats": "ICE ease is inverse effort; velocity counts closed sprints; ideal burndown is linear; statistics are fixed-horizon; measurements enter through API rather than event ingestion; WIP limits are not yet tenant-configurable; schema uses create_all pending migrations."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4376,7 +4432,14 @@
         "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
         "test_path": "tests/modules/test_m19_business_360_399.py",
         "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[396-",
-        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted."
+        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted.",
+        "alternate_implementation": {
+          "commit": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+          "implementation_path": "backend/app/modules/m16_executive_dashboard/planning.py",
+          "test_path": "tests/modules/test_m16_planning_388_399.py",
+          "frontend_path": "frontend/components/PlanningBoard.tsx",
+          "caveats": "ICE ease is inverse effort; velocity counts closed sprints; ideal burndown is linear; statistics are fixed-horizon; measurements enter through API rather than event ingestion; WIP limits are not yet tenant-configurable; schema uses create_all pending migrations."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4392,7 +4455,14 @@
         "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
         "test_path": "tests/modules/test_m19_business_360_399.py",
         "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[397-",
-        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted."
+        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted.",
+        "alternate_implementation": {
+          "commit": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+          "implementation_path": "backend/app/modules/m16_executive_dashboard/planning.py",
+          "test_path": "tests/modules/test_m16_planning_388_399.py",
+          "frontend_path": "frontend/components/PlanningBoard.tsx",
+          "caveats": "ICE ease is inverse effort; velocity counts closed sprints; ideal burndown is linear; statistics are fixed-horizon; measurements enter through API rather than event ingestion; WIP limits are not yet tenant-configurable; schema uses create_all pending migrations."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4408,7 +4478,14 @@
         "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
         "test_path": "tests/modules/test_m19_business_360_399.py",
         "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[398-",
-        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted."
+        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted.",
+        "alternate_implementation": {
+          "commit": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+          "implementation_path": "backend/app/modules/m16_executive_dashboard/planning.py",
+          "test_path": "tests/modules/test_m16_planning_388_399.py",
+          "frontend_path": "frontend/components/PlanningBoard.tsx",
+          "caveats": "ICE ease is inverse effort; velocity counts closed sprints; ideal burndown is linear; statistics are fixed-horizon; measurements enter through API rather than event ingestion; WIP limits are not yet tenant-configurable; schema uses create_all pending migrations."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4424,7 +4501,14 @@
         "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
         "test_path": "tests/modules/test_m19_business_360_399.py",
         "test_case": "tests/modules/test_m19_business_360_399.py::test_399_significance_reports_uncertainty_and_warning",
-        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted."
+        "caveats": "Input/evidence-bound analysis only; no external market research. Statistics use fixed-horizon z-test where applicable; churn risk is a rubric; business artifacts are not yet durably persisted.",
+        "alternate_implementation": {
+          "commit": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+          "implementation_path": "backend/app/modules/m16_executive_dashboard/planning.py",
+          "test_path": "tests/modules/test_m16_planning_388_399.py",
+          "frontend_path": "frontend/components/PlanningBoard.tsx",
+          "caveats": "ICE ease is inverse effort; velocity counts closed sprints; ideal burndown is linear; statistics are fixed-horizon; measurements enter through API rather than event ingestion; WIP limits are not yet tenant-configurable; schema uses create_all pending migrations."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
