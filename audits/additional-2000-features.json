@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+  "audited_head": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
   "counts": {
-    "verified-pushed": 283,
+    "verified-pushed": 308,
     "thin": 3,
-    "missing": 1724
+    "missing": 1699
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -7035,8 +7035,13 @@
       "category": "Technical & Engineering",
       "requirement": "Question Answering",
       "description": "Answers queries",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7045,8 +7050,13 @@
       "category": "Technical & Engineering",
       "requirement": "Information Extraction",
       "description": "Pulls structured data",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7055,8 +7065,13 @@
       "category": "Technical & Engineering",
       "requirement": "Named Entity Recognition",
       "description": "Identifies entities",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7065,8 +7080,13 @@
       "category": "Technical & Engineering",
       "requirement": "Relation Extraction",
       "description": "Finds relationships",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7075,8 +7095,13 @@
       "category": "Technical & Engineering",
       "requirement": "Sentiment Analysis",
       "description": "Detects emotion",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7085,8 +7110,13 @@
       "category": "Technical & Engineering",
       "requirement": "Topic Modeling",
       "description": "Discovers themes",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7095,8 +7125,13 @@
       "category": "Technical & Engineering",
       "requirement": "Text Classification",
       "description": "Categorizes documents",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7105,8 +7140,13 @@
       "category": "Technical & Engineering",
       "requirement": "Document Clustering",
       "description": "Groups similar docs",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7115,8 +7155,13 @@
       "category": "Technical & Engineering",
       "requirement": "Semantic Search",
       "description": "Finds by meaning",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7125,8 +7170,13 @@
       "category": "Technical & Engineering",
       "requirement": "Knowledge Graph Construction",
       "description": "Builds relationships",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7135,8 +7185,13 @@
       "category": "Technical & Engineering",
       "requirement": "Ontology Design",
       "description": "Formalizes concepts",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7145,8 +7200,13 @@
       "category": "Technical & Engineering",
       "requirement": "Reasoning Engine",
       "description": "Infers new facts",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7155,8 +7215,13 @@
       "category": "Technical & Engineering",
       "requirement": "Planning System",
       "description": "Sequences actions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7165,8 +7230,13 @@
       "category": "Technical & Engineering",
       "requirement": "Scheduling System",
       "description": "Allocates resources",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7175,8 +7245,13 @@
       "category": "Technical & Engineering",
       "requirement": "Optimization Engine",
       "description": "Finds best solutions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7185,8 +7260,13 @@
       "category": "Technical & Engineering",
       "requirement": "Simulation Engine",
       "description": "Models scenarios",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7195,8 +7275,13 @@
       "category": "Technical & Engineering",
       "requirement": "Game Engine",
       "description": "Creates interactive experiences",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7205,8 +7290,13 @@
       "category": "Technical & Engineering",
       "requirement": "Physics Engine",
       "description": "Simulates physical world",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7215,8 +7305,13 @@
       "category": "Technical & Engineering",
       "requirement": "Rendering Engine",
       "description": "Creates visuals",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7225,8 +7320,13 @@
       "category": "Technical & Engineering",
       "requirement": "Audio Engine",
       "description": "Processes sound",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7235,8 +7335,13 @@
       "category": "Technical & Engineering",
       "requirement": "Networking Stack",
       "description": "Handles communication",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7245,8 +7350,13 @@
       "category": "Technical & Engineering",
       "requirement": "Protocol Design",
       "description": "Creates communication standards",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7255,8 +7365,13 @@
       "category": "Technical & Engineering",
       "requirement": "Compression Algorithm",
       "description": "Reduces size",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7265,8 +7380,13 @@
       "category": "Technical & Engineering",
       "requirement": "Error Correction",
       "description": "Handles transmission errors",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7275,8 +7395,13 @@
       "category": "Technical & Engineering",
       "requirement": "Cryptographic Protocol",
       "description": "Secures communication",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade high-level engine contracts only. Claim detection is pattern-based. No actual formal verification is performed for cryptographic or protocol designs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
