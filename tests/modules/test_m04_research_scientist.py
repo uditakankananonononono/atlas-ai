@@ -74,7 +74,7 @@ def test_analysis_is_only_proposed_and_network_access_is_rejected():
     })
     assert safe.status_code == 200
     assert safe.json()["requires_approval"] is True
-    assert safe.json()["status"] == "proposed"
+    assert safe.json()["status"] == "pending"
     unsafe = client.post("/research-scientist/analyses/proposals", json={
         "objective": "Download and execute remote analysis code",
         "language": "python",
@@ -94,3 +94,8 @@ def test_duplicate_paper_ids_fail_closed():
         assert str(exc) == "paper_id values must be unique"
     else:
         raise AssertionError("duplicate IDs should be rejected")
+
+def test_route_persists_analysis_approval():
+ app=FastAPI();app.include_router(router)
+ response=TestClient(app).post("/research-scientist/analyses/proposals",headers={"x-atlas-tenant":"research-tenant","x-atlas-actor":"u"},json={"objective":"Run an approved differential analysis","language":"python","code":"print(1)","network_access":False})
+ assert response.status_code==200 and response.json()["status"]=="pending" and response.json()["approval_id"]

@@ -1,7 +1,9 @@
 """FastAPI routes for the Research Scientist module."""
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.core.providers import ProviderError
+from app.auth.context import TenantContext, require_tenant
+from app.modules.m00_approval_center.service import default_service
 from .schemas import (
     AnalysisProposalRequest,
     HypothesisRequest,
@@ -34,9 +36,11 @@ async def draft_hypothesis(request: HypothesisRequest) -> HypothesisResponse:
 
 
 @router.post("/analyses/proposals", response_model=ProposedAnalysis)
-def propose_analysis(request: AnalysisProposalRequest) -> ProposedAnalysis:
+def propose_analysis(request: AnalysisProposalRequest, tenant: TenantContext = Depends(require_tenant)) -> ProposedAnalysis:
     """Create an approval-gated sandbox execution proposal; never execute code here."""
     try:
-        return Service.propose_analysis(request)
+        proposal = Service.propose_analysis(request)
+        approval = default_service().submit(module_id=4, action_type=proposal.action_type, user_id=tenant.tenant_id, payload=proposal.model_dump(mode="json"))
+        return proposal.model_copy(update={"approval_id": approval["id"], "status": "pending"})
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc

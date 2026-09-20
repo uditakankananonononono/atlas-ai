@@ -73,4 +73,5 @@ class ProposedAnalysis(BaseModel):
     dataset_urls: list[str]
     sandbox_policy: Literal["ephemeral-no-network"] = "ephemeral-no-network"
     requires_approval: Literal[True] = True
-    status: Literal["proposed"] = "proposed"
+    status: Literal["proposed", "pending"] = "proposed"
+    approval_id: str | None = None
