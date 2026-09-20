@@ -9,3 +9,17 @@ class BillingEventOut(BaseModel):id:str;type:str;processed:bool;processed_at:dat
 
 class CancelIn(BaseModel):subscription_id:str=Field(min_length=5,max_length=200)
 class InvoiceIn(BaseModel):customer_id:str=Field(min_length=5,max_length=200);description:str=Field(min_length=1,max_length=1000);amount_cents:int=Field(gt=0,le=100000000);currency:str=Field(default="usd",pattern="^[a-z]{3}$")
+
+SubscriptionStatus = Literal["trialing","active","past_due","suspended","canceled","incomplete","incomplete_expired","unpaid","paused","none"]
+class EntitlementOut(BaseModel):
+ plan_id:str;status:SubscriptionStatus;features:list[str];limits:dict[str,int];can_use_paid_features:bool
+class UsageIn(BaseModel):
+ metric:str=Field(min_length=1,max_length=80,pattern=r"^[A-Za-z][A-Za-z0-9_.-]*$");quantity:int=Field(gt=0,le=100000000);idempotency_key:str=Field(min_length=1,max_length=160);occurred_at:datetime|None=None;metadata:dict[str,str]=Field(default_factory=dict)
+class UsageOut(BaseModel):
+ id:str;metric:str;quantity:int;occurred_at:datetime;created:bool
+class MeterOut(BaseModel):
+ period_start:datetime;period_end:datetime;usage:dict[str,int];included:dict[str,int];remaining:dict[str,int]
+class SubscriptionOut(BaseModel):
+ tenant_id:str;plan_id:str;status:SubscriptionStatus;customer_id:str|None=None;subscription_id:str|None=None;current_period_start:datetime|None=None;current_period_end:datetime|None=None;cancel_at_period_end:bool=False
+class InvoiceOut(BaseModel):
+ id:str;status:str;currency:str;amount_due:int;amount_paid:int;period_start:datetime|None=None;period_end:datetime|None=None;hosted_invoice_url:str|None=None
