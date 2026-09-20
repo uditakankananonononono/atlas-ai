@@ -36,6 +36,14 @@ from .metacognition import (
     PlanningHorizonController, PromptRegistry, ReframingEngine, SteelmanEngine,
     TemporalTradeoffs, WorldModelRegistry, AbstractionShifter,
 )
+from .foresight import (
+    AntifragilityAssessor, AsymmetryFinder, BaseRateIntegrator, BayesianUpdater,
+    CausalAssessor, ConstraintAnalyzer, EVCalculator, HypothesisTracker,
+    InsightCapture, KellySizer, LeverageFinder, OptimismCalibrator, OptionalityAnalyzer, OutsideView,
+    PlanningFallacyCorrector, PremortemEngine, RedTeamer, ReferenceClassForecaster,
+    ReversibilityAssessor, RiskOfRuinAnalyzer, ScenarioPlanner, SecondOrderTracer,
+    SerendipityEngine, SimulationFidelityTracker, SystemsModel,
+)
 from .tools import ToolDispatcher, ToolRegistry
 from .working_memory import AttentionController, WorkingMemory
 
@@ -148,6 +156,31 @@ class CognitiveWorkerService:
         self.epistemic_calendar = EpistemicCalendar()
         self.decay_modeler = KnowledgeDecayModeler()
         self.curiosity = CuriosityEngine()
+        # Simulation, forecasting and decision-analysis engines (rows 35-59)
+        self.serendipity = SerendipityEngine()
+        self.insights = InsightCapture()
+        self.sim_fidelity = SimulationFidelityTracker()
+        self.hypotheses = HypothesisTracker()
+        self.bayes = BayesianUpdater()
+        self.causal = CausalAssessor()
+        self.base_rates = BaseRateIntegrator()
+        self.reference_class = ReferenceClassForecaster()
+        self.outside_view = OutsideView()
+        self.planning_fallacy = PlanningFallacyCorrector()
+        self.optimism = OptimismCalibrator()
+        self.scenarios = ScenarioPlanner()
+        self.premortem = PremortemEngine()
+        self.red_team = RedTeamer()
+        self.second_order = SecondOrderTracer()
+        self.leverage = LeverageFinder()
+        self.constraints = ConstraintAnalyzer()
+        self.antifragility = AntifragilityAssessor()
+        self.optionality = OptionalityAnalyzer()
+        self.reversibility = ReversibilityAssessor()
+        self.asymmetry = AsymmetryFinder()
+        self.ev_calculator = EVCalculator()
+        self.risk_of_ruin = RiskOfRuinAnalyzer()
+        self.kelly = KellySizer()
         self.executive_model = executive_model
         self.loop = DeliberativeLoop(
             planner=self.planner, dispatcher=self.dispatcher,
@@ -277,6 +310,14 @@ class CognitiveWorkerService:
                 "beliefs_tracked": len(self.epistemic_calendar.beliefs),
                 "known_gaps": len(self.curiosity._gap_counts),
                 "decisions_automated": self.decision_guard.automated_total,
+            },
+            "foresight": {
+                "insights_captured": len(self.insights.insights),
+                "simulations_tracked": len(self.sim_fidelity.records),
+                "simulation_fidelity": self.sim_fidelity.fidelity(),
+                "active_hypotheses": len(self.hypotheses.ranking()),
+                "reference_cases": len(self.reference_class.cases),
+                "planning_history_kinds": len(self.planning_fallacy.history),
             },
         }
 

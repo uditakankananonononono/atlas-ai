@@ -62,3 +62,27 @@ and `tests/modules/test_m20_metacognition_routes.py` (mounted routes).
 - All engines are deterministic and offline; production model assistance
   (e.g. richer devil's-advocate attacks) should be injected behind new
   protocols without changing the typed contracts.
+
+## Rows 35-59: simulation, forecasting and decision analysis (foresight.py)
+
+- `foresight.py` adds 25 typed engines, instantiated on the service and
+  mounted under `/api/modules/20/meta/*`. Engines are deterministic and
+  offline; rows 56-59 return an explicit decision-support caveat and never
+  make investment-advice claims.
+- Serendipity (35) composes with the row-34 curiosity gaps and semantic
+  memory; it returns suggestions only - execution still goes through the
+  service's normal approval gates.
+- Insight capture (36), simulation fidelity (37), hypotheses (38),
+  reference-class cases (42), planning history (44) and optimism records
+  (45) are in-memory in this lane; a `m20_foresight_*` durability
+  follow-up (SQL repository) is the same shape as the earlier meta
+  durability note.
+- Second-order tracing (49) propagates through an explicit rule table that
+  is returned in the response (`rules_used`) so the inference is
+  inspectable - no hidden reasoning is captured or stored.
+- Systems model (50) and leverage ranking (51) are constructed per request
+  from caller-supplied links; nothing persists between calls.
+- Risk of ruin (58) uses the closed-form gambler's ruin for even-money
+  bets and a seeded Monte Carlo otherwise; the method used is returned.
+- Kelly sizing (59) clamps no-edge positions to zero and recommends a
+  fractional, capped size by default.

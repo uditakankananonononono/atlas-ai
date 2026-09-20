@@ -13,6 +13,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
+from .foresight import SystemsModel
 from .safety import ApprovalGateDecision
 from .schemas import Risk, ToolSpec
 
@@ -664,3 +665,416 @@ def row34_explore(request: CuriosityExploreRequest) -> dict[str, Any]:
     service = get_service()
     items = service.curiosity.allocate(idle_budget=request.idle_budget)
     return {"exploration": [i.__dict__ for i in items]}
+
+
+# ----------------------------------------------------------- rows 35-59 --
+# Simulation, forecasting and decision-analysis surface (/meta/...).
+
+class SerendipityRequest(BaseModel):
+    text: str = Field(min_length=1)
+    available_slots: int = Field(default=5, ge=0)
+    epsilon: float | None = Field(default=None, ge=0.0, le=1.0)
+    seed: int | None = None
+
+
+class InsightRequest(BaseModel):
+    text: str = Field(min_length=1)
+    context: str = ""
+
+
+class InsightDevelopRequest(BaseModel):
+    note: str = Field(min_length=1)
+
+
+class SimulationPredictRequest(BaseModel):
+    domain: str = Field(min_length=1)
+    predicted: float
+    confidence: float = Field(default=0.5, ge=0.0, le=1.0)
+
+
+class SimulationResolveRequest(BaseModel):
+    actual: float
+
+
+class HypothesisRequest(BaseModel):
+    statement: str = Field(min_length=1)
+    prior: float = Field(gt=0.0, lt=1.0)
+
+
+class HypothesisEvidenceRequest(BaseModel):
+    likelihood_ratios: dict[str, float]
+
+
+class BayesianRequest(BaseModel):
+    prior: float = Field(ge=0.0, le=1.0)
+    likelihood_ratio: float = Field(gt=0.0)
+
+
+class CausalRequest(BaseModel):
+    cause: str = Field(min_length=1)
+    effect: str = Field(min_length=1)
+    evidence: dict[str, bool] = Field(default_factory=dict)
+
+
+class BaseRateRequest(BaseModel):
+    base_rate: float = Field(ge=0.0, le=1.0)
+    case_estimate: float = Field(ge=0.0, le=1.0)
+    evidence_reliability: float = Field(default=0.5, ge=0.0, le=1.0)
+    sample_size: int = Field(default=0, ge=0)
+
+
+class ReferenceCaseRequest(BaseModel):
+    features: str = Field(min_length=1)
+    outcome: float
+    label: str | None = None
+
+
+class ReferenceForecastRequest(BaseModel):
+    features: str = Field(min_length=1)
+
+
+class OutsideViewRequest(BaseModel):
+    inside_estimate: float
+    outside_weight: float = Field(default=0.5, ge=0.0, le=1.0)
+    subject: str = "this project"
+
+
+class OverrunRecordRequest(BaseModel):
+    kind: str = Field(min_length=1)
+    estimated: float = Field(gt=0.0)
+    actual: float = Field(ge=0.0)
+
+
+class OverrunCorrectRequest(BaseModel):
+    kind: str = Field(min_length=1)
+    estimate: float = Field(gt=0.0)
+
+
+class OptimismRecordRequest(BaseModel):
+    domain: str = Field(min_length=1)
+    predicted_confidence: float = Field(ge=0.0, le=1.0)
+    succeeded: bool
+
+
+class OptimismAdjustRequest(BaseModel):
+    domain: str = Field(min_length=1)
+    confidence: float = Field(ge=0.0, le=1.0)
+
+
+class ScenarioRequest(BaseModel):
+    objective: str = Field(min_length=1)
+    drivers: list[str] = Field(min_length=1)
+    probabilities: dict[str, float] | None = None
+
+
+class PremortemRequest(BaseModel):
+    goal: str = Field(min_length=1)
+    risks: list[str] = Field(default_factory=list)
+    failure_date: datetime | None = None
+
+
+class RedTeamRequest(BaseModel):
+    plan: str = Field(min_length=1)
+    assets: list[str] = Field(default_factory=list)
+
+
+class SecondOrderRequest(BaseModel):
+    action: str = Field(min_length=1)
+    first_order: list[str] = Field(min_length=1)
+    depth: int = Field(default=2, ge=1, le=4)
+
+
+class SystemsLinkRequest(BaseModel):
+    source: str = Field(min_length=1)
+    target: str = Field(min_length=1)
+    sign: str = Field(pattern=r"^[+-]$")
+    delay: str = ""
+
+
+class SystemsModelRequest(BaseModel):
+    links: list[SystemsLinkRequest] = Field(default_factory=list)
+
+
+class ConstraintRequest(BaseModel):
+    stages: list[dict[str, Any]] = Field(min_length=1)
+
+
+class AntifragilityRequest(BaseModel):
+    components: list[dict[str, Any]] = Field(min_length=1)
+
+
+class OptionalityRequest(BaseModel):
+    decision: str = Field(min_length=1)
+    options_kept: list[str] = Field(default_factory=list)
+    options_closed: list[str] = Field(default_factory=list)
+    reversible: bool = False
+
+
+class ReversibilityRequest(BaseModel):
+    decision: str = Field(min_length=1)
+    undo_cost: float = Field(ge=0.0, le=10.0)
+    undo_days: float = Field(ge=0.0)
+    blast_radius: float = Field(ge=0.0, le=10.0)
+
+
+class AsymmetryRequest(BaseModel):
+    options: list[dict[str, Any]] = Field(min_length=1)
+
+
+class EVRequest(BaseModel):
+    options: list[dict[str, Any]] = Field(min_length=1)
+
+
+class RiskOfRuinRequest(BaseModel):
+    capital: float = Field(gt=0.0)
+    bet_size: float = Field(gt=0.0)
+    win_prob: float = Field(ge=0.0, le=1.0)
+    payoff_ratio: float = Field(default=1.0, gt=0.0)
+    trials: int = Field(default=100, ge=1)
+
+
+class KellyRequest(BaseModel):
+    win_prob: float = Field(ge=0.0, le=1.0)
+    payoff_ratio: float = Field(gt=0.0)
+
+
+@router.post("/meta/serendipity/plan")
+def row35_serendipity(request: SerendipityRequest) -> dict[str, Any]:
+    service = get_service()
+    gaps = service.curiosity.detect_gaps(request.text, service.semantic)
+    engine = service.serendipity if request.epsilon is None else type(service.serendipity)(epsilon=request.epsilon)
+    topics = [f.content for f, _ in service.semantic.query(request.text, limit=6, min_score=0.05)]
+    slots = engine.plan(gaps, available_slots=request.available_slots,
+                        known_topics=topics, seed=request.seed)
+    return {"epsilon": engine.epsilon, "gaps": gaps, "slots": [s.__dict__ for s in slots],
+            "note": "Suggestions only - any external action still requires the normal approval path"}
+
+
+@router.post("/meta/insights", status_code=201)
+def row36_capture_insight(request: InsightRequest) -> dict[str, Any]:
+    service = get_service()
+    insight = service.insights.capture(request.text, context=request.context,
+                                       semantic_memory=service.semantic)
+    return {"insight_id": insight.insight_id, "links": insight.links,
+            "development_prompts": service.insights.development_prompts(insight.insight_id)}
+
+
+@router.post("/meta/insights/{insight_id}/develop")
+def row36_develop_insight(insight_id: str, request: InsightDevelopRequest) -> dict[str, Any]:
+    service = get_service()
+    try:
+        insight = service.insights.develop(insight_id, request.note)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="unknown insight_id")
+    return {"insight_id": insight.insight_id, "status": insight.status,
+            "developments": insight.developments}
+
+
+@router.get("/meta/insights/stale")
+def row36_stale_insights(older_than_days: float = 7.0) -> dict[str, Any]:
+    stale = get_service().insights.stale(older_than_days=older_than_days)
+    return {"stale": [{"insight_id": i.insight_id, "text": i.text,
+                       "captured_at": i.captured_at.isoformat()} for i in stale]}
+
+
+@router.post("/meta/simulations", status_code=201)
+def row37_record_simulation(request: SimulationPredictRequest) -> dict[str, Any]:
+    rec = get_service().sim_fidelity.record_prediction(
+        request.domain, request.predicted, confidence=request.confidence)
+    return {"record_id": rec.record_id}
+
+
+@router.post("/meta/simulations/{record_id}/resolve")
+def row37_resolve_simulation(record_id: str, request: SimulationResolveRequest) -> dict[str, Any]:
+    service = get_service()
+    try:
+        rec = service.sim_fidelity.resolve(record_id, request.actual)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="unknown record_id")
+    return {"record_id": rec.record_id, "fidelity": rec.fidelity,
+            "domain_fidelity": service.sim_fidelity.fidelity(domain=rec.domain),
+            "confidence_adjustment": service.sim_fidelity.confidence_adjustment(domain=rec.domain)}
+
+
+@router.post("/meta/hypotheses", status_code=201)
+def row38_add_hypothesis(request: HypothesisRequest) -> dict[str, Any]:
+    h = get_service().hypotheses.add(request.statement, prior=request.prior)
+    return {"hypothesis_id": h.hypothesis_id}
+
+
+@router.post("/meta/hypotheses/evidence")
+def row38_update_hypotheses(request: HypothesisEvidenceRequest) -> dict[str, Any]:
+    service = get_service()
+    try:
+        ranking = service.hypotheses.update(request.likelihood_ratios)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"unknown hypothesis_id: {exc}")
+    return {"ranking": [{"hypothesis_id": h.hypothesis_id, "statement": h.statement,
+                         "probability": h.probability, "evidence_count": h.evidence_count}
+                        for h in ranking]}
+
+
+@router.post("/meta/bayes/update")
+def row39_bayesian_update(request: BayesianRequest) -> dict[str, Any]:
+    service = get_service()
+    posterior = service.bayes.update(request.prior, request.likelihood_ratio)
+    return {"prior": request.prior, "likelihood_ratio": request.likelihood_ratio,
+            "posterior": posterior}
+
+
+@router.post("/meta/causal/assess")
+def row40_causal_assess(request: CausalRequest) -> dict[str, Any]:
+    report = get_service().causal.assess(cause=request.cause, effect=request.effect,
+                                         evidence=request.evidence)
+    return report.__dict__
+
+
+@router.post("/meta/base-rate/integrate")
+def row41_base_rate(request: BaseRateRequest) -> dict[str, Any]:
+    estimate = get_service().base_rates.integrate(
+        base_rate=request.base_rate, case_estimate=request.case_estimate,
+        evidence_reliability=request.evidence_reliability, sample_size=request.sample_size)
+    return estimate.__dict__
+
+
+@router.post("/meta/reference-class/cases", status_code=201)
+def row42_add_case(request: ReferenceCaseRequest) -> dict[str, Any]:
+    service = get_service()
+    service.reference_class.add_case(request.features, request.outcome, label=request.label)
+    return {"cases": len(service.reference_class.cases)}
+
+
+@router.post("/meta/reference-class/forecast")
+def row42_forecast(request: ReferenceForecastRequest) -> dict[str, Any]:
+    forecast = get_service().reference_class.forecast(request.features)
+    if forecast is None:
+        return {"forecast": None, "reason": "no reference cases recorded yet"}
+    return {"forecast": forecast.__dict__}
+
+
+@router.post("/meta/outside-view")
+def row43_outside_view(request: OutsideViewRequest) -> dict[str, Any]:
+    service = get_service()
+    forecast = service.reference_class.forecast(request.subject)
+    report = service.outside_view.adopt(inside_estimate=request.inside_estimate,
+                                        reference_forecast=forecast,
+                                        outside_weight=request.outside_weight,
+                                        subject=request.subject)
+    return report.__dict__
+
+
+@router.post("/meta/planning-fallacy/records", status_code=201)
+def row44_record_overrun(request: OverrunRecordRequest) -> dict[str, Any]:
+    service = get_service()
+    service.planning_fallacy.record(kind=request.kind, estimated=request.estimated,
+                                    actual=request.actual)
+    mult, n = service.planning_fallacy.multiplier(request.kind)
+    return {"kind": request.kind, "multiplier": mult, "samples": n}
+
+
+@router.post("/meta/planning-fallacy/correct")
+def row44_correct_estimate(request: OverrunCorrectRequest) -> dict[str, Any]:
+    return get_service().planning_fallacy.correct(kind=request.kind, estimate=request.estimate)
+
+
+@router.post("/meta/optimism/records", status_code=201)
+def row45_record_outcome(request: OptimismRecordRequest) -> dict[str, Any]:
+    service = get_service()
+    service.optimism.record(domain=request.domain,
+                            predicted_confidence=request.predicted_confidence,
+                            succeeded=request.succeeded)
+    bias, n = service.optimism.bias(request.domain)
+    return {"domain": request.domain, "bias": bias, "samples": n}
+
+
+@router.post("/meta/optimism/adjust")
+def row45_adjust_confidence(request: OptimismAdjustRequest) -> dict[str, Any]:
+    return get_service().optimism.adjust(domain=request.domain, confidence=request.confidence)
+
+
+@router.post("/meta/scenarios")
+def row46_scenarios(request: ScenarioRequest) -> dict[str, Any]:
+    return get_service().scenarios.plan(objective=request.objective, drivers=request.drivers,
+                                        probabilities=request.probabilities)
+
+
+@router.post("/meta/premortem")
+def row47_premortem(request: PremortemRequest) -> dict[str, Any]:
+    return get_service().premortem.analyze(goal=request.goal, risks=request.risks,
+                                           failure_date=request.failure_date)
+
+
+@router.post("/meta/red-team")
+def row48_red_team(request: RedTeamRequest) -> dict[str, Any]:
+    return get_service().red_team.probe(plan=request.plan, assets=request.assets)
+
+
+@router.post("/meta/second-order")
+def row49_second_order(request: SecondOrderRequest) -> dict[str, Any]:
+    return get_service().second_order.trace(action=request.action,
+                                            first_order=request.first_order,
+                                            depth=request.depth)
+
+
+@router.post("/meta/systems/loops")
+def row50_systems_loops(request: SystemsModelRequest) -> dict[str, Any]:
+    model = SystemsModel()
+    for link in request.links:
+        model.add_link(link.source, link.target, sign=link.sign, delay=link.delay)
+    return {"loops": [loop.__dict__ for loop in model.loops()],
+            "emergence_notes": model.emergence_notes()}
+
+
+@router.post("/meta/systems/leverage")
+def row51_leverage(request: SystemsModelRequest) -> dict[str, Any]:
+    model = SystemsModel()
+    for link in request.links:
+        model.add_link(link.source, link.target, sign=link.sign, delay=link.delay)
+    points = get_service().leverage.rank(model)
+    return {"leverage_points": [p.__dict__ for p in points]}
+
+
+@router.post("/meta/constraints/analyze")
+def row52_constraints(request: ConstraintRequest) -> dict[str, Any]:
+    return get_service().constraints.analyze(stages=request.stages)
+
+
+@router.post("/meta/antifragility/assess")
+def row53_antifragility(request: AntifragilityRequest) -> dict[str, Any]:
+    return get_service().antifragility.assess(components=request.components)
+
+
+@router.post("/meta/optionality/assess")
+def row54_optionality(request: OptionalityRequest) -> dict[str, Any]:
+    return get_service().optionality.assess(
+        decision=request.decision, options_kept=request.options_kept,
+        options_closed=request.options_closed, reversible=request.reversible)
+
+
+@router.post("/meta/reversibility/assess")
+def row55_reversibility(request: ReversibilityRequest) -> dict[str, Any]:
+    return get_service().reversibility.assess(
+        decision=request.decision, undo_cost=request.undo_cost,
+        undo_days=request.undo_days, blast_radius=request.blast_radius)
+
+
+@router.post("/meta/asymmetry/evaluate")
+def row56_asymmetry(request: AsymmetryRequest) -> dict[str, Any]:
+    return get_service().asymmetry.evaluate(options=request.options)
+
+
+@router.post("/meta/ev/compute")
+def row57_expected_value(request: EVRequest) -> dict[str, Any]:
+    return get_service().ev_calculator.compute(options=request.options)
+
+
+@router.post("/meta/risk-of-ruin")
+def row58_risk_of_ruin(request: RiskOfRuinRequest) -> dict[str, Any]:
+    return get_service().risk_of_ruin.analyze(
+        capital=request.capital, bet_size=request.bet_size, win_prob=request.win_prob,
+        payoff_ratio=request.payoff_ratio, trials=request.trials)
+
+
+@router.post("/meta/kelly/size")
+def row59_kelly(request: KellyRequest) -> dict[str, Any]:
+    return get_service().kelly.size(win_prob=request.win_prob, payoff_ratio=request.payoff_ratio)
