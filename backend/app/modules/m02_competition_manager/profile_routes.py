@@ -21,3 +21,13 @@ async def sheets(x:SheetsIn,t:TenantContext=Depends(require_tenant)):
  finally:await g.close()
 @router.post('/retrieve')
 async def retrieve(x:RetrieveIn,t:TenantContext=Depends(require_tenant)):return await corpus(t,x.embedding_provider).retrieve(x.query,x.limit)
+from .onboarding import OnboardingService
+class OnboardingCompleteIn(BaseModel):document_types:list[str];source_ids:list[str]
+@router.get('/onboarding/launch-step')
+def onboarding_step(t:TenantContext=Depends(require_tenant)):return OnboardingService(t.tenant_id).launch_step()
+@router.post('/onboarding/complete')
+def onboarding_complete(x:OnboardingCompleteIn,t:TenantContext=Depends(require_tenant)):
+ try:return OnboardingService(t.tenant_id).complete(x.document_types,x.source_ids)
+ except ValueError as e:raise HTTPException(422,str(e))
+@router.post('/onboarding/skip')
+def onboarding_skip(t:TenantContext=Depends(require_tenant)):return OnboardingService(t.tenant_id).skip()

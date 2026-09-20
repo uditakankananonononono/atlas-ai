@@ -1,10 +1,10 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "e4103e81d1317acc9c244c9ec715fee73c830d40",
   "counts": {
-    "verified-pushed": 5,
+    "verified-pushed": 6,
     "thin": 3,
     "missing": 2001
   },
@@ -20137,6 +20137,20 @@
       "status": "missing",
       "evidence": null,
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+    },
+    {
+      "id": 2010,
+      "category_id": 0,
+      "category": "Claire personalization additions",
+      "requirement": "Launch onboarding prompts for application source corpus",
+      "description": "At launch/onboarding, proactively ask the user to connect or select writings, essays, and activity descriptions; index them as the source of truth for grounded application drafting.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d472d3e3c45b5aafec4ababf975a056b9ab6d221",
+        "implementation_path": "backend/app/modules/m02_competition_manager/onboarding.py",
+        "test_path": "tests/modules/test_m02_onboarding.py"
+      },
+      "boundary": "Optional and skippable. No drafting from invented user material; application drafting remains unavailable until owner sources are indexed."
     }
   ],
   "delta_from_schema_version_2": {
@@ -20151,5 +20165,11 @@
       "old": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results.",
       "new": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision."
     }
-  ]
+  ],
+  "delta_from_schema_version_3": {
+    "added": 1,
+    "removed": 0,
+    "changed": 0,
+    "unchanged": 2009
+  }
 }
