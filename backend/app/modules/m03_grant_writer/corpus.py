@@ -23,3 +23,40 @@ class NsfAwardsClient:
             response = await client.get("https://www.research.gov/awardapi-service/v1/awards.json", params={"keyword":terms,"printFields":"id,title,abstractText","offset":1,"rpp":min(limit,1000)})
         response.raise_for_status()
         return [FundedAward("nsf_awards",str(row.get("id","")),row.get("title") or "",row.get("abstractText") or "",f"https://www.nsf.gov/awardsearch/showAward?AWD_ID={row.get('id','')}") for row in response.json().get("response",{}).get("award",[])]
+
+from datetime import datetime, timezone
+from sqlalchemy import JSON, DateTime, String, Text, UniqueConstraint, select
+from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
+from app.core.database import Base, SessionLocal, engine
+
+class FundedAwardRow(Base):
+    __tablename__="m03_funded_awards"
+    __table_args__=(UniqueConstraint("tenant_id","source","award_id"),)
+    id: Mapped[int]=mapped_column(primary_key=True,autoincrement=True)
+    tenant_id: Mapped[str]=mapped_column(String(120),index=True)
+    source: Mapped[str]=mapped_column(String(40),index=True)
+    award_id: Mapped[str]=mapped_column(String(160),index=True)
+    title: Mapped[str]=mapped_column(Text)
+    abstract: Mapped[str]=mapped_column(Text)
+    url: Mapped[str]=mapped_column(Text)
+    provenance: Mapped[dict]=mapped_column(JSON,default=dict)
+    collected_at: Mapped[datetime]=mapped_column(DateTime(timezone=True),default=lambda:datetime.now(timezone.utc))
+
+class FundedCorpusRepository:
+    def __init__(self,tenant_id:str,session_factory:sessionmaker=SessionLocal)->None:
+        self.tenant_id=tenant_id; self.sessions=session_factory; Base.metadata.create_all(engine)
+    def upsert(self,awards:list[FundedAward],query:str)->int:
+        created=0
+        with self.sessions.begin() as db:
+            for award in awards:
+                row=db.scalar(select(FundedAwardRow).where(FundedAwardRow.tenant_id==self.tenant_id,FundedAwardRow.source==award.source,FundedAwardRow.award_id==award.award_id))
+                provenance={"official_url":award.url,"query":query,"retrieved_at":datetime.now(timezone.utc).isoformat()}
+                if row is None:
+                    db.add(FundedAwardRow(tenant_id=self.tenant_id,source=award.source,award_id=award.award_id,title=award.title,abstract=award.abstract,url=award.url,provenance=provenance)); created+=1
+                else: row.title=award.title; row.abstract=award.abstract; row.url=award.url; row.provenance=provenance
+        return created
+    def search_text(self,query:str,limit:int=20)->list[FundedAward]:
+        pattern=f"%{query}%"
+        with self.sessions() as db:
+            rows=list(db.scalars(select(FundedAwardRow).where(FundedAwardRow.tenant_id==self.tenant_id,(FundedAwardRow.title.ilike(pattern))|(FundedAwardRow.abstract.ilike(pattern))).limit(limit)))
+            return [FundedAward(r.source,r.award_id,r.title,r.abstract,r.url) for r in rows]
