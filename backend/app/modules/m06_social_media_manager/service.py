@@ -185,6 +185,20 @@ class OfficialSocialMetricsClient:
         raise ProviderError(f"no official metrics API is wired for {platform.value}")
 
 
+class SocialRepository(Protocol):
+    def save_plan(self, plan: ContentPlan) -> ContentPlan: ...
+    def get_plan(self, plan_id: str) -> ContentPlan | None: ...
+    def save_report(self, report: AnalysisReport) -> AnalysisReport: ...
+    def get_report(self, report_id: str) -> AnalysisReport | None: ...
+
+class MemorySocialRepository:
+    def __init__(self) -> None:
+        self.plans: dict[str, ContentPlan] = {}; self.reports: dict[str, AnalysisReport] = {}
+    def save_plan(self, plan: ContentPlan) -> ContentPlan: self.plans[plan.id]=plan; return plan
+    def get_plan(self, plan_id: str) -> ContentPlan | None: return self.plans.get(plan_id)
+    def save_report(self, report: AnalysisReport) -> AnalysisReport: self.reports[report.id]=report; return report
+    def get_report(self, report_id: str) -> AnalysisReport | None: return self.reports.get(report_id)
+
 class Service:
     """Domain service for the Social Media Manager module.
 
@@ -202,16 +216,14 @@ class Service:
         metrics_client: MetricsClient | None = None,
         provider: str = "openai",
         model: str | None = None,
+        repository: SocialRepository | None = None,
     ) -> None:
         self._approvals = approval_store
         self._generate = generate
         self._metrics = metrics_client
         self._provider = provider
         self._model = model
-        # In-memory working state. Durable storage is a shared-schema concern
-        # recorded in INTEGRATION.md; the module lane owns no migrations.
-        self._plans: dict[str, ContentPlan] = {}
-        self._reports: dict[str, AnalysisReport] = {}
+        self._repository = repository or MemorySocialRepository()
 
     # -- content generation pipeline -------------------------------------
 
@@ -230,15 +242,13 @@ class Service:
             drafts=[self._with_asset_prompts(draft) for draft in drafts],
             created_at=datetime.now(timezone.utc),
         )
-        self._plans[plan.id] = plan
-        return plan
+        return self._repository.save_plan(plan)
 
     def get_plan(self, plan_id: str) -> ContentPlan:
         """Return a stored plan or raise PlanNotFoundError."""
-        try:
-            return self._plans[plan_id]
-        except KeyError as error:
-            raise PlanNotFoundError(plan_id) from error
+        item=self._repository.get_plan(plan_id)
+        if item is None: raise PlanNotFoundError(plan_id)
+        return item
 
     async def _strategize(self, brief: str, platforms: list[Platform]) -> list[PlatformDraft]:
         prompt = (
@@ -332,6 +342,7 @@ class Service:
             for draft in plan.drafts
         ]
         plan.status = "pending_approval"
+        self._repository.save_plan(plan)
         return requests
 
     def request_ab_test(self, plan_id: str, platform: Platform, variant_caption: str) -> ApprovalRequest:
@@ -395,15 +406,13 @@ class Service:
             model=model,
             created_at=datetime.now(timezone.utc),
         )
-        self._reports[report.id] = report
-        return report
+        return self._repository.save_report(report)
 
     def get_report(self, report_id: str) -> AnalysisReport:
         """Return a stored analysis report or raise PlanNotFoundError."""
-        try:
-            return self._reports[report_id]
-        except KeyError as error:
-            raise PlanNotFoundError(report_id) from error
+        item=self._repository.get_report(report_id)
+        if item is None: raise PlanNotFoundError(report_id)
+        return item
 
     @staticmethod
     def _parse_suggestions(text: str) -> list[str]:

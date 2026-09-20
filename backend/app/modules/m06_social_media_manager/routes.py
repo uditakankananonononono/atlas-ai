@@ -12,6 +12,7 @@ import os
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.models import ApprovalRequest
+from app.auth.context import TenantContext, require_tenant
 from app.core.providers import ProviderError
 
 from .schemas import ABTestIn, AnalysisReportOut, AnalyticsIn, ContentBriefIn, ContentPlanOut, ScheduleIn
@@ -19,28 +20,12 @@ from .service import OfficialSocialMetricsClient, PlanNotFoundError, Service
 
 router = APIRouter(prefix="/social-media-manager", tags=["social-media-manager"])
 
-_service: Service | None = None
-
-
-def get_service() -> Service:
-    """Lazily build the default service wiring (shared store + BYOK provider)."""
-    global _service
-    if _service is None:
-        from app.core.approvals import approvals
-        from app.core.providers import generate
-
-        _service = Service(
-            approval_store=approvals,
-            generate=generate,
-            metrics_client=OfficialSocialMetricsClient(
-                meta_access_token=os.getenv("ATLAS_META_ACCESS_TOKEN"),
-                x_bearer_token=os.getenv("ATLAS_X_BEARER_TOKEN"),
-                linkedin_access_token=os.getenv("ATLAS_LINKEDIN_ACCESS_TOKEN"),
-                linkedin_org_id=os.getenv("ATLAS_LINKEDIN_ORG_ID"),
-            ),
-        )
-    return _service
-
+def get_service(tenant: TenantContext = Depends(require_tenant)) -> Service:
+    """Build a tenant-bound durable service."""
+    from app.core.approvals import approvals
+    from app.core.providers import generate
+    from .sql_repository import SqlSocialRepository
+    return Service(approval_store=approvals, generate=generate, repository=SqlSocialRepository(tenant.tenant_id), metrics_client=OfficialSocialMetricsClient(meta_access_token=os.getenv("ATLAS_META_ACCESS_TOKEN"),x_bearer_token=os.getenv("ATLAS_X_BEARER_TOKEN"),linkedin_access_token=os.getenv("ATLAS_LINKEDIN_ACCESS_TOKEN"),linkedin_org_id=os.getenv("ATLAS_LINKEDIN_ORG_ID")))
 
 @router.post("/plans", response_model=ContentPlanOut, status_code=201)
 async def create_plan(request: ContentBriefIn, service: Service = Depends(get_service)) -> object:
