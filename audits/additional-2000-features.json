@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1498,
-    "verified-pushed": 509,
+    "missing": 1493,
+    "verified-pushed": 514,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -13672,8 +13672,12 @@
       "category": "Data & Analytics",
       "requirement": "Synthetic Control",
       "description": "Constructed counterfactuals",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ba27e8a7167f9c6754c2f0a7ca0d8111cd54f76a",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1063_1067.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13682,8 +13686,12 @@
       "category": "Data & Analytics",
       "requirement": "Matching Methods",
       "description": "Create comparable groups",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ba27e8a7167f9c6754c2f0a7ca0d8111cd54f76a",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1063_1067.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13692,8 +13700,12 @@
       "category": "Data & Analytics",
       "requirement": "Propensity Score Matching",
       "description": "Match on probability",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ba27e8a7167f9c6754c2f0a7ca0d8111cd54f76a",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1063_1067.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13702,8 +13714,12 @@
       "category": "Data & Analytics",
       "requirement": "Coarsened Exact Matching",
       "description": "Match on categories",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ba27e8a7167f9c6754c2f0a7ca0d8111cd54f76a",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1063_1067.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13712,8 +13728,12 @@
       "category": "Data & Analytics",
       "requirement": "Genetic Matching",
       "description": "Optimize balance",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ba27e8a7167f9c6754c2f0a7ca0d8111cd54f76a",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1063_1067.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
