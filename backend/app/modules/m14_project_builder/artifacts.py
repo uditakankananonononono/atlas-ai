@@ -71,6 +71,11 @@ _DEFAULT_KINDS: Dict[str, KindSpec] = {
         required_provenance=("generator", "created_at"),
         reproducibility_keys=("generator",),
     ),
+    "design_document": KindSpec(
+        "design_document",
+        required_provenance=("generator", "created_at", "design_kind", "feature_row"),
+        reproducibility_keys=("generator",),
+    ),
 }
 
 

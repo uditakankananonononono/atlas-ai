@@ -97,3 +97,16 @@ class ExportView(BaseModel):
     zip_sha256:str|None=None; warnings:list[str]=[]
 class StatusReportView(BaseModel):
     project_id:str; markdown:str; generated_at:datetime
+
+# --- Engineering design artifacts (rows 510-534) ------------------------------
+class DesignRequest(BaseModel):
+    kind:str=Field(min_length=1,max_length=60)
+    context:dict[str,str]=Field(default_factory=dict)
+class DesignValidationView(BaseModel):
+    passed:bool; score:float=Field(ge=0,le=1); findings:list[dict[str,str]]=[]
+    remediation:list[str]=[]
+class DesignDocView(BaseModel):
+    kind:str; row:int; title:str; markdown:str; generated_at:datetime
+    validation:DesignValidationView; artifact_id:str
+class DesignListItem(BaseModel):
+    artifact_id:str; kind:str; row:int; title:str; generated_at:datetime

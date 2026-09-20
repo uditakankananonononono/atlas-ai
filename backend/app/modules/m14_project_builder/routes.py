@@ -72,6 +72,15 @@ def get_artifacts(project_id:str,tenant_id:str=Depends(tenant),service:Service=D
 @router.post("/projects/{project_id}/artifacts/validate",response_model=ArtifactSetValidationView)
 def validate_artifacts(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     return service.validate_artifacts(_get_or_404(service,tenant_id,project_id))
+@router.post("/projects/{project_id}/designs",response_model=DesignDocView,status_code=201)
+def generate_design(project_id:str,request:DesignRequest,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
+    project=_get_or_404(service,tenant_id,project_id)
+    try:return service.generate_design(project,request)
+    except Exception as exc:raise HTTPException(422,str(exc)) from exc
+@router.get("/projects/{project_id}/designs",response_model=list[DesignListItem])
+def list_designs(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
+    try:return service.list_designs(_get_or_404(service,tenant_id,project_id))
+    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 @router.get("/projects/{project_id}/status-report",response_model=StatusReportView)
 def status_report(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     return service.status_report(_get_or_404(service,tenant_id,project_id))

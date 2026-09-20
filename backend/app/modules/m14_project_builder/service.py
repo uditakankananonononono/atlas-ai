@@ -12,6 +12,7 @@ from uuid import uuid4
 from app.core.models import ApprovalRequest
 from app.core.providers import generate as byok_generate
 from . import artifacts as artifact_engine
+from . import engineering as engineering_engine
 from . import exports as export_engine
 from . import milestones as milestone_engine
 from . import quality as quality_engine
@@ -190,6 +191,36 @@ class Service:
         report=quality_engine.evaluate_plan(project.plan,budget=project.budget)
         return QualityResult(passed=report.passed,score=report.score,
             findings=[f.message for f in report.findings],remediation=list(report.remediation))
+
+    # --- Engineering design artifacts (rows 510-534) ------------------------------
+    def generate_design(self,project:ProjectView,request:DesignRequest)->DesignDocView:
+        document=engineering_engine.generate_design(request.kind,project.goal,context=request.context)
+        report=engineering_engine.validate_design(document)
+        if not report.passed:
+            raise ValueError("generated design failed validation: "+"; ".join(f.message for f in report.findings if f.severity=="error"))
+        payload=document.markdown.encode("utf-8")
+        provenance={"generator":"m14-engineering","created_at":document.generated_at,
+            "design_kind":document.kind,"feature_row":str(document.row)}
+        record=artifact_engine.build_manifest(project.id,f"design:{document.kind}","design_document",
+            f"workspace://{project.id}/designs/{document.kind}.md",payload,provenance)
+        manifest=ArtifactManifest(id=record.id,project_id=record.project_id,task_id=record.task_id,kind=record.kind,uri=record.uri,sha256=record.sha256,provenance=dict(record.provenance))
+        if self._repository:self._repository.save_artifact(project.id,manifest,payload)
+        else:
+            self._artifacts.setdefault((project.tenant_id,project.id),[]).append(manifest)
+            self._artifact_payloads.setdefault((project.tenant_id,project.id),{})[manifest.id]=payload
+        return DesignDocView(kind=document.kind,row=document.row,title=document.title,
+            markdown=document.markdown,generated_at=datetime.fromisoformat(document.generated_at),
+            validation=DesignValidationView(passed=report.passed,score=report.score,
+                findings=[asdict(f) for f in report.findings],remediation=list(report.remediation)),
+            artifact_id=manifest.id)
+    def list_designs(self,project:ProjectView)->list[DesignListItem]:
+        out=[]
+        for m in self.list_artifacts(project):
+            if m.kind!="design_document":continue
+            spec=engineering_engine.spec_for_kind(str(m.provenance.get("design_kind","")))
+            out.append(DesignListItem(artifact_id=m.id,kind=spec.kind,row=spec.row,title=spec.title,
+                generated_at=datetime.fromisoformat(str(m.provenance.get("created_at")))))
+        return out
 
     # --- Status report -----------------------------------------------------------
     def status_report(self,project:ProjectView,as_of:datetime|None=None)->StatusReportView:
