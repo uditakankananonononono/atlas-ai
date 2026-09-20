@@ -207,3 +207,16 @@ async def live(request:Request,cursor:int=0,service:Service=Depends(get_service)
             if not events:yield ": heartbeat\n\n"
             await asyncio.sleep(2)
     return StreamingResponse(stream(),media_type="text/event-stream",headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+# --- tenant-bound analysis jobs (feature rows 1010-1034) ---
+@router.get("/analysis/methods",response_model=list[AnalysisMethodInfo])
+def analysis_methods(service:Service=Depends(get_service)):return service.analysis_methods()
+@router.post("/analysis/jobs",response_model=AnalysisJobOut,status_code=201)
+def run_analysis(data:AnalysisJobIn,service:Service=Depends(get_service)):
+    try:return service.run_analysis(data)
+    except ValueError as e:raise HTTPException(422,str(e))
+@router.get("/analysis/jobs",response_model=list[AnalysisJobOut])
+def list_analysis_jobs(method:str|None=None,service:Service=Depends(get_service)):return service.list_analysis_jobs(method)
+@router.get("/analysis/jobs/{job_id}",response_model=AnalysisJobOut)
+def get_analysis_job(job_id:str,service:Service=Depends(get_service)):
+    try:return service.get_analysis_job(job_id)
+    except LookupError:raise HTTPException(404,"analysis job not found")

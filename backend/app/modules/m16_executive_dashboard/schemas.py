@@ -63,3 +63,10 @@ class ExperimentOut(BaseModel):id:str;name:str;hypothesis:str;metric:str;kind:st
 class MeasurementIn(BaseModel):variant_key:str;trials:int=Field(ge=0);successes:int=Field(ge=0)
 class SignificanceReport(BaseModel):test:str;p_value:float|None;significant:bool;alpha:float;uplift:float|None;confidence_interval:tuple[float,float]|None;inputs:dict[str,Any];assumptions:list[str]
 class VariantResult(BaseModel):key:str;trials:int;successes:int;rate:float|None
+# --- tenant-bound analysis jobs (feature rows 1010-1034) ---
+class AnalysisJobIn(BaseModel):
+    method:str=Field(min_length=1,max_length=60);data:dict[str,Any]=Field(default_factory=dict);params:dict[str,Any]=Field(default_factory=dict);seed:int=Field(0,ge=0)
+class AnalysisJobOut(BaseModel):
+    id:str;method:str;feature_row:int;data:dict[str,Any];params:dict[str,Any];seed:int;status:str;output:dict[str,Any]|None;error:str|None;created_at:datetime;completed_at:datetime|None
+class AnalysisMethodInfo(BaseModel):
+    method:str;feature_row:int;summary:str;required_inputs:list[str];limits:list[str]

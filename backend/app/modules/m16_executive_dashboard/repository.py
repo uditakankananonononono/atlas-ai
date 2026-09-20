@@ -219,6 +219,18 @@ class SqlDashboardRepository:
         with self.sessions() as db:
             r=db.scalar(select(ExperimentRow).where(ExperimentRow.tenant_id==self.tenant_id,ExperimentRow.id==experiment_id))
             return _experiment(r) if r else None
+    def save_analysis_job(self,j:AnalysisJobOut):
+        with self.sessions.begin() as db:db.add(AnalysisJobRow(tenant_id=self.tenant_id,**j.model_dump()))
+        return j
+    def get_analysis_job(self,job_id):
+        with self.sessions() as db:
+            r=db.scalar(select(AnalysisJobRow).where(AnalysisJobRow.tenant_id==self.tenant_id,AnalysisJobRow.id==job_id))
+            return _analysis_job(r) if r else None
+    def list_analysis_jobs(self,method=None):
+        with self.sessions() as db:
+            q=select(AnalysisJobRow).where(AnalysisJobRow.tenant_id==self.tenant_id)
+            if method:q=q.where(AnalysisJobRow.method==method)
+            return [_analysis_job(r) for r in db.scalars(q.order_by(AnalysisJobRow.created_at.desc()).limit(200))]
     def list_experiments(self):
         with self.sessions() as db:return [_experiment(r) for r in db.scalars(select(ExperimentRow).where(ExperimentRow.tenant_id==self.tenant_id).order_by(ExperimentRow.created_at))]
     def save_roadmap(self,rm:RoadmapOut):
@@ -230,3 +242,8 @@ class SqlDashboardRepository:
             return RoadmapOut(id=r.id,name=r.name,horizon_start=r.horizon_start,horizon_end=r.horizon_end,created_at=r.created_at) if r else None
     def list_roadmaps(self):
         with self.sessions() as db:return [RoadmapOut(id=r.id,name=r.name,horizon_start=r.horizon_start,horizon_end=r.horizon_end,created_at=r.created_at) for r in db.scalars(select(RoadmapRow).where(RoadmapRow.tenant_id==self.tenant_id).order_by(RoadmapRow.created_at))]
+class AnalysisJobRow(Base):
+    __tablename__="m16_analysis_jobs";__table_args__=(UniqueConstraint("tenant_id","id",name="uq_m16_analysis_job"),)
+    pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(36));method:Mapped[str]=mapped_column(String(60),index=True);feature_row:Mapped[int]=mapped_column(Integer);data:Mapped[dict]=mapped_column(JSON);params:Mapped[dict]=mapped_column(JSON);seed:Mapped[int]=mapped_column(Integer);status:Mapped[str]=mapped_column(String(20));output:Mapped[dict|None]=mapped_column(JSON,nullable=True);error:Mapped[str|None]=mapped_column(Text,nullable=True);created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True));completed_at:Mapped[datetime|None]=mapped_column(DateTime(timezone=True),nullable=True)
+def _analysis_job(r):
+    return AnalysisJobOut(id=r.id,method=r.method,feature_row=r.feature_row,data=r.data,params=r.params,seed=r.seed,status=r.status,output=r.output,error=r.error,created_at=r.created_at,completed_at=r.completed_at)

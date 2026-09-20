@@ -4,7 +4,7 @@ from uuid import uuid4
 from .alerts import alert_message,cooldown_bucket,evaluate
 from .blockers import detect_blockers
 from .kpis import EVENT_KPIS,RESERVED_KPI_IDS,compute_kpis,custom_event_kpi,event_ref,kpi_event_evidence
-from . import planning
+from . import analysis,planning
 from .projector import fold
 from .schemas import *
 from .status import RepoCatalog,effective_state,event_module_id,module_statuses
@@ -382,3 +382,23 @@ class Service:
         saver=getattr(self.repository,"heartbeat",None)
         if not saver:raise RuntimeError("repository does not support agent heartbeats")
         return saver(data,_utcnow())
+# --- tenant-bound analysis jobs (feature rows 1010-1034) ---
+METHOD_SUMMARIES={"predictive":"Forecasts future outcomes","prescriptive":"Recommends actions","descriptive":"Summarizes past data","diagnostic":"Explains why things happened","eda":"Discovers patterns","confirmatory":"Tests hypotheses","inference":"Draws conclusions","hypothesis_test":"Tests claims","confidence_interval":"Quantifies uncertainty","bootstrap":"Resamples for inference","permutation_test":"Tests without assumptions","nonparametric":"Avoids distributional assumptions","robust":"Resists outliers","outlier_detection":"Finds anomalies","imputation":"Fills gaps","multiple_imputation":"Handles uncertainty","mle":"Finds best parameters","em":"Handles latent variables","mcmc":"Samples complex distributions","variational":"Fast approximate inference","gibbs":"Iterative sampling","metropolis_hastings":"MCMC algorithm","hmc":"Efficient MCMC","smc":"Particle filtering","particle_filter":"Track dynamic systems"}
+METHOD_INPUTS={"predictive":["x","y","future_x"],"prescriptive":["options"],"descriptive":["values"],"diagnostic":["x","y"],"eda":["values"],"confirmatory":["values"],"inference":["values"],"hypothesis_test":["values"],"confidence_interval":["values"],"bootstrap":["values"],"permutation_test":["group_a","group_b"],"nonparametric":["group_a","group_b"],"robust":["values"],"outlier_detection":["values"],"imputation":["values"],"multiple_imputation":["values"],"mle":["values"],"em":["values"],"mcmc":["values"],"variational":["values"],"gibbs":["values"],"metropolis_hastings":["values"],"hmc":["values"],"smc":["observations"],"particle_filter":["observations"]}
+def _analysis_methods(self):
+    return [AnalysisMethodInfo(method=m,feature_row=analysis.ROWS[m],summary=METHOD_SUMMARIES[m],required_inputs=METHOD_INPUTS[m],limits=[]) for m in analysis.ROWS]
+def _run_analysis(self,data:AnalysisJobIn):
+    if data.method not in analysis.ROWS:raise ValueError(f"unsupported analysis method {data.method}")
+    started=_utcnow()
+    try:
+        result=analysis.run(data.method,data.data,data.params,data.seed)
+        job=AnalysisJobOut(id=str(uuid4()),method=data.method,feature_row=analysis.ROWS[data.method],data=data.data,params=data.params,seed=data.seed,status="completed",output=result["output"],error=None,created_at=started,completed_at=_utcnow())
+    except ValueError as e:
+        job=AnalysisJobOut(id=str(uuid4()),method=data.method,feature_row=analysis.ROWS[data.method],data=data.data,params=data.params,seed=data.seed,status="failed",output=None,error=str(e),created_at=started,completed_at=_utcnow())
+    return self.repository.save_analysis_job(job)
+def _get_analysis_job(self,job_id):
+    j=self.repository.get_analysis_job(job_id)
+    if not j:raise LookupError(job_id)
+    return j
+def _list_analysis_jobs(self,method=None):return self.repository.list_analysis_jobs(method)
+Service.analysis_methods=_analysis_methods;Service.run_analysis=_run_analysis;Service.get_analysis_job=_get_analysis_job;Service.list_analysis_jobs=_list_analysis_jobs
