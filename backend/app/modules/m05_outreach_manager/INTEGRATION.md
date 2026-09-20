@@ -53,3 +53,27 @@ Draft and proposal generation calls the shared BYOK `app.core.providers.generate
 ## Lab registry growth
 
 `data/lab_registry.json` ships with a small seed of well-known institutes and labs. Operators can extend it with additional entries (`name`, `university`, `country`, `topics`, `page_url`); `LabRegistry.load()` reads this module-relative file and can also accept an explicit path for deployment-specific registries. Discovery remains scoped to this registry plus explicitly supplied URLs — it is not a general web crawler.
+
+## Growth planning surface (feature rows 417-450)
+
+`growth.py` adds 34 typed, evidence-bound planning builders mounted at
+`POST /outreach-manager/growth/<slug>` (one route per row, see the
+`_GROWTH_ENDPOINTS` table in routes.py). Properties the integrator can rely on:
+
+- Every builder returns a deterministic, reviewable artifact (`BusinessArtifact`,
+  or typed results for lead scoring and price elasticity). Nothing executes:
+  artifacts only plan.
+- Every external effect is listed in the artifact's `gated_effects` and, where a
+  real send exists (email marketing row 425), binds to the campaign runtime's
+  exact-review approval machinery - the same action types, verified-email scope
+  rules, and per-domain caps as outreach campaigns.
+- No builder fabricates contacts, journalists, creators, prices, or market data.
+  Empty supplied lists produce artifacts with explicit scope checks and manual
+  import steps, never invented entries.
+- Computed rows do transparent arithmetic on supplied numbers (lead scores,
+  midpoint elasticity, funnel conversion, CRO drop-off, health scores, price
+  floors, tier spacing, bundle discounts, dynamic-price bound stacking) and
+  embed those inputs as evidence items.
+- Requests carry caller-supplied evidence (`source` + `fact`); artifacts must
+  cite at least one evidence item and every section's evidence keys are
+  validated. Missing evidence or invalid inputs return 422.

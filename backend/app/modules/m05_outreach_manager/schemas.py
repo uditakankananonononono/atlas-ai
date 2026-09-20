@@ -224,3 +224,29 @@ class ProposalDraftRequest(BaseModel):
     recipient_context: str = Field(min_length=1, max_length=2000)
     provider: str = "openai"
     model: str | None = None
+
+
+# --- growth planning (feature rows 417-450) -------------------------------------
+
+
+class EvidenceInput(BaseModel):
+    """One caller-supplied fact with its source; key auto-assigned when omitted."""
+
+    key: str | None = None
+    source: str = "caller"
+    fact: str
+
+
+class GrowthPlanRequest(BaseModel):
+    """Generic request for the growth planning endpoints.
+
+    `inputs` carries the builder-specific fields (validated and typed by the
+    builder); `evidence` carries the facts the artifact may cite;
+    `contact_ids` binds CRM contacts for the email-marketing endpoint.
+    """
+
+    title: str | None = None
+    goal: str = "growth"
+    inputs: dict[str, Any] = Field(default_factory=dict)
+    evidence: list[EvidenceInput] = Field(default_factory=list)
+    contact_ids: list[str] = Field(default_factory=list)

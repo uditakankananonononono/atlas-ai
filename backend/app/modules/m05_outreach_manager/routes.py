@@ -668,3 +668,121 @@ def _load_contacts(container: Container, contact_ids: list[str]) -> list[Contact
             raise HTTPException(status_code=404, detail=f"contact not found: {contact_id}")
         contacts.append(contact)
     return contacts
+
+
+# --- growth planning endpoints (feature rows 417-450) -----------------------------
+
+from . import growth as _growth
+from .growth import BusinessArtifact, ElasticityResult, EvidenceItem, GrowthPlanError, LeadScoringResult
+from .schemas import GrowthPlanRequest
+
+_GROWTH_ENDPOINTS: list[tuple[str, str, type]] = [
+    ("public-relations", "plan_public_relations", BusinessArtifact),
+    ("media-relations", "plan_media_relations", BusinessArtifact),
+    ("crisis-communication", "plan_crisis_communication", BusinessArtifact),
+    ("social-media-strategy", "plan_social_media_strategy", BusinessArtifact),
+    ("community-management", "plan_community_management", BusinessArtifact),
+    ("influencer-marketing", "plan_influencer_marketing", BusinessArtifact),
+    ("affiliate-marketing", "plan_affiliate_marketing", BusinessArtifact),
+    ("referral-program", "plan_referral_program", BusinessArtifact),
+    ("email-marketing", "plan_email_marketing", BusinessArtifact),
+    ("marketing-automation", "plan_marketing_automation", BusinessArtifact),
+    ("lead-scoring", "score_leads", LeadScoringResult),
+    ("sales-funnel", "design_sales_funnel", BusinessArtifact),
+    ("conversion-optimization", "plan_conversion_optimization", BusinessArtifact),
+    ("landing-page", "plan_landing_page", BusinessArtifact),
+    ("sales-script", "develop_sales_script", BusinessArtifact),
+    ("objection-handling", "plan_objection_handling", BusinessArtifact),
+    ("negotiation", "plan_negotiation", BusinessArtifact),
+    ("deal-structuring", "structure_deal", BusinessArtifact),
+    ("pricing-strategy", "plan_pricing_strategy", BusinessArtifact),
+    ("price-elasticity", "analyze_price_elasticity", ElasticityResult),
+    ("revenue-model", "design_revenue_model", BusinessArtifact),
+    ("subscription-design", "design_subscription", BusinessArtifact),
+    ("freemium", "plan_freemium", BusinessArtifact),
+    ("usage-based-pricing", "plan_usage_based_pricing", BusinessArtifact),
+    ("tiered-pricing", "plan_tiered_pricing", BusinessArtifact),
+    ("dynamic-pricing", "plan_dynamic_pricing", BusinessArtifact),
+    ("bundling", "plan_bundling", BusinessArtifact),
+    ("upselling", "plan_upselling", BusinessArtifact),
+    ("cross-selling", "plan_cross_selling", BusinessArtifact),
+    ("customer-success", "plan_customer_success", BusinessArtifact),
+    ("onboarding", "plan_onboarding", BusinessArtifact),
+    ("support-system", "design_support_system", BusinessArtifact),
+    ("knowledge-base", "plan_knowledge_base", BusinessArtifact),
+    ("community-support", "plan_community_support", BusinessArtifact),
+]
+
+
+def _coerce_value(hint, value):
+    """Coerce JSON input dicts into the builder's typed models by annotation."""
+    import types
+    import typing
+
+    from pydantic import BaseModel
+
+    if hint is None:
+        return value
+    origin = typing.get_origin(hint)
+    if origin in (typing.Union, types.UnionType):
+        for arg in typing.get_args(hint):
+            if arg is type(None):
+                continue
+            coerced = _coerce_value(arg, value)
+            if coerced is not value:
+                return coerced
+        return value
+    if origin is list and isinstance(value, list):
+        args = typing.get_args(hint)
+        if args and isinstance(args[0], type) and issubclass(args[0], BaseModel):
+            return [args[0](**item) if isinstance(item, dict) else item for item in value]
+        return value
+    if isinstance(hint, type) and issubclass(hint, BaseModel) and isinstance(value, dict):
+        return hint(**value)
+    return value
+
+
+def _growth_view(builder_name: str):
+    import inspect
+    import typing
+
+    from pydantic import ValidationError
+
+    builder = getattr(_growth, builder_name)
+    params = inspect.signature(builder).parameters
+    hints = typing.get_type_hints(builder)
+
+    def view(request: GrowthPlanRequest, container: Container = Depends(get_container)):
+        evidence = [
+            EvidenceItem(key=e.key or f"ev{i + 1}", source=e.source, fact=e.fact)
+            for i, e in enumerate(request.evidence)
+        ]
+        kwargs = {name: _coerce_value(hints.get(name), value) for name, value in request.inputs.items()}
+        if request.title is not None and "title" in params:
+            kwargs["title"] = request.title
+        if "goal" in params and "goal" not in kwargs:
+            kwargs["goal"] = request.goal
+        if builder_name == "plan_email_marketing":
+            kwargs["contacts"] = _load_contacts(container, request.contact_ids)
+        try:
+            return builder(evidence=evidence, **kwargs)
+        except GrowthPlanError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except ValidationError as exc:
+            raise HTTPException(status_code=422, detail=f"invalid inputs: {exc}") from exc
+        except TypeError as exc:
+            raise HTTPException(
+                status_code=422, detail=f"missing or unknown inputs for {builder_name}: {exc}"
+            ) from exc
+
+    return view
+
+
+for _path, _builder_name, _model in _GROWTH_ENDPOINTS:
+    router.add_api_route(
+        f"/growth/{_path}",
+        _growth_view(_builder_name),
+        methods=["POST"],
+        response_model=_model,
+        name=f"growth_{_builder_name}",
+    )
