@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -193,3 +194,68 @@ class BestTimeOut(BaseModel):
     platform: Platform
     weekday: str
     next_at: datetime
+
+
+# -- rows 400-426: marketing analyses and plans -----------------------------
+
+
+class SampleSizeIn(BaseModel):
+    """Row 400: inputs for the two-proportion A/B power calculation."""
+
+    baseline_rate: float = Field(gt=0, lt=1)
+    minimum_detectable_effect: float = Field(gt=0, lt=1)
+    alpha: float = Field(default=0.05, gt=0, lt=0.5)
+    power: float = Field(default=0.8, gt=0.5, lt=0.9999)
+
+
+class ArtifactIn(BaseModel):
+    """Generic typed input for rows 401-426 (LLM-backed drafts)."""
+
+    business: str = Field(min_length=2, max_length=500)
+    product: str | None = None
+    audience: str | None = None
+    goals: list[str] = Field(default_factory=list, max_length=20)
+    facts: dict[str, Any] = Field(default_factory=dict)
+    contacts: list[str] = Field(default_factory=list, max_length=100)
+    provided_metrics: dict[str, Any] = Field(default_factory=dict)
+
+
+class CopywritingIn(BaseModel):
+    """Row 407: persuasive copy through the compliance gate."""
+
+    brief: str = Field(min_length=3, max_length=4000)
+    platform: Platform
+    format: str | None = None
+    voice: str | None = None
+    sponsored: bool = False
+    media_count: int = Field(default=0, ge=0, le=50)
+    alt_texts: int = Field(default=0, ge=0, le=50)
+
+
+class EditorialCalendarIn(BaseModel):
+    """Row 409: dated draft calendar; entries are never scheduled here."""
+
+    business: str = Field(min_length=2, max_length=500)
+    themes: list[str] = Field(min_length=1, max_length=10)
+    start_date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    weeks: int = Field(default=4, ge=1, le=12)
+    posts_per_week: int = Field(default=3, ge=1, le=7)
+
+
+class ArtifactOut(BaseModel):
+    """One stored draft artifact."""
+
+    id: str
+    row: int
+    kind: str
+    title: str
+    status: str
+    provenance: str
+    model: str | None
+    sections: dict[str, Any]
+    created_at: datetime
+
+
+class CopywritingOut(BaseModel):
+    artifact: ArtifactOut
+    findings: list[ComplianceIssueOut]

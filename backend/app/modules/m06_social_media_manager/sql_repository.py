@@ -18,6 +18,7 @@ from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 from app.core.database import Base, SessionLocal, engine
 
 from .adapters import NormalizedMetrics
+from .marketing import MarketingArtifact
 from .analytics import ABTest, MetricsSnapshot
 from .scheduler import PublishRecord, ScheduleEntry
 from .service import AnalysisReport, AssetPrompt, ContentPlan, Platform, PlatformDraft
@@ -49,6 +50,9 @@ class SocialSnapshotRow(Base):
 class SocialABTestRow(Base):
     __tablename__="m06_social_ab_tests"; __table_args__=(UniqueConstraint("tenant_id","item_id"),)
     id:Mapped[int]=mapped_column(primary_key=True,autoincrement=True); tenant_id:Mapped[str]=mapped_column(String(120),index=True); item_id:Mapped[str]=mapped_column(String(36),index=True); data:Mapped[dict]=mapped_column(JSON)
+class SocialArtifactRow(Base):
+    __tablename__="m06_social_artifacts"; __table_args__=(UniqueConstraint("tenant_id","item_id"),)
+    id:Mapped[int]=mapped_column(primary_key=True,autoincrement=True); tenant_id:Mapped[str]=mapped_column(String(120),index=True); item_id:Mapped[str]=mapped_column(String(36),index=True); kind:Mapped[str]=mapped_column(String(60),index=True); data:Mapped[dict]=mapped_column(JSON)
 
 def plan_data(x:ContentPlan)->dict:
     return {"id":x.id,"brief":x.brief,"status":x.status,"created_at":x.created_at.isoformat(),"drafts":[{"platform":d.platform.value,"format":d.format,"post_copy":d.post_copy,"asset_prompts":[a.__dict__ for a in d.asset_prompts]} for d in x.drafts]}
@@ -123,6 +127,18 @@ def to_ab_test(d: dict) -> ABTest:
     )
 
 
+def artifact_data(x: MarketingArtifact) -> dict:
+    return {"id": x.id, "row": x.row, "kind": x.kind, "title": x.title, "sections": x.sections,
+            "inputs": x.inputs, "status": x.status, "provenance": x.provenance, "model": x.model,
+            "created_at": x.created_at.isoformat()}
+
+def to_artifact(d: dict) -> MarketingArtifact:
+    return MarketingArtifact(id=d["id"], row=d["row"], kind=d["kind"], title=d["title"],
+                             sections=d["sections"], inputs=d["inputs"], status=d.get("status", "draft"),
+                             provenance=d.get("provenance", "llm-draft"), model=d.get("model"),
+                             created_at=datetime.fromisoformat(d["created_at"]))
+
+
 class SqlSocialRepository:
     """Durable tenant-scoped store for plans, reports, schedules, and analytics."""
 
@@ -178,3 +194,7 @@ class SqlSocialRepository:
     def list_ab_tests(self,plan_id:str|None=None):
         tests=self._list(SocialABTestRow,to_ab_test)
         return [t for t in tests if plan_id is None or t.plan_id==plan_id]
+    def save_artifact(self,x): self._save(SocialArtifactRow,x.id,artifact_data(x),{"kind":x.kind}); return x
+    def get_artifact(self,item_id): return self._get(SocialArtifactRow,item_id,to_artifact)
+    def list_artifacts(self,kind:str|None=None):
+        return self._list(SocialArtifactRow,to_artifact,(() if kind is None else (SocialArtifactRow.kind==kind,)))

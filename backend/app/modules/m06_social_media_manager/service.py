@@ -180,6 +180,9 @@ class SocialRepository(Protocol):
     def save_ab_test(self, test: ABTest) -> ABTest: ...
     def get_ab_test(self, test_id: str) -> ABTest | None: ...
     def list_ab_tests(self, plan_id: str | None = None) -> list[ABTest]: ...
+    def save_artifact(self, artifact: Any) -> Any: ...
+    def get_artifact(self, artifact_id: str) -> Any | None: ...
+    def list_artifacts(self, kind: str | None = None) -> list[Any]: ...
 
 
 class MemorySocialRepository:
@@ -192,6 +195,7 @@ class MemorySocialRepository:
         self.publish_records: list = []
         self.snapshots: dict[str, Any] = {}
         self.ab_tests: dict[str, ABTest] = {}
+        self.artifacts: dict[str, Any] = {}
 
     def save_plan(self, plan: ContentPlan) -> ContentPlan: self.plans[plan.id]=plan; return plan
     def get_plan(self, plan_id: str) -> ContentPlan | None: return self.plans.get(plan_id)
@@ -212,6 +216,10 @@ class MemorySocialRepository:
     def get_ab_test(self, test_id: str) -> ABTest | None: return self.ab_tests.get(test_id)
     def list_ab_tests(self, plan_id: str | None = None) -> list[ABTest]:
         return [t for t in self.ab_tests.values() if plan_id is None or t.plan_id == plan_id]
+    def save_artifact(self, artifact: Any) -> Any: self.artifacts[artifact.id]=artifact; return artifact
+    def get_artifact(self, artifact_id: str) -> Any | None: return self.artifacts.get(artifact_id)
+    def list_artifacts(self, kind: str | None = None) -> list[Any]:
+        return [a for a in self.artifacts.values() if kind is None or a.kind == kind]
 
 
 class Service:
@@ -243,6 +251,17 @@ class Service:
         self._model = model
         self._repository = repository or MemorySocialRepository()
         self._scheduler = scheduler
+        from .marketing import MarketingEngine
+
+        self._marketing = MarketingEngine(
+            repository=self._repository, generate=self._generate,
+            provider=self._provider, model=self._model,
+        )
+
+    @property
+    def marketing(self):
+        """The rows-400-426 marketing engine (draft/review-first)."""
+        return self._marketing
 
     # -- content generation pipeline -------------------------------------
 

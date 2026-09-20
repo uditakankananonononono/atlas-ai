@@ -28,8 +28,15 @@ from .scheduler import (
     ScheduleStateError,
 )
 from .models import Platform
+from .marketing import ARTIFACT_SPECS, ArtifactParseError, MarketingArtifact
 from .schemas import (
+    ArtifactIn,
+    ArtifactOut,
     BestTimeOut,
+    CopywritingIn,
+    CopywritingOut,
+    EditorialCalendarIn,
+    SampleSizeIn,
     ABMetricsIn,
     ABTestIn,
     ABTestOut,
@@ -219,6 +226,110 @@ def best_publish_time(platform: Platform, service: Service = Depends(get_service
     if suggestion is None:
         raise HTTPException(status_code=404, detail="not enough daily metrics for a recommendation")
     return {"platform": platform, "weekday": suggestion.strftime("%A"), "next_at": suggestion}
+
+
+# -- rows 400-426: marketing analyses and plans (draft/review-first) -------
+
+
+def _artifact_out(artifact: MarketingArtifact) -> dict:
+    return {
+        "id": artifact.id, "row": artifact.row, "kind": artifact.kind, "title": artifact.title,
+        "status": artifact.status, "provenance": artifact.provenance, "model": artifact.model,
+        "sections": artifact.sections, "created_at": artifact.created_at,
+    }
+
+
+@router.post("/marketing/sample-size", response_model=ArtifactOut)
+def sample_size(request: SampleSizeIn, service: Service = Depends(get_service)) -> object:
+    """Row 400: deterministic two-proportion A/B power calculation."""
+    try:
+        return _artifact_out(service.marketing.sample_size(
+            request.baseline_rate, request.minimum_detectable_effect,
+            alpha=request.alpha, power=request.power,
+        ))
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+async def _run_artifact(slug: str, request: ArtifactIn, service: Service) -> dict:
+    try:
+        artifact = await service.marketing.generate(
+            slug,
+            business=request.business,
+            product=request.product,
+            audience=request.audience,
+            goals=request.goals,
+            facts=request.facts,
+            contacts=request.contacts,
+            provided_metrics=request.provided_metrics,
+        )
+        return _artifact_out(artifact)
+    except ArtifactParseError as error:
+        raise HTTPException(status_code=502, detail=str(error)) from error
+    except ProviderError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
+
+
+def _register_artifact_route(slug: str) -> None:
+    """Mount POST /marketing/<slug> for one registry row (401-426)."""
+
+    async def handler(request: ArtifactIn, service: Service = Depends(get_service)) -> object:
+        return await _run_artifact(slug, request, service)
+
+    handler.__name__ = f"marketing_{slug.replace('-', '_')}"
+    router.add_api_route(
+        f"/marketing/{slug}", handler, methods=["POST"],
+        response_model=ArtifactOut, name=handler.__name__,
+    )
+
+
+for _slug in ARTIFACT_SPECS:
+    if _slug not in ("copywriting", "editorial-calendar"):
+        _register_artifact_route(_slug)
+
+
+@router.post("/marketing/copywriting", response_model=CopywritingOut)
+async def marketing_copywriting(request: CopywritingIn, service: Service = Depends(get_service)) -> object:
+    """Row 407: persuasive copy through the module compliance gate (never published)."""
+    try:
+        artifact, findings = await service.marketing.draft_copy(
+            brief=request.brief, platform=request.platform, format=request.format,
+            voice=request.voice, sponsored=request.sponsored,
+            media_count=request.media_count, alt_texts=request.alt_texts,
+        )
+        return {"artifact": _artifact_out(artifact), "findings": findings}
+    except ArtifactParseError as error:
+        raise HTTPException(status_code=502, detail=str(error)) from error
+    except DraftComplianceError as error:
+        raise HTTPException(
+            status_code=422,
+            detail=[{"code": i.code, "severity": i.severity, "message": i.message} for i in error.issues],
+        ) from error
+    except ProviderError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
+
+
+@router.post("/marketing/editorial-calendar", response_model=ArtifactOut)
+async def marketing_editorial_calendar(request: EditorialCalendarIn, service: Service = Depends(get_service)) -> object:
+    """Row 409: dated draft calendar entries; scheduling stays approval-gated elsewhere."""
+    try:
+        artifact = await service.marketing.editorial_calendar(
+            business=request.business, themes=request.themes, start_date=request.start_date,
+            weeks=request.weeks, posts_per_week=request.posts_per_week,
+        )
+        return _artifact_out(artifact)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=f"invalid calendar input: {error}") from error
+    except ArtifactParseError as error:
+        raise HTTPException(status_code=502, detail=str(error)) from error
+    except ProviderError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
+
+
+@router.get("/marketing/artifacts", response_model=list[ArtifactOut])
+def list_marketing_artifacts(kind: str | None = None, service: Service = Depends(get_service)) -> object:
+    """List stored draft artifacts, optionally filtered by kind."""
+    return [_artifact_out(a) for a in service.marketing.list_artifacts(kind)]
 
 
 # -- scheduler (approval-verified execution gate) -------------------------------
