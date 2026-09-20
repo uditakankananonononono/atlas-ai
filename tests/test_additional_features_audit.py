@@ -22,3 +22,12 @@ def test_flipped_rows_have_commit_and_test_evidence():
    assert len(x['evidence']['commit'])==40
    assert Path(x['evidence']['implementation_path']).exists()
    assert Path(x['evidence']['test_path']).exists()
+
+
+def test_latest_live_doc_delta_and_application_boundary():
+ assert AUDIT["schema_version"]==3
+ assert AUDIT["delta_from_schema_version_2"]=={"added":0,"removed":0,"changed":1,"unchanged":2008}
+ universal=AUDIT["rows"][0]
+ assert "signs me up for competitions" in universal["description"]
+ assert "exact-preview human review" in universal["boundary"]
+ assert "never evade detection" in universal["boundary"]

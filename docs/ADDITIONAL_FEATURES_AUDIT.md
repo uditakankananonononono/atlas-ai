@@ -26,3 +26,7 @@ Added nine requirements: universal multi-field creation/application/tool-discove
 ## First row flips
 
 After Claire's consent-first personalization and training chunks: **5 verified-pushed / 3 thin / 2,001 missing**. Verified: Decision Journaling + Retrieval; Correction Loop; bounded owner-authored reasoning-note capture/retrieval; opt-in Behavioral Telemetry; Cognitive Twin Retrieval. Thin: Voice Fine-Tuning, Preference Ranking, weekly Human-in-the-Loop Reinforcement because dataset/job pipelines and signals exist but no real trained/evaluated model artifact exists yet. The universal multi-field vision remains missing as a whole until every underlying domain row is verified.
+
+## 19:11 live-document delta
+
+Fresh re-read found **0 added, 0 removed, 1 changed, 2,008 unchanged**. Total remains 2,009. The universal multi-field requirement now also asks Atlas to prepare sign-ups for competitions, essays, debates, MUNs, applications, summer programs, olympiads and hackathons; use PaperBleach-style humanization; gather advice online; and implement carefully. Bounded implementation: Atlas may research and prepare these applications, but every sign-up/submission remains exact-preview approval-gated; humanization means factual clarity and natural voice, never authorship evasion, deception or fabricated activity.

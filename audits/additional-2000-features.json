@@ -1,7 +1,7 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
-  "source_revision_checked_at": "2026-09-20T18:23:37+05:30",
+  "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "e4103e81d1317acc9c244c9ec715fee73c830d40",
   "counts": {
     "verified-pushed": 5,
@@ -20,7 +20,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
-      "description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results.",
+      "description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
       "status": "missing",
       "evidence": null,
       "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects."
@@ -20137,6 +20137,19 @@
       "status": "missing",
       "evidence": null,
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+    }
+  ],
+  "delta_from_schema_version_2": {
+    "added": 0,
+    "removed": 0,
+    "changed": 1,
+    "unchanged": 2008
+  },
+  "changed_requirements": [
+    {
+      "requirement": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
+      "old": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results.",
+      "new": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision."
     }
   ]
 }
