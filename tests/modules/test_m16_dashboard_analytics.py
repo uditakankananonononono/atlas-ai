@@ -223,3 +223,107 @@ def test_digest_sections_reflect_state():
     assert any("[critical]" in line for line in blockers_sec.lines)
     modules_sec=next(sec for sec in d.sections if sec.title=="Modules")
     assert any("module 3" in line for line in modules_sec.lines)
+def _rule_repo(repo):
+    rules={}
+    repo.save_alert_rule=lambda d,at:rules.setdefault(d.id,d)
+    repo.list_alert_rules=lambda:list(rules.values())
+    repo.delete_alert_rule=lambda i:rules.pop(i,None) is not None
+    appended=[]
+    repo.append_event=lambda e:(appended.append(e) or e)
+    repo._appended=appended
+    return rules
+def test_alert_rule_fires_on_projection_and_dedupes_hourly():
+    repo=FakeRepo(events=[event(1,"grant.won",NOW-timedelta(hours=1)),event(2,"grant.won",NOW-timedelta(hours=2))])
+    rules=_rule_repo(repo)
+    s=Service(repo,catalog=CAT)
+    s.save_alert_rule(AlertRuleIn(id="grants_spike",kpi_id="grants_won",comparator=AlertComparator.GTE,threshold=2))
+    summary=s.project(NOW)
+    assert summary["alerts_fired"]==1
+    alerts=[e for e in repo._appended if e.topic=="alert"]
+    assert len(alerts)==1 and alerts[0].aggregate_id=="grants_spike" and alerts[0].payload["value"]==2
+    again=s.project(NOW)
+    assert again["alerts_fired"]==1 and len([e for e in repo._appended if e.topic=="alert"])==2  # redelivery dedupes at repo level in SQL
+def test_alert_rule_below_threshold_and_unknown_kpi():
+    repo=FakeRepo(events=[event(1,"grant.won",NOW-timedelta(hours=1))])
+    _rule_repo(repo)
+    s=Service(repo,catalog=CAT)
+    s.save_alert_rule(AlertRuleIn(id="grants_spike",kpi_id="grants_won",comparator=AlertComparator.GT,threshold=5))
+    s.save_alert_rule(AlertRuleIn(id="ghost",kpi_id="no_such_kpi",comparator=AlertComparator.GT,threshold=0))
+    assert s.project(NOW)["alerts_fired"]==0 and repo._appended==[]
+def test_alert_rule_custom_message_and_delete():
+    repo=FakeRepo();_rule_repo(repo)
+    s=Service(repo,catalog=CAT)
+    s.save_alert_rule(AlertRuleIn(id="pending_high",kpi_id="approvals_pending",comparator=AlertComparator.GTE,threshold=0,message="queue needs review"))
+    assert s.project(NOW)["alerts_fired"]==1
+    assert repo._appended[0].payload["message"]=="queue needs review"
+    s.delete_alert_rule("pending_high")
+    with pytest.raises(LookupError):s.delete_alert_rule("pending_high")
+    assert s.project(NOW)["alerts_fired"]==0
+def test_bulk_decide_mixed_results():
+    repo=FakeRepo(approvals=[approval(1),approval(2),approval(3,expires=NOW-timedelta(minutes=5))])
+    outcomes={}
+    def decide(aid,state,note,at):
+        a=next(x for x in repo._approvals if x.id==aid);a.state=state;a.reviewed_at=at;outcomes[aid]=state;return a
+    repo.decide=decide
+    s=Service(repo,catalog=CAT)
+    result=s.decide_many(BulkApprovalDecision(approval_ids=["ap1","ap2","ap3","missing"],approve=True,note="batch"))
+    assert [a.id for a in result.decided]==["ap1","ap2"]
+    reasons={x["id"]:x["reason"] for x in result.skipped}
+    assert reasons["ap3"]=="approval expired" and reasons["missing"]=="not pending"
+    assert outcomes=={"ap1":ApprovalState.APPROVED,"ap2":ApprovalState.APPROVED}
+def test_sweep_expired_flips_state():
+    expired=approval(1,expires=NOW-timedelta(minutes=5));fresh=approval(2,expires=NOW+timedelta(hours=2))
+    repo=FakeRepo(approvals=[expired,fresh])
+    def sweep(moment):
+        out=[a for a in repo._approvals if a.state==ApprovalState.PENDING and a.expires_at and a.expires_at<moment]
+        for a in out:a.state=ApprovalState.EXPIRED
+        return out
+    repo.expire_approvals_before=sweep
+    s=Service(repo,catalog=CAT)
+    result=s.sweep_expired(NOW)
+    assert [a.id for a in result]==["ap1"] and expired.state==ApprovalState.EXPIRED and fresh.state==ApprovalState.PENDING
+    assert s.blockers(NOW)==[b for b in s.blockers(NOW) if b.kind!="approval_expired_pending"]
+def test_export_events_csv_filtered_and_bounded():
+    events=[event(1,"grant.won",NOW-timedelta(hours=1),payload={"module_id":3}),event(2,"task.completed",NOW-timedelta(hours=1)),event(3,"grant.won",NOW-timedelta(hours=40))]
+    s=svc(events=events)
+    csv_text=s.export_events_csv(24,"grant.won",now=NOW)
+    lines=csv_text.strip().splitlines()
+    assert lines[0]=="id,sequence,topic,aggregate_type,aggregate_id,module_id,occurred_at"
+    assert len(lines)==2 and lines[1].startswith("e1,1,grant.won") and ",3," in lines[1]
+    assert "e3" not in s.export_events_csv(24,None,now=NOW) and "e2" in s.export_events_csv(24,None,now=NOW)
+def test_export_kpis_csv():
+    s=svc(events=[event(1,"grant.won",NOW-timedelta(hours=1))])
+    text=s.export_kpis_csv(NOW)
+    assert text.splitlines()[0]=="id,label,value,unit,previous_value,window_hours,evidence_total"
+    row=next(l for l in text.splitlines() if l.startswith("grants_won,"))
+    assert row.startswith("grants_won,Grants won,1.0,count,") or row.startswith("grants_won,Grants won,1,count,")
+def test_default_view_when_unset():
+    view=svc().get_view(NOW)
+    assert [w.kind for w in view.widgets]==[WidgetKind.KPI_CARD,WidgetKind.BLOCKERS,WidgetKind.MODULE_STATUS,WidgetKind.TIMELINE,WidgetKind.APPROVALS]
+def test_save_view_validates_and_normalizes():
+    repo=FakeRepo();stored={}
+    repo.save_view=lambda layout,at:stored.update(layout=layout,at=at)
+    repo.get_view=lambda:(stored.get("layout"),stored.get("at"))
+    s=Service(repo,catalog=CAT)
+    view=s.save_view(DashboardViewIn(widgets=[WidgetConfig(id="b",kind=WidgetKind.BLOCKERS,position=9),WidgetConfig(id="k",kind=WidgetKind.KPI_CARD,kpi_id="grants_won",position=3)]))
+    assert [w.id for w in view.widgets]==["k","b"] and [w.position for w in view.widgets]==[0,1]
+    loaded=s.get_view(NOW)
+    assert [w.id for w in loaded.widgets]==["k","b"]
+    with pytest.raises(ValueError):s.save_view(DashboardViewIn(widgets=[WidgetConfig(id="x",kind=WidgetKind.KPI_CARD,kpi_id="nope"),WidgetConfig(id="x",kind=WidgetKind.BLOCKERS)]))
+    with pytest.raises(ValueError):s.save_view(DashboardViewIn(widgets=[WidgetConfig(id="y",kind=WidgetKind.KPI_CARD,kpi_id="nope")]))
+def test_alert_cooldown_buckets():
+    from app.modules.m16_executive_dashboard.alerts import cooldown_bucket
+    base=datetime.fromtimestamp(int(NOW.timestamp()//21600)*21600,tz=timezone.utc)  # aligned 6h boundary
+    rule=AlertRuleOut(id="rr",kpi_id="kk",comparator=AlertComparator.GT,threshold=1,cooldown_hours=6,created_at=NOW)
+    assert cooldown_bucket(rule,base)==cooldown_bucket(rule,base+timedelta(hours=5))
+    assert cooldown_bucket(rule,base+timedelta(hours=7))>cooldown_bucket(rule,base)
+    hourly=AlertRuleOut(id="rr",kpi_id="kk",comparator=AlertComparator.GT,threshold=1,created_at=NOW)
+    assert cooldown_bucket(hourly,base)!=cooldown_bucket(hourly,base+timedelta(hours=1))
+def test_export_events_csv_cursor_pagination():
+    events=[event(i,"task.completed",NOW-timedelta(minutes=i)) for i in range(1,6)]
+    s=svc(events=events)
+    page1=s.export_events_csv(24,None,0,NOW).strip().splitlines()
+    assert len(page1)==6
+    page2=s.export_events_csv(24,None,3,NOW).strip().splitlines()
+    ids=[l.split(",")[0] for l in page2[1:]]
+    assert ids==["e4","e5"]

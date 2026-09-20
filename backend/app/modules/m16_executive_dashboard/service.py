@@ -1,6 +1,7 @@
 from __future__ import annotations
 from datetime import datetime,timedelta,timezone
 from uuid import uuid4
+from .alerts import alert_message,cooldown_bucket,evaluate
 from .blockers import detect_blockers
 from .kpis import EVENT_KPIS,RESERVED_KPI_IDS,compute_kpis,custom_event_kpi,event_ref,kpi_event_evidence
 from .projector import fold
@@ -27,7 +28,14 @@ class Service:
         kpis=self.kpis(now)
         recorder=getattr(self.repository,"record_kpi_points",None)
         if recorder:recorder([(k.id,k.window_hours,k.value) for k in kpis],now)
-        return {"projected_events":projected,"last_sequence":self.repository.snapshot().last_sequence,"recorded_points":len(kpis) if recorder else 0,"at":now.isoformat()}
+        fired=self._evaluate_alert_rules(kpis,now)
+        return {"projected_events":projected,"last_sequence":self.repository.snapshot().last_sequence,"recorded_points":len(kpis) if recorder else 0,"alerts_fired":fired,"at":now.isoformat()}
+    def _evaluate_alert_rules(self,kpis,now):
+        fired=0
+        for rule,kpi in evaluate(self.list_alert_rules(),kpis):
+            self.repository.append_event(Event(id=f"alert:{rule.id}:{cooldown_bucket(rule,now)}",sequence=0,topic="alert",aggregate_type="alert_rule",aggregate_id=rule.id,payload={"severity":rule.severity.value,"message":alert_message(rule,kpi),"kpi_id":kpi.id,"value":kpi.value,"threshold":rule.threshold},occurred_at=now));fired+=1
+        if fired:self._project_if_needed()
+        return fired
     def events_after(self,cursor):return self.repository.events_after(cursor)
     def pending_approvals(self):
         now=_utcnow();return [a for a in self.repository.pending_approvals() if not a.expires_at or a.expires_at>now]
@@ -188,6 +196,71 @@ class Service:
     def delete_kpi_definition(self,kpi_id):
         deleter=getattr(self.repository,"delete_kpi_definition",None)
         if not deleter or not deleter(kpi_id):raise LookupError(kpi_id)
+    # --- KPI alert rules ---
+    def save_alert_rule(self,data:AlertRuleIn):
+        saver=getattr(self.repository,"save_alert_rule",None)
+        if not saver:raise RuntimeError("repository does not support alert rules")
+        return saver(data,_utcnow())
+    def list_alert_rules(self):
+        getter=getattr(self.repository,"list_alert_rules",None);return list(getter()) if getter else []
+    def delete_alert_rule(self,rule_id):
+        deleter=getattr(self.repository,"delete_alert_rule",None)
+        if not deleter or not deleter(rule_id):raise LookupError(rule_id)
+    # --- bulk approval decisions ---
+    def decide_many(self,data:BulkApprovalDecision):
+        decided=[];skipped=[]
+        for aid in data.approval_ids:
+            try:
+                result=self.decide(aid,ApprovalDecision(approve=data.approve,note=data.note))
+                if result:decided.append(result)
+                else:skipped.append({"id":aid,"reason":"not pending"})
+            except LookupError:skipped.append({"id":aid,"reason":"not pending"})
+            except RuntimeError as e:skipped.append({"id":aid,"reason":str(e)})
+        return BulkDecisionResult(decided=decided,skipped=skipped)
+    # --- tenant dashboard view ---
+    DEFAULT_WIDGETS=({"id":"kpis","kind":WidgetKind.KPI_CARD,"position":0},{"id":"blockers","kind":WidgetKind.BLOCKERS,"position":1},{"id":"modules","kind":WidgetKind.MODULE_STATUS,"position":2},{"id":"timeline","kind":WidgetKind.TIMELINE,"position":3},{"id":"approvals","kind":WidgetKind.APPROVALS,"position":4})
+    def get_view(self,now=None):
+        getter=getattr(self.repository,"get_view",None)
+        layout,at=(getter() if getter else (None,None))
+        if layout is None:return DashboardView(widgets=[WidgetConfig(**w) for w in self.DEFAULT_WIDGETS],updated_at=now or _utcnow())
+        return DashboardView(widgets=[WidgetConfig(**w) for w in layout["widgets"]],updated_at=at)
+    def save_view(self,data:DashboardViewIn):
+        saver=getattr(self.repository,"save_view",None)
+        if not saver:raise RuntimeError("repository does not support view preferences")
+        known={k.id for k in self.kpis()}
+        ids=set()
+        for w in data.widgets:
+            if w.id in ids:raise ValueError(f"duplicate widget id {w.id}")
+            ids.add(w.id)
+            if w.kind==WidgetKind.KPI_CARD and w.kpi_id is not None and w.kpi_id not in known:raise ValueError(f"unknown kpi_id {w.kpi_id}")
+        ordered=sorted(data.widgets,key=lambda w:w.position)
+        for i,w in enumerate(ordered):w.position=i
+        now=_utcnow();saver({"widgets":[w.model_dump(mode="json") for w in ordered]},now)
+        return DashboardView(widgets=ordered,updated_at=now)
+    # --- approval expiry sweep ---
+    def sweep_expired(self,now=None):
+        """Flip pending approvals past their expiry to EXPIRED. Returns the expired approvals."""
+        now=now or _utcnow()
+        sweeper=getattr(self.repository,"expire_approvals_before",None)
+        if not sweeper:raise RuntimeError("repository does not support expiry sweeps")
+        return sweeper(now)
+    # --- evidence export ---
+    def export_events_csv(self,since_hours:int=24,topic:str|None=None,after_sequence:int=0,now=None):
+        now=now or _utcnow();since=now-timedelta(hours=max(1,min(since_hours,24*30)))
+        rows=[e for e in self._events_between(since,now) if e.sequence>after_sequence]
+        if topic:rows=[e for e in rows if e.topic==topic]
+        import csv,io
+        buf=io.StringIO();w=csv.writer(buf)
+        w.writerow(["id","sequence","topic","aggregate_type","aggregate_id","module_id","occurred_at"])
+        for e in rows[:5000]:w.writerow([e.id,e.sequence,e.topic,e.aggregate_type,e.aggregate_id,event_module_id(e) or "",e.occurred_at.isoformat()])
+        return buf.getvalue()
+    def export_kpis_csv(self,now=None):
+        now=now or _utcnow()
+        import csv,io
+        buf=io.StringIO();w=csv.writer(buf)
+        w.writerow(["id","label","value","unit","previous_value","window_hours","evidence_total"])
+        for k in self.kpis(now):w.writerow([k.id,k.label,k.value,k.unit,"" if k.previous_value is None else k.previous_value,k.window_hours,k.evidence_total])
+        return buf.getvalue()
     # --- agent heartbeats ---
     def digest(self,now=None):
         """Deterministic executive digest: text sections computed from live KPIs, blockers and statuses."""

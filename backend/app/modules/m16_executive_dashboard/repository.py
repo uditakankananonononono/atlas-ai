@@ -23,6 +23,11 @@ class KpiPointRow(Base):
 class KpiDefinitionRow(Base):
     __tablename__="m16_kpi_definitions";__table_args__=(UniqueConstraint("tenant_id","id",name="uq_m16_kpi_definition"),)
     pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(80));label:Mapped[str]=mapped_column(String(120));unit:Mapped[str]=mapped_column(String(20));topics:Mapped[list]=mapped_column(JSON);window_hours:Mapped[int|None]=mapped_column(Integer,nullable=True);created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
+class AlertRuleRow(Base):
+    __tablename__="m16_alert_rules";__table_args__=(UniqueConstraint("tenant_id","id",name="uq_m16_alert_rule"),)
+    pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(80));kpi_id:Mapped[str]=mapped_column(String(80));comparator:Mapped[str]=mapped_column(String(8));threshold:Mapped[float]=mapped_column(Float);severity:Mapped[str]=mapped_column(String(20));message:Mapped[str|None]=mapped_column(String(300),nullable=True);cooldown_hours:Mapped[int]=mapped_column(Integer,default=1);created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
+class ViewPrefsRow(Base):
+    __tablename__="m16_view_prefs";tenant_id:Mapped[str]=mapped_column(String(120),primary_key=True);layout:Mapped[dict]=mapped_column(JSON);updated_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
 def _event(r):return Event(id=r.id,sequence=r.sequence,topic=r.topic,aggregate_type=r.aggregate_type,aggregate_id=r.aggregate_id,payload=r.payload,occurred_at=r.occurred_at)
 def _approval(r):return Approval(id=r.id,module_id=r.module_id,action_type=r.action_type,title=r.title,summary=r.summary,risk=r.risk,evidence=r.evidence,proposed_payload=r.proposed_payload,state=ApprovalState(r.state),created_at=r.created_at,expires_at=r.expires_at,reviewed_at=r.reviewed_at)
 def _command(r):return CommandPreview(id=r.id,utterance=r.utterance,intent=r.intent,parameters=r.parameters,plan=r.plan,read_only=r.read_only,confidence=r.confidence,expires_at=r.expires_at,created_at=r.created_at)
@@ -102,3 +107,31 @@ class SqlDashboardRepository:
             r=db.scalar(select(KpiDefinitionRow).where(KpiDefinitionRow.tenant_id==self.tenant_id,KpiDefinitionRow.id==kpi_id))
             if not r:return False
             db.delete(r);return True
+    def save_alert_rule(self,d,at):
+        with self.sessions.begin() as db:
+            r=db.scalar(select(AlertRuleRow).where(AlertRuleRow.tenant_id==self.tenant_id,AlertRuleRow.id==d.id))
+            if r:r.kpi_id=d.kpi_id;r.comparator=d.comparator.value;r.threshold=d.threshold;r.severity=d.severity.value;r.message=d.message;r.cooldown_hours=d.cooldown_hours
+            else:db.add(AlertRuleRow(tenant_id=self.tenant_id,id=d.id,kpi_id=d.kpi_id,comparator=d.comparator.value,threshold=d.threshold,severity=d.severity.value,message=d.message,cooldown_hours=d.cooldown_hours,created_at=at))
+        return AlertRuleOut(**d.model_dump(),created_at=at)
+    def list_alert_rules(self):
+        with self.sessions() as db:return [AlertRuleOut(id=r.id,kpi_id=r.kpi_id,comparator=AlertComparator(r.comparator),threshold=r.threshold,severity=BlockerSeverity(r.severity),message=r.message,cooldown_hours=r.cooldown_hours,created_at=r.created_at) for r in db.scalars(select(AlertRuleRow).where(AlertRuleRow.tenant_id==self.tenant_id).order_by(AlertRuleRow.id))]
+    def delete_alert_rule(self,rule_id):
+        with self.sessions.begin() as db:
+            r=db.scalar(select(AlertRuleRow).where(AlertRuleRow.tenant_id==self.tenant_id,AlertRuleRow.id==rule_id))
+            if not r:return False
+            db.delete(r);return True
+    def expire_approvals_before(self,moment):
+        with self.sessions.begin() as db:
+            rows=db.scalars(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.state==ApprovalState.PENDING.value,ApprovalRow.expires_at.isnot(None),ApprovalRow.expires_at<moment)).all()
+            for r in rows:r.state=ApprovalState.EXPIRED.value
+            db.flush()
+            return [_approval(r) for r in rows]
+    def save_view(self,layout,at):
+        with self.sessions.begin() as db:
+            r=db.get(ViewPrefsRow,self.tenant_id)
+            if r:r.layout=layout;r.updated_at=at
+            else:db.add(ViewPrefsRow(tenant_id=self.tenant_id,layout=layout,updated_at=at))
+    def get_view(self):
+        with self.sessions() as db:
+            r=db.get(ViewPrefsRow,self.tenant_id)
+            return (dict(r.layout),r.updated_at) if r else (None,None)

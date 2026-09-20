@@ -63,6 +63,37 @@ def save_kpi_definition(data:KpiDefinitionIn,service:Service=Depends(get_service
 def delete_kpi_definition(kpi_id:str,service:Service=Depends(get_service)):
     try:service.delete_kpi_definition(kpi_id)
     except LookupError:raise HTTPException(404,"unknown kpi definition")
+@router.get("/view",response_model=DashboardView)
+def get_view(service:Service=Depends(get_service)):return service.get_view()
+@router.put("/view",response_model=DashboardView)
+def save_view(data:DashboardViewIn,service:Service=Depends(get_service)):
+    try:return service.save_view(data)
+    except ValueError as e:raise HTTPException(422,str(e))
+    except RuntimeError as e:raise HTTPException(501,str(e))
+@router.post("/approvals/sweep",response_model=list[Approval])
+def sweep(service:Service=Depends(get_service)):
+    try:return service.sweep_expired()
+    except RuntimeError as e:raise HTTPException(501,str(e))
+@router.get("/export/events.csv")
+def export_events(since_hours:int=24,topic:str|None=None,after_sequence:int=0,service:Service=Depends(get_service)):
+    from fastapi.responses import PlainTextResponse
+    return PlainTextResponse(service.export_events_csv(since_hours,topic,after_sequence),media_type="text/csv")
+@router.get("/export/kpis.csv")
+def export_kpis(service:Service=Depends(get_service)):
+    from fastapi.responses import PlainTextResponse
+    return PlainTextResponse(service.export_kpis_csv(),media_type="text/csv")
+@router.get("/alert-rules",response_model=list[AlertRuleOut])
+def list_alert_rules(service:Service=Depends(get_service)):return service.list_alert_rules()
+@router.put("/alert-rules",response_model=AlertRuleOut)
+def save_alert_rule(data:AlertRuleIn,service:Service=Depends(get_service)):
+    try:return service.save_alert_rule(data)
+    except RuntimeError as e:raise HTTPException(501,str(e))
+@router.delete("/alert-rules/{rule_id}",status_code=204)
+def delete_alert_rule(rule_id:str,service:Service=Depends(get_service)):
+    try:service.delete_alert_rule(rule_id)
+    except LookupError:raise HTTPException(404,"unknown alert rule")
+@router.post("/approvals/bulk-decision",response_model=BulkDecisionResult)
+def bulk_decide(data:BulkApprovalDecision,service:Service=Depends(get_service)):return service.decide_many(data)
 @router.get("/digest",response_model=Digest)
 def digest(service:Service=Depends(get_service)):return service.digest()
 @router.post("/project")
