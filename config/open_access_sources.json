@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "providers": [
+    "unpaywall",
+    "core",
+    "doaj",
+    "pmc"
+  ],
+  "topics": [
+    "computational biology",
+    "AI agents"
+  ],
+  "rule": "Official APIs and open-access links only."
+}

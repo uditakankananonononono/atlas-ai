@@ -1,0 +1,1 @@
+{"version":1,"reddit":{"subreddits":["competitions","scholarships"],"delay_seconds":10},"github":{"topics":["hackathon","scholarship","computational-biology","ai-agents"],"optional_key_env":"GITHUB_TOKEN"},"rule":"Registry-driven public endpoints only; stop on quota/block."}

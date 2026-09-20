@@ -1,4 +1,6 @@
 """Config-selectable collector registry. Registry names are explicit allow-lists."""
+from .community import RedditPublicCollector, GitHubTopicsCollector
+from .open_access import OpenAccessCollector
 from .discovery import InterestWebDiscoveryCollector
 from .channels import DiscordBotCollector, GmailNewsletterCollector
 from .research_news import ArxivCollector, BioMedRxivCollector, PubMedCollector, SemanticScholarCollector, FeedCollector, HackerNewsCollector, ProductHuntCollector
@@ -8,6 +10,9 @@ from .scholarships import ScholarshipSiteCollector
 from .social import ApifyInstagramCollector, BrightDataInstagramCollector, PublicInstagramCollector, PublicPinterestCollector, PinterestApiCollector, XApiCollector, YouTubeDataCollector
 
 COLLECTORS = {
+    "reddit_public": RedditPublicCollector,
+    "github_topics": GitHubTopicsCollector,
+    "open_access": OpenAccessCollector,
     "arxiv": ArxivCollector,
     "biorxiv_medrxiv": BioMedRxivCollector,
     "pubmed": PubMedCollector,

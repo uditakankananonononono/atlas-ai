@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "capacity": 10000,
+  "keywords": [],
+  "rule": "Owner/imported terms only. Empty slots remain empty; terms are never invented to hit capacity."
+}
