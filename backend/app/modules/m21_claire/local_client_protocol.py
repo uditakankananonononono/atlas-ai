@@ -1,4 +1,4 @@
-"""Wire contract for Claire's separately installed local PC daemon."""
+"""Optional capability endpoint for Claire, whose primary surface is inside Atlas."""
 from __future__ import annotations
 from dataclasses import dataclass,field
 from datetime import datetime,timezone
