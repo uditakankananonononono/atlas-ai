@@ -1,6 +1,7 @@
 """FastAPI routes local to the grant-writer module."""
 
 from fastapi import APIRouter, Depends
+from app.auth.context import TenantContext, require_tenant
 
 from .schemas import (
     BudgetRequest,
@@ -11,6 +12,7 @@ from .schemas import (
     ProposedExportResponse,
     SuccessAnalysisRequest,
     SuccessAnalysisResponse,
+    CorpusIngestRequest, CorpusIngestResponse, CorpusSearchResult,
 )
 from .service import Service
 
@@ -48,3 +50,15 @@ def analyze_success(
 def propose_export(request: ExportRequest, service: Service = Depends(get_service)) -> ProposedExportResponse:
     """Queue document generation for explicit approval instead of executing it."""
     return service.propose_export(request)
+
+
+@router.post("/corpus/ingest",response_model=CorpusIngestResponse)
+async def ingest_funded_corpus(request:CorpusIngestRequest,tenant:TenantContext=Depends(require_tenant)):
+    from .corpus import BulkCorpusIngester,FundedCorpusRepository
+    result=await BulkCorpusIngester(FundedCorpusRepository(tenant.tenant_id)).ingest(request.query,request.target)
+    return CorpusIngestResponse(**result.__dict__,caveat="Official APIs returned fewer unique awards than target; no records were invented." if not result.complete else "Target met with unique official award records.")
+
+@router.get("/corpus/search",response_model=list[CorpusSearchResult])
+def search_funded_corpus(query:str,tenant:TenantContext=Depends(require_tenant)):
+    from .corpus import FundedCorpusRepository
+    return [CorpusSearchResult(**x.__dict__) for x in FundedCorpusRepository(tenant.tenant_id).search_text(query)]

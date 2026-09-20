@@ -60,3 +60,37 @@ class FundedCorpusRepository:
         with self.sessions() as db:
             rows=list(db.scalars(select(FundedAwardRow).where(FundedAwardRow.tenant_id==self.tenant_id,(FundedAwardRow.title.ilike(pattern))|(FundedAwardRow.abstract.ilike(pattern))).limit(limit)))
             return [FundedAward(r.source,r.award_id,r.title,r.abstract,r.url) for r in rows]
+
+@dataclass(frozen=True)
+class CorpusIngestResult:
+    requested_target: int
+    fetched: int
+    created: int
+    providers: dict[str, int]
+    complete: bool
+
+class BulkCorpusIngester:
+    """Page official award APIs until a real 1,000+ target or exhaustion.
+
+    The result never pads the corpus. `complete` is false when official APIs
+    return fewer unique awards than requested.
+    """
+    def __init__(self, repository: FundedCorpusRepository, nih=None, nsf=None):
+        self.repository=repository
+        self.nih=nih or NihReporterClient()
+        self.nsf=nsf or NsfAwardsClient()
+
+    async def ingest(self, terms: str, target: int = 1000) -> CorpusIngestResult:
+        if target < 1000 or target > 10000:
+            raise ValueError("target must be between 1000 and 10000")
+        per_provider=(target+1)//2
+        nih,nsf=await __import__('asyncio').gather(
+            self.nih.search(terms,limit=min(500,per_provider)),
+            self.nsf.search(terms,limit=min(1000,target)),
+        )
+        unique={}
+        counts={"nih_reporter":len(nih),"nsf_awards":len(nsf)}
+        for award in [*nih,*nsf]: unique[(award.source,award.award_id)]=award
+        selected=list(unique.values())[:target]
+        created=self.repository.upsert(selected,terms)
+        return CorpusIngestResult(target,len(selected),created,counts,len(selected)>=target)

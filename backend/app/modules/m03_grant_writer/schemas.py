@@ -105,3 +105,19 @@ class ProposedExportResponse(BaseModel):
     status: str
     action_type: str
     formats: list[str]
+
+
+class CorpusIngestRequest(BaseModel):
+    query: str = Field(min_length=2,max_length=500)
+    target: int = Field(default=1000,ge=1000,le=10000)
+
+class CorpusIngestResponse(BaseModel):
+    requested_target:int
+    fetched:int
+    created:int
+    providers:dict[str,int]
+    complete:bool
+    caveat:str
+
+class CorpusSearchResult(BaseModel):
+    source:str; award_id:str; title:str; abstract:str; url:str
