@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1517,
-    "verified-pushed": 490,
+    "missing": 1513,
+    "verified-pushed": 494,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -13406,8 +13406,12 @@
       "category": "Data & Analytics",
       "requirement": "Belief Propagation",
       "description": "Message passing inference",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48f92b2ee763b47b882e099605190e398147e447",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1044_1047.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13416,8 +13420,12 @@
       "category": "Data & Analytics",
       "requirement": "Variational Message Passing",
       "description": "Approximate inference",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48f92b2ee763b47b882e099605190e398147e447",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1044_1047.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13426,8 +13434,12 @@
       "category": "Data & Analytics",
       "requirement": "Expectation Propagation",
       "description": "Deterministic approximation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48f92b2ee763b47b882e099605190e398147e447",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1044_1047.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13436,8 +13448,12 @@
       "category": "Data & Analytics",
       "requirement": "Laplace Approximation",
       "description": "Gaussian approximation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48f92b2ee763b47b882e099605190e398147e447",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1044_1047.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
