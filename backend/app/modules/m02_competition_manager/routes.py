@@ -72,7 +72,7 @@ def propose_form_fill(
         proposal = service.propose_form_fill(competition_id, request)
     except CompetitionNotFoundError as error:
         raise HTTPException(status_code=404, detail="competition not found") from error
-    approvals.put(
+    approval = approvals.put(
         ApprovalRequest(
             id=str(uuid4()),
             module_id=2,
@@ -80,6 +80,9 @@ def propose_form_fill(
             payload=proposal.payload,
         )
     )
+    proposal.payload["approval_id"] = approval.id
+    proposal.payload["browser_agent_path"] = "/api/v1/browser-agent/submit/request"
+    proposal.payload["required_preview"] = "full-page screenshot plus exact field values"
     return proposal
 
 

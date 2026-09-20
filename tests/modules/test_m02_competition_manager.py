@@ -125,3 +125,10 @@ def test_form_fill_is_only_a_proposal_and_status_requires_valid_evidence() -> No
                 status=SubmissionStatus.ACCEPTED,
             ),
         )
+
+def test_form_fill_contract_targets_browser_agent_without_executing():
+    from app.modules.m02_competition_manager.routes import router
+    paths={route.path for route in router.routes}
+    assert "/competition-manager/competitions/{competition_id}/form-fill-proposals" in paths
+    # M13 owns execution; M2 remains proposal-only and therefore cannot click submit itself.
+    assert not hasattr(Service,"submit_form")
