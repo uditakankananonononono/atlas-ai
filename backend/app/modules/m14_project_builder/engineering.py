@@ -1,10 +1,15 @@
 """Engineering design artifacts for Atlas Module 14 (Project Builder).
 
-Covers features-doc rows 510-534 (Technical & Engineering foundations):
-typed, evidence-bearing design documents - requirements, architecture,
-API, schema, monolith/microservice/event/queue/cache/load/scale/fault/DR/
-backup plans, and security/authn/authz/encryption/key-management/audit/
-compliance/privacy/governance/lineage/quality designs.
+Covers features-doc rows 510-559 (Technical & Engineering):
+typed, evidence-bearing design documents. Rows 510-534: requirements,
+architecture, API, schema, monolith/microservice/event/queue/cache/load/
+scale/fault/DR/backup plans, and security/authn/authz/encryption/key-
+management/audit/compliance/privacy/governance/lineage/quality designs.
+Rows 535-559: data engineering (ETL, warehouse, lake, mesh, stream/batch,
+lambda/kappa), ML infrastructure (pipelines, feature store, registry,
+monitoring, experiments), and applied-AI designs (recommendation, search,
+ranking, fraud, anomaly, time-series, NLP, CV, speech, translation,
+summarization).
 
 Every design kind maps to exactly one features-doc row. Generation is
 deterministic scaffolding derived from project context (the LLM planner can
@@ -142,6 +147,108 @@ DESIGN_KINDS: Tuple[DesignKindSpec, ...] = (
     DesignKindSpec("data_quality", 534, "Data Quality", (
         "Quality Dimensions", "Validation Rules", "Monitoring",
         "Remediation", "Service Level Targets",
+    )),
+    # --- Rows 535-559: data engineering, ML infrastructure, applied AI ------
+    DesignKindSpec("etl_pipeline", 535, "ETL Pipeline Design", (
+        "Sources", "Extraction", "Transformations", "Load Targets",
+        "Scheduling", "Data Validation", "Recovery",
+    )),
+    DesignKindSpec("data_warehouse", 536, "Data Warehouse Design", (
+        "Schema Model", "Layering", "Partitioning", "Query Patterns",
+        "Load Strategy", "Access Control",
+    )),
+    DesignKindSpec("data_lake", 537, "Data Lake Design", (
+        "Storage Layout", "Zones", "File Formats", "Catalog", "Retention",
+        "Access Control",
+    )),
+    DesignKindSpec("data_mesh", 538, "Data Mesh Design", (
+        "Domains", "Data Products", "Ownership", "Federated Governance",
+        "Self-Serve Platform", "Interoperability Standards",
+    )),
+    DesignKindSpec("stream_processing", 539, "Stream Processing", (
+        "Sources", "Topology", "Windowing", "State Management",
+        "Delivery Semantics", "Late Data", "Scaling",
+    )),
+    DesignKindSpec("batch_processing", 540, "Batch Processing", (
+        "Jobs", "Scheduling", "Partitioning", "Resource Allocation",
+        "Retry Policy", "Output Contracts",
+    )),
+    DesignKindSpec("lambda_architecture", 541, "Lambda Architecture", (
+        "Batch Layer", "Speed Layer", "Serving Layer", "Reconciliation",
+        "Operational Complexity", "Trade-offs",
+    )),
+    DesignKindSpec("kappa_architecture", 542, "Kappa Architecture", (
+        "Immutable Log", "Reprocessing", "Serving Views",
+        "Schema Evolution", "Trade-offs",
+    )),
+    DesignKindSpec("ml_pipeline", 543, "Machine Learning Pipeline", (
+        "Pipeline Stages", "Data Versioning", "Training Procedure",
+        "Evaluation Gates", "Model Promotion", "Orchestration",
+        "Reproducibility",
+    )),
+    DesignKindSpec("feature_store", 544, "Feature Store Design", (
+        "Feature Definitions", "Offline Store", "Online Store",
+        "Point-in-Time Correctness", "Feature Versioning", "Monitoring",
+    )),
+    DesignKindSpec("model_registry", 545, "Model Registry", (
+        "Versioning Scheme", "Metadata", "Stage Transitions", "Lineage",
+        "Approval Gates", "Rollback",
+    )),
+    DesignKindSpec("model_monitoring", 546, "Model Monitoring", (
+        "Monitored Signals", "Drift Detection", "Data Quality Checks",
+        "Alerting", "Retraining Triggers", "Baselines",
+    )),
+    DesignKindSpec("ab_testing", 547, "A/B Testing Infrastructure", (
+        "Experiment Lifecycle", "Assignment", "Metrics",
+        "Statistical Power", "Guardrails", "Ramp Plan",
+    )),
+    DesignKindSpec("recommendation", 548, "Recommendation System", (
+        "Candidate Generation", "Ranking", "Features", "Feedback Loop",
+        "Cold Start", "Offline Evaluation",
+    )),
+    DesignKindSpec("search_system", 549, "Search System", (
+        "Indexing", "Query Understanding", "Retrieval", "Ranking",
+        "Relevance Evaluation", "Latency Budget",
+    )),
+    DesignKindSpec("ranking_system", 550, "Ranking System", (
+        "Features", "Model Choice", "Training Data", "Online Serving",
+        "Bias Controls", "Evaluation",
+    )),
+    DesignKindSpec("fraud_detection", 551, "Fraud Detection", (
+        "Fraud Taxonomy", "Signals", "Rules and Models", "Decisioning",
+        "Review Workflow", "False Positive Budget",
+    )),
+    DesignKindSpec("anomaly_detection", 552, "Anomaly Detection", (
+        "Baselines", "Detection Methods", "Sensitivity Tuning",
+        "Alert Routing", "Feedback Loop",
+    )),
+    DesignKindSpec("time_series", 553, "Time Series Forecasting", (
+        "Data Characteristics", "Model Choice", "Validation Strategy",
+        "Horizon and Granularity", "Backtesting",
+    )),
+    DesignKindSpec("nlp", 554, "Natural Language Processing", (
+        "Tasks", "Data Sources", "Model Choice", "Evaluation",
+        "Latency Budget", "Safety Filters",
+    )),
+    DesignKindSpec("computer_vision", 555, "Computer Vision", (
+        "Tasks", "Data Sources", "Model Choice", "Evaluation",
+        "Preprocessing", "Safety and Consent",
+    )),
+    DesignKindSpec("speech_recognition", 556, "Speech Recognition", (
+        "Audio Inputs", "Model Choice", "Language Support", "Evaluation",
+        "Streaming vs Batch",
+    )),
+    DesignKindSpec("speech_synthesis", 557, "Speech Synthesis", (
+        "Voices", "Model Choice", "Text Normalization", "Evaluation",
+        "Consent and Disclosure",
+    )),
+    DesignKindSpec("machine_translation", 558, "Machine Translation", (
+        "Language Pairs", "Model Choice", "Domain Adaptation",
+        "Evaluation", "Human Review",
+    )),
+    DesignKindSpec("text_summarization", 559, "Text Summarization", (
+        "Input Constraints", "Model Choice", "Evaluation",
+        "Factuality Controls", "Latency Budget",
     )),
 )
 
@@ -307,11 +414,121 @@ _SECTION_GUIDANCE: Mapping[str, str] = {
     "Monitoring": "How quality is measured continuously.",
     "Remediation": "What happens when quality fails.",
     "Service Level Targets": "Numeric quality targets.",
+    "Extraction": "How data is pulled from each source and at what cadence.",
+    "Load Targets": "Where transformed data lands and its schema there.",
+    "Scheduling": "When jobs run, their dependencies, and SLAs.",
+    "Data Validation": "Checks data must pass between stages.",
+    "Recovery": "How failed runs are retried and replayed.",
+    "Schema Model": "Star/snowflake layout and rationale.",
+    "Partitioning": "How tables are partitioned and clustered.",
+    "Query Patterns": "The analytical queries the design optimizes for.",
+    "Load Strategy": "Full vs incremental loads and merge semantics.",
+    "Storage Layout": "Bucket/prefix layout and lifecycle rules.",
+    "Zones": "Raw, curated, and consumption zones and their contracts.",
+    "File Formats": "Formats and compaction strategy per zone.",
+    "Catalog": "How datasets are registered and discovered.",
+    "Domains": "Bounded data domains and their boundaries.",
+    "Data Products": "Products each domain publishes and their contracts.",
+    "Federated Governance": "Global standards enforced across domains.",
+    "Self-Serve Platform": "Shared tooling domains build on.",
+    "Interoperability Standards": "Schemas, identifiers, and protocols shared across products.",
+    "Topology": "The processing graph: operators and their connections.",
+    "Windowing": "Window types, sizes, and triggers per computation.",
+    "State Management": "Where operator state lives and how it recovers.",
+    "Late Data": "How late and out-of-order events are handled.",
+    "Scaling": "How throughput growth is absorbed.",
+    "Jobs": "The batch jobs, their inputs, and their outputs.",
+    "Resource Allocation": "Compute and memory budgets per job.",
+    "Retry Policy": "Bounded retries and failure escalation per job.",
+    "Output Contracts": "The guarantees every job output satisfies.",
+    "Batch Layer": "The immutable master dataset and batch views.",
+    "Speed Layer": "How recent data is covered before batch catches up.",
+    "Serving Layer": "How batch and speed views merge for queries.",
+    "Reconciliation": "How the two layers agree and conflicts resolve.",
+    "Operational Complexity": "The cost of running two stacks, mitigated.",
+    "Immutable Log": "The append-only log as the system of record.",
+    "Reprocessing": "How history is replayed when logic changes.",
+    "Serving Views": "Materialized views derived from the log.",
+    "Pipeline Stages": "Ingest, validate, train, evaluate, register, ship.",
+    "Data Versioning": "How datasets are versioned and linked to runs.",
+    "Training Procedure": "Environment, config, and resource plan for training.",
+    "Evaluation Gates": "Metric thresholds a model must pass to advance.",
+    "Model Promotion": "How a candidate moves through stages to release.",
+    "Orchestration": "How stages are scheduled, retried, and observed.",
+    "Reproducibility": "How any run can be recreated exactly.",
+    "Feature Definitions": "Canonical definitions and owners per feature.",
+    "Offline Store": "Bulk historical features for training.",
+    "Online Store": "Low-latency features for inference.",
+    "Point-in-Time Correctness": "How training sets avoid leakage.",
+    "Feature Versioning": "How feature changes roll out safely.",
+    "Versioning Scheme": "How model versions are named and ordered.",
+    "Metadata": "What is recorded per version: metrics, data, code, approvals.",
+    "Stage Transitions": "States a version moves through and who moves it.",
+    "Lineage": "Links from a model to its data, code, and experiments.",
+    "Approval Gates": "Sign-offs required before each stage change.",
+    "Rollback": "How a bad release is reverted.",
+    "Monitored Signals": "Inputs, outputs, and outcomes watched per model.",
+    "Drift Detection": "Statistical drift checks on features and predictions.",
+    "Data Quality Checks": "Freshness, null, and distribution checks upstream.",
+    "Alerting": "Thresholds, routing, and on-call ownership.",
+    "Retraining Triggers": "Conditions that queue a retrain.",
+    "Baselines": "Reference distributions and models for comparison.",
+    "Experiment Lifecycle": "Draft, review, launch, analyze, decide.",
+    "Assignment": "How units are randomized and kept consistent.",
+    "Statistical Power": "Sample size and duration planning.",
+    "Guardrails": "Metrics that stop an experiment automatically.",
+    "Ramp Plan": "Staged exposure increase with checkpoints.",
+    "Candidate Generation": "Recall sources: collaborative, content, trends.",
+    "Ranking": "How candidates are ordered for a user.",
+    "Features": "User, item, and context features used.",
+    "Feedback Loop": "How interactions update the system.",
+    "Cold Start": "Strategy for new users and new items.",
+    "Offline Evaluation": "Replay and metric evaluation before any exposure.",
+    "Indexing": "Document ingestion, analyzers, and index structure.",
+    "Query Understanding": "Parsing, spelling, synonyms, and intent.",
+    "Retrieval": "How candidate documents are fetched.",
+    "Relevance Evaluation": "Labels, judgments, and relevance metrics.",
+    "Latency Budget": "Per-stage latency targets for the query path.",
+    "Model Choice": "Model family selected and why.",
+    "Training Data": "Source, labeling, and volume of training data.",
+    "Online Serving": "How ranked results are produced at request time.",
+    "Bias Controls": "How exposure and ordering bias is limited.",
+    "Evaluation": "Metrics, datasets, and review protocol.",
+    "Fraud Taxonomy": "Fraud types the system targets.",
+    "Signals": "Behavioral, device, and network signals used.",
+    "Rules and Models": "Deterministic rules alongside learned models.",
+    "Decisioning": "Allow, review, or block: thresholds and actions.",
+    "Review Workflow": "How flagged cases reach human reviewers.",
+    "False Positive Budget": "The tolerated false-positive rate and its cost.",
+    "Detection Methods": "Statistical and learned detectors per signal.",
+    "Sensitivity Tuning": "How thresholds balance alerts vs misses.",
+    "Alert Routing": "Where anomalies go and who acts on them.",
+    "Data Characteristics": "Trend, seasonality, and noise profile.",
+    "Validation Strategy": "Time-aware splits that prevent leakage.",
+    "Horizon and Granularity": "How far ahead and at what resolution.",
+    "Backtesting": "Rolling-origin evaluation protocol.",
+    "Tasks": "The language tasks covered and their scope.",
+    "Data Sources": "Corpora, licenses, and coverage.",
+    "Safety Filters": "How harmful inputs and outputs are screened.",
+    "Preprocessing": "Resize, normalize, and augment steps.",
+    "Safety and Consent": "Consent for image use and content screening.",
+    "Audio Inputs": "Sample rates, channels, and noise conditions.",
+    "Language Support": "Languages and dialects covered.",
+    "Streaming vs Batch": "Where each transcription mode applies.",
+    "Voices": "Voice catalog, licensing, and selection.",
+    "Text Normalization": "Numbers, dates, and abbreviations expanded before synthesis.",
+    "Consent and Disclosure": "Voice consent and synthetic-speech disclosure.",
+    "Language Pairs": "Supported pairs and their quality bar.",
+    "Domain Adaptation": "Glossaries and fine-tuning per domain.",
+    "Human Review": "Where human post-editing fits.",
+    "Input Constraints": "Length, language, and format limits.",
+    "Factuality Controls": "How summaries are kept faithful to source.",
 }
+
 
 _DESIGN_ARTIFACT_NOTICE = (
     "Design artifact. Describes planned work only; it is not evidence of "
-    "deployment, operation, or achieved performance."
+    "deployment, operation, trained models, or achieved performance."
 )
 
 
@@ -374,7 +591,10 @@ _PLACEHOLDER_RE = re.compile(
 _OPERATIONAL_CLAIM_RE = re.compile(
     r"\b(is|are|was|were|currently)\s+(deployed|live|running|serving|operational)\b|"
     r"\bin production\b|\b\d+(\.\d+)?\s?%\s*(uptime|availability|sla)\b|"
-    r"\bachieved\s+\d",
+    r"\bachieved\s+\d|"
+    r"\b\d+(\.\d+)?\s?%\s*(accuracy|precision|recall|f1|auc|wer|bleu|rouge)\b|"
+    r"\b(f1|auc|accuracy|precision|recall|wer|bleu|rouge)\s*(of|=|was|is)\s*\d|"
+    r"\bwe (trained|measured|evaluated|benchmarked|tested)\b",
     re.IGNORECASE,
 )
 # Secrets never belong in an artifact. Patterns cover private keys, common

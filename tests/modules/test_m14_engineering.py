@@ -48,9 +48,24 @@ def project(service):
 
 # --- Row mapping: every row 510-534 maps to exactly one kind and back --------
 class TestRowMapping:
-    def test_twenty_five_rows_contiguous(self):
+    def test_fifty_rows_contiguous_510_to_559(self):
         rows = sorted(s.row for s in DESIGN_KINDS)
-        assert rows == list(range(510, 535))
+        assert rows == list(range(510, 560))
+
+    def test_rows_535_to_559_registered(self):
+        expected = {
+            535: "etl_pipeline", 536: "data_warehouse", 537: "data_lake",
+            538: "data_mesh", 539: "stream_processing", 540: "batch_processing",
+            541: "lambda_architecture", 542: "kappa_architecture",
+            543: "ml_pipeline", 544: "feature_store", 545: "model_registry",
+            546: "model_monitoring", 547: "ab_testing", 548: "recommendation",
+            549: "search_system", 550: "ranking_system", 551: "fraud_detection",
+            552: "anomaly_detection", 553: "time_series", 554: "nlp",
+            555: "computer_vision", 556: "speech_recognition",
+            557: "speech_synthesis", 558: "machine_translation",
+            559: "text_summarization",
+        }
+        assert {s.row: s.kind for s in DESIGN_KINDS if s.row >= 535} == expected
 
     @pytest.mark.parametrize("spec", DESIGN_KINDS, ids=lambda s: f"row-{s.row}")
     def test_row_roundtrip(self, spec):
@@ -143,6 +158,29 @@ class TestValidationFailures:
         report = validate_design(self._doc("system_architecture", broken))
         assert not report.passed
         assert any(f.check == "no_operational_claims" for f in report.findings)
+
+    @pytest.mark.parametrize("claim", [
+        "The model achieves 94% accuracy on the validation set.",
+        "F1 of 0.87 on the eval set.",
+        "We trained the model on 1M labeled examples.",
+        "WER was 6.2% for English.",
+        "Recall = 0.91 for the fraud class.",
+    ])
+    def test_ml_performance_claims_fail(self, claim):
+        # Rows 535-559: a design must never claim a trained model's results.
+        doc = generate_design("ml_pipeline", "g", generated_at=NOW)
+        broken = doc.markdown + f"\n{claim}\n"
+        report = validate_design(self._doc("ml_pipeline", broken))
+        assert not report.passed
+        assert any(f.check == "no_operational_claims" for f in report.findings)
+
+    @pytest.mark.parametrize("spec", [s for s in DESIGN_KINDS if s.row >= 535],
+                             ids=lambda s: f"row-{s.row}-{s.kind}")
+    def test_new_kinds_generate_valid_documents(self, spec):
+        doc = generate_design(spec.kind, "Build Atlas", generated_at=NOW)
+        assert "trained models" in doc.markdown  # honesty notice extended
+        report = validate_design(doc)
+        assert report.passed, [f.message for f in report.findings]
 
     @pytest.mark.parametrize("secret", [
         "-----BEGIN RSA PRIVATE KEY-----\nMIIabc",
