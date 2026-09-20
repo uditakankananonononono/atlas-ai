@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "8b85db12e7d832b365fc4ee1bb3dc2dc55a1cbbd",
+  "audited_head": "a60ae5e156a516d17a053b5db95a44422059e6bf",
   "counts": {
-    "verified-pushed": 71,
+    "verified-pushed": 102,
     "thin": 3,
-    "missing": 1936
+    "missing": 1905
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -7618,8 +7618,14 @@
       "category": "Social & Communication",
       "requirement": "Persuasive Writing",
       "description": "Changes minds through words",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7628,8 +7634,14 @@
       "category": "Social & Communication",
       "requirement": "Negotiation Tactics",
       "description": "Achieves favorable outcomes",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7638,8 +7650,14 @@
       "category": "Social & Communication",
       "requirement": "Conflict Resolution",
       "description": "Resolves disputes",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7648,8 +7666,14 @@
       "category": "Social & Communication",
       "requirement": "Mediation",
       "description": "Facilitates agreement",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7658,8 +7682,14 @@
       "category": "Social & Communication",
       "requirement": "Active Listening",
       "description": "Understands deeply",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7668,8 +7698,14 @@
       "category": "Social & Communication",
       "requirement": "Empathetic Response",
       "description": "Acknowledges feelings",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7678,8 +7714,14 @@
       "category": "Social & Communication",
       "requirement": "Emotional Intelligence",
       "description": "Reads and responds to emotions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7688,8 +7730,14 @@
       "category": "Social & Communication",
       "requirement": "Social Calibration",
       "description": "Adjusts to context",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7698,8 +7746,14 @@
       "category": "Social & Communication",
       "requirement": "Cultural Sensitivity",
       "description": "Respects differences",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7708,8 +7762,14 @@
       "category": "Social & Communication",
       "requirement": "Cross-Cultural Communication",
       "description": "Bridges cultures",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7718,8 +7778,14 @@
       "category": "Social & Communication",
       "requirement": "Diplomatic Language",
       "description": "Avoids offense",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7728,8 +7794,14 @@
       "category": "Social & Communication",
       "requirement": "Assertiveness",
       "description": "States needs clearly",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7738,8 +7810,14 @@
       "category": "Social & Communication",
       "requirement": "Boundary Setting",
       "description": "Protects resources",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7748,8 +7826,14 @@
       "category": "Social & Communication",
       "requirement": "Difficult Conversations",
       "description": "Handles tough topics",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7758,8 +7842,14 @@
       "category": "Social & Communication",
       "requirement": "Feedback Delivery",
       "description": "Gives constructively",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7768,8 +7858,14 @@
       "category": "Social & Communication",
       "requirement": "Feedback Reception",
       "description": "Accepts gracefully",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7778,8 +7874,14 @@
       "category": "Social & Communication",
       "requirement": "Public Speaking",
       "description": "Presents to groups",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7788,8 +7890,14 @@
       "category": "Social & Communication",
       "requirement": "Presentation Design",
       "description": "Creates compelling slides",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7798,8 +7906,14 @@
       "category": "Social & Communication",
       "requirement": "Storytelling",
       "description": "Engages through narrative",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7808,8 +7922,14 @@
       "category": "Social & Communication",
       "requirement": "Rapport Building",
       "description": "Creates connection",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7818,8 +7938,14 @@
       "category": "Social & Communication",
       "requirement": "Networking",
       "description": "Builds relationships",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7828,8 +7954,14 @@
       "category": "Social & Communication",
       "requirement": "Mentorship",
       "description": "Guides others",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7838,8 +7970,14 @@
       "category": "Social & Communication",
       "requirement": "Coaching",
       "description": "Develops capabilities",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7848,8 +7986,14 @@
       "category": "Social & Communication",
       "requirement": "Teaching",
       "description": "Transmits knowledge",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7858,8 +8002,14 @@
       "category": "Social & Communication",
       "requirement": "Explaining Complex Ideas",
       "description": "Makes accessible",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7868,8 +8018,14 @@
       "category": "Social & Communication",
       "requirement": "Analogies",
       "description": "Illuminates through comparison",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7878,8 +8034,14 @@
       "category": "Social & Communication",
       "requirement": "Metaphors",
       "description": "Creates understanding",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7888,8 +8050,14 @@
       "category": "Social & Communication",
       "requirement": "Examples",
       "description": "Illustrates concretely",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7898,8 +8066,14 @@
       "category": "Social & Communication",
       "requirement": "Scaffolding",
       "description": "Builds understanding progressively",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7908,8 +8082,14 @@
       "category": "Social & Communication",
       "requirement": "Questioning",
       "description": "Elicits information",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -7918,8 +8098,14 @@
       "category": "Social & Communication",
       "requirement": "Socratic Method",
       "description": "Teaches through questions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+        "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
