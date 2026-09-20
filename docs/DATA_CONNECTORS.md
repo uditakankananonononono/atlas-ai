@@ -5,3 +5,7 @@ Atlas is free-first. The default scholarship crawler indexes only the configured
 Gmail uses the owner's Google OAuth connection. Discord uses only a bot the owner controls and has invited to the relevant servers. YouTube uses its standard free API quota. Apollo and Hunter use their free tiers where the current account permits. X's official API, Apify, and Bright Data remain optional disabled connectors; Atlas does not depend on them.
 
 Every connector is allow-listed in `app.collectors.registry`, configured in `config/collection_connectors.json`, normalized to durable tenant-scoped collected records, deduplicated by content hash, and logged with requests and configured cost. Keys come from deployment secrets and are never stored in registry JSON.
+
+Pinterest supports the official v5 board-pin API under the user's authorized app and a separate free public-board indexer. The public indexer accepts explicit Pinterest board URLs, waits at least five seconds between boards, limits pin depth, and stops on 403/429 rather than evading controls.
+
+The Gmail route explicitly includes LinkedIn updates, X/Twitter digests and "posts you missed" mail, plus creator newsletters. Each message is classified (`linkedin_digest`, `x_digest`, or `creator_newsletter`), preserves the source email, and extracts linked content for downstream opportunity and relationship analysis.

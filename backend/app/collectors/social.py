@@ -91,3 +91,43 @@ class YouTubeDataCollector(HttpCollector):
             video_id=row.get("id",{}).get("videoId")
             if video_id: items.append(CollectedItem(f"https://www.youtube.com/watch?v={video_id}",video_id,{"provider":"youtube_data_api","platform":"youtube",**row}))
         return CollectionBatch(items,1,cursor=data.get("nextPageToken"),detail={"provider":"youtube_data_api"})
+
+class PinterestApiCollector(HttpCollector):
+    """Pinterest API v5 boards/pins for an authorized standard-access app."""
+    async def collect(self, config: dict) -> CollectionBatch:
+        token=os.getenv(config.get("token_env","PINTEREST_ACCESS_TOKEN"))
+        if not token: raise RuntimeError("PINTEREST_ACCESS_TOKEN is not configured")
+        board_id=self.require(config,"board_id")
+        response=await self.client.get(f"https://api.pinterest.com/v5/boards/{board_id}/pins",headers={"Authorization":f"Bearer {token}"},params={"page_size":min(100,int(config.get("page_size",100))),"bookmark":config.get("cursor")})
+        response.raise_for_status(); data=response.json(); items=[]
+        for row in data.get("items",[]):
+            ident=str(row["id"]); link=row.get("link") or f"https://www.pinterest.com/pin/{ident}/"
+            items.append(CollectedItem(link,ident,{"provider":"pinterest_api_v5","platform":"pinterest",**row}))
+        return CollectionBatch(items,1,cursor=data.get("bookmark"),detail={"provider":"pinterest_api_v5","board_id":board_id})
+
+class PublicPinterestCollector(HttpCollector):
+    """Conservative free crawler for public Pinterest board pages only."""
+    async def collect(self, config: dict) -> CollectionBatch:
+        import asyncio, re
+        from bs4 import BeautifulSoup
+        delay=max(5.0,float(config.get("delay_seconds",8)))
+        max_pins=min(50,max(1,int(config.get("pins_per_board",25))))
+        items=[]; requests=0
+        for board_url in config.get("board_urls",[]):
+            if not board_url.startswith("https://www.pinterest."):
+                raise ValueError("public Pinterest collector accepts pinterest board URLs only")
+            response=await self.client.get(board_url,headers={"User-Agent":config.get("user_agent","AtlasPublicIndexer/1.0")})
+            requests+=1
+            if response.status_code in (403,429): raise RuntimeError("public Pinterest collection stopped on throttle/block")
+            response.raise_for_status(); soup=BeautifulSoup(response.text,"html.parser"); seen=set()
+            for anchor in soup.select('a[href*="/pin/"]'):
+                match=re.search(r"/pin/(\d+)",anchor.get("href", ""))
+                if not match or match.group(1) in seen: continue
+                ident=match.group(1); seen.add(ident)
+                url=f"https://www.pinterest.com/pin/{ident}/"
+                text=" ".join(anchor.get_text(" ",strip=True).split())
+                image=anchor.find("img")
+                items.append(CollectedItem(url,ident,{"provider":"pinterest_public_board","platform":"pinterest","board_url":board_url,"title":text,"image_url":image.get("src") if image else None}))
+                if len(seen)>=max_pins: break
+            await asyncio.sleep(delay)
+        return CollectionBatch(items,requests,detail={"provider":"pinterest_public_board","boards":len(config.get("board_urls",[])),"pacing_seconds":delay})

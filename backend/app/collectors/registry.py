@@ -2,11 +2,13 @@
 from .channels import DiscordBotCollector, GmailNewsletterCollector
 from .contacts import ApolloPeopleCollector, HunterDomainCollector
 from .scholarships import ScholarshipSiteCollector
-from .social import ApifyInstagramCollector, BrightDataInstagramCollector, PublicInstagramCollector, XApiCollector, YouTubeDataCollector
+from .social import ApifyInstagramCollector, BrightDataInstagramCollector, PublicInstagramCollector, PublicPinterestCollector, PinterestApiCollector, XApiCollector, YouTubeDataCollector
 
 COLLECTORS = {
     "public_scholarship_sites": ScholarshipSiteCollector,
     "public_instagram": PublicInstagramCollector,
+    "public_pinterest": PublicPinterestCollector,
+    "pinterest_api_v5": PinterestApiCollector,
     "apify_instagram": ApifyInstagramCollector,
     "bright_data_instagram": BrightDataInstagramCollector,
     "apollo_people": ApolloPeopleCollector,

@@ -5,7 +5,7 @@ from app.collectors.registry import COLLECTORS, build_collector
 from app.collectors.social import YouTubeDataCollector
 from app.collectors.channels import DiscordBotCollector
 
-EXPECTED={"apify_instagram","bright_data_instagram","apollo_people","hunter_domain","gmail_newsletters","discord_invited_bot","x_api","youtube_data_api","public_instagram","public_scholarship_sites"}
+EXPECTED={"apify_instagram","bright_data_instagram","apollo_people","hunter_domain","gmail_newsletters","discord_invited_bot","x_api","youtube_data_api","public_instagram","public_scholarship_sites","public_pinterest","pinterest_api_v5"}
 
 def test_registry_has_only_approved_connector_names():
     assert EXPECTED <= COLLECTORS.keys()

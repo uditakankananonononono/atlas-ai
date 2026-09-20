@@ -26,6 +26,23 @@
       "restriction": "anonymous public profiles only; stop on throttle/challenge"
     },
     {
+      "key": "pinterest-public-boards",
+      "adapter": "public_pinterest",
+      "type": "public_page",
+      "enabled": false,
+      "cost": "free",
+      "pacing_seconds": 8,
+      "restriction": "public boards only; stop on throttle/block"
+    },
+    {
+      "key": "pinterest-official-api",
+      "adapter": "pinterest_api_v5",
+      "type": "official_api",
+      "enabled": false,
+      "cost": "free_standard_access",
+      "credential_env": "PINTEREST_ACCESS_TOKEN"
+    },
+    {
       "key": "instagram-seeds-apify",
       "adapter": "apify_instagram",
       "type": "licensed_data",
