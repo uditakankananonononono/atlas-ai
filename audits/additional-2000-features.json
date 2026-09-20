@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+  "audited_head": "d9b7e3298363fda444854adc3e26248b00f5254a",
   "counts": {
-    "verified-pushed": 208,
+    "verified-pushed": 233,
     "thin": 3,
-    "missing": 1799
+    "missing": 1774
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -6335,8 +6335,13 @@
       "category": "Technical & Engineering",
       "requirement": "ETL Pipeline Design",
       "description": "Moves and transforms data",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6345,8 +6350,13 @@
       "category": "Technical & Engineering",
       "requirement": "Data Warehouse Design",
       "description": "Structures analytics",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6355,8 +6365,13 @@
       "category": "Technical & Engineering",
       "requirement": "Data Lake Design",
       "description": "Stores raw data",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6365,8 +6380,13 @@
       "category": "Technical & Engineering",
       "requirement": "Data Mesh Design",
       "description": "Decentralizes data",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6375,8 +6395,13 @@
       "category": "Technical & Engineering",
       "requirement": "Stream Processing",
       "description": "Handles real-time data",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6385,8 +6410,13 @@
       "category": "Technical & Engineering",
       "requirement": "Batch Processing",
       "description": "Handles bulk data",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6395,8 +6425,13 @@
       "category": "Technical & Engineering",
       "requirement": "Lambda Architecture",
       "description": "Combines batch and stream",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6405,8 +6440,13 @@
       "category": "Technical & Engineering",
       "requirement": "Kappa Architecture",
       "description": "Stream-only processing",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6415,8 +6455,13 @@
       "category": "Technical & Engineering",
       "requirement": "Machine Learning Pipeline",
       "description": "Automates ML workflow",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6425,8 +6470,13 @@
       "category": "Technical & Engineering",
       "requirement": "Feature Store Design",
       "description": "Manages ML features",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6435,8 +6485,13 @@
       "category": "Technical & Engineering",
       "requirement": "Model Registry",
       "description": "Tracks model versions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6445,8 +6500,13 @@
       "category": "Technical & Engineering",
       "requirement": "Model Monitoring",
       "description": "Detects drift",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6455,8 +6515,13 @@
       "category": "Technical & Engineering",
       "requirement": "A/B Testing Infrastructure",
       "description": "Enables experiments",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6465,8 +6530,13 @@
       "category": "Technical & Engineering",
       "requirement": "Recommendation System",
       "description": "Suggests items",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6475,8 +6545,13 @@
       "category": "Technical & Engineering",
       "requirement": "Search System",
       "description": "Finds relevant content",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6485,8 +6560,13 @@
       "category": "Technical & Engineering",
       "requirement": "Ranking System",
       "description": "Orders results",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6495,8 +6575,13 @@
       "category": "Technical & Engineering",
       "requirement": "Fraud Detection",
       "description": "Identifies anomalies",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6505,8 +6590,13 @@
       "category": "Technical & Engineering",
       "requirement": "Anomaly Detection",
       "description": "Finds outliers",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6515,8 +6605,13 @@
       "category": "Technical & Engineering",
       "requirement": "Time Series Forecasting",
       "description": "Predicts future values",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6525,8 +6620,13 @@
       "category": "Technical & Engineering",
       "requirement": "Natural Language Processing",
       "description": "Understands text",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6535,8 +6635,13 @@
       "category": "Technical & Engineering",
       "requirement": "Computer Vision",
       "description": "Understands images",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6545,8 +6650,13 @@
       "category": "Technical & Engineering",
       "requirement": "Speech Recognition",
       "description": "Transcribes audio",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6555,8 +6665,13 @@
       "category": "Technical & Engineering",
       "requirement": "Speech Synthesis",
       "description": "Generates voice",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6565,8 +6680,13 @@
       "category": "Technical & Engineering",
       "requirement": "Machine Translation",
       "description": "Translates languages",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6575,8 +6695,13 @@
       "category": "Technical & Engineering",
       "requirement": "Text Summarization",
       "description": "Condenses content",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9b7e3298363fda444854adc3e26248b00f5254a",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design content, not live infrastructure or trained models. Claim detection is regex-based and may miss paraphrases. Cross-kind consistency is not yet validated."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
