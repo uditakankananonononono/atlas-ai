@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1513,
-    "verified-pushed": 494,
+    "missing": 1508,
+    "verified-pushed": 499,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -13462,8 +13462,12 @@
       "category": "Data & Analytics",
       "requirement": "Importance Sampling",
       "description": "Weighted sampling",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c89ac1255029a8aee38748c207d18f7db48c8f32",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1048_1052.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13472,8 +13476,12 @@
       "category": "Data & Analytics",
       "requirement": "Rejection Sampling",
       "description": "Accept-reject sampling",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c89ac1255029a8aee38748c207d18f7db48c8f32",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1048_1052.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13482,8 +13490,12 @@
       "category": "Data & Analytics",
       "requirement": "Slice Sampling",
       "description": "Adaptive MCMC",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c89ac1255029a8aee38748c207d18f7db48c8f32",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1048_1052.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13492,8 +13504,12 @@
       "category": "Data & Analytics",
       "requirement": "Nested Sampling",
       "description": "Evidence estimation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c89ac1255029a8aee38748c207d18f7db48c8f32",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1048_1052.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13502,8 +13518,12 @@
       "category": "Data & Analytics",
       "requirement": "Approximate Bayesian Computation",
       "description": "Simulation-based inference",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c89ac1255029a8aee38748c207d18f7db48c8f32",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1048_1052.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
