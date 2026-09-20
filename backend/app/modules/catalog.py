@@ -8,13 +8,13 @@ class Module:
     status: str = "stub"
 
 MODULES = [
-    Module(0, "approval-center", "Human Approval Center", "foundation"),
+    Module(0, "approval-center", "Human Approval Center", "implemented"),
     Module(1, "opportunity-discovery", "Opportunity Discovery Engine"),
-    Module(2, "competition-manager", "Competition Manager"),
+    Module(2, "competition-manager", "Competition Manager", "implemented"),
     Module(3, "grant-writer", "Grant & Fellowship Writer", "implemented"),
     Module(4, "research-scientist", "Research Scientist", "implemented"),
-    Module(5, "outreach-manager", "Outreach Manager"),
-    Module(6, "social-media-manager", "Social Media Manager"),
+    Module(5, "outreach-manager", "Outreach Manager", "implemented"),
+    Module(6, "social-media-manager", "Social Media Manager", "implemented"),
     Module(7, "brand-collaboration", "Brand Collaboration Manager"),
     Module(8, "startup-growth", "Startup Growth"),
     Module(9, "knowledge-workspace", "Knowledge Workspace"),

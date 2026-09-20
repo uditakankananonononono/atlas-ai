@@ -23,6 +23,5 @@ def plan_goal(goal: str, allow_external_action: bool = False) -> GoalPlan:
         steps.append(PlannedStep(module_id=mid, module_name=module.name, action=f"Prepare work for: {goal}", requires_approval=external))
         if external:
             approvals.append(ApprovalRequest(id=str(uuid4()), module_id=mid, action_type="external_communication", payload={"goal": goal, "execution_enabled": allow_external_action}))
-    for request in approvals:
-        approval_store.put(request)
+    approvals = [approval_store.put(request) for request in approvals]
     return GoalPlan(goal=goal, steps=steps, approval_requests=approvals)
