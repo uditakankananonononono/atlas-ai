@@ -16,7 +16,8 @@ def test_one_flow_carries_owner_provenance_through_voice_review_and_browser_hand
  assert out['stages']==['ai_curated_draft','natural_voice_pass','owner_review','browser_stage','separate_final_submit_approval']
  assert out['source_provenance']['impact'][0]=={'source_type':'google_doc','source_id':'doc1','locator':'docs/doc1'}
  assert out['official_url']=='https://official.example/app' and not out['submission_enabled'] and out['final_submit_requires_separate_approval']
- assert a.list()[-1].payload['exact_answers']==out['exact_answers']
+ req=next(x for x in a.list() if x.id==out['approval_id'])
+ assert req.payload['exact_answers']==out['exact_answers']
 def test_integrated_flow_refuses_to_generate_from_nothing():
  f=IntegratedApplicationFlow(Empty(),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),ApprovalStore())
  try:asyncio.run(f.prepare('c','https://official',[{'field':'essay','question':'Why?'}]))
