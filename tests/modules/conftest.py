@@ -93,8 +93,14 @@ def _stub_app_core() -> None:
     core_database = types.ModuleType("app.core.database")
     from sqlalchemy import create_engine
     from sqlalchemy.orm import declarative_base, sessionmaker
+    from sqlalchemy.pool import StaticPool
 
-    engine = create_engine("sqlite:///:memory:")
+    # StaticPool: one shared in-memory connection across TestClient threads.
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
     SessionLocal = sessionmaker(bind=engine)
     Base = declarative_base()
     core_database.engine = engine
