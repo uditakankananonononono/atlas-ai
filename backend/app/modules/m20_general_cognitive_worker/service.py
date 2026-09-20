@@ -28,6 +28,14 @@ from .schemas import (
 from .semantic_memory import SemanticMemory
 from .sensory import DocumentParser, SensoryLayer, Transcriber, VisionModel
 from .skill_library import SkillLibrary
+from .metacognition import (
+    AttentionResidueManager, BiasDetector, CalibrationEngine, CounterfactualEngine,
+    CuriosityEngine, DecisionFatigueGuard, DevilsAdvocate, EpistemicCalendar,
+    FlowStateManager, GoalHierarchyManager, ImprovementLoop, IntuitionEngine,
+    KnowledgeDecayModeler, LoadBalancer, MetaLearner, PerspectiveSimulator,
+    PlanningHorizonController, PromptRegistry, ReframingEngine, SteelmanEngine,
+    TemporalTradeoffs, WorldModelRegistry, AbstractionShifter,
+)
 from .tools import ToolDispatcher, ToolRegistry
 from .working_memory import AttentionController, WorkingMemory
 
@@ -116,6 +124,30 @@ class CognitiveWorkerService:
         self.emotions = EmotionalStateModel()
         self.uncertainty = UncertaintyGate()
         self.creativity = CreativityMode()
+        # Executive Function & Meta-Cognition engines (features-doc rows 10-34)
+        self.prompt_registry = PromptRegistry()
+        self.improvement = ImprovementLoop(self.prompt_registry)
+        self.meta_learner = MetaLearner()
+        self.load_balancer = LoadBalancer()
+        self.calibration = CalibrationEngine()
+        self.counterfactuals = CounterfactualEngine()
+        self.temporal = TemporalTradeoffs()
+        self.residue = AttentionResidueManager()
+        self.flow = FlowStateManager()
+        self.reframing = ReframingEngine()
+        self.bias_detector = BiasDetector()
+        self.intuition = IntuitionEngine()
+        self.world_models = WorldModelRegistry()
+        self.goal_hierarchy = GoalHierarchyManager()
+        self.decision_guard = DecisionFatigueGuard()
+        self.horizon = PlanningHorizonController()
+        self.abstraction = AbstractionShifter()
+        self.perspectives = PerspectiveSimulator()
+        self.devils_advocate = DevilsAdvocate()
+        self.steelman = SteelmanEngine()
+        self.epistemic_calendar = EpistemicCalendar()
+        self.decay_modeler = KnowledgeDecayModeler()
+        self.curiosity = CuriosityEngine()
         self.executive_model = executive_model
         self.loop = DeliberativeLoop(
             planner=self.planner, dispatcher=self.dispatcher,
@@ -235,6 +267,17 @@ class CognitiveWorkerService:
             "traces": len(self.loop.traces),
             "emotional_tone_bias": self.emotions.tone_bias(),
             "cognitive_load": self.scheduler.cognitive_load(),
+            "metacognition": {
+                "prompt_templates": len(self.prompt_registry.active()),
+                "improvement_proposals": len(self.improvement.proposals),
+                "abstract_patterns": len(self.meta_learner.patterns),
+                "claims_tracked": len(self.calibration.claims),
+                "calibration_error": self.calibration.calibration_error(),
+                "world_models": len(self.world_models.models),
+                "beliefs_tracked": len(self.epistemic_calendar.beliefs),
+                "known_gaps": len(self.curiosity._gap_counts),
+                "decisions_automated": self.decision_guard.automated_total,
+            },
         }
 
     def traces(self, *, task_id: str | None = None) -> list[TraceEntry]:

@@ -43,3 +43,22 @@ persistence, and the FastAPI surface.
   approximation, not a full stochastic model.
 - Category 1 judgment rows ship as prompt-chain skill scaffolds; they guide
   the model, they are not standalone algorithms.
+
+## Features-doc rows 10-34 (Executive Function & Meta-Cognition)
+
+`metacognition.py` implements each row as an exact typed capability; routes
+are mounted under `/api/modules/20/meta/*`; focused tests are
+`tests/modules/test_m20_metacognition.py` (row logic, named test_rowNN_*)
+and `tests/modules/test_m20_metacognition_routes.py` (mounted routes).
+
+- Row 10 (recursive self-improvement) is bounded: it rewrites only versioned
+  entries in `PromptRegistry`, only after approval through the approval
+  gate. `ImprovementLoop.FORBIDDEN_TARGETS` blocks safety/tool/approval
+  targets. No deployed code is self-modified.
+- Row 13 calibration, row 21 world models, row 32 epistemic calendar, and
+  row 34 gap counters are in-memory in this package; add `m20_meta_*` tables
+  via `GCWRepository` when durability is required.
+- Rows 14/15/24-27 reuse the tested operators in `reasoning.py`.
+- All engines are deterministic and offline; production model assistance
+  (e.g. richer devil's-advocate attacks) should be injected behind new
+  protocols without changing the typed contracts.
