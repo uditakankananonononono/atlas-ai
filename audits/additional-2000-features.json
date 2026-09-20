@@ -4,9 +4,9 @@
   "source_revision_checked_at": "2026-09-20T18:23:37+05:30",
   "audited_head": "e4103e81d1317acc9c244c9ec715fee73c830d40",
   "counts": {
-    "verified-pushed": 0,
-    "thin": 0,
-    "missing": 2009
+    "verified-pushed": 5,
+    "thin": 3,
+    "missing": 2001
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -31,8 +31,12 @@
       "category": "Claire personalization additions",
       "requirement": "Decision Journaling + Retrieval (Most Powerful, Easiest)",
       "description": "What it is: Every time you make a decision \u2014 \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" \u2014 you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
+        "implementation_path": "backend/app/modules/m21_claire/personalization.py",
+        "test_path": "tests/modules/test_m21_personalization.py"
+      },
       "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects."
     },
     {
@@ -41,8 +45,12 @@
       "category": "Claire personalization additions",
       "requirement": "Correction Loop (Reinforcement From You)",
       "description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output \u2192 your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
+        "implementation_path": "backend/app/modules/m21_claire/personalization.py",
+        "test_path": "tests/modules/test_m21_personalization.py"
+      },
       "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects."
     },
     {
@@ -51,8 +59,12 @@
       "category": "Claire personalization additions",
       "requirement": "Voice Fine-Tuning (Style Transfer to You)",
       "description": "What it is: You collect 50\u2013200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
-      "status": "missing",
-      "evidence": null,
+      "status": "thin",
+      "evidence": {
+        "commit": "a0b2ada7c54d95dd521a7f29997cb3c465b4c72f",
+        "implementation_path": "backend/app/modules/m21_claire/training.py",
+        "test_path": "tests/modules/test_m21_personalization.py"
+      },
       "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects."
     },
     {
@@ -61,9 +73,14 @@
       "category": "Claire personalization additions",
       "requirement": "Chain-of-Thought Capture",
       "description": "What it is: When you solve a hard problem, you record your reasoning step by step \u2014 not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
+        "implementation_path": "backend/app/modules/m21_claire/personalization.py",
+        "test_path": "tests/modules/test_m21_personalization.py"
+      },
+      "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects.",
+      "implemented_as": "Owner-authored reasoning-note capture and retrieval; hidden model scratchpad is never captured."
     },
     {
       "id": 6,
@@ -71,8 +88,12 @@
       "category": "Claire personalization additions",
       "requirement": "Preference Ranking",
       "description": "What it is: Claire generates 3\u20135 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
-      "status": "missing",
-      "evidence": null,
+      "status": "thin",
+      "evidence": {
+        "commit": "a0b2ada7c54d95dd521a7f29997cb3c465b4c72f",
+        "implementation_path": "backend/app/modules/m21_claire/training.py",
+        "test_path": "tests/modules/test_m21_personalization.py"
+      },
       "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects."
     },
     {
@@ -81,8 +102,12 @@
       "category": "Claire personalization additions",
       "requirement": "Behavioral Telemetry (What You Actually Do)",
       "description": "What it is: Silently log your real actions \u2014 which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
+        "implementation_path": "backend/app/modules/m21_claire/personalization.py",
+        "test_path": "tests/modules/test_m21_personalization.py"
+      },
       "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects."
     },
     {
@@ -91,8 +116,12 @@
       "category": "Claire personalization additions",
       "requirement": "Cognitive Twin Retrieval",
       "description": "What it is: Embed every piece of your writing, every decision, every correction into a vector store. Claire queries this before acting. Implementation: ChromaDB (you already have it in the stack). Free. What it achieves: Claire's default behavior becomes \"what would the user likely want?\"",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
+        "implementation_path": "backend/app/modules/m21_claire/personalization.py",
+        "test_path": "tests/modules/test_m21_personalization.py"
+      },
       "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects."
     },
     {
@@ -101,8 +130,12 @@
       "category": "Claire personalization additions",
       "requirement": "Human-in-the-Loop Reinforcement (Weekly)",
       "description": "What it is: Once a week, Claire shows you what she did, you mark each action: good / bad / unclear. That becomes training signal. Implementation: A review UI + a small reward model. Real, buildable. What it achieves: Continuous alignment to you, not to generic human values.",
-      "status": "missing",
-      "evidence": null,
+      "status": "thin",
+      "evidence": {
+        "commit": "a0b2ada7c54d95dd521a7f29997cb3c465b4c72f",
+        "implementation_path": "backend/app/modules/m21_claire/training.py",
+        "test_path": "tests/modules/test_m21_personalization.py"
+      },
       "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects."
     },
     {

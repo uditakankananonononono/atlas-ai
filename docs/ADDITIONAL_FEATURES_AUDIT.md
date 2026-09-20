@@ -22,3 +22,7 @@ Standing boundaries apply to each row: no deception or fabricated evidence, no l
 ## September 20 live-document delta
 
 Added nine requirements: universal multi-field creation/application/tool-discovery vision; Decision Journaling + Retrieval; Correction Loop; Voice Fine-Tuning; owner-authored reasoning note retrieval (modified from hidden chain-of-thought capture); Preference Ranking; opt-in Behavioral Telemetry; Cognitive Twin Retrieval; and weekly Human-in-the-Loop Reinforcement. Removed: 0. Changed among the original 2,000: 0.
+
+## First row flips
+
+After Claire's consent-first personalization and training chunks: **5 verified-pushed / 3 thin / 2,001 missing**. Verified: Decision Journaling + Retrieval; Correction Loop; bounded owner-authored reasoning-note capture/retrieval; opt-in Behavioral Telemetry; Cognitive Twin Retrieval. Thin: Voice Fine-Tuning, Preference Ranking, weekly Human-in-the-Loop Reinforcement because dataset/job pipelines and signals exist but no real trained/evaluated model artifact exists yet. The universal multi-field vision remains missing as a whole until every underlying domain row is verified.
