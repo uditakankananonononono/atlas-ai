@@ -4,16 +4,20 @@ Implements spec module 6 ("Social Media Manager"):
 
 - Content generation pipeline: a content brief goes to a strategist step
   (LLM via the shared BYOK provider) that picks the best format per platform
-  (carousel for Instagram, thread for X/Twitter, 60s video script for TikTok,
-  article post for LinkedIn) and drafts copy plus asset prompts for the
-  self-hosted renderers named in the spec (ComfyUI/Stable Diffusion XL for
-  images, Bark/Tortoise-TTS for audio).
-- Scheduling: posts are scheduled through the official platform APIs (Meta
-  Graph API, X API v2, LinkedIn API), but every schedule/publish/A-B test is
-  filed with the shared approval store and held until a human confirms. This
-  module never publishes, schedules, or submits anything itself.
+  (carousel for Instagram, thread for X/Twitter, 60s video script for
+  TikTok, article post for LinkedIn) and drafts copy plus asset prompts for
+  the self-hosted renderers named in the spec (ComfyUI/Stable Diffusion XL
+  for images, Bark/Tortoise-TTS for audio).
+- Scheduling: every draft is compliance-checked (see compliance.py), filed
+  with the shared approval store, and persisted as a schedule entry. The
+  approval-verified execution gate that performs the platform write lives in
+  scheduler.py; this service never publishes, schedules, or submits anything
+  itself.
 - Analytics: engagement metrics are pulled through official platform APIs
-  (read-only) and summarised by the LLM into improvement suggestions.
+  (read-only, see adapters.py), normalized, persisted as snapshots, and
+  summarised by the LLM into improvement suggestions with a deterministic
+  fallback. A/B caption tests follow a full propose -> running -> concluded
+  lifecycle with a statistical verdict (see analytics.py).
 
 This file contains no FastAPI imports and performs no network or credential
 work at import time. All dependencies are injected through the constructor.
@@ -23,9 +27,7 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from enum import Enum
 from typing import Any, Awaitable, Callable, Protocol
 
 import httpx
@@ -33,37 +35,39 @@ import httpx
 from app.core.models import ApprovalRequest
 from app.core.providers import ProviderError
 
+from .adapters import (
+    AdapterError,
+    LinkedInAdapter,
+    MetaGraphAdapter,
+    NormalizedMetrics,
+    TikTokContentPostingAdapter,
+    XApiV2Adapter,
+)
+from .analytics import ABTest
+from .compliance import ComplianceIssue, is_blocking, validate_draft
+from .scheduler import Scheduler, ScheduleEntry
+
 # Signature of the shared BYOK generator (app.core.providers.generate).
 GenerateFn = Callable[..., Awaitable[tuple[str, str]]]
 
-MODULE_ID = 6
+from .models import (
+    AUDIO_ENGINE,
+    DEFAULT_FORMATS,
+    IMAGE_ENGINE,
+    MAX_CAROUSEL_SLIDES,
+    MODULE_ID,
+    AnalysisReport,
+    AssetPrompt,
+    ContentPlan,
+    PlanNotFoundError,
+    Platform,
+    PlatformDraft,
+)
 
-
-class Platform(str, Enum):
-    """Platforms covered by the spec's content generation pipeline."""
-
-    INSTAGRAM = "instagram"
-    TWITTER = "twitter"
-    TIKTOK = "tiktok"
-    LINKEDIN = "linkedin"
-
-
-#: Format the strategist prefers per platform when the LLM gives no usable
-#: answer. Mirrors the examples in the spec.
-DEFAULT_FORMATS: dict[Platform, str] = {
-    Platform.INSTAGRAM: "carousel",
-    Platform.TWITTER: "thread",
-    Platform.TIKTOK: "video_script_60s",
-    Platform.LINKEDIN: "article_post",
-}
-
-#: Self-hosted asset renderers named in the spec. The module only emits
-#: prompts; the render jobs themselves are wired by the integrator.
-IMAGE_ENGINE = "comfyui-sdxl"
-AUDIO_ENGINE = "bark-tts"
-
-MAX_CAROUSEL_SLIDES = 5
-
+__all__ = [
+    "AUDIO_ENGINE", "DEFAULT_FORMATS", "IMAGE_ENGINE", "MAX_CAROUSEL_SLIDES", "MODULE_ID",
+    "AnalysisReport", "AssetPrompt", "ContentPlan", "PlanNotFoundError", "Platform", "PlatformDraft",
+]
 
 class ApprovalStoreProtocol(Protocol):
     """The slice of the shared approval store this module needs."""
@@ -77,58 +81,23 @@ class MetricsClient(Protocol):
     async def fetch_engagement(self, platform: Platform, since_days: int) -> dict[str, Any]: ...
 
 
-@dataclass
-class AssetPrompt:
-    """A render prompt for a self-hosted asset engine (no render executed)."""
+class DraftComplianceError(ValueError):
+    """Drafts failed blocking compliance checks; carries every finding."""
 
-    kind: str  # "image" | "audio"
-    engine: str
-    prompt: str
-
-
-@dataclass
-class PlatformDraft:
-    """Drafted content for one platform."""
-
-    platform: Platform
-    format: str
-    post_copy: str
-    asset_prompts: list[AssetPrompt] = field(default_factory=list)
-
-
-@dataclass
-class ContentPlan:
-    """A strategist plan produced from one content brief."""
-
-    id: str
-    brief: str
-    drafts: list[PlatformDraft]
-    created_at: datetime
-    status: str = "draft"  # draft -> pending_approval once scheduling is requested
-
-
-@dataclass
-class AnalysisReport:
-    """LLM-written improvement suggestions over pulled engagement metrics."""
-
-    id: str
-    platform: Platform
-    since_days: int
-    suggestions: list[str]
-    model: str
-    created_at: datetime
-
-
-class PlanNotFoundError(KeyError):
-    """Raised when a caller references an unknown content plan."""
+    def __init__(self, issues: list[ComplianceIssue]) -> None:
+        super().__init__("one or more drafts have blocking compliance issues")
+        self.issues = issues
 
 
 class OfficialSocialMetricsClient:
     """Engagement reader over official platform APIs only.
 
-    Meta Graph API (Instagram insights), X API v2 (authenticated user lookup
-    with public metrics), LinkedIn API (organizational share statistics).
-    Tokens are injected by the caller and are never logged or returned.
+    Thin compatibility facade over the adapter layer (adapters.py): Meta
+    Graph API (Instagram insights), X API v2 (authenticated user lookup with
+    public metrics), LinkedIn API (organizational share statistics), TikTok
+    Content Posting API (video list). Tokens are injected by the caller and
+    are never logged or returned; adapter errors surface as ProviderError so
+    the shared provider-error handling in routes keeps working.
     """
 
     def __init__(
@@ -138,74 +107,122 @@ class OfficialSocialMetricsClient:
         x_bearer_token: str | None = None,
         linkedin_access_token: str | None = None,
         linkedin_org_id: str | None = None,
+        meta_ig_user_id: str | None = None,
+        tiktok_access_token: str | None = None,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
-        self._meta_access_token = meta_access_token
-        self._x_bearer_token = x_bearer_token
-        self._linkedin_access_token = linkedin_access_token
-        self._linkedin_org_id = linkedin_org_id
         self._transport = transport
+        self._adapters = {
+            Platform.INSTAGRAM: MetaGraphAdapter(
+                access_token=meta_access_token, ig_user_id=meta_ig_user_id, transport=transport
+            ),
+            Platform.TWITTER: XApiV2Adapter(bearer_token=x_bearer_token, transport=transport),
+            Platform.LINKEDIN: LinkedInAdapter(
+                access_token=linkedin_access_token, organization_id=linkedin_org_id, transport=transport
+            ),
+            Platform.TIKTOK: TikTokContentPostingAdapter(access_token=tiktok_access_token, transport=transport),
+        }
 
-    async def _get(self, url: str, *, headers: dict[str, str], params: dict[str, str]) -> dict[str, Any]:
-        async with httpx.AsyncClient(timeout=30, transport=self._transport) as client:
-            response = await client.get(url, headers=headers, params=params)
-        if response.is_error:
-            raise ProviderError(f"official platform API request failed ({response.status_code})")
-        return response.json()
+    def _adapter(self, platform: Platform) -> Any:
+        return self._adapters[platform]
 
     async def fetch_engagement(self, platform: Platform, since_days: int) -> dict[str, Any]:
         """Fetch recent engagement metrics through the platform's official API."""
-        if platform in {Platform.INSTAGRAM}:
-            if not self._meta_access_token:
-                raise ProviderError("Meta Graph API token is not configured")
-            # Meta Graph API: account insights for the authenticated IG business account.
-            return await self._get(
-                "https://graph.facebook.com/v21.0/me/insights",
-                headers={"Authorization": f"Bearer {self._meta_access_token}"},
-                params={"metric": "impressions,reach,engagement", "period": "day"},
-            )
-        if platform == Platform.TWITTER:
-            if not self._x_bearer_token:
-                raise ProviderError("X API v2 bearer token is not configured")
-            # X API v2: authenticated user lookup including public metrics.
-            return await self._get(
-                "https://api.twitter.com/2/users/me",
-                headers={"Authorization": f"Bearer {self._x_bearer_token}"},
-                params={"user.fields": "public_metrics"},
-            )
-        if platform == Platform.LINKEDIN:
-            if not self._linkedin_access_token or not self._linkedin_org_id:
-                raise ProviderError("LinkedIn API credentials are not configured")
-            # LinkedIn API: organization share statistics.
-            return await self._get(
-                "https://api.linkedin.com/v2/organizationalEntityShareStatistics",
-                headers={"Authorization": f"Bearer {self._linkedin_access_token}"},
-                params={"q": "organizationalEntity", "organizationalEntity": f"urn:li:organization:{self._linkedin_org_id}"},
-            )
-        raise ProviderError(f"no official metrics API is wired for {platform.value}")
+        try:
+            return await self._adapter(platform).fetch_metrics(since_days)
+        except AdapterError as error:
+            raise ProviderError(str(error)) from error
+
+    async def fetch_normalized(self, platform: Platform, since_days: int) -> NormalizedMetrics:
+        """Fetch and normalize engagement into the cross-platform shape."""
+        adapter = self._adapter(platform)
+        try:
+            raw = await adapter.fetch_metrics(since_days)
+        except AdapterError as error:
+            raise ProviderError(str(error)) from error
+        return adapter.normalize_metrics(raw)
+
+
+def _normalize_generic(platform: Platform, raw: dict[str, Any]) -> NormalizedMetrics:
+    """Best-effort normalization for metrics clients without a normalizer."""
+    def number(key: str) -> int:
+        value = raw.get(key, 0)
+        return int(value) if isinstance(value, (int, float)) else 0
+
+    return NormalizedMetrics(
+        platform=platform.value,
+        impressions=number("impressions"),
+        reach=number("reach"),
+        engagement=number("engagement"),
+        likes=number("likes"),
+        comments=number("comments"),
+        shares=number("shares"),
+        follower_count=number("follower_count") or number("followers_count"),
+        detail={"source": "generic", "keys": sorted(raw)},
+    )
 
 
 class SocialRepository(Protocol):
+    """Full persistence boundary: plans, reports, schedules, analytics."""
+
     def save_plan(self, plan: ContentPlan) -> ContentPlan: ...
     def get_plan(self, plan_id: str) -> ContentPlan | None: ...
     def save_report(self, report: AnalysisReport) -> AnalysisReport: ...
     def get_report(self, report_id: str) -> AnalysisReport | None: ...
+    def save_schedule(self, entry: ScheduleEntry) -> ScheduleEntry: ...
+    def get_schedule(self, schedule_id: str) -> ScheduleEntry | None: ...
+    def list_schedules(self, plan_id: str | None = None) -> list[ScheduleEntry]: ...
+    def save_publish_record(self, record: Any) -> Any: ...
+    def list_publish_records(self, schedule_id: str | None = None) -> list: ...
+    def save_snapshot(self, snapshot: Any) -> Any: ...
+    def get_snapshot(self, snapshot_id: str) -> Any | None: ...
+    def list_snapshots(self, platform: Platform | None = None) -> list[Any]: ...
+    def save_ab_test(self, test: ABTest) -> ABTest: ...
+    def get_ab_test(self, test_id: str) -> ABTest | None: ...
+    def list_ab_tests(self, plan_id: str | None = None) -> list[ABTest]: ...
+
 
 class MemorySocialRepository:
+    """In-memory repository for development and tests."""
+
     def __init__(self) -> None:
-        self.plans: dict[str, ContentPlan] = {}; self.reports: dict[str, AnalysisReport] = {}
+        self.plans: dict[str, ContentPlan] = {}
+        self.reports: dict[str, AnalysisReport] = {}
+        self.schedules: dict[str, ScheduleEntry] = {}
+        self.publish_records: list = []
+        self.snapshots: dict[str, Any] = {}
+        self.ab_tests: dict[str, ABTest] = {}
+
     def save_plan(self, plan: ContentPlan) -> ContentPlan: self.plans[plan.id]=plan; return plan
     def get_plan(self, plan_id: str) -> ContentPlan | None: return self.plans.get(plan_id)
     def save_report(self, report: AnalysisReport) -> AnalysisReport: self.reports[report.id]=report; return report
     def get_report(self, report_id: str) -> AnalysisReport | None: return self.reports.get(report_id)
+    def save_schedule(self, entry: ScheduleEntry) -> ScheduleEntry: self.schedules[entry.id]=entry; return entry
+    def get_schedule(self, schedule_id: str) -> ScheduleEntry | None: return self.schedules.get(schedule_id)
+    def list_schedules(self, plan_id: str | None = None) -> list[ScheduleEntry]:
+        return [e for e in self.schedules.values() if plan_id is None or e.plan_id == plan_id]
+    def save_publish_record(self, record: Any) -> Any: self.publish_records.append(record); return record
+    def list_publish_records(self, schedule_id: str | None = None) -> list:
+        return [r for r in self.publish_records if schedule_id is None or r.schedule_id == schedule_id]
+    def save_snapshot(self, snapshot: Any) -> Any: self.snapshots[snapshot.id]=snapshot; return snapshot
+    def get_snapshot(self, snapshot_id: str) -> Any | None: return self.snapshots.get(snapshot_id)
+    def list_snapshots(self, platform: Platform | None = None) -> list[Any]:
+        return [s for s in self.snapshots.values() if platform is None or s.platform == platform]
+    def save_ab_test(self, test: ABTest) -> ABTest: self.ab_tests[test.id]=test; return test
+    def get_ab_test(self, test_id: str) -> ABTest | None: return self.ab_tests.get(test_id)
+    def list_ab_tests(self, plan_id: str | None = None) -> list[ABTest]:
+        return [t for t in self.ab_tests.values() if plan_id is None or t.plan_id == plan_id]
+
 
 class Service:
     """Domain service for the Social Media Manager module.
 
     Dependencies are injected: the shared approval store, the shared BYOK
-    generator, and an optional metrics client. The service never publishes,
-    schedules, submits, or deletes anything; external effects are filed as
-    approval requests and returned to the caller.
+    generator, a metrics client, a repository, and optionally the module
+    scheduler (schedule entries are only persisted when one is wired). The
+    service never publishes, schedules, submits, or deletes anything;
+    external effects are filed as approval requests and returned to the
+    caller, and the approval-verified execution gate lives in scheduler.py.
     """
 
     def __init__(
@@ -217,6 +234,7 @@ class Service:
         provider: str = "openai",
         model: str | None = None,
         repository: SocialRepository | None = None,
+        scheduler: Scheduler | None = None,
     ) -> None:
         self._approvals = approval_store
         self._generate = generate
@@ -224,6 +242,7 @@ class Service:
         self._provider = provider
         self._model = model
         self._repository = repository or MemorySocialRepository()
+        self._scheduler = scheduler
 
     # -- content generation pipeline -------------------------------------
 
@@ -317,16 +336,41 @@ class Service:
             ]
         return draft
 
-    # -- approval-gated external effects -----------------------------------
+    # -- approval-gated scheduling -----------------------------------------
 
-    def request_schedule(self, plan_id: str, publish_at: datetime | None = None) -> list[ApprovalRequest]:
-        """File one approval request per platform draft to schedule the post.
+    def check_compliance(self, plan_id: str, *, sponsored: bool = False) -> list[ComplianceIssue]:
+        """Every compliance finding across a plan's drafts, errors and warnings."""
+        plan = self.get_plan(plan_id)
+        findings: list[ComplianceIssue] = []
+        for draft in plan.drafts:
+            findings.extend(
+                validate_draft(
+                    draft.platform.value,
+                    draft.format,
+                    draft.post_copy,
+                    sponsored=sponsored,
+                    media_count=len([p for p in draft.asset_prompts if p.kind == "image"]),
+                    alt_texts=len([p for p in draft.asset_prompts if p.kind == "image" and p.prompt.strip()]),
+                )
+            )
+        return findings
 
-        Returns the pending requests. Nothing is scheduled or published here;
-        the integrator's approval executor performs the platform API call only
-        after a human approves.
+    def request_schedule(
+        self, plan_id: str, publish_at: datetime | None = None, *, sponsored: bool = False
+    ) -> list[ApprovalRequest]:
+        """Compliance-check, persist schedule entries, and file approvals.
+
+        Nothing is scheduled or published here. Blocking compliance findings
+        abort the request before any approval is filed (fail closed). The
+        approval-verified execution gate in scheduler.py performs the actual
+        platform API call after a human approves.
         """
         plan = self.get_plan(plan_id)
+        findings = self.check_compliance(plan_id, sponsored=sponsored)
+        blocking = [issue for issue in findings if issue.severity == "error"]
+        if blocking:
+            raise DraftComplianceError(blocking)
+        moment = publish_at or datetime.now(timezone.utc)
         requests = [
             self._file_approval(
                 action_type="schedule_post",
@@ -335,26 +379,41 @@ class Service:
                     "platform": draft.platform.value,
                     "format": draft.format,
                     "copy": draft.post_copy,
-                    "publish_at": publish_at.isoformat() if publish_at else None,
+                    "publish_at": moment.isoformat(),
                     "api": self._official_api_name(draft.platform),
+                    "sponsored": sponsored,
                 },
             )
             for draft in plan.drafts
         ]
+        if self._scheduler is not None:
+            approval_ids = {draft.platform: request.id for draft, request in zip(plan.drafts, requests)}
+            entries = self._scheduler.create_entries(
+                plan, publish_at=moment, approval_ids=approval_ids, sponsored=sponsored
+            )
+            for request, entry in zip(requests, entries):
+                request.payload["schedule_id"] = entry.id
         plan.status = "pending_approval"
         self._repository.save_plan(plan)
         return requests
 
+    def list_schedule(self, plan_id: str) -> list[ScheduleEntry]:
+        """Schedule entries for one plan (empty when no scheduler is wired)."""
+        self.get_plan(plan_id)
+        return self._repository.list_schedules(plan_id)
+
     def request_ab_test(self, plan_id: str, platform: Platform, variant_caption: str) -> ApprovalRequest:
         """Propose an A/B caption test for one platform draft.
 
-        Execution (posting both variants) stays behind the approval boundary.
+        Execution (posting both variants) stays behind the approval boundary;
+        the persisted ABTest record tracks the full lifecycle to a
+        statistical verdict.
         """
         plan = self.get_plan(plan_id)
         draft = next((d for d in plan.drafts if d.platform == platform), None)
         if draft is None:
             raise PlanNotFoundError(f"plan {plan_id} has no draft for {platform.value}")
-        return self._file_approval(
+        request = self._file_approval(
             action_type="ab_test",
             payload={
                 "plan_id": plan.id,
@@ -364,6 +423,18 @@ class Service:
                 "api": self._official_api_name(platform),
             },
         )
+        self._repository.save_ab_test(
+            ABTest(
+                id=str(uuid.uuid4()),
+                plan_id=plan.id,
+                platform=platform,
+                variant_a=draft.post_copy,
+                variant_b=variant_caption,
+                approval_id=request.id,
+            )
+        )
+        request.payload["ab_test_id"] = self._repository.list_ab_tests(plan.id)[-1].id
+        return request
 
     def _file_approval(self, *, action_type: str, payload: dict[str, Any]) -> ApprovalRequest:
         request = ApprovalRequest(id=str(uuid.uuid4()), module_id=MODULE_ID, action_type=action_type, payload=payload)
@@ -380,8 +451,34 @@ class Service:
 
     # -- analytics ---------------------------------------------------------
 
+    async def capture_metrics(self, platform: Platform, since_days: int = 1) -> Any:
+        """Daily pull: fetch + normalize + persist one metrics snapshot."""
+        if self._metrics is None:
+            raise ProviderError("no metrics client is configured for this service")
+        fetch_normalized = getattr(self._metrics, "fetch_normalized", None)
+        if fetch_normalized is not None:
+            normalized = await fetch_normalized(platform, since_days)
+        else:
+            raw = await self._metrics.fetch_engagement(platform, since_days)
+            normalized = _normalize_generic(platform, raw)
+        from .analytics import MetricsSnapshot
+
+        snapshot = MetricsSnapshot(
+            id=str(uuid.uuid4()),
+            platform=platform,
+            since_days=since_days,
+            metrics=normalized,
+            captured_at=datetime.now(timezone.utc),
+        )
+        return self._repository.save_snapshot(snapshot)
+
     async def analyze_engagement(self, platform: Platform, since_days: int = 7) -> AnalysisReport:
-        """Pull official-API metrics and ask the LLM for improvement suggestions."""
+        """Pull official-API metrics and ask the LLM for improvement suggestions.
+
+        The deterministic trend line is prepended to the prompt and used as
+        the fallback when the provider is unavailable, so the report always
+        contains at least one evidence-based suggestion.
+        """
         if self._metrics is None:
             raise ProviderError("no metrics client is configured for this service")
         metrics = await self._metrics.fetch_engagement(platform, since_days)
