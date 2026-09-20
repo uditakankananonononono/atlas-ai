@@ -1,8 +1,8 @@
-# Additional 2,000-feature audit intake
+# Additional 2,009-feature audit
 
-Source: owner-shared Google Doc `1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY`. Parsed 10 categories and exactly 2,000 feature rows. Category 10 contains nine 100-feature subheadings; those headings are structure, not additional feature rows.
+Source: owner-shared Google Doc `1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY`. Fresh re-read after the owner edited the document: 9 requirements were added before the existing categories; 0 removed and 0 changed. The ledger now contains exactly 2,009 feature rows. Category 10 contains nine 100-feature subheadings; those headings are structure, not additional feature rows.
 
-Initial classification: **0 verified-pushed / 0 thin / 2,000 missing**. This is intentionally strict. Existing adjacent modules do not verify newly named behavior. Every row must gain exact code, a mounted boundary and a focused passing test before becoming verified-pushed. The complete machine-readable ledger is `audits/additional-2000-features.json`.
+Initial classification: **0 verified-pushed / 0 thin / 2,009 missing**. This is intentionally strict. Existing adjacent modules do not verify newly named behavior. Every row must gain exact code, a mounted boundary and a focused passing test before becoming verified-pushed. The complete machine-readable ledger is `audits/additional-2000-features.json`.
 
 Standing boundaries apply to each row: no deception or fabricated evidence, no login-driven mass scraping, no self-bots or piracy, no false sentience/medical/legal certainty, and exact-preview human approval for external effects, money and irreversible actions. Impossible or unsafe wording will be implemented only as a bounded, honest analogue or refusal, with the modification recorded row by row.
 
@@ -18,3 +18,7 @@ Standing boundaries apply to each row: no deception or fabricated evidence, no l
 | 8. Future & Emerging Capabilities | 100 | 0 | 0 | 100 |
 | 9. Data & Analytics | 100 | 0 | 0 | 100 |
 | 10. Specialized Domain Expertise | 900 | 0 | 0 | 900 |
+
+## September 20 live-document delta
+
+Added nine requirements: universal multi-field creation/application/tool-discovery vision; Decision Journaling + Retrieval; Correction Loop; Voice Fine-Tuning; owner-authored reasoning note retrieval (modified from hidden chain-of-thought capture); Preference Ranking; opt-in Behavioral Telemetry; Cognitive Twin Retrieval; and weekly Human-in-the-Loop Reinforcement. Removed: 0. Changed among the original 2,000: 0.
