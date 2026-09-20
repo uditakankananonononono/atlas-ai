@@ -1,0 +1,55 @@
+x-atlas-env: &atlas-env
+  ATLAS_ENV: production
+  ATLAS_DATABASE_URL: ${ATLAS_DATABASE_URL:?set ATLAS_DATABASE_URL}
+  ATLAS_REDIS_URL: ${ATLAS_REDIS_URL:?set ATLAS_REDIS_URL}
+  ATLAS_TOKEN_KEY: ${ATLAS_TOKEN_KEY:?set ATLAS_TOKEN_KEY}
+  ATLAS_API_KEY_ENCRYPTION_KEY: ${ATLAS_API_KEY_ENCRYPTION_KEY:?set ATLAS_API_KEY_ENCRYPTION_KEY}
+x-worker: &worker
+  image: ${ATLAS_IMAGE:-atlas-ai:latest}
+  restart: unless-stopped
+  env_file: [.env.production]
+  environment: *atlas-env
+  depends_on:
+    postgres: {condition: service_healthy}
+    redis: {condition: service_healthy}
+services:
+  api:
+    image: ${ATLAS_IMAGE:-atlas-ai:latest}
+    build: .
+    restart: unless-stopped
+    env_file: [.env.production]
+    environment: *atlas-env
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${ATLAS_API_WORKERS:-4}
+    ports: ["8000:8000"]
+    healthcheck: {test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"], interval: 30s, timeout: 5s, retries: 5}
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+  collector-worker:
+    <<: *worker
+    command: celery -A app.workers.celery_app:celery_app worker -Q collection,default --concurrency=${ATLAS_COLLECTOR_CONCURRENCY:-8} --loglevel=INFO
+    deploy: {replicas: 2, resources: {limits: {cpus: "2", memory: 4G}}}
+  ai-worker:
+    <<: *worker
+    command: celery -A app.workers.celery_app:celery_app worker -Q ai,documents --concurrency=${ATLAS_AI_CONCURRENCY:-4} --loglevel=INFO
+    deploy: {replicas: 2, resources: {limits: {cpus: "4", memory: 12G}}}
+  browser-worker:
+    <<: *worker
+    command: celery -A app.workers.celery_app:celery_app worker -Q browser --concurrency=${ATLAS_BROWSER_CONCURRENCY:-2} --loglevel=INFO
+    deploy: {replicas: 1, resources: {limits: {cpus: "2", memory: 4G}}}
+  beat:
+    <<: *worker
+    command: celery -A app.workers.celery_app:celery_app beat --loglevel=INFO --pidfile=
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment: {POSTGRES_USER: atlas, POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}", POSTGRES_DB: atlas}
+    volumes: ["atlas-postgres:/var/lib/postgresql/data"]
+    healthcheck: {test: ["CMD-SHELL", "pg_isready -U atlas"], interval: 10s, timeout: 5s, retries: 10}
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?set REDIS_PASSWORD}
+    volumes: ["atlas-redis:/data"]
+    healthcheck: {test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"], interval: 10s, timeout: 5s, retries: 10}
+volumes: {atlas-postgres: {}, atlas-redis: {}}

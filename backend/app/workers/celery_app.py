@@ -9,6 +9,18 @@ celery_app.conf.update(
     accept_content=["json"],
     timezone="UTC",
     enable_utc=True,
+    task_routes={
+        "atlas.collection.*": {"queue": "collection"},
+        "atlas.m13.*": {"queue": "browser"},
+        "atlas.m12.*": {"queue": "ai"},
+        "atlas.m15.*": {"queue": "documents"},
+        "atlas.m10.*": {"queue": "default"},
+        "atlas.m11.*": {"queue": "default"},
+    },
+    task_acks_late=True,
+    task_reject_on_worker_lost=True,
+    worker_prefetch_multiplier=1,
+    broker_connection_retry_on_startup=True,
     beat_schedule={
         "dispatch-due-collection-sources": {
             "task": "atlas.collection.dispatch_due",
