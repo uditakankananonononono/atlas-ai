@@ -6,6 +6,20 @@ services:
       ATLAS_REDIS_URL: redis://redis:6379/0
     ports: ["8000:8000"]
     depends_on: [postgres, redis]
+  worker:
+    build: .
+    command: celery -A app.workers.celery_app:celery_app worker --loglevel=INFO
+    environment:
+      ATLAS_DATABASE_URL: postgresql+psycopg://atlas:atlas@postgres:5432/atlas
+      ATLAS_REDIS_URL: redis://redis:6379/0
+    depends_on: [postgres, redis]
+  beat:
+    build: .
+    command: celery -A app.workers.celery_app:celery_app beat --loglevel=INFO
+    environment:
+      ATLAS_DATABASE_URL: postgresql+psycopg://atlas:atlas@postgres:5432/atlas
+      ATLAS_REDIS_URL: redis://redis:6379/0
+    depends_on: [postgres, redis]
   postgres:
     image: pgvector/pgvector:pg16
     environment:
