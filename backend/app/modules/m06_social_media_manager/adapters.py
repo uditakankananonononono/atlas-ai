@@ -238,10 +238,16 @@ class MetaGraphAdapter(_HttpLayer):
     @staticmethod
     def normalize_metrics(raw: dict[str, Any]) -> NormalizedMetrics:
         totals: dict[str, int] = {}
+        daily_series: list[tuple[str, int]] = []
         for entry in raw.get("data", []):
             name = entry.get("name")
             values = entry.get("values") or []
             totals[name] = sum(int(v.get("value", 0)) for v in values)
+            if name in ("engagement", "likes"):
+                for value in values:
+                    day = value.get("end_time", "")[:10]
+                    if day:
+                        daily_series.append((day, int(value.get("value", 0))))
         return NormalizedMetrics(
             platform="instagram",
             impressions=totals.get("impressions", 0),
@@ -250,7 +256,7 @@ class MetaGraphAdapter(_HttpLayer):
             comments=totals.get("comments", 0),
             shares=totals.get("shares", 0) + totals.get("saved", 0),
             engagement=totals.get("likes", 0) + totals.get("comments", 0) + totals.get("shares", 0) + totals.get("saved", 0),
-            detail={"source": "meta-graph-api", "metrics": sorted(totals)},
+            detail={"source": "meta-graph-api", "metrics": sorted(totals), "daily_series": daily_series},
         )
 
 

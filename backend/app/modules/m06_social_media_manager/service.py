@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Awaitable, Callable, Protocol
 
 import httpx
@@ -448,6 +448,74 @@ class Service:
             Platform.TWITTER: "x-api-v2",
             Platform.LINKEDIN: "linkedin-api",
         }[platform]
+
+
+    # -- drafting depth ------------------------------------------------------
+
+    async def revise_draft(
+        self, plan_id: str, platform: Platform, feedback: str, *, sponsored: bool = False
+    ) -> tuple[PlatformDraft, list[ComplianceIssue]]:
+        """Rewrite one platform draft from human feedback.
+
+        The BYOK LLM rewrites under the platform's hard limits; the revised
+        copy is compliance-checked again before it is stored. Blocking
+        findings keep the OLD copy in place and raise DraftComplianceError,
+        so a bad revision can never replace a schedulable draft.
+        """
+        plan = self.get_plan(plan_id)
+        draft = next((d for d in plan.drafts if d.platform == platform), None)
+        if draft is None:
+            raise PlanNotFoundError(f"plan {plan_id} has no draft for {platform.value}")
+        from .compliance import PLATFORM_LIMITS
+
+        limit = PLATFORM_LIMITS[platform.value]["caption_chars"]
+        prompt = (
+            f"Rewrite this {platform.value} post applying the human feedback below. "
+            f"Hard rules: at most {limit} characters, no invented facts, keep any disclosure "
+            "hashtags (e.g. #ad) that are present. Reply with ONLY the revised post copy.\n\n"
+            f"Current copy: {draft.post_copy}\n\nFeedback: {feedback}"
+        )
+        try:
+            _model, text = await self._generate(prompt, self._provider, self._model)
+        except ProviderError:
+            raise
+        revised = text.strip()
+        issues = validate_draft(
+            platform.value,
+            draft.format,
+            revised,
+            sponsored=sponsored,
+            media_count=len([p for p in draft.asset_prompts if p.kind == "image"]),
+            alt_texts=len([p for p in draft.asset_prompts if p.kind == "image" and p.prompt.strip()]),
+        )
+        blocking = [issue for issue in issues if issue.severity == "error"]
+        if blocking:
+            raise DraftComplianceError(blocking)
+        draft.post_copy = revised
+        self._repository.save_plan(plan)
+        return draft, issues
+
+    def suggest_publish_time(self, platform: Platform, *, now: datetime | None = None) -> datetime | None:
+        """Next occurrence of the platform's best-performing weekday.
+
+        Uses the deterministic best-weekday statistic over persisted Meta
+        daily-insight series when available; returns None when there is not
+        enough data to say anything honest (never a made-up time).
+        """
+        from .analytics import best_day_recommendation
+
+        snapshots = self._repository.list_snapshots(platform)
+        series: list[tuple[str, int]] = []
+        for snapshot in snapshots:
+            daily = snapshot.metrics.detail.get("daily_series") or []
+            series.extend(tuple(item) for item in daily)
+        weekday = best_day_recommendation(series)
+        if weekday is None:
+            return None
+        target = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].index(weekday)
+        moment = now or datetime.now(timezone.utc)
+        days_ahead = (target - moment.weekday()) % 7 or 7
+        return (moment + timedelta(days=days_ahead)).replace(hour=9, minute=0, second=0, microsecond=0)
 
     # -- analytics ---------------------------------------------------------
 

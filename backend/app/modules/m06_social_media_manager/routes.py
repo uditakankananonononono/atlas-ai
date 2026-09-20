@@ -27,7 +27,9 @@ from .scheduler import (
     ScheduleNotFoundError,
     ScheduleStateError,
 )
+from .models import Platform
 from .schemas import (
+    BestTimeOut,
     ABMetricsIn,
     ABTestIn,
     ABTestOut,
@@ -41,6 +43,8 @@ from .schemas import (
     ContentPlanOut,
     PublishRecordOut,
     RescheduleIn,
+    RevisionIn,
+    RevisionOut,
     ScheduleEntryOut,
     ScheduleIn,
     SnapshotIn,
@@ -189,6 +193,32 @@ def request_ab_test(plan_id: str, request: ABTestIn, service: Service = Depends(
         return service.request_ab_test(plan_id, request.platform, request.variant_caption)
     except PlanNotFoundError as error:
         raise HTTPException(status_code=404, detail="plan or platform draft not found") from error
+
+
+@router.post("/plans/{plan_id}/drafts/{platform}/revision", response_model=RevisionOut)
+async def revise_draft(plan_id: str, platform: Platform, request: RevisionIn, service: Service = Depends(get_service)) -> object:
+    """Rewrite one draft from human feedback; blocking findings keep the old copy."""
+    try:
+        draft, findings = await service.revise_draft(plan_id, platform, request.feedback, sponsored=request.sponsored)
+        return {"draft": draft, "findings": findings}
+    except PlanNotFoundError as error:
+        raise HTTPException(status_code=404, detail="plan or platform draft not found") from error
+    except DraftComplianceError as error:
+        raise HTTPException(
+            status_code=422,
+            detail=[{"code": i.code, "severity": i.severity, "message": i.message} for i in error.issues],
+        ) from error
+    except ProviderError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
+
+
+@router.get("/metrics/best-time/{platform}", response_model=BestTimeOut)
+def best_publish_time(platform: Platform, service: Service = Depends(get_service)) -> object:
+    """Next occurrence of the platform's best-performing weekday (Meta series)."""
+    suggestion = service.suggest_publish_time(platform)
+    if suggestion is None:
+        raise HTTPException(status_code=404, detail="not enough daily metrics for a recommendation")
+    return {"platform": platform, "weekday": suggestion.strftime("%A"), "next_at": suggestion}
 
 
 # -- scheduler (approval-verified execution gate) -------------------------------

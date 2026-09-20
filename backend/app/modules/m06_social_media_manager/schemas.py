@@ -175,3 +175,21 @@ class SnapshotOut(BaseModel):
     since_days: int
     metrics: NormalizedMetricsOut
     captured_at: datetime
+
+
+class RevisionIn(BaseModel):
+    """Human feedback applied to one platform draft."""
+
+    feedback: str = Field(min_length=3, max_length=2000)
+    sponsored: bool = False
+
+
+class RevisionOut(BaseModel):
+    draft: PlatformDraftOut
+    findings: list[ComplianceIssueOut]
+
+
+class BestTimeOut(BaseModel):
+    platform: Platform
+    weekday: str
+    next_at: datetime
