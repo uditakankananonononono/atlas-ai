@@ -35,4 +35,19 @@ async def generate(prompt: str, provider: str, model: str | None = None) -> tupl
         if response.is_error:
             raise ProviderError(f"Anthropic request failed ({response.status_code})")
         return chosen, "".join(block["text"] for block in response.json()["content"] if block["type"] == "text")
+    if provider in {"gemini", "google"}:
+        key = os.getenv("GEMINI_API_KEY")
+        if not key:
+            raise ProviderError("GEMINI_API_KEY is not configured")
+        chosen = model or os.getenv("ATLAS_GEMINI_MODEL", "gemini-2.5-flash")
+        async with httpx.AsyncClient(timeout=60) as client:
+            response = await client.post(
+                f"https://generativelanguage.googleapis.com/v1beta/models/{chosen}:generateContent",
+                params={"key": key},
+                json={"contents": [{"parts": [{"text": prompt}]}]},
+            )
+        if response.is_error:
+            raise ProviderError(f"Gemini request failed ({response.status_code})")
+        parts = response.json()["candidates"][0]["content"]["parts"]
+        return chosen, "".join(part.get("text", "") for part in parts)
     raise ProviderError(f"Unsupported provider: {provider}")
