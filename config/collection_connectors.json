@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "policy": {
+    "login_driven_scraping": false,
+    "ban_evasion": false,
+    "module_0_gates_outbound_actions": true
+  },
+  "connectors": [
+    {
+      "key": "scholarship-public-sites",
+      "adapter": "public_scholarship_sites",
+      "type": "public_page",
+      "enabled": true,
+      "registry": "config/scholarship_sources.json",
+      "cost": "free",
+      "pacing_seconds": 3
+    },
+    {
+      "key": "instagram-seeds-free",
+      "adapter": "public_instagram",
+      "type": "public_page",
+      "enabled": false,
+      "registry": "config/social_seed_accounts.json",
+      "cost": "free",
+      "pacing_seconds": 12,
+      "restriction": "anonymous public profiles only; stop on throttle/challenge"
+    },
+    {
+      "key": "instagram-seeds-apify",
+      "adapter": "apify_instagram",
+      "type": "licensed_data",
+      "enabled": false,
+      "registry": "config/social_seed_accounts.json",
+      "credential_env": "APIFY_API_TOKEN",
+      "optional_paid": true
+    },
+    {
+      "key": "instagram-seeds-bright-data",
+      "adapter": "bright_data_instagram",
+      "type": "licensed_data",
+      "enabled": false,
+      "registry": "config/social_seed_accounts.json",
+      "credential_env": "BRIGHT_DATA_API_TOKEN",
+      "optional_paid": true
+    },
+    {
+      "key": "outreach-apollo",
+      "adapter": "apollo_people",
+      "type": "official_api",
+      "enabled": false,
+      "credential_env": "APOLLO_API_KEY"
+    },
+    {
+      "key": "outreach-hunter",
+      "adapter": "hunter_domain",
+      "type": "official_api",
+      "enabled": false,
+      "credential_env": "HUNTER_API_KEY"
+    },
+    {
+      "key": "gmail-newsletters",
+      "adapter": "gmail_newsletters",
+      "type": "official_api",
+      "enabled": false,
+      "credential_env": "GOOGLE_OAUTH_ACCESS_TOKEN"
+    },
+    {
+      "key": "discord-owned-bot",
+      "adapter": "discord_invited_bot",
+      "type": "official_api",
+      "enabled": false,
+      "credential_env": "DISCORD_BOT_TOKEN",
+      "restriction": "invited bot only; no user tokens or self-bots"
+    },
+    {
+      "key": "x-official-api",
+      "adapter": "x_api",
+      "type": "official_api",
+      "enabled": false,
+      "credential_env": "X_BEARER_TOKEN",
+      "optional_paid": true
+    },
+    {
+      "key": "youtube-official-api",
+      "adapter": "youtube_data_api",
+      "type": "official_api",
+      "enabled": false,
+      "credential_env": "YOUTUBE_API_KEY"
+    }
+  ],
+  "first_targets": [
+    "config/scholarship_sources.json",
+    "config/social_seed_accounts.json"
+  ]
+}

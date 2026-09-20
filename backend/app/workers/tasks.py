@@ -24,6 +24,5 @@ def dispatch_due_collection_sources(limit: int = 1000) -> dict[str, int]:
 
 @celery_app.task(name="atlas.collection.collect_source", bind=True, autoretry_for=(ConnectionError,), retry_backoff=True, retry_jitter=True, max_retries=5)
 def collect_source(self, source_id: int) -> dict[str, object]:
-    # Concrete API/RSS/public-page/authorized-session adapters register here.
-    # A missing adapter fails visibly instead of simulating collection.
-    return {"source_id": source_id, "status": "requires_registered_collector"}
+    from app.core.collection import execute_registered_source
+    return execute_registered_source(source_id)

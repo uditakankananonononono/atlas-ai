@@ -13,6 +13,7 @@ class CollectorType(str, Enum):
     PUBLIC_PAGE = "public_page"
     AUTHORIZED_SESSION = "authorized_session"
     WEBHOOK = "webhook"
+    LICENSED_DATA = "licensed_data"
 
 class CollectionSourceRow(Base):
     __tablename__ = "collection_sources"
@@ -66,3 +67,44 @@ def due_source_ids(limit: int = 1000) -> list[int]:
 def estimate_daily_cost(source: CollectionSourceRow) -> float:
     requests = min(source.daily_request_cap, max(1, 86400 // source.cadence_seconds))
     return round(requests * source.cost_per_1000_requests_usd / 1000, 6)
+
+
+def execute_registered_source(source_id: int) -> dict[str, Any]:
+    """Run one configured allow-listed collector and durably store deduplicated records."""
+    import asyncio, hashlib, json
+    from datetime import timedelta
+    from app.collectors.registry import build_collector
+    started = datetime.now(timezone.utc)
+    with SessionLocal() as db:
+        source = db.get(CollectionSourceRow, source_id)
+        if source is None:
+            raise LookupError(f"collection source not found: {source_id}")
+        if not source.enabled:
+            return {"source_id": source_id, "status": "disabled"}
+        if source.throttle_until and source.throttle_until > started:
+            return {"source_id": source_id, "status": "throttled", "until": source.throttle_until.isoformat()}
+        config = dict(source.config or {})
+        adapter_name = config.get("adapter")
+        if not adapter_name:
+            raise ValueError("collection source config requires registered adapter")
+        collector = build_collector(adapter_name)
+        run = CollectionRunRow(tenant_id=source.tenant_id, source_key=source.source_key, status="running", started_at=started)
+        db.add(run); db.commit()
+        try:
+            batch = asyncio.run(collector.collect(config))
+            asyncio.run(collector.close())
+            created = 0
+            for item in batch.items:
+                digest = hashlib.sha256(json.dumps(item.payload, sort_keys=True, default=str).encode()).hexdigest()
+                exists = db.scalar(select(CollectedRecordRow.id).where(CollectedRecordRow.tenant_id == source.tenant_id, CollectedRecordRow.content_hash == digest))
+                if exists is None:
+                    db.add(CollectedRecordRow(tenant_id=source.tenant_id, source_key=source.source_key, canonical_url=item.canonical_url, content_hash=digest, payload=item.payload)); created += 1
+            finished=datetime.now(timezone.utc)
+            run.status="completed"; run.requests=batch.requests; run.records_new=created
+            run.estimated_cost_usd=round(batch.requests * source.cost_per_1000_requests_usd / 1000, 6)
+            run.finished_at=finished; run.detail={**batch.detail,"cursor":batch.cursor}
+            source.last_run_at=finished; source.next_run_at=finished + timedelta(seconds=source.cadence_seconds)
+            db.commit()
+            return {"source_id":source_id,"status":"completed","records_new":created,"requests":batch.requests,"cursor":batch.cursor}
+        except Exception as exc:
+            run.status="failed"; run.finished_at=datetime.now(timezone.utc); run.detail={"error":type(exc).__name__,"message":str(exc)[:500]}; db.commit(); raise

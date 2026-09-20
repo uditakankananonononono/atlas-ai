@@ -1,0 +1,7 @@
+# Data connectors
+
+Atlas is free-first. The default scholarship crawler indexes only the configured public site registry with a clear user agent, same-domain links, pacing, deduplication, and hard stop on 403/429. The free Instagram adapter uses Instaloader anonymously for public profiles only, at least 8 seconds between accounts, limited post depth, and stops on login, challenge, or throttle signals. It never rotates identities, proxies, or user accounts.
+
+Gmail uses the owner's Google OAuth connection. Discord uses only a bot the owner controls and has invited to the relevant servers. YouTube uses its standard free API quota. Apollo and Hunter use their free tiers where the current account permits. X's official API, Apify, and Bright Data remain optional disabled connectors; Atlas does not depend on them.
+
+Every connector is allow-listed in `app.collectors.registry`, configured in `config/collection_connectors.json`, normalized to durable tenant-scoped collected records, deduplicated by content hash, and logged with requests and configured cost. Keys come from deployment secrets and are never stored in registry JSON.
