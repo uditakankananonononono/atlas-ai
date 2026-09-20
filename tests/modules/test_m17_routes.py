@@ -51,3 +51,15 @@ def test_communication_coaching_endpoint_is_mounted_and_owner_scoped():
     assert body["external_action_proposed"] is False
     payload["owner_id"] = str(uuid4())
     assert client.post("/v1/modules/17/communication/coaching", json=payload).status_code == 403
+
+
+def test_collaboration_coaching_endpoint_is_mounted_and_owner_scoped():
+    from fastapi import FastAPI
+    owner=uuid4(); service=AdviceEssayService(InMemoryModule17Repository())
+    app=FastAPI(); app.include_router(build_router(lambda: service, lambda: owner)); client=TestClient(app)
+    payload={"owner_id":str(owner),"skill":"facilitation","context":"Planning","objective":"Fair decision"}
+    response=client.post("/v1/modules/17/collaboration/coaching",json=payload)
+    assert response.status_code==200
+    assert response.json()["external_action_proposed"] is False
+    payload["owner_id"]=str(uuid4())
+    assert client.post("/v1/modules/17/collaboration/coaching",json=payload).status_code==403

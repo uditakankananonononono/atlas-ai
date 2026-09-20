@@ -8,11 +8,14 @@ from collections.abc import Iterable, Sequence
 from typing import Protocol
 from uuid import UUID
 
+from .collaboration_coaching import CollaborationCoach
 from .communication_coaching import CommunicationCoach
 from .schemas import (
     AdviceSource,
     CommunicationCoachingRequest,
     CommunicationCoachingResponse,
+    CollaborationCoachingRequest,
+    CollaborationCoachingResponse,
     AdviceTip,
     CritiqueDimension,
     CritiqueFinding,
@@ -144,6 +147,10 @@ class AdviceEssayService:
         self.repository = repository
         self.coach = coach or DeterministicCoach()
         self.communication_coach = CommunicationCoach()
+        self.collaboration_coach = CollaborationCoach()
+
+    def coach_collaboration(self, request: CollaborationCoachingRequest) -> CollaborationCoachingResponse:
+        return self.collaboration_coach.coach(request)
 
     def coach_communication(self, request: CommunicationCoachingRequest) -> CommunicationCoachingResponse:
         return self.communication_coach.coach(request)

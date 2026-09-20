@@ -197,3 +197,60 @@ class CommunicationCoachingResponse(BaseModel):
     external_action_proposed: bool = False
     caveats: list[str] = Field(default_factory=list)
     authorship_notice: str | None = None
+
+
+class CollaborationSkill(str, Enum):
+    FACILITATION = "facilitation"
+    BRAINSTORMING = "brainstorming"
+    CONSENSUS_BUILDING = "consensus_building"
+    VOTING_DESIGN = "voting_design"
+    DELIBERATION = "deliberation"
+    DEBATE = "debate"
+    RHETORIC = "rhetoric"
+    LOGIC = "logic"
+    FALLACY_DETECTION = "fallacy_detection"
+    STEELMANNING = "steelmanning"
+    CHARITABLE_INTERPRETATION = "charitable_interpretation"
+    PRINCIPLE_OF_CHARITY = "principle_of_charity"
+    STEEL_MANNING = "steel_manning"
+    DEVILS_ADVOCACY = "devils_advocacy"
+    RED_TEAMING = "red_teaming"
+    WAR_GAMING = "war_gaming"
+    TABLETOP_EXERCISES = "tabletop_exercises"
+    SIMULATION = "simulation"
+    ROLE_PLAYING = "role_playing"
+    PERSPECTIVE_TAKING = "perspective_taking"
+    THEORY_OF_MIND = "theory_of_mind"
+    MENTALIZING = "mentalizing"
+    EMPATHY = "empathy"
+    COMPASSION = "compassion"
+    ALTRUISM = "altruism"
+    PROSOCIAL_BEHAVIOR = "prosocial_behavior"
+    COOPERATION = "cooperation"
+    COLLABORATION = "collaboration"
+    TEAMWORK = "teamwork"
+    TEAM_BUILDING = "team_building"
+
+
+class CollaborationCoachingRequest(BaseModel):
+    owner_id: UUID
+    skill: CollaborationSkill
+    context: str = Field(min_length=1, max_length=10_000)
+    objective: str = Field(min_length=1, max_length=1000)
+    participants: list[str] = Field(default_factory=list, max_length=100)
+    proposal_or_argument: str | None = Field(default=None, max_length=50_000)
+    known_facts: list[str] = Field(default_factory=list, max_length=100)
+    constraints: list[str] = Field(default_factory=list, max_length=50)
+    student_authored_work: bool = False
+
+
+class CollaborationCoachingResponse(BaseModel):
+    owner_id: UUID
+    skill: CollaborationSkill
+    agenda: list[str]
+    questions: list[str]
+    critique: list[str]
+    safeguards: list[str]
+    review_required: bool = True
+    external_action_proposed: bool = False
+    authorship_notice: str | None = None
