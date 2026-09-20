@@ -176,3 +176,7 @@ The old README was stale and materially understated current code. It also hid an
 ## Assistant behavior alignment
 
 Behavior is a product capability, not decoration. `config/assistant_persona.json` and `backend/app/persona/policy.py` now encode precise concessions, honest limitation disclosure, source/alternative/confidence transparency without hidden scratchpad, exact-preview approval etiquette, no fabrication or deception, and low-stakes-only dry humor. The policy rejects empty approval previews and deception markers and returns explicit evidence/limitation disclosures. Focused tests enforce those boundaries. Remaining work is to inject this shared policy into every module-specific provider prompt and outward action executor, rather than leaving any module to define behavior independently.
+
+## Integration coherence evidence
+
+Mounted packages alone do not count as an integrated product. `app.runtime` now provides a typed tenant/actor/correlation context, evidence-carrying module handoffs, registered operation dispatch, fail-closed missing handlers, and an end-to-end trace. Two concrete cross-module compositions are tested: M1 -> M2 -> M13 -> M0 for opportunity-to-application preparation, and M4 -> M3 -> M15 -> M0 for research-to-document preparation. The live `/api/v1/runtime/coherence` route exposes shared runtime facts. Remaining integration work is to register each production module service as a runtime handler and move all module-specific direct calls through the same durable event/queue path.
