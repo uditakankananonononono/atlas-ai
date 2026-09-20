@@ -10,7 +10,7 @@ from __future__ import annotations
 import math,random,statistics
 from collections import Counter
 ROWS={
-"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047}
+"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052}
 def _nums(data,key="values",min_n=1):
     v=data.get(key)
     if not isinstance(v,list) or len(v)<min_n or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in v):raise ValueError(f"{key} must contain at least {min_n} finite numbers")
@@ -363,5 +363,60 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
             mode=new
         variance=-1/hess
         o["output"]={"model":"one_parameter_binomial_logistic","posterior_mode":mode,"gaussian_variance":variance,"iterations":i+1,"converged":converged,"interval":[mode-1.96*math.sqrt(variance),mode+1.96*math.sqrt(variance)]};a += ["Independent binomial observations, one coefficient, Normal(0, prior_variance) prior; posterior locally Gaussian near a single mode."];limits += ["Laplace can misrepresent skewed/multimodal posteriors; one parameter only; inspect convergence and use production inference for consequential decisions."]
+    elif method=="importance_sampling":
+        draws=max(100,min(int(p.get("draws",5000)),50000));proposal_mean=float(p.get("proposal_mean",0));proposal_sd=float(p.get("proposal_sd",2));target_mean=float(p.get("target_mean",1));target_sd=float(p.get("target_sd",1))
+        if proposal_sd<=0 or target_sd<=0:raise ValueError("standard deviations must be positive")
+        samples=[];weights=[]
+        for _ in range(draws):
+            x=rng.gauss(proposal_mean,proposal_sd);logw=-.5*((x-target_mean)/target_sd)**2-math.log(target_sd)+.5*((x-proposal_mean)/proposal_sd)**2+math.log(proposal_sd);samples.append(x);weights.append(math.exp(min(700,logw)))
+        z=sum(weights);norm=[w/z for w in weights];estimate=sum(w*x for w,x in zip(norm,samples));ess=1/sum(w*w for w in norm)
+        o["output"]={"target_expectation":estimate,"effective_sample_size":ess,"draws":draws,"normalized_weight_max":max(norm),"proposal":{"mean":proposal_mean,"sd":proposal_sd}};a += ["Normalized Gaussian target and Gaussian proposal with overlapping support."];limits += ["Self-normalized estimate; weight degeneracy can make nominal draws misleading; inspect ESS."]
+    elif method=="rejection_sampling":
+        draws=max(1,min(int(p.get("accepted_draws",1000)),20000));proposal_mean=float(p.get("proposal_mean",0));proposal_sd=float(p.get("proposal_sd",2));target_mean=float(p.get("target_mean",1));target_sd=float(p.get("target_sd",1));bound=float(p.get("bound",3));max_attempts=max(draws,min(int(p.get("max_attempts",draws*100)),2000000))
+        if proposal_sd<=0 or target_sd<=0 or bound<=0:raise ValueError("scales and bound must be positive")
+        accepted=[];attempts=0;violations=0
+        while len(accepted)<draws and attempts<max_attempts:
+            attempts+=1;x=rng.gauss(proposal_mean,proposal_sd);target=math.exp(-.5*((x-target_mean)/target_sd)**2)/target_sd;proposal=math.exp(-.5*((x-proposal_mean)/proposal_sd)**2)/proposal_sd;ratio=target/(bound*proposal)
+            if ratio>1:violations+=1
+            if rng.random()<min(1,ratio):accepted.append(x)
+        if violations:raise ValueError("rejection bound is invalid: target exceeds bound times proposal")
+        o["output"]={"accepted":len(accepted),"attempts":attempts,"acceptance_rate":len(accepted)/attempts if attempts else 0,"sample_mean":_mean(accepted) if accepted else None,"completed":len(accepted)==draws};a += ["Gaussian target/proposal and caller-supplied envelope bound valid everywhere."];limits += ["Fails on detected bound violations; finite attempts can return incomplete; Gaussian reference families only."]
+    elif method=="slice_sampling":
+        draws=max(50,min(int(p.get("draws",2000)),20000));width=float(p.get("width",1));steps=max(1,min(int(p.get("max_steps_out",100)),1000));target_mean=float(p.get("target_mean",1));target_sd=float(p.get("target_sd",1));x=float(p.get("initial",target_mean));samples=[]
+        if width<=0 or target_sd<=0:raise ValueError("width and target_sd must be positive")
+        logpdf=lambda z:-.5*((z-target_mean)/target_sd)**2
+        for _ in range(draws):
+            logy=logpdf(x)+math.log(max(rng.random(),1e-300));left=x-width*rng.random();right=left+width;j=int(steps*rng.random());k=steps-1-j
+            while j>0 and logpdf(left)>logy:left-=width;j-=1
+            while k>0 and logpdf(right)>logy:right+=width;k-=1
+            while True:
+                cand=rng.uniform(left,right)
+                if logpdf(cand)>=logy:x=cand;break
+                if cand<x:left=cand
+                else:right=cand
+            samples.append(x)
+        o["output"]={"sample_mean":_mean(samples),"interval":[_quantile(samples,.025),_quantile(samples,.975)],"draws":draws,"width":width};a += ["Continuous one-dimensional Gaussian target known up to proportionality."];limits += ["Stepping-out univariate slice sampler; width affects efficiency; no diagnostics or multivariate adaptation."]
+    elif method=="nested_sampling":
+        live=max(20,min(int(p.get("live_points",200)),2000));iterations=max(10,min(int(p.get("iterations",1000)),20000));prior_low=float(p.get("prior_low",-10));prior_high=float(p.get("prior_high",10));obs=float(data.get("observation",0));likelihood_sd=float(p.get("likelihood_sd",1))
+        if prior_high<=prior_low or likelihood_sd<=0:raise ValueError("invalid prior interval or likelihood scale")
+        loglike=lambda x:-.5*((obs-x)/likelihood_sd)**2-math.log(math.sqrt(2*math.pi)*likelihood_sd)
+        points=[(rng.uniform(prior_low,prior_high),0) for _ in range(live)];points=[(x,loglike(x)) for x,_ in points];logz=-math.inf;dead=[]
+        def logadd(a,b):
+            if a==-math.inf:return b
+            m=max(a,b);return m+math.log(math.exp(a-m)+math.exp(b-m))
+        for i in range(iterations):
+            worst=min(range(live),key=lambda j:points[j][1]);x,ll=points[worst];logwidth=math.log(math.exp(-i/live)-math.exp(-(i+1)/live));logz=logadd(logz,logwidth+ll);dead.append((x,ll));tries=0
+            while True:
+                cand=rng.uniform(prior_low,prior_high);cl=loglike(cand);tries+=1
+                if cl>ll:points[worst]=(cand,cl);break
+                if tries>100000:raise ValueError("failed constrained-prior replacement")
+        o["output"]={"log_evidence":logz,"live_points":live,"iterations":iterations,"dead_point_count":len(dead)};a += ["Uniform bounded prior and one-dimensional Gaussian likelihood; deterministic expected shrinkage exp(-i/live_points)."];limits += ["Reference nested sampler omits stochastic shrinkage error, posterior weights and final live-point evidence remainder."]
+    elif method=="approximate_bayesian_computation":
+        observed=float(data.get("observed_summary"));draws=max(100,min(int(p.get("draws",10000)),200000));epsilon=float(p.get("epsilon",.1));prior_low=float(p.get("prior_low",-10));prior_high=float(p.get("prior_high",10));simulation_sd=float(p.get("simulation_sd",1));accepted=[]
+        if epsilon<=0 or prior_high<=prior_low or simulation_sd<=0:raise ValueError("invalid epsilon, prior or simulation scale")
+        for _ in range(draws):
+            theta=rng.uniform(prior_low,prior_high);sim=rng.gauss(theta,simulation_sd)
+            if abs(sim-observed)<=epsilon:accepted.append(theta)
+        o["output"]={"algorithm":"abc_rejection","accepted":len(accepted),"draws":draws,"acceptance_rate":len(accepted)/draws,"posterior_mean":_mean(accepted) if accepted else None,"posterior_interval":[_quantile(accepted,.025),_quantile(accepted,.975)] if accepted else None,"epsilon":epsilon};a += ["Observed scalar summary; uniform prior; Gaussian simulator; absolute-distance acceptance kernel."];limits += ["Posterior is epsilon-dependent and summary-limited; low acceptance or insufficient summary statistics can bias inference."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
     return o
