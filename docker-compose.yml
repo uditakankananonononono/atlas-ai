@@ -20,6 +20,9 @@ services:
       ATLAS_DATABASE_URL: postgresql+psycopg://atlas:atlas@postgres:5432/atlas
       ATLAS_REDIS_URL: redis://redis:6379/0
     depends_on: [postgres, redis]
+  ollama:
+    image: ollama/ollama:latest
+    volumes: ["atlas-ollama:/root/.ollama"]
   postgres:
     image: pgvector/pgvector:pg16
     environment:
@@ -31,3 +34,4 @@ services:
     image: redis:7-alpine
 volumes:
   atlas-postgres: {}
+  atlas-ollama: {}
