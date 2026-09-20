@@ -1,11 +1,12 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from app.core.approvals import approvals
+from app.auth.context import TenantContext, require_tenant
 from app.core.models import ApprovalDecision, ApprovalRequest, GenerateRequest, GenerateResponse, GoalPlan, GoalRequest
 from app.core.planner import plan_goal
 from app.core.providers import ProviderError, generate
 from app.modules.catalog import MODULES
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(require_tenant)])
 
 @router.get("/modules")
 def list_modules() -> list[dict[str, object]]:

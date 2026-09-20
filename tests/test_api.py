@@ -38,3 +38,9 @@ def test_openai_byok_call(monkeypatch):
     response = client.post("/api/v1/ai/generate", json={"prompt": "write a draft"})
     assert response.status_code == 200
     assert response.json()["text"] == "draft output"
+
+def test_production_requires_tenant_identity(monkeypatch):
+    monkeypatch.setenv("ATLAS_ENV", "production")
+    assert client.get("/api/v1/modules").status_code == 401
+    response = client.get("/api/v1/modules", headers={"x-atlas-tenant": "tenant-1", "x-atlas-actor": "user-1"})
+    assert response.status_code == 200
