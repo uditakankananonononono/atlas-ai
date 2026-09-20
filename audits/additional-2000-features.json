@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+  "audited_head": "97296db9fd9063aeae01c4f97345dc33fd32851f",
   "counts": {
-    "verified-pushed": 397,
+    "verified-pushed": 431,
     "thin": 3,
-    "missing": 1610
+    "missing": 1576
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -6245,8 +6245,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Stakeholder Analysis",
       "description": "Maps interests",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6255,8 +6260,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Communication Planning",
       "description": "Structures messaging",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6265,8 +6275,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Training Design",
       "description": "Develops capabilities",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6275,8 +6290,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Organizational Design",
       "description": "Structures teams",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6285,8 +6305,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Span of Control",
       "description": "Determines management ratio",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6295,8 +6320,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Matrix Organization",
       "description": "Balances functions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6305,8 +6335,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Team Topology Design",
       "description": "Structures for flow",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6315,8 +6350,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Culture Design",
       "description": "Shapes values and norms",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6325,8 +6365,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Values Definition",
       "description": "Articulates principles",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6335,8 +6380,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Mission Statement Creation",
       "description": "Defines purpose",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6345,8 +6395,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Vision Statement Creation",
       "description": "Paints future",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6355,8 +6410,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Strategy Development",
       "description": "Plans competitive approach",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6365,8 +6425,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "SWOT Analysis",
       "description": "Assesses position",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6375,8 +6440,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "PESTLE Analysis",
       "description": "Scans environment",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6385,8 +6455,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Scenario Planning",
       "description": "Prepares for futures",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6395,8 +6470,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Strategic Planning",
       "description": "Sets direction",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6405,8 +6485,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "OKR Setting",
       "description": "Defines objectives and key results",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6415,8 +6500,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "KPI Selection",
       "description": "Chooses metrics",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6425,8 +6515,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Balanced Scorecard",
       "description": "Measures multiple dimensions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6435,8 +6530,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Performance Management",
       "description": "Evaluates and improves",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6445,8 +6545,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Compensation Design",
       "description": "Structures rewards",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6455,8 +6560,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Equity Distribution",
       "description": "Allocates ownership",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6465,8 +6575,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Cap Table Management",
       "description": "Tracks ownership",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6475,8 +6590,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Fundraising Strategy",
       "description": "Plans capital raising",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6485,8 +6605,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Pitch Deck Creation",
       "description": "Crafts investor presentation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6495,8 +6620,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Financial Modeling",
       "description": "Projects financials",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6505,8 +6635,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Valuation Analysis",
       "description": "Estimates worth",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6515,8 +6650,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Due Diligence Preparation",
       "description": "Organizes for review",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6525,8 +6665,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Term Sheet Negotiation",
       "description": "Structures deals",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6535,8 +6680,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Investor Relations",
       "description": "Manages relationships",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6545,8 +6695,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Board Management",
       "description": "Works with directors",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6555,8 +6710,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Exit Planning",
       "description": "Prepares for liquidity",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6565,8 +6725,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "M&A Analysis",
       "description": "Evaluates acquisitions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6575,8 +6740,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "IPO Preparation",
       "description": "Prepares for public offering",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
+        "test_path": "tests/modules/test_m05_corporate.py",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
