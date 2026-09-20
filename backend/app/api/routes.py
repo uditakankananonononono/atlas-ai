@@ -19,6 +19,13 @@ def create_plan(request: GoalRequest) -> GoalPlan:
 def list_approvals() -> list[ApprovalRequest]:
     return approvals.list()
 
+@router.get("/approvals/{approval_id}/audit")
+def approval_audit(approval_id: str) -> list[dict[str, str]]:
+    events = approvals.audit(approval_id)
+    if not events:
+        raise HTTPException(status_code=404, detail="approval not found")
+    return events
+
 @router.post("/approvals/{approval_id}/decision", response_model=ApprovalRequest)
 def decide_approval(approval_id: str, decision: ApprovalDecision) -> ApprovalRequest:
     try:

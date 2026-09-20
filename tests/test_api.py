@@ -19,6 +19,7 @@ def test_approval_flow_end_to_end():
     decided = client.post(f'/api/v1/approvals/{request["id"]}/decision', json={"decision": "approved"})
     assert decided.status_code == 200
     assert decided.json()["status"] == "approved"
+    assert [e["event"] for e in client.get(f'/api/v1/approvals/{request["id"]}/audit').json()] == ["created", "approved"]
     assert client.post(f'/api/v1/approvals/{request["id"]}/decision', json={"decision": "denied"}).status_code == 409
 
 def test_ai_missing_byok_is_clear(monkeypatch):
