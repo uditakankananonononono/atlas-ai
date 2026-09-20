@@ -10,7 +10,7 @@ from __future__ import annotations
 import math,random,statistics
 from collections import Counter
 ROWS={
-"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034}
+"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038}
 def _nums(data,key="values",min_n=1):
     v=data.get(key)
     if not isinstance(v,list) or len(v)<min_n or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in v):raise ValueError(f"{key} must contain at least {min_n} finite numbers")
@@ -146,5 +146,56 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
                 new.append(cloud[lo])
             cloud=new
         o["output"]={"algorithm":"bootstrap_particle_filter","state_estimates":est,"effective_sample_sizes":ess,"particles":particles};a+=['1D random-walk state model and Gaussian observation model with caller-supplied standard deviations.'];limits+=['Bootstrap resampling every step; no smoothing, parameter learning, multidimensional state, or degeneracy remedy.']
+    elif method=="kalman_filter":
+        observations=_nums(data,"observations");transition=float(p.get("transition",1));observation=float(p.get("observation",1));q=float(p.get("process_variance",1));r=float(p.get("observation_variance",1));state=float(p.get("initial_state",0));variance=float(p.get("initial_variance",1));est=[];innovations=[];gains=[];variances=[]
+        if q<0 or r<=0 or variance<0:raise ValueError("variances require process>=0, observation>0, initial>=0")
+        for y in observations:
+            predicted=transition*state;pred_var=transition*transition*variance+q;innovation=y-observation*predicted;s=observation*observation*pred_var+r;gain=pred_var*observation/s;state=predicted+gain*innovation;variance=(1-gain*observation)*pred_var
+            est.append(state);innovations.append(innovation);gains.append(gain);variances.append(variance)
+        o["output"]={"model":"scalar_linear_gaussian","filtered_states":est,"posterior_variances":variances,"innovations":innovations,"kalman_gains":gains};a += ["Scalar linear-Gaussian state-space model with caller-supplied transition and observation coefficients."];limits += ["Filtering only; scalar state; no smoothing, missing observations, control input, parameter learning, or covariance-stability square-root form."]
+    elif method=="extended_kalman_filter":
+        observations=_nums(data,"observations");model=p.get("observation_model","square");q=float(p.get("process_variance",.1));r=float(p.get("observation_variance",1));state=float(p.get("initial_state",1));variance=float(p.get("initial_variance",1));est=[];jacobians=[]
+        if model not in {"square","exp"}:raise ValueError("observation_model must be square or exp")
+        if q<0 or r<=0 or variance<0:raise ValueError("invalid variances")
+        for y in observations:
+            pred=state;pred_var=variance+q
+            if model=="square":h=pred*pred;jac=2*pred
+            else:h=math.exp(pred);jac=h
+            innovation=y-h;s=jac*jac*pred_var+r;gain=pred_var*jac/s;state=pred+gain*innovation;variance=max(0,(1-gain*jac)*pred_var);est.append(state);jacobians.append(jac)
+        o["output"]={"model":f"nonlinear_{model}_observation","filtered_states":est,"posterior_variance":variance,"observation_jacobians":jacobians};a += ["Identity process model and differentiable nonlinear scalar observation model; first-order local linearization."];limits += ["EKF can be biased or diverge for strong nonlinearity; scalar reference models square/exp only; inspect residuals and use domain tooling for decisions."]
+    elif method=="unscented_kalman_filter":
+        observations=_nums(data,"observations");model=p.get("observation_model","square");q=float(p.get("process_variance",.1));r=float(p.get("observation_variance",1));state=float(p.get("initial_state",1));variance=float(p.get("initial_variance",1));alpha=float(p.get("alpha",.5));beta=float(p.get("beta",2));kappa=float(p.get("kappa",0));est=[]
+        if model not in {"square","exp"}:raise ValueError("observation_model must be square or exp")
+        if q<0 or r<=0 or variance<0 or alpha<=0:raise ValueError("invalid UKF parameters")
+        lam=alpha*alpha*(1+kappa)-1;c=1+lam
+        if c<=0:raise ValueError("alpha/kappa yield non-positive sigma spread")
+        wm=[lam/c,1/(2*c),1/(2*c)];wc=[wm[0]+(1-alpha*alpha+beta),wm[1],wm[2]]
+        h=lambda x:x*x if model=="square" else math.exp(x)
+        for y in observations:
+            pred_var=variance+q;spread=math.sqrt(max(c*pred_var,0));sigma=[state,state+spread,state-spread];z=[h(x) for x in sigma];zmean=sum(w*v for w,v in zip(wm,z));svar=sum(w*(v-zmean)**2 for w,v in zip(wc,z))+r;cross=sum(w*(x-state)*(v-zmean) for w,x,v in zip(wc,sigma,z));gain=cross/svar;state=state+gain*(y-zmean);variance=max(0,pred_var-gain*gain*svar);est.append(state)
+        o["output"]={"model":f"scaled_unscented_{model}_observation","filtered_states":est,"posterior_variance":variance,"sigma_parameters":{"alpha":alpha,"beta":beta,"kappa":kappa}};a += ["Identity scalar process and scaled unscented transform with Gaussian noise."];limits += ["Scalar square/exp observation reference; sensitive to sigma parameters; no smoothing or learned noise model."]
+    elif method=="hidden_markov_model":
+        obs=data.get("observations");states=data.get("states");start=data.get("start_probability");trans=data.get("transition_probability");emit=data.get("emission_probability")
+        if not isinstance(obs,list) or not obs or not isinstance(states,list) or not states or not isinstance(start,dict) or not isinstance(trans,dict) or not isinstance(emit,dict):raise ValueError("observations, states, start_probability, transition_probability and emission_probability required")
+        def prob(v,label):
+            x=float(v)
+            if x<0 or x>1:raise ValueError(f"{label} probabilities must be in [0,1]")
+            return x
+        for st in states:
+            if st not in start or st not in trans or st not in emit:raise ValueError(f"missing parameters for state {st}")
+            if abs(sum(prob(trans[st].get(t,0),"transition") for t in states)-1)>1e-6:raise ValueError(f"transition probabilities for {st} must sum to 1")
+        if abs(sum(prob(start[st],"start") for st in states)-1)>1e-6:raise ValueError("start probabilities must sum to 1")
+        alpha={st:prob(start[st],"start")*prob(emit[st].get(str(obs[0]),emit[st].get(obs[0],0)),"emission") for st in states};scale=sum(alpha.values())
+        if scale<=0:raise ValueError("first observation has zero likelihood")
+        loglik=math.log(scale);alpha={st:v/scale for st,v in alpha.items()};filtered=[dict(alpha)];viterbi={st:(math.log(max(prob(start[st],"start"),1e-300))+math.log(max(prob(emit[st].get(str(obs[0]),emit[st].get(obs[0],0)),"emission"),1e-300)),[st]) for st in states}
+        for ob in obs[1:]:
+            nxt={st:sum(alpha[prev]*prob(trans[prev].get(st,0),"transition") for prev in states)*prob(emit[st].get(str(ob),emit[st].get(ob,0)),"emission") for st in states};scale=sum(nxt.values())
+            if scale<=0:raise ValueError(f"observation {ob!r} has zero likelihood")
+            loglik+=math.log(scale);alpha={st:v/scale for st,v in nxt.items()};filtered.append(dict(alpha));nv={}
+            for st in states:
+                score,path=max((viterbi[prev][0]+math.log(max(prob(trans[prev].get(st,0),"transition"),1e-300)),viterbi[prev][1]) for prev in states);nv[st]=(score+math.log(max(prob(emit[st].get(str(ob),emit[st].get(ob,0)),"emission"),1e-300)),path+[st])
+            viterbi=nv
+        best=max(viterbi.values(),key=lambda x:x[0])
+        o["output"]={"algorithm":"scaled_forward_and_viterbi","log_likelihood":loglik,"filtered_state_probabilities":filtered,"most_likely_path":best[1]};a += ["Finite first-order, time-homogeneous HMM; conditional independence of emissions given state."];limits += ["Caller supplies fixed probabilities; no Baum-Welch training, smoothing, unknown symbols, or higher-order duration model."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
     return o
