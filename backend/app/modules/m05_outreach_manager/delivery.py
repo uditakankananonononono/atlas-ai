@@ -82,26 +82,21 @@ class ApprovalGate(Protocol):
 
 
 class ModuleZeroApprovalGate:
-    """ApprovalGate over the shared app.core.approvals facade.
-
-    The facade exposes list() rather than get(id); scanning newest-first
-    is correct and stays inside the existing shared API. A direct get on
-    the facade is noted in INTEGRATION.md as an integration improvement.
-    """
+    """ApprovalGate over the shared Module 0 facade's direct lookup."""
 
     def __init__(self, store: Any) -> None:
         self._store = store
 
     def get(self, approval_id: str) -> ApprovalView | None:
-        for item in self._store.list():
-            if item.id == approval_id:
-                return ApprovalView(
-                    id=item.id,
-                    status=item.status.value if hasattr(item.status, "value") else str(item.status),
-                    action_type=item.action_type,
-                    payload=item.payload,
-                )
-        return None
+        item = self._store.get(approval_id)
+        if item is None:
+            return None
+        return ApprovalView(
+            id=item.id,
+            status=item.status.value if hasattr(item.status, "value") else str(item.status),
+            action_type=item.action_type,
+            payload=item.payload,
+        )
 
 
 @dataclass

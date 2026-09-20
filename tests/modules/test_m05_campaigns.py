@@ -216,3 +216,35 @@ def test_unknown_message_raises():
     service, _, _, _ = make_service(now)
     with pytest.raises(MessageNotFoundError):
         service.record_decision("nope", approved=True)
+
+class CallbackApprovalSpy(ApprovalSpy):
+    def __init__(self):
+        super().__init__()
+        self.callbacks = {}
+
+    def put(self, item):
+        stored = item.model_copy(update={"id": "module-zero-id"})
+        self.items.append(stored)
+        return stored
+
+    def register_callback(self, item_id, callback):
+        self.callbacks[item_id] = callback
+
+
+def test_module_zero_decision_callback_uses_stored_id_and_updates_message():
+    now = [datetime(2026, 9, 20, tzinfo=timezone.utc)]
+    contacts = InMemoryContactRepository()
+    campaigns = InMemoryCampaignRepository()
+    approvals = CallbackApprovalSpy()
+    service = CampaignService(campaigns, contacts, approvals, clock=lambda: now[0])
+    contact = Service(contacts, approvals, scholar=None).create_contact(
+        ContactCreate(project_id="atlas", name="Dr. Rao", email="rao@example.edu")
+    )
+    campaign = service.create_campaign(project_id="atlas", name="C", goal="Find a supervisor")
+    message = service.add_draft(campaign.id, contact.id, subject="Hi", body="Body")
+
+    approval = service.submit_for_approval(message.id)
+    assert approval.id == "module-zero-id"
+    assert campaigns.get_message(message.id).approval_id == "module-zero-id"
+    approvals.callbacks[approval.id]({"status": "approved", "approved_by": "udita"})
+    assert campaigns.get_message(message.id).status == "approved"
