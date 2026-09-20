@@ -7,7 +7,7 @@ def test_owner_additional_doc_is_fully_rowized():
  assert [x['id'] for x in AUDIT['rows']]==list(range(1,2011))
  assert Counter(x['category_id'] for x in AUDIT['rows'])==Counter({0:10,1:100,2:150,3:100,4:150,5:200,6:100,7:100,8:100,9:100,10:900})
 def test_feature_counts_match_current_verified_evidence():
- assert AUDIT['counts']=={'verified-pushed':178,'thin':3,'missing':1829}
+ assert AUDIT['counts']=={'verified-pushed':208,'thin':3,'missing':1799}
  assert all(x['requirement'] and x['boundary'] for x in AUDIT['rows'])
  assert {x['status'] for x in AUDIT['rows']} <= {'verified-pushed','thin','missing'}
 

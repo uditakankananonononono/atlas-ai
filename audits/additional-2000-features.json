@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+  "audited_head": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
   "counts": {
-    "verified-pushed": 178,
+    "verified-pushed": 208,
     "thin": 3,
-    "missing": 1829
+    "missing": 1799
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -8581,8 +8581,14 @@
       "category": "Social & Communication",
       "requirement": "Facilitation",
       "description": "Guides group process",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8591,8 +8597,14 @@
       "category": "Social & Communication",
       "requirement": "Brainstorming",
       "description": "Generates ideas collectively",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8601,8 +8613,14 @@
       "category": "Social & Communication",
       "requirement": "Consensus Building",
       "description": "Finds agreement",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8611,8 +8629,14 @@
       "category": "Social & Communication",
       "requirement": "Voting Design",
       "description": "Aggregates preferences",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8621,8 +8645,14 @@
       "category": "Social & Communication",
       "requirement": "Deliberation",
       "description": "Discusses thoughtfully",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8631,8 +8661,14 @@
       "category": "Social & Communication",
       "requirement": "Debate",
       "description": "Argues positions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8641,8 +8677,14 @@
       "category": "Social & Communication",
       "requirement": "Rhetoric",
       "description": "Persuades effectively",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8651,8 +8693,14 @@
       "category": "Social & Communication",
       "requirement": "Logic",
       "description": "Reasons validly",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8661,8 +8709,14 @@
       "category": "Social & Communication",
       "requirement": "Fallacy Detection",
       "description": "Spots flawed arguments",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8671,8 +8725,14 @@
       "category": "Social & Communication",
       "requirement": "Steelmanning",
       "description": "Strengthens opposing views",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8681,8 +8741,14 @@
       "category": "Social & Communication",
       "requirement": "Charitable Interpretation",
       "description": "Assumes good faith",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8691,8 +8757,14 @@
       "category": "Social & Communication",
       "requirement": "Principle of Charity",
       "description": "Interprets favorably",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8701,8 +8773,14 @@
       "category": "Social & Communication",
       "requirement": "Steel Manning",
       "description": "Best version of argument",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8711,8 +8789,14 @@
       "category": "Social & Communication",
       "requirement": "Devil's Advocacy",
       "description": "Argues against",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8721,8 +8805,14 @@
       "category": "Social & Communication",
       "requirement": "Red Teaming",
       "description": "Finds vulnerabilities",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8731,8 +8821,14 @@
       "category": "Social & Communication",
       "requirement": "War Gaming",
       "description": "Simulates conflict",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8741,8 +8837,14 @@
       "category": "Social & Communication",
       "requirement": "Tabletop Exercises",
       "description": "Practices response",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8751,8 +8853,14 @@
       "category": "Social & Communication",
       "requirement": "Simulation",
       "description": "Models scenarios",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8761,8 +8869,14 @@
       "category": "Social & Communication",
       "requirement": "Role Playing",
       "description": "Practices perspectives",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8771,8 +8885,14 @@
       "category": "Social & Communication",
       "requirement": "Perspective Taking",
       "description": "Sees from other views",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8781,8 +8901,14 @@
       "category": "Social & Communication",
       "requirement": "Theory of Mind",
       "description": "Models others' beliefs",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8791,8 +8917,14 @@
       "category": "Social & Communication",
       "requirement": "Mentalizing",
       "description": "Understands mental states",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8801,8 +8933,14 @@
       "category": "Social & Communication",
       "requirement": "Empathy",
       "description": "Feels with others",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8811,8 +8949,14 @@
       "category": "Social & Communication",
       "requirement": "Compassion",
       "description": "Responds to suffering",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8821,8 +8965,14 @@
       "category": "Social & Communication",
       "requirement": "Altruism",
       "description": "Helps without reward",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8831,8 +8981,14 @@
       "category": "Social & Communication",
       "requirement": "Prosocial Behavior",
       "description": "Benefits others",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8841,8 +8997,14 @@
       "category": "Social & Communication",
       "requirement": "Cooperation",
       "description": "Works together",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8851,8 +9013,14 @@
       "category": "Social & Communication",
       "requirement": "Collaboration",
       "description": "Creates jointly",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8861,8 +9029,14 @@
       "category": "Social & Communication",
       "requirement": "Teamwork",
       "description": "Functions in groups",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -8871,8 +9045,14 @@
       "category": "Social & Communication",
       "requirement": "Team Building",
       "description": "Develops cohesion",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b6f4abf25e1a22a76b9777968a11954601e5d9a8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/collaboration_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_741_770.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_741_770.md",
+        "caveats": "Review-only coaching. No group messaging, live voting or moderation, mind-reading, simulation execution, or election-grade voting."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
