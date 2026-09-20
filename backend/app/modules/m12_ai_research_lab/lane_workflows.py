@@ -193,6 +193,15 @@ class WorkflowEngine:
             raise ValueError("kind must be non-empty")
         self._executors[kind] = fn
 
+    def executor_for(self, kind: str) -> Executor:
+        try:
+            return self._executors[kind]
+        except KeyError:
+            raise KeyError(f"no executor registered for kind '{kind}'") from None
+
+    def executor_kinds(self) -> List[str]:
+        return sorted(self._executors)
+
     def _budget_key(self, run_id: str, step_id: str) -> str:
         return f"{run_id}:{step_id}"
 
