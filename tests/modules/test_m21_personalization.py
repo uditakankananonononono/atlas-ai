@@ -10,7 +10,7 @@ def test_decisions_corrections_and_owner_reasoning_retrieve_by_vector_and_tenant
  a,b=repos(tmp_path)
  a.add('decision',{'decision':'Pick official API','reason':'more reliable','context':'tooling'},[1,0])
  a.add('correction',{'original':'Generic','correction':'Be direct','context':'email'},[.9,.1])
- a.add('reasoning_note',{'title':'Vendor choice','owner_authored_note':'I value audit logs','embedding':[]},[0,1])
+ a.add('reasoning_note',{'title':'Vendor choice','owner_authored_note':'I value audit logs'},[0,1])
  got=a.retrieve([1,0]);assert [x['kind'] for x in got[:2]]==['m21_decisions','m21_corrections'];assert b.retrieve([1,0])==[]
 def test_rankings_and_weekly_reviews_are_real_persistent_signals(tmp_path):
  a,_=repos(tmp_path)
