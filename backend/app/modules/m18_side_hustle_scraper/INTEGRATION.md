@@ -1,0 +1,2 @@
+# Module 18 integration
+Mount `spec.router`; inject official Reddit/YouTube adapters, existing public Pinterest collector and public-web discovery. Add tenant-scoped PostgreSQL blueprint/event repositories and optional Google Trends-compatible licensed trend provider. No unofficial TikTok API, proxy rotation, login-driven Instagram scraping, income promises or automatic purchases. Acceptance: source links survive extraction, scam signals influence analysis, score explanation and sensitivity cases are present, and duplicate fingerprints are tenant scoped.

@@ -25,9 +25,9 @@ MODULES = [
     Module(14, "project-builder", "Project Builder", "implemented"),
     Module(15, "document-generator", "Document Generator", "implemented"),
     Module(16, "executive-dashboard", "Executive Dashboard"),
-    Module(17, "narrative-architect", "Social Advice Compiler & College Essay Architect"),
-    Module(18, "side-hustle-scraper", "Side Hustle & Knowledge Scraper"),
-    Module(19, "idea-incubator", "Autonomous Idea Incubator"),
+    Module(17, "narrative-architect", "Social Advice Compiler & College Essay Architect", "implemented"),
+    Module(18, "side-hustle-scraper", "Side Hustle & Knowledge Scraper", "implemented"),
+    Module(19, "idea-incubator", "Autonomous Idea Incubator", "implemented"),
     Module(20, "general-cognitive-worker", "General Cognitive Worker"),
     Module(21, "claire", "Claire Personal Assistant / Idea Realisation Engine"),
 ]
