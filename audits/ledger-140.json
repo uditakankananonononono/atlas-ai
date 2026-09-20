@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "audited_head": "d90eb80dc1df708a9b4a3d9c7245040e620b9109",
+  "audited_head": "1a3b800",
   "rows": [
     {
       "row": 1,
@@ -1436,12 +1436,12 @@
       "row": 131,
       "module": "CRM",
       "requirement": "Clearbit enrichment",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
       "implementation_path": "backend/app/modules/m05_outreach_manager",
-      "implementation_commit": "0b29c0278a8c87688aa33ec9fe6007b4e2f4f33a",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_commit": "528442432a2e78106a6300fdffe555634a0d658c",
+      "test_evidence": "tests/modules/test_m05_enrichment.py",
+      "audit_note": "Official Clearbit profile enrichment is implemented on the tenant-bound M05 service and route, fills only empty fields, handles pending/not-found responses, and has provider-normalization tests."
     },
     {
       "row": 132,
@@ -1458,12 +1458,12 @@
       "row": 133,
       "module": "CRM",
       "requirement": "University/lab page collection",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
       "implementation_path": "backend/app/modules/m05_outreach_manager",
-      "implementation_commit": "0b29c0278a8c87688aa33ec9fe6007b4e2f4f33a",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_commit": "528442432a2e78106a6300fdffe555634a0d658c",
+      "test_evidence": "tests/modules/test_m05_discovery.py",
+      "audit_note": "HTTPS-only university/lab registry search and robots-aware public-page collection are mounted on M05 routes with provenance and focused HTTP tests."
     },
     {
       "row": 134,
@@ -1480,56 +1480,56 @@
       "row": 135,
       "module": "CRM",
       "requirement": "PR outreach planning",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
       "implementation_path": "backend/app/modules/m05_outreach_manager",
-      "implementation_commit": "0b29c0278a8c87688aa33ec9fe6007b4e2f4f33a",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_commit": "528442432a2e78106a6300fdffe555634a0d658c",
+      "test_evidence": "tests/modules/test_m05_planning.py",
+      "audit_note": "PR outreach planning, embargo review gates, target selection, and mounted HTTP planning are implemented and tested."
     },
     {
       "row": 136,
       "module": "CRM",
       "requirement": "Business proposals from AI-created projects",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
       "implementation_path": "backend/app/modules/m05_outreach_manager",
-      "implementation_commit": "0b29c0278a8c87688aa33ec9fe6007b4e2f4f33a",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_commit": "528442432a2e78106a6300fdffe555634a0d658c",
+      "test_evidence": "tests/modules/test_m05_planning.py",
+      "audit_note": "Business proposal drafting is grounded only in supplied project facts, mounted on M05 routes, and tested against invented claims."
     },
     {
       "row": 137,
       "module": "CRM",
       "requirement": "Micro-survey: what tool do you wish you had",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m05_outreach_manager",
+      "implementation_commit": "528442432a2e78106a6300fdffe555634a0d658c",
+      "test_evidence": "tests/modules/test_m05_planning.py",
+      "audit_note": "The exact micro-survey question and survey action type are implemented through planning and mounted HTTP routes with focused tests."
     },
     {
       "row": 138,
       "module": "CRM",
       "requirement": "Professor/researcher/professional/student outreach",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
       "implementation_path": "backend/app/modules/m05_outreach_manager",
-      "implementation_commit": "0b29c0278a8c87688aa33ec9fe6007b4e2f4f33a",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_commit": "528442432a2e78106a6300fdffe555634a0d658c",
+      "test_evidence": "tests/modules/test_m05_planning.py",
+      "audit_note": "Professor, researcher, professional and student audiences are typed, scoped, drafted, approval-gated and tested across planning, campaign and HTTP layers."
     },
     {
       "row": 139,
       "module": "CRM",
       "requirement": "Email outreach",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
       "implementation_path": "backend/app/modules/m05_outreach_manager",
-      "implementation_commit": "0b29c0278a8c87688aa33ec9fe6007b4e2f4f33a",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_commit": "528442432a2e78106a6300fdffe555634a0d658c",
+      "test_evidence": "tests/modules/test_m05_delivery.py",
+      "audit_note": "Email outreach is durable and tenant-scoped, exact-payload approval-gated, callback-synchronized with Module 0, SMTP-backed only when configured, audited, and covered by focused delivery/campaign/HTTP tests."
     },
     {
       "row": 140,
