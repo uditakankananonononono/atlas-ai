@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+  "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 456,
+    "verified-pushed": 481,
     "thin": 3,
-    "missing": 1551
+    "missing": 1526
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -944,8 +944,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Ergodicity Awareness",
       "description": "Recognizes when time averages differ from ensemble averages",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -954,8 +960,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Non-Linear Thinking",
       "description": "Models exponential, logarithmic, and power-law relationships",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -964,8 +976,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Tipping Point Detection",
       "description": "Identifies when small changes trigger phase transitions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -974,8 +992,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Network Effect Analysis",
       "description": "Values products/services based on user connections",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -984,8 +1008,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Flywheel Identification",
       "description": "Finds self-reinforcing growth loops",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -994,8 +1024,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Moat Analysis",
       "description": "Assesses defensibility of competitive advantages",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1004,8 +1040,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Disruption Theory Application",
       "description": "Predicts how new entrants unseat incumbents",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1014,8 +1056,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Jobs-to-be-Done Framing",
       "description": "Understands what customers actually hire products for",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1024,8 +1072,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Value Chain Mapping",
       "description": "Traces where value is created and captured",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1034,8 +1088,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Pareto Principle Application",
       "description": "Focuses on the 20% that delivers 80%",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1044,8 +1104,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Theory of Constraints",
       "description": "Manages the weakest link in any process",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1054,8 +1120,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Queueing Theory",
       "description": "Optimizes flow through bottlenecks",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1064,8 +1136,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Little's Law Application",
       "description": "Relates work-in-progress, throughput, and cycle time",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1074,8 +1152,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Critical Path Analysis",
       "description": "Identifies tasks that determine project duration",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1084,8 +1168,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Monte Carlo Simulation",
       "description": "Models probability distributions of outcomes",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1094,8 +1184,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Sensitivity Analysis",
       "description": "Determines which variables most affect results",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1104,8 +1200,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Tornado Diagram Creation",
       "description": "Visualizes impact of uncertainty on outcomes",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1114,8 +1216,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Decision Tree Construction",
       "description": "Maps choices and consequences",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1124,8 +1232,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Real Options Valuation",
       "description": "Prices flexibility and optionality",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1134,8 +1248,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Game Theory Application",
       "description": "Models strategic interactions with rational actors",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1144,8 +1264,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Nash Equilibrium Identification",
       "description": "Finds stable states in competitive situations",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1154,8 +1280,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Mechanism Design",
       "description": "Creates rules that incentivize desired behavior",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1164,8 +1296,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Auction Theory Application",
       "description": "Optimizes bidding and selling strategies",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1174,8 +1312,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Signaling Theory",
       "description": "Interprets costly signals of quality",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1184,8 +1328,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Principal-Agent Problem Solving",
       "description": "Aligns incentives between parties",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/strategy.py",
+        "test_path": "tests/modules/test_m20_strategy.py",
+        "route_test_path": "tests/modules/test_m20_strategy_routes.py",
+        "caveats": "Four-form nonlinear fits; tipping outputs are fragility indicators; VCG checks supplied deviations only; one-at-a-time sensitivity; binomial real-options. Decision support, not business/investment certainty."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
