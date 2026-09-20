@@ -8,6 +8,8 @@ import json
 import queue
 
 from fastapi import APIRouter, Depends, HTTPException, Response
+
+from app.auth.context import TenantContext, require_tenant
 from fastapi.responses import StreamingResponse
 
 from app.core.models import ApprovalStatus
@@ -34,14 +36,14 @@ def _not_found(error: ApprovalNotFoundError) -> HTTPException:
 
 
 @router.post("/requests", response_model=schemas.ApprovalView, status_code=201)
-def submit_request(body: schemas.ApprovalSubmit, service: Service = Depends(get_service)) -> dict:
+def submit_request(body: schemas.ApprovalSubmit, service: Service = Depends(get_service), tenant: TenantContext = Depends(require_tenant)) -> dict:
     """Queue a gated action for human approval. Nothing executes here."""
     try:
         return service.submit(
             module_id=body.module_id,
             action_type=body.action_type,
             payload=body.payload,
-            user_id=body.user_id,
+            user_id=tenant.tenant_id,
             ttl_seconds=body.ttl_seconds,
         )
     except ValueError as error:
@@ -55,16 +57,22 @@ def list_requests(
     user_id: str | None = None,
     limit: int = 100,
     service: Service = Depends(get_service),
+    tenant: TenantContext = Depends(require_tenant),
 ) -> list[dict]:
-    """List approval requests newest first, with optional filters."""
-    return service.list(status=status, module_id=module_id, user_id=user_id, limit=limit)
+    """List approval requests newest first, scoped to the authenticated tenant."""
+    if user_id is not None and user_id != tenant.tenant_id:
+        raise HTTPException(status_code=403, detail="cross-tenant approval access denied")
+    return service.list(status=status, module_id=module_id, user_id=tenant.tenant_id, limit=limit)
 
 
 @router.get("/requests/{approval_id}", response_model=schemas.ApprovalView)
-def get_request(approval_id: str, service: Service = Depends(get_service)) -> dict:
+def get_request(approval_id: str, service: Service = Depends(get_service), tenant: TenantContext = Depends(require_tenant)) -> dict:
     """Fetch one request; overdue pending requests report as expired."""
     try:
-        return service.get(approval_id)
+        view = service.get(approval_id)
+        if view["user_id"] != tenant.tenant_id:
+            raise ApprovalNotFoundError(approval_id)
+        return view
     except ApprovalNotFoundError as error:
         raise _not_found(error) from error
 
@@ -74,10 +82,14 @@ def decide_request(
     approval_id: str,
     body: schemas.ApprovalDecisionIn,
     service: Service = Depends(get_service),
+    tenant: TenantContext = Depends(require_tenant),
 ) -> dict:
-    """Record the human decision. Final: re-deciding returns 409."""
+    """Record the authenticated human decision. Final: re-deciding returns 409."""
     try:
-        return service.decide(approval_id, ApprovalStatus(body.decision), body.decided_by)
+        current = service.get(approval_id)
+        if current["user_id"] != tenant.tenant_id:
+            raise ApprovalNotFoundError(approval_id)
+        return service.decide(approval_id, ApprovalStatus(body.decision), tenant.actor_id)
     except ApprovalNotFoundError as error:
         raise _not_found(error) from error
     except ApprovalConflictError as error:
@@ -85,9 +97,12 @@ def decide_request(
 
 
 @router.get("/requests/{approval_id}/audit", response_model=list[schemas.ApprovalEventView])
-def audit_request(approval_id: str, service: Service = Depends(get_service)) -> list[dict]:
+def audit_request(approval_id: str, service: Service = Depends(get_service), tenant: TenantContext = Depends(require_tenant)) -> list[dict]:
     """Return the immutable event log for one request."""
     try:
+        current = service.get(approval_id)
+        if current["user_id"] != tenant.tenant_id:
+            raise ApprovalNotFoundError(approval_id)
         return service.audit(approval_id)
     except ApprovalNotFoundError as error:
         raise _not_found(error) from error
@@ -120,3 +135,47 @@ async def stream_events(response: Response, service: Service = Depends(get_servi
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+@router.put("/policies/{policy_id}", response_model=schemas.PolicyView)
+def upsert_policy(policy_id: str, body: schemas.PolicyUpsert,
+                  service: Service = Depends(get_service)) -> dict:
+    if policy_id != body.id:
+        raise HTTPException(status_code=422, detail="path policy id must match body id")
+    return service.upsert_policy(policy_id=body.id, name=body.name,
+        action_pattern=body.action_pattern, effect=body.effect, actor="api",
+        module_id=body.module_id, priority=body.priority, enabled=body.enabled,
+        conditions=body.conditions, review_ttl_seconds=body.review_ttl_seconds)
+
+
+@router.get("/policies", response_model=list[schemas.PolicyView])
+def list_policies(enabled_only: bool = False, service: Service = Depends(get_service)) -> list[dict]:
+    return service.list_policies(enabled_only=enabled_only)
+
+
+@router.post("/gate", response_model=schemas.GateResult)
+def check_gate(body: schemas.GateCheck, service: Service = Depends(get_service), tenant: TenantContext = Depends(require_tenant)) -> dict:
+    try:
+        return service.gate(module_id=body.module_id, action_type=body.action_type,
+            payload=body.payload, context=body.context, user_id=tenant.tenant_id,
+            idempotency_key=body.idempotency_key)
+    except ApprovalConflictError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@router.post("/requests/{approval_id}/consume", response_model=schemas.EffectPermit)
+def consume_effect(approval_id: str, body: schemas.EffectConsume,
+                   service: Service = Depends(get_service),
+                   tenant: TenantContext = Depends(require_tenant)) -> dict:
+    try:
+        current = service.get(approval_id)
+        if current["user_id"] != tenant.tenant_id:
+            raise ApprovalNotFoundError(approval_id)
+        return service.consume_effect(approval_id, module_id=body.module_id,
+            action_type=body.action_type, payload=body.payload, user_id=tenant.tenant_id,
+            effect_id=body.effect_id, actor=tenant.actor_id)
+    except ApprovalNotFoundError as error:
+        raise _not_found(error) from error
+    except ApprovalConflictError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error

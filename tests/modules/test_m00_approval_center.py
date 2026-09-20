@@ -166,7 +166,7 @@ def test_routes_full_approval_flow(client):
     decided = client.post(f"/approval-center/requests/{approval_id}/decision",
                           json={"decision": "approved", "decided_by": "udita"})
     assert decided.status_code == 200
-    assert decided.json()["approved_by"] == "udita"
+    assert decided.json()["approved_by"] == "local-user"
 
     replay = client.post(f"/approval-center/requests/{approval_id}/decision",
                          json={"decision": "denied", "decided_by": "udita"})
@@ -183,3 +183,83 @@ def test_routes_missing_and_invalid_requests(client):
                        json={"decision": "approved", "decided_by": "udita"}).status_code == 404
     assert client.post("/approval-center/requests",
                        json={"module_id": 999, "action_type": "send_email"}).status_code == 422
+
+
+def test_policy_fail_closed_precedence_and_conditions(service):
+    service.upsert_policy(policy_id="allow", name="low risk", module_id=5,
+        action_pattern="send_*", effect="allow", actor="admin", priority=10,
+        conditions={"risk.level": "low"})
+    service.upsert_policy(policy_id="deny", name="deny tie", module_id=5,
+        action_pattern="send_*", effect="deny", actor="admin", priority=10,
+        conditions={"risk.level": "low"})
+    effect, picked = service.evaluate_policy(module_id=5, action_type="send_email",
+                                             context={"risk": {"level": "low"}})
+    assert (effect, picked["id"]) == ("deny", "deny")
+    assert service.evaluate_policy(module_id=5, action_type="unknown")[0] == "review"
+
+
+def test_gate_idempotency_does_not_duplicate_reviews(service):
+    first = service.gate(module_id=5, action_type="send_email", payload={"to": "a@b.test"},
+                         user_id="udita", idempotency_key="job:1")
+    second = service.gate(module_id=5, action_type="send_email", payload={"to": "a@b.test"},
+                          user_id="udita", idempotency_key="job:1")
+    assert first["approval"]["id"] == second["approval"]["id"]
+    with pytest.raises(ApprovalConflictError, match="another request"):
+        service.gate(module_id=5, action_type="send_email", payload={"to": "other@b.test"},
+                     user_id="udita", idempotency_key="job:1")
+
+
+def test_effect_gate_is_exact_idempotent_and_one_shot(service):
+    payload = {"to": "prof@example.edu", "subject": "Research"}
+    pending = service.gate(module_id=5, action_type="send_email", payload=payload, user_id="udita")
+    approval_id = pending["approval"]["id"]
+    service.decide(approval_id, ApprovalStatus.APPROVED, decided_by="udita")
+    with pytest.raises(ApprovalConflictError, match="does not match"):
+        service.consume_effect(approval_id, module_id=5, action_type="send_email",
+            payload={"to": "attacker@example.test"}, user_id="udita",
+            effect_id="mail-1", actor="worker")
+    permit = service.consume_effect(approval_id, module_id=5, action_type="send_email",
+        payload=payload, user_id="udita", effect_id="mail-1", actor="worker")
+    assert permit["allowed"] is True
+    replay = service.consume_effect(approval_id, module_id=5, action_type="send_email",
+        payload=payload, user_id="udita", effect_id="mail-1", actor="worker")
+    assert replay["effect_id"] == "mail-1"
+    with pytest.raises(ApprovalConflictError, match="already been consumed"):
+        service.consume_effect(approval_id, module_id=5, action_type="send_email",
+            payload=payload, user_id="udita", effect_id="mail-2", actor="worker")
+    assert [e["event"] for e in service.audit(approval_id)] == ["created", "approved", "effect_consumed"]
+
+
+def test_unapproved_effect_is_blocked(service):
+    view = submit(service)
+    with pytest.raises(ApprovalConflictError, match="not approved"):
+        service.consume_effect(view["id"], module_id=view["module_id"],
+            action_type=view["action_type"], payload=view["payload"], user_id=view["user_id"],
+            effect_id="mail-1", actor="worker")
+
+
+def test_policy_and_gate_routes(client):
+    policy = {"id": "allow-safe", "name": "safe", "module_id": 5,
+              "action_pattern": "read_*", "effect": "allow", "priority": 1,
+              "conditions": {}, "review_ttl_seconds": 60}
+    assert client.put("/approval-center/policies/allow-safe", json=policy).status_code == 200
+    result = client.post("/approval-center/gate", json={"module_id": 5,
+        "action_type": "read_public", "payload": {}})
+    assert result.status_code == 200 and result.json()["allowed"] is True
+
+
+def test_routes_enforce_tenant_scope_and_identity(client):
+    created = client.post("/approval-center/requests", headers={"x-atlas-tenant": "tenant-a"},
+        json={"module_id": 5, "action_type": "send_email", "payload": {}, "user_id": "spoof"})
+    assert created.status_code == 201
+    item = created.json()
+    assert item["user_id"] == "tenant-a"
+    approval_id = item["id"]
+    # Cross-tenant reads use 404 so ids cannot be enumerated.
+    assert client.get(f"/approval-center/requests/{approval_id}",
+                      headers={"x-atlas-tenant": "tenant-b"}).status_code == 404
+    decided = client.post(f"/approval-center/requests/{approval_id}/decision",
+        headers={"x-atlas-tenant": "tenant-a", "x-atlas-actor": "reviewer-7"},
+        json={"decision": "approved", "decided_by": "spoof"})
+    assert decided.status_code == 200
+    assert decided.json()["approved_by"] == "reviewer-7"

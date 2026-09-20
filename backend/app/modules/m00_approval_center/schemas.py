@@ -53,3 +53,54 @@ class ExpireResult(BaseModel):
     """Result of sweeping overdue pending requests into the expired state."""
 
     expired_ids: list[str]
+
+class PolicyUpsert(BaseModel):
+    """Policy controlling whether a matching action is allowed, denied, or reviewed."""
+    id: str = Field(min_length=1, max_length=120)
+    name: str = Field(min_length=1, max_length=200)
+    action_pattern: str = Field(default="*", min_length=1, max_length=200)
+    module_id: int | None = None
+    effect: Literal["allow", "deny", "review"]
+    priority: int = 0
+    enabled: bool = True
+    conditions: dict[str, Any] = Field(default_factory=dict)
+    review_ttl_seconds: int = Field(default=3600, gt=0)
+
+
+class PolicyView(PolicyUpsert):
+    created_at: datetime
+    updated_at: datetime
+
+
+class GateCheck(BaseModel):
+    """Evaluate policy and, when required, durably create a review request."""
+    module_id: int
+    action_type: str = Field(min_length=1, max_length=100)
+    payload: dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
+    user_id: str = Field(default=DEFAULT_USER_ID, min_length=1, max_length=120)
+    idempotency_key: str | None = Field(default=None, max_length=200)
+
+
+class GateResult(BaseModel):
+    decision: Literal["allow", "deny", "review"]
+    allowed: bool
+    reason: str
+    policy_id: str | None = None
+    approval: ApprovalView | None = None
+
+
+class EffectConsume(BaseModel):
+    """Consume an approved request immediately before its exact external effect."""
+    module_id: int
+    action_type: str = Field(min_length=1, max_length=100)
+    payload: dict[str, Any] = Field(default_factory=dict)
+    user_id: str = Field(default=DEFAULT_USER_ID, min_length=1, max_length=120)
+    effect_id: str = Field(min_length=1, max_length=200)
+
+
+class EffectPermit(BaseModel):
+    approval_id: str
+    effect_id: str
+    allowed: bool
+    consumed_at: datetime

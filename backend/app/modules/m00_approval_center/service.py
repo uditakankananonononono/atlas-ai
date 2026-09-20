@@ -399,3 +399,191 @@ def request_approval(
             poll_interval_seconds=poll_interval_seconds,
         )
     return view
+
+# ---- Durable policy and exact-effect gate extensions ----
+import fnmatch
+import hashlib
+import json
+from sqlalchemy import Boolean, Integer, UniqueConstraint
+
+
+class ApprovalPolicyRow(Base):
+    __tablename__ = "m00_approval_policies"
+    id: Mapped[str] = mapped_column(String(120), primary_key=True)
+    name: Mapped[str] = mapped_column(String(200))
+    module_id: Mapped[int | None] = mapped_column(nullable=True, index=True)
+    action_pattern: Mapped[str] = mapped_column(String(200), default="*")
+    effect: Mapped[str] = mapped_column(String(20))
+    priority: Mapped[int] = mapped_column(Integer, default=0, index=True)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    conditions: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    review_ttl_seconds: Mapped[int] = mapped_column(Integer, default=3600)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class ApprovalIdempotencyRow(Base):
+    __tablename__ = "m00_approval_idempotency"
+    key: Mapped[str] = mapped_column(String(200), primary_key=True)
+    request_hash: Mapped[str] = mapped_column(String(64))
+    approval_id: Mapped[str] = mapped_column(String(36), unique=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class ApprovalEffectRow(Base):
+    __tablename__ = "m00_approval_effects"
+    __table_args__ = (UniqueConstraint("approval_id"), UniqueConstraint("effect_id"))
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    approval_id: Mapped[str] = mapped_column(String(36), index=True)
+    effect_id: Mapped[str] = mapped_column(String(200), index=True)
+    request_hash: Mapped[str] = mapped_column(String(64))
+    actor: Mapped[str] = mapped_column(String(120))
+    consumed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+def _canonical(value: Any) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+
+def _request_hash(*, module_id: int, action_type: str, payload: dict[str, Any], user_id: str) -> str:
+    body = {"module_id": module_id, "action_type": action_type, "payload": payload, "user_id": user_id}
+    return hashlib.sha256(_canonical(body).encode()).hexdigest()
+
+
+def _condition_matches(conditions: dict[str, Any], context: dict[str, Any]) -> bool:
+    """Exact values and value lists; dotted keys address nested context."""
+    for dotted, wanted in conditions.items():
+        current: Any = context
+        for part in dotted.split("."):
+            if not isinstance(current, dict) or part not in current:
+                return False
+            current = current[part]
+        if isinstance(wanted, list):
+            if current not in wanted:
+                return False
+        elif current != wanted:
+            return False
+    return True
+
+
+def _policy_view(row: ApprovalPolicyRow) -> dict[str, Any]:
+    return {"id": row.id, "name": row.name, "module_id": row.module_id,
+            "action_pattern": row.action_pattern, "effect": row.effect,
+            "priority": row.priority, "enabled": row.enabled,
+            "conditions": row.conditions, "review_ttl_seconds": row.review_ttl_seconds,
+            "created_at": _aware(row.created_at), "updated_at": _aware(row.updated_at)}
+
+
+def _install_extensions() -> None:
+    """Attach extensions without changing the established Service API."""
+    def upsert_policy(self: Service, *, policy_id: str, name: str, action_pattern: str,
+                      effect: str, actor: str, module_id: int | None = None,
+                      priority: int = 0, enabled: bool = True,
+                      conditions: dict[str, Any] | None = None,
+                      review_ttl_seconds: int = 3600) -> dict[str, Any]:
+        if effect not in {"allow", "deny", "review"}:
+            raise ValueError("effect must be allow, deny, or review")
+        if review_ttl_seconds <= 0:
+            raise ValueError("review_ttl_seconds must be positive")
+        now = self._clock()
+        with self._sessions.begin() as db:
+            row = db.get(ApprovalPolicyRow, policy_id)
+            event = "policy_updated" if row else "policy_created"
+            if row is None:
+                row = ApprovalPolicyRow(id=policy_id, created_at=now)
+                db.add(row)
+            row.name, row.module_id, row.action_pattern = name, module_id, action_pattern
+            row.effect, row.priority, row.enabled = effect, priority, enabled
+            row.conditions, row.review_ttl_seconds, row.updated_at = conditions or {}, review_ttl_seconds, now
+            # Policy events use their policy id in the existing append-only audit table.
+            db.add(ApprovalEventRow(approval_id=f"policy:{policy_id}", event=event, actor=actor, at=now))
+            db.flush()
+            return _policy_view(row)
+
+    def list_policies(self: Service, *, enabled_only: bool = False) -> list[dict[str, Any]]:
+        with self._sessions() as db:
+            stmt = select(ApprovalPolicyRow).order_by(ApprovalPolicyRow.priority.desc(), ApprovalPolicyRow.id)
+            if enabled_only:
+                stmt = stmt.where(ApprovalPolicyRow.enabled.is_(True))
+            return [_policy_view(row) for row in db.scalars(stmt)]
+
+    def evaluate_policy(self: Service, *, module_id: int, action_type: str,
+                        context: dict[str, Any] | None = None) -> tuple[str, dict[str, Any] | None]:
+        matches = [p for p in self.list_policies(enabled_only=True)
+                   if (p["module_id"] is None or p["module_id"] == module_id)
+                   and fnmatch.fnmatchcase(action_type, p["action_pattern"])
+                   and _condition_matches(p["conditions"], context or {})]
+        if not matches:
+            return "review", None  # fail closed for unknown external effects
+        top_priority = matches[0]["priority"]
+        severity = {"deny": 0, "review": 1, "allow": 2}
+        top = sorted((p for p in matches if p["priority"] == top_priority),
+                     key=lambda p: (severity[p["effect"]], p["id"]))
+        return top[0]["effect"], top[0]
+
+    def gate(self: Service, *, module_id: int, action_type: str, payload: dict[str, Any],
+             user_id: str = DEFAULT_USER_ID, context: dict[str, Any] | None = None,
+             idempotency_key: str | None = None) -> dict[str, Any]:
+        effect, policy = self.evaluate_policy(module_id=module_id, action_type=action_type, context=context)
+        if effect == "allow":
+            return {"decision": "allow", "allowed": True, "reason": "allowed by policy",
+                    "policy_id": policy["id"], "approval": None}
+        if effect == "deny":
+            return {"decision": "deny", "allowed": False, "reason": "denied by policy",
+                    "policy_id": policy["id"], "approval": None}
+        digest = _request_hash(module_id=module_id, action_type=action_type, payload=payload, user_id=user_id)
+        if idempotency_key:
+            with self._sessions() as db:
+                idem = db.get(ApprovalIdempotencyRow, idempotency_key)
+                if idem:
+                    if idem.request_hash != digest:
+                        raise ApprovalConflictError("idempotency key belongs to another request")
+                    return {"decision": "review", "allowed": False, "reason": "existing review",
+                            "policy_id": policy["id"] if policy else None, "approval": self.get(idem.approval_id)}
+        approval = self.submit(module_id=module_id, action_type=action_type, payload=payload,
+                               user_id=user_id,
+                               ttl_seconds=policy["review_ttl_seconds"] if policy else None)
+        if idempotency_key:
+            with self._sessions.begin() as db:
+                db.add(ApprovalIdempotencyRow(key=idempotency_key, request_hash=digest,
+                                               approval_id=approval["id"], created_at=self._clock()))
+        return {"decision": "review", "allowed": False, "reason": "human review required",
+                "policy_id": policy["id"] if policy else None, "approval": approval}
+
+    def consume_effect(self: Service, approval_id: str, *, module_id: int, action_type: str,
+                       payload: dict[str, Any], user_id: str, effect_id: str,
+                       actor: str) -> dict[str, Any]:
+        """Atomically issue a one-shot permit bound to the exact reviewed request."""
+        digest = _request_hash(module_id=module_id, action_type=action_type, payload=payload, user_id=user_id)
+        now = self._clock()
+        with self._sessions.begin() as db:
+            row = self._fetch(db, approval_id)
+            if self._expire_if_overdue(db, row, now):
+                raise ApprovalConflictError("approval has expired")
+            existing = db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.approval_id == approval_id))
+            if existing:
+                if existing.effect_id == effect_id and existing.request_hash == digest:
+                    return {"approval_id": approval_id, "effect_id": effect_id,
+                            "allowed": True, "consumed_at": _aware(existing.consumed_at)}
+                raise ApprovalConflictError("approval has already been consumed")
+            if row.status != ApprovalStatus.APPROVED.value:
+                raise ApprovalConflictError(f"approval is {row.status}, not approved")
+            stored = _request_hash(module_id=row.module_id, action_type=row.action_type,
+                                   payload=row.payload, user_id=row.user_id)
+            if stored != digest:
+                raise ApprovalConflictError("effect does not match approved request")
+            if db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.effect_id == effect_id)):
+                raise ApprovalConflictError("effect id has already been used")
+            db.add(ApprovalEffectRow(approval_id=approval_id, effect_id=effect_id,
+                                     request_hash=digest, actor=actor, consumed_at=now))
+            db.add(ApprovalEventRow(approval_id=approval_id, event="effect_consumed", actor=actor, at=now))
+        return {"approval_id": approval_id, "effect_id": effect_id, "allowed": True, "consumed_at": now}
+
+    Service.upsert_policy = upsert_policy
+    Service.list_policies = list_policies
+    Service.evaluate_policy = evaluate_policy
+    Service.gate = gate
+    Service.consume_effect = consume_effect
+
+
+_install_extensions()
