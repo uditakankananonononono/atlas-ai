@@ -132,3 +132,38 @@ class SyncResult(BaseModel):
     upserted: int = 0
     cancelled: int = 0
     full_resync: bool = False
+
+
+class EventConflictView(BaseModel):
+    id: str
+    left_event_id: str
+    right_event_id: str
+    left_source_id: str
+    right_source_id: str
+    overlap_start: datetime
+    overlap_end: datetime
+    overlap_minutes: int = Field(ge=1)
+    severity: Literal["hard", "soft"]
+
+
+class SchedulingProposalRequest(BaseModel):
+    earliest: datetime
+    latest: datetime
+    duration_minutes: int = Field(ge=15, le=24 * 60)
+    limit: int = Field(default=5, ge=1, le=50)
+    buffer_before_minutes: int = Field(default=0, ge=0, le=24 * 60)
+    buffer_after_minutes: int = Field(default=0, ge=0, le=24 * 60)
+    granularity_minutes: Literal[5, 10, 15, 30, 60] = 15
+    source_ids: list[str] = Field(default_factory=list)
+
+
+class SchedulingCandidateView(BaseModel):
+    start: datetime
+    end: datetime
+    score: float
+    reasons: list[str]
+
+
+class SchedulingProposalView(BaseModel):
+    candidates: list[SchedulingCandidateView]
+    considered_event_count: int = Field(ge=0)

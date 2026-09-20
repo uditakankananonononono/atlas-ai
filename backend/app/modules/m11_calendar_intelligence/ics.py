@@ -1,15 +1,17 @@
 """Minimal iCalendar (RFC 5545) VEVENT parsing, stdlib only.
 
 Covers what CalDAV/ICS feeds actually carry for events: UID, SUMMARY,
-DTSTART/DTEND (UTC, floating, or all-day), LOCATION, STATUS. TZID-local
-times are treated as floating and surfaced as UTC; recurring RRULE
-expansion is integrator work (documented in INTEGRATION.md).
+DTSTART/DTEND (UTC, TZID-local, floating, or all-day), LOCATION, STATUS.
+Known IANA TZIDs are preserved with ZoneInfo; truly floating times retain the
+legacy UTC interpretation because the feed supplies no calendar timezone.
+Recurring RRULE expansion is integrator work.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 
 @dataclass
@@ -48,9 +50,17 @@ def parse_datetime(value: str, params: dict[str, str]) -> datetime | None:
         except ValueError:
             return None
     try:
-        # Floating / TZID-local time: surfaced as UTC (documented limitation).
-        return datetime.strptime(value, "%Y%m%dT%H%M%S").replace(tzinfo=timezone.utc)
+        parsed = datetime.strptime(value, "%Y%m%dT%H%M%S")
     except ValueError:
+        return None
+    tzid = params.get("TZID", "").strip().strip('"')
+    if not tzid:
+        # RFC floating time has no absolute instant. Keep the module's legacy
+        # UTC interpretation rather than guessing the user's local timezone.
+        return parsed.replace(tzinfo=timezone.utc)
+    try:
+        return parsed.replace(tzinfo=ZoneInfo(tzid))
+    except ZoneInfoNotFoundError:
         return None
 
 

@@ -25,6 +25,7 @@ from app.core.token_crypto import TokenCipher
 
 from .caldav import CalDAVClient
 from .google_calendar import GoogleCalendarClient, SyncTokenExpiredError
+from .conflicts import Availability, CalendarInterval, detect_conflicts
 from .schemas import (
     CalDAVSourceCreate,
     CalendarEventView,
@@ -32,17 +33,23 @@ from .schemas import (
     ConflictAlternative,
     ConflictReport,
     DayLoad,
+    EventConflictView,
     GoogleSourceCreate,
     MeetingLoadReport,
     PlannedBlock,
     ProposedAction,
+    SchedulingCandidateView,
     SchedulingPrefsSchema,
+    SchedulingProposalRequest,
+    SchedulingProposalView,
     SchedulingTaskCreate,
     SchedulingTaskView,
     SyncResult,
     WeeklyPlanView,
     WindowSchema,
 )
+from .proposals import ProposalRequest, propose_slots
+from .sync_validation import validate_sync_batch
 from .solver import (
     BuiltInSolver,
     FixedEvent,
@@ -264,8 +271,12 @@ class Service:
         return self._upsert_events(row.id, events)
 
     def _upsert_events(self, source_id: str, events) -> SyncResult:
+        # Materialize and validate the whole provider response before the first
+        # write, preventing malformed late entries from causing partial syncs.
+        incoming = list(events)
+        validated = validate_sync_batch(incoming)
         upserted = cancelled = 0
-        for event in events:
+        for event in validated:
             self.repository.upsert_event(
                 event_id=str(uuid4()), source_id=source_id, uid=event.uid,
                 summary=event.summary, start=event.start, end=event.end,
@@ -275,7 +286,7 @@ class Service:
                 cancelled += 1
             else:
                 upserted += 1
-        return SyncResult(source_id=source_id, fetched=len(events),
+        return SyncResult(source_id=source_id, fetched=len(incoming),
                           upserted=upserted, cancelled=cancelled)
 
     def list_events(self, start: datetime | None = None, end: datetime | None = None) -> list[CalendarEventView]:
@@ -288,6 +299,100 @@ class Service:
         ]
 
     # -- prefs + tasks ------------------------------------------------------------------
+    def propose_scheduling_slots(
+        self, data: SchedulingProposalRequest
+    ) -> SchedulingProposalView:
+        if data.earliest.tzinfo is None or data.earliest.utcoffset() is None:
+            raise ValueError("earliest must be timezone-aware")
+        if data.latest.tzinfo is None or data.latest.utcoffset() is None:
+            raise ValueError("latest must be timezone-aware")
+        rows = self.repository.list_events(start=data.earliest, end=data.latest)
+        if data.source_ids:
+            allowed = set(data.source_ids)
+            rows = [row for row in rows if row.source_id in allowed]
+        fixed = [
+            FixedEvent(
+                id=row.id, summary=row.summary, start=_aware(row.start),
+                end=_aware(row.end), location=row.location,
+            )
+            for row in rows
+            if row.start is not None and row.end is not None
+        ]
+        saved = self.repository.get_prefs()
+        prefs = _prefs_from_schema(
+            SchedulingPrefsSchema.model_validate(saved) if saved else None
+        )
+        candidates = propose_slots(
+            ProposalRequest(
+                earliest=data.earliest, latest=data.latest,
+                duration_minutes=data.duration_minutes, limit=data.limit,
+                buffer_before_minutes=data.buffer_before_minutes,
+                buffer_after_minutes=data.buffer_after_minutes,
+                granularity_minutes=data.granularity_minutes,
+            ),
+            fixed,
+            prefs,
+        )
+        return SchedulingProposalView(
+            candidates=[
+                SchedulingCandidateView(
+                    start=item.start, end=item.end, score=item.score,
+                    reasons=list(item.reasons),
+                )
+                for item in candidates
+            ],
+            considered_event_count=len(fixed),
+        )
+
+    def detect_event_conflicts(
+        self,
+        *,
+        start: datetime | None = None,
+        end: datetime | None = None,
+        minimum_overlap_minutes: int = 1,
+        across_sources_only: bool = False,
+    ) -> list[EventConflictView]:
+        """Find overlaps in the current synced event snapshot.
+
+        Provider rows do not currently expose transparency/tentative metadata,
+        so non-cancelled synced rows are conservatively treated as busy.
+        """
+        if minimum_overlap_minutes < 1:
+            raise ValueError("minimum_overlap_minutes must be at least 1")
+        intervals = [
+            CalendarInterval(
+                event_id=row.id,
+                source_id=row.source_id,
+                summary=row.summary,
+                start=_aware(row.start),
+                end=_aware(row.end),
+                availability=Availability.BUSY,
+                status=row.status,
+            )
+            for row in self.repository.list_events(
+                start=start, end=end, include_cancelled=True
+            )
+            if row.start is not None and row.end is not None
+        ]
+        return [
+            EventConflictView(
+                id=conflict.id,
+                left_event_id=conflict.left.event_id,
+                right_event_id=conflict.right.event_id,
+                left_source_id=conflict.left.source_id,
+                right_source_id=conflict.right.source_id,
+                overlap_start=conflict.overlap_start,
+                overlap_end=conflict.overlap_end,
+                overlap_minutes=conflict.overlap_minutes,
+                severity=conflict.severity.value,
+            )
+            for conflict in detect_conflicts(
+                intervals,
+                minimum_overlap=timedelta(minutes=minimum_overlap_minutes),
+                across_sources_only=across_sources_only,
+            )
+        ]
+
     def get_prefs(self) -> SchedulingPrefsSchema:
         stored = self.repository.get_prefs()
         return SchedulingPrefsSchema.model_validate(stored) if stored else _prefs_to_schema(SchedulingPrefs.default())

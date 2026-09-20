@@ -23,10 +23,13 @@ from .schemas import (
     CalendarEventView,
     CalendarSourceView,
     ConflictReport,
+    EventConflictView,
     GoogleSourceCreate,
     MeetingLoadReport,
     ProposedAction,
     SchedulingPrefsSchema,
+    SchedulingProposalRequest,
+    SchedulingProposalView,
     SchedulingTaskCreate,
     SchedulingTaskView,
     SyncResult,
@@ -144,6 +147,33 @@ def list_events(
     service: Service = Depends(get_service),
 ) -> list[CalendarEventView]:
     return service.list_events(start=start, end=end)
+
+
+@router.post("/proposals", response_model=SchedulingProposalView)
+def propose_scheduling_slots(
+    data: SchedulingProposalRequest,
+    service: Service = Depends(get_service),
+) -> SchedulingProposalView:
+    try:
+        return service.propose_scheduling_slots(data)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.get("/conflicts", response_model=list[EventConflictView])
+def list_conflicts(
+    start: datetime | None = None,
+    end: datetime | None = None,
+    minimum_overlap_minutes: int = Query(default=1, ge=1, le=24 * 60),
+    across_sources_only: bool = False,
+    service: Service = Depends(get_service),
+) -> list[EventConflictView]:
+    return service.detect_event_conflicts(
+        start=start,
+        end=end,
+        minimum_overlap_minutes=minimum_overlap_minutes,
+        across_sources_only=across_sources_only,
+    )
 
 
 @router.get("/prefs", response_model=SchedulingPrefsSchema)
