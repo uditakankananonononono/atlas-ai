@@ -17,6 +17,7 @@ from .schemas import (
     FormFillProposalRequest,
     ProposedAction,
     StatusUpdate,
+    ApplicationAnswersIn,
 )
 from .service import (
     CompetitionNotFoundError,
@@ -95,3 +96,10 @@ def update_status(competition_id: str, request: StatusUpdate, service: Service =
         raise HTTPException(status_code=404, detail="competition not found") from error
     except UnsafeStatusTransitionError as error:
         raise HTTPException(status_code=409, detail=str(error)) from error
+
+
+@router.post("/competitions/{competition_id}/answers/review-package")
+async def prepare_humanized_answers(competition_id:str,request:ApplicationAnswersIn):
+    from .application_pipeline import ApplicationAnswerPipeline
+    from .humanize import NaturalVoiceService
+    return await ApplicationAnswerPipeline(NaturalVoiceService(generate),approvals).prepare_review(competition_id,request.answers,request.provider)

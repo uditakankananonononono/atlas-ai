@@ -110,3 +110,8 @@ class StatusUpdate(BaseModel):
     """A status transition backed by explicit evidence."""
 
     evidence: StatusEvidence
+
+
+class ApplicationAnswersIn(BaseModel):
+    answers:dict[str,str]=Field(min_length=1,max_length=100)
+    provider:str="openai"
