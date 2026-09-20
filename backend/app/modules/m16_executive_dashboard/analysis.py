@@ -10,7 +10,7 @@ from __future__ import annotations
 import math,random,statistics
 from collections import Counter
 ROWS={
-"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038}
+"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043}
 def _nums(data,key="values",min_n=1):
     v=data.get(key)
     if not isinstance(v,list) or len(v)<min_n or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in v):raise ValueError(f"{key} must contain at least {min_n} finite numbers")
@@ -197,5 +197,104 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
             viterbi=nv
         best=max(viterbi.values(),key=lambda x:x[0])
         o["output"]={"algorithm":"scaled_forward_and_viterbi","log_likelihood":loglik,"filtered_state_probabilities":filtered,"most_likely_path":best[1]};a += ["Finite first-order, time-homogeneous HMM; conditional independence of emissions given state."];limits += ["Caller supplies fixed probabilities; no Baum-Welch training, smoothing, unknown symbols, or higher-order duration model."]
+    elif method=="conditional_random_field":
+        tokens=data.get("tokens");labels=data.get("labels");emission=data.get("emission_scores");transition=data.get("transition_scores",{});start=data.get("start_scores",{})
+        if not isinstance(tokens,list) or not tokens or not isinstance(labels,list) or not labels or not isinstance(emission,list) or len(emission)!=len(tokens):raise ValueError("tokens, labels and one emission score map per token required")
+        if any(not isinstance(e,dict) or any(label not in e for label in labels) for e in emission):raise ValueError("every emission map must score every label")
+        scores={label:(float(start.get(label,0))+float(emission[0][label]),[label]) for label in labels};logz_scores=dict(scores)
+        for i in range(1,len(tokens)):
+            nxt={};forward={}
+            for label in labels:
+                candidates=[(score+float(transition.get(prev,{}).get(label,0))+float(emission[i][label]),path+[label]) for prev,(score,path) in scores.items()];nxt[label]=max(candidates,key=lambda x:x[0])
+                vals=[score+float(transition.get(prev,{}).get(label,0))+float(emission[i][label]) for prev,(score,_) in logz_scores.items()];m=max(vals);forward[label]=(m+math.log(sum(math.exp(v-m) for v in vals)),[])
+            scores=nxt;logz_scores=forward
+        best=max(scores.values(),key=lambda x:x[0]);vals=[v[0] for v in logz_scores.values()];m=max(vals);logz=m+math.log(sum(math.exp(v-m) for v in vals))
+        o["output"]={"algorithm":"linear_chain_crf_viterbi","labels":best[1],"path_score":best[0],"log_partition":logz};a += ["Caller supplies log-potentials for a first-order linear-chain CRF."];limits += ["Decoding and partition function only; no feature extraction, marginals, gradient training, regularization, or higher-order dependencies."]
+    elif method=="graphical_model":
+        nodes=data.get("nodes");edges=data.get("edges");directed=bool(p.get("directed",True))
+        if not isinstance(nodes,list) or not nodes or len(set(nodes))!=len(nodes) or not isinstance(edges,list):raise ValueError("unique nodes and edge pairs required")
+        adjacency={n:[] for n in nodes};indegree={n:0 for n in nodes}
+        for edge in edges:
+            if not isinstance(edge,list) or len(edge)!=2 or edge[0] not in adjacency or edge[1] not in adjacency or edge[0]==edge[1]:raise ValueError("edges must connect distinct declared nodes")
+            u,v=edge;adjacency[u].append(v)
+            if directed:indegree[v]+=1
+            else:adjacency[v].append(u)
+        topo=[]
+        if directed:
+            queue=sorted([n for n,d in indegree.items() if d==0])
+            while queue:
+                n=queue.pop(0);topo.append(n)
+                for v in adjacency[n]:
+                    indegree[v]-=1
+                    if indegree[v]==0:queue.append(v);queue.sort()
+        components=[];seen=set()
+        und={n:set() for n in nodes}
+        for u,v in edges:und[u].add(v);und[v].add(u)
+        for root in nodes:
+            if root in seen:continue
+            stack=[root];comp=[];seen.add(root)
+            while stack:
+                n=stack.pop();comp.append(n)
+                for v in und[n]:
+                    if v not in seen:seen.add(v);stack.append(v)
+            components.append(sorted(comp))
+        o["output"]={"directed":directed,"node_count":len(nodes),"edge_count":len(edges),"adjacency":adjacency,"components":components,"is_dag":(len(topo)==len(nodes)) if directed else None,"topological_order":topo if len(topo)==len(nodes) else None};a += ["Edges encode the caller's conditional-dependency structure."];limits += ["Structural diagnostics only; does not infer causal direction or learn graph structure from observations."]
+    elif method=="bayesian_network":
+        variables=data.get("variables");parents=data.get("parents",{});cpts=data.get("cpts",{});query=data.get("query");evidence=data.get("evidence",{})
+        if not isinstance(variables,list) or not variables or query not in variables or not isinstance(evidence,dict):raise ValueError("variables and a query variable required")
+        for var in variables:
+            ps=parents.get(var,[])
+            if any(x not in variables or variables.index(x)>=variables.index(var) for x in ps):raise ValueError("parents must precede children in topological variable order")
+            if var not in cpts:raise ValueError(f"missing CPT for {var}")
+        def ptrue(var,assign):
+            ps=parents.get(var,[]);key=''.join('1' if assign[x] else '0' for x in ps);table=cpts[var]
+            val=table.get(key,table.get('',table if isinstance(table,(int,float)) else None)) if isinstance(table,dict) else table
+            if val is None:raise ValueError(f"missing CPT row for {var}:{key}")
+            val=float(val)
+            if not 0<=val<=1:raise ValueError("CPT probabilities must be in [0,1]")
+            return val
+        def enumerate_all(i,assign):
+            if i==len(variables):return 1.0
+            var=variables[i]
+            if var in assign:
+                pt=ptrue(var,assign);return (pt if assign[var] else 1-pt)*enumerate_all(i+1,assign)
+            total=0
+            for val in (False,True):
+                assign[var]=val;pt=ptrue(var,assign);total+=(pt if val else 1-pt)*enumerate_all(i+1,assign);del assign[var]
+            return total
+        probs=[]
+        for val in (False,True):
+            assign={k:bool(v) for k,v in evidence.items()};assign[query]=val;probs.append(enumerate_all(0,assign))
+        z=sum(probs)
+        if z<=0:raise ValueError("evidence has zero probability")
+        o["output"]={"algorithm":"exact_enumeration","query":query,"probability_false":probs[0]/z,"probability_true":probs[1]/z,"evidence":evidence};a += ["Binary discrete DAG; variables are topologically ordered; CPTs are complete."];limits += ["Exact enumeration is exponential; binary variables only; observational conditioning is not automatically causal."]
+    elif method=="markov_random_field":
+        variables=data.get("variables");edges=data.get("edges",[]);unary=data.get("unary_log_potentials",{});pairwise=data.get("pairwise_log_potentials",{})
+        if not isinstance(variables,list) or not variables or len(variables)>20:raise ValueError("1-20 variables required for exact enumeration")
+        configs=[];z=0.0
+        for bits in range(1<<len(variables)):
+            assign={v:bool(bits&(1<<i)) for i,v in enumerate(variables)};energy=0.0
+            for v in variables:energy+=float(unary.get(v,{}).get('1' if assign[v] else '0',0))
+            for edge in edges:
+                u,v=edge;table=pairwise.get(f"{u}|{v}",pairwise.get(f"{v}|{u}",{}));key=('1' if assign[u] else '0')+('1' if assign[v] else '0');energy+=float(table.get(key,0))
+            weight=math.exp(energy);configs.append((assign,energy,weight));z+=weight
+        marginals={v:sum(w for assign,_,w in configs if assign[v])/z for v in variables};best=max(configs,key=lambda x:x[1])
+        o["output"]={"algorithm":"exact_log_potential_enumeration","partition_function":z,"marginal_true":marginals,"map_assignment":best[0],"map_log_potential":best[1]};a += ["Binary undirected model; supplied values are log-potentials, not normalized probabilities."];limits += ["Exact enumeration capped at 20 variables; pairwise factors only; no structure/parameter learning."]
+    elif method=="factor_graph":
+        variables=data.get("variables");factors=data.get("factors")
+        if not isinstance(variables,list) or not variables or len(variables)>20 or not isinstance(factors,list):raise ValueError("1-20 variables and factors required")
+        configs=[];z=0.0
+        for bits in range(1<<len(variables)):
+            assign={v:bool(bits&(1<<i)) for i,v in enumerate(variables)};weight=1.0
+            for factor in factors:
+                scope=factor.get("scope",[]);table=factor.get("table",{});key=''.join('1' if assign[v] else '0' for v in scope)
+                if any(v not in assign for v in scope) or key not in table:raise ValueError("factor scope/table is incomplete")
+                value=float(table[key])
+                if value<0:raise ValueError("factor values must be non-negative")
+                weight*=value
+            configs.append((assign,weight));z+=weight
+        if z<=0:raise ValueError("factor graph has zero total mass")
+        marginals={v:sum(w for assign,w in configs if assign[v])/z for v in variables};best=max(configs,key=lambda x:x[1])
+        o["output"]={"algorithm":"exact_factor_product_enumeration","partition_function":z,"marginal_true":marginals,"map_assignment":best[0],"map_probability":best[1]/z};a += ["Binary finite factor graph with complete non-negative factor tables."];limits += ["Exact enumeration capped at 20 variables; no loopy belief propagation or continuous variables."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
     return o
