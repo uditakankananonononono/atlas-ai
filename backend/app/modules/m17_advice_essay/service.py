@@ -8,8 +8,11 @@ from collections.abc import Iterable, Sequence
 from typing import Protocol
 from uuid import UUID
 
+from .communication_coaching import CommunicationCoach
 from .schemas import (
     AdviceSource,
+    CommunicationCoachingRequest,
+    CommunicationCoachingResponse,
     AdviceTip,
     CritiqueDimension,
     CritiqueFinding,
@@ -140,6 +143,10 @@ class AdviceEssayService:
     def __init__(self, repository: Module17Repository, coach: Coach | None = None) -> None:
         self.repository = repository
         self.coach = coach or DeterministicCoach()
+        self.communication_coach = CommunicationCoach()
+
+    def coach_communication(self, request: CommunicationCoachingRequest) -> CommunicationCoachingResponse:
+        return self.communication_coach.coach(request)
 
     def ingest_source(self, source: AdviceSource) -> AdviceSource:
         if source.source_kind not in {SourceKind.USER_SUBMITTED, SourceKind.PUBLIC_API, SourceKind.PUBLIC_WEB}:

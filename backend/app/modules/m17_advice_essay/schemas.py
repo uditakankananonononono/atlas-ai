@@ -131,3 +131,69 @@ class AuditRecord(BaseModel):
     action: str
     details: dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class CommunicationSkill(str, Enum):
+    PERSUASIVE_WRITING = "persuasive_writing"
+    NEGOTIATION_TACTICS = "negotiation_tactics"
+    CONFLICT_RESOLUTION = "conflict_resolution"
+    MEDIATION = "mediation"
+    ACTIVE_LISTENING = "active_listening"
+    EMPATHETIC_RESPONSE = "empathetic_response"
+    EMOTIONAL_INTELLIGENCE = "emotional_intelligence"
+    SOCIAL_CALIBRATION = "social_calibration"
+    CULTURAL_SENSITIVITY = "cultural_sensitivity"
+    CROSS_CULTURAL_COMMUNICATION = "cross_cultural_communication"
+    DIPLOMATIC_LANGUAGE = "diplomatic_language"
+    ASSERTIVENESS = "assertiveness"
+    BOUNDARY_SETTING = "boundary_setting"
+    DIFFICULT_CONVERSATIONS = "difficult_conversations"
+    FEEDBACK_DELIVERY = "feedback_delivery"
+    FEEDBACK_RECEPTION = "feedback_reception"
+    PUBLIC_SPEAKING = "public_speaking"
+    PRESENTATION_DESIGN = "presentation_design"
+    STORYTELLING = "storytelling"
+    RAPPORT_BUILDING = "rapport_building"
+    NETWORKING = "networking"
+    MENTORSHIP = "mentorship"
+    COACHING = "coaching"
+    TEACHING = "teaching"
+    EXPLAINING_COMPLEX_IDEAS = "explaining_complex_ideas"
+    ANALOGIES = "analogies"
+    METAPHORS = "metaphors"
+    EXAMPLES = "examples"
+    SCAFFOLDING = "scaffolding"
+    QUESTIONING = "questioning"
+    SOCRATIC_METHOD = "socratic_method"
+
+
+class CommunicationCoachingRequest(BaseModel):
+    owner_id: UUID
+    skill: CommunicationSkill
+    context: str = Field(min_length=1, max_length=10_000)
+    goal: str = Field(min_length=1, max_length=1000)
+    audience: str = Field(min_length=1, max_length=500)
+    draft: str | None = Field(default=None, max_length=50_000)
+    known_facts: list[str] = Field(default_factory=list, max_length=50)
+    cultural_context: list[str] = Field(default_factory=list, max_length=30)
+    constraints: list[str] = Field(default_factory=list, max_length=30)
+    student_authored_work: bool = False
+
+
+class CoachingObservation(BaseModel):
+    label: str = Field(min_length=1, max_length=120)
+    detail: str = Field(min_length=1, max_length=1200)
+    evidence: str | None = Field(default=None, max_length=1200)
+
+
+class CommunicationCoachingResponse(BaseModel):
+    owner_id: UUID
+    skill: CommunicationSkill
+    observations: list[CoachingObservation]
+    questions: list[str]
+    rehearsal_steps: list[str]
+    draft_feedback: list[str]
+    review_required: bool = True
+    external_action_proposed: bool = False
+    caveats: list[str] = Field(default_factory=list)
+    authorship_notice: str | None = None

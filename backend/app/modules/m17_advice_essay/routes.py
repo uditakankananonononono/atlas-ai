@@ -13,7 +13,10 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
-from .schemas import AdviceSource, AdviceTip, EssayBrief, EssayConcept, EssayCritique, IdentityMaterial
+from .schemas import (
+    AdviceSource, AdviceTip, CommunicationCoachingRequest, CommunicationCoachingResponse,
+    EssayBrief, EssayConcept, EssayCritique, IdentityMaterial,
+)
 from .service import AdviceEssayService
 
 
@@ -27,6 +30,11 @@ def build_router(
     owner_provider: Callable[[], UUID],
 ) -> APIRouter:
     router = APIRouter(prefix="/v1/modules/17", tags=["module-17"])
+    @router.post("/communication/coaching", response_model=CommunicationCoachingResponse)
+    def coach_communication(request: CommunicationCoachingRequest, service: AdviceEssayService = Depends(service_provider), owner_id: UUID = Depends(owner_provider)) -> CommunicationCoachingResponse:
+        _require_owner(owner_id, request.owner_id)
+        return service.coach_communication(request)
+
     @router.post("/sources", response_model=AdviceSource, status_code=status.HTTP_201_CREATED)
     def add_source(source: AdviceSource, service: AdviceEssayService = Depends(service_provider), owner_id: UUID = Depends(owner_provider)) -> AdviceSource:
         _require_owner(owner_id, source.owner_id)
