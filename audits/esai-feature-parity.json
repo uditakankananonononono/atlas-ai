@@ -71,22 +71,38 @@
     {
       "id": 11,
       "feature": "Major Mentor",
-      "status": "missing"
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/advising.py",
+        "test": "tests/modules/test_m23_advising.py"
+      }
     },
     {
       "id": 12,
       "feature": "School Match Maker",
-      "status": "thin"
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/advising.py",
+        "test": "tests/modules/test_m23_advising.py"
+      }
     },
     {
       "id": 13,
       "feature": "Activity Planner",
-      "status": "missing"
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/advising.py",
+        "test": "tests/modules/test_m23_advising.py"
+      }
     },
     {
       "id": 14,
       "feature": "Passion Project Picker",
-      "status": "missing"
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/advising.py",
+        "test": "tests/modules/test_m23_advising.py"
+      }
     },
     {
       "id": 15,

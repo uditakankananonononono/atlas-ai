@@ -10,3 +10,7 @@ class IdentityInterviewTurnIn(BaseModel):
     student_response:str=Field(min_length=10,max_length=20000)
     modality:Literal['chat','voice']='chat'
     evidence_tags:list[str]=Field(default_factory=list,max_length=30)
+class MajorMentorIn(BaseModel):profile:dict;majors:list[dict]=Field(min_length=1,max_length=200)
+class SchoolMatchIn(BaseModel):profile:dict;schools:list[dict]=Field(min_length=1,max_length=500)
+class ActivityPlannerIn(BaseModel):profile:dict;activities:list[dict]=Field(min_length=1,max_length=200);weekly_hours:float=Field(gt=0,le=168)
+class PassionProjectIn(BaseModel):profile:dict;constraints:dict=Field(default_factory=dict);ideas:list[dict]=Field(min_length=1,max_length=200)

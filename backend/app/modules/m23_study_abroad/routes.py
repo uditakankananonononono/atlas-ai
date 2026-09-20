@@ -31,3 +31,16 @@ def answer_identity_interview(session_id:str,x:IdentityInterviewTurnIn,repo:Iden
  try:return repo.answer(session_id,x.student_response,x.modality,x.evidence_tags)
  except LookupError:raise HTTPException(404,'identity interview not found')
  except ValueError as e:raise HTTPException(409,str(e))
+
+from .advising import AdvisingService
+def advising_service(tenant:TenantContext=Depends(require_tenant)):return AdvisingService(tenant.tenant_id)
+@router.post('/major-mentor')
+def major_mentor(x:MajorMentorIn,s:AdvisingService=Depends(advising_service)):return s.major_mentor(x.profile,x.majors)
+@router.post('/school-match')
+def school_match(x:SchoolMatchIn,s:AdvisingService=Depends(advising_service)):return s.school_match(x.profile,x.schools)
+@router.post('/activity-plan')
+def activity_plan(x:ActivityPlannerIn,s:AdvisingService=Depends(advising_service)):return s.activity_plan(x.profile,x.activities,x.weekly_hours)
+@router.post('/passion-projects')
+def passion_projects(x:PassionProjectIn,s:AdvisingService=Depends(advising_service)):return s.passion_projects(x.profile,x.constraints,x.ideas)
+@router.get('/advising-history')
+def advising_history(kind:str|None=None,s:AdvisingService=Depends(advising_service)):return s.history(kind)
