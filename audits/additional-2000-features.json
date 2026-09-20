@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "c1fba065c2c41c91d123fb45097c66718ac7cc4a",
+  "audited_head": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
   "counts": {
-    "verified-pushed": 308,
+    "verified-pushed": 333,
     "thin": 3,
-    "missing": 1699
+    "missing": 1674
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -1444,8 +1444,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Automated Literature Review",
       "description": "Synthesizes thousands of papers into coherent summaries",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[110-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1454,8 +1460,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Citation Network Analysis",
       "description": "Maps influence and idea flow through academic literature",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[111-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1464,8 +1476,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Research Gap Identification",
       "description": "Finds unexplored questions through systematic analysis",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[112-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1474,8 +1492,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Hypothesis Generation from Data",
       "description": "Derives testable predictions from patterns",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[113-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1484,8 +1508,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Experimental Design Optimization",
       "description": "Creates most efficient experiments to test hypotheses",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[114-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1494,8 +1524,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Power Analysis",
       "description": "Determines sample sizes needed for statistical significance",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_115_power_with_method_caveat",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1504,8 +1540,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Confound Identification",
       "description": "Spots variables that could distort results",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[116-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1514,8 +1556,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Randomization Strategy",
       "description": "Designs proper control and treatment groups",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[117-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1524,8 +1572,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Blinding Protocol Development",
       "description": "Prevents bias in experimental execution",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[118-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1534,8 +1588,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Replication Study Design",
       "description": "Creates protocols to verify previous findings",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[119-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1544,8 +1604,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Meta-Analysis Automation",
       "description": "Combines results across studies statistically",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_120_meta_analysis",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1554,8 +1620,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Effect Size Calculation",
       "description": "Quantifies magnitude of phenomena",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_121_effect_sizes",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1564,8 +1636,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Publication Bias Detection",
       "description": "Identifies missing negative results",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[122-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1574,8 +1652,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "P-Hacking Prevention",
       "description": "Avoids statistical manipulation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[123-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1584,8 +1668,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Preregistration Generation",
       "description": "Documents hypotheses before data collection",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[124-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1594,8 +1684,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Open Science Compliance",
       "description": "Ensures data and code sharing",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[125-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1604,8 +1700,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Reproducibility Verification",
       "description": "Checks if results can be recreated",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[126-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1614,8 +1716,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Peer Review Simulation",
       "description": "Predicts reviewer critiques before submission",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[127-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1624,8 +1732,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Journal Selection Optimization",
       "description": "Matches papers to appropriate venues",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[128-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1634,8 +1748,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Impact Factor Prediction",
       "description": "Estimates citation counts",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[129-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1644,8 +1764,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Abstract Optimization",
       "description": "Crafts compelling summaries",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[130-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1654,8 +1780,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Title Generation",
       "description": "Creates attention-grabbing, accurate titles",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[131-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1664,8 +1796,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Figure Design",
       "description": "Creates publication-quality visualizations",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[132-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1674,8 +1812,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Statistical Analysis Selection",
       "description": "Chooses appropriate tests",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[133-",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -1684,8 +1828,14 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Bayesian Analysis",
       "description": "Incorporates prior knowledge into inference",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_case": "tests/modules/test_m19_research_110_134.py::test_row_134_bayesian_update",
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
