@@ -17,7 +17,7 @@ from .schemas import (
     FormFillProposalRequest,
     ProposedAction,
     StatusUpdate,
-    ApplicationAnswersIn,
+    ApplicationAnswersIn, IntegratedApplicationIn,
 )
 from .service import (
     CompetitionNotFoundError,
@@ -103,3 +103,15 @@ async def prepare_humanized_answers(competition_id:str,request:ApplicationAnswer
     from .application_pipeline import ApplicationAnswerPipeline
     from .humanize import NaturalVoiceService
     return await ApplicationAnswerPipeline(NaturalVoiceService(generate),approvals).prepare_review(competition_id,request.answers,request.provider)
+
+
+@router.post("/competitions/{competition_id}/integrated-application")
+async def integrated_application(competition_id:str,request:IntegratedApplicationIn,tenant:TenantContext=Depends(require_tenant)):
+    from app.core.embeddings import get_embedding_provider
+    from .profile_corpus import ProfileCorpus
+    from .grounded_drafting import GroundedApplicationDrafter
+    from .humanize import NaturalVoiceService
+    from .integrated_application import IntegratedApplicationFlow
+    flow=IntegratedApplicationFlow(ProfileCorpus(tenant.tenant_id,get_embedding_provider(request.embedding_provider)),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),approvals)
+    try:return await flow.prepare(competition_id,request.official_url,[x.model_dump() for x in request.fields],request.provider)
+    except ValueError as e:raise HTTPException(422,str(e))

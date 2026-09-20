@@ -115,3 +115,8 @@ class StatusUpdate(BaseModel):
 class ApplicationAnswersIn(BaseModel):
     answers:dict[str,str]=Field(min_length=1,max_length=100)
     provider:str="openai"
+
+class ApplicationFieldIn(BaseModel):
+ field:str=Field(min_length=1,max_length=300);question:str=Field(min_length=3,max_length=5000);requirements:str="";evidence_limit:int=Field(8,ge=1,le=50)
+class IntegratedApplicationIn(BaseModel):
+ official_url:str;fields:list[ApplicationFieldIn]=Field(min_length=1,max_length=100);provider:str="openai";embedding_provider:str="openai"
