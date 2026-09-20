@@ -98,6 +98,105 @@ def bulk_decide(data:BulkApprovalDecision,service:Service=Depends(get_service)):
 def digest(service:Service=Depends(get_service)):return service.digest()
 @router.post("/project")
 def project(service:Service=Depends(get_service)):return service.project()
+# --- planning & measurement (feature rows 388-399) ---
+planning_router=APIRouter(prefix="/planning",tags=["executive-dashboard-planning"])
+@planning_router.post("/items",response_model=WorkItemOut,status_code=201)
+def create_item(data:WorkItemIn,service:Service=Depends(get_service)):return service.create_work_item(data)
+@planning_router.get("/items",response_model=list[WorkItemOut])
+def list_items(sprint_id:str|None=None,roadmap_id:str|None=None,status:str|None=None,service:Service=Depends(get_service)):return service.list_work_items(sprint_id,roadmap_id,status)
+@planning_router.patch("/items/{item_id}",response_model=WorkItemOut)
+def patch_item(item_id:str,data:WorkItemPatch,service:Service=Depends(get_service)):
+    try:return service.patch_work_item(item_id,data)
+    except LookupError:raise HTTPException(404,"work item not found")
+    except ValueError as e:raise HTTPException(422,str(e))
+@planning_router.delete("/items/{item_id}",status_code=204)
+def delete_item(item_id:str,service:Service=Depends(get_service)):
+    try:service.delete_work_item(item_id)
+    except LookupError:raise HTTPException(404,"work item not found")
+@planning_router.get("/prioritization",response_model=list[PrioritizedItem])
+def prioritization(method:str="rice",service:Service=Depends(get_service)):
+    try:return service.prioritization(method)
+    except ValueError as e:raise HTTPException(422,str(e))
+@planning_router.post("/sprints",response_model=SprintOut,status_code=201)
+def create_sprint(data:SprintIn,service:Service=Depends(get_service)):
+    try:return service.create_sprint(data)
+    except ValueError as e:raise HTTPException(422,str(e))
+@planning_router.get("/sprints",response_model=list[SprintOut])
+def list_sprints(service:Service=Depends(get_service)):return service.list_sprints()
+@planning_router.post("/sprints/{sprint_id}/start",response_model=SprintOut)
+def start_sprint(sprint_id:str,service:Service=Depends(get_service)):
+    try:return service.start_sprint(sprint_id)
+    except LookupError:raise HTTPException(404,"sprint not found")
+    except ValueError as e:raise HTTPException(409,str(e))
+@planning_router.post("/sprints/{sprint_id}/close",response_model=SprintOut)
+def close_sprint(sprint_id:str,service:Service=Depends(get_service)):
+    try:return service.close_sprint(sprint_id)
+    except LookupError:raise HTTPException(404,"sprint not found")
+    except ValueError as e:raise HTTPException(409,str(e))
+@planning_router.get("/sprints/{sprint_id}/burndown",response_model=BurndownReport)
+def sprint_burndown(sprint_id:str,service:Service=Depends(get_service)):
+    try:return service.burndown(sprint_id)
+    except LookupError:raise HTTPException(404,"sprint not found")
+@planning_router.get("/velocity",response_model=VelocityReport)
+def velocity(service:Service=Depends(get_service)):return service.velocity_report()
+@planning_router.get("/board",response_model=KanbanBoard)
+def board(service:Service=Depends(get_service)):return service.board()
+@planning_router.post("/items/{item_id}/move",response_model=WorkItemOut)
+def move_item(item_id:str,column:str,service:Service=Depends(get_service)):
+    from .planning import WipLimitExceeded
+    try:return service.move_item(item_id,column)
+    except LookupError:raise HTTPException(404,"work item not found")
+    except WipLimitExceeded as e:raise HTTPException(409,str(e))
+    except ValueError as e:raise HTTPException(422,str(e))
+@planning_router.post("/roadmaps",response_model=RoadmapOut,status_code=201)
+def create_roadmap(data:RoadmapIn,service:Service=Depends(get_service)):
+    try:return service.create_roadmap(data)
+    except ValueError as e:raise HTTPException(422,str(e))
+@planning_router.get("/roadmaps",response_model=list[RoadmapOut])
+def list_roadmaps(service:Service=Depends(get_service)):return service.list_roadmaps()
+@planning_router.get("/roadmaps/{roadmap_id}/view",response_model=RoadmapView)
+def roadmap_view(roadmap_id:str,service:Service=Depends(get_service)):
+    try:return service.roadmap_view(roadmap_id)
+    except LookupError:raise HTTPException(404,"roadmap not found")
+@planning_router.post("/ceremonies",response_model=CeremonyOut,status_code=201)
+def create_ceremony(data:CeremonyIn,service:Service=Depends(get_service)):
+    try:return service.create_ceremony(data)
+    except LookupError:raise HTTPException(404,"sprint not found")
+@planning_router.get("/ceremonies",response_model=list[CeremonyOut])
+def list_ceremonies(sprint_id:str|None=None,service:Service=Depends(get_service)):return service.list_ceremonies(sprint_id)
+@planning_router.post("/retrospectives",response_model=RetrospectiveOut,status_code=201)
+def create_retro(data:RetrospectiveIn,service:Service=Depends(get_service)):
+    try:return service.create_retrospective(data)
+    except LookupError:raise HTTPException(404,"sprint not found")
+@planning_router.get("/retrospectives",response_model=list[RetrospectiveOut])
+def list_retros(service:Service=Depends(get_service)):return service.list_retrospectives()
+@planning_router.get("/retrospectives/rollup")
+def retro_rollup(service:Service=Depends(get_service)):return service.retro_rollup()
+@planning_router.post("/experiments",response_model=ExperimentOut,status_code=201)
+def create_experiment(data:ExperimentIn,service:Service=Depends(get_service)):
+    try:return service.create_experiment(data)
+    except ValueError as e:raise HTTPException(422,str(e))
+@planning_router.get("/experiments",response_model=list[ExperimentOut])
+def list_experiments(service:Service=Depends(get_service)):return service.list_experiments()
+@planning_router.get("/experiments/{experiment_id}",response_model=ExperimentOut)
+def get_experiment(experiment_id:str,service:Service=Depends(get_service)):
+    try:return service.get_experiment(experiment_id)
+    except LookupError:raise HTTPException(404,"experiment not found")
+@planning_router.post("/experiments/{experiment_id}/measurements",response_model=ExperimentOut)
+def record_measurement(experiment_id:str,data:MeasurementIn,service:Service=Depends(get_service)):
+    try:return service.record_measurement(experiment_id,data)
+    except LookupError as e:raise HTTPException(404,str(e))
+    except ValueError as e:raise HTTPException(409,str(e))
+@planning_router.post("/experiments/{experiment_id}/status",response_model=ExperimentOut)
+def set_experiment_status(experiment_id:str,status:str,service:Service=Depends(get_service)):
+    try:return service.set_experiment_status(experiment_id,status)
+    except LookupError:raise HTTPException(404,"experiment not found")
+    except ValueError as e:raise HTTPException(409,str(e))
+@planning_router.get("/experiments/{experiment_id}/significance",response_model=SignificanceReport)
+def experiment_significance(experiment_id:str,alpha:float=0.05,service:Service=Depends(get_service)):
+    try:return service.experiment_significance(experiment_id,alpha)
+    except LookupError:raise HTTPException(404,"experiment not found")
+router.include_router(planning_router)
 @router.get("/live")
 async def live(request:Request,cursor:int=0,service:Service=Depends(get_service)):
     async def stream():

@@ -28,6 +28,27 @@ class AlertRuleRow(Base):
     pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(80));kpi_id:Mapped[str]=mapped_column(String(80));comparator:Mapped[str]=mapped_column(String(8));threshold:Mapped[float]=mapped_column(Float);severity:Mapped[str]=mapped_column(String(20));message:Mapped[str|None]=mapped_column(String(300),nullable=True);cooldown_hours:Mapped[int]=mapped_column(Integer,default=1);created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
 class ViewPrefsRow(Base):
     __tablename__="m16_view_prefs";tenant_id:Mapped[str]=mapped_column(String(120),primary_key=True);layout:Mapped[dict]=mapped_column(JSON);updated_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
+class WorkItemRow(Base):
+    __tablename__="m16_work_items";__table_args__=(UniqueConstraint("tenant_id","id",name="uq_m16_work_item"),)
+    pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(36));title:Mapped[str]=mapped_column(String(300));item_type:Mapped[str]=mapped_column(String(40));status:Mapped[str]=mapped_column(String(20),index=True);estimate:Mapped[float|None]=mapped_column(Float,nullable=True);reach:Mapped[float|None]=mapped_column(Float,nullable=True);impact:Mapped[float|None]=mapped_column(Float,nullable=True);confidence:Mapped[float|None]=mapped_column(Float,nullable=True);effort:Mapped[float|None]=mapped_column(Float,nullable=True);value:Mapped[float|None]=mapped_column(Float,nullable=True);rank:Mapped[int]=mapped_column(Integer);sprint_id:Mapped[str|None]=mapped_column(String(36),nullable=True,index=True);roadmap_id:Mapped[str|None]=mapped_column(String(36),nullable=True,index=True);planned_start:Mapped[datetime|None]=mapped_column(DateTime(timezone=True),nullable=True);planned_end:Mapped[datetime|None]=mapped_column(DateTime(timezone=True),nullable=True);created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True));updated_at:Mapped[datetime]=mapped_column(DateTime(timezone=True));completed_at:Mapped[datetime|None]=mapped_column(DateTime(timezone=True),nullable=True)
+class SprintRow(Base):
+    __tablename__="m16_sprints";__table_args__=(UniqueConstraint("tenant_id","id",name="uq_m16_sprint"),)
+    pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(36));name:Mapped[str]=mapped_column(String(200));goal:Mapped[str]=mapped_column(Text);start:Mapped[datetime]=mapped_column(DateTime(timezone=True));end:Mapped[datetime]=mapped_column(DateTime(timezone=True));capacity_points:Mapped[float|None]=mapped_column(Float,nullable=True);status:Mapped[str]=mapped_column(String(20));closed_at:Mapped[datetime|None]=mapped_column(DateTime(timezone=True),nullable=True)
+class CeremonyRow(Base):
+    __tablename__="m16_ceremonies";__table_args__=(UniqueConstraint("tenant_id","id",name="uq_m16_ceremony"),)
+    pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(36));sprint_id:Mapped[str]=mapped_column(String(36),index=True);kind:Mapped[str]=mapped_column(String(20));scheduled_at:Mapped[datetime]=mapped_column(DateTime(timezone=True));notes:Mapped[str]=mapped_column(Text);action_items:Mapped[list]=mapped_column(JSON);created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
+class RetrospectiveRow(Base):
+    __tablename__="m16_retrospectives";__table_args__=(UniqueConstraint("tenant_id","id",name="uq_m16_retro"),)
+    pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(36));sprint_id:Mapped[str]=mapped_column(String(36),index=True);went_well:Mapped[list]=mapped_column(JSON);didnt_go_well:Mapped[list]=mapped_column(JSON);action_items:Mapped[list]=mapped_column(JSON);created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
+class ExperimentRow(Base):
+    __tablename__="m16_experiments";__table_args__=(UniqueConstraint("tenant_id","id",name="uq_m16_experiment"),)
+    pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(36));name:Mapped[str]=mapped_column(String(200));hypothesis:Mapped[str]=mapped_column(Text);metric:Mapped[str]=mapped_column(String(120));kind:Mapped[str]=mapped_column(String(20));variants:Mapped[list]=mapped_column(JSON);status:Mapped[str]=mapped_column(String(20));created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True));updated_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
+class RoadmapRow(Base):
+    __tablename__="m16_roadmaps";__table_args__=(UniqueConstraint("tenant_id","id",name="uq_m16_roadmap"),)
+    pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(36));name:Mapped[str]=mapped_column(String(200));horizon_start:Mapped[datetime]=mapped_column(DateTime(timezone=True));horizon_end:Mapped[datetime]=mapped_column(DateTime(timezone=True));created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
+def _work_item(r):return WorkItemOut(id=r.id,title=r.title,item_type=r.item_type,status=r.status,estimate=r.estimate,reach=r.reach,impact=r.impact,confidence=r.confidence,effort=r.effort,value=r.value,rank=r.rank,sprint_id=r.sprint_id,roadmap_id=r.roadmap_id,planned_start=r.planned_start,planned_end=r.planned_end,created_at=r.created_at,updated_at=r.updated_at,completed_at=r.completed_at)
+def _sprint(r):return SprintOut(id=r.id,name=r.name,goal=r.goal,start=r.start,end=r.end,capacity_points=r.capacity_points,status=r.status,closed_at=r.closed_at)
+def _experiment(r):return ExperimentOut(id=r.id,name=r.name,hypothesis=r.hypothesis,metric=r.metric,kind=r.kind,variants=[VariantOut(**v) for v in r.variants],status=r.status,created_at=r.created_at,updated_at=r.updated_at)
 def _event(r):return Event(id=r.id,sequence=r.sequence,topic=r.topic,aggregate_type=r.aggregate_type,aggregate_id=r.aggregate_id,payload=r.payload,occurred_at=r.occurred_at)
 def _approval(r):return Approval(id=r.id,module_id=r.module_id,action_type=r.action_type,title=r.title,summary=r.summary,risk=r.risk,evidence=r.evidence,proposed_payload=r.proposed_payload,state=ApprovalState(r.state),created_at=r.created_at,expires_at=r.expires_at,reviewed_at=r.reviewed_at)
 def _command(r):return CommandPreview(id=r.id,utterance=r.utterance,intent=r.intent,parameters=r.parameters,plan=r.plan,read_only=r.read_only,confidence=r.confidence,expires_at=r.expires_at,created_at=r.created_at)
@@ -135,3 +156,77 @@ class SqlDashboardRepository:
         with self.sessions() as db:
             r=db.get(ViewPrefsRow,self.tenant_id)
             return (dict(r.layout),r.updated_at) if r else (None,None)
+    def save_work_item(self,item:WorkItemOut):
+        with self.sessions.begin() as db:
+            r=db.scalar(select(WorkItemRow).where(WorkItemRow.tenant_id==self.tenant_id,WorkItemRow.id==item.id))
+            data=item.model_dump()
+            if r:
+                for k,v in data.items():setattr(r,k,v)
+            else:db.add(WorkItemRow(tenant_id=self.tenant_id,**data))
+        return item
+    def get_work_item(self,item_id):
+        with self.sessions() as db:
+            r=db.scalar(select(WorkItemRow).where(WorkItemRow.tenant_id==self.tenant_id,WorkItemRow.id==item_id))
+            return _work_item(r) if r else None
+    def list_work_items(self,sprint_id=None,roadmap_id=None,status=None):
+        with self.sessions() as db:
+            q=select(WorkItemRow).where(WorkItemRow.tenant_id==self.tenant_id)
+            if sprint_id is not None:q=q.where(WorkItemRow.sprint_id==sprint_id)
+            if roadmap_id is not None:q=q.where(WorkItemRow.roadmap_id==roadmap_id)
+            if status is not None:q=q.where(WorkItemRow.status==status)
+            return [_work_item(r) for r in db.scalars(q.order_by(WorkItemRow.rank,WorkItemRow.created_at))]
+    def delete_work_item(self,item_id):
+        with self.sessions.begin() as db:
+            r=db.scalar(select(WorkItemRow).where(WorkItemRow.tenant_id==self.tenant_id,WorkItemRow.id==item_id))
+            if not r:return False
+            db.delete(r);return True
+    def save_sprint(self,sp:SprintOut):
+        with self.sessions.begin() as db:
+            r=db.scalar(select(SprintRow).where(SprintRow.tenant_id==self.tenant_id,SprintRow.id==sp.id))
+            data=sp.model_dump()
+            if r:
+                for k,v in data.items():setattr(r,k,v)
+            else:db.add(SprintRow(tenant_id=self.tenant_id,**data))
+        return sp
+    def get_sprint(self,sprint_id):
+        with self.sessions() as db:
+            r=db.scalar(select(SprintRow).where(SprintRow.tenant_id==self.tenant_id,SprintRow.id==sprint_id))
+            return _sprint(r) if r else None
+    def list_sprints(self):
+        with self.sessions() as db:return [_sprint(r) for r in db.scalars(select(SprintRow).where(SprintRow.tenant_id==self.tenant_id).order_by(SprintRow.start))]
+    def save_ceremony(self,c:CeremonyOut):
+        with self.sessions.begin() as db:db.add(CeremonyRow(tenant_id=self.tenant_id,**c.model_dump()))
+        return c
+    def list_ceremonies(self,sprint_id=None):
+        with self.sessions() as db:
+            q=select(CeremonyRow).where(CeremonyRow.tenant_id==self.tenant_id)
+            if sprint_id is not None:q=q.where(CeremonyRow.sprint_id==sprint_id)
+            return [CeremonyOut(id=r.id,sprint_id=r.sprint_id,kind=r.kind,scheduled_at=r.scheduled_at,notes=r.notes,action_items=r.action_items,created_at=r.created_at) for r in db.scalars(q.order_by(CeremonyRow.scheduled_at))]
+    def save_retrospective(self,retro:RetrospectiveOut):
+        with self.sessions.begin() as db:db.add(RetrospectiveRow(tenant_id=self.tenant_id,**retro.model_dump()))
+        return retro
+    def list_retrospectives(self):
+        with self.sessions() as db:return [RetrospectiveOut(id=r.id,sprint_id=r.sprint_id,went_well=r.went_well,didnt_go_well=r.didnt_go_well,action_items=r.action_items,created_at=r.created_at) for r in db.scalars(select(RetrospectiveRow).where(RetrospectiveRow.tenant_id==self.tenant_id).order_by(RetrospectiveRow.created_at))]
+    def save_experiment(self,e:ExperimentOut):
+        with self.sessions.begin() as db:
+            r=db.scalar(select(ExperimentRow).where(ExperimentRow.tenant_id==self.tenant_id,ExperimentRow.id==e.id))
+            data=e.model_dump()
+            if r:
+                for k,v in data.items():setattr(r,k,v)
+            else:db.add(ExperimentRow(tenant_id=self.tenant_id,**data))
+        return e
+    def get_experiment(self,experiment_id):
+        with self.sessions() as db:
+            r=db.scalar(select(ExperimentRow).where(ExperimentRow.tenant_id==self.tenant_id,ExperimentRow.id==experiment_id))
+            return _experiment(r) if r else None
+    def list_experiments(self):
+        with self.sessions() as db:return [_experiment(r) for r in db.scalars(select(ExperimentRow).where(ExperimentRow.tenant_id==self.tenant_id).order_by(ExperimentRow.created_at))]
+    def save_roadmap(self,rm:RoadmapOut):
+        with self.sessions.begin() as db:db.add(RoadmapRow(tenant_id=self.tenant_id,**rm.model_dump()))
+        return rm
+    def get_roadmap(self,roadmap_id):
+        with self.sessions() as db:
+            r=db.scalar(select(RoadmapRow).where(RoadmapRow.tenant_id==self.tenant_id,RoadmapRow.id==roadmap_id))
+            return RoadmapOut(id=r.id,name=r.name,horizon_start=r.horizon_start,horizon_end=r.horizon_end,created_at=r.created_at) if r else None
+    def list_roadmaps(self):
+        with self.sessions() as db:return [RoadmapOut(id=r.id,name=r.name,horizon_start=r.horizon_start,horizon_end=r.horizon_end,created_at=r.created_at) for r in db.scalars(select(RoadmapRow).where(RoadmapRow.tenant_id==self.tenant_id).order_by(RoadmapRow.created_at))]

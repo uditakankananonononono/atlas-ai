@@ -36,3 +36,30 @@ class WidgetKind(str,Enum):KPI_CARD="kpi_card";MODULE_STATUS="module_status";BLO
 class WidgetConfig(BaseModel):id:str=Field(min_length=1,max_length=80);kind:WidgetKind;kpi_id:str|None=None;visible:bool=True;position:int=Field(0,ge=0)
 class DashboardView(BaseModel):widgets:list[WidgetConfig];updated_at:datetime
 class DashboardViewIn(BaseModel):widgets:list[WidgetConfig]=Field(max_length=50)
+# --- planning & measurement entities (feature rows 388-399) ---
+WORK_ITEM_STATUSES=("backlog","ready","in_progress","review","done")
+class WorkItemIn(BaseModel):title:str=Field(min_length=1,max_length=300);item_type:str=Field("feature",max_length=40);estimate:float|None=Field(None,ge=0);reach:float|None=None;impact:float|None=None;confidence:float|None=Field(None,ge=0,le=1);effort:float|None=Field(None,ge=0);value:float|None=Field(None,ge=0);sprint_id:str|None=None;roadmap_id:str|None=None;planned_start:datetime|None=None;planned_end:datetime|None=None
+class WorkItemPatch(BaseModel):title:str|None=None;status:str|None=None;estimate:float|None=Field(None,ge=0);reach:float|None=None;impact:float|None=None;confidence:float|None=Field(None,ge=0,le=1);effort:float|None=Field(None,ge=0);value:float|None=Field(None,ge=0);rank:int|None=None;sprint_id:str|None=None;roadmap_id:str|None=None;planned_start:datetime|None=None;planned_end:datetime|None=None
+class WorkItemOut(WorkItemIn):id:str;status:str="backlog";rank:int=0;created_at:datetime;updated_at:datetime;completed_at:datetime|None=None
+class PrioritizedItem(BaseModel):item:WorkItemOut;method:str;score:float|None;inputs:dict[str,float|None];formula:str;missing_inputs:list[str]
+class SprintIn(BaseModel):name:str=Field(min_length=1,max_length=200);goal:str="";start:datetime;end:datetime;capacity_points:float|None=Field(None,ge=0)
+class SprintOut(SprintIn):id:str;status:str="planned";closed_at:datetime|None=None
+class VelocityPoint(BaseModel):sprint_id:str;sprint_name:str;committed_points:float;completed_points:float
+class VelocityReport(BaseModel):sprints:list[VelocityPoint];average_completed:float|None;inputs:dict[str,Any]
+class BurndownPoint(BaseModel):day:datetime;ideal_remaining:float;actual_remaining:float;total_committed:float
+class BurndownReport(BaseModel):sprint_id:str;series:list[BurndownPoint];assumptions:list[str]
+class KanbanBoard(BaseModel):columns:dict[str,list[WorkItemOut]];wip_limits:dict[str,int|None]
+class CeremonyIn(BaseModel):sprint_id:str;kind:str=Field(pattern="^(planning|daily|review|retro|other)$");scheduled_at:datetime;notes:str="";action_items:list[dict[str,Any]]=Field(default_factory=list)
+class CeremonyOut(CeremonyIn):id:str;created_at:datetime
+class RetrospectiveIn(BaseModel):sprint_id:str;went_well:list[str]=Field(default_factory=list);didnt_go_well:list[str]=Field(default_factory=list);action_items:list[dict[str,Any]]=Field(default_factory=list)
+class RetrospectiveOut(RetrospectiveIn):id:str;created_at:datetime
+class RoadmapIn(BaseModel):name:str=Field(min_length=1,max_length=200);horizon_start:datetime;horizon_end:datetime
+class RoadmapOut(RoadmapIn):id:str;created_at:datetime
+class RoadmapView(BaseModel):roadmap:RoadmapOut;lanes:dict[str,list[WorkItemOut]]
+class VariantIn(BaseModel):key:str=Field(min_length=1,max_length=60);name:str="";allocation:float=Field(gt=0,le=1);factors:dict[str,str]=Field(default_factory=dict)
+class VariantOut(VariantIn):trials:int=0;successes:int=0
+class ExperimentIn(BaseModel):name:str=Field(min_length=1,max_length=200);hypothesis:str="";metric:str=Field(min_length=1,max_length=120);kind:str=Field("ab",pattern="^(ab|multivariate)$");variants:list[VariantIn]=Field(min_length=2)
+class ExperimentOut(BaseModel):id:str;name:str;hypothesis:str;metric:str;kind:str;variants:list[VariantOut];status:str="draft";created_at:datetime;updated_at:datetime
+class MeasurementIn(BaseModel):variant_key:str;trials:int=Field(ge=0);successes:int=Field(ge=0)
+class SignificanceReport(BaseModel):test:str;p_value:float|None;significant:bool;alpha:float;uplift:float|None;confidence_interval:tuple[float,float]|None;inputs:dict[str,Any];assumptions:list[str]
+class VariantResult(BaseModel):key:str;trials:int;successes:int;rate:float|None

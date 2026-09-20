@@ -4,6 +4,7 @@ from uuid import uuid4
 from .alerts import alert_message,cooldown_bucket,evaluate
 from .blockers import detect_blockers
 from .kpis import EVENT_KPIS,RESERVED_KPI_IDS,compute_kpis,custom_event_kpi,event_ref,kpi_event_evidence
+from . import planning
 from .projector import fold
 from .schemas import *
 from .status import RepoCatalog,effective_state,event_module_id,module_statuses
@@ -261,6 +262,109 @@ class Service:
         w.writerow(["id","label","value","unit","previous_value","window_hours","evidence_total"])
         for k in self.kpis(now):w.writerow([k.id,k.label,k.value,k.unit,"" if k.previous_value is None else k.previous_value,k.window_hours,k.evidence_total])
         return buf.getvalue()
+    # --- planning & measurement (feature rows 388-399) ---
+    def create_work_item(self,data:WorkItemIn):
+        existing=self.repository.list_work_items()
+        rank=max((i.rank for i in existing),default=0)+1
+        now=_utcnow()
+        return self.repository.save_work_item(WorkItemOut(id=str(uuid4()),rank=rank,created_at=now,updated_at=now,**data.model_dump()))
+    def patch_work_item(self,item_id,patch:WorkItemPatch):
+        item=self.repository.get_work_item(item_id)
+        if not item:raise LookupError(item_id)
+        data=item.model_dump()
+        for k,v in patch.model_dump(exclude_unset=True).items():
+            if v is not None:data[k]=v
+        if data["status"] not in planning.KANBAN_COLUMNS:raise ValueError(f"unknown status {data['status']}")
+        if data["status"]=="done" and item.status!="done":data["completed_at"]=_utcnow()
+        if data["status"]!="done":data["completed_at"]=None
+        data["updated_at"]=_utcnow()
+        return self.repository.save_work_item(WorkItemOut(**data))
+    def delete_work_item(self,item_id):
+        if not self.repository.delete_work_item(item_id):raise LookupError(item_id)
+    def list_work_items(self,sprint_id=None,roadmap_id=None,status=None):
+        return self.repository.list_work_items(sprint_id,roadmap_id,status)
+    def prioritization(self,method:str):
+        items=[i for i in self.repository.list_work_items() if i.status!="done"]
+        return planning.prioritize(items,method)
+    def create_sprint(self,data:SprintIn):
+        if data.end<=data.start:raise ValueError("sprint end must be after start")
+        return self.repository.save_sprint(SprintOut(id=str(uuid4()),**data.model_dump()))
+    def list_sprints(self):return self.repository.list_sprints()
+    def start_sprint(self,sprint_id):
+        sp=self.repository.get_sprint(sprint_id)
+        if not sp:raise LookupError(sprint_id)
+        if sp.status!="planned":raise ValueError(f"sprint is {sp.status}, only planned sprints can start")
+        for other in self.repository.list_sprints():
+            if other.status=="active":raise ValueError(f"sprint {other.name} is already active")
+        sp.status="active";return self.repository.save_sprint(sp)
+    def close_sprint(self,sprint_id):
+        sp=self.repository.get_sprint(sprint_id)
+        if not sp:raise LookupError(sprint_id)
+        if sp.status!="active":raise ValueError(f"sprint is {sp.status}, only active sprints can close")
+        sp.status="closed";sp.closed_at=_utcnow();return self.repository.save_sprint(sp)
+    def burndown(self,sprint_id,now=None):
+        sp=self.repository.get_sprint(sprint_id)
+        if not sp:raise LookupError(sprint_id)
+        items=self.repository.list_work_items(sprint_id=sprint_id)
+        series,assumptions=planning.burndown(sp,items,now or _utcnow())
+        return BurndownReport(sprint_id=sprint_id,series=series,assumptions=assumptions)
+    def velocity_report(self):
+        sprints=self.repository.list_sprints()
+        by_sprint={sp.id:self.repository.list_work_items(sprint_id=sp.id) for sp in sprints}
+        points,avg=planning.velocity(sprints,by_sprint)
+        return VelocityReport(sprints=points,average_completed=avg,inputs={"sprint_ids":[p.sprint_id for p in points],"note":"Average over closed sprints only; completed means items in done with estimates."})
+    def board(self):
+        items=self.repository.list_work_items()
+        columns={c:[i for i in items if i.status==c] for c in planning.KANBAN_COLUMNS}
+        return KanbanBoard(columns=columns,wip_limits=planning.DEFAULT_WIP_LIMITS)
+    def move_item(self,item_id,column):
+        item=self.repository.get_work_item(item_id)
+        if not item:raise LookupError(item_id)
+        planning.move_item(item,column,self.repository.list_work_items())
+        return self.patch_work_item(item_id,WorkItemPatch(status=column))
+    def create_roadmap(self,data:RoadmapIn):
+        if data.horizon_end<=data.horizon_start:raise ValueError("horizon end must be after start")
+        return self.repository.save_roadmap(RoadmapOut(id=str(uuid4()),created_at=_utcnow(),**data.model_dump()))
+    def list_roadmaps(self):return self.repository.list_roadmaps()
+    def roadmap_view(self,roadmap_id):
+        rm=self.repository.get_roadmap(roadmap_id)
+        if not rm:raise LookupError(roadmap_id)
+        return RoadmapView(roadmap=rm,lanes=planning.roadmap_view(self.repository.list_work_items(roadmap_id=roadmap_id)))
+    def create_ceremony(self,data:CeremonyIn):
+        if not self.repository.get_sprint(data.sprint_id):raise LookupError(data.sprint_id)
+        return self.repository.save_ceremony(CeremonyOut(id=str(uuid4()),created_at=_utcnow(),**data.model_dump()))
+    def list_ceremonies(self,sprint_id=None):return self.repository.list_ceremonies(sprint_id)
+    def create_retrospective(self,data:RetrospectiveIn):
+        if not self.repository.get_sprint(data.sprint_id):raise LookupError(data.sprint_id)
+        items=[{**a,"status":a.get("status","open")} for a in data.action_items]
+        return self.repository.save_retrospective(RetrospectiveOut(id=str(uuid4()),created_at=_utcnow(),**{**data.model_dump(),"action_items":items}))
+    def list_retrospectives(self):return self.repository.list_retrospectives()
+    def retro_rollup(self):return planning.retro_rollup(self.repository.list_retrospectives())
+    def create_experiment(self,data:ExperimentIn):
+        errors=planning.validate_experiment(data.kind,[v.model_dump() for v in data.variants])
+        if errors:raise ValueError("; ".join(errors))
+        now=_utcnow()
+        return self.repository.save_experiment(ExperimentOut(id=str(uuid4()),variants=[VariantOut(**v.model_dump()) for v in data.variants],created_at=now,updated_at=now,**data.model_dump(exclude={"variants"})))
+    def list_experiments(self):return self.repository.list_experiments()
+    def get_experiment(self,experiment_id):
+        e=self.repository.get_experiment(experiment_id)
+        if not e:raise LookupError(experiment_id)
+        return e
+    def record_measurement(self,experiment_id,data:MeasurementIn):
+        e=self.get_experiment(experiment_id)
+        if e.status!="running":raise ValueError(f"experiment is {e.status}; measurements require a running experiment")
+        for v in e.variants:
+            if v.key==data.variant_key:
+                v.trials=data.trials;v.successes=data.successes;e.updated_at=_utcnow()
+                return self.repository.save_experiment(e)
+        raise LookupError(data.variant_key)
+    def set_experiment_status(self,experiment_id,status):
+        allowed={"draft":{"running"},"running":{"paused","concluded"},"paused":{"running","concluded"},"concluded":set()}
+        e=self.get_experiment(experiment_id)
+        if status not in allowed.get(e.status,set()):raise ValueError(f"cannot move experiment from {e.status} to {status}")
+        e.status=status;e.updated_at=_utcnow();return self.repository.save_experiment(e)
+    def experiment_significance(self,experiment_id,alpha:float=0.05):
+        return planning.experiment_significance(self.get_experiment(experiment_id),alpha)
     # --- agent heartbeats ---
     def digest(self,now=None):
         """Deterministic executive digest: text sections computed from live KPIs, blockers and statuses."""
