@@ -95,24 +95,43 @@ class HttpxGoogleCalendarClient:
 
     async def list_events(self, access_token: str, calendar_id: str, *,
                           sync_token: str | None, time_min: datetime | None) -> EventPage:
-        params: dict[str, str] = {"singleEvents": "true", "maxResults": "250"}
+        base_params: dict[str, str] = {"singleEvents": "true", "maxResults": "250"}
         if sync_token:
-            params["syncToken"] = sync_token
+            base_params["syncToken"] = sync_token
         elif time_min:
-            params["timeMin"] = time_min.astimezone(timezone.utc).isoformat()
-        response = await self._client.get(
-            f"{self._base}/calendars/{calendar_id}/events",
-            headers=self._headers(access_token), params=params,
-        )
-        if response.status_code == 410:
-            raise SyncTokenExpiredError("sync token expired")
-        if response.is_error:
-            raise UpstreamServiceError(f"Calendar events.list failed ({response.status_code})")
-        data = response.json()
-        return EventPage(
-            events=[parse_google_event(item) for item in data.get("items", []) or []],
-            next_sync_token=data.get("nextSyncToken"),
-        )
+            base_params["timeMin"] = time_min.astimezone(timezone.utc).isoformat()
+
+        events: list[IcsEvent] = []
+        page_token: str | None = None
+        seen_page_tokens: set[str] = set()
+        next_sync_token: str | None = None
+        while True:
+            params = dict(base_params)
+            if page_token:
+                params["pageToken"] = page_token
+            response = await self._client.get(
+                f"{self._base}/calendars/{calendar_id}/events",
+                headers=self._headers(access_token), params=params,
+            )
+            if response.status_code == 410:
+                raise SyncTokenExpiredError("sync token expired")
+            if response.is_error:
+                raise UpstreamServiceError(
+                    f"Calendar events.list failed ({response.status_code})"
+                )
+            data = response.json()
+            events.extend(
+                parse_google_event(item) for item in data.get("items", []) or []
+            )
+            next_sync_token = data.get("nextSyncToken") or next_sync_token
+            next_page = data.get("nextPageToken")
+            if not next_page:
+                break
+            if next_page in seen_page_tokens:
+                raise UpstreamServiceError("Calendar events.list repeated a page token")
+            seen_page_tokens.add(next_page)
+            page_token = next_page
+        return EventPage(events=events, next_sync_token=next_sync_token)
 
     async def stop_channel(self, access_token: str, *, channel_id: str, resource_id: str) -> None:
         response = await self._client.post(
