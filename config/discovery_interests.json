@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "topics": ["computational biology", "AI agents", "illustration", "college applications", "entrepreneurship"],
+  "platforms": ["linkedin", "x", "instagram"],
+  "collection_policy": {"login": false, "delay_seconds": 12, "results_per_query": 15, "stop_on_block_or_challenge": true, "evasion": false},
+  "workflow": "Candidates enter pending_review with evidence. Only approved candidates enter deep-tracking registries."
+}

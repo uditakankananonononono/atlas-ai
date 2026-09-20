@@ -7,6 +7,16 @@
   },
   "connectors": [
     {
+      "key": "interest-web-discovery",
+      "adapter": "interest_web_discovery",
+      "type": "public_page",
+      "enabled": false,
+      "registry": "config/discovery_interests.json",
+      "cost": "free",
+      "pacing_seconds": 12,
+      "restriction": "public search results only; staging and owner review before tracking"
+    },
+    {
       "key": "scholarship-public-sites",
       "adapter": "public_scholarship_sites",
       "type": "public_page",
