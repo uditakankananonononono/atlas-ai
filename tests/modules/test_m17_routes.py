@@ -63,3 +63,15 @@ def test_collaboration_coaching_endpoint_is_mounted_and_owner_scoped():
     assert response.json()["external_action_proposed"] is False
     payload["owner_id"]=str(uuid4())
     assert client.post("/v1/modules/17/collaboration/coaching",json=payload).status_code==403
+
+
+def test_trust_wellbeing_endpoint_is_mounted_and_owner_scoped():
+    from fastapi import FastAPI
+    owner=uuid4(); service=AdviceEssayService(InMemoryModule17Repository())
+    app=FastAPI(); app.include_router(build_router(lambda:service,lambda:owner)); client=TestClient(app)
+    payload={"owner_id":str(owner),"skill":"stress_management","context":"Busy week","goal":"Choose a low-risk step"}
+    response=client.post("/v1/modules/17/trust-wellbeing/coaching",json=payload)
+    assert response.status_code==200
+    assert "not emergency or crisis support" in response.json()["escalation_boundary"].lower()
+    payload["owner_id"]=str(uuid4())
+    assert client.post("/v1/modules/17/trust-wellbeing/coaching",json=payload).status_code==403

@@ -9,6 +9,7 @@ from typing import Protocol
 from uuid import UUID
 
 from .collaboration_coaching import CollaborationCoach
+from .trust_wellbeing_coaching import TrustWellbeingCoach
 from .communication_coaching import CommunicationCoach
 from .schemas import (
     AdviceSource,
@@ -16,6 +17,8 @@ from .schemas import (
     CommunicationCoachingResponse,
     CollaborationCoachingRequest,
     CollaborationCoachingResponse,
+    TrustWellbeingCoachingRequest,
+    TrustWellbeingCoachingResponse,
     AdviceTip,
     CritiqueDimension,
     CritiqueFinding,
@@ -148,6 +151,10 @@ class AdviceEssayService:
         self.coach = coach or DeterministicCoach()
         self.communication_coach = CommunicationCoach()
         self.collaboration_coach = CollaborationCoach()
+        self.trust_wellbeing_coach = TrustWellbeingCoach()
+
+    def coach_trust_wellbeing(self, request: TrustWellbeingCoachingRequest) -> TrustWellbeingCoachingResponse:
+        return self.trust_wellbeing_coach.coach(request)
 
     def coach_collaboration(self, request: CollaborationCoachingRequest) -> CollaborationCoachingResponse:
         return self.collaboration_coach.coach(request)

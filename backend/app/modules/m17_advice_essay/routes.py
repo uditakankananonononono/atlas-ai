@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 from .schemas import (
     AdviceSource, AdviceTip, CommunicationCoachingRequest, CommunicationCoachingResponse,
     CollaborationCoachingRequest, CollaborationCoachingResponse,
+    TrustWellbeingCoachingRequest, TrustWellbeingCoachingResponse,
     EssayBrief, EssayConcept, EssayCritique, IdentityMaterial,
 )
 from .service import AdviceEssayService
@@ -31,6 +32,11 @@ def build_router(
     owner_provider: Callable[[], UUID],
 ) -> APIRouter:
     router = APIRouter(prefix="/v1/modules/17", tags=["module-17"])
+    @router.post("/trust-wellbeing/coaching", response_model=TrustWellbeingCoachingResponse)
+    def coach_trust_wellbeing(request: TrustWellbeingCoachingRequest, service: AdviceEssayService = Depends(service_provider), owner_id: UUID = Depends(owner_provider)) -> TrustWellbeingCoachingResponse:
+        _require_owner(owner_id, request.owner_id)
+        return service.coach_trust_wellbeing(request)
+
     @router.post("/collaboration/coaching", response_model=CollaborationCoachingResponse)
     def coach_collaboration(request: CollaborationCoachingRequest, service: AdviceEssayService = Depends(service_provider), owner_id: UUID = Depends(owner_provider)) -> CollaborationCoachingResponse:
         _require_owner(owner_id, request.owner_id)

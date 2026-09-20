@@ -254,3 +254,68 @@ class CollaborationCoachingResponse(BaseModel):
     review_required: bool = True
     external_action_proposed: bool = False
     authorship_notice: str | None = None
+
+
+class TrustWellbeingSkill(str, Enum):
+    TRUST_BUILDING = "trust_building"
+    PSYCHOLOGICAL_SAFETY = "psychological_safety"
+    INCLUSION = "inclusion"
+    DIVERSITY = "diversity"
+    EQUITY = "equity"
+    JUSTICE = "justice"
+    ETHICS = "ethics"
+    INTEGRITY = "integrity"
+    HONESTY = "honesty"
+    TRANSPARENCY = "transparency"
+    ACCOUNTABILITY = "accountability"
+    RELIABILITY = "reliability"
+    DEPENDABILITY = "dependability"
+    CONSISTENCY = "consistency"
+    PATIENCE = "patience"
+    TOLERANCE = "tolerance"
+    FORGIVENESS = "forgiveness"
+    GRATITUDE = "gratitude"
+    HUMILITY = "humility"
+    CURIOSITY = "curiosity"
+    OPEN_MINDEDNESS = "open_mindedness"
+    INTELLECTUAL_HUMILITY = "intellectual_humility"
+    WISDOM = "wisdom"
+    PRUDENCE = "prudence"
+    TEMPERANCE = "temperance"
+    COURAGE = "courage"
+    RESILIENCE = "resilience"
+    GRIT = "grit"
+    SELF_CONTROL = "self_control"
+    DELAYED_GRATIFICATION = "delayed_gratification"
+    IMPULSE_CONTROL = "impulse_control"
+    EMOTIONAL_REGULATION = "emotional_regulation"
+    STRESS_MANAGEMENT = "stress_management"
+    COPING_STRATEGIES = "coping_strategies"
+    MINDFULNESS = "mindfulness"
+    MEDITATION = "meditation"
+    RELAXATION = "relaxation"
+    SLEEP_HYGIENE = "sleep_hygiene"
+    EXERCISE = "exercise"
+
+
+class TrustWellbeingCoachingRequest(BaseModel):
+    owner_id: UUID
+    skill: TrustWellbeingSkill
+    context: str = Field(min_length=1, max_length=10_000)
+    goal: str = Field(min_length=1, max_length=1000)
+    preferences: list[str] = Field(default_factory=list, max_length=50)
+    constraints: list[str] = Field(default_factory=list, max_length=50)
+    reflection: str | None = Field(default=None, max_length=50_000)
+    student_authored_work: bool = False
+
+
+class TrustWellbeingCoachingResponse(BaseModel):
+    owner_id: UUID
+    skill: TrustWellbeingSkill
+    reflection_questions: list[str]
+    low_risk_steps: list[str]
+    safeguards: list[str]
+    escalation_boundary: str
+    review_required: bool = True
+    external_action_proposed: bool = False
+    authorship_notice: str | None = None
