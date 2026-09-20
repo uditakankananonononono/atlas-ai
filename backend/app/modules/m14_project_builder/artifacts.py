@@ -404,6 +404,80 @@ def validate_manifest_set(
                 )
             )
         seen_hashes.setdefault(rec.sha256, rec.id)
+    # Lineage: optional provenance["derived_from"] lists parent artifact ids.
+    ids = {rec.id for rec in records}
+    parents: Dict[str, Tuple[str, ...]] = {}
+    for rec in records:
+        raw = rec.provenance.get("derived_from")
+        if raw is None:
+            parents[rec.id] = ()
+            continue
+        if not isinstance(raw, (list, tuple)) or not all(
+            isinstance(x, str) for x in raw
+        ):
+            findings.append(
+                ValidationFinding(
+                    check="lineage_shape",
+                    severity="error",
+                    message=(
+                        f"artifact {rec.id} provenance['derived_from'] must be "
+                        "a list of artifact ids"
+                    ),
+                    remediation="store parent artifact ids as a list of strings",
+                )
+            )
+            parents[rec.id] = ()
+            continue
+        if rec.id in raw:
+            findings.append(
+                ValidationFinding(
+                    check="lineage_self_reference",
+                    severity="error",
+                    message=f"artifact {rec.id} lists itself in derived_from",
+                    remediation="remove the self-reference from derived_from",
+                )
+            )
+        dangling = [x for x in raw if x not in ids]
+        if dangling:
+            findings.append(
+                ValidationFinding(
+                    check="lineage_dangling",
+                    severity="error",
+                    message=(
+                        f"artifact {rec.id} derived_from references unknown "
+                        "artifacts: " + ", ".join(sorted(set(dangling)))
+                    ),
+                    remediation="only reference artifacts registered in this project",
+                )
+            )
+        parents[rec.id] = tuple(x for x in raw if x in ids and x != rec.id)
+    # Lineage cycles (only over valid edges).
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = {rid: WHITE for rid in ids}
+    cyclic: set = set()
+
+    def visit(node: str, stack: Tuple[str, ...]) -> None:
+        color[node] = GRAY
+        for parent in parents.get(node, ()):
+            if color.get(parent) == GRAY:
+                cyclic.update(stack + (parent,))
+            elif color.get(parent) == WHITE:
+                visit(parent, stack + (parent,))
+        color[node] = BLACK
+
+    for rid in sorted(ids):
+        if color[rid] == WHITE:
+            visit(rid, ())
+    if cyclic:
+        findings.append(
+            ValidationFinding(
+                check="lineage_acyclic",
+                severity="error",
+                message="artifact lineage contains a cycle involving: "
+                + ", ".join(sorted(cyclic)),
+                remediation="break the cycle; lineage must point backward in time",
+            )
+        )
     reports = tuple(
         validate_artifact(rec, payload=payloads.get(rec.id), registry=registry, now=now)
         for rec in records

@@ -186,3 +186,50 @@ class TestSetValidation:
         assert report.passed
         assert report.score == 1.0
         assert len(report.artifact_reports) == 2
+
+
+class TestLineage:
+    def _record_with_parents(self, parents, uri="workspace://p1/t1/out.csv"):
+        prov = {"source": "https://example.org", "retrieved_at": PAST,
+                "derived_from": parents}
+        return build_manifest("p1", "t1", "dataset", uri, b"x", prov)
+
+    def test_valid_lineage_passes(self):
+        parent = make_record(uri="workspace://p1/t1/parent.csv")
+        child = self._record_with_parents([parent.id])
+        report = validate_manifest_set((parent, child), "p1", now=NOW)
+        assert report.passed
+        assert not any(f.check.startswith("lineage") for f in report.findings)
+
+    def test_dangling_reference_fails(self):
+        rec = self._record_with_parents(["ghost-id"])
+        report = validate_manifest_set((rec,), "p1", now=NOW)
+        assert not report.passed
+        assert any(f.check == "lineage_dangling" for f in report.findings)
+
+    def test_self_reference_fails(self):
+        rec = self._record_with_parents([])
+        prov = dict(rec.provenance)
+        prov["derived_from"] = [rec.id]
+        rec2 = ArtifactRecord(**{**rec.__dict__, "provenance": prov})
+        report = validate_manifest_set((rec2,), "p1", now=NOW)
+        assert not report.passed
+        assert any(f.check == "lineage_self_reference" for f in report.findings)
+
+    def test_bad_shape_fails(self):
+        prov = {"source": "x", "retrieved_at": PAST, "derived_from": "not-a-list"}
+        rec = build_manifest("p1", "t1", "dataset", "workspace://p1/t1/o.csv",
+                             b"x", prov)
+        report = validate_manifest_set((rec,), "p1", now=NOW)
+        assert not report.passed
+        assert any(f.check == "lineage_shape" for f in report.findings)
+
+    def test_cycle_fails(self):
+        a = self._record_with_parents([], uri="workspace://p1/t1/a.csv")
+        b = self._record_with_parents([a.id], uri="workspace://p1/t1/b.csv")
+        prov_a = dict(a.provenance)
+        prov_a["derived_from"] = [b.id]
+        a2 = ArtifactRecord(**{**a.__dict__, "provenance": prov_a})
+        report = validate_manifest_set((a2, b), "p1", now=NOW)
+        assert not report.passed
+        assert any(f.check == "lineage_acyclic" for f in report.findings)

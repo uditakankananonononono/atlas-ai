@@ -72,6 +72,14 @@ def get_artifacts(project_id:str,tenant_id:str=Depends(tenant),service:Service=D
 @router.post("/projects/{project_id}/artifacts/validate",response_model=ArtifactSetValidationView)
 def validate_artifacts(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     return service.validate_artifacts(_get_or_404(service,tenant_id,project_id))
+@router.get("/projects/{project_id}/status-report",response_model=StatusReportView)
+def status_report(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
+    return service.status_report(_get_or_404(service,tenant_id,project_id))
+@router.post("/projects/{project_id}/quality",response_model=QualityResult)
+def evaluate_quality(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
+    project=_get_or_404(service,tenant_id,project_id)
+    try:return service.evaluate_plan(project)
+    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 @router.post("/projects/{project_id}/feedback",response_model=FeedbackResponse)
 async def feedback(project_id:str,request:FeedbackRequest,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     project=_get_or_404(service,tenant_id,project_id)

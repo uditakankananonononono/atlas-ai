@@ -95,3 +95,5 @@ class FeedbackResponse(BaseModel):
 class ExportView(BaseModel):
     project_id:str; readme:str; manifest:dict[str,Any]; verification:dict[str,Any]
     zip_sha256:str|None=None
+class StatusReportView(BaseModel):
+    project_id:str; markdown:str; generated_at:datetime

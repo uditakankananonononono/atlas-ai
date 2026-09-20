@@ -220,6 +220,7 @@ class TestServiceFeedbackAndExport:
         assert response.requires_human_review
 
     def test_export_assembles_verified_directory(self, service, project, tmp_path):
+        service.scope_project(project, ScopeRequest())
         service.plan_milestones(project, MilestonePlanRequest(
             kind="research_project", start=START))
         service.register_artifact(project, ArtifactRegisterRequest(
@@ -233,6 +234,9 @@ class TestServiceFeedbackAndExport:
         assert view.zip_sha256
         root = tmp_path / project.id
         assert (root / "README.md").exists()
+        assert (root / "STATUS.md").exists()
+        assert "## Progress" in (root / "STATUS.md").read_text()
+        assert (root / "SCOPE.md").exists()
         assert (root / "export_manifest.json").exists()
         assert (tmp_path / f"{project.id}-export.zip").exists()
 
@@ -351,3 +355,47 @@ class TestRoutes:
         assert export.status_code == 201
         assert export.json()["verification"]["passed"]
         assert export.json()["zip_sha256"]
+
+
+class TestQualityWiring:
+    def test_service_requires_plan(self, service, project):
+        with pytest.raises(ValueError):
+            service.evaluate_plan(project)
+
+    def test_service_evaluates_planned_project(self, service, project):
+        asyncio.run(service.plan(project))
+        result = service.evaluate_plan(service.get("tenant1", project.id))
+        assert result.passed
+        assert 0.0 <= result.score <= 1.0
+
+    def test_quality_route(self, client):
+        pid = client.post("/project-builder/projects",
+                          json={"goal": "Analyze this dataset"}).json()["id"]
+        no_plan = client.post(f"/project-builder/projects/{pid}/quality")
+        assert no_plan.status_code == 422
+
+
+class TestStatusReportWiring:
+    def test_service_renders_full_state(self, service, project):
+        service.plan_milestones(project, MilestonePlanRequest(
+            kind="data_analysis", start=START))
+        service.register_artifact(project, ArtifactRegisterRequest(
+            task_id="t1", kind="dataset", uri="workspace://p/t/d.csv",
+            content_base64=b64(b"x"), provenance=GOOD_PROV))
+        view = service.status_report(project)
+        assert "## Progress" in view.markdown
+        assert "## Artifact validation" in view.markdown
+        assert view.generated_at.tzinfo is not None
+
+    def test_service_minimal_project(self, service, project):
+        view = service.status_report(project)
+        assert "**Status:** draft" in view.markdown
+        assert "## Progress" not in view.markdown
+
+    def test_status_report_route(self, client):
+        pid = client.post("/project-builder/projects",
+                          json={"goal": "Analyze this dataset"}).json()["id"]
+        response = client.get(f"/project-builder/projects/{pid}/status-report")
+        assert response.status_code == 200
+        assert "**Status:** draft" in response.json()["markdown"]
+        assert client.get("/project-builder/projects/nope/status-report").status_code == 404

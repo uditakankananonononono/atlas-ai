@@ -14,6 +14,8 @@ from app.core.providers import generate as byok_generate
 from . import artifacts as artifact_engine
 from . import exports as export_engine
 from . import milestones as milestone_engine
+from . import quality as quality_engine
+from . import reports as report_engine
 from . import scoping as scope_engine
 from .schemas import *
 GenerateFn=Callable[[str,str,str|None],Awaitable[tuple[str,str]]]
@@ -182,6 +184,31 @@ class Service:
                 findings=[asdict(f) for f in r.findings],remediation=list(r.remediation)) for r in report.artifact_reports],
             findings=[asdict(f) for f in report.findings])
 
+    # --- Plan quality -----------------------------------------------------------
+    def evaluate_plan(self,project:ProjectView)->QualityResult:
+        if not project.plan:raise ValueError("project must be planned before quality evaluation")
+        report=quality_engine.evaluate_plan(project.plan,budget=project.budget)
+        return QualityResult(passed=report.passed,score=report.score,
+            findings=[f.message for f in report.findings],remediation=list(report.remediation))
+
+    # --- Status report -----------------------------------------------------------
+    def status_report(self,project:ProjectView,as_of:datetime|None=None)->StatusReportView:
+        milestones=tuple(_milestone_to_domain(v) for v in self.list_milestones(project))
+        progress=milestone_engine.compute_progress(list(milestones)) if milestones else None
+        slippage=tuple(milestone_engine.detect_slippage(list(milestones),as_of or datetime.now(timezone.utc))) if milestones else ()
+        manifests=self.list_artifacts(project)
+        validation=None
+        if manifests:
+            if self._repository:payloads=self._repository.artifact_payloads(project.id)
+            else:payloads=self._artifact_payloads.get((project.tenant_id,project.id),{})
+            records=tuple(_artifact_to_record(m) for m in manifests)
+            validation=artifact_engine.validate_manifest_set(records,project.id,payloads=payloads)
+        generated=datetime.now(timezone.utc)
+        markdown=report_engine.render_status_report(report_engine.StatusReportContext(
+            project_id=project.id,goal=project.goal,status=project.status,progress=progress,
+            milestones=milestones,slippage=slippage,artifact_validation=validation,generated_at=generated))
+        return StatusReportView(project_id=project.id,markdown=markdown,generated_at=generated)
+
     # --- Feedback and exports --------------------------------------------------
     async def apply_feedback(self,project:ProjectView,request:FeedbackRequest)->FeedbackResponse:
         if not project.plan:raise ValueError("project must be planned before feedback")
@@ -218,8 +245,13 @@ class Service:
             milestones=milestones,artifacts=tuple(records),overall_progress=progress,
             assumptions=tuple(project.plan.assumptions) if project.plan else (),risks=tuple(project.plan.risks) if project.plan else ()))
         readme_bytes=readme.encode("utf-8")
-        readme_entry=export_engine.write_project_files(root,{"README.md":readme_bytes},overwrite=True)
-        manifest=export_engine.build_manifest(project.id,tuple(entries)+tuple(readme_entry))
+        extra_entries=export_engine.write_project_files(root,{"README.md":readme_bytes},overwrite=True)
+        status_md=self.status_report(project).markdown
+        extra_entries+=export_engine.write_project_files(root,{"STATUS.md":status_md.encode("utf-8")},overwrite=True)
+        scope_md=(project.brief.get("scope") or {}).get("markdown")
+        if scope_md:
+            extra_entries+=export_engine.write_project_files(root,{"SCOPE.md":scope_md.encode("utf-8")},overwrite=True)
+        manifest=export_engine.build_manifest(project.id,tuple(entries)+tuple(extra_entries))
         (root/"export_manifest.json").write_text(json.dumps(manifest.to_dict(),indent=2))
         verification=export_engine.verify_export(root,manifest)
         zip_entry=export_engine.create_zip(root,root.parent/f"{project.id}-export.zip")
