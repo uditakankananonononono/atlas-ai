@@ -32,3 +32,22 @@ def test_critique_uses_authenticated_owner_not_request_owner():
     })
     assert response.status_code == 200
     assert response.json()["owner_id"] == str(owner)
+
+
+def test_communication_coaching_endpoint_is_mounted_and_owner_scoped():
+    from fastapi import FastAPI
+
+    owner = uuid4(); service = AdviceEssayService(InMemoryModule17Repository())
+    app = FastAPI(); app.include_router(build_router(lambda: service, lambda: owner)); client = TestClient(app)
+    payload = {
+        "owner_id": str(owner), "skill": "socratic_method", "context": "Teach reasoning",
+        "goal": "Help the learner inspect assumptions", "audience": "Student",
+        "student_authored_work": True,
+    }
+    response = client.post("/v1/modules/17/communication/coaching", json=payload)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["review_required"] is True
+    assert body["external_action_proposed"] is False
+    payload["owner_id"] = str(uuid4())
+    assert client.post("/v1/modules/17/communication/coaching", json=payload).status_code == 403
