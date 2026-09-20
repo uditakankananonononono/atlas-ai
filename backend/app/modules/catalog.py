@@ -31,5 +31,6 @@ MODULES = [
     Module(20, "general-cognitive-worker", "General Cognitive Worker", "implemented"),
     Module(21, "claire", "Claire Personal Assistant / Idea Realisation Engine", "implemented"),
     Module(22, "tools-hub", "Tools Discovery & Integration Hub", "implemented"),
+    Module(23, "billing", "Billing and Subscriptions", "implemented"),
 ]
 BY_ID = {module.id: module for module in MODULES}
