@@ -111,3 +111,116 @@ class FollowUpRequest(BaseModel):
     days_without_reply: int = Field(ge=1, le=365)
     provider: str = "openai"
     model: str | None = None
+
+
+class EnrichEmailRequest(BaseModel):
+    """Find a verified-candidate email for a contact at one domain."""
+
+    domain: str = Field(min_length=3, max_length=253)
+
+
+class LabSearchRequest(BaseModel):
+    """Search the curated lab registry."""
+
+    query: str = Field(default="", max_length=500)
+    topics: list[str] = Field(default_factory=list, max_length=20)
+    limit: int = Field(default=10, ge=1, le=50)
+
+
+class LabCollectRequest(BaseModel):
+    """Collect one public lab page (robots-respecting)."""
+
+    url: str = Field(min_length=10, max_length=2000)
+
+
+class CampaignCreateRequest(BaseModel):
+    """Create a scoped outreach campaign."""
+
+    project_id: str = Field(min_length=1, max_length=120)
+    name: str = Field(min_length=1, max_length=200)
+    goal: str = Field(min_length=3, max_length=2000)
+    audience: str = Field(default="professor", max_length=40)
+    max_follow_ups: int = Field(default=2, ge=0, le=10)
+    follow_up_window_days: int = Field(default=5, ge=1, le=90)
+
+
+class CampaignStatusUpdate(BaseModel):
+    """Pause, resume, or complete a campaign."""
+
+    status: Literal["active", "paused", "completed"]
+
+
+class MessageDraftRequest(BaseModel):
+    """Add a message draft to a campaign."""
+
+    contact_id: str
+    subject: str = Field(min_length=1, max_length=500)
+    body: str = Field(min_length=1, max_length=20_000)
+    kind: Literal["initial", "follow_up", "survey", "proposal", "pr_pitch"] = "initial"
+    provider: str | None = None
+    model: str | None = None
+
+
+class DecisionRecordRequest(BaseModel):
+    """Mirror a Module 0 decision onto a message."""
+
+    approved: bool
+    actor: str | None = Field(default=None, max_length=120)
+
+
+class ReplyRecordRequest(BaseModel):
+    """Record a reply detected via provider thread metadata."""
+
+    thread_id: str | None = Field(default=None, max_length=200)
+    snippet: str | None = Field(default=None, max_length=1000)
+
+
+class FailureRecordRequest(BaseModel):
+    """Record a delivery failure or bounce notice."""
+
+    reason: str = Field(min_length=1, max_length=1000)
+    bounced: bool = False
+
+
+class FollowUpDraftRequest(BaseModel):
+    """Draft the next follow-up for a due message."""
+
+    provider: str = "openai"
+    model: str | None = None
+
+
+class CampaignPlanRequest(BaseModel):
+    """Plan a scoped campaign over stored contacts."""
+
+    goal: str = Field(min_length=3, max_length=2000)
+    audience: Literal["professor", "researcher", "professional", "student", "press"]
+    contact_ids: list[str] = Field(min_length=1, max_length=500)
+    scope: dict[str, Any] | None = None
+    manual_channels: list[str] = Field(default_factory=list, max_length=10)
+
+
+class SurveyPlanRequest(BaseModel):
+    """Plan a micro-survey over stored contacts."""
+
+    goal: str = Field(min_length=3, max_length=2000)
+    contact_ids: list[str] = Field(min_length=1, max_length=500)
+    question: str | None = Field(default=None, max_length=500)
+    scope: dict[str, Any] | None = None
+
+
+class PRPlanRequest(BaseModel):
+    """Plan PR outreach over supplied press targets."""
+
+    goal: str = Field(min_length=3, max_length=2000)
+    targets: list[dict[str, Any]] = Field(min_length=1, max_length=500)
+    embargo: datetime | None = None
+    scope: dict[str, Any] | None = None
+
+
+class ProposalDraftRequest(BaseModel):
+    """Draft a business proposal grounded in supplied project facts."""
+
+    project: dict[str, Any]
+    recipient_context: str = Field(min_length=1, max_length=2000)
+    provider: str = "openai"
+    model: str | None = None
