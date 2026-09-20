@@ -95,5 +95,17 @@
     "official_api_first": true,
     "authorized_browser_cadence_hours": 8,
     "stop_on_throttle_or_challenge": true
+  },
+  "source_notes": {
+    "owner_pasted_names_count": 76,
+    "normalized_matches": 75,
+    "unresolved_names": [
+      "appilcation ally"
+    ],
+    "normalization_notes": {
+      "open doors for students org": "opendoorsforstudents",
+      "for finance hub": "financehub"
+    },
+    "rule": "Unresolved names are never guessed into handles; verify the real public account before adding."
   }
 }
