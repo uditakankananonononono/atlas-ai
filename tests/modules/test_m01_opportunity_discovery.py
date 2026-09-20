@@ -329,3 +329,34 @@ def test_type_tagging_precedence():
     opp_type, tags = tag_type("Global Hackathon", "a coding competition", OpportunityType.OTHER)
     assert opp_type == OpportunityType.HACKATHON
     assert "hackathon" in tags
+
+class FakeNormalizer:
+    def entities(self, text): return ["org:Example Foundation"]
+    def deadline(self, text): return parse_deadline(text)
+class FakeEmbeddingMatcher:
+    def similarity(self, opportunity_text, profile_text):
+        assert "machine learning" in profile_text
+        return .8765
+
+def test_scan_wires_nlp_entities_dateparser_and_embedding_primary_paths():
+    service = Service(session_factory=memory_session_factory(), fetcher=two_source_fetcher,
+        approval_putter=FakeApprovalStore().put, normalizer=FakeNormalizer(),
+        embedding_matcher=FakeEmbeddingMatcher(), sources=(DEFAULT_SOURCES[0],))
+    result=service.run_scan(profile=PROFILE)
+    assert result.new == 2
+    rows=service.list_opportunities()
+    assert all(row.match_score == .8765 for row in rows)
+    assert all("org:Example Foundation" in row.tags for row in rows)
+    assert next(x for x in rows if "Hackathon" in x.title).deadline.strftime("%Y-%m-%d") == "2026-12-01"
+
+def test_http_embedding_matcher_uses_openai_byok(monkeypatch):
+    from app.modules.m01_opportunity_discovery.service import HttpEmbeddingMatcher
+    monkeypatch.setenv("OPENAI_API_KEY","secret")
+    class R:
+        def raise_for_status(self): pass
+        def json(self): return {"data":[{"index":0,"embedding":[1.,0.]},{"index":1,"embedding":[1.,0.]}]}
+    def post(url,headers,json,timeout):
+        assert url.endswith("/embeddings") and headers["Authorization"] == "Bearer secret"
+        return R()
+    monkeypatch.setattr("app.modules.m01_opportunity_discovery.service.httpx.post",post)
+    assert HttpEmbeddingMatcher("openai").similarity("a","b") == 1.0

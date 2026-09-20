@@ -26,12 +26,13 @@ from __future__ import annotations
 
 import hashlib
 import math
+import os
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Protocol
 from uuid import NAMESPACE_URL, uuid5
 
 import httpx
@@ -48,6 +49,70 @@ MODULE_SLUG = "opportunity-discovery"
 MODULE_NAME = "Opportunity Discovery Engine"
 
 DIGEST_ACTION_TYPE = "send_opportunity_digest_email"
+
+
+class Normalizer(Protocol):
+    def entities(self, text: str) -> list[str]: ...
+    def deadline(self, text: str) -> datetime | None: ...
+
+
+class SpacyDateNormalizer:
+    """Real configurable spaCy NER plus dateparser deadline normalization.
+
+    The spaCy model is explicit because shipping an unverified language model
+    would hide provenance. Production sets ATLAS_SPACY_MODEL to an installed
+    checkpoint; failure is clear instead of silently pretending regex is NER.
+    """
+    def __init__(self, model: str | None = None) -> None:
+        import spacy
+        self.model = model or os.getenv("ATLAS_SPACY_MODEL", "en_core_web_sm")
+        try:
+            self.nlp = spacy.load(self.model)
+        except OSError as exc:
+            raise RuntimeError(f"spaCy model {self.model!r} is not installed") from exc
+
+    def entities(self, text: str) -> list[str]:
+        return sorted({f"{ent.label_.lower()}:{ent.text.strip()}" for ent in self.nlp(text) if ent.text.strip()})
+
+    def deadline(self, text: str) -> datetime | None:
+        import dateparser.search
+        match = _DEADLINE_RE.search(text)
+        if not match:
+            return None
+        found = dateparser.search.search_dates(
+            match.group(1), settings={"PREFER_DATES_FROM":"future", "RETURN_AS_TIMEZONE_AWARE":True}
+        )
+        if not found:
+            return None
+        parsed = found[0][1]
+        return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+class EmbeddingMatcher(Protocol):
+    def similarity(self, opportunity_text: str, profile_text: str) -> float: ...
+
+
+class HttpEmbeddingMatcher:
+    """Synchronous scoring adapter for OpenAI BYOK or local Ollama BGE."""
+    def __init__(self, provider: str | None = None) -> None:
+        self.provider=(provider or os.getenv("ATLAS_EMBEDDING_PROVIDER", "openai")).lower()
+
+    def _embed(self, texts: list[str]) -> list[list[float]]:
+        if self.provider == "openai":
+            key=os.getenv("OPENAI_API_KEY")
+            if not key: raise RuntimeError("OPENAI_API_KEY is not configured")
+            response=httpx.post("https://api.openai.com/v1/embeddings",headers={"Authorization":f"Bearer {key}"},json={"model":os.getenv("ATLAS_OPENAI_EMBEDDING_MODEL","text-embedding-3-large"),"input":texts,"dimensions":1024},timeout=120)
+            response.raise_for_status(); return [x["embedding"] for x in sorted(response.json()["data"],key=lambda x:x["index"])]
+        if self.provider in {"ollama","bge","local"}:
+            base=os.getenv("ATLAS_OLLAMA_URL","http://ollama:11434").rstrip("/")
+            response=httpx.post(f"{base}/api/embed",json={"model":os.getenv("ATLAS_OLLAMA_EMBEDDING_MODEL","bge-m3"),"input":texts,"truncate":True},timeout=300)
+            response.raise_for_status(); return response.json()["embeddings"]
+        raise RuntimeError(f"unsupported embedding provider: {self.provider}")
+
+    def similarity(self, opportunity_text: str, profile_text: str) -> float:
+        left,right=self._embed([opportunity_text,profile_text])
+        dot=sum(a*b for a,b in zip(left,right)); norms=math.sqrt(sum(a*a for a in left))*math.sqrt(sum(b*b for b in right))
+        return 0.0 if not norms else dot/norms
 
 # ---------------------------------------------------------------------------
 # Sources
@@ -423,12 +488,16 @@ class Service:
         approval_putter: ApprovalPutter | None = None,
         notifier: Notifier | None = None,
         sources: Iterable[Source] | None = None,
+        normalizer: Normalizer | None = None,
+        embedding_matcher: EmbeddingMatcher | None = None,
     ) -> None:
         self._session_factory = session_factory or SessionLocal
         self._fetcher = fetcher or default_fetcher
         self._approval_putter = approval_putter or self._default_approval_putter
         self._notifier = notifier
         self._sources = tuple(sources) if sources is not None else DEFAULT_SOURCES
+        self._normalizer = normalizer
+        self._embedding_matcher = embedding_matcher
         self._tables_ready = False
 
     @staticmethod
@@ -517,7 +586,9 @@ class Service:
         text = f"{title} {description}"
         opp_type, tags = tag_type(title, description, source.default_type)
         tags = sorted({*tags, *raw.get("extra_tags", [])})
-        deadline = parse_deadline(text)
+        deadline = self._normalizer.deadline(text) if self._normalizer else parse_deadline(text)
+        if self._normalizer:
+            tags = sorted({*tags, *self._normalizer.entities(text)})
         now = datetime.now(timezone.utc)
         row_id = opportunity_id(url)
         with self._session_factory() as session:
@@ -540,7 +611,8 @@ class Service:
             row.deadline = deadline
             row.opportunity_type = opp_type.value
             row.tags = tags
-            row.match_score = match_score(text, profile)
+            profile_text = " ".join([*profile.interests, *profile.skills, *profile.past_successes])
+            row.match_score = round(self._embedding_matcher.similarity(text, profile_text), 4) if self._embedding_matcher and profile_text else match_score(text, profile)
             row.expected_impact = expected_impact(text, opp_type)
             row.last_seen = now
             session.commit()
