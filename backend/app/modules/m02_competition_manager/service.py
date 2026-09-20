@@ -2,7 +2,7 @@
 
 import json
 from collections.abc import Awaitable, Callable
-from typing import Any
+from typing import Any, Protocol
 from uuid import uuid4
 
 from pydantic import ValidationError
@@ -36,6 +36,20 @@ class UnsafeStatusTransitionError(ValueError):
     """Raised for unsupported or unevidenced submission state changes."""
 
 
+class CompetitionRepository(Protocol):
+    def save(self, competition: Competition) -> Competition: ...
+    def get(self, competition_id: str) -> Competition | None: ...
+
+class DictCompetitionRepository:
+    def __init__(self, store: dict[str, Competition] | None = None) -> None:
+        self.store = store if store is not None else {}
+    def save(self, competition: Competition) -> Competition:
+        self.store[competition.id] = competition.model_copy(deep=True)
+        return competition
+    def get(self, competition_id: str) -> Competition | None:
+        item=self.store.get(competition_id)
+        return item.model_copy(deep=True) if item else None
+
 class Service:
     """Manage competition rules, drafts, checklists, and safe action proposals.
 
@@ -47,9 +61,10 @@ class Service:
         self,
         generator: Generator,
         store: dict[str, Competition] | None = None,
+        repository: CompetitionRepository | None = None,
     ) -> None:
         self._generator = generator
-        self._store = store if store is not None else {}
+        self._repository = repository or DictCompetitionRepository(store)
 
     async def create_competition(self, request: CompetitionCreate) -> Competition:
         """Extract structured rules and create a material checklist."""
@@ -65,8 +80,7 @@ class Service:
                 for material in rules.required_materials
             ],
         )
-        self._store[competition.id] = competition
-        return competition
+        return self._repository.save(competition)
 
     async def _extract_rules(self, request: CompetitionCreate) -> RuleSet:
         prompt = (
@@ -100,10 +114,10 @@ class Service:
 
     def get_competition(self, competition_id: str) -> Competition:
         """Return one competition or raise a domain-specific error."""
-        try:
-            return self._store[competition_id]
-        except KeyError as error:
-            raise CompetitionNotFoundError(competition_id) from error
+        item=self._repository.get(competition_id)
+        if item is None:
+            raise CompetitionNotFoundError(competition_id)
+        return item
 
     async def draft_field(self, competition_id: str, request: DraftRequest) -> DraftResult:
         """Draft an application field using only user-authorized context."""
@@ -121,6 +135,7 @@ class Service:
         model, text = await self._generator(prompt, request.provider, request.model)
         competition.drafts[request.field_name] = text
         competition.status = SubmissionStatus.READY_FOR_REVIEW
+        self._repository.save(competition)
         return DraftResult(
             competition_id=competition_id,
             field_name=request.field_name,
@@ -134,6 +149,7 @@ class Service:
         """Describe browser staging work without filling or submitting a form."""
         competition = self.get_competition(competition_id)
         competition.status = SubmissionStatus.SUBMISSION_PROPOSED
+        self._repository.save(competition)
         return ProposedAction(
             action_type="competition.form_fill_and_submission",
             payload={
@@ -167,4 +183,4 @@ class Service:
             )
         competition.status = evidence.status
         competition.status_evidence.append(evidence)
-        return competition
+        return self._repository.save(competition)

@@ -2,9 +2,10 @@
 
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
 from app.core.approvals import approvals
+from app.auth.context import TenantContext, require_tenant
 from app.core.models import ApprovalRequest
 from app.core.providers import generate
 
@@ -25,11 +26,15 @@ from .service import (
 )
 
 router = APIRouter(prefix="/competition-manager", tags=["competition-manager"])
-service = Service(generator=generate)
 
+
+
+def get_service(tenant: TenantContext = Depends(require_tenant)) -> Service:
+    from .sql_repository import SqlCompetitionRepository
+    return Service(generator=generate, repository=SqlCompetitionRepository(tenant.tenant_id))
 
 @router.post("/competitions", response_model=Competition)
-async def create_competition(request: CompetitionCreate) -> Competition:
+async def create_competition(request: CompetitionCreate, service: Service = Depends(get_service)) -> Competition:
     """Create a competition from supplied official rule text."""
     try:
         return await service.create_competition(request)
@@ -38,7 +43,7 @@ async def create_competition(request: CompetitionCreate) -> Competition:
 
 
 @router.get("/competitions/{competition_id}", response_model=Competition)
-def get_competition(competition_id: str) -> Competition:
+def get_competition(competition_id: str, service: Service = Depends(get_service)) -> Competition:
     """Read competition state."""
     try:
         return service.get_competition(competition_id)
@@ -47,7 +52,7 @@ def get_competition(competition_id: str) -> Competition:
 
 
 @router.post("/competitions/{competition_id}/drafts", response_model=DraftResult)
-async def draft_field(competition_id: str, request: DraftRequest) -> DraftResult:
+async def draft_field(competition_id: str, request: DraftRequest, service: Service = Depends(get_service)) -> DraftResult:
     """Generate a review-required draft through the shared BYOK provider."""
     try:
         return await service.draft_field(competition_id, request)
@@ -60,7 +65,7 @@ async def draft_field(competition_id: str, request: DraftRequest) -> DraftResult
     response_model=ProposedAction,
 )
 def propose_form_fill(
-    competition_id: str, request: FormFillProposalRequest
+    competition_id: str, request: FormFillProposalRequest, service: Service = Depends(get_service)
 ) -> ProposedAction:
     """Queue browser staging behind the shared approval boundary."""
     try:
@@ -79,7 +84,7 @@ def propose_form_fill(
 
 
 @router.post("/competitions/{competition_id}/status", response_model=Competition)
-def update_status(competition_id: str, request: StatusUpdate) -> Competition:
+def update_status(competition_id: str, request: StatusUpdate, service: Service = Depends(get_service)) -> Competition:
     """Record a status update from official API, email, or manual evidence."""
     try:
         return service.update_status(competition_id, request.evidence)
