@@ -10,7 +10,7 @@ from __future__ import annotations
 import math,random,statistics
 from collections import Counter
 ROWS={
-"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052}
+"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057}
 def _nums(data,key="values",min_n=1):
     v=data.get(key)
     if not isinstance(v,list) or len(v)<min_n or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in v):raise ValueError(f"{key} must contain at least {min_n} finite numbers")
@@ -418,5 +418,43 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
             theta=rng.uniform(prior_low,prior_high);sim=rng.gauss(theta,simulation_sd)
             if abs(sim-observed)<=epsilon:accepted.append(theta)
         o["output"]={"algorithm":"abc_rejection","accepted":len(accepted),"draws":draws,"acceptance_rate":len(accepted)/draws,"posterior_mean":_mean(accepted) if accepted else None,"posterior_interval":[_quantile(accepted,.025),_quantile(accepted,.975)] if accepted else None,"epsilon":epsilon};a += ["Observed scalar summary; uniform prior; Gaussian simulator; absolute-distance acceptance kernel."];limits += ["Posterior is epsilon-dependent and summary-limited; low acceptance or insufficient summary statistics can bias inference."]
+    elif method=="synthetic_likelihood":
+        observed=_nums(data,"observed_summary");simulated=data.get("simulated_summaries")
+        if not isinstance(simulated,list) or len(simulated)<3 or any(not isinstance(row,list) or len(row)!=len(observed) for row in simulated):raise ValueError("at least three aligned simulated summary vectors required")
+        sims=[[float(v) for v in row] for row in simulated];dim=len(observed);mu=[_mean([r[j] for r in sims]) for j in range(dim)]
+        if dim==1:
+            var=_var([r[0] for r in sims],0)
+            if var<=0:raise ValueError("simulated summary variance must be positive")
+            loglik=-.5*(math.log(2*math.pi*var)+(observed[0]-mu[0])**2/var);cov=[[var]]
+        elif dim==2:
+            a11=_var([r[0] for r in sims],0);a22=_var([r[1] for r in sims],0);a12=_mean([(r[0]-mu[0])*(r[1]-mu[1]) for r in sims]);det=a11*a22-a12*a12
+            if det<=0:raise ValueError("simulated covariance must be positive definite")
+            d0,d1=observed[0]-mu[0],observed[1]-mu[1];quad=(a22*d0*d0-2*a12*d0*d1+a11*d1*d1)/det;loglik=-.5*(2*math.log(2*math.pi)+math.log(det)+quad);cov=[[a11,a12],[a12,a22]]
+        else:raise ValueError("reference implementation supports one or two summary dimensions")
+        o["output"]={"synthetic_log_likelihood":loglik,"simulated_mean":mu,"simulated_covariance":cov,"simulation_count":len(sims)};a += ["Summary statistics at the candidate parameter are approximately multivariate Normal."];limits += ["One/two summary dimensions; caller supplies simulations; covariance Monte Carlo error can dominate at low simulation count."]
+    elif method=="indirect_inference":
+        observed=float(data.get("observed_auxiliary"));grid=_nums(data,"parameter_grid");simulated=data.get("simulated_auxiliary")
+        if not isinstance(simulated,list) or len(simulated)!=len(grid) or any(not isinstance(v,list) or not v for v in simulated):raise ValueError("one non-empty simulated auxiliary list per parameter required")
+        distances=[]
+        for theta,vals in zip(grid,simulated):distances.append({"parameter":theta,"simulated_auxiliary_mean":_mean([float(x) for x in vals]),"distance":abs(_mean([float(x) for x in vals])-observed)})
+        best=min(distances,key=lambda x:x["distance"]);o["output"]={"estimate":best["parameter"],"observed_auxiliary":observed,"binding_grid":distances};a += ["Auxiliary statistic identifies the structural parameter and simulations are comparable to observed data."];limits += ["Grid search with scalar auxiliary statistic; simulation noise and weak/non-injective binding functions can misidentify parameters."]
+    elif method=="method_of_moments":
+        values=_nums(data);moments=p.get("moments",["mean","variance"]);sample_mean=_mean(values);sample_variance=_var(values,0);result={}
+        if "mean" in moments:result["location"]=sample_mean
+        if "variance" in moments:result["scale_variance"]=sample_variance
+        if not result:raise ValueError("moments must request mean and/or variance")
+        o["output"]={"distribution":"normal","estimates":result,"sample_moments":{"mean":sample_mean,"variance":sample_variance},"moment_residuals":{"mean":0.0,"variance":0.0}};a += ["Selected population moments exist and identify Normal location/variance parameters."];limits += ["Normal two-moment reference; estimates can be inefficient and sensitive to high-order moment instability."]
+    elif method=="generalized_method_of_moments":
+        z=_nums(data,"instrument");x=_nums(data,"regressor");y=_nums(data,"outcome")
+        if not len(z)==len(x)==len(y):raise ValueError("instrument, regressor and outcome lengths differ")
+        zx=sum(a*b for a,b in zip(z,x))/len(z);zy=sum(a*b for a,b in zip(z,y))/len(z)
+        if abs(zx)<1e-12:raise ValueError("instrument has zero sample relevance")
+        beta=zy/zx;res=[yy-beta*xx for xx,yy in zip(x,y)];moment=sum(a*e for a,e in zip(z,res))/len(z);o["output"]={"estimate":beta,"moment":moment,"objective":moment*moment,"weight_matrix":[[1.0]],"iterations":1};a += ["Single exogenous instrument: E[z*(y-beta*x)]=0; observations iid."];limits += ["Just-identified scalar GMM; no overidentification test, heteroskedasticity/HAC covariance, or weak-instrument robust inference."]
+    elif method=="instrumental_variables":
+        z=_nums(data,"instrument");x=_nums(data,"regressor");y=_nums(data,"outcome")
+        if not len(z)==len(x)==len(y) or len(z)<3:raise ValueError("aligned instrument, regressor and outcome with at least 3 rows required")
+        mz,mx,my=_mean(z),_mean(x),_mean(y);covzx=sum((a-mz)*(b-mx) for a,b in zip(z,x));covzy=sum((a-mz)*(b-my) for a,b in zip(z,y))
+        if abs(covzx)<1e-12:raise ValueError("instrument has zero first-stage relevance")
+        beta=covzy/covzx;intercept=my-beta*mx;first_stage=covzx/sum((a-mz)**2 for a in z);xhat=[mx+first_stage*(a-mz) for a in z];r2=1-sum((b-h)**2 for b,h in zip(x,xhat))/sum((b-mx)**2 for b in x) if _var(x,0)>0 else 0;o["output"]={"estimate":beta,"intercept":intercept,"first_stage_slope":first_stage,"first_stage_r_squared":r2,"weak_instrument_warning":r2<.1};a += ["Instrument relevance, exclusion restriction, independence/exogeneity, monotonicity for a LATE interpretation."];limits += ["One instrument/regressor linear IV; validity is not testable from this data alone; no robust standard error."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
     return o
