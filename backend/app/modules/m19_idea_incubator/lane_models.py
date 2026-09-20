@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Any
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 def utcnow() -> datetime:
@@ -62,7 +62,7 @@ class IdeaCreate(BaseModel):
     tags: list[str] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
-    @validator("title", "problem", "proposed_solution", "owner_id")
+    @field_validator("title", "problem", "proposed_solution", "owner_id")
     def strip_required(cls, value: str) -> str:
         value = value.strip()
         if not value:
@@ -88,7 +88,7 @@ class EvidenceCreate(BaseModel):
     observed_at: datetime = Field(default_factory=utcnow)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
-    @validator("claim", "source")
+    @field_validator("claim", "source")
     def strip_evidence_text(cls, value: str) -> str:
         value = value.strip()
         if not value:

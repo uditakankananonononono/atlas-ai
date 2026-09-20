@@ -42,7 +42,7 @@ class IdeaIncubatorService:
         self.repository = repository or InMemoryIdeaRepository()
 
     def create_idea(self, data: IdeaCreate) -> Idea:
-        return self.repository.add_idea(Idea(**data.dict()))
+        return self.repository.add_idea(Idea(**data.model_dump()))
 
     def get_idea(self, idea_id: UUID) -> Idea:
         return self.repository.get_idea(idea_id)
@@ -53,7 +53,7 @@ class IdeaIncubatorService:
 
     def add_evidence(self, idea_id: UUID, data: EvidenceCreate) -> Evidence:
         self.repository.get_idea(idea_id)
-        return self.repository.add_evidence(Evidence(idea_id=idea_id, **data.dict()))
+        return self.repository.add_evidence(Evidence(idea_id=idea_id, **data.model_dump()))
 
     def summarize_evidence(self, idea_id: UUID) -> EvidenceSummary:
         items = self.repository.list_evidence(idea_id)
@@ -95,7 +95,7 @@ class IdeaIncubatorService:
             outcome = FeasibilityOutcome.PASS
         else:
             outcome = FeasibilityOutcome.CONDITIONAL
-        normalized = data.dict()
+        normalized = data.model_dump()
         normalized["weights"] = weights
         item = FeasibilityTest(
             idea_id=idea_id, weighted_score=round(weighted_score, 2),
@@ -107,7 +107,7 @@ class IdeaIncubatorService:
         idea = self.repository.get_idea(idea_id)
         if idea.stage in {IdeaStage.APPROVED, IdeaStage.REJECTED}:
             raise ValidationError("terminal ideas cannot receive new experiments")
-        return self.repository.add_experiment(Experiment(idea_id=idea_id, **data.dict()))
+        return self.repository.add_experiment(Experiment(idea_id=idea_id, **data.model_dump()))
 
     def update_experiment(self, idea_id: UUID, experiment_id: UUID, data: ExperimentUpdate) -> Experiment:
         experiments = self.repository.list_experiments(idea_id)
