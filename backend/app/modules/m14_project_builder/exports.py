@@ -250,7 +250,13 @@ def verify_export(
     """Recompute digests for every manifest entry under root."""
     missing, mismatched = [], []
     for entry in manifest.entries:
-        target = safe_join(root, entry.relative_path)
+        try:
+            target = safe_join(root, entry.relative_path)
+        except ExportError:
+            # A manifest pointing outside the root is hostile or corrupt;
+            # count it as mismatched rather than crashing verification.
+            mismatched.append(entry.relative_path)
+            continue
         if not target.is_file():
             missing.append(entry.relative_path)
             continue

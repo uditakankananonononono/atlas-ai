@@ -154,3 +154,22 @@ class TestRun:
         ledger = BudgetLedger(BudgetLimits())
         with pytest.raises(RunnerError):
             TaskRunner(ledger, ok_output, max_task_attempts=0)
+
+
+class TestRunnerBoundaries:
+    def test_all_failed_dag_reports_blocked(self):
+        def fail(t):
+            return TaskOutput(success=False, failure_reason="x")
+
+        runner, _ = make_runner(fail, attempts=1)
+        report = runner.run(plan(task("a"), task("b"), task("c", ("a", "b"))))
+        assert report.stopped_reason == "blocked_failures"
+        assert set(report.tasks_failed) == {"a", "b"}
+        c = next(t for t in report.plan.tasks if t.id == "c")
+        assert c.status == "blocked"
+
+    def test_report_budget_status_snapshot(self):
+        runner, ledger = make_runner()
+        report = runner.run(plan(task("a")))
+        assert report.budget_status.agent_calls_used == 1
+        assert ledger.events()

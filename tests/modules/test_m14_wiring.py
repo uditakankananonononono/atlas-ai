@@ -399,3 +399,69 @@ class TestStatusReportWiring:
         assert response.status_code == 200
         assert "**Status:** draft" in response.json()["markdown"]
         assert client.get("/project-builder/projects/nope/status-report").status_code == 404
+
+
+class TestRouteEdgeCases:
+    def _project(self, client):
+        return client.post("/project-builder/projects",
+                           json={"goal": "Analyze this dataset"}).json()["id"]
+
+    def test_milestone_plan_unknown_kind_422(self, client):
+        pid = self._project(client)
+        response = client.post(f"/project-builder/projects/{pid}/milestones",
+                               json={"kind": "nope", "start": START.isoformat()})
+        assert response.status_code == 422
+
+    def test_milestone_plan_naive_start_422(self, client):
+        pid = self._project(client)
+        response = client.post(f"/project-builder/projects/{pid}/milestones",
+                               json={"kind": "data_analysis",
+                                     "start": "2026-09-21T09:00:00"})
+        assert response.status_code == 422
+
+    def test_replan_route(self, client):
+        pid = self._project(client)
+        client.post(f"/project-builder/projects/{pid}/milestones",
+                    json={"kind": "data_analysis", "start": START.isoformat()})
+        later = (START + timedelta(days=30)).isoformat()
+        response = client.post(
+            f"/project-builder/projects/{pid}/milestones/replan",
+            params={"as_of": later})
+        assert response.status_code == 200
+        assert all(m["planned_end"] >= later for m in response.json()
+                   if m["status"] == "pending")
+
+    def test_replan_without_milestones_422(self, client):
+        pid = self._project(client)
+        response = client.post(f"/project-builder/projects/{pid}/milestones/replan")
+        assert response.status_code == 422
+
+    def test_slippage_route_empty_without_milestones(self, client):
+        pid = self._project(client)
+        response = client.get(f"/project-builder/projects/{pid}/milestones/slippage")
+        assert response.status_code == 200
+        assert response.json() == []
+
+    def test_validate_artifacts_empty_set(self, client):
+        pid = self._project(client)
+        response = client.post(f"/project-builder/projects/{pid}/artifacts/validate")
+        assert response.status_code == 200
+        assert response.json()["passed"]
+        assert response.json()["artifacts"] == []
+
+    def test_progress_without_milestones_422(self, client):
+        pid = self._project(client)
+        response = client.get(f"/project-builder/projects/{pid}/milestones/progress")
+        assert response.status_code == 422
+
+    def test_scope_unknown_kind_422(self, client):
+        pid = self._project(client)
+        response = client.post(f"/project-builder/projects/{pid}/scope",
+                               json={"kind": "nope"})
+        assert response.status_code == 422
+
+    def test_export_empty_project(self, client):
+        pid = self._project(client)
+        response = client.post(f"/project-builder/projects/{pid}/exports")
+        assert response.status_code == 201
+        assert response.json()["verification"]["passed"]

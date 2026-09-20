@@ -196,3 +196,24 @@ class TestVerify:
         result = verify_export(project_dir, manifest)
         assert not result.passed
         assert result.extra == ("sneaky.txt",)
+
+
+class TestVerifyHardening:
+    def test_hostile_manifest_entry_counted_not_crashing(self, project_dir):
+        from app.modules.m14_project_builder.exports import ExportEntry
+        entries = write_project_files(project_dir, {"a.txt": b"alpha"})
+        hostile = ExportEntry(relative_path="../escape.txt",
+                              sha256="0" * 64, byte_size=1)
+        manifest = build_manifest("p1", tuple(entries) + (hostile,))
+        result = verify_export(project_dir, manifest)
+        assert not result.passed
+        assert "../escape.txt" in result.mismatched
+
+    def test_absolute_manifest_entry_counted(self, project_dir):
+        from app.modules.m14_project_builder.exports import ExportEntry
+        hostile = ExportEntry(relative_path="/etc/passwd",
+                              sha256="0" * 64, byte_size=1)
+        manifest = build_manifest("p1", (hostile,))
+        result = verify_export(project_dir, manifest)
+        assert not result.passed
+        assert result.mismatched == ("/etc/passwd",)

@@ -123,3 +123,22 @@ class TestPreflightAndEvents:
         assert kinds == ["iterations", "agent_calls", "cost_usd", "runtime_seconds"]
         assert all(e.at for e in events)
         assert events[1].note == "literature"
+
+
+class TestBoundaries:
+    def test_exact_limit_allowed(self):
+        ledger = BudgetLedger(BudgetLimits(max_agent_calls=2, max_cost_usd=1.0))
+        ledger.record_agent_call(cost_usd=0.5)
+        ledger.record_agent_call(cost_usd=0.5)
+        status = ledger.status()
+        assert status.agent_calls_remaining == 0
+        assert status.cost_usd_remaining == pytest.approx(0.0)
+        assert status.exhausted
+
+    def test_event_log_chronological(self):
+        ledger = BudgetLedger(BudgetLimits())
+        ledger.record_iteration("one")
+        ledger.record_agent_call(note="two")
+        ledger.record_runtime(1, "three")
+        notes = [e.note for e in ledger.events()]
+        assert notes == ["one", "two", "three"]
