@@ -230,9 +230,12 @@ class Service:
         else:payloads=self._artifact_payloads.get((project.tenant_id,project.id),{})
         records=[_artifact_to_record(m) for m in manifests]
         files={}
+        warnings=[]
         for record in records:
             payload=payloads.get(record.id)
-            if payload is None:continue
+            if payload is None:
+                warnings.append(f"artifact {record.id} ({record.kind}) excluded from export: payload unavailable")
+                continue
             files[artifact_engine.storage_path(record)]=payload
         root=(Path(base_dir) if base_dir else Path(tempfile.mkdtemp(prefix=f"atlas-m14-{project.id}-")))/project.id
         root.mkdir(parents=True,exist_ok=True)
@@ -256,4 +259,4 @@ class Service:
         verification=export_engine.verify_export(root,manifest)
         zip_entry=export_engine.create_zip(root,root.parent/f"{project.id}-export.zip")
         return ExportView(project_id=project.id,readme=readme,manifest=manifest.to_dict(),
-            verification=asdict(verification),zip_sha256=zip_entry.sha256)
+            verification=asdict(verification),zip_sha256=zip_entry.sha256,warnings=warnings)

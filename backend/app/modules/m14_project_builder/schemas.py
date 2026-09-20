@@ -94,6 +94,6 @@ class FeedbackResponse(BaseModel):
     project:ProjectView; revision_applied:bool; requires_human_review:bool=True
 class ExportView(BaseModel):
     project_id:str; readme:str; manifest:dict[str,Any]; verification:dict[str,Any]
-    zip_sha256:str|None=None
+    zip_sha256:str|None=None; warnings:list[str]=[]
 class StatusReportView(BaseModel):
     project_id:str; markdown:str; generated_at:datetime

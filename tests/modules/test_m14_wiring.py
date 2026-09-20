@@ -465,3 +465,15 @@ class TestRouteEdgeCases:
         response = client.post(f"/project-builder/projects/{pid}/exports")
         assert response.status_code == 201
         assert response.json()["verification"]["passed"]
+
+
+class TestExportWarnings:
+    def test_missing_payload_warns_not_silent(self, service, project, tmp_path):
+        manifest = service.register_artifact(project, ArtifactRegisterRequest(
+            task_id="t1", kind="dataset", uri="workspace://p/t/d.csv",
+            content_base64=b64(b"x"), provenance=GOOD_PROV))
+        # Simulate object-store loss: drop the payload behind the service.
+        del service._artifact_payloads[("tenant1", project.id)][manifest.id]
+        view = service.export_project(project, base_dir=tmp_path)
+        assert any(manifest.id in w for w in view.warnings)
+        assert view.verification["passed"]  # export is consistent, artifact excluded
