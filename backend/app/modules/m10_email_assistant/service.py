@@ -29,7 +29,7 @@ from app.core.models import ApprovalRequest
 from app.core.providers import generate
 from app.core.token_crypto import TokenCipher
 
-from .classifier import Classification, ClassifierInput, EmailClassifier, RuleBasedClassifier
+from .classifier import Classification, ClassifierInput, EmailClassifier, configured_classifier
 from .extraction import GenerateFn, extract_actions
 from .gmail import (
     GmailClient,
@@ -115,7 +115,7 @@ class Service:
         self.google_client_id = google_client_id
         self.google_client_secret = google_client_secret
         self.pubsub_verification_token = pubsub_verification_token
-        self.classifier = classifier or RuleBasedClassifier()
+        self.classifier = classifier or configured_classifier()
         self.embedder = embedder or NullEmbedder()
         self.llm_generate = llm_generate
         self.graph_context = graph_context

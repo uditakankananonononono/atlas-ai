@@ -11,6 +11,7 @@ used until a trained checkpoint ships, and in tests.
 
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import dataclass, field
 from typing import Protocol
@@ -156,3 +157,21 @@ class BertEmailClassifier:
                 f"model returned unknown label {result['label']!r}; checkpoint must emit the seven spec labels"
             ) from exc
         return Classification(category, float(result["score"]), ["bert:" + result["label"]])
+
+
+def configured_classifier() -> EmailClassifier:
+    """Select the production classifier explicitly and fail closed on bad config.
+
+    ATLAS_EMAIL_CLASSIFIER=bert requires ATLAS_EMAIL_BERT_MODEL to identify a
+    verified local or Hugging Face checkpoint. No model is downloaded merely
+    by importing the service, and no unverified training labels are fabricated.
+    """
+    selected=os.getenv("ATLAS_EMAIL_CLASSIFIER", "rules").strip().lower()
+    if selected in {"rules","rule","deterministic"}:
+        return RuleBasedClassifier()
+    if selected in {"bert","transformers"}:
+        model=os.getenv("ATLAS_EMAIL_BERT_MODEL", "").strip()
+        if not model:
+            raise ClassifierUnavailableError("ATLAS_EMAIL_BERT_MODEL is required when ATLAS_EMAIL_CLASSIFIER=bert")
+        return BertEmailClassifier(model)
+    raise ClassifierUnavailableError(f"unsupported email classifier: {selected}")

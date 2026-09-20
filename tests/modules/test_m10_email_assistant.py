@@ -357,3 +357,29 @@ def test_pubsub_route_rejects_bad_token(tmp_path, monkeypatch):
         headers={"x-atlas-tenant": "t1", "x-atlas-actor": "u1"},
     )
     assert response.status_code == 403
+
+def test_configured_bert_checkpoint_is_live_primary(monkeypatch):
+    from app.modules.m10_email_assistant.classifier import BertEmailClassifier, configured_classifier
+    monkeypatch.setenv("ATLAS_EMAIL_CLASSIFIER","bert")
+    monkeypatch.setenv("ATLAS_EMAIL_BERT_MODEL","owner/verified-seven-label-checkpoint")
+    classifier=configured_classifier()
+    assert isinstance(classifier,BertEmailClassifier)
+    assert classifier.model_path == "owner/verified-seven-label-checkpoint"
+
+def test_bert_config_fails_closed_without_verified_checkpoint(monkeypatch):
+    from app.modules.m10_email_assistant.classifier import ClassifierUnavailableError, configured_classifier
+    monkeypatch.setenv("ATLAS_EMAIL_CLASSIFIER","bert")
+    monkeypatch.delenv("ATLAS_EMAIL_BERT_MODEL",raising=False)
+    with pytest.raises(ClassifierUnavailableError,match="ATLAS_EMAIL_BERT_MODEL"):
+        configured_classifier()
+
+def test_bert_classifier_loads_configured_pipeline_and_preserves_provenance(monkeypatch):
+    import sys, types
+    from app.modules.m10_email_assistant.classifier import BertEmailClassifier, ClassifierInput
+    def pipeline(kind,model):
+        assert (kind,model)==("text-classification","verified-local")
+        return lambda text,truncation:[{"label":"ACTION_REQUIRED","score":.97}]
+    monkeypatch.setitem(sys.modules,"transformers",types.SimpleNamespace(pipeline=pipeline))
+    out=BertEmailClassifier("verified-local").classify(ClassifierInput("Please sign","x@example.org","sign by Friday"))
+    assert out.category.value == "action_required" and out.confidence == .97
+    assert out.reasons == ["bert:ACTION_REQUIRED"]
