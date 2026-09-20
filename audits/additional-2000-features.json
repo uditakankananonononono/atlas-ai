@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "d9b7e3298363fda444854adc3e26248b00f5254a",
+  "audited_head": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
   "counts": {
-    "verified-pushed": 233,
+    "verified-pushed": 258,
     "thin": 3,
-    "missing": 1774
+    "missing": 1749
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -5370,8 +5370,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Vendor Selection",
       "description": "Chooses suppliers",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_451_vendor_selection_is_ranked_not_executed",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5380,8 +5387,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Supply Chain Design",
       "description": "Structures logistics",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[452-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5390,8 +5404,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Inventory Management",
       "description": "Optimizes stock",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_453_inventory_eoq_and_reorder_point",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5400,8 +5421,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Demand Forecasting",
       "description": "Predicts needs",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_454_forecast_declares_naive_scope_and_uncertainty",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5410,8 +5438,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Logistics Optimization",
       "description": "Minimizes costs",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_455_logistics_cost_model",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5420,8 +5455,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Manufacturing Planning",
       "description": "Schedules production",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[456-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5430,8 +5472,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Quality Control",
       "description": "Ensures standards",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[457-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5440,8 +5489,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Six Sigma",
       "description": "Reduces defects",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[458-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5450,8 +5506,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Lean Manufacturing",
       "description": "Eliminates waste",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[459-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5460,8 +5523,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Just-in-Time Production",
       "description": "Minimizes inventory",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[460-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5470,8 +5540,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Total Quality Management",
       "description": "Embeds quality culture",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[461-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5480,8 +5557,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Continuous Improvement",
       "description": "Kaizen philosophy",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[462-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5490,8 +5574,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Root Cause Analysis",
       "description": "Finds underlying issues",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[463-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5500,8 +5591,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Fishbone Diagram Creation",
       "description": "Maps causes",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[464-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5510,8 +5608,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "5 Whys Analysis",
       "description": "Drills to root cause",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[465-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5520,8 +5625,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "PDCA Cycle",
       "description": "Plan-Do-Check-Act",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[466-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5530,8 +5642,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "DMAIC",
       "description": "Define-Measure-Analyze-Improve-Control",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[467-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5540,8 +5659,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Value Stream Mapping",
       "description": "Visualizes flow",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[468-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5550,8 +5676,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Process Mining",
       "description": "Discovers actual processes",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[469-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5560,8 +5693,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Workflow Automation",
       "description": "Eliminates manual steps",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[470-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5570,8 +5710,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Robotic Process Automation",
       "description": "Automates repetitive tasks",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[471-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5580,8 +5727,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Business Process Reengineering",
       "description": "Redesigns fundamentally",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[472-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5590,8 +5744,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Change Management",
       "description": "Guides transitions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[473-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5600,8 +5761,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Kotter's 8 Steps",
       "description": "Leads change",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[474-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5610,8 +5778,15 @@
       "category": "Business & Entrepreneurship",
       "requirement": "ADKAR Model",
       "description": "Manages individual change",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+        "implementation_path": "backend/app/modules/m19_idea_incubator/operations_service.py",
+        "test_path": "tests/modules/test_m19_operations_451_475.py",
+        "test_case": "tests/modules/test_m19_operations_451_475.py::test_row_named_evidence_bound_plans[475-",
+        "execution_claim": "not_executed",
+        "caveats": "Moving-average forecast only; vendor output is a decision aid, not due diligence; no optimization solver or process-log ingestion; artifacts are not yet persisted."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
