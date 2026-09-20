@@ -14,6 +14,9 @@ class ApprovalRow(Base):
     pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(36));module_id:Mapped[int]=mapped_column(Integer);action_type:Mapped[str]=mapped_column(String(120));title:Mapped[str]=mapped_column(String(500));summary:Mapped[str]=mapped_column(Text);risk:Mapped[str]=mapped_column(String(20));evidence:Mapped[dict]=mapped_column(JSON);proposed_payload:Mapped[dict]=mapped_column(JSON);state:Mapped[str]=mapped_column(String(20));created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True));expires_at:Mapped[datetime|None]=mapped_column(DateTime(timezone=True),nullable=True);reviewed_at:Mapped[datetime|None]=mapped_column(DateTime(timezone=True),nullable=True);reviewed_by:Mapped[str|None]=mapped_column(String(120),nullable=True);review_note:Mapped[str|None]=mapped_column(Text,nullable=True)
 class CommandRow(Base):
     __tablename__="m16_commands";pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);actor_id:Mapped[str]=mapped_column(String(120));id:Mapped[str]=mapped_column(String(36),index=True);utterance:Mapped[str]=mapped_column(Text);intent:Mapped[str]=mapped_column(String(120));parameters:Mapped[dict]=mapped_column(JSON);plan:Mapped[list]=mapped_column(JSON);read_only:Mapped[bool]=mapped_column(Boolean);confidence:Mapped[float]=mapped_column(Float);expires_at:Mapped[datetime]=mapped_column(DateTime(timezone=True));created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True));executed_at:Mapped[datetime|None]=mapped_column(DateTime(timezone=True),nullable=True)
+class AgentStatusRow(Base):
+    __tablename__="m16_agent_status";__table_args__=(UniqueConstraint("tenant_id","agent_id",name="uq_m16_agent"),)
+    pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);module_id:Mapped[int]=mapped_column(Integer,index=True);agent_id:Mapped[str]=mapped_column(String(120));state:Mapped[str]=mapped_column(String(20));current_task:Mapped[str|None]=mapped_column(String(500),nullable=True);detail:Mapped[dict]=mapped_column(JSON);last_heartbeat:Mapped[datetime]=mapped_column(DateTime(timezone=True))
 def _event(r):return Event(id=r.id,sequence=r.sequence,topic=r.topic,aggregate_type=r.aggregate_type,aggregate_id=r.aggregate_id,payload=r.payload,occurred_at=r.occurred_at)
 def _approval(r):return Approval(id=r.id,module_id=r.module_id,action_type=r.action_type,title=r.title,summary=r.summary,risk=r.risk,evidence=r.evidence,proposed_payload=r.proposed_payload,state=ApprovalState(r.state),created_at=r.created_at,expires_at=r.expires_at,reviewed_at=r.reviewed_at)
 def _command(r):return CommandPreview(id=r.id,utterance=r.utterance,intent=r.intent,parameters=r.parameters,plan=r.plan,read_only=r.read_only,confidence=r.confidence,expires_at=r.expires_at,created_at=r.created_at)
@@ -44,3 +47,23 @@ class SqlDashboardRepository:
         with self.sessions() as db:r=db.scalar(select(CommandRow).where(CommandRow.tenant_id==self.tenant_id,CommandRow.actor_id==self.actor_id,CommandRow.id==cid));return (r,_command(r)) if r else (None,None)
     def mark_command(self,cid,at):
         with self.sessions.begin() as db:r=db.scalar(select(CommandRow).where(CommandRow.tenant_id==self.tenant_id,CommandRow.actor_id==self.actor_id,CommandRow.id==cid));r.executed_at=at
+    def heartbeat(self,data,at):
+        with self.sessions.begin() as db:
+            r=db.scalar(select(AgentStatusRow).where(AgentStatusRow.tenant_id==self.tenant_id,AgentStatusRow.agent_id==data.agent_id))
+            if r:r.module_id=data.module_id;r.state=data.state.value;r.current_task=data.current_task;r.detail=data.detail;r.last_heartbeat=at
+            else:db.add(AgentStatusRow(tenant_id=self.tenant_id,module_id=data.module_id,agent_id=data.agent_id,state=data.state.value,current_task=data.current_task,detail=data.detail,last_heartbeat=at))
+        return AgentStatus(**data.model_dump(),last_heartbeat=at)
+    def list_agents(self):
+        with self.sessions() as db:return [AgentStatus(module_id=r.module_id,agent_id=r.agent_id,state=AgentState(r.state),current_task=r.current_task,detail=r.detail,last_heartbeat=r.last_heartbeat) for r in db.scalars(select(AgentStatusRow).where(AgentStatusRow.tenant_id==self.tenant_id).order_by(AgentStatusRow.module_id))]
+    def approvals_reviewed_since(self,since):
+        with self.sessions() as db:return [_approval(r) for r in db.scalars(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.reviewed_at.isnot(None),ApprovalRow.reviewed_at>=since).order_by(ApprovalRow.reviewed_at))]
+    def events_between(self,start,end,limit=2000):
+        with self.sessions() as db:return [_event(r) for r in db.scalars(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.occurred_at>=start,EventRow.occurred_at<=end).order_by(EventRow.sequence).limit(limit))]
+    def event_by_id(self,event_id):
+        with self.sessions() as db:
+            r=db.scalar(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.id==event_id))
+            return _event(r) if r else None
+    def approval_by_id(self,approval_id):
+        with self.sessions() as db:
+            r=db.scalar(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==approval_id))
+            return _approval(r) if r else None
