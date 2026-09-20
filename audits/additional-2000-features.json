@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1508,
-    "verified-pushed": 499,
+    "missing": 1503,
+    "verified-pushed": 504,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -13532,8 +13532,12 @@
       "category": "Data & Analytics",
       "requirement": "Synthetic Likelihood",
       "description": "Composite likelihood",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "20e53ecec92250cba221f2cd8c025a2d019d258f",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1053_1057.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13542,8 +13546,12 @@
       "category": "Data & Analytics",
       "requirement": "Indirect Inference",
       "description": "Simulation-based estimation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "20e53ecec92250cba221f2cd8c025a2d019d258f",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1053_1057.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13552,8 +13560,12 @@
       "category": "Data & Analytics",
       "requirement": "Method of Moments",
       "description": "Moment-based estimation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "20e53ecec92250cba221f2cd8c025a2d019d258f",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1053_1057.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13562,8 +13574,12 @@
       "category": "Data & Analytics",
       "requirement": "Generalized Method of Moments",
       "description": "Flexible moment estimation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "20e53ecec92250cba221f2cd8c025a2d019d258f",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1053_1057.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13572,8 +13588,12 @@
       "category": "Data & Analytics",
       "requirement": "Instrumental Variables",
       "description": "Handle endogeneity",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "20e53ecec92250cba221f2cd8c025a2d019d258f",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1053_1057.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
