@@ -10,3 +10,6 @@ node_modules/
 
 atlas.db
 *.db
+frontend/node_modules/
+frontend/.next/
+frontend/tsconfig.tsbuildinfo

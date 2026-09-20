@@ -1,7 +1,6 @@
-const modules = ["Approvals", "Opportunities", "Research", "Outreach", "Projects", "Documents", "Calendar", "Knowledge"];
-export default function Home() {
-  return <main className="min-h-screen bg-slate-950 p-10 text-white">
-    <p className="text-cyan-400">ATLAS AI / PHASE 1</p><h1 className="mt-2 text-4xl font-semibold">Human-controlled work, module by module.</h1>
-    <section className="mt-10 grid gap-4 md:grid-cols-4">{modules.map((m) => <article key={m} className="rounded-xl border border-slate-700 bg-slate-900 p-5">{m}<p className="mt-2 text-sm text-slate-400">Foundation shell</p></article>)}</section>
-  </main>;
-}
+"use client";
+import {useEffect,useState} from "react";
+import ExecutiveDashboard from "../components/ExecutiveDashboard";
+import KnowledgeWorkspace from "../components/KnowledgeWorkspace";
+type Module={id:number;slug:string;name:string;status:string};
+export default function Home(){const [modules,setModules]=useState<Module[]>([]);const [view,setView]=useState<"dashboard"|"knowledge"|"modules">("dashboard");useEffect(()=>{fetch(`${process.env.NEXT_PUBLIC_ATLAS_API_URL??"http://localhost:8000"}/api/v1/modules`,{headers:{"x-atlas-tenant":"local","x-atlas-actor":"dashboard"}}).then(x=>x.json()).then(setModules).catch(()=>setModules([]))},[]);return <main className="min-h-screen bg-slate-950 p-6 text-white"><header className="flex items-center justify-between"><div><p className="text-cyan-400">ATLAS AI</p><h1 className="text-3xl font-semibold">Human-controlled operations</h1></div><nav className="flex gap-2">{(["dashboard","knowledge","modules"] as const).map(x=><button key={x} onClick={()=>setView(x)} className="rounded border border-slate-700 px-3 py-2 capitalize">{x}</button>)}</nav></header><section className="mt-8">{view==="dashboard"?<ExecutiveDashboard/>:view==="knowledge"?<KnowledgeWorkspace seedId="root"/>:<div className="grid gap-3 md:grid-cols-4">{modules.map(m=><article key={m.id} className="rounded-xl border border-slate-700 bg-slate-900 p-4"><b>{m.id}. {m.name}</b><p className="text-sm text-emerald-400">{m.status}</p></article>)}</div>}</section></main>}
