@@ -12,7 +12,10 @@ from app.modules.m15_document_generator import spec as document_generator
 from app.modules.m17_narrative_architect import spec as narrative_architect
 from app.modules.m18_side_hustle_scraper import spec as side_hustle_scraper
 from app.modules.m19_idea_incubator import spec as idea_incubator
+from app.modules.m20_general_cognitive_worker import spec as general_cognitive_worker
+from app.modules.m21_claire import spec as claire
+from app.modules.m22_tools_hub import spec as tools_hub
 from app.modules.types import ModuleSpec
 
-IMPLEMENTED_SPECS: tuple[ModuleSpec, ...] = (approval_center, opportunity_discovery, competition_manager, grant_writer, research_scientist, outreach_manager, social_media_manager, brand_collaboration, startup_growth, project_builder, document_generator, narrative_architect, side_hustle_scraper, idea_incubator)
+IMPLEMENTED_SPECS: tuple[ModuleSpec, ...] = (approval_center, opportunity_discovery, competition_manager, grant_writer, research_scientist, outreach_manager, social_media_manager, brand_collaboration, startup_growth, project_builder, document_generator, narrative_architect, side_hustle_scraper, idea_incubator, general_cognitive_worker, claire, tools_hub)
 BY_IMPLEMENTED_ID = {spec.id: spec for spec in IMPLEMENTED_SPECS}

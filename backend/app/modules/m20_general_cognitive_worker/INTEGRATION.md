@@ -1,0 +1,2 @@
+# Integration
+Mount `router`; add Module 20 to the module registry as implemented. Production wiring should replace in-memory run/memory/skill collections with the Atlas tenant-scoped SQL repository. Celery can call `Service.start`; idempotency keys already include run, step, and attempt. External/irreversible tools cannot dispatch until Module 0 approval is approved. Decision traces expose summaries, evidence, alternatives, policy basis, and outcomes rather than private model scratchpad. Add SSE/WebSocket forwarding of trace records if desired.

@@ -28,7 +28,8 @@ MODULES = [
     Module(17, "narrative-architect", "Social Advice Compiler & College Essay Architect", "implemented"),
     Module(18, "side-hustle-scraper", "Side Hustle & Knowledge Scraper", "implemented"),
     Module(19, "idea-incubator", "Autonomous Idea Incubator", "implemented"),
-    Module(20, "general-cognitive-worker", "General Cognitive Worker"),
-    Module(21, "claire", "Claire Personal Assistant / Idea Realisation Engine"),
+    Module(20, "general-cognitive-worker", "General Cognitive Worker", "implemented"),
+    Module(21, "claire", "Claire Personal Assistant / Idea Realisation Engine", "implemented"),
+    Module(22, "tools-hub", "Tools Discovery & Integration Hub", "implemented"),
 ]
 BY_ID = {module.id: module for module in MODULES}

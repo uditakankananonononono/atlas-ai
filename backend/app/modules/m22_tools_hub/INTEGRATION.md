@@ -1,0 +1,2 @@
+# Integration
+Add catalog entry 22, mount `router`, and inject approved public discovery collectors (official registries, changelog/RSS feeds, GitHub public API, vendor marketplaces). Candidate discovery is read-only. Installation proposals redact secret/token-like config, require Module 0 approval, and include rollback. A separate executor must verify approval and perform installation inside the Atlas sandbox; this lane deliberately does not install software. Persist candidates/proposals/portfolio tenant-scoped in Postgres.
