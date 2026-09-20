@@ -10,7 +10,7 @@ from __future__ import annotations
 import math,random,statistics
 from collections import Counter
 ROWS={
-"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057}
+"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062}
 def _nums(data,key="values",min_n=1):
     v=data.get(key)
     if not isinstance(v,list) or len(v)<min_n or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in v):raise ValueError(f"{key} must contain at least {min_n} finite numbers")
@@ -456,5 +456,52 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
         mz,mx,my=_mean(z),_mean(x),_mean(y);covzx=sum((a-mz)*(b-mx) for a,b in zip(z,x));covzy=sum((a-mz)*(b-my) for a,b in zip(z,y))
         if abs(covzx)<1e-12:raise ValueError("instrument has zero first-stage relevance")
         beta=covzy/covzx;intercept=my-beta*mx;first_stage=covzx/sum((a-mz)**2 for a in z);xhat=[mx+first_stage*(a-mz) for a in z];r2=1-sum((b-h)**2 for b,h in zip(x,xhat))/sum((b-mx)**2 for b in x) if _var(x,0)>0 else 0;o["output"]={"estimate":beta,"intercept":intercept,"first_stage_slope":first_stage,"first_stage_r_squared":r2,"weak_instrument_warning":r2<.1};a += ["Instrument relevance, exclusion restriction, independence/exogeneity, monotonicity for a LATE interpretation."];limits += ["One instrument/regressor linear IV; validity is not testable from this data alone; no robust standard error."]
+    elif method=="two_stage_least_squares":
+        z=_nums(data,"instrument");x=_nums(data,"regressor");y=_nums(data,"outcome")
+        if not len(z)==len(x)==len(y) or len(z)<3:raise ValueError("aligned instrument, regressor and outcome required")
+        mz,mx,my=_mean(z),_mean(x),_mean(y);szz=sum((v-mz)**2 for v in z)
+        if szz<=0:raise ValueError("instrument has no variation")
+        first=sum((a-mz)*(b-mx) for a,b in zip(z,x))/szz;first_i=mx-first*mz;xhat=[first_i+first*v for v in z];shh=sum((h-_mean(xhat))**2 for h in xhat)
+        if shh<=1e-12:raise ValueError("instrument does not identify fitted treatment variation")
+        beta=sum((h-_mean(xhat))*(yy-my) for h,yy in zip(xhat,y))/shh;intercept=my-beta*_mean(xhat);res=[yy-intercept-beta*xx for xx,yy in zip(x,y)];r2=1-sum((xx-h)**2 for xx,h in zip(x,xhat))/sum((xx-mx)**2 for xx in x) if _var(x,0)>0 else 0
+        o["output"]={"estimate":beta,"intercept":intercept,"first_stage":{"intercept":first_i,"slope":first,"r_squared":r2},"structural_residuals":res,"weak_instrument_warning":r2<.1};a += ["Linear first/second stages; relevance, exclusion restriction, exogeneity and correct specification."];limits += ["One excluded instrument and endogenous regressor; no controls, robust covariance or weak-IV confidence set."]
+    elif method=="limited_information_maximum_likelihood":
+        z=_nums(data,"instrument");x=_nums(data,"regressor");y=_nums(data,"outcome");k=float(p.get("k_class",1.0))
+        if not len(z)==len(x)==len(y) or len(z)<3:raise ValueError("aligned inputs required")
+        mz,mx,my=_mean(z),_mean(x),_mean(y);zc=[v-mz for v in z];xc=[v-mx for v in x];yc=[v-my for v in y];szz=sum(v*v for v in zc)
+        if szz<=0:raise ValueError("instrument has no variation")
+        px=[sum(a*b for a,b in zip(zc,xc))/szz*v for v in zc];py=[sum(a*b for a,b in zip(zc,yc))/szz*v for v in zc];mxv=[a-b for a,b in zip(xc,px)];myv=[a-b for a,b in zip(yc,py)];num=sum(a*b for a,b in zip(xc,yc))-k*sum(a*b for a,b in zip(mxv,myv));den=sum(a*a for a in xc)-k*sum(a*a for a in mxv)
+        if abs(den)<1e-12:raise ValueError("k-class denominator is singular")
+        beta=num/den;o["output"]={"estimate":beta,"intercept":my-beta*mx,"k_class":k,"note":"k=1 equals 2SLS in the just-identified single-instrument case"};a += ["Linear simultaneous-equation setup and valid excluded instrument."];limits += ["Caller supplies k-class value; this reference does not estimate the LIML eigenvalue for overidentified systems."]
+    elif method=="control_functions":
+        z=_nums(data,"instrument");x=_nums(data,"regressor");y=_nums(data,"outcome")
+        if not len(z)==len(x)==len(y) or len(z)<4:raise ValueError("at least four aligned rows required")
+        mz,mx=_mean(z),_mean(x);szz=sum((v-mz)**2 for v in z)
+        if szz<=0:raise ValueError("instrument has no variation")
+        pi=sum((a-mz)*(b-mx) for a,b in zip(z,x))/szz;pi0=mx-pi*mz;v=[xx-(pi0+pi*zz) for xx,zz in zip(x,z)]
+        n=len(x);sx=sum(x);sv=sum(v);sxx=sum(a*a for a in x);svv=sum(a*a for a in v);sxv=sum(a*b for a,b in zip(x,v));sy=sum(y);sxy=sum(a*b for a,b in zip(x,y));svy=sum(a*b for a,b in zip(v,y));matrix=[[n,sx,sv],[sx,sxx,sxv],[sv,sxv,svv]];rhs=[sy,sxy,svy]
+        for i in range(3):
+            pivot=max(range(i,3),key=lambda r:abs(matrix[r][i]));matrix[i],matrix[pivot]=matrix[pivot],matrix[i];rhs[i],rhs[pivot]=rhs[pivot],rhs[i]
+            if abs(matrix[i][i])<1e-12:raise ValueError("control-function regression is singular")
+            d=matrix[i][i];matrix[i]=[q/d for q in matrix[i]];rhs[i]/=d
+            for r in range(3):
+                if r!=i:
+                    f=matrix[r][i];matrix[r]=[a-f*b for a,b in zip(matrix[r],matrix[i])];rhs[r]-=f*rhs[i]
+        o["output"]={"intercept":rhs[0],"treatment_effect":rhs[1],"control_residual_coefficient":rhs[2],"endogeneity_signal":abs(rhs[2])>1e-8,"first_stage_slope":pi};a += ["Linear first stage; additive control residual makes outcome conditionally exogenous; valid instrument."];limits += ["Linear scalar reference; control-residual coefficient is a diagnostic, not a formal endogeneity test without uncertainty estimates."]
+    elif method=="regression_discontinuity":
+        running=_nums(data,"running_variable");outcome=_nums(data,"outcome");cutoff=float(p.get("cutoff",0));bandwidth=float(p.get("bandwidth",1))
+        if len(running)!=len(outcome) or bandwidth<=0:raise ValueError("aligned inputs and positive bandwidth required")
+        left=[(x,y) for x,y in zip(running,outcome) if cutoff-bandwidth<=x<cutoff];right=[(x,y) for x,y in zip(running,outcome) if cutoff<=x<=cutoff+bandwidth]
+        if len(left)<2 or len(right)<2:raise ValueError("need at least two observations on each side within bandwidth")
+        def fit(rows):
+            xs=[x-cutoff for x,_ in rows];ys=[y for _,y in rows];vx=sum((x-_mean(xs))**2 for x in xs);slope=sum((x-_mean(xs))*(y-_mean(ys)) for x,y in zip(xs,ys))/vx if vx else 0;return _mean(ys)-slope*_mean(xs),slope
+        li,ls=fit(left);ri,rs=fit(right);o["output"]={"treatment_effect_at_cutoff":ri-li,"left_intercept":li,"right_intercept":ri,"left_slope":ls,"right_slope":rs,"bandwidth":bandwidth,"n_left":len(left),"n_right":len(right)};a += ["Continuity of potential outcomes at cutoff, no precise manipulation, local linear specification, sharp treatment assignment."];limits += ["No bandwidth selection, kernel weighting, manipulation test, robust bias correction or fuzzy RD."]
+    elif method=="difference_in_differences":
+        group=data.get("treated");period=data.get("post");outcome=_nums(data,"outcome")
+        if not isinstance(group,list) or not isinstance(period,list) or not len(group)==len(period)==len(outcome):raise ValueError("aligned treated, post and outcome required")
+        cells={}
+        for g,t,y in zip(group,period,outcome):cells.setdefault((bool(g),bool(t)),[]).append(y)
+        if any(not cells.get(k) for k in [(False,False),(False,True),(True,False),(True,True)]):raise ValueError("all four treated/post cells required")
+        means={k:_mean(v) for k,v in cells.items()};effect=(means[(True,True)]-means[(True,False)])-(means[(False,True)]-means[(False,False)]);o["output"]={"effect":effect,"cell_means":{"control_pre":means[(False,False)],"control_post":means[(False,True)],"treated_pre":means[(True,False)],"treated_post":means[(True,True)]},"group_changes":{"control":means[(False,True)]-means[(False,False)],"treated":means[(True,True)]-means[(True,False)]}};a += ["Parallel untreated trends, no anticipation, stable composition and no spillovers/interference."];limits += ["Two-group/two-period unadjusted DID; no event study, clustered uncertainty, covariates or staggered adoption correction."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
     return o
