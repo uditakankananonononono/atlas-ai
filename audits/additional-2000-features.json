@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "41796ca339b214f7ff76f06fc4ad5c5a44c59ca9",
+  "audited_head": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
   "counts": {
-    "verified-pushed": 258,
+    "verified-pushed": 283,
     "thin": 3,
-    "missing": 1749
+    "missing": 1724
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -544,8 +544,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Serendipity Engineering",
       "description": "Creates conditions for lucky discoveries through strategic randomness",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -554,8 +560,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Insight Capture",
       "description": "Records and develops fleeting ideas before they're lost",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -564,8 +576,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Mental Simulation Fidelity",
       "description": "Calibrates how accurately imagined scenarios match reality",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -574,8 +592,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Parallel Hypothesis Tracking",
       "description": "Maintains multiple explanations for observations simultaneously",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -584,8 +608,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Bayesian Belief Updating",
       "description": "Revises probabilities as new evidence arrives",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -594,8 +624,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Causal vs. Correlational Distinction",
       "description": "Avoids confusing correlation with causation in analysis",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -604,8 +640,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Base Rate Integration",
       "description": "Incorporates prior probabilities into predictions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -614,8 +656,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Reference Class Forecasting",
       "description": "Uses similar past cases to predict outcomes",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -624,8 +672,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Outside View Adoption",
       "description": "Sees situations from perspectives other than own",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -634,8 +688,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Planning Fallacy Correction",
       "description": "Adjusts time estimates based on historical overrun patterns",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -644,8 +704,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Optimism/Pessimism Calibration",
       "description": "Matches confidence to actual accuracy rates",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -654,8 +720,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Scenario Planning",
       "description": "Develops multiple plausible futures and strategies for each",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -664,8 +736,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Pre-Mortem Analysis",
       "description": "Imagines project failure and works backward to prevent it",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -674,8 +752,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Red Team Thinking",
       "description": "Adopts adversarial mindset to find vulnerabilities",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -684,8 +768,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Second-Order Effects Tracing",
       "description": "Follows consequences of consequences",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -694,8 +784,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Systems Thinking",
       "description": "Recognizes feedback loops, delays, and emergent behavior",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -704,8 +800,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Leverage Point Identification",
       "description": "Finds where small interventions create large effects",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -714,8 +816,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Constraint Theory Application",
       "description": "Identifies and exploits bottlenecks",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -724,8 +832,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Antifragility Design",
       "description": "Creates systems that improve from stress",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -734,8 +848,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Optionality Preservation",
       "description": "Maintains future choices by avoiding premature commitment",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -744,8 +864,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Reversibility Assessment",
       "description": "Distinguishes one-way from two-way doors",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -754,8 +880,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Asymmetric Bet Identification",
       "description": "Finds opportunities with limited downside and unlimited upside",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -764,8 +896,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Expected Value Calculation",
       "description": "Quantifies probability-weighted outcomes",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -774,8 +912,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Risk of Ruin Analysis",
       "description": "Ensures no single decision can cause catastrophic loss",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -784,8 +928,14 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Kelly Criterion Bet Sizing",
       "description": "Optimizes position sizes for long-term growth",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0e05c97e7ca867f27a755b38fbfad3206db6dbce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/foresight.py",
+        "test_path": "tests/modules/test_m20_foresight.py",
+        "route_test_path": "tests/modules/test_m20_foresight_routes.py",
+        "caveats": "Foresight state is in-memory pending m20_foresight_* persistence. Premortem likelihood/impact values are explicit placeholders; red-team and second-order paths use rule tables. Kelly, EV and ruin are decision support, not investment advice."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
