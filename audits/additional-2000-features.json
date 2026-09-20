@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+  "audited_head": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
   "counts": {
-    "verified-pushed": 129,
+    "verified-pushed": 154,
     "thin": 3,
-    "missing": 1878
+    "missing": 1853
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -5780,8 +5780,13 @@
       "category": "Technical & Engineering",
       "requirement": "Requirements Gathering",
       "description": "Elicits system needs",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5790,8 +5795,13 @@
       "category": "Technical & Engineering",
       "requirement": "System Architecture Design",
       "description": "Structures components",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5800,8 +5810,13 @@
       "category": "Technical & Engineering",
       "requirement": "API Design",
       "description": "Creates interfaces",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5810,8 +5825,13 @@
       "category": "Technical & Engineering",
       "requirement": "Database Schema Design",
       "description": "Models data",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5820,8 +5840,13 @@
       "category": "Technical & Engineering",
       "requirement": "Microservices Design",
       "description": "Decomposes systems",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5830,8 +5855,13 @@
       "category": "Technical & Engineering",
       "requirement": "Monolith Design",
       "description": "Creates unified systems",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5840,8 +5870,13 @@
       "category": "Technical & Engineering",
       "requirement": "Event-Driven Architecture",
       "description": "Designs reactive systems",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5850,8 +5885,13 @@
       "category": "Technical & Engineering",
       "requirement": "Message Queue Design",
       "description": "Handles async communication",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5860,8 +5900,13 @@
       "category": "Technical & Engineering",
       "requirement": "Caching Strategy",
       "description": "Optimizes performance",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5870,8 +5915,13 @@
       "category": "Technical & Engineering",
       "requirement": "Load Balancing",
       "description": "Distributes traffic",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5880,8 +5930,13 @@
       "category": "Technical & Engineering",
       "requirement": "Auto-Scaling",
       "description": "Adjusts capacity",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5890,8 +5945,13 @@
       "category": "Technical & Engineering",
       "requirement": "Fault Tolerance",
       "description": "Handles failures",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5900,8 +5960,13 @@
       "category": "Technical & Engineering",
       "requirement": "Disaster Recovery",
       "description": "Plans for catastrophes",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5910,8 +5975,13 @@
       "category": "Technical & Engineering",
       "requirement": "Backup Strategy",
       "description": "Protects data",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5920,8 +5990,13 @@
       "category": "Technical & Engineering",
       "requirement": "Security Architecture",
       "description": "Designs defenses",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5930,8 +6005,13 @@
       "category": "Technical & Engineering",
       "requirement": "Authentication Design",
       "description": "Verifies identity",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5940,8 +6020,13 @@
       "category": "Technical & Engineering",
       "requirement": "Authorization Design",
       "description": "Controls access",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5950,8 +6035,13 @@
       "category": "Technical & Engineering",
       "requirement": "Encryption Implementation",
       "description": "Protects data",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5960,8 +6050,13 @@
       "category": "Technical & Engineering",
       "requirement": "Key Management",
       "description": "Secures secrets",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5970,8 +6065,13 @@
       "category": "Technical & Engineering",
       "requirement": "Audit Logging",
       "description": "Tracks activity",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5980,8 +6080,13 @@
       "category": "Technical & Engineering",
       "requirement": "Compliance Implementation",
       "description": "Meets regulations",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5990,8 +6095,13 @@
       "category": "Technical & Engineering",
       "requirement": "Privacy by Design",
       "description": "Protects user data",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6000,8 +6110,13 @@
       "category": "Technical & Engineering",
       "requirement": "Data Governance",
       "description": "Manages data assets",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6010,8 +6125,13 @@
       "category": "Technical & Engineering",
       "requirement": "Data Lineage",
       "description": "Tracks data flow",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -6020,8 +6140,13 @@
       "category": "Technical & Engineering",
       "requirement": "Data Quality",
       "description": "Ensures accuracy",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+        "implementation_path": "backend/app/modules/m14_project_builder/engineering.py",
+        "test_path": "tests/modules/test_m14_engineering.py",
+        "caveats": "Scaffold-grade design artifacts; model refinement owns depth. Validator rejects placeholders, operational-state claims and embedded-secret patterns but cannot prove semantic correctness. Compliance row lists regulations generically."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
