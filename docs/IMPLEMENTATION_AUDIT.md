@@ -172,3 +172,7 @@ Audited source HEAD: `d90eb80dc1df708a9b4a3d9c7245040e620b9109`. Counts: 27 veri
 ## Fallback audit
 
 The old README was stale and materially understated current code. It also hid an important distinction: some deterministic paths are valid degradation behind real primaries, while others replace a requested primary. `docs/FALLBACK_AUDIT.md` classifies each material fallback. M10 action extraction, M6 provider drafting, M7 PDF/HTML rendering, M8 PPTX/Markdown rendering and M12 routed model retry are legitimate degradation. M1 keyword/date/token/impact approximations and the default M10 rule classifier are disguised substitutes for requested primary capabilities and remain build items.
+
+## Assistant behavior alignment
+
+Behavior is a product capability, not decoration. `config/assistant_persona.json` and `backend/app/persona/policy.py` now encode precise concessions, honest limitation disclosure, source/alternative/confidence transparency without hidden scratchpad, exact-preview approval etiquette, no fabrication or deception, and low-stakes-only dry humor. The policy rejects empty approval previews and deception markers and returns explicit evidence/limitation disclosures. Focused tests enforce those boundaries. Remaining work is to inject this shared policy into every module-specific provider prompt and outward action executor, rather than leaving any module to define behavior independently.
