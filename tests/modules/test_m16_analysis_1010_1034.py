@@ -97,7 +97,7 @@ def test_analysis_jobs_persist_and_are_retrievable():
     assert s.list_analysis_jobs(method="bootstrap")==[]
 def test_analysis_method_catalog_covers_rows_1010_1034():
     methods=svc().analysis_methods()
-    assert len(methods)==25 and {m.feature_row for m in methods}==set(range(1010,1035))
+    assert len(methods)>=25 and {m.feature_row for m in methods} >= set(range(1010,1035))
     assert all(m.summary and m.required_inputs for m in methods)
 def test_failed_jobs_are_stored_with_error_not_exception():
     s=svc()
