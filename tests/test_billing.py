@@ -64,10 +64,10 @@ def test_subscription_and_invoice_events_update_lifecycle_once():
  from app.modules.m24_billing.schemas import BillingEventIn
  repo=LifecycleRepo();s=Service(A(),repo,S())
  sub=BillingEventIn(id='evt_sub',type='customer.subscription.updated',created=1,data={'object':{'id':'sub_1','customer':'cus_1','status':'past_due','metadata':{'atlas_tenant_id':'t'}}})
- assert s.ingest_event(sub).processed and repo.billing['t']['status']=='past_due'
+ assert s.ingest_event(sub,trusted_provider=True).processed and repo.billing['t']['status']=='past_due'
  inv=BillingEventIn(id='evt_inv',type='invoice.paid',created=1,data={'object':{'id':'in_1','status':'paid','currency':'usd','amount_due':2900,'amount_paid':2900,'metadata':{'atlas_tenant_id':'t'}}})
- assert s.ingest_event(inv).processed and repo.invoice_rows[0][1]['amount_paid']==2900
- assert not s.ingest_event(inv).processed and len(repo.invoice_rows)==1
+ assert s.ingest_event(inv,trusted_provider=True).processed and repo.invoice_rows[0][1]['amount_paid']==2900
+ assert not s.ingest_event(inv,trusted_provider=True).processed and len(repo.invoice_rows)==1
 
 def test_suspended_tenant_cannot_record_usage():
  from app.modules.m24_billing.schemas import UsageIn

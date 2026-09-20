@@ -60,7 +60,7 @@ class Service:
   elif kind.startswith("invoice."):
    tenant_id=tenant_id or obj.get("metadata",{}).get("atlas_tenant_id")
    if tenant_id:self.repo.upsert_invoice(tenant_id,id=obj["id"],status=obj.get("status",kind.removeprefix("invoice.")),currency=obj.get("currency","usd"),amount_due=int(obj.get("amount_due",0)),amount_paid=int(obj.get("amount_paid",0)),period_start=datetime.fromtimestamp(obj["period_start"],timezone.utc) if obj.get("period_start") else None,period_end=datetime.fromtimestamp(obj["period_end"],timezone.utc) if obj.get("period_end") else None,hosted_invoice_url=obj.get("hosted_invoice_url"))
- def ingest_event(self,event:BillingEventIn):
+ def ingest_event(self,event:BillingEventIn,*,trusted_provider=False):
   created=self.repo.save_event(event)
-  if created:self._apply_lifecycle_event(event)
+  if created and trusted_provider:self._apply_lifecycle_event(event)
   return BillingEventOut(id=event.id,type=event.type,processed=created,processed_at=datetime.now(timezone.utc))

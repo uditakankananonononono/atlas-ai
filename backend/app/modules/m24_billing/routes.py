@@ -35,7 +35,7 @@ async def stripe_webhook(request:Request,s:Service=Depends(get_service)):
  payload=await request.body()
  try:data=verify_stripe_signature(payload,request.headers.get('stripe-signature',''),os.getenv('STRIPE_WEBHOOK_SECRET',''))
  except StripeSignatureError as e:raise HTTPException(400,str(e))
- return s.ingest_event(BillingEventIn(id=data['id'],type=data['type'],created=data['created'],data=data.get('data',{})))
+ return s.ingest_event(BillingEventIn(id=data['id'],type=data['type'],created=data['created'],data=data.get('data',{})),trusted_provider=True)
 from datetime import datetime
 @router.get('/entitlements',response_model=EntitlementOut)
 def entitlements(t:TenantContext=Depends(require_tenant),s:Service=Depends(get_service)):return s.entitlements(t.tenant_id)
