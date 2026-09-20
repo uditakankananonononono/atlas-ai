@@ -86,3 +86,26 @@ and `tests/modules/test_m20_metacognition_routes.py` (mounted routes).
   bets and a seeded Monte Carlo otherwise; the method used is returned.
 - Kelly sizing (59) clamps no-edge positions to zero and recommends a
   fractional, capped size by default.
+
+## Rows 60-84: strategic and quantitative decision aids (strategy.py)
+
+- `strategy.py` adds 25 typed engines over the runtime; 24 are
+  instantiated on the service and mounted under `/api/modules/20/meta/*`
+  (SystemsModel continues to be built per request; the TOC manager keeps
+  snapshot history for bottleneck-migration reporting).
+- Rows 72-75, 77 and 80 reuse the existing computable operators in
+  `reasoning.py` (littles_law, critical_path, monte_carlo_simulation,
+  sensitivity_analysis, evaluate_decision_tree, nash_equilibria_2x2)
+  rather than re-implementing them; row 64 builds on the row-50
+  SystemsModel.
+- Rows 75/76 evaluate caller-supplied model expressions through a
+  whitelisted AST evaluator: arithmetic over named parameters only - no
+  imports, calls, or attribute access; anything else is rejected with 422.
+- Valuation-shaped rows (63, 65, 66, 68, 78, 79, 80, 82, 84) return an
+  explicit decision-support caveat; none claim business certainty.
+- Mechanism design (81) computes exact VCG allocations/payments by
+  exhaustive matching for up to 8 items (greedy beyond that) and checks
+  incentive compatibility only against caller-supplied deviations - both
+  limits are stated in the response assumptions.
+- Row 70 is the ongoing TOC management loop (release pacing, WIP cap,
+  migration), distinct from row 52's one-shot bottleneck analysis.

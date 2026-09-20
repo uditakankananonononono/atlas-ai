@@ -1078,3 +1078,382 @@ def row58_risk_of_ruin(request: RiskOfRuinRequest) -> dict[str, Any]:
 @router.post("/meta/kelly/size")
 def row59_kelly(request: KellyRequest) -> dict[str, Any]:
     return get_service().kelly.size(win_prob=request.win_prob, payoff_ratio=request.payoff_ratio)
+
+
+# ----------------------------------------------------------- rows 60-84 --
+# Strategic and quantitative decision aids (/meta/...).
+
+class ErgodicityRequest(BaseModel):
+    outcomes: list[list[float]] = Field(min_length=1)
+
+
+class NonLinearRequest(BaseModel):
+    xs: list[float] = Field(min_length=3)
+    ys: list[float] = Field(min_length=3)
+
+
+class NonLinearExtrapolateRequest(BaseModel):
+    model: str
+    slope: float
+    intercept: float
+    x: float = Field(gt=0.0)
+
+
+class TippingPointRequest(BaseModel):
+    series: list[float] = Field(min_length=8)
+    threshold: float | None = None
+
+
+class NetworkEffectRequest(BaseModel):
+    n_users: int = Field(ge=0)
+    two_sided: bool = False
+    same_side: bool = True
+
+
+class MoatRequest(BaseModel):
+    ratings: dict[str, dict[str, Any]]
+
+
+class DisruptionRequest(BaseModel):
+    entrant_improvement_rate: float = Field(ge=0.0)
+    incumbent_improvement_rate: float = Field(ge=0.0)
+    entrant_targets_underserved: bool
+    entrant_cheaper: bool
+    incumbent_overserving: bool = False
+
+
+class JTBDRequest(BaseModel):
+    product: str = Field(min_length=1)
+    statements: list[str] = Field(min_length=1)
+
+
+class ValueChainRequest(BaseModel):
+    stages: list[dict[str, Any]] = Field(min_length=1)
+
+
+class ParetoRequest(BaseModel):
+    items: dict[str, float]
+    target_share: float = Field(default=0.8, gt=0.0, le=1.0)
+
+
+class TOCRequest(BaseModel):
+    stages: list[dict[str, Any]] = Field(min_length=1)
+
+
+class QueueRequest(BaseModel):
+    arrival_rate: float = Field(ge=0.0)
+    service_rate: float = Field(gt=0.0)
+    servers: int = Field(default=1, ge=1)
+
+
+class LittlesLawRequest(BaseModel):
+    wip: float | None = None
+    throughput: float | None = None
+    cycle_time: float | None = None
+
+
+class CriticalPathRequest(BaseModel):
+    tasks: list[dict[str, Any]] = Field(min_length=1)
+
+
+class MonteCarloRequest(BaseModel):
+    tasks: list[dict[str, float]] = Field(min_length=1)
+    trials: int = Field(default=1000, ge=10)
+    seed: int | None = 42
+
+
+class SensitivityRequest(BaseModel):
+    expression: str = Field(min_length=1)
+    params: dict[str, float] = Field(min_length=1)
+    swing: float = Field(default=0.2, gt=0.0, lt=1.0)
+
+
+class DecisionTreeRequest(BaseModel):
+    spec: dict[str, Any]
+
+
+class RealOptionsRequest(BaseModel):
+    underlying: float = Field(gt=0.0)
+    up: float = Field(ge=1.0)
+    down: float = Field(gt=0.0, lt=1.0)
+    exercise_cost: float = Field(ge=0.0)
+    kind: str = "expand"
+    steps: int = Field(default=10, ge=1, le=50)
+    risk_free: float = 0.0
+
+
+class GameRequest(BaseModel):
+    row_payoffs: list[list[float]]
+    col_payoffs: list[list[float]]
+
+
+class VCGRequest(BaseModel):
+    agents: dict[str, dict[str, float]]
+
+
+class ICCheckRequest(BaseModel):
+    agent: str
+    true_values: dict[str, float]
+    others: dict[str, dict[str, float]] = Field(default_factory=dict)
+    deviations: list[dict[str, float]] = Field(default_factory=list)
+
+
+class AuctionRequest(BaseModel):
+    auction_type: str
+    value: float = Field(ge=0.0)
+    n_bidders: int = Field(default=2, ge=2)
+    common_value: bool = False
+
+
+class SignalingRequest(BaseModel):
+    benefit: float = Field(ge=0.0)
+    cost_high_type: float = Field(ge=0.0)
+    cost_low_type: float = Field(ge=0.0)
+
+
+class PrincipalAgentRequest(BaseModel):
+    efforts: list[dict[str, Any]] = Field(min_length=1)
+    target_effort: str
+    shares: list[float] | None = None
+
+
+@router.post("/meta/ergodicity")
+def row60_ergodicity(request: ErgodicityRequest) -> dict[str, Any]:
+    try:
+        return get_service().ergodicity.analyze(
+            outcomes=[(float(p), float(m)) for p, m in request.outcomes])
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/nonlinear/classify")
+def row61_nonlinear_classify(request: NonLinearRequest) -> dict[str, Any]:
+    try:
+        return get_service().nonlinear.classify(xs=request.xs, ys=request.ys)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/nonlinear/extrapolate")
+def row61_nonlinear_extrapolate(request: NonLinearExtrapolateRequest) -> dict[str, Any]:
+    try:
+        value = get_service().nonlinear.extrapolate(
+            model=request.model, slope=request.slope, intercept=request.intercept, x=request.x)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+    return {"model": request.model, "x": request.x, "extrapolated": value,
+            "note": "The fitted form was used - no silent linear projection"}
+
+
+@router.post("/meta/tipping-point")
+def row62_tipping_point(request: TippingPointRequest) -> dict[str, Any]:
+    try:
+        return get_service().tipping_points.analyze(series=request.series,
+                                                    threshold=request.threshold)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/network-effects")
+def row63_network_effects(request: NetworkEffectRequest) -> dict[str, Any]:
+    return get_service().network_effects.analyze(
+        n_users=request.n_users, two_sided=request.two_sided, same_side=request.same_side)
+
+
+@router.post("/meta/flywheels")
+def row64_flywheels(request: SystemsModelRequest) -> dict[str, Any]:
+    model = SystemsModel()
+    for link in request.links:
+        model.add_link(link.source, link.target, sign=link.sign, delay=link.delay)
+    return get_service().flywheels.find(model)
+
+
+@router.post("/meta/moats")
+def row65_moats(request: MoatRequest) -> dict[str, Any]:
+    try:
+        return get_service().moats.assess(ratings=request.ratings)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/disruption")
+def row66_disruption(request: DisruptionRequest) -> dict[str, Any]:
+    return get_service().disruption.assess(
+        entrant_improvement_rate=request.entrant_improvement_rate,
+        incumbent_improvement_rate=request.incumbent_improvement_rate,
+        entrant_targets_underserved=request.entrant_targets_underserved,
+        entrant_cheaper=request.entrant_cheaper,
+        incumbent_overserving=request.incumbent_overserving)
+
+
+@router.post("/meta/jtbd")
+def row67_jtbd(request: JTBDRequest) -> dict[str, Any]:
+    return get_service().jtbd.frame(product=request.product, statements=request.statements)
+
+
+@router.post("/meta/value-chain")
+def row68_value_chain(request: ValueChainRequest) -> dict[str, Any]:
+    try:
+        return get_service().value_chain.map(stages=request.stages)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/pareto")
+def row69_pareto(request: ParetoRequest) -> dict[str, Any]:
+    try:
+        return get_service().pareto.analyze(items=request.items,
+                                            target_share=request.target_share)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/toc/observe")
+def row70_toc(request: TOCRequest) -> dict[str, Any]:
+    try:
+        return get_service().toc.observe(stages=request.stages)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/queue")
+def row71_queue(request: QueueRequest) -> dict[str, Any]:
+    service = get_service()
+    try:
+        if request.servers == 1:
+            return service.queues.mm1(arrival_rate=request.arrival_rate,
+                                      service_rate=request.service_rate)
+        return service.queues.mmc(arrival_rate=request.arrival_rate,
+                                  service_rate=request.service_rate,
+                                  servers=request.servers)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/littles-law")
+def row72_littles_law(request: LittlesLawRequest) -> dict[str, Any]:
+    try:
+        return get_service().littles.relate(wip=request.wip, throughput=request.throughput,
+                                            cycle_time=request.cycle_time)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/critical-path")
+def row73_critical_path(request: CriticalPathRequest) -> dict[str, Any]:
+    try:
+        return get_service().critical_paths.analyze(tasks=request.tasks)
+    except (ValueError, KeyError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/monte-carlo")
+def row74_monte_carlo(request: MonteCarloRequest) -> dict[str, Any]:
+    try:
+        return get_service().monte_carlo.simulate(tasks=request.tasks,
+                                                  trials=request.trials, seed=request.seed)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/sensitivity")
+def row75_sensitivity(request: SensitivityRequest) -> dict[str, Any]:
+    try:
+        return get_service().sensitivity.analyze(expression=request.expression,
+                                                 params=request.params, swing=request.swing)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/tornado")
+def row76_tornado(request: SensitivityRequest) -> dict[str, Any]:
+    try:
+        return get_service().tornado.build(expression=request.expression,
+                                           params=request.params, swing=request.swing)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/decision-tree")
+def row77_decision_tree(request: DecisionTreeRequest) -> dict[str, Any]:
+    try:
+        return get_service().decision_trees.build(spec=request.spec)
+    except (ValueError, KeyError, TypeError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/real-options")
+def row78_real_options(request: RealOptionsRequest) -> dict[str, Any]:
+    try:
+        return get_service().real_options.value(
+            underlying=request.underlying, up=request.up, down=request.down,
+            exercise_cost=request.exercise_cost, kind=request.kind,
+            steps=request.steps, risk_free=request.risk_free)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/game")
+def row79_game(request: GameRequest) -> dict[str, Any]:
+    try:
+        return get_service().game_theory.analyze(row_payoffs=request.row_payoffs,
+                                                 col_payoffs=request.col_payoffs)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/nash")
+def row80_nash(request: GameRequest) -> dict[str, Any]:
+    try:
+        return get_service().nash.find(row_payoffs=request.row_payoffs,
+                                       col_payoffs=request.col_payoffs)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/mechanism/vcg")
+def row81_vcg(request: VCGRequest) -> dict[str, Any]:
+    try:
+        return get_service().mechanisms.vcg(agents=request.agents)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/mechanism/check-incentives")
+def row81_check_incentives(request: ICCheckRequest) -> dict[str, Any]:
+    try:
+        return get_service().mechanisms.check_incentives(
+            agent=request.agent, true_values=request.true_values,
+            others=request.others, deviations=request.deviations)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/auction")
+def row82_auction(request: AuctionRequest) -> dict[str, Any]:
+    try:
+        return get_service().auctions.recommend(
+            auction_type=request.auction_type, value=request.value,
+            n_bidders=request.n_bidders, common_value=request.common_value)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/signaling")
+def row83_signaling(request: SignalingRequest) -> dict[str, Any]:
+    try:
+        return get_service().signaling.assess(benefit=request.benefit,
+                                              cost_high_type=request.cost_high_type,
+                                              cost_low_type=request.cost_low_type)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/meta/principal-agent")
+def row84_principal_agent(request: PrincipalAgentRequest) -> dict[str, Any]:
+    try:
+        return get_service().principal_agent.design(efforts=request.efforts,
+                                                    target_effort=request.target_effort,
+                                                    shares=request.shares)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))

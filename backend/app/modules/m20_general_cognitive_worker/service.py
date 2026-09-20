@@ -44,6 +44,15 @@ from .foresight import (
     ReversibilityAssessor, RiskOfRuinAnalyzer, ScenarioPlanner, SecondOrderTracer,
     SerendipityEngine, SimulationFidelityTracker, SystemsModel,
 )
+from .strategy import (
+    AuctionAdvisor, ConstraintsManager, CriticalPathAnalyzer, DecisionTreeBuilder,
+    DisruptionAssessor, ErgodicityAnalyzer, FlywheelFinder, GameAnalyzer,
+    JTBDFramer, LittlesLawAdvisor, MechanismDesigner, MoatAssessor,
+    MonteCarloProjector, NashFinder, NetworkEffectAnalyzer, NonLinearModeler,
+    ParetoAnalyzer, PrincipalAgentDesigner, QueueAnalyzer, RealOptionsValuer,
+    SensitivityExplorer, SignalingAssessor, TippingPointDetector, TornadoBuilder,
+    ValueChainMapper,
+)
 from .tools import ToolDispatcher, ToolRegistry
 from .working_memory import AttentionController, WorkingMemory
 
@@ -181,6 +190,32 @@ class CognitiveWorkerService:
         self.ev_calculator = EVCalculator()
         self.risk_of_ruin = RiskOfRuinAnalyzer()
         self.kelly = KellySizer()
+        # Strategic and quantitative decision aids (rows 60-84)
+        self.ergodicity = ErgodicityAnalyzer()
+        self.nonlinear = NonLinearModeler()
+        self.tipping_points = TippingPointDetector()
+        self.network_effects = NetworkEffectAnalyzer()
+        self.flywheels = FlywheelFinder()
+        self.moats = MoatAssessor()
+        self.disruption = DisruptionAssessor()
+        self.jtbd = JTBDFramer()
+        self.value_chain = ValueChainMapper()
+        self.pareto = ParetoAnalyzer()
+        self.toc = ConstraintsManager()
+        self.queues = QueueAnalyzer()
+        self.littles = LittlesLawAdvisor()
+        self.critical_paths = CriticalPathAnalyzer()
+        self.monte_carlo = MonteCarloProjector()
+        self.sensitivity = SensitivityExplorer()
+        self.tornado = TornadoBuilder()
+        self.decision_trees = DecisionTreeBuilder()
+        self.real_options = RealOptionsValuer()
+        self.game_theory = GameAnalyzer()
+        self.nash = NashFinder()
+        self.mechanisms = MechanismDesigner()
+        self.auctions = AuctionAdvisor()
+        self.signaling = SignalingAssessor()
+        self.principal_agent = PrincipalAgentDesigner()
         self.executive_model = executive_model
         self.loop = DeliberativeLoop(
             planner=self.planner, dispatcher=self.dispatcher,
@@ -318,6 +353,9 @@ class CognitiveWorkerService:
                 "active_hypotheses": len(self.hypotheses.ranking()),
                 "reference_cases": len(self.reference_class.cases),
                 "planning_history_kinds": len(self.planning_fallacy.history),
+            },
+            "strategy": {
+                "toc_snapshots": len(self.toc.snapshots),
             },
         }
 
