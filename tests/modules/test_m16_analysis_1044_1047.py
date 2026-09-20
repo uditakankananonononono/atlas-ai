@@ -5,7 +5,7 @@ def test_row_1044_sum_product_exact_on_tree():
  data={'variables':['a','b'],'factors':[{'scope':['a'],'table':{'0':.2,'1':.8}},{'scope':['a','b'],'table':{'00':3,'01':1,'10':1,'11':3}}]}
  o=analysis.run('belief_propagation',data,{'iterations':4})['output']
  assert o['converged_on_tree'] and o['marginal_true']['a']==pytest.approx(.8)
- assert o['marginal_true']['b']==pytest.approx(.68)
+ assert o['marginal_true']['b']==pytest.approx(.65)
 
 def test_row_1045_vmp_combines_natural_parameter_messages():
  o=analysis.run('variational_message_passing',{'observations':[1,2,3]},{'prior_mean':0,'prior_variance':100,'observation_variance':1})['output']
