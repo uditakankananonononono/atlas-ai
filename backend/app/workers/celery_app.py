@@ -38,5 +38,9 @@ celery_app.conf.update(
             "task": "atlas.m06.sync_and_execute_due",
             "schedule": 60.0,
         },
+        "draft-due-outreach-followups": {
+            "task": "atlas.m05.draft_due_followups",
+            "schedule": 3600.0,
+        },
     },
 )

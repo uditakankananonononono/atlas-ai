@@ -51,3 +51,35 @@ def test_social_task_syncs_before_approved_effect_execution(monkeypatch):
     monkeypatch.setattr("app.modules.m06_social_media_manager.scheduler.Scheduler", Scheduler)
     assert tasks.sync_and_execute_due_social.run() == {"tenants": 1, "synced": 2, "published": 1}
     assert calls == [("repo", "a"), ("sync",), ("execute",)]
+
+
+def test_followup_task_drafts_and_submits_each_message(monkeypatch):
+    monkeypatch.setattr(tasks, "_tenant_ids_for", lambda *models: ["a"])
+    calls = []
+
+    class Repo:
+        def __init__(self, tenant): calls.append(("repo", tenant))
+    class Message:
+        id = "original"
+    class Followup:
+        id = "followup"
+    class Service:
+        def __init__(self, *args): pass
+        def due_follow_ups(self): return [Message()]
+        async def draft_follow_up(self, message_id, generate):
+            calls.append(("draft", message_id))
+            return Followup()
+        def submit_for_approval(self, message_id): calls.append(("review", message_id))
+
+    monkeypatch.setattr("app.modules.m05_outreach_manager.sql_repository.SqlCampaignRepository", Repo)
+    monkeypatch.setattr("app.modules.m05_outreach_manager.sql_repository.SqlContactRepository", Repo)
+    monkeypatch.setattr("app.modules.m05_outreach_manager.campaigns.CampaignService", Service)
+    assert tasks.draft_due_followups.run() == {
+        "tenants": 1, "drafted": 1, "submitted_for_approval": 1,
+    }
+    assert calls == [("repo", "a"), ("repo", "a"), ("draft", "original"), ("review", "followup")]
+
+
+def test_followup_beat_is_hourly_and_never_a_send_task():
+    entry = celery_app.conf.beat_schedule["draft-due-outreach-followups"]
+    assert entry == {"task": "atlas.m05.draft_due_followups", "schedule": 3600.0}

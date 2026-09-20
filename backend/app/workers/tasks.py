@@ -87,3 +87,27 @@ def sync_and_execute_due_social() -> dict[str, int]:
         synced += len(scheduler.sync_decisions())
         published += len(scheduler.execute_due())
     return {"tenants": len(tenants), "synced": synced, "published": published}
+
+
+@celery_app.task(name="atlas.m05.draft_due_followups")
+def draft_due_followups() -> dict[str, int]:
+    """Create review-bound follow-up drafts; this task never sends email."""
+    import asyncio
+    from app.core.approvals import approvals
+    from app.core.providers import generate
+    from app.modules.m05_outreach_manager.campaigns import CampaignService
+    from app.modules.m05_outreach_manager.sql_repository import (
+        CampaignRow, ContactRow, MessageRow, SqlCampaignRepository, SqlContactRepository,
+    )
+    tenants = _tenant_ids_for(CampaignRow, ContactRow, MessageRow)
+    drafted = submitted = 0
+    for tenant_id in tenants:
+        service = CampaignService(
+            SqlCampaignRepository(tenant_id), SqlContactRepository(tenant_id), approvals
+        )
+        for message in service.due_follow_ups():
+            followup = asyncio.run(service.draft_follow_up(message.id, generate))
+            drafted += 1
+            service.submit_for_approval(followup.id)
+            submitted += 1
+    return {"tenants": len(tenants), "drafted": drafted, "submitted_for_approval": submitted}
