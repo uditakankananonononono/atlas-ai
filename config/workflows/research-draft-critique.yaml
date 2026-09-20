@@ -1,0 +1,17 @@
+name: research-draft-critique-revise
+nodes:
+  - id: research
+    task: model
+    config: {task_type: research, min_confidence: 0.72}
+  - id: draft
+    task: model
+    depends_on: [research]
+    config: {task_type: draft, min_confidence: 0.75}
+  - id: critique
+    task: model
+    depends_on: [draft]
+    config: {task_type: critique, min_confidence: 0.78}
+  - id: revise
+    task: model
+    depends_on: [draft, critique]
+    config: {task_type: revise, min_confidence: 0.80}
