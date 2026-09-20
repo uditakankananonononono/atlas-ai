@@ -168,3 +168,7 @@ Audited source HEAD: `d90eb80dc1df708a9b4a3d9c7245040e620b9109`. Counts: 27 veri
 ## Verification command
 
 `pytest -q` validates the current offline suite. `tests/test_implementation_audit.py` enforces row completeness, allowed statuses, evidence requirements and live module registration.
+
+## Fallback audit
+
+The old README was stale and materially understated current code. It also hid an important distinction: some deterministic paths are valid degradation behind real primaries, while others replace a requested primary. `docs/FALLBACK_AUDIT.md` classifies each material fallback. M10 action extraction, M6 provider drafting, M7 PDF/HTML rendering, M8 PPTX/Markdown rendering and M12 routed model retry are legitimate degradation. M1 keyword/date/token/impact approximations and the default M10 rule classifier are disguised substitutes for requested primary capabilities and remain build items.

@@ -5,7 +5,7 @@ class Module:
     id: int
     slug: str
     name: str
-    status: str = "stub"
+    status: str
 
 MODULES = [
     Module(0, "approval-center", "Human Approval Center", "implemented"),

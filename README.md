@@ -1,76 +1,77 @@
 # Atlas AI
 
-Original Phase 1 foundation for Atlas AI, owned by Udita. Atlas is being built as a commercial, human-controlled, modular work platform. This repository is new code and does not copy or depend on any private assistant implementation.
+Atlas AI is a human-controlled modular work platform owned by Udita. This repository contains a FastAPI API, Next.js dashboard, tenant-scoped persistence, worker/queue configuration, source and provider adapters, approval-gated effects, document renderers, billing test-mode wiring, and production container definitions.
 
-## What runs today
+## Honest state
 
-A FastAPI service provides:
+This is an active product build, not a finished production service. Modules 0-23 are registered on live API routers and have offline tests, but registration is not proof that every requested feature is complete. The row-by-row evidence audit is in [`docs/IMPLEMENTATION_AUDIT.md`](docs/IMPLEMENTATION_AUDIT.md) and [`audits/ledger-140.json`](audits/ledger-140.json). The audit deliberately labels adjacent-but-incomplete work **thin** and absent exact requirements **missing**.
 
-- `GET /health`
-- `GET /api/v1/modules` - the complete module registry
-- `POST /api/v1/goals/plan` - a small end-to-end workflow: accept a goal, route it to relevant modules, return a typed plan, and generate a pending approval request before outreach
+The previous README was stale. It still described the first foundation commit and called current modules stubs even after their implementations landed. It also claimed auth, tenant state, workers, providers, billing and deployment were all deferred, which is no longer true. This README replaces those claims rather than papering over remaining gaps.
+
+## Run locally
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -e '.[dev]'
 uvicorn app.main:app --app-dir backend --reload
-# another shell
-curl -X POST http://localhost:8000/api/v1/goals/plan \
-  -H 'content-type: application/json' \
-  -d '{"goal":"Research professors and draft outreach email"}'
-pytest
+pytest -q
+
+cd frontend
+npm ci
+npm run typecheck
+npm run build
 ```
 
-Or run infrastructure with `docker compose up --build`. PostgreSQL/pgvector and Redis are included now so later phases do not require a platform rewrite.
+Development infrastructure is available through `docker compose up --build`. The production topology is in `docker-compose.prod.yml`; it still needs provisioned infrastructure, migrations, TLS, live monitoring and backups before a 24/7 launch claim is valid.
 
-## Spec map
+## Current module state
 
-All module identities live in `backend/app/modules/catalog.py`; code grows behind these stable boundaries.
+All module routers below are mounted by `backend/app/main.py`. "Implemented core" means substantive code and tests exist. "Thin" means important requested production capability is still absent.
 
-| ID | Spec module | Phase 1 location | State |
+| ID | Module | Current real implementation | Important remaining gap |
 |---:|---|---|---|
-|0|Human Approval Center|`core/models.py`, `core/planner.py`|Foundation: pending request model and gate|
-|1|Opportunity Discovery|`modules/catalog.py`|Stub|
-|2|Competition Manager|`modules/catalog.py`|Stub|
-|3|Grant & Fellowship Writer|`modules/catalog.py`|Routing skeleton|
-|4|Research Scientist|`modules/catalog.py`|Routing skeleton|
-|5|Outreach Manager|`core/planner.py`|Routing + approval gate|
-|6|Social Media Manager|`modules/catalog.py`|Stub|
-|7|Brand Collaboration Manager|`modules/catalog.py`|Stub|
-|8|Startup Growth|`modules/catalog.py`|Stub|
-|9|Knowledge Workspace|`modules/catalog.py`|Stub|
-|10|Email Assistant|`modules/catalog.py`|Stub|
-|11|Calendar Intelligence|`modules/catalog.py`|Stub|
-|12|AI Research Lab|`modules/catalog.py`|Stub|
-|13|Browser Agent|`modules/catalog.py`|Stub|
-|14|Project Builder|`modules/catalog.py`|Routing skeleton|
-|15|Document Generator|`modules/catalog.py`|Routing skeleton|
-|16|Executive Dashboard|`frontend/app/page.tsx`|Static shell|
-|17|Social Advice Compiler & College Essay Architect|`modules/catalog.py`|Stub|
-|18|Side Hustle & Knowledge Scraper|`modules/catalog.py`|Stub|
-|19|Autonomous Idea Incubator|`modules/catalog.py`|Routing skeleton|
-|20|General Cognitive Worker|`modules/catalog.py`|Fallback route, intentionally bounded|
-|21|Claire PA / Idea Realisation Engine|`modules/catalog.py`|Stub, bounded by permission and retry budgets|
+| 0 | Human Approval Center | durable proposals, decisions, expiry, audit events, blocking callbacks | cross-process dashboard fan-out |
+| 1 | Opportunity Discovery | RSS/Atom, GitHub and Devpost scans, normalization, scoring, SQL state, gated digests | scheduled source fleet, spaCy/dateparser/embedding normalization, 200 verified scholarship sources |
+| 2 | Competition Manager | rule extraction, checklist/drafting, SQL state, evidence status, browser handoff | Docs grounding, winner corpus, announcement monitors and follow-ups |
+| 3 | Grant Writer | provider-backed proposal sections, budgets, funded-example analysis, durable corpus, DOCX/PDF renderer | 1,000+ real funded corpus, vector retrieval and live rate evidence |
+| 4 | Research Scientist | literature clustering, provider-backed hypotheses, sandbox proposals, scientific adapters | durable surveillance, embedding clusters, ReAct/gap finder, manuscript/artifact pipeline |
+| 5 | Outreach Manager | tenant SQL CRM, change history, professor discovery, drafts and gated sends | more official enrichment sources and a real approved-send executor |
+| 6 | Social Media Manager | provider-backed plans, asset prompts, SQL plans/reports, official X metrics, gated scheduling | real asset generation and platform execution after approval |
+| 7 | Brand Collaboration | discovery scoring, tenant ledger, PDF/HTML collateral, reports/invoices, gated send | live provider integrations and production artifact storage |
+| 8 | Startup Growth | real Next.js archives, Supabase waitlist route, PPTX deck, code-grounded docs, gated publish | deployment executor and broader templates |
+| 9 | Knowledge Workspace | tenant graph, review suggestions, versioning and planner export | Google Docs/Sheets ingestion and richer visual editing |
+| 10 | Email Assistant | Gmail OAuth/watch/ingestion, seven-class classifier, action extraction, priority/follow-up, gated replies | production OAuth credentials and approved send execution |
+| 11 | Calendar Intelligence | Google/CalDAV sync, solver, travel/prep/focus constraints, conflict proposals | production credentials and live apply verification |
+| 12 | AI Research Lab | cost/latency/capability router, bounded retries, confidence and YAML DAG execution | production model catalog and distributed node runner |
+| 13 | Browser Agent | sessions, URL safety, form matching, screenshot-bound single-use approvals | deployed Playwright/VLM runtime and artifact storage |
+| 14 | Project Builder | tenant project plans, tasks, dependencies and approval gates | richer project executors and integrations |
+| 15 | Document Generator | versioned documents, diffs and PDF/DOCX/PPTX renderers | Google publishing and higher-fidelity templates |
+| 16 | Executive Dashboard | approval queue, command previews, critical paths and graph UI | live SSE/Redis fan-out and fuller operational UI |
+| 17 | Narrative Architect | cited-source collection and bounded narrative drafting | more official sources and full editing workflow |
+| 18 | Side Hustle Scraper | sourced blueprint generation with login-scrape rejection | larger source registry and market validation adapters |
+| 19 | Idea Incubator | budget-capped previews and approval gates | durable long-running incubation orchestration |
+| 20 | General Cognitive Worker | plans, dependencies, bounded retries, budgets, memory and supervision | durable distributed execution and broader real tool adapters |
+| 21 | Claire | in-Atlas workflows, bounded capabilities, optional paired-client protocol, per-action gates and deception refusal | persistent orchestration and deployed paired-client transport |
+| 22 | Tools Hub | allow-listed discovery and approval-gated installation proposals | production catalog, provenance/security scanner and post-approval installer |
+| 23 | Billing | plan metadata, Stripe test Checkout proposals, idempotent executions and event dedupe | signed webhooks, invoice/cancel/tax flows, production prices |
 
-## Deliberately deferred
+## Fallback policy
 
-Auth/OIDC, tenant data models, encrypted BYOK storage and key rotation, durable approval callbacks, Celery workers, SSE, provider adapters, vector memory, billing/tier enforcement, deployment, and production observability. These are not cosmetic TODOs: they need explicit contracts, acceptance tests, threat modelling, and account choices.
+A fallback is legitimate only when a real primary implementation exists and the fallback handles an optional dependency, missing key, upstream failure or malformed model output. Current legitimate examples are: provider-backed email action extraction to deterministic extraction; provider-backed social strategy to deterministic formatting; WeasyPrint PDF to inspectable HTML; PPTX to Markdown when `python-pptx` is not installed; and routed model retries across eligible providers.
 
-The first customer workflow and cloud target are still open product decisions. Zero-cost services can support an early demo, but no README should promise that a multi-user commercial system will stay at zero operating cost.
+Deterministic logic that replaces a requested primary capability is not called complete. The M1 keyword/date/token scoring and impact heuristic currently stand in for live spaCy/dateparser/embedding/model-backed normalization. That is a disguised stub and remains a build item in the audit. The M10 rule classifier is useful on its own, but it is also a stand-in until a verified trained checkpoint is supplied. Exact classifications and evidence are in [`docs/FALLBACK_AUDIT.md`](docs/FALLBACK_AUDIT.md).
 
-## Compliant substitutions
+## Safety and commercial boundaries
 
-The spec mentions Discord self-bots, unofficial social APIs, residential proxies, stealth scraping, and scraping behind authenticated services. Atlas will instead use official APIs/RSS/licensed sources, user-authorized browser sessions, robots/terms-aware collection, and manual import where no compliant integration exists. See `docs/ARCHITECTURE.md`.
+- Every message, follow-up, publication, form submission, deletion and money action is previewed and approval-gated.
+- No Discord self-bots, piracy adapters, fabricated application activities, fabricated labels, deception as the user, login-driven mass scraping or personal-session evasion.
+- Collection uses public sources, official APIs, invited bots, newsletters, open-access sources and discovery followed by selected tracking.
+- Users bring model/provider keys. Metered features expose configuration/cost before use.
+- Stripe remains test-mode only. Atlas is not yet a launched billing service.
 
-## Commercial boundaries
+## Evidence
 
-Module IDs and entitlements will stay separate so `$50 / $150 / $300` product tiers can be added without forking the codebase. Users bring their own model/provider keys; Atlas will not bundle the founder's keys.
-
-## Stage 2 API slice
-
-Stage 2 adds two working backend paths:
-
-- `POST /api/v1/ai/generate` calls OpenAI or Anthropic with the operator's own environment key. Atlas never returns or logs the key. Missing credentials fail clearly.
-- `GET /api/v1/approvals` and `POST /api/v1/approvals/{id}/decision` complete the approval lifecycle for gated work. Re-deciding a finished request is rejected.
-
-Set `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` in your local environment or secret manager. The current approval store is intentionally in-memory for this tested slice; PostgreSQL durability and tenant isolation are the next production boundary.
+- Full implementation audit: [`docs/IMPLEMENTATION_AUDIT.md`](docs/IMPLEMENTATION_AUDIT.md)
+- Machine-readable 140-row audit: [`audits/ledger-140.json`](audits/ledger-140.json)
+- Architecture and deployment: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
+- Billing boundary: [`docs/BILLING.md`](docs/BILLING.md)
