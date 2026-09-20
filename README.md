@@ -65,3 +65,12 @@ The spec mentions Discord self-bots, unofficial social APIs, residential proxies
 ## Commercial boundaries
 
 Module IDs and entitlements will stay separate so `$50 / $150 / $300` product tiers can be added without forking the codebase. Users bring their own model/provider keys; Atlas will not bundle the founder's keys.
+
+## Stage 2 API slice
+
+Stage 2 adds two working backend paths:
+
+- `POST /api/v1/ai/generate` calls OpenAI or Anthropic with the operator's own environment key. Atlas never returns or logs the key. Missing credentials fail clearly.
+- `GET /api/v1/approvals` and `POST /api/v1/approvals/{id}/decision` complete the approval lifecycle for gated work. Re-deciding a finished request is rejected.
+
+Set `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` in your local environment or secret manager. The current approval store is intentionally in-memory for this tested slice; PostgreSQL durability and tenant isolation are the next production boundary.

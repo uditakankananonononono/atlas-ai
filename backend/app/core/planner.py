@@ -1,6 +1,7 @@
 from uuid import uuid4
 from app.core.models import ApprovalRequest, GoalPlan, PlannedStep
 from app.modules.catalog import BY_ID
+from app.core.approvals import approvals as approval_store
 
 _KEYWORDS = {
     1: ("opportunity", "competition", "grant", "fellowship"),
@@ -22,4 +23,6 @@ def plan_goal(goal: str, allow_external_action: bool = False) -> GoalPlan:
         steps.append(PlannedStep(module_id=mid, module_name=module.name, action=f"Prepare work for: {goal}", requires_approval=external))
         if external:
             approvals.append(ApprovalRequest(id=str(uuid4()), module_id=mid, action_type="external_communication", payload={"goal": goal, "execution_enabled": allow_external_action}))
+    for request in approvals:
+        approval_store.put(request)
     return GoalPlan(goal=goal, steps=steps, approval_requests=approvals)
