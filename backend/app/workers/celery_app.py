@@ -30,5 +30,13 @@ celery_app.conf.update(
             "task": "atlas.approvals.expire",
             "schedule": 60.0,
         },
+        "project-and-sweep-executive-dashboards": {
+            "task": "atlas.m16.project_and_sweep",
+            "schedule": 60.0,
+        },
+        "sync-and-execute-due-social-posts": {
+            "task": "atlas.m06.sync_and_execute_due",
+            "schedule": 60.0,
+        },
     },
 )

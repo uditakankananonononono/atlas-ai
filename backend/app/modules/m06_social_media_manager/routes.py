@@ -82,11 +82,11 @@ class _ApprovalCenterLookup:
         self._approvals = approvals
 
     def status_of(self, approval_id: str) -> str | None:
-        for request in self._approvals.list():
-            if request.id == approval_id:
-                status = request.status
-                return getattr(status, "value", str(status))
-        return None
+        request = self._approvals.get(approval_id)
+        if request is None:
+            return None
+        status = request.status
+        return getattr(status, "value", str(status))
 
 
 class _EnvAdapterFactory:
