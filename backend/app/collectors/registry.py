@@ -1,11 +1,13 @@
 """Config-selectable collector registry. Registry names are explicit allow-lists."""
 from .channels import DiscordBotCollector, GmailNewsletterCollector
+from .linkedin import PublicLinkedInCollector
 from .contacts import ApolloPeopleCollector, HunterDomainCollector
 from .scholarships import ScholarshipSiteCollector
 from .social import ApifyInstagramCollector, BrightDataInstagramCollector, PublicInstagramCollector, PublicPinterestCollector, PinterestApiCollector, XApiCollector, YouTubeDataCollector
 
 COLLECTORS = {
     "public_scholarship_sites": ScholarshipSiteCollector,
+    "public_linkedin": PublicLinkedInCollector,
     "public_instagram": PublicInstagramCollector,
     "public_pinterest": PublicPinterestCollector,
     "pinterest_api_v5": PinterestApiCollector,

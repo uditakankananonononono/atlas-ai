@@ -43,6 +43,16 @@
       "credential_env": "PINTEREST_ACCESS_TOKEN"
     },
     {
+      "key": "linkedin-named-creators-free",
+      "adapter": "public_linkedin",
+      "type": "public_page",
+      "enabled": false,
+      "registry": "config/linkedin_creator_sources.json",
+      "cost": "free",
+      "pacing_seconds": 15,
+      "restriction": "named public creators, robots allowed posts/articles only; no login/evasion"
+    },
+    {
       "key": "instagram-seeds-apify",
       "adapter": "apify_instagram",
       "type": "licensed_data",

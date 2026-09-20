@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "creator_urls": [],
+  "rule": "Named public creator URLs only. No authenticated pages, connections, search results, or private content.",
+  "collection_policy": {
+    "login": false,
+    "respect_robots_txt": true,
+    "delay_seconds": 15,
+    "items_per_creator": 10,
+    "stop_on_403_or_429": true,
+    "evasion": false
+  }
+}
