@@ -65,3 +65,6 @@ def decision(idea_id:str,data:DecisionCreate,service:LedgerService=Depends(get_l
 # Feature rows 360-399 are mounted as a sub-router so the global module prefix stays stable.
 from .business_router import router as business_router
 router.include_router(business_router)
+
+from .operations_router import router as operations_router
+router.include_router(operations_router)
