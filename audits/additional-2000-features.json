@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "4c34c2e23cd1e728ef65777f275cdc0baf68147b",
+  "audited_head": "7f1877a99914912f70ae71a9940fcf03332ddab0",
   "counts": {
-    "verified-pushed": 154,
+    "verified-pushed": 178,
     "thin": 3,
-    "missing": 1853
+    "missing": 1829
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -4796,7 +4796,13 @@
         "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
         "test_path": "tests/modules/test_m06_marketing.py",
         "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
-        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send.",
+        "alternate_m05_implementation": {
+          "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+          "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+          "test_path": "tests/modules/test_m05_growth.py",
+          "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4812,7 +4818,13 @@
         "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
         "test_path": "tests/modules/test_m06_marketing.py",
         "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
-        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send.",
+        "alternate_m05_implementation": {
+          "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+          "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+          "test_path": "tests/modules/test_m05_growth.py",
+          "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4828,7 +4840,13 @@
         "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
         "test_path": "tests/modules/test_m06_marketing.py",
         "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
-        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send.",
+        "alternate_m05_implementation": {
+          "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+          "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+          "test_path": "tests/modules/test_m05_growth.py",
+          "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4844,7 +4862,13 @@
         "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
         "test_path": "tests/modules/test_m06_marketing.py",
         "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
-        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send.",
+        "alternate_m05_implementation": {
+          "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+          "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+          "test_path": "tests/modules/test_m05_growth.py",
+          "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4860,7 +4884,13 @@
         "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
         "test_path": "tests/modules/test_m06_marketing.py",
         "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
-        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send.",
+        "alternate_m05_implementation": {
+          "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+          "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+          "test_path": "tests/modules/test_m05_growth.py",
+          "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4876,7 +4906,13 @@
         "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
         "test_path": "tests/modules/test_m06_marketing.py",
         "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
-        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send.",
+        "alternate_m05_implementation": {
+          "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+          "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+          "test_path": "tests/modules/test_m05_growth.py",
+          "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4892,7 +4928,13 @@
         "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
         "test_path": "tests/modules/test_m06_marketing.py",
         "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
-        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send.",
+        "alternate_m05_implementation": {
+          "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+          "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+          "test_path": "tests/modules/test_m05_growth.py",
+          "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4908,7 +4950,13 @@
         "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
         "test_path": "tests/modules/test_m06_marketing.py",
         "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
-        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send.",
+        "alternate_m05_implementation": {
+          "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+          "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+          "test_path": "tests/modules/test_m05_growth.py",
+          "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4924,7 +4972,13 @@
         "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
         "test_path": "tests/modules/test_m06_marketing.py",
         "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
-        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send.",
+        "alternate_m05_implementation": {
+          "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+          "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+          "test_path": "tests/modules/test_m05_growth.py",
+          "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4940,7 +4994,13 @@
         "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
         "test_path": "tests/modules/test_m06_marketing.py",
         "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
-        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send.",
+        "alternate_m05_implementation": {
+          "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+          "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+          "test_path": "tests/modules/test_m05_growth.py",
+          "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+        }
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4950,8 +5010,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Lead Scoring",
       "description": "Prioritizes prospects",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4960,8 +5025,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Sales Funnel Design",
       "description": "Maps buyer journey",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4970,8 +5040,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Conversion Rate Optimization",
       "description": "Improves funnel performance",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4980,8 +5055,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Landing Page Optimization",
       "description": "Improves conversion",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4990,8 +5070,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Sales Script Development",
       "description": "Structures pitches",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5000,8 +5085,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Objection Handling",
       "description": "Addresses concerns",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5010,8 +5100,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Negotiation Strategy",
       "description": "Plans negotiations",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5020,8 +5115,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Deal Structuring",
       "description": "Designs agreements",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5030,8 +5130,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Pricing Strategy",
       "description": "Sets optimal prices",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5040,8 +5145,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Price Elasticity Analysis",
       "description": "Measures sensitivity",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5050,8 +5160,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Revenue Model Design",
       "description": "Structures monetization",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5060,8 +5175,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Subscription Design",
       "description": "Creates recurring revenue",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5070,8 +5190,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Freemium Strategy",
       "description": "Balances free and paid",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5080,8 +5205,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Usage-Based Pricing",
       "description": "Charges for consumption",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5090,8 +5220,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Tiered Pricing",
       "description": "Offers multiple levels",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5100,8 +5235,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Dynamic Pricing",
       "description": "Adjusts to demand",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5110,8 +5250,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Bundling Strategy",
       "description": "Combines offerings",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5120,8 +5265,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Upselling",
       "description": "Increases order value",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5130,8 +5280,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Cross-Selling",
       "description": "Sells complementary products",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5140,8 +5295,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Customer Success",
       "description": "Ensures outcomes",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5150,8 +5310,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Onboarding Optimization",
       "description": "Improves first experience",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5160,8 +5325,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Support System Design",
       "description": "Creates help infrastructure",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5170,8 +5340,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Knowledge Base Creation",
       "description": "Documents solutions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -5180,8 +5355,13 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Community Support",
       "description": "Enables peer help",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
+        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
+        "test_path": "tests/modules/test_m05_growth.py",
+        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
