@@ -10,7 +10,7 @@ from __future__ import annotations
 import math,random,statistics
 from collections import Counter
 ROWS={
-"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043}
+"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047}
 def _nums(data,key="values",min_n=1):
     v=data.get(key)
     if not isinstance(v,list) or len(v)<min_n or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in v):raise ValueError(f"{key} must contain at least {min_n} finite numbers")
@@ -296,5 +296,72 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
         if z<=0:raise ValueError("factor graph has zero total mass")
         marginals={v:sum(w for assign,w in configs if assign[v])/z for v in variables};best=max(configs,key=lambda x:x[1])
         o["output"]={"algorithm":"exact_factor_product_enumeration","partition_function":z,"marginal_true":marginals,"map_assignment":best[0],"map_probability":best[1]/z};a += ["Binary finite factor graph with complete non-negative factor tables."];limits += ["Exact enumeration capped at 20 variables; no loopy belief propagation or continuous variables."]
+    elif method=="belief_propagation":
+        variables=data.get("variables");factors=data.get("factors");iterations=max(1,min(int(p.get("iterations",20)),500));damping=float(p.get("damping",0));
+        if not isinstance(variables,list) or not variables or not isinstance(factors,list) or not 0<=damping<1:raise ValueError("variables, factors and damping in [0,1) required")
+        neighbors={v:[] for v in variables}
+        for i,f in enumerate(factors):
+            for v in f.get("scope",[]):
+                if v not in neighbors:raise ValueError("unknown factor variable")
+                neighbors[v].append(i)
+        vf={(v,i):[.5,.5] for v in variables for i in neighbors[v]};fv={(i,v):[.5,.5] for v in variables for i in neighbors[v]}
+        def norm(x):
+            z=sum(x)
+            if z<=0:raise ValueError("zero-mass message")
+            return [a/z for a in x]
+        for _ in range(iterations):
+            nf={}
+            for i,f in enumerate(factors):
+                scope=f.get("scope",[]);table=f.get("table",{})
+                for target in scope:
+                    vals=[0.0,0.0];others=[v for v in scope if v!=target]
+                    for bits in range(1<<len(others)):
+                        assign={v:bool(bits&(1<<j)) for j,v in enumerate(others)}
+                        for tv in (False,True):
+                            assign[target]=tv;key=''.join('1' if assign[v] else '0' for v in scope)
+                            if key not in table:raise ValueError("incomplete factor table")
+                            weight=float(table[key])
+                            for v in others:weight*=vf[(v,i)][1 if assign[v] else 0]
+                            vals[1 if tv else 0]+=weight
+                    fresh=norm(vals);old=fv[(i,target)];nf[(i,target)]=norm([damping*old[j]+(1-damping)*fresh[j] for j in range(2)])
+            fv=nf;nv={}
+            for v in variables:
+                for target in neighbors[v]:
+                    vals=[1.0,1.0]
+                    for i in neighbors[v]:
+                        if i!=target:
+                            vals[0]*=fv[(i,v)][0];vals[1]*=fv[(i,v)][1]
+                    nv[(v,target)]=norm(vals)
+            vf=nv
+        beliefs={}
+        for v in variables:
+            vals=[1.0,1.0]
+            for i in neighbors[v]:vals[0]*=fv[(i,v)][0];vals[1]*=fv[(i,v)][1]
+            beliefs[v]=norm(vals)[1]
+        o["output"]={"algorithm":"sum_product","marginal_true":beliefs,"iterations":iterations,"damping":damping,"converged_on_tree":sum(max(0,len(f.get("scope",[]))-1) for f in factors)==len(variables)-1};a += ["Binary finite factor graph and non-negative complete factor tables."];limits += ["Exact on trees after sufficient passes; loopy results are approximate and need convergence checks; fixed iteration budget."]
+    elif method=="variational_message_passing":
+        observations=_nums(data,"observations");prior_mean=float(p.get("prior_mean",0));prior_variance=float(p.get("prior_variance",100));observation_variance=float(p.get("observation_variance",1))
+        if prior_variance<=0 or observation_variance<=0:raise ValueError("variances must be positive")
+        prior_precision=1/prior_variance;likelihood_precision=len(observations)/observation_variance;posterior_precision=prior_precision+likelihood_precision;posterior_variance=1/posterior_precision;posterior_mean=posterior_variance*(prior_precision*prior_mean+sum(observations)/observation_variance)
+        messages={"prior_to_mean":{"precision":prior_precision,"precision_mean":prior_precision*prior_mean},"likelihood_to_mean":{"precision":likelihood_precision,"precision_mean":sum(observations)/observation_variance}}
+        o["output"]={"family":"conjugate_normal","posterior_mean":posterior_mean,"posterior_variance":posterior_variance,"natural_parameter_messages":messages,"iterations":1,"converged":True};a += ["Conjugate Normal prior and Normal likelihood with known variance; mean-field family contains the exact posterior."];limits += ["Single latent mean reference graph; no nonconjugate factors, automatic graph compiler, or generic ELBO optimizer."]
+    elif method=="expectation_propagation":
+        lower=float(data.get("lower"));prior_mean=float(p.get("prior_mean",0));prior_variance=float(p.get("prior_variance",1))
+        if prior_variance<=0:raise ValueError("prior_variance must be positive")
+        sd=math.sqrt(prior_variance);alpha=(lower-prior_mean)/sd;tail=max(1-_normal_cdf(alpha),1e-300);phi=math.exp(-alpha*alpha/2)/math.sqrt(2*math.pi);ratio=phi/tail;mean_post=prior_mean+sd*ratio;var_post=prior_variance*(1+alpha*ratio-ratio*ratio)
+        site_precision=1/var_post-1/prior_variance;site_precision_mean=mean_post/var_post-prior_mean/prior_variance
+        o["output"]={"model":"gaussian_prior_times_lower_truncation_factor","moment_matched_mean":mean_post,"moment_matched_variance":var_post,"site_natural_parameters":{"precision":site_precision,"precision_mean":site_precision_mean},"normalizer":tail};a += ["One-dimensional Gaussian cavity and indicator factor x>lower; EP moment match is analytic."];limits += ["Single-site reference; no iterative multi-site EP, power EP, damping, or negative-variance recovery."]
+    elif method=="laplace_approximation":
+        observations=_nums(data,"observations");trials=data.get("trials");successes=data.get("successes")
+        if not isinstance(trials,list) or not isinstance(successes,list) or len(trials)!=len(observations) or len(successes)!=len(observations):raise ValueError("observations, trials and successes must align")
+        prior_variance=float(p.get("prior_variance",100));mode=float(p.get("initial",0));tol=float(p.get("tolerance",1e-9));iters=max(1,min(int(p.get("iterations",100)),1000))
+        if prior_variance<=0 or any(n<=0 or y<0 or y>n for y,n in zip(successes,trials)):raise ValueError("invalid variance or binomial counts")
+        converged=False
+        for i in range(iters):
+            probs=[1/(1+math.exp(-max(-700,min(700,mode*x)))) for x in observations];grad=-mode/prior_variance+sum(x*(y-n*pr) for x,y,n,pr in zip(observations,successes,trials,probs));hess=-1/prior_variance-sum(n*x*x*pr*(1-pr) for x,n,pr in zip(observations,trials,probs));step=grad/hess;new=mode-step
+            if abs(new-mode)<tol:mode=new;converged=True;break
+            mode=new
+        variance=-1/hess
+        o["output"]={"model":"one_parameter_binomial_logistic","posterior_mode":mode,"gaussian_variance":variance,"iterations":i+1,"converged":converged,"interval":[mode-1.96*math.sqrt(variance),mode+1.96*math.sqrt(variance)]};a += ["Independent binomial observations, one coefficient, Normal(0, prior_variance) prior; posterior locally Gaussian near a single mode."];limits += ["Laplace can misrepresent skewed/multimodal posteriors; one parameter only; inspect convergence and use production inference for consequential decisions."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
     return o
