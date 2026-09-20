@@ -30,3 +30,14 @@ def test_claire_sends_and_spend_are_per_action_approval():
  approvals=ApprovalStore();s=Service(Cognitive(approvals,Model()),approvals);g=s.intake("manage outreach",[],{})
  assert s.request_environment_change(g.id,"send_message",{"recipient":"review first"}).status.value=="pending"
  assert s.request_environment_change(g.id,"spend_money",{"total":"review first"}).status.value=="pending"
+
+def test_claire_optional_pc_endpoint_has_full_owner_machine_capability_parity():
+ approvals=ApprovalStore();s=Service(Cognitive(approvals,Model()),approvals);g=s.intake("organize my machine",[],{})
+ for operation in ("type_text","click","scroll","browser_navigate","install_package","run_command","run_workflow","read_file","write_file","move_file","copy_file"):
+  req=s.request_environment_change(g.id,operation,{"operation":operation})
+  assert req.status.value=="pending"
+
+def test_claire_refuses_deception_as_user():
+ s=Service(Cognitive(ApprovalStore(),Model()),ApprovalStore())
+ for goal in ("lie on my behalf to the organizer","deceive this contact","send a false statement as me"):
+  with pytest.raises(ValueError):s.intake(goal,[],{})
