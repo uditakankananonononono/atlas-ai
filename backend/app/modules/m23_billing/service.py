@@ -20,6 +20,18 @@ class Service:
   if plan.monthly_price_usd<=0:raise ValueError("free plan does not need checkout")
   result=await self.stripe.create_checkout(plan,view["payload"]["success_url"],view["payload"]["cancel_url"],tenant_id,approval_id)
   self.repo.record_execution(approval_id,result);return result
+ def propose_cancel(self,tenant_id,data:CancelIn):
+  payload={"tenant_id":tenant_id,"subscription_id":data.subscription_id,"provider":"stripe","effect":"cancel_subscription"};req=self.approvals.put(ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type="cancel_subscription",payload=payload));return ApprovalProposal(approval_id=req.id,action_type=req.action_type,payload=payload)
+ def propose_invoice(self,tenant_id,data:InvoiceIn):
+  payload={"tenant_id":tenant_id,**data.model_dump(),"provider":"stripe","effect":"create_draft_invoice"};req=self.approvals.put(ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type="issue_invoice",payload=payload));return ApprovalProposal(approval_id=req.id,action_type=req.action_type,payload=payload)
+ async def execute_approved(self,approval_id,tenant_id):
+  view=self.repo.approval(approval_id)
+  if not view or view["status"]!="approved" or view["payload"].get("tenant_id")!=tenant_id:raise PermissionError("approved tenant-bound billing action required")
+  action=view["payload"].get("effect")
+  if action=="cancel_subscription":result=await self.stripe.cancel_subscription(view["payload"]["subscription_id"],approval_id)
+  elif action=="create_draft_invoice":result=await self.stripe.create_invoice(view["payload"]["customer_id"],view["payload"]["description"],view["payload"]["amount_cents"],view["payload"]["currency"],approval_id)
+  else:raise ValueError("unsupported approved billing action")
+  self.repo.record_execution(approval_id,result);return result
  def ingest_event(self,event:BillingEventIn):
   created=self.repo.save_event(event)
   return BillingEventOut(id=event.id,type=event.type,processed=created,processed_at=datetime.now(timezone.utc))

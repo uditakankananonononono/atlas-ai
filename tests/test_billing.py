@@ -18,3 +18,18 @@ def test_webhook_idempotency():
  s=Service(A(),R(),S());e=BillingEventIn(id="evt_1",type="invoice.paid",created=1,data={});assert s.ingest_event(e).processed and not s.ingest_event(e).processed
 def test_stripe_requires_test_mode():
  with pytest.raises(ValueError):StripeClient("sk_live_never")
+
+def test_stripe_webhook_signature_timestamp_and_payload_are_verified():
+ import hashlib,hmac,json
+ from app.modules.m23_billing.webhooks import verify_stripe_signature,StripeSignatureError
+ payload=json.dumps({'id':'evt','type':'invoice.paid','created':100,'data':{}}).encode();ts=1000;sig=hmac.new(b'whsec_test',f'{ts}.'.encode()+payload,hashlib.sha256).hexdigest()
+ assert verify_stripe_signature(payload,f't={ts},v1={sig}','whsec_test',now=1000)['id']=='evt'
+ with pytest.raises(StripeSignatureError):verify_stripe_signature(payload,f't={ts},v1=bad','whsec_test',now=1000)
+ with pytest.raises(StripeSignatureError):verify_stripe_signature(payload,f't={ts},v1={sig}','whsec_test',now=2000)
+
+def test_cancel_and_invoice_are_separate_tenant_bound_approval_actions():
+ from app.modules.m23_billing.schemas import CancelIn,InvoiceIn
+ r=R();s=Service(A(),r,S())
+ c=s.propose_cancel('t',CancelIn(subscription_id='sub_12345'));i=s.propose_invoice('t',InvoiceIn(customer_id='cus_12345',description='Atlas Team',amount_cents=9900))
+ assert c.action_type=='cancel_subscription' and c.payload['subscription_id']=='sub_12345'
+ assert i.action_type=='issue_invoice' and i.payload['amount_cents']==9900 and i.payload['effect']=='create_draft_invoice'
