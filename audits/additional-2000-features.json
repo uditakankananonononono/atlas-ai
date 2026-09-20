@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1503,
-    "verified-pushed": 504,
+    "missing": 1498,
+    "verified-pushed": 509,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -13602,8 +13602,12 @@
       "category": "Data & Analytics",
       "requirement": "Two-Stage Least Squares",
       "description": "IV estimation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "569c540c787496fccddf2146a8a72d8c1aa106cc",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1058_1062.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13612,8 +13616,12 @@
       "category": "Data & Analytics",
       "requirement": "Limited Information Maximum Likelihood",
       "description": "IV estimation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "569c540c787496fccddf2146a8a72d8c1aa106cc",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1058_1062.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13622,8 +13630,12 @@
       "category": "Data & Analytics",
       "requirement": "Control Functions",
       "description": "Handle endogeneity",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "569c540c787496fccddf2146a8a72d8c1aa106cc",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1058_1062.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13632,8 +13644,12 @@
       "category": "Data & Analytics",
       "requirement": "Regression Discontinuity",
       "description": "Threshold-based identification",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "569c540c787496fccddf2146a8a72d8c1aa106cc",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1058_1062.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13642,8 +13658,12 @@
       "category": "Data & Analytics",
       "requirement": "Difference-in-Differences",
       "description": "Panel-based identification",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "569c540c787496fccddf2146a8a72d8c1aa106cc",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1058_1062.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
