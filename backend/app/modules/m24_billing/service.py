@@ -3,7 +3,7 @@ from datetime import datetime,timezone
 from uuid import uuid4
 from app.core.models import ApprovalRequest
 from .schemas import *
-MODULE_ID=23
+MODULE_ID=24
 PLANS={p.id:p for p in [Plan(id="free",name="Free",monthly_price_usd=0,included_seats=1,included_runs=100,features=["BYOK","manual collectors"]),Plan(id="pro",name="Pro",monthly_price_usd=29,included_seats=1,included_runs=10000,features=["workers","monitoring","artifacts"]),Plan(id="team",name="Team",monthly_price_usd=99,included_seats=5,included_runs=50000,features=["team workspaces","priority queues","audit exports"])]}
 class Service:
  def __init__(self,approvals,repo,stripe):self.approvals=approvals;self.repo=repo;self.stripe=stripe

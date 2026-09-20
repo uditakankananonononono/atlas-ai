@@ -1,7 +1,7 @@
 import asyncio,httpx,pytest
-from app.modules.m23_billing.service import Service
-from app.modules.m23_billing.schemas import CheckoutIn,BillingEventIn
-from app.modules.m23_billing.stripe_client import StripeClient
+from app.modules.m24_billing.service import Service
+from app.modules.m24_billing.schemas import CheckoutIn,BillingEventIn
+from app.modules.m24_billing.stripe_client import StripeClient
 class A:
  def put(self,x):return x
 class R:
@@ -21,14 +21,14 @@ def test_stripe_requires_test_mode():
 
 def test_stripe_webhook_signature_timestamp_and_payload_are_verified():
  import hashlib,hmac,json
- from app.modules.m23_billing.webhooks import verify_stripe_signature,StripeSignatureError
+ from app.modules.m24_billing.webhooks import verify_stripe_signature,StripeSignatureError
  payload=json.dumps({'id':'evt','type':'invoice.paid','created':100,'data':{}}).encode();ts=1000;sig=hmac.new(b'whsec_test',f'{ts}.'.encode()+payload,hashlib.sha256).hexdigest()
  assert verify_stripe_signature(payload,f't={ts},v1={sig}','whsec_test',now=1000)['id']=='evt'
  with pytest.raises(StripeSignatureError):verify_stripe_signature(payload,f't={ts},v1=bad','whsec_test',now=1000)
  with pytest.raises(StripeSignatureError):verify_stripe_signature(payload,f't={ts},v1={sig}','whsec_test',now=2000)
 
 def test_cancel_and_invoice_are_separate_tenant_bound_approval_actions():
- from app.modules.m23_billing.schemas import CancelIn,InvoiceIn
+ from app.modules.m24_billing.schemas import CancelIn,InvoiceIn
  r=R();s=Service(A(),r,S())
  c=s.propose_cancel('t',CancelIn(subscription_id='sub_12345'));i=s.propose_invoice('t',InvoiceIn(customer_id='cus_12345',description='Atlas Team',amount_cents=9900))
  assert c.action_type=='cancel_subscription' and c.payload['subscription_id']=='sub_12345'

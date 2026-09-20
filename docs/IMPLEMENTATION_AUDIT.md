@@ -157,7 +157,7 @@ Audited source HEAD: `d90eb80dc1df708a9b4a3d9c7245040e620b9109`. Counts: 27 veri
 | Modules 7-20 | **thin** | Every module is registered and mounted with focused tests; several are bounded domain foundations rather than every line of the pasted product spec. |
 | Claire / Module 21 | **thin** | In-Atlas workflow service, optional paired endpoint, per-action approval, capability-parity contract and deception refusal have tests. Persistent orchestration, real paired-client transport and complete personality interaction tests remain. |
 | Tools Hub / Module 22 | **thin** | Allow-listed discovery/install proposal is mounted and tested. A production catalog, provenance scanner and install executor after approval remain. |
-| Billing / Module 23 | **thin** | Test-mode Checkout proposal/execution is tested. Signed webhooks, invoices, cancellation, taxes and production prices remain. |
+| Billing / Module 24 | **thin** | Test-mode Checkout proposal/execution is tested. Signed webhooks, invoices, cancellation, taxes and production prices remain. |
 | Email assistant alignment | **thin** | Gmail OAuth/ingestion/classification/drafting routes and tests exist; production credentials and end-to-end send-after-approval remain. |
 | Calendar alignment | **thin** | Google/CalDAV ingestion, solver, conflicts and approval-gated apply are tested; production credentials and live deployment remain. |
 | Browsing alignment | **thin** | Browser submission contract, URL security and exact single-use approvals are tested; paired production browser runtime and screenshot verification remain. |

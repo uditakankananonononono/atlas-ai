@@ -53,7 +53,7 @@ All module routers below are mounted by `backend/app/main.py`. "Implemented core
 | 20 | General Cognitive Worker | plans, dependencies, bounded retries, budgets, memory and supervision | durable distributed execution and broader real tool adapters |
 | 21 | Claire | in-Atlas workflows, bounded capabilities, optional paired-client protocol, per-action gates and deception refusal | persistent orchestration and deployed paired-client transport |
 | 22 | Tools Hub | allow-listed discovery and approval-gated installation proposals | production catalog, provenance/security scanner and post-approval installer |
-| 23 | Billing | plan metadata, Stripe test Checkout proposals, idempotent executions and event dedupe | signed webhooks, invoice/cancel/tax flows, production prices |
+| 24 | Billing | plan metadata, Stripe test Checkout proposals, idempotent executions and event dedupe | signed webhooks, invoice/cancel/tax flows, production prices |
 
 ## Fallback policy
 

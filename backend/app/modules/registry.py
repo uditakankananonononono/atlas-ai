@@ -21,8 +21,9 @@ from app.modules.m12_ai_research_lab import spec as ai_research_lab
 from app.modules.m13_browser_agent import spec as browser_agent
 from app.modules.m10_email_assistant import spec as email_assistant
 from app.modules.m11_calendar_intelligence import spec as calendar_intelligence
-from app.modules.m23_billing import spec as billing
+from app.modules.m23_study_abroad import spec as study_abroad
+from app.modules.m24_billing import spec as billing
 from app.modules.types import ModuleSpec
 
-IMPLEMENTED_SPECS: tuple[ModuleSpec, ...] = (approval_center, opportunity_discovery, competition_manager, grant_writer, research_scientist, outreach_manager, social_media_manager, brand_collaboration, startup_growth, project_builder, document_generator, narrative_architect, side_hustle_scraper, idea_incubator, general_cognitive_worker, claire, tools_hub, knowledge_workspace, executive_dashboard, ai_research_lab, browser_agent, email_assistant, calendar_intelligence, billing)
+IMPLEMENTED_SPECS: tuple[ModuleSpec, ...] = (approval_center, opportunity_discovery, competition_manager, grant_writer, research_scientist, outreach_manager, social_media_manager, brand_collaboration, startup_growth, project_builder, document_generator, narrative_architect, side_hustle_scraper, idea_incubator, general_cognitive_worker, claire, tools_hub, knowledge_workspace, executive_dashboard, ai_research_lab, browser_agent, email_assistant, calendar_intelligence, study_abroad, billing)
 BY_IMPLEMENTED_ID = {spec.id: spec for spec in IMPLEMENTED_SPECS}

@@ -1,0 +1,402 @@
+{
+  "module": 23,
+  "name": "Study Abroad Planner & Global Admissions Intelligence",
+  "source_message_id": "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUMxNjM2MjYzMEIyNENCMUE3NzJDNjAyQjYxOUQxNDgA",
+  "counts": {
+    "thin": 18,
+    "missing": 40,
+    "verified-pushed": 4
+  },
+  "rows": [
+    {
+      "row": 1,
+      "requirement": "End-to-end study abroad lifecycle",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 2,
+      "requirement": "55 study destinations",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 3,
+      "requirement": "Top 100 institutions per destination/global T100",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 4,
+      "requirement": "Identity Intelligence profile",
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/service.py",
+        "test": "tests/modules/test_m23_study_abroad.py"
+      }
+    },
+    {
+      "row": 5,
+      "requirement": "Narrative Intelligence patterns",
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/service.py",
+        "test": "tests/modules/test_m23_study_abroad.py"
+      }
+    },
+    {
+      "row": 6,
+      "requirement": "Contextual Intelligence opportunity fit",
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/service.py",
+        "test": "tests/modules/test_m23_study_abroad.py"
+      }
+    },
+    {
+      "row": 7,
+      "requirement": "Voice/chat identity onboarding",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 8,
+      "requirement": "Embedding identity vector",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 9,
+      "requirement": "Pattern discovery clustering",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 10,
+      "requirement": "Story development frameworks",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 11,
+      "requirement": "Multi-dimensional essay feedback",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 12,
+      "requirement": "Common App adaptation",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 13,
+      "requirement": "Coalition adaptation",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 14,
+      "requirement": "UC PIQ adaptation",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 15,
+      "requirement": "UCAS adaptation",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 16,
+      "requirement": "OUAC adaptation",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 17,
+      "requirement": "European national systems",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 18,
+      "requirement": "Graduate SOP coaching",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 19,
+      "requirement": "Diversity statement coaching",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 20,
+      "requirement": "Research statement coaching",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 21,
+      "requirement": "No ghostwriting final prose",
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/service.py",
+        "test": "tests/modules/test_m23_study_abroad.py"
+      }
+    },
+    {
+      "row": 22,
+      "requirement": "Draft version control in Knowledge Workspace",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 23,
+      "requirement": "Official admissions monitoring",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 24,
+      "requirement": "Deep university profiles",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 25,
+      "requirement": "Program-level intelligence",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 26,
+      "requirement": "Reach/Target/Safety fit scoring",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 27,
+      "requirement": "Multi-application portal support",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 28,
+      "requirement": "Deadline tracker",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 29,
+      "requirement": "Document vault",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 30,
+      "requirement": "Recommender coordination",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 31,
+      "requirement": "Interview preparation",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 32,
+      "requirement": "Submission approval via Module 0",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 33,
+      "requirement": "Pre-submission multi-model review",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 34,
+      "requirement": "Global scholarship databases",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 35,
+      "requirement": "Scholarship matching",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 36,
+      "requirement": "Net cost calculator",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 37,
+      "requirement": "Financial aid forms",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 38,
+      "requirement": "Scholarship deadline/document tasks",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 39,
+      "requirement": "Scholarship award tracking",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 40,
+      "requirement": "Allowed social intelligence sources",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 41,
+      "requirement": "Advice credibility scoring",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 42,
+      "requirement": "Admissions trend detection",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 43,
+      "requirement": "Webinar discovery",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 44,
+      "requirement": "Webinar workflow",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 45,
+      "requirement": "Daily intelligence brief",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 46,
+      "requirement": "Strategist agent",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 47,
+      "requirement": "Storyteller agent",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 48,
+      "requirement": "Researcher agent",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 49,
+      "requirement": "Executor agent",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 50,
+      "requirement": "Critic agent",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 51,
+      "requirement": "PostgreSQL tenant records",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 52,
+      "requirement": "Vector embeddings",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 53,
+      "requirement": "University graph",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 54,
+      "requirement": "Celery source schedules",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 55,
+      "requirement": "Playwright and static collectors",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 56,
+      "requirement": "Multi-provider AI layer",
+      "status": "thin",
+      "evidence": null
+    },
+    {
+      "row": 57,
+      "requirement": "spaCy/dateparser/BERT NLP",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 58,
+      "requirement": "Encrypted OAuth/credentials/audit",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 59,
+      "requirement": "Cross-module achievement narrative flow",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 60,
+      "requirement": "12+ languages",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 61,
+      "requirement": "Historical applied-won improvement",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "row": 62,
+      "requirement": "Career outcomes and visa pathways",
+      "status": "missing",
+      "evidence": null
+    }
+  ],
+  "esai_sources": [
+    "https://www.esai.ai/",
+    "https://www.esai.ai/explore/brandi",
+    "https://www.esai.ai/resources/faq",
+    "https://www.esai.ai/pricing"
+  ]
+}
