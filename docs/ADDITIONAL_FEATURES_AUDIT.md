@@ -1,0 +1,20 @@
+# Additional 2,000-feature audit intake
+
+Source: owner-shared Google Doc `1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY`. Parsed 10 categories and exactly 2,000 feature rows. Category 10 contains nine 100-feature subheadings; those headings are structure, not additional feature rows.
+
+Initial classification: **0 verified-pushed / 0 thin / 2,000 missing**. This is intentionally strict. Existing adjacent modules do not verify newly named behavior. Every row must gain exact code, a mounted boundary and a focused passing test before becoming verified-pushed. The complete machine-readable ledger is `audits/additional-2000-features.json`.
+
+Standing boundaries apply to each row: no deception or fabricated evidence, no login-driven mass scraping, no self-bots or piracy, no false sentience/medical/legal certainty, and exact-preview human approval for external effects, money and irreversible actions. Impossible or unsafe wording will be implemented only as a bounded, honest analogue or refusal, with the modification recorded row by row.
+
+| Category | Declared rows | Initial verified | Thin | Missing |
+|---|---:|---:|---:|---:|
+| 1. Executive Function & Meta-Cognition | 100 | 0 | 0 | 100 |
+| 2. Research & Scientific Discovery | 150 | 0 | 0 | 150 |
+| 3. Creative & Artistic Capabilities | 100 | 0 | 0 | 100 |
+| 4. Business & Entrepreneurship | 150 | 0 | 0 | 150 |
+| 5. Technical & Engineering | 200 | 0 | 0 | 200 |
+| 6. Social & Communication | 100 | 0 | 0 | 100 |
+| 7. Learning & Knowledge | 100 | 0 | 0 | 100 |
+| 8. Future & Emerging Capabilities | 100 | 0 | 0 | 100 |
+| 9. Data & Analytics | 100 | 0 | 0 | 100 |
+| 10. Specialized Domain Expertise | 900 | 0 | 0 | 900 |
