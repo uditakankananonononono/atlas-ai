@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+  "audited_head": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
   "counts": {
-    "verified-pushed": 372,
+    "verified-pushed": 397,
     "thin": 3,
-    "missing": 1635
+    "missing": 1610
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -3304,8 +3304,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Color Theory Application",
       "description": "Uses color for emotional effect",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3314,8 +3320,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Composition Principles",
       "description": "Arranges visual elements",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3324,8 +3336,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Typography Selection",
       "description": "Chooses appropriate fonts",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3334,8 +3352,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Logo Design",
       "description": "Creates memorable brand marks",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3344,8 +3368,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Brand Identity Systems",
       "description": "Develops cohesive visual language",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3354,8 +3384,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Packaging Design",
       "description": "Creates shelf presence",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3364,8 +3400,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "UI/UX Design",
       "description": "Optimizes user interfaces",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3374,8 +3416,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Information Architecture",
       "description": "Organizes content logically",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3384,8 +3432,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Interaction Design",
       "description": "Creates engaging experiences",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3394,8 +3448,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Motion Design",
       "description": "Animates with purpose",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3404,8 +3464,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "3D Modeling",
       "description": "Creates digital objects",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3414,8 +3480,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Texture Creation",
       "description": "Develops surface appearance",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3424,8 +3496,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Lighting Design",
       "description": "Sets mood through illumination",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3434,8 +3512,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Rendering Optimization",
       "description": "Balances quality and speed",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3444,8 +3528,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Animation Principles",
       "description": "Applies squash, stretch, anticipation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3454,8 +3544,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Character Rigging",
       "description": "Creates animation skeletons",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3464,8 +3560,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Facial Animation",
       "description": "Conveys emotion through expression",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3474,8 +3576,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Physics Simulation",
       "description": "Creates realistic motion",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3484,8 +3592,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Particle Effects",
       "description": "Generates dynamic elements",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3494,8 +3608,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Procedural Generation",
       "description": "Creates content algorithmically",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3504,8 +3624,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Sound Design",
       "description": "Creates auditory experiences",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3514,8 +3640,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Music Composition",
       "description": "Writes original melodies",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3524,8 +3656,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Harmony Arrangement",
       "description": "Combines notes pleasingly",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3534,8 +3672,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Rhythm Programming",
       "description": "Creates beats and grooves",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -3544,8 +3688,14 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Orchestration",
       "description": "Assigns instruments to parts",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45dd90e4ffe2836934c8d6a8d2d5faf2a4bdc8fd",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
+        "test_path": "tests/modules/test_m06_creative.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Draft specifications only; no renderer invoked. Lexical imitation guard can miss paraphrases. Quality depends on BYOK model. Named-style requests are redacted to original treatment."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
