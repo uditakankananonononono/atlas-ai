@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "97296db9fd9063aeae01c4f97345dc33fd32851f",
+  "audited_head": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
   "counts": {
-    "verified-pushed": 431,
+    "verified-pushed": 456,
     "thin": 3,
-    "missing": 1576
+    "missing": 1551
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -12730,8 +12730,14 @@
       "category": "Data & Analytics",
       "requirement": "Predictive Analytics",
       "description": "Forecasts future outcomes",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12740,8 +12746,14 @@
       "category": "Data & Analytics",
       "requirement": "Prescriptive Analytics",
       "description": "Recommends actions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12750,8 +12762,14 @@
       "category": "Data & Analytics",
       "requirement": "Descriptive Analytics",
       "description": "Summarizes past data",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12760,8 +12778,14 @@
       "category": "Data & Analytics",
       "requirement": "Diagnostic Analytics",
       "description": "Explains why things happened",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12770,8 +12794,14 @@
       "category": "Data & Analytics",
       "requirement": "Exploratory Data Analysis",
       "description": "Discovers patterns",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12780,8 +12810,14 @@
       "category": "Data & Analytics",
       "requirement": "Confirmatory Data Analysis",
       "description": "Tests hypotheses",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12790,8 +12826,14 @@
       "category": "Data & Analytics",
       "requirement": "Statistical Inference",
       "description": "Draws conclusions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12800,8 +12842,14 @@
       "category": "Data & Analytics",
       "requirement": "Hypothesis Testing",
       "description": "Tests claims",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12810,8 +12858,14 @@
       "category": "Data & Analytics",
       "requirement": "Confidence Intervals",
       "description": "Quantifies uncertainty",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12820,8 +12874,14 @@
       "category": "Data & Analytics",
       "requirement": "Bootstrapping",
       "description": "Resamples for inference",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12830,8 +12890,14 @@
       "category": "Data & Analytics",
       "requirement": "Permutation Testing",
       "description": "Tests without assumptions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12840,8 +12906,14 @@
       "category": "Data & Analytics",
       "requirement": "Nonparametric Methods",
       "description": "Avoids distributional assumptions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12850,8 +12922,14 @@
       "category": "Data & Analytics",
       "requirement": "Robust Statistics",
       "description": "Resists outliers",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12860,8 +12938,14 @@
       "category": "Data & Analytics",
       "requirement": "Outlier Detection",
       "description": "Finds anomalies",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12870,8 +12954,14 @@
       "category": "Data & Analytics",
       "requirement": "Missing Data Imputation",
       "description": "Fills gaps",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12880,8 +12970,14 @@
       "category": "Data & Analytics",
       "requirement": "Multiple Imputation",
       "description": "Handles uncertainty",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12890,8 +12986,14 @@
       "category": "Data & Analytics",
       "requirement": "Maximum Likelihood Estimation",
       "description": "Finds best parameters",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12900,8 +13002,14 @@
       "category": "Data & Analytics",
       "requirement": "Expectation-Maximization",
       "description": "Handles latent variables",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12910,8 +13018,14 @@
       "category": "Data & Analytics",
       "requirement": "Markov Chain Monte Carlo",
       "description": "Samples complex distributions",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12920,8 +13034,14 @@
       "category": "Data & Analytics",
       "requirement": "Variational Inference",
       "description": "Fast approximate inference",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12930,8 +13050,14 @@
       "category": "Data & Analytics",
       "requirement": "Gibbs Sampling",
       "description": "Iterative sampling",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12940,8 +13066,14 @@
       "category": "Data & Analytics",
       "requirement": "Metropolis-Hastings",
       "description": "MCMC algorithm",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12950,8 +13082,14 @@
       "category": "Data & Analytics",
       "requirement": "Hamiltonian Monte Carlo",
       "description": "Efficient MCMC",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12960,8 +13098,14 @@
       "category": "Data & Analytics",
       "requirement": "Sequential Monte Carlo",
       "description": "Particle filtering",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -12970,8 +13114,14 @@
       "category": "Data & Analytics",
       "requirement": "Particle Filters",
       "description": "Track dynamic systems",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "frontend_path": "frontend/components/AnalysisPanel.tsx",
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
