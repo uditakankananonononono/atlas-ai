@@ -68,3 +68,6 @@ router.include_router(business_router)
 
 from .operations_router import router as operations_router
 router.include_router(operations_router)
+
+from .research_router import router as research_router
+router.include_router(research_router)
