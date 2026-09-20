@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {"university": "Massachusetts Institute of Technology", "department": "Computer Science and Artificial Intelligence Laboratory", "lab_name": "MIT CSAIL", "topics": ["artificial intelligence", "robotics", "computer science", "machine learning"], "url": "https://www.csail.mit.edu", "country": "US"},
+    {"university": "Stanford University", "department": "Stanford Artificial Intelligence Laboratory", "lab_name": "Stanford AI Lab (SAIL)", "topics": ["artificial intelligence", "machine learning", "natural language processing", "computer vision"], "url": "https://ai.stanford.edu", "country": "US"},
+    {"university": "University of California, Berkeley", "department": "Berkeley Artificial Intelligence Research", "lab_name": "BAIR Lab", "topics": ["artificial intelligence", "machine learning", "robotics"], "url": "https://bair.berkeley.edu", "country": "US"},
+    {"university": "Carnegie Mellon University", "department": "Robotics Institute", "lab_name": "CMU Robotics Institute", "topics": ["robotics", "computer vision", "machine learning"], "url": "https://www.ri.cmu.edu", "country": "US"},
+    {"university": "University of Oxford", "department": "Oxford Robotics Institute", "lab_name": "Oxford Robotics Institute", "topics": ["robotics", "autonomous systems", "computer vision"], "url": "https://ori.ox.ac.uk", "country": "GB"},
+    {"university": "University of Cambridge", "department": "Department of Computer Science and Technology", "lab_name": "Cambridge Computer Laboratory", "topics": ["computer science", "systems", "machine learning"], "url": "https://www.cl.cam.ac.uk", "country": "GB"},
+    {"university": "ETH Zurich", "department": "ETH AI Center", "lab_name": "ETH AI Center", "topics": ["artificial intelligence", "machine learning", "data science"], "url": "https://ai.ethz.ch", "country": "CH"},
+    {"university": "University of Toronto", "department": "Vector Institute", "lab_name": "Vector Institute", "topics": ["artificial intelligence", "deep learning", "machine learning"], "url": "https://vectorinstitute.ai", "country": "CA"},
+    {"university": "Universite de Montreal", "department": "Mila - Quebec AI Institute", "lab_name": "Mila", "topics": ["deep learning", "artificial intelligence", "machine learning"], "url": "https://mila.quebec/en/", "country": "CA"},
+    {"university": "Allen Institute for AI", "department": "Research", "lab_name": "Allen Institute for AI (AI2)", "topics": ["artificial intelligence", "natural language processing", "computer vision"], "url": "https://allenai.org", "country": "US"},
+    {"university": "Broad Institute of MIT and Harvard", "department": "Broad Institute", "lab_name": "Broad Institute", "topics": ["genomics", "spatial transcriptomics", "computational biology", "biomedicine"], "url": "https://www.broadinstitute.org", "country": "US"},
+    {"university": "Wellcome Sanger Institute", "department": "Wellcome Sanger Institute", "lab_name": "Wellcome Sanger Institute", "topics": ["genomics", "spatial transcriptomics", "single-cell genomics", "computational biology"], "url": "https://www.sanger.ac.uk", "country": "GB"},
+    {"university": "European Molecular Biology Laboratory", "department": "EMBL", "lab_name": "EMBL", "topics": ["molecular biology", "bioinformatics", "computational biology", "genomics"], "url": "https://www.embl.org", "country": "DE"},
+    {"university": "Cold Spring Harbor Laboratory", "department": "Cold Spring Harbor Laboratory", "lab_name": "Cold Spring Harbor Laboratory", "topics": ["molecular biology", "genetics", "neuroscience", "cancer research"], "url": "https://www.cshl.edu", "country": "US"}
+  ]
+}
