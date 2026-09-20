@@ -17,13 +17,22 @@ class CommandRow(Base):
 class AgentStatusRow(Base):
     __tablename__="m16_agent_status";__table_args__=(UniqueConstraint("tenant_id","agent_id",name="uq_m16_agent"),)
     pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);module_id:Mapped[int]=mapped_column(Integer,index=True);agent_id:Mapped[str]=mapped_column(String(120));state:Mapped[str]=mapped_column(String(20));current_task:Mapped[str|None]=mapped_column(String(500),nullable=True);detail:Mapped[dict]=mapped_column(JSON);last_heartbeat:Mapped[datetime]=mapped_column(DateTime(timezone=True))
+class KpiPointRow(Base):
+    __tablename__="m16_kpi_points";
+    pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);kpi_id:Mapped[str]=mapped_column(String(80));window_hours:Mapped[int]=mapped_column(Integer);value:Mapped[float]=mapped_column(Float);recorded_at:Mapped[datetime]=mapped_column(DateTime(timezone=True),index=True)
+class KpiDefinitionRow(Base):
+    __tablename__="m16_kpi_definitions";__table_args__=(UniqueConstraint("tenant_id","id",name="uq_m16_kpi_definition"),)
+    pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(80));label:Mapped[str]=mapped_column(String(120));unit:Mapped[str]=mapped_column(String(20));topics:Mapped[list]=mapped_column(JSON);window_hours:Mapped[int|None]=mapped_column(Integer,nullable=True);created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
 def _event(r):return Event(id=r.id,sequence=r.sequence,topic=r.topic,aggregate_type=r.aggregate_type,aggregate_id=r.aggregate_id,payload=r.payload,occurred_at=r.occurred_at)
 def _approval(r):return Approval(id=r.id,module_id=r.module_id,action_type=r.action_type,title=r.title,summary=r.summary,risk=r.risk,evidence=r.evidence,proposed_payload=r.proposed_payload,state=ApprovalState(r.state),created_at=r.created_at,expires_at=r.expires_at,reviewed_at=r.reviewed_at)
 def _command(r):return CommandPreview(id=r.id,utterance=r.utterance,intent=r.intent,parameters=r.parameters,plan=r.plan,read_only=r.read_only,confidence=r.confidence,expires_at=r.expires_at,created_at=r.created_at)
 class SqlDashboardRepository:
     def __init__(self,tenant_id,actor_id,session_factory:sessionmaker=SessionLocal):self.tenant_id=tenant_id;self.actor_id=actor_id;self.sessions=session_factory;Base.metadata.create_all(engine)
     def append_event(self,e:Event):
-        with self.sessions.begin() as db:max_seq=db.scalar(select(func.coalesce(func.max(EventRow.sequence),0)).where(EventRow.tenant_id==self.tenant_id));e.sequence=max_seq+1;db.add(EventRow(tenant_id=self.tenant_id,**e.model_dump()));return e
+        with self.sessions.begin() as db:
+            existing=db.scalar(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.id==e.id))
+            if existing:return _event(existing)
+            max_seq=db.scalar(select(func.coalesce(func.max(EventRow.sequence),0)).where(EventRow.tenant_id==self.tenant_id));e.sequence=max_seq+1;db.add(EventRow(tenant_id=self.tenant_id,**e.model_dump()));return e
     def events_after(self,cursor,limit=500):
         with self.sessions() as db:return [_event(r) for r in db.scalars(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.sequence>cursor).order_by(EventRow.sequence).limit(limit))]
     def snapshot(self):
@@ -67,3 +76,29 @@ class SqlDashboardRepository:
         with self.sessions() as db:
             r=db.scalar(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==approval_id))
             return _approval(r) if r else None
+    def update_snapshot(self,data,last_sequence):
+        with self.sessions.begin() as db:
+            r=db.get(SnapshotRow,self.tenant_id)
+            if not r:r=SnapshotRow(tenant_id=self.tenant_id,version=0,last_sequence=0,data={},generated_at=datetime.utcnow());db.add(r);db.flush()
+            assert last_sequence>=r.last_sequence,"snapshot projection cannot move backwards"
+            r.data=data;r.last_sequence=last_sequence;r.version=r.version+1;r.generated_at=datetime.utcnow();db.flush()
+            return Snapshot(version=r.version,last_sequence=r.last_sequence,data=r.data,generated_at=r.generated_at)
+    def record_kpi_points(self,points,at):
+        with self.sessions.begin() as db:
+            for kpi_id,window_hours,value in points:db.add(KpiPointRow(tenant_id=self.tenant_id,kpi_id=kpi_id,window_hours=window_hours,value=float(value),recorded_at=at))
+    def kpi_value_at_or_before(self,kpi_id,window_hours,moment):
+        with self.sessions() as db:
+            return db.scalar(select(KpiPointRow.value).where(KpiPointRow.tenant_id==self.tenant_id,KpiPointRow.kpi_id==kpi_id,KpiPointRow.window_hours==window_hours,KpiPointRow.recorded_at<=moment).order_by(KpiPointRow.recorded_at.desc(),KpiPointRow.pk.desc()).limit(1))
+    def save_kpi_definition(self,d,at):
+        with self.sessions.begin() as db:
+            r=db.scalar(select(KpiDefinitionRow).where(KpiDefinitionRow.tenant_id==self.tenant_id,KpiDefinitionRow.id==d.id))
+            if r:r.label=d.label;r.unit=d.unit;r.topics=list(d.topics);r.window_hours=d.window_hours
+            else:db.add(KpiDefinitionRow(tenant_id=self.tenant_id,id=d.id,label=d.label,unit=d.unit,topics=list(d.topics),window_hours=d.window_hours,created_at=at))
+        return KpiDefinitionOut(**d.model_dump(),created_at=at)
+    def list_kpi_definitions(self):
+        with self.sessions() as db:return [KpiDefinitionOut(id=r.id,label=r.label,unit=r.unit,topics=list(r.topics),window_hours=r.window_hours,created_at=r.created_at) for r in db.scalars(select(KpiDefinitionRow).where(KpiDefinitionRow.tenant_id==self.tenant_id).order_by(KpiDefinitionRow.id))]
+    def delete_kpi_definition(self,kpi_id):
+        with self.sessions.begin() as db:
+            r=db.scalar(select(KpiDefinitionRow).where(KpiDefinitionRow.tenant_id==self.tenant_id,KpiDefinitionRow.id==kpi_id))
+            if not r:return False
+            db.delete(r);return True

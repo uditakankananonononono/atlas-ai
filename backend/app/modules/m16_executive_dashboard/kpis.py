@@ -12,6 +12,7 @@ from datetime import datetime,timedelta
 from .schemas import AgentState,AgentStatus,Approval,Event,EvidenceRef,KPI,TimelineItem
 from .timeline import overdue_items
 EVIDENCE_SAMPLE_LIMIT=25
+RESERVED_KPI_IDS=frozenset({"approvals_pending","approval_decisions","avg_approval_turnaround_hours","agents_stalled","timeline_items_at_risk"})
 @dataclass(frozen=True)
 class KPIDefinition:
     id:str;label:str;unit:str;definition:str;topics:frozenset[str]|None=None  # None matches every event
@@ -53,6 +54,11 @@ def compute_kpis(window_events:list[Event],previous_events:list[Event],pending_a
     refs,total=_sample([timeline_ref(i) for i in risky])
     out.append(KPI(id="timeline_items_at_risk",label="Timeline items at risk",value=len(risky),window_hours=window_hours,definition="Timeline items past their end date with progress below 100%.",evidence=refs,evidence_total=total))
     return out
+def custom_event_kpi(defn,window:list[Event],previous:list[Event],default_window_hours:int)->KPI:
+    """Compute one tenant-defined event KPI (topics list, optional window override)."""
+    topics=frozenset(defn.topics);hours=defn.window_hours or default_window_hours
+    internal=KPIDefinition(defn.id,defn.label,defn.unit,f"Events with topic in {sorted(topics)} inside the window.",topics)
+    return _event_kpi(internal,window,previous,hours)
 def kpi_event_evidence(kpi_id:str,window:list[Event],previous:list[Event],window_hours:int)->tuple[list[Event],list[Event]]|None:
     """The exact events behind an event-backed KPI, for drilldown. None if the KPI is not event-backed."""
     for d in EVENT_KPIS:

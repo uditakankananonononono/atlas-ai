@@ -131,3 +131,95 @@ def test_command_intents_execute_read_only():
     assert kpis["status"]=="completed" and any(k["id"]=="approvals_pending" for k in kpis["result"]["kpis"])
     write=s.execute(s.preview("email this to the professor").id)
     assert write["status"]=="approval_required"
+from app.modules.m16_executive_dashboard.projector import apply_event,fold
+class ProjectingRepo(FakeRepo):
+    def __init__(self,*a,**k):super().__init__(*a,**k);self.points=[]
+    def update_snapshot(self,data,last_sequence):
+        self.timeline=[TimelineItem(**t) for t in data.get("timeline",[])]
+        self._data=data;self._last=last_sequence
+        return Snapshot(version=2,last_sequence=last_sequence,generated_at=NOW,data=data)
+    def snapshot(self):
+        data=getattr(self,"_data",None)
+        if data is None:data={"timeline":[i.model_dump(mode="json") for i in self.timeline]}
+        return Snapshot(version=2,last_sequence=getattr(self,"_last",0),generated_at=NOW,data=data)
+    def record_kpi_points(self,points,at):self.points.extend((p,at) for p in points)
+    def kpi_value_at_or_before(self,kpi_id,window_hours,moment):
+        vals=[(p[0][2],p[1]) for p in self.points if p[0][0]==kpi_id and p[1]<=moment]
+        return vals[-1][0] if vals else None
+def test_projector_folds_metrics_freshness_timeline_alerts():
+    item=TimelineItem(id="t1",title="Apply",start=NOW,end=NOW+timedelta(hours=3))
+    events=[event(1,"application.submitted",NOW,payload={"module_id":3}),event(2,"timeline.upsert",NOW,payload={"item":item.model_dump(mode="json")}),event(3,"alert",NOW,payload={"severity":"warning","message":"worker slow","module_id":3})]
+    data,last=fold({"metrics":{},"timeline":[],"alerts":[],"freshness":{}},events)
+    assert last==3 and data["metrics"]["topic:application.submitted"]==1 and data["metrics"]["module:3:events"]==2
+    assert data["timeline"][0]["id"]=="t1" and len(data["alerts"])==1 and data["alerts"][0]["module_id"]==3
+    assert "task/a1" in data["freshness"]
+    again,last2=fold(data,[])
+    assert again==data and last2==0
+def test_projector_timeline_upsert_replaces_by_id():
+    older=TimelineItem(id="t1",title="v1",start=NOW,end=NOW+timedelta(hours=1)).model_dump(mode="json")
+    newer=TimelineItem(id="t1",title="v2",start=NOW,end=NOW+timedelta(hours=2),progress=.5).model_dump(mode="json")
+    data,_=fold({"timeline":[older]},[event(1,"timeline.upsert",NOW,payload={"item":newer})])
+    assert len(data["timeline"])==1 and data["timeline"][0]["title"]=="v2"
+def test_service_snapshot_autoprojects_and_project_records_points():
+    item=TimelineItem(id="t1",title="Apply",start=NOW,end=NOW+timedelta(hours=3))
+    repo=ProjectingRepo(events=[event(1,"timeline.upsert",NOW,payload={"item":item.model_dump(mode="json")}),event(2,"grant.won",NOW)])
+    s=Service(repo,catalog=CAT)
+    snap=s.snapshot()
+    assert snap.last_sequence==2 and snap.data["metrics"]["topic:grant.won"]==1
+    assert [i.id for i in s._timeline()]==["t1"]
+    summary=s.project(NOW)
+    assert summary["projected_events"]==0 and summary["recorded_points"]>0
+    k={x.id:x for x in s.kpis(NOW+timedelta(hours=24))}["approvals_pending"]
+    assert k.previous_value==0.0
+def test_projector_rejects_invalid_timeline_payload():
+    data,_=fold({"timeline":[]},[event(1,"timeline.upsert",NOW,payload={"item":{"bad":1}})])
+    assert data["timeline"]==[]
+def test_event_intake_assigns_ids_and_defaults():
+    repo=FakeRepo();s=Service(repo,catalog=CAT)
+    saved=[]
+    repo._events=saved
+    orig=repo.__class__
+    # FakeRepo lacks append_event; add one
+    repo.append_event=lambda e:(saved.append(e) or e)
+    e=s.intake(EventIn(topic="grant.won",aggregate_type="module:3",aggregate_id="g1",payload={"module_id":3}))
+    assert e.id and e.occurred_at is not None and saved==[e]
+    batch=s.intake_batch([EventIn(topic="a",aggregate_type="t",aggregate_id="1"),EventIn(topic="b",aggregate_type="t",aggregate_id="2")])
+    assert len(batch)==2 and len({e.id for e in batch})==2
+def test_custom_kpi_definition_lifecycle_and_computation():
+    repo=FakeRepo(events=[event(1,"outreach.sent",NOW-timedelta(hours=2)),event(2,"outreach.sent",NOW-timedelta(hours=30)),event(3,"other",NOW-timedelta(hours=1))])
+    defs={}
+    repo.save_kpi_definition=lambda d,at:defs.setdefault(d.id,KpiDefinitionOut(**d.model_dump(),created_at=at))
+    repo.list_kpi_definitions=lambda:list(defs.values())
+    repo.delete_kpi_definition=lambda i:defs.pop(i,None) is not None
+    s=Service(repo,catalog=CAT)
+    out=s.save_kpi_definition(KpiDefinitionIn(id="outreach_sent",label="Outreach sent",topics=["outreach.sent"]))
+    assert out.id=="outreach_sent"
+    k={x.id:x for x in s.kpis(NOW)}["outreach_sent"]
+    assert k.value==1 and k.previous_value==1 and {r.id for r in k.evidence}=={"e1"}
+    with pytest.raises(ValueError):s.save_kpi_definition(KpiDefinitionIn(id="grants_won",label="x",topics=["t"]))
+    s.delete_kpi_definition("outreach_sent")
+    assert "outreach_sent" not in {x.id for x in s.kpis(NOW)}
+    with pytest.raises(LookupError):s.delete_kpi_definition("outreach_sent")
+def test_custom_kpi_window_override():
+    repo=FakeRepo(events=[event(1,"outreach.sent",NOW-timedelta(hours=50))])
+    defs={}
+    repo.save_kpi_definition=lambda d,at:defs.setdefault(d.id,d)
+    repo.list_kpi_definitions=lambda:list(defs.values())
+    s=Service(repo,catalog=CAT)
+    s.save_kpi_definition(KpiDefinitionIn(id="outreach_week",label="Outreach week",topics=["outreach.sent"],window_hours=72))
+    k={x.id:x for x in s.kpis(NOW)}["outreach_week"]
+    assert k.value==1 and k.window_hours==72
+def test_digest_sections_reflect_state():
+    approvals=[approval(1,module_id=3,expires=NOW-timedelta(minutes=5))]
+    events=[event(1,"grant.won",NOW-timedelta(hours=1))]
+    s=svc(approvals=approvals,events=events)
+    d=s.digest(NOW)
+    assert d.open_blockers>=2 and d.generated_at==NOW
+    titles={sec.title for sec in d.sections}
+    assert titles=={"KPIs","Blockers","Modules"}
+    kpis_sec=next(sec for sec in d.sections if sec.title=="KPIs")
+    assert any(line.startswith("Grants won: 1") for line in kpis_sec.lines)
+    blockers_sec=next(sec for sec in d.sections if sec.title=="Blockers")
+    assert any("[critical]" in line for line in blockers_sec.lines)
+    modules_sec=next(sec for sec in d.sections if sec.title=="Modules")
+    assert any("module 3" in line for line in modules_sec.lines)

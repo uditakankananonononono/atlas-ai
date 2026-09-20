@@ -46,6 +46,27 @@ def drilldown(kind:str,ref_id:str,service:Service=Depends(get_service)):
 def heartbeat(data:AgentHeartbeat,service:Service=Depends(get_service)):
     try:return service.heartbeat(data)
     except RuntimeError as e:raise HTTPException(501,str(e))
+@router.post("/events",response_model=Event,status_code=201)
+def intake(data:EventIn,service:Service=Depends(get_service)):return service.intake(data)
+@router.post("/events/batch",response_model=list[Event],status_code=201)
+def intake_batch(items:list[EventIn],service:Service=Depends(get_service)):
+    if len(items)>500:raise HTTPException(413,"batch too large (max 500)")
+    return service.intake_batch(items)
+@router.get("/kpi-definitions",response_model=list[KpiDefinitionOut])
+def list_kpi_definitions(service:Service=Depends(get_service)):return service.list_kpi_definitions()
+@router.put("/kpi-definitions",response_model=KpiDefinitionOut)
+def save_kpi_definition(data:KpiDefinitionIn,service:Service=Depends(get_service)):
+    try:return service.save_kpi_definition(data)
+    except ValueError as e:raise HTTPException(409,str(e))
+    except RuntimeError as e:raise HTTPException(501,str(e))
+@router.delete("/kpi-definitions/{kpi_id}",status_code=204)
+def delete_kpi_definition(kpi_id:str,service:Service=Depends(get_service)):
+    try:service.delete_kpi_definition(kpi_id)
+    except LookupError:raise HTTPException(404,"unknown kpi definition")
+@router.get("/digest",response_model=Digest)
+def digest(service:Service=Depends(get_service)):return service.digest()
+@router.post("/project")
+def project(service:Service=Depends(get_service)):return service.project()
 @router.get("/live")
 async def live(request:Request,cursor:int=0,service:Service=Depends(get_service)):
     async def stream():

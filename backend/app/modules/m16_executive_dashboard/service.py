@@ -2,7 +2,8 @@ from __future__ import annotations
 from datetime import datetime,timedelta,timezone
 from uuid import uuid4
 from .blockers import detect_blockers
-from .kpis import compute_kpis,event_ref,kpi_event_evidence
+from .kpis import EVENT_KPIS,RESERVED_KPI_IDS,compute_kpis,custom_event_kpi,event_ref,kpi_event_evidence
+from .projector import fold
 from .schemas import *
 from .status import RepoCatalog,effective_state,event_module_id,module_statuses
 from .timeline import critical_path
@@ -11,7 +12,22 @@ class Service:
     def __init__(self,repository,catalog=None,parser=None,executor=None,window_hours:int=24):
         self.repository=repository;self.catalog=catalog or RepoCatalog();self.parser=parser or self._parse;self.executor=executor or self._execute_read;self.window_hours=window_hours
     # --- snapshot, events, approvals (existing contract) ---
-    def snapshot(self):return self.repository.snapshot()
+    def snapshot(self):
+        self._project_if_needed()
+        return self.repository.snapshot()
+    def _project_if_needed(self):
+        updater=getattr(self.repository,"update_snapshot",None)
+        if not updater:return 0
+        snap=self.repository.snapshot();pending=self.repository.events_after(snap.last_sequence)
+        if not pending:return 0
+        data,last=fold(snap.data,pending);updater(data,last);return len(pending)
+    def project(self,now=None):
+        """Fold pending events into the snapshot and record a KPI history point. Returns a summary."""
+        now=now or _utcnow();projected=self._project_if_needed()
+        kpis=self.kpis(now)
+        recorder=getattr(self.repository,"record_kpi_points",None)
+        if recorder:recorder([(k.id,k.window_hours,k.value) for k in kpis],now)
+        return {"projected_events":projected,"last_sequence":self.repository.snapshot().last_sequence,"recorded_points":len(kpis) if recorder else 0,"at":now.isoformat()}
     def events_after(self,cursor):return self.repository.events_after(cursor)
     def pending_approvals(self):
         now=_utcnow();return [a for a in self.repository.pending_approvals() if not a.expires_at or a.expires_at>now]
@@ -87,7 +103,17 @@ class Service:
         return module_statuses(self.catalog,self._agents(),self._all_pending(),self._events_between(since,now),now)
     def kpis(self,now=None):
         now=now or _utcnow();since=now-timedelta(hours=self.window_hours);prev=since-timedelta(hours=self.window_hours)
-        return compute_kpis(self._events_between(since,now),self._events_between(prev,since),self.pending_approvals(),self._reviewed_since(since),[a.model_copy(update={"state":effective_state(a,now)}) for a in self._agents()],self._timeline(),now,self.window_hours)
+        out=compute_kpis(self._events_between(since,now),self._events_between(prev,since),self.pending_approvals(),self._reviewed_since(since),[a.model_copy(update={"state":effective_state(a,now)}) for a in self._agents()],self._timeline(),now,self.window_hours)
+        history=getattr(self.repository,"kpi_value_at_or_before",None)
+        if history:
+            for k in out:
+                if k.previous_value is None:
+                    prior=history(k.id,k.window_hours,since)
+                    if prior is not None:k.previous_value=float(prior)
+        for d in self.list_kpi_definitions():
+            hours=d.window_hours or self.window_hours;dstart=now-timedelta(hours=hours);dprev=dstart-timedelta(hours=hours)
+            out.append(custom_event_kpi(d,self._events_between(dstart,now),self._events_between(dprev,dstart),self.window_hours))
+        return out
     def blockers(self,now=None):
         now=now or _utcnow()
         return detect_blockers(self._all_pending(),self._agents(),self._timeline(),self._modules(),now)
@@ -143,7 +169,38 @@ class Service:
             except ValueError:detail["on_critical_path"]=False
             return DrilldownResult(subject=EvidenceRef(kind="timeline_item",id=item.id,summary=item.title),detail=detail)
         raise LookupError(f"{kind}/{ref_id}")
+    # --- event intake ---
+    def intake(self,data:EventIn):
+        now=_utcnow()
+        e=Event(id=data.id or str(uuid4()),sequence=0,topic=data.topic,aggregate_type=data.aggregate_type,aggregate_id=data.aggregate_id,payload=data.payload,occurred_at=data.occurred_at or now)
+        return self.repository.append_event(e)
+    def intake_batch(self,items):
+        return [self.intake(i) for i in items]
+    # --- tenant-defined KPIs ---
+    def save_kpi_definition(self,data:KpiDefinitionIn):
+        saver=getattr(self.repository,"save_kpi_definition",None)
+        if not saver:raise RuntimeError("repository does not support kpi definitions")
+        reserved=RESERVED_KPI_IDS|{d.id for d in EVENT_KPIS}
+        if data.id in reserved:raise ValueError(f"kpi id {data.id} is reserved")
+        return saver(data,_utcnow())
+    def list_kpi_definitions(self):
+        getter=getattr(self.repository,"list_kpi_definitions",None);return list(getter()) if getter else []
+    def delete_kpi_definition(self,kpi_id):
+        deleter=getattr(self.repository,"delete_kpi_definition",None)
+        if not deleter or not deleter(kpi_id):raise LookupError(kpi_id)
     # --- agent heartbeats ---
+    def digest(self,now=None):
+        """Deterministic executive digest: text sections computed from live KPIs, blockers and statuses."""
+        now=now or _utcnow();kpis=self.kpis(now);blocks=self.blockers(now);statuses=self.module_statuses(now)
+        kpi_lines=[]
+        for k in kpis:
+            trend=""
+            if k.previous_value is not None:
+                delta=k.value-k.previous_value;trend=f" ({'+' if delta>=0 else ''}{delta:g} vs prior {k.window_hours}h)"
+            kpi_lines.append(f"{k.label}: {k.value:g} {k.unit}{trend}")
+        blocker_lines=[f"[{b.severity.value}] {b.summary} Action: {b.recommended_action}" for b in blocks[:20]]
+        agent_lines=[f"module {s.module_id} ({s.slug}): {'implemented' if s.implemented else 'not implemented'}, agent {(s.agent.state.value if s.agent else 'none')}, {s.pending_approvals} pending approvals, {s.events_24h} events/24h, {s.open_blockers} blockers" for s in statuses]
+        return Digest(generated_at=now,pending_approvals=len(self.pending_approvals()),open_blockers=len(blocks),sections=[DigestSection(title="KPIs",lines=kpi_lines),DigestSection(title="Blockers",lines=blocker_lines or ["none"]),DigestSection(title="Modules",lines=agent_lines)])
     def heartbeat(self,data:AgentHeartbeat):
         saver=getattr(self.repository,"heartbeat",None)
         if not saver:raise RuntimeError("repository does not support agent heartbeats")
