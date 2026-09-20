@@ -10,6 +10,10 @@ celery_app.conf.update(
     timezone="UTC",
     enable_utc=True,
     beat_schedule={
+        "dispatch-due-collection-sources": {
+            "task": "atlas.collection.dispatch_due",
+            "schedule": 60.0,
+        },
         "expire-approval-requests": {
             "task": "atlas.approvals.expire",
             "schedule": 60.0,

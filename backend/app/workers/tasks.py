@@ -13,3 +13,17 @@ def execute_approved_action(approval_id: str) -> dict[str, str]:
     if view["status"].value != "approved":
         raise ValueError("approval is not approved")
     return {"approval_id": approval_id, "status": "ready_for_registered_handler"}
+
+@celery_app.task(name="atlas.collection.dispatch_due")
+def dispatch_due_collection_sources(limit: int = 1000) -> dict[str, int]:
+    from app.core.collection import due_source_ids
+    ids = due_source_ids(limit)
+    for source_id in ids:
+        collect_source.delay(source_id)
+    return {"dispatched": len(ids)}
+
+@celery_app.task(name="atlas.collection.collect_source", bind=True, autoretry_for=(ConnectionError,), retry_backoff=True, retry_jitter=True, max_retries=5)
+def collect_source(self, source_id: int) -> dict[str, object]:
+    # Concrete API/RSS/public-page/authorized-session adapters register here.
+    # A missing adapter fails visibly instead of simulating collection.
+    return {"source_id": source_id, "status": "requires_registered_collector"}
