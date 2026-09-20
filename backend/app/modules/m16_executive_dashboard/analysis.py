@@ -10,7 +10,7 @@ from __future__ import annotations
 import math,random,statistics
 from collections import Counter
 ROWS={
-"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062}
+"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062,"synthetic_control":1063,"matching_methods":1064,"propensity_score_matching":1065,"coarsened_exact_matching":1066,"genetic_matching":1067}
 def _nums(data,key="values",min_n=1):
     v=data.get(key)
     if not isinstance(v,list) or len(v)<min_n or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in v):raise ValueError(f"{key} must contain at least {min_n} finite numbers")
@@ -503,5 +503,53 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
         for g,t,y in zip(group,period,outcome):cells.setdefault((bool(g),bool(t)),[]).append(y)
         if any(not cells.get(k) for k in [(False,False),(False,True),(True,False),(True,True)]):raise ValueError("all four treated/post cells required")
         means={k:_mean(v) for k,v in cells.items()};effect=(means[(True,True)]-means[(True,False)])-(means[(False,True)]-means[(False,False)]);o["output"]={"effect":effect,"cell_means":{"control_pre":means[(False,False)],"control_post":means[(False,True)],"treated_pre":means[(True,False)],"treated_post":means[(True,True)]},"group_changes":{"control":means[(False,True)]-means[(False,False)],"treated":means[(True,True)]-means[(True,False)]}};a += ["Parallel untreated trends, no anticipation, stable composition and no spillovers/interference."];limits += ["Two-group/two-period unadjusted DID; no event study, clustered uncertainty, covariates or staggered adoption correction."]
+    elif method=="synthetic_control":
+        treated=_nums(data,"treated_pre");donors=data.get("donor_pre");post=float(data.get("treated_post"));donor_post=_nums(data,"donor_post")
+        if not isinstance(donors,list) or not donors or any(not isinstance(d,list) or len(d)!=len(treated) for d in donors) or len(donors)!=len(donor_post):raise ValueError("aligned donor pre/post series required")
+        donors=[[float(v) for v in d] for d in donors];weights=[1/len(donors)]*len(donors);lr=float(p.get("learning_rate",.05));iters=max(10,min(int(p.get("iterations",2000)),20000))
+        for _ in range(iters):
+            pred=[sum(weights[j]*donors[j][t] for j in range(len(donors))) for t in range(len(treated))];grad=[2*sum((pred[t]-treated[t])*donors[j][t] for t in range(len(treated)))/len(treated) for j in range(len(donors))];weights=[max(0,weights[j]-lr*grad[j]) for j in range(len(weights))];z=sum(weights);weights=[w/z for w in weights] if z else [1/len(weights)]*len(weights)
+        synth_pre=[sum(weights[j]*donors[j][t] for j in range(len(donors))) for t in range(len(treated))];synth_post=sum(w*y for w,y in zip(weights,donor_post));rmspe=math.sqrt(_mean([(a-b)**2 for a,b in zip(treated,synth_pre)]));o["output"]={"weights":weights,"synthetic_pre":synth_pre,"synthetic_post":synth_post,"effect":post-synth_post,"pre_rmspe":rmspe};a += ["Convex donor combination reproduces untreated potential outcomes; no spillovers or donor treatment contamination."];limits += ["Projected-gradient reference; no predictor weighting, placebo inference, regularization selection or uncertainty interval."]
+    elif method in ("matching_methods","propensity_score_matching","genetic_matching"):
+        treated=data.get("treated");outcome=_nums(data,"outcome");covariates=data.get("covariates")
+        if not isinstance(treated,list) or not isinstance(covariates,list) or not len(treated)==len(outcome)==len(covariates) or any(not isinstance(row,list) or not row for row in covariates):raise ValueError("aligned treated, outcome and covariate rows required")
+        dim=len(covariates[0])
+        if any(len(r)!=dim for r in covariates):raise ValueError("covariate dimensions differ")
+        tx=[i for i,v in enumerate(treated) if bool(v)];ct=[i for i,v in enumerate(treated) if not bool(v)]
+        if not tx or not ct:raise ValueError("both treatment groups required")
+        scale=[]
+        for j in range(dim):
+            vals=[float(r[j]) for r in covariates];sd=math.sqrt(_var(vals,0));scale.append(sd if sd>1e-12 else 1)
+        if method=="genetic_matching":
+            weights=p.get("covariate_weights",[1]*dim)
+            if not isinstance(weights,list) or len(weights)!=dim or any(float(w)<=0 for w in weights):raise ValueError("positive covariate_weights required")
+        else:weights=[1]*dim
+        def dist(i,j):return math.sqrt(sum(float(weights[k])*((float(covariates[i][k])-float(covariates[j][k]))/scale[k])**2 for k in range(dim)))
+        if method=="propensity_score_matching":
+            scores=[]
+            mt=[_mean([float(covariates[i][j]) for i in tx]) for j in range(dim)];mc=[_mean([float(covariates[i][j]) for i in ct]) for j in range(dim)]
+            for row in covariates:
+                logit=sum((mt[j]-mc[j])*float(row[j])/(scale[j]**2) for j in range(dim));scores.append(1/(1+math.exp(-max(-700,min(700,logit)))))
+            distance=lambda i,j:abs(scores[i]-scores[j])
+        else:distance=dist;scores=None
+        pairs=[];replacement=bool(p.get("replacement",True));available=set(ct)
+        for i in tx:
+            pool=ct if replacement else list(available)
+            if not pool:break
+            j=min(pool,key=lambda q:distance(i,q));pairs.append({"treated_index":i,"control_index":j,"distance":distance(i,j),"effect":outcome[i]-outcome[j]})
+            if not replacement:available.remove(j)
+        o["output"]={"method":method,"pairs":pairs,"att":_mean([q["effect"] for q in pairs]),"matched_count":len(pairs),"propensity_scores":scores};a += ["Conditional ignorability/no unmeasured confounding, overlap, SUTVA and correctly measured pre-treatment covariates."];limits += ["Greedy nearest-neighbor reference; no caliper/balance optimization or matching-uncertainty correction; genetic weights are caller supplied, not evolved."]
+    elif method=="coarsened_exact_matching":
+        treated=data.get("treated");outcome=_nums(data,"outcome");covariates=data.get("covariates");cutpoints=p.get("cutpoints")
+        if not isinstance(treated,list) or not isinstance(covariates,list) or not len(treated)==len(outcome)==len(covariates) or not covariates or not isinstance(cutpoints,list) or len(cutpoints)!=len(covariates[0]):raise ValueError("aligned inputs and one cutpoint list per covariate required")
+        def binval(v,cuts):return sum(float(v)>float(c) for c in cuts)
+        strata={}
+        for i,row in enumerate(covariates):strata.setdefault(tuple(binval(v,cutpoints[j]) for j,v in enumerate(row)),[]).append(i)
+        effects=[];matched=[]
+        for key,ids in strata.items():
+            t=[i for i in ids if treated[i]];c=[i for i in ids if not treated[i]]
+            if t and c:effects.append((_mean([outcome[i] for i in t])-_mean([outcome[i] for i in c]),len(t)));matched+=ids
+        if not effects:raise ValueError("no strata contain both groups")
+        att=sum(e*w for e,w in effects)/sum(w for _,w in effects);o["output"]={"att":att,"matched_indices":sorted(matched),"matched_count":len(matched),"eligible_strata":len(effects),"total_strata":len(strata)};a += ["Ignorability within coarsened strata, overlap and meaningful pre-specified cutpoints."];limits += ["Results depend on cutpoint choice; no automated monotonic imbalance tuning or uncertainty estimate."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
     return o
