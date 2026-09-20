@@ -4,3 +4,9 @@ class EssayCoachingIn(BaseModel):prompt:str=Field(min_length=5,max_length=5000);
 class EssayCoachingOut(BaseModel):questions:list[str];outline_feedback:list[str];critique:dict[str,str];final_prose:str|None=None;guardrail:Literal['student-authored-final']='student-authored-final'
 class StudentProfileIn(BaseModel):values:list[str];turning_points:list[str];strengths:list[str];academics:dict=Field(default_factory=dict);finances:dict=Field(default_factory=dict);goals:list[str]=Field(default_factory=list)
 class UniversityIn(BaseModel):id:str;name:str;country:str;programs:list[str];annual_tuition_usd:float|None=None;admission_rate:float|None=None;requirements:dict=Field(default_factory=dict);official_url:str
+class IdentityInterviewStartIn(BaseModel):
+    track:Literal['college','career']
+class IdentityInterviewTurnIn(BaseModel):
+    student_response:str=Field(min_length=10,max_length=20000)
+    modality:Literal['chat','voice']='chat'
+    evidence_tags:list[str]=Field(default_factory=list,max_length=30)

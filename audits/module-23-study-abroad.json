@@ -4,8 +4,8 @@
   "source_message_id": "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUMxNjM2MjYzMEIyNENCMUE3NzJDNjAyQjYxOUQxNDgA",
   "counts": {
     "thin": 18,
-    "missing": 40,
-    "verified-pushed": 4
+    "missing": 39,
+    "verified-pushed": 5
   },
   "rows": [
     {
@@ -56,8 +56,11 @@
     {
       "row": 7,
       "requirement": "Voice/chat identity onboarding",
-      "status": "missing",
-      "evidence": null
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/interview.py",
+        "test": "tests/modules/test_m23_identity_interview.py"
+      }
     },
     {
       "row": 8,

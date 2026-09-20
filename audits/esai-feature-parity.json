@@ -10,40 +10,196 @@
     "https://www.esai.ai/pricing"
   ],
   "rows": [
-    {"id":1,"feature":"Identity Intelligence","status":"verified-pushed"},
-    {"id":2,"feature":"Narrative Intelligence","status":"thin"},
-    {"id":3,"feature":"Contextual Intelligence","status":"verified-pushed"},
-    {"id":4,"feature":"Brandi conversational voice coach","status":"missing"},
-    {"id":5,"feature":"Living BrandID profile","status":"missing"},
-    {"id":6,"feature":"College Track","status":"thin"},
-    {"id":7,"feature":"Career Track","status":"missing"},
-    {"id":8,"feature":"Opportunity matching for colleges","status":"thin"},
-    {"id":9,"feature":"Opportunity matching for internships/jobs","status":"missing"},
-    {"id":10,"feature":"Story Strategist","status":"thin"},
-    {"id":11,"feature":"Major Mentor","status":"missing"},
-    {"id":12,"feature":"School Match Maker","status":"thin"},
-    {"id":13,"feature":"Activity Planner","status":"missing"},
-    {"id":14,"feature":"Passion Project Picker","status":"missing"},
-    {"id":15,"feature":"Personal Statement Topic Finder","status":"missing"},
-    {"id":16,"feature":"Supplemental Essay Assistant","status":"thin"},
-    {"id":17,"feature":"Outline Assistant","status":"thin"},
-    {"id":18,"feature":"Hook Helper","status":"missing"},
-    {"id":19,"feature":"Conclusion Coach","status":"missing"},
-    {"id":20,"feature":"Essay Draft Editor for clarity/tone","status":"thin"},
-    {"id":21,"feature":"Personal Stat Calculator","status":"missing"},
-    {"id":22,"feature":"Scholarship Guide","status":"missing"},
-    {"id":23,"feature":"LOCI Tool","status":"missing"},
-    {"id":24,"feature":"Interview preparation by conversation","status":"missing"},
-    {"id":25,"feature":"Resume narrative powered by BrandID","status":"missing"},
-    {"id":26,"feature":"Cover-letter narrative powered by BrandID","status":"missing"},
-    {"id":27,"feature":"LinkedIn headline positioning","status":"missing"},
-    {"id":28,"feature":"Dynamic profile evolves with conversations","status":"missing"},
-    {"id":29,"feature":"Opportunity-specific BrandID adaptation","status":"missing"},
-    {"id":30,"feature":"One/unlimited story project entitlements","status":"missing"},
-    {"id":31,"feature":"Common App integration","status":"missing"},
-    {"id":32,"feature":"Essay Support Suite","status":"thin"},
-    {"id":33,"feature":"Student-owned no-ghostwriting workflow","status":"verified-pushed"},
-    {"id":34,"feature":"School administrator engagement visibility","status":"missing"},
-    {"id":35,"feature":"College and career tracks from one identity model","status":"missing"}
+    {
+      "id": 1,
+      "feature": "Identity Intelligence",
+      "status": "verified-pushed"
+    },
+    {
+      "id": 2,
+      "feature": "Narrative Intelligence",
+      "status": "thin"
+    },
+    {
+      "id": 3,
+      "feature": "Contextual Intelligence",
+      "status": "verified-pushed"
+    },
+    {
+      "id": 4,
+      "feature": "Brandi conversational voice coach",
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/interview.py; backend/app/modules/m23_study_abroad/story.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_identity_interview.py; tests/modules/test_m23_story.py"
+      }
+    },
+    {
+      "id": 5,
+      "feature": "Living BrandID profile",
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/interview.py; backend/app/modules/m23_study_abroad/story.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_identity_interview.py; tests/modules/test_m23_story.py"
+      }
+    },
+    {
+      "id": 6,
+      "feature": "College Track",
+      "status": "thin"
+    },
+    {
+      "id": 7,
+      "feature": "Career Track",
+      "status": "missing"
+    },
+    {
+      "id": 8,
+      "feature": "Opportunity matching for colleges",
+      "status": "thin"
+    },
+    {
+      "id": 9,
+      "feature": "Opportunity matching for internships/jobs",
+      "status": "missing"
+    },
+    {
+      "id": 10,
+      "feature": "Story Strategist",
+      "status": "thin"
+    },
+    {
+      "id": 11,
+      "feature": "Major Mentor",
+      "status": "missing"
+    },
+    {
+      "id": 12,
+      "feature": "School Match Maker",
+      "status": "thin"
+    },
+    {
+      "id": 13,
+      "feature": "Activity Planner",
+      "status": "missing"
+    },
+    {
+      "id": 14,
+      "feature": "Passion Project Picker",
+      "status": "missing"
+    },
+    {
+      "id": 15,
+      "feature": "Personal Statement Topic Finder",
+      "status": "missing"
+    },
+    {
+      "id": 16,
+      "feature": "Supplemental Essay Assistant",
+      "status": "thin"
+    },
+    {
+      "id": 17,
+      "feature": "Outline Assistant",
+      "status": "thin"
+    },
+    {
+      "id": 18,
+      "feature": "Hook Helper",
+      "status": "missing"
+    },
+    {
+      "id": 19,
+      "feature": "Conclusion Coach",
+      "status": "missing"
+    },
+    {
+      "id": 20,
+      "feature": "Essay Draft Editor for clarity/tone",
+      "status": "thin"
+    },
+    {
+      "id": 21,
+      "feature": "Personal Stat Calculator",
+      "status": "missing"
+    },
+    {
+      "id": 22,
+      "feature": "Scholarship Guide",
+      "status": "missing"
+    },
+    {
+      "id": 23,
+      "feature": "LOCI Tool",
+      "status": "missing"
+    },
+    {
+      "id": 24,
+      "feature": "Interview preparation by conversation",
+      "status": "missing"
+    },
+    {
+      "id": 25,
+      "feature": "Resume narrative powered by BrandID",
+      "status": "missing"
+    },
+    {
+      "id": 26,
+      "feature": "Cover-letter narrative powered by BrandID",
+      "status": "missing"
+    },
+    {
+      "id": 27,
+      "feature": "LinkedIn headline positioning",
+      "status": "missing"
+    },
+    {
+      "id": 28,
+      "feature": "Dynamic profile evolves with conversations",
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/interview.py; backend/app/modules/m23_study_abroad/story.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_identity_interview.py; tests/modules/test_m23_story.py"
+      }
+    },
+    {
+      "id": 29,
+      "feature": "Opportunity-specific BrandID adaptation",
+      "status": "missing"
+    },
+    {
+      "id": 30,
+      "feature": "One/unlimited story project entitlements",
+      "status": "missing"
+    },
+    {
+      "id": 31,
+      "feature": "Common App integration",
+      "status": "missing"
+    },
+    {
+      "id": 32,
+      "feature": "Essay Support Suite",
+      "status": "thin"
+    },
+    {
+      "id": 33,
+      "feature": "Student-owned no-ghostwriting workflow",
+      "status": "verified-pushed"
+    },
+    {
+      "id": 34,
+      "feature": "School administrator engagement visibility",
+      "status": "missing"
+    },
+    {
+      "id": 35,
+      "feature": "College and career tracks from one identity model",
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/interview.py; backend/app/modules/m23_study_abroad/story.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_identity_interview.py; tests/modules/test_m23_story.py"
+      }
+    }
   ]
 }
