@@ -20146,7 +20146,7 @@
       "description": "At launch/onboarding, proactively ask the user to connect or select writings, essays, and activity descriptions; index them as the source of truth for grounded application drafting.",
       "status": "verified-pushed",
       "evidence": {
-        "commit": "d472d3e3c45b5aafec4ababf975a056b9ab6d221",
+        "commit": "d9ed1543bbea25fcedf015d967d209bafc9bfe0f",
         "implementation_path": "backend/app/modules/m02_competition_manager/onboarding.py",
         "test_path": "tests/modules/test_m02_onboarding.py"
       },
