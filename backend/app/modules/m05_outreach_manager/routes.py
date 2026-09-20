@@ -6,6 +6,7 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.approvals import approvals
+from app.auth.context import TenantContext, require_tenant
 
 from .schemas import (
     CampaignDraftRequest,
@@ -20,21 +21,20 @@ from .schemas import (
 )
 from .service import (
     ContactNotFoundError,
-    InMemoryContactRepository,
     SemanticScholarClient,
     Service,
     UpstreamServiceError,
 )
 
 router = APIRouter(prefix="/outreach-manager", tags=["outreach-manager"])
-_repository = InMemoryContactRepository()
 
 
-async def get_service() -> AsyncIterator[Service]:
+async def get_service(tenant: TenantContext = Depends(require_tenant)) -> AsyncIterator[Service]:
     """Build request-scoped network dependencies and close them deterministically."""
 
+    from .sql_repository import SqlContactRepository
     async with httpx.AsyncClient(timeout=20) as client:
-        yield Service(_repository, approvals, SemanticScholarClient(client))
+        yield Service(SqlContactRepository(tenant.tenant_id), approvals, SemanticScholarClient(client))
 
 
 @router.post("/contacts", response_model=Contact, status_code=status.HTTP_201_CREATED)
