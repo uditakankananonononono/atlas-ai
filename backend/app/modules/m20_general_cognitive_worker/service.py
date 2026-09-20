@@ -1,162 +1,255 @@
-"""Module 20: evidence-oriented cognitive worker with bounded autonomy."""
+"""GCW service facade: one object wiring every subsystem together.
+
+This is the entry point the integrator binds: inject the LLM clients
+(ExecutiveModel/PlannerModel/Transcriber/VisionModel/DocumentParser), the
+Module 0 approval gate, and production stores; everything else composes
+here. Also owns stand-up reporting for the Executive Dashboard (spec 4.3)
+and Atlas supervision (health + budget signals).
+"""
 from __future__ import annotations
 
-import asyncio, re, uuid
-from collections import deque
-from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Awaitable, Callable, Protocol
+from typing import Any
 
-from app.core.models import ApprovalRequest, ApprovalStatus
+from .embeddings import EmbeddingProvider
+from .episodic_memory import EpisodicMemory
+from .executive import DeliberativeLoop, ExecutiveModel, MCTSRuminator
+from .htn_planner import HTNPlanner, PlannerModel
+from .reflection import (
+    CreativityMode, EmotionalStateModel, IdeationEngine, RetrospectiveEngine,
+    ScratchpadManager, UncertaintyGate,
+)
+from .safety import ApprovalGate, ConstitutionalRules, InMemoryApprovalGate, SafetyGate, SandboxPolicy
+from .scheduler import ContextScheduler
+from .schemas import (
+    ActionRecord, Budget, CognitiveEvent, Episode, Risk, SemanticFact, Skill,
+    TaskContext, TaskState, TraceEntry,
+)
+from .semantic_memory import SemanticMemory
+from .sensory import DocumentParser, SensoryLayer, Transcriber, VisionModel
+from .skill_library import SkillLibrary
+from .tools import ToolDispatcher, ToolRegistry
+from .working_memory import AttentionController, WorkingMemory
 
-MODULE_ID=20
-def now(): return datetime.now(timezone.utc)
+# Judgment-style Category 1 rows ship as prompt-chain skills (spec 4.2.3
+# procedural memory): the executive matches goals to them and runs the chain
+# through the model. They are reasoning scaffolds, not autonomous actions.
+JUDGMENT_SKILLS: list[dict[str, Any]] = [
+    {
+        "name": "devils-advocate",
+        "goal_pattern": "stress test challenge my conclusion argument",
+        "chain": ["state the conclusion", "argue the strongest case against it",
+                  "list what would change the conclusion"],
+    },
+    {
+        "name": "steelman",
+        "goal_pattern": "steelman strongest version opposing argument",
+        "chain": ["restate the opposing position at its strongest",
+                  "list its best evidence", "only then respond"],
+    },
+    {
+        "name": "premortem",
+        "goal_pattern": "premortem imagine project failure prevent",
+        "chain": ["imagine the project failed completely", "list the most likely causes",
+                  "turn each cause into a preventive action"],
+    },
+    {
+        "name": "cognitive-reframing",
+        "goal_pattern": "reframe setback learning opportunity",
+        "chain": ["state the setback plainly", "extract the actionable lesson",
+                  "name the next smallest step"],
+    },
+    {
+        "name": "second-order-check",
+        "goal_pattern": "second order effects consequences",
+        "chain": ["list first-order effects", "for each, list its consequences",
+                  "flag delayed and feedback effects"],
+    },
+    {
+        "name": "bias-scan",
+        "goal_pattern": "detect cognitive biases in reasoning",
+        "chain": ["check sunk cost, anchoring, confirmation, availability biases",
+                  "state which apply and why", "re-derive the conclusion without them"],
+    },
+]
 
-class Risk(str,Enum): READ="read"; REVERSIBLE="reversible"; EXTERNAL="external"; IRREVERSIBLE="irreversible"
-class State(str,Enum): PENDING="pending"; WAITING_APPROVAL="waiting_approval"; RUNNING="running"; SUCCEEDED="succeeded"; FAILED="failed"; BLOCKED="blocked"
 
-@dataclass
-class SensoryEvent:
-    source:str; kind:str; payload:dict[str,Any]; external_id:str|None=None; confidence:float=1.; observed_at:datetime=field(default_factory=now); id:str=field(default_factory=lambda:str(uuid.uuid4()))
-@dataclass
-class Memory:
-    kind:str; content:dict[str,Any]; provenance:dict[str,Any]; salience:float=.5; id:str=field(default_factory=lambda:str(uuid.uuid4()))
-@dataclass
-class Skill:
-    name:str; goal_pattern:str; steps:list[dict[str,Any]]; version:int=1; evidence:dict[str,Any]=field(default_factory=dict)
-@dataclass
-class Tool:
-    name:str; description:str; risk:Risk; capabilities:set[str]; handler:Callable[[dict[str,Any],str],Awaitable[dict[str,Any]]]; timeout:int=60; max_retries:int=2
-@dataclass
-class Step:
-    title:str; tool:str|None; arguments:dict[str,Any]; depends_on:set[str]=field(default_factory=set); risk:Risk=Risk.READ; max_attempts:int=3; id:str=field(default_factory=lambda:str(uuid.uuid4())); state:State=State.PENDING; attempts:int=0; approval_id:str|None=None; result:dict[str,Any]|None=None; error:str|None=None
-@dataclass
-class Plan:
-    goal:str; steps:list[Step]; constraints:dict[str,Any]; id:str=field(default_factory=lambda:str(uuid.uuid4()))
-@dataclass
-class Trace:
-    phase:str; summary:str; evidence:list[dict[str,Any]]; alternatives:list[str]; decision:str; policy_basis:list[str]; at:datetime=field(default_factory=now)
-@dataclass
-class Run:
-    goal:str; budget:dict[str,float]; plan:Plan; id:str=field(default_factory=lambda:str(uuid.uuid4())); status:State=State.PENDING; traces:list[Trace]=field(default_factory=list); spent:dict[str,float]=field(default_factory=lambda:{"seconds":0,"tokens":0,"money":0})
+class CognitiveWorkerService:
+    """The General Cognitive Worker (spec section 4)."""
 
-class ApprovalStore(Protocol):
-    def put(self,item:ApprovalRequest)->ApprovalRequest: ...
-    def list(self)->list[ApprovalRequest]: ...
-class Model(Protocol):
-    async def __call__(self,purpose:str,payload:dict[str,Any])->dict[str,Any]: ...
+    def __init__(
+        self,
+        *,
+        executive_model: ExecutiveModel | None = None,
+        planner_model: PlannerModel | None = None,
+        approval_gate: ApprovalGate | None = None,
+        embedder: EmbeddingProvider | None = None,
+        attention: AttentionController | None = None,
+        transcriber: Transcriber | None = None,
+        vision: VisionModel | None = None,
+        document_parser: DocumentParser | None = None,
+        sandbox: SandboxPolicy | None = None,
+        rules: ConstitutionalRules | None = None,
+        working_memory_capacity: int = 50,
+        seed_judgment_skills: bool = True,
+    ) -> None:
+        self.embedder = embedder
+        self.sensory = SensoryLayer(
+            transcriber=transcriber, vision=vision, document_parser=document_parser,
+        )
+        self.working_memory = WorkingMemory(
+            capacity=working_memory_capacity, attention=attention,
+        )
+        self.episodic = EpisodicMemory(embedder=embedder)
+        self.semantic = SemanticMemory(embedder=embedder)
+        self.skills = SkillLibrary()
+        self.tools = ToolRegistry()
+        self.safety = SafetyGate(
+            rules=rules, approvals=approval_gate or InMemoryApprovalGate(), sandbox=sandbox,
+        )
+        self.dispatcher = ToolDispatcher(self.tools, self.safety)
+        self.planner = HTNPlanner(model=planner_model)
+        self.scheduler = ContextScheduler()
+        self.scratchpads = ScratchpadManager()
+        self.ideation = IdeationEngine()
+        self.retrospectives = RetrospectiveEngine(embedder=embedder)
+        self.emotions = EmotionalStateModel()
+        self.uncertainty = UncertaintyGate()
+        self.creativity = CreativityMode()
+        self.executive_model = executive_model
+        self.loop = DeliberativeLoop(
+            planner=self.planner, dispatcher=self.dispatcher,
+            working_memory=self.working_memory, episodic=self.episodic,
+            semantic=self.semantic, skills=self.skills, model=executive_model,
+        )
+        if seed_judgment_skills:
+            self._seed_judgment_skills()
 
-class SensoryIngestion:
-    def __init__(self,sources:set[str],max_bytes:int=1_000_000): self.sources,self.max_bytes,self.seen=sources,max_bytes,set()
-    def ingest(self,event:SensoryEvent)->bool:
-        if event.source not in self.sources: raise ValueError("unregistered sensory source")
-        if not 0<=event.confidence<=1: raise ValueError("invalid confidence")
-        if len(repr(event.payload).encode())>self.max_bytes: raise ValueError("payload too large")
-        key=(event.source,event.external_id) if event.external_id else (event.source,event.id)
-        if key in self.seen:return False
-        self.seen.add(key);return True
+    def _seed_judgment_skills(self) -> None:
+        for entry in JUDGMENT_SKILLS:
+            steps = [ActionRecord(tool="prompt_chain", arguments={"step": s}) for s in entry["chain"]]
+            self.skills.register(Skill(
+                name=entry["name"], goal_pattern=entry["goal_pattern"], steps=steps,
+            ))
 
-class WorkingMemory:
-    def __init__(self,token_budget:int=12000): self.token_budget=token_budget;self.items:deque[tuple[str,Any,float,int]]=deque()
-    def put(self,key:str,value:Any,salience:float=.5):
-        self.items=deque(x for x in self.items if x[0]!=key);self.items.append((key,value,salience,max(1,len(repr(value))//4)))
-        while sum(x[3] for x in self.items)>self.token_budget:self.items.remove(min(self.items,key=lambda x:x[2]))
-    def context(self):return {x[0]:x[1] for x in sorted(self.items,key=lambda x:x[2],reverse=True)}
+    # -- perception ------------------------------------------------------
 
-class LongTermMemory:
-    def __init__(self):self.episodic:list[Memory]=[];self.semantic:list[Memory]=[]
-    def remember(self,item:Memory):getattr(self,item.kind).append(item)
-    def recall(self,query:str,limit:int=12):
-        terms=set(re.findall(r"\w+",query.lower()));all_items=self.episodic+self.semantic
-        return sorted(all_items,key=lambda m:(len(terms&set(re.findall(r"\w+",repr(m.content).lower()))),m.salience),reverse=True)[:limit]
+    def ingest(self, event: CognitiveEvent, *, context_id: str | None = None) -> CognitiveEvent | None:
+        """Push a normalized sensory event into working memory."""
+        if event is None:
+            return None
+        from .schemas import ChunkType, MemoryChunk
+        goal = ""
+        if context_id and (ctx := self.scheduler.get(context_id)):
+            goal = ctx.goal
+        self.working_memory.put(MemoryChunk(
+            type=ChunkType.FACT, content=event.text, confidence=event.confidence,
+            source=f"sensory:{event.modality.value}",
+        ), active_goal=goal, partition=context_id or "")
+        return event
 
-class SkillLibrary:
-    def __init__(self):self.skills:dict[str,list[Skill]]={}
-    def register(self,skill:Skill):
-        if not skill.steps:raise ValueError("skill needs steps")
-        self.skills.setdefault(skill.name,[]).append(skill)
-    def match(self,goal:str):return [v[-1] for v in self.skills.values() if re.search(v[-1].goal_pattern,goal,re.I)]
+    # -- goals and execution --------------------------------------------
 
-class HTNPlanner:
-    def __init__(self,skills:SkillLibrary,model:Model):self.skills,self.model=skills,model
-    async def plan(self,goal:str,constraints:dict[str,Any])->Plan:
-        matched=self.skills.match(goal);raw=matched[0].steps if matched else (await self.model("htn_plan",{"goal":goal,"constraints":constraints}))["steps"]
-        steps=[Step(x["title"],x.get("tool"),x.get("arguments",{}),set(x.get("depends_on",[])),Risk(x.get("risk","read")),min(5,max(1,x.get("max_attempts",3))),x.get("id",str(uuid.uuid4()))) for x in raw]
-        ids={s.id for s in steps}
-        if any(not s.depends_on<=ids for s in steps):raise ValueError("unknown dependency")
-        self._acyclic(steps);return Plan(goal,steps,constraints)
-    @staticmethod
-    def _acyclic(steps):
-        graph={s.id:s.depends_on for s in steps};active=set();seen=set()
-        def visit(n):
-            if n in active:raise ValueError("cyclic plan")
-            if n in seen:return
-            active.add(n)
-            for d in graph[n]:visit(d)
-            active.remove(n);seen.add(n)
-        for n in graph:visit(n)
+    def submit_goal(
+        self,
+        goal: str,
+        *,
+        importance: int = 3,
+        deadline: datetime | None = None,
+        budget: Budget | None = None,
+        run_immediately: bool = True,
+    ) -> TaskContext:
+        context = TaskContext(
+            goal=goal, importance=max(1, min(5, importance)), deadline=deadline,
+        )
+        context.wm_partition = context.id
+        self.scheduler.add(context)
+        if run_immediately:
+            self.loop.start(context)
+            self.emotions.record_outcome(context.state == TaskState.SUCCEEDED)
+        context.updated_at = datetime.now(timezone.utc)
+        return context
 
-class ToolRegistry:
-    def __init__(self):self.tools:dict[str,Tool]={}
-    def register(self,tool:Tool):self.tools[tool.name]=tool
-    async def dispatch(self,step:Step,key:str):
-        if step.tool is None:return {"ok":True,"note":"cognitive step"}
-        tool=self.tools.get(step.tool)
-        if not tool:raise ValueError("tool unavailable")
-        if tool.risk!=step.risk:raise ValueError("tool risk differs from reviewed plan")
-        return await asyncio.wait_for(tool.handler(step.arguments,key),tool.timeout)
+    def tick(self, *, budget: Budget | None = None) -> TaskContext | None:
+        """One scheduler step: time-slice the highest-priority context."""
+        context = self.scheduler.next_context()
+        if context is None:
+            return None
+        if context.state in (TaskState.PENDING, TaskState.PLANNING):
+            self.loop.start(context)
+        elif context.state in (TaskState.RUNNING, TaskState.RUMINATING):
+            self.loop.run(context, budget=budget)
+        context.updated_at = datetime.now(timezone.utc)
+        return context
 
-class ConcurrencyScheduler:
-    def __init__(self,max_parallel:int=6):self.gate=asyncio.Semaphore(max_parallel)
-    async def run(self,steps,fn):
-        async def one(s):
-            async with self.gate:return await fn(s)
-        return await asyncio.gather(*(one(s) for s in steps),return_exceptions=True)
+    def resume(self, task_id: str, node_id: str, *, approved: bool) -> TaskContext | None:
+        context = self.scheduler.get(task_id)
+        if context is None:
+            return None
+        return self.loop.resume_after_approval(context, node_id, approved)
 
-class DeliberativeLoop:
-    def __init__(self,approvals:ApprovalStore,tools:ToolRegistry,scheduler:ConcurrencyScheduler):self.approvals,self.tools,self.scheduler=approvals,tools,scheduler
-    async def execute(self,run:Run)->Run:
-        run.status=State.RUNNING;by_id={s.id:s for s in run.plan.steps}
-        while True:
-            if any(s.state in {State.FAILED,State.BLOCKED} for s in run.plan.steps):run.status=State.BLOCKED;break
-            if all(s.state==State.SUCCEEDED for s in run.plan.steps):run.status=State.SUCCEEDED;break
-            ready=[s for s in run.plan.steps if s.state in {State.PENDING,State.WAITING_APPROVAL} and all(by_id[d].state==State.SUCCEEDED for d in s.depends_on)]
-            if not ready:run.status=State.BLOCKED;break
-            before=[(s.id,s.state,s.attempts) for s in ready]
-            await self.scheduler.run(ready,lambda s:self._step(run,s))
-            after=[(s.id,s.state,s.attempts) for s in ready]
-            if before==after:break
-        return run
-    async def _step(self,run:Run,step:Step):
-        if step.risk in {Risk.EXTERNAL,Risk.IRREVERSIBLE}:
-            if not step.approval_id:
-                req=self.approvals.put(ApprovalRequest(id=str(uuid.uuid4()),module_id=MODULE_ID,action_type=f"cognitive:{step.tool or 'step'}",payload={"run_id":run.id,"step_id":step.id,"title":step.title,"arguments":step.arguments,"risk":step.risk.value}))
-                step.approval_id=req.id;step.state=State.WAITING_APPROVAL;return
-            req=next((x for x in self.approvals.list() if x.id==step.approval_id),None)
-            if not req or req.status==ApprovalStatus.PENDING:return
-            if req.status!=ApprovalStatus.APPROVED:step.state=State.BLOCKED;return
-        step.state=State.RUNNING;step.attempts+=1
-        try:
-            step.result=await self.tools.dispatch(step,f"{run.id}:{step.id}:{step.attempts}");step.state=State.SUCCEEDED
-            run.traces.append(Trace("execution",f"Completed {step.title}",[step.result],[],"continue",["tool registry","approval gate"]))
-        except Exception as e:
-            step.error=f"{type(e).__name__}: {e}";step.state=State.PENDING if step.attempts<step.max_attempts else State.FAILED
-            run.traces.append(Trace("execution",f"Attempt failed: {step.title}",[],["retry","escalate"],"retry" if step.state==State.PENDING else "escalate",["bounded retries"]))
+    def ruminate(self, task_id: str) -> dict[str, Any] | None:
+        context = self.scheduler.get(task_id)
+        if context is None:
+            return None
+        return self.loop.ruminate(context)
 
-class Retrospective:
-    async def review(self,run:Run,model:Model):
-        result=await model("retrospective",{"goal":run.goal,"status":run.status,"traces":[t.summary for t in run.traces]})
-        run.traces.append(Trace("retrospective",result.get("summary","reviewed"),result.get("evidence",[]),result.get("alternatives",[]),result.get("next","none"),["evidence based learning"]));return result
+    # -- reporting and supervision ---------------------------------------
 
-class AtlasSupervisor:
-    def assess(self,runs:list[Run],max_failures:int=3):
-        failures=sum(r.status in {State.FAILED,State.BLOCKED} for r in runs);over=[r.id for r in runs if any(r.spent.get(k,0)>r.budget.get(k,float('inf')) for k in r.spent)]
-        return {"healthy":failures<max_failures and not over,"failed_runs":failures,"over_budget":over,"action":"pause_and_escalate" if failures>=max_failures or over else "continue"}
+    def standup(self) -> str:
+        """Daily stand-up for the Executive Dashboard (spec 4.3)."""
+        lines = [f"GCW stand-up {datetime.now(timezone.utc).date().isoformat()}"]
+        contexts = list(self.scheduler._contexts.values())
+        if not contexts:
+            lines.append("- no active work")
+        for ctx in sorted(contexts, key=lambda c: c.created_at):
+            total = len(ctx.plan)
+            done = sum(1 for n in ctx.plan if n.state == TaskState.SUCCEEDED)
+            blocked = [n.title for n in ctx.plan if n.state in (TaskState.BLOCKED, TaskState.WAITING_APPROVAL)]
+            lines.append(
+                f"- [{ctx.state.value}] {ctx.goal} ({done}/{total} steps)"
+                + (f" | blocked on: {', '.join(blocked)}" if blocked else "")
+            )
+            for note in ctx.standup_notes[-3:]:
+                lines.append(f"    note: {note}")
+        return "\n".join(lines)
 
-class Service:
-    """Composes all 12 requested parts; traces expose evidence/decisions, not hidden scratchpad."""
-    def __init__(self,approval_store:ApprovalStore,model:Model,max_parallel:int=6):
-        self.sensory=SensoryIngestion({"api","webhook","file","email","calendar","browser","user"});self.working=WorkingMemory();self.ltm=LongTermMemory();self.skills=SkillLibrary();self.planner=HTNPlanner(self.skills,model);self.tools=ToolRegistry();self.scheduler=ConcurrencyScheduler(max_parallel);self.loop=DeliberativeLoop(approval_store,self.tools,self.scheduler);self.retrospective=Retrospective();self.supervisor=AtlasSupervisor();self.model=model;self.runs={}
-    async def start(self,goal:str,constraints:dict[str,Any],budget:dict[str,float]):
-        memories=self.ltm.recall(goal);plan=await self.planner.plan(goal,{**constraints,"memory":[m.content for m in memories]});run=Run(goal,budget,plan);run.traces.append(Trace("intake","Goal accepted",[{"memory_id":m.id} for m in memories],["clarify","plan"],"plan",["bounded budget","tenant context supplied by route"]));self.runs[run.id]=run;return await self.loop.execute(run)
+    def supervise(self) -> dict[str, Any]:
+        """Atlas supervision: module health and budget signals."""
+        contexts = list(self.scheduler._contexts.values())
+        by_state: dict[str, int] = {}
+        for ctx in contexts:
+            by_state[ctx.state.value] = by_state.get(ctx.state.value, 0) + 1
+        tool_failures = sum(1 for r in self.dispatcher.records if not r.succeeded)
+        return {
+            "module": "m20_general_cognitive_worker",
+            "healthy": True,
+            "tasks": by_state,
+            "working_memory_chunks": len(self.working_memory),
+            "episodes": len(self.episodic),
+            "semantic_facts": len(self.semantic),
+            "skills": len(self.skills),
+            "tools": len(self.tools),
+            "tool_calls": len(self.dispatcher.records),
+            "tool_failures": tool_failures,
+            "traces": len(self.loop.traces),
+            "emotional_tone_bias": self.emotions.tone_bias(),
+            "cognitive_load": self.scheduler.cognitive_load(),
+        }
+
+    def traces(self, *, task_id: str | None = None) -> list[TraceEntry]:
+        return [
+            t for t in self.loop.traces if task_id is None or t.task_id == task_id
+        ]
+
+    def close_task(self, task_id: str, *, went_well: list[str], went_poorly: list[str],
+                   lessons: list[str]) -> None:
+        """Write the retrospective and clear the WM partition."""
+        self.retrospectives.write(
+            task_id, went_well=went_well, went_poorly=went_poorly, lessons=lessons,
+        )
+        self.working_memory.clear_partition(task_id)
+
+
+# Legacy runtime exports used by Claire and the original Module 20 surface.
+from .legacy_service import Service, Run, State

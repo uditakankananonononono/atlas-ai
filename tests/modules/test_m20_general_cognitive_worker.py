@@ -2,7 +2,7 @@ import pytest
 from app.core.models import ApprovalStatus
 from app.modules.m00_approval_center.service import Service as ApprovalService
 from app.core.approvals import approvals as shared_approvals
-from app.modules.m20_general_cognitive_worker.service import *
+from app.modules.m20_general_cognitive_worker.legacy_service import *
 
 class Model:
  async def __call__(self,purpose,payload):

@@ -311,8 +311,3 @@ class Budget(BaseModel):
     seconds: float = 300.0
     tokens: int = 100_000
     money_usd: float = 0.0
-
-class GoalIn(BaseModel):
-    goal: str = Field(min_length=3, max_length=8000)
-    constraints: dict[str, Any] = Field(default_factory=dict)
-    budget: dict[str, float] = Field(default_factory=lambda: {"seconds": 900, "tokens": 100000, "money": 0})
