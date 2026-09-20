@@ -13,8 +13,8 @@ def test_application_pipeline_order_and_exact_review_gate():
  req=a.list()[0];assert req.action_type=='review_humanized_application_answers'
  assert req.payload['prohibitions']==['detector_evasion','authorship_misrepresentation','fabricated_content']
 def test_changed_factual_anchors_fail_before_review_or_submission():
- a=ApprovalStore()
+ a=ApprovalStore();before=len(a.list())
  try:asyncio.run(ApplicationAnswerPipeline(NaturalVoiceService(bad),a).prepare_review('c',{'x':'In 2025 I built Atlas at MIT.'}))
  except ValueError as e:assert 'factual anchors' in str(e)
  else:raise AssertionError
- assert a.list()==[]
+ assert len(a.list())==before
