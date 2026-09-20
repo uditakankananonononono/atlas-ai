@@ -43,3 +43,22 @@ def test_preference_dataset_needs_complete_real_rankings_and_minimum_signal():
  d=s.preference_dataset([{'context':f'c{i}','options':['a','b'],'ranking':['b','a']} for i in range(20)])
  assert d.kind=='preference' and all(x['provenance']=='owner_ranked' for x in d.examples)
  assert s.propose_training(d,'local-ranking-model','pairwise')['status']=='pending'
+
+def test_decision_outcomes_close_the_learning_loop_and_stay_tenant_scoped(tmp_path):
+ a,b=repos(tmp_path)
+ decision_id=a.add('decision',{'decision':'Enter competition A','reason':'strong mission fit','context':'competitions'},[1,0])
+ outcome_id=a.add_decision_outcome(decision_id,{'outcome':'Reached finalist round','rating':'better','lesson':'Mission-fit evidence was predictive','evidence':{'result_url':'https://example.test/result'}})
+ history=a.decision_history(decision_id)
+ assert history['decision']['reason']=='strong mission fit'
+ assert history['outcomes'][0]['id']==outcome_id
+ assert history['outcomes'][0]['lesson']=='Mission-fit evidence was predictive'
+ with pytest.raises(KeyError):b.decision_history(decision_id)
+ with pytest.raises(KeyError):b.add_decision_outcome(decision_id,{'outcome':'x','rating':'unknown','lesson':'x','evidence':{}})
+
+def test_retrieved_decision_includes_outcome_lessons_for_future_recommendations(tmp_path):
+ a,_=repos(tmp_path)
+ decision_id=a.add('decision',{'decision':'Use an official API','reason':'reliability','context':'collectors'},[1,0])
+ a.add_decision_outcome(decision_id,{'outcome':'No collection failures for 30 days','rating':'better','lesson':'Prefer stable versioned APIs','evidence':{'sample_days':30}})
+ result=a.retrieve([1,0],1)[0]
+ assert result['content']['outcomes'][0]['rating']=='better'
+ assert result['content']['outcomes'][0]['lesson']=='Prefer stable versioned APIs'

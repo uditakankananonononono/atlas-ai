@@ -7,6 +7,8 @@ from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
 from app.core.database import Base,SessionLocal,engine
 class DecisionRow(Base):
  __tablename__='m21_decisions';id:Mapped[int]=mapped_column(primary_key=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);decision:Mapped[str]=mapped_column(Text);reason:Mapped[str]=mapped_column(Text);context:Mapped[str]=mapped_column(Text);embedding:Mapped[list]=mapped_column(JSON,default=list);created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True),default=lambda:datetime.now(timezone.utc))
+class DecisionOutcomeRow(Base):
+ __tablename__='m21_decision_outcomes';id:Mapped[int]=mapped_column(primary_key=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);decision_id:Mapped[int]=mapped_column(Integer,index=True);outcome:Mapped[str]=mapped_column(Text);rating:Mapped[str]=mapped_column(String(20));lesson:Mapped[str]=mapped_column(Text);evidence:Mapped[dict]=mapped_column(JSON,default=dict);observed_at:Mapped[datetime]=mapped_column(DateTime(timezone=True),default=lambda:datetime.now(timezone.utc))
 class CorrectionRow(Base):
  __tablename__='m21_corrections';id:Mapped[int]=mapped_column(primary_key=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);original:Mapped[str]=mapped_column(Text);correction:Mapped[str]=mapped_column(Text);context:Mapped[str]=mapped_column(Text);embedding:Mapped[list]=mapped_column(JSON,default=list);created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True),default=lambda:datetime.now(timezone.utc))
 class ReasoningNoteRow(Base):
@@ -30,7 +32,25 @@ class PersonalizationRepository:
   with self.sessions() as db:
    rows=[*db.scalars(select(DecisionRow).where(DecisionRow.tenant_id==self.tenant_id)),*db.scalars(select(CorrectionRow).where(CorrectionRow.tenant_id==self.tenant_id)),*db.scalars(select(ReasoningNoteRow).where(ReasoningNoteRow.tenant_id==self.tenant_id))]
    rows=[r for r in rows if r.embedding];rows.sort(key=lambda r:cosine(query_vector,r.embedding),reverse=True)
-   return [{'kind':r.__tablename__,'id':r.id,'score':round(cosine(query_vector,r.embedding),4),'content':{k:v for k,v in vars(r).items() if not k.startswith('_') and k not in {'embedding','tenant_id'}}} for r in rows[:limit]]
+   result=[]
+   for r in rows[:limit]:
+    content={k:v for k,v in vars(r).items() if not k.startswith('_') and k not in {'embedding','tenant_id'}}
+    if isinstance(r,DecisionRow):
+     outcomes=list(db.scalars(select(DecisionOutcomeRow).where(DecisionOutcomeRow.tenant_id==self.tenant_id,DecisionOutcomeRow.decision_id==r.id).order_by(DecisionOutcomeRow.observed_at.desc())))
+     content['outcomes']=[{'outcome':x.outcome,'rating':x.rating,'lesson':x.lesson,'evidence':x.evidence,'observed_at':x.observed_at} for x in outcomes]
+    result.append({'kind':r.__tablename__,'id':r.id,'score':round(cosine(query_vector,r.embedding),4),'content':content})
+   return result
+ def add_decision_outcome(self,decision_id,data):
+  with self.sessions.begin() as db:
+   decision=db.get(DecisionRow,decision_id)
+   if decision is None or decision.tenant_id!=self.tenant_id:raise KeyError('decision not found')
+   row=DecisionOutcomeRow(tenant_id=self.tenant_id,decision_id=decision_id,**data);db.add(row);db.flush();return row.id
+ def decision_history(self,decision_id):
+  with self.sessions() as db:
+   decision=db.get(DecisionRow,decision_id)
+   if decision is None or decision.tenant_id!=self.tenant_id:raise KeyError('decision not found')
+   outcomes=list(db.scalars(select(DecisionOutcomeRow).where(DecisionOutcomeRow.tenant_id==self.tenant_id,DecisionOutcomeRow.decision_id==decision_id).order_by(DecisionOutcomeRow.observed_at)))
+   return {'decision':{'id':decision.id,'decision':decision.decision,'reason':decision.reason,'context':decision.context,'created_at':decision.created_at},'outcomes':[{'id':x.id,'outcome':x.outcome,'rating':x.rating,'lesson':x.lesson,'evidence':x.evidence,'observed_at':x.observed_at} for x in outcomes]}
  def set_telemetry_consent(self,enabled,scopes):
   now=datetime.now(timezone.utc)
   with self.sessions.begin() as db:
