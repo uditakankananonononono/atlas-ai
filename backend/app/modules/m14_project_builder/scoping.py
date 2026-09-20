@@ -9,6 +9,7 @@ refines inside these boundaries afterward.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Mapping, Optional, Sequence, Tuple
@@ -26,20 +27,31 @@ class ScopeError(ValueError):
 
 # Keyword -> project-kind evidence. First match group wins ties via _PRIORITY.
 _KIND_KEYWORDS: Mapping[str, Tuple[str, ...]] = {
+    "essay_project": (
+        "essay", "personal statement", "application essay", "college essay",
+        "sop", "statement of purpose", "writing piece",
+    ),
+    "competition_application": (
+        "competition", "scholarship", "contest", "hackathon", "olympiad",
+        "apply", "application", "program application", "summer program",
+    ),
     "research_project": (
         "research", "paper", "isef", "experiment", "study", "literature",
         "hypothesis", "science fair", "poster", "investigate",
     ),
     "coding_project": (
-        "app", "application", "build", "code", "software", "api", "website",
-        "tool", "platform", "cli", "library", "program",
+        "app", "build", "code", "software", "api", "website",
+        "tool", "platform", "cli", "library",
     ),
     "data_analysis": (
         "analyze", "analyse", "analysis", "dataset", "data", "model",
         "predict", "trends", "statistics", "visualize", "visualise",
     ),
 }
-_PRIORITY = ("research_project", "coding_project", "data_analysis")
+_PRIORITY = (
+    "research_project", "essay_project", "competition_application",
+    "coding_project", "data_analysis",
+)
 
 
 @dataclass(frozen=True)
@@ -60,7 +72,12 @@ def infer_project_kind(goal: str, brief_keywords: Sequence[str] = ()) -> KindInf
         text += " " + word.lower()
     scores: dict[str, list[str]] = {}
     for kind, keywords in _KIND_KEYWORDS.items():
-        hits = [kw for kw in keywords if kw in text]
+        # Word-boundary matching: "app" must not match inside "apply".
+        hits = [
+            kw
+            for kw in keywords
+            if re.search(r"\b" + re.escape(kw) + r"\b", text)
+        ]
         if hits:
             scores[kind] = hits
     if not scores:
@@ -126,6 +143,16 @@ class ScopeDocument:
 
 
 _DEFAULT_OUT_OF_SCOPE: Mapping[str, Tuple[str, ...]] = {
+    "essay_project": (
+        "submitting the essay anywhere without human review",
+        "fabricating experiences or achievements",
+        "exceeding the target word limit",
+    ),
+    "competition_application": (
+        "submitting any application without explicit human approval",
+        "paying application fees without budget approval",
+        "misrepresenting eligibility or accomplishments",
+    ),
     "research_project": (
         "human-subject experiments without ethics approval",
         "paid dataset purchases without budget approval",
@@ -144,6 +171,14 @@ _DEFAULT_OUT_OF_SCOPE: Mapping[str, Tuple[str, ...]] = {
 }
 
 _DEFAULT_ASSUMPTIONS: Mapping[str, Tuple[str, ...]] = {
+    "essay_project": (
+        "Source experiences and details come from the user",
+        "A target word limit or prompt is known before the final pass",
+    ),
+    "competition_application": (
+        "The user meets the stated eligibility criteria",
+        "Required materials (transcripts, essays, recommendations) are obtainable",
+    ),
     "research_project": (
         "Suitable public datasets exist and are licensed for research use",
         "Required literature is openly accessible",
@@ -159,6 +194,14 @@ _DEFAULT_ASSUMPTIONS: Mapping[str, Tuple[str, ...]] = {
 }
 
 _DEFAULT_RISKS: Mapping[str, Tuple[str, ...]] = {
+    "essay_project": (
+        "Early drafts may not capture the user's voice",
+        "Revision cycles can expand beyond the planned iterations",
+    ),
+    "competition_application": (
+        "External deadlines are fixed and immovable",
+        "Recommendation letters may arrive late",
+    ),
     "research_project": (
         "Experiment results may not support the hypothesis",
         "Timeline slips if dataset acquisition stalls",

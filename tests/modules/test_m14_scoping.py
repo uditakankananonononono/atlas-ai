@@ -182,3 +182,27 @@ class TestScopeMarkdown:
         text = render_scope_markdown(scope)
         assert "**Feasible:** NO" in text
         assert "## Feasibility issues" in text
+
+
+class TestNewKinds:
+    def test_essay_goal(self):
+        result = infer_project_kind("Write my college essay about my grandmother")
+        assert result.kind == "essay_project"
+
+    def test_competition_goal(self):
+        result = infer_project_kind("Apply to the national science olympiad")
+        assert result.kind == "competition_application"
+        assert "olympiad" in result.matched_keywords
+
+    @pytest.mark.parametrize("kind", ["essay_project", "competition_application"])
+    def test_new_kinds_scope_cleanly(self, kind):
+        scope = generate_scope("p1", "placeholder", kind=kind,
+                               start=START, created_at=START)
+        assert scope.feasibility.feasible
+        assert scope.out_of_scope and scope.assumptions and scope.risks
+        assert len(scope.in_scope) == 6
+
+    def test_competition_out_of_scope_gates_submission(self):
+        scope = generate_scope("p1", "Apply to the hackathon", start=START,
+                               created_at=START)
+        assert any("human approval" in item for item in scope.out_of_scope)

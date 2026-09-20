@@ -311,7 +311,8 @@ class TestAcceptance:
 class TestTemplates:
     def test_kinds_listed(self):
         kinds = list_template_kinds()
-        assert kinds == ("coding_project", "data_analysis", "research_project")
+        assert kinds == ("coding_project", "competition_application",
+                         "data_analysis", "essay_project", "research_project")
 
     def test_unknown_kind_raises(self):
         with pytest.raises(KeyError):
