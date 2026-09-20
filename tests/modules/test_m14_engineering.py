@@ -48,9 +48,27 @@ def project(service):
 
 # --- Row mapping: every row 510-534 maps to exactly one kind and back --------
 class TestRowMapping:
-    def test_fifty_rows_contiguous_510_to_559(self):
+    def test_rows_510_to_584_contiguous(self):
         rows = sorted(s.row for s in DESIGN_KINDS)
-        assert rows == list(range(510, 560))
+        assert rows == list(range(510, 585))
+
+    def test_rows_560_to_584_registered(self):
+        expected = {
+            560: "question_answering", 561: "information_extraction",
+            562: "named_entity_recognition", 563: "relation_extraction",
+            564: "sentiment_analysis", 565: "topic_modeling",
+            566: "text_classification", 567: "document_clustering",
+            568: "semantic_search", 569: "knowledge_graph",
+            570: "ontology_design", 571: "reasoning_engine",
+            572: "planning_system", 573: "scheduling_system",
+            574: "optimization_engine", 575: "simulation_engine",
+            576: "game_engine", 577: "physics_engine",
+            578: "rendering_engine", 579: "audio_engine",
+            580: "networking_stack", 581: "protocol_design",
+            582: "compression", 583: "error_correction",
+            584: "cryptographic_protocol",
+        }
+        assert {s.row: s.kind for s in DESIGN_KINDS if s.row >= 560} == expected
 
     def test_rows_535_to_559_registered(self):
         expected = {
@@ -65,7 +83,7 @@ class TestRowMapping:
             557: "speech_synthesis", 558: "machine_translation",
             559: "text_summarization",
         }
-        assert {s.row: s.kind for s in DESIGN_KINDS if s.row >= 535} == expected
+        assert {s.row: s.kind for s in DESIGN_KINDS if 535 <= s.row < 560} == expected
 
     @pytest.mark.parametrize("spec", DESIGN_KINDS, ids=lambda s: f"row-{s.row}")
     def test_row_roundtrip(self, spec):
