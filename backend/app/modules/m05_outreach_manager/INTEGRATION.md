@@ -77,3 +77,22 @@ Draft and proposal generation calls the shared BYOK `app.core.providers.generate
 - Requests carry caller-supplied evidence (`source` + `fact`); artifacts must
   cite at least one evidence item and every section's evidence keys are
   validated. Missing evidence or invalid inputs return 422.
+
+## Corporate review artifacts (feature rows 476-509)
+
+`corporate.py` adds 34 evidence-bound review-artifact builders mounted at
+`POST /outreach-manager/corporate/<slug>`, sharing the artifact model and
+invariants of the growth surface (evidence citation enforced, all external
+effects approval-gated, deterministic computation on supplied inputs).
+
+Finance- and legal-adjacent rows (compensation, equity, cap table, fundraising,
+valuation, term sheets, M&A, IPO) carry an explicit "planning aid only - not
+financial, legal, tax, or investment advice" scope check, and fundraising rows
+carry "no investor contact, solicitation, or send is performed by this module".
+Computed rows: stakeholder quadrants, span-of-control flags, SWOT pairings,
+PESTLE attention list, scenario grids, OKR scoring formula (plus a public
+`score_okr` for period-end review), KPI leading/lagging balance, pay mix,
+equity/cap-table percentages with over-authorization rejection, fundraising
+runway math, financial projection arithmetic, single-multiple valuation with
+caveats, diligence coverage %, term-sheet give-for-must trade plan, M&A implied
+multiple, IPO readiness scorecard.

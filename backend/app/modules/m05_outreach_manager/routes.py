@@ -742,13 +742,13 @@ def _coerce_value(hint, value):
     return value
 
 
-def _growth_view(builder_name: str):
+def _growth_view(builder_name: str, module=None):
     import inspect
     import typing
 
     from pydantic import ValidationError
 
-    builder = getattr(_growth, builder_name)
+    builder = getattr(module or _growth, builder_name)
     params = inspect.signature(builder).parameters
     hints = typing.get_type_hints(builder)
 
@@ -764,6 +764,8 @@ def _growth_view(builder_name: str):
             kwargs["goal"] = request.goal
         if builder_name == "plan_email_marketing":
             kwargs["contacts"] = _load_contacts(container, request.contact_ids)
+        if "title" not in params and "title" in kwargs:
+            del kwargs["title"]
         try:
             return builder(evidence=evidence, **kwargs)
         except GrowthPlanError as exc:
@@ -785,4 +787,55 @@ for _path, _builder_name, _model in _GROWTH_ENDPOINTS:
         methods=["POST"],
         response_model=_model,
         name=f"growth_{_builder_name}",
+    )
+
+
+# --- corporate review artifacts (feature rows 476-509) ----------------------------
+
+from . import corporate as _corporate
+
+_CORPORATE_ENDPOINTS: list[tuple[str, str, type]] = [
+    ("stakeholder-analysis", "analyze_stakeholders", BusinessArtifact),
+    ("communication-planning", "plan_communication", BusinessArtifact),
+    ("training-design", "design_training", BusinessArtifact),
+    ("organizational-design", "design_organization", BusinessArtifact),
+    ("span-of-control", "analyze_span_of_control", BusinessArtifact),
+    ("matrix-organization", "design_matrix_organization", BusinessArtifact),
+    ("team-topology", "design_team_topology", BusinessArtifact),
+    ("culture-design", "design_culture", BusinessArtifact),
+    ("values-definition", "define_values", BusinessArtifact),
+    ("mission-statement", "create_mission_statement", BusinessArtifact),
+    ("vision-statement", "create_vision_statement", BusinessArtifact),
+    ("strategy-development", "develop_strategy", BusinessArtifact),
+    ("swot-analysis", "analyze_swot", BusinessArtifact),
+    ("pestle-analysis", "analyze_pestle", BusinessArtifact),
+    ("scenario-planning", "plan_scenarios", BusinessArtifact),
+    ("strategic-planning", "plan_strategy", BusinessArtifact),
+    ("okr-setting", "set_okrs", BusinessArtifact),
+    ("kpi-selection", "select_kpis", BusinessArtifact),
+    ("balanced-scorecard", "build_balanced_scorecard", BusinessArtifact),
+    ("performance-management", "plan_performance_management", BusinessArtifact),
+    ("compensation-design", "design_compensation", BusinessArtifact),
+    ("equity-distribution", "plan_equity_distribution", BusinessArtifact),
+    ("cap-table", "manage_cap_table", BusinessArtifact),
+    ("fundraising-strategy", "plan_fundraising", BusinessArtifact),
+    ("pitch-deck", "create_pitch_deck", BusinessArtifact),
+    ("financial-model", "build_financial_model", BusinessArtifact),
+    ("valuation-analysis", "analyze_valuation", BusinessArtifact),
+    ("due-diligence", "prepare_due_diligence", BusinessArtifact),
+    ("term-sheet", "negotiate_term_sheet", BusinessArtifact),
+    ("investor-relations", "plan_investor_relations", BusinessArtifact),
+    ("board-management", "manage_board", BusinessArtifact),
+    ("exit-planning", "plan_exit", BusinessArtifact),
+    ("mna-analysis", "analyze_acquisition", BusinessArtifact),
+    ("ipo-preparation", "prepare_ipo", BusinessArtifact),
+]
+
+for _path, _builder_name, _model in _CORPORATE_ENDPOINTS:
+    router.add_api_route(
+        f"/corporate/{_path}",
+        _growth_view(_builder_name, module=_corporate),
+        methods=["POST"],
+        response_model=_model,
+        name=f"corporate_{_builder_name}",
     )
