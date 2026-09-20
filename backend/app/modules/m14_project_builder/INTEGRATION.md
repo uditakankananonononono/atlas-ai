@@ -1,0 +1,3 @@
+# Module 14 integration
+
+Replace the in-process project repository with the tenant-scoped SQL adapter at integration. Dispatch only approved plans through Celery. Register five specialist runners (literature, data, coder, analyst, writer) behind the same budget, timeout, provenance, and audit contracts. Generated code runs only in an approved, no-network sandbox. `Service.commit` supports GitPython versioning inside a project-specific working tree and never pushes a remote. Advancement pass: validated DAGs, measurable gates, bounded refinement budgets, artifact hashes/provenance, resumable task states and fail-closed approval proposals.

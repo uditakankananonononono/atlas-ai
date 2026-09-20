@@ -1,0 +1,6 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}\usepackage{graphicx}\usepackage{hyperref}
+\title{ {{ title }} }\author{ {{ author|default('Atlas AI') }} }
+\begin{document}\maketitle
+{% for section in sections %}\section{ {{ section.title }} } {{ section.body }} {% endfor %}
+\end{document}
