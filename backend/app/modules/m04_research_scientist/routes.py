@@ -11,6 +11,7 @@ from .schemas import (
     ProposedAnalysis,
     SurveillanceRequest,
     SurveillanceResponse,
+    SurveillanceIngestRequest, GapEvidenceOut,
 )
 from .service import Service
 
@@ -44,3 +45,20 @@ def propose_analysis(request: AnalysisProposalRequest, tenant: TenantContext = D
         return proposal.model_copy(update={"approval_id": approval["id"], "status": "pending"})
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.post("/surveillance/ingest")
+async def ingest_surveillance(request:SurveillanceIngestRequest,tenant:TenantContext=Depends(require_tenant)):
+    from app.core.embeddings import get_embedding_provider
+    from .surveillance import SurveillancePipeline,SurveillanceRepository
+    return await SurveillancePipeline(SurveillanceRepository(tenant.tenant_id),get_embedding_provider(request.embedding_provider)).ingest(request.papers)
+
+@router.get("/surveillance/clusters")
+def surveillance_clusters(threshold:float=.72,tenant:TenantContext=Depends(require_tenant)):
+    from .surveillance import SurveillancePipeline,SurveillanceRepository
+    return {"clusters":SurveillancePipeline(SurveillanceRepository(tenant.tenant_id),None).clusters(threshold)}
+
+@router.get("/surveillance/gaps",response_model=list[GapEvidenceOut])
+def surveillance_gaps(tenant:TenantContext=Depends(require_tenant)):
+    from .surveillance import SurveillancePipeline,SurveillanceRepository
+    return [GapEvidenceOut(**x.__dict__) for x in SurveillancePipeline(SurveillanceRepository(tenant.tenant_id),None).gaps()]

@@ -75,3 +75,11 @@ class ProposedAnalysis(BaseModel):
     requires_approval: Literal[True] = True
     status: Literal["proposed", "pending"] = "proposed"
     approval_id: str | None = None
+
+
+class SurveillanceIngestRequest(BaseModel):
+    papers:list[PaperInput]=Field(min_length=1,max_length=1000)
+    embedding_provider:Literal["openai","ollama","local","bge"]="openai"
+
+class GapEvidenceOut(BaseModel):
+    left_paper_id:str;right_paper_id:str;similarity:float;shared_keywords:list[str];gap:str
