@@ -44,3 +44,16 @@ def activity_plan(x:ActivityPlannerIn,s:AdvisingService=Depends(advising_service
 def passion_projects(x:PassionProjectIn,s:AdvisingService=Depends(advising_service)):return s.passion_projects(x.profile,x.constraints,x.ideas)
 @router.get('/advising-history')
 def advising_history(kind:str|None=None,s:AdvisingService=Depends(advising_service)):return s.history(kind)
+
+from .essay_tools import EssayToolService
+essay_tools=EssayToolService()
+@router.post('/essay-tools/topics')
+def essay_topics(x:TopicFinderIn):return essay_tools.topic_finder(x.prompt,x.evidence)
+@router.post('/essay-tools/outline')
+def essay_outline(x:OutlineCoachIn):return essay_tools.outline(x.prompt,x.student_thesis,x.evidence)
+@router.post('/essay-tools/hook')
+def essay_hook(x:HookCoachIn):return essay_tools.hook_coach(x.student_hook,x.evidence)
+@router.post('/essay-tools/conclusion')
+def essay_conclusion(x:ConclusionCoachIn):return essay_tools.conclusion_coach(x.student_conclusion,x.thesis)
+@router.post('/essay-tools/clarity')
+def essay_clarity(x:ClarityReviewIn):return essay_tools.clarity_review(x.draft)

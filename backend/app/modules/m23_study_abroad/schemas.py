@@ -14,3 +14,8 @@ class MajorMentorIn(BaseModel):profile:dict;majors:list[dict]=Field(min_length=1
 class SchoolMatchIn(BaseModel):profile:dict;schools:list[dict]=Field(min_length=1,max_length=500)
 class ActivityPlannerIn(BaseModel):profile:dict;activities:list[dict]=Field(min_length=1,max_length=200);weekly_hours:float=Field(gt=0,le=168)
 class PassionProjectIn(BaseModel):profile:dict;constraints:dict=Field(default_factory=dict);ideas:list[dict]=Field(min_length=1,max_length=200)
+class TopicFinderIn(BaseModel):prompt:str=Field(min_length=5,max_length=5000);evidence:list[dict]=Field(min_length=1,max_length=100)
+class OutlineCoachIn(BaseModel):prompt:str=Field(min_length=5,max_length=5000);student_thesis:str=Field(min_length=5,max_length=5000);evidence:list[dict]=Field(min_length=1,max_length=100)
+class HookCoachIn(BaseModel):student_hook:str=Field(min_length=5,max_length=5000);evidence:list[str]=Field(min_length=1,max_length=100)
+class ConclusionCoachIn(BaseModel):student_conclusion:str=Field(min_length=5,max_length=10000);thesis:str=Field(min_length=5,max_length=5000)
+class ClarityReviewIn(BaseModel):draft:str=Field(min_length=20,max_length=100000)

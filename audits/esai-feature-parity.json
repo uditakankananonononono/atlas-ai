@@ -107,7 +107,11 @@
     {
       "id": 15,
       "feature": "Personal Statement Topic Finder",
-      "status": "missing"
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/essay_tools.py",
+        "test": "tests/modules/test_m23_essay_tools.py"
+      }
     },
     {
       "id": 16,
@@ -117,22 +121,38 @@
     {
       "id": 17,
       "feature": "Outline Assistant",
-      "status": "thin"
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/essay_tools.py",
+        "test": "tests/modules/test_m23_essay_tools.py"
+      }
     },
     {
       "id": 18,
       "feature": "Hook Helper",
-      "status": "missing"
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/essay_tools.py",
+        "test": "tests/modules/test_m23_essay_tools.py"
+      }
     },
     {
       "id": 19,
       "feature": "Conclusion Coach",
-      "status": "missing"
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/essay_tools.py",
+        "test": "tests/modules/test_m23_essay_tools.py"
+      }
     },
     {
       "id": 20,
       "feature": "Essay Draft Editor for clarity/tone",
-      "status": "thin"
+      "status": "verified-pushed",
+      "evidence": {
+        "implementation": "backend/app/modules/m23_study_abroad/essay_tools.py",
+        "test": "tests/modules/test_m23_essay_tools.py"
+      }
     },
     {
       "id": 21,
