@@ -4,7 +4,7 @@ from __future__ import annotations
 import math
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from enum import Enum
 from statistics import median
 from typing import Iterable
@@ -34,7 +34,7 @@ class GrowthInitiative:
     owner: str | None = None
     status: InitiativeStatus = InitiativeStatus.BACKLOG
     dependencies: tuple[str, ...] = ()
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     def __post_init__(self) -> None:
         if not self.id or not self.title.strip():
