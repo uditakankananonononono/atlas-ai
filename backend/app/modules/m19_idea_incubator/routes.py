@@ -61,3 +61,7 @@ def update_experiment(idea_id:str,experiment_id:str,data:ExperimentUpdate,servic
 def decision(idea_id:str,data:DecisionCreate,service:LedgerService=Depends(get_ledger)):
  try:return service.decide(idea_id,data)
  except (LookupError,ConflictError,ValidationError) as e:raise _error(e) from e
+
+# Feature rows 360-399 are mounted as a sub-router so the global module prefix stays stable.
+from .business_router import router as business_router
+router.include_router(business_router)
