@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "topics": ["computational biology", "AI agents", "illustration", "college applications", "entrepreneurship"],
+  "sources": [
+    {"adapter":"arxiv","enabled":true,"cost":"free"},
+    {"adapter":"biorxiv_medrxiv","server":"biorxiv","enabled":true,"cost":"free"},
+    {"adapter":"biorxiv_medrxiv","server":"medrxiv","enabled":true,"cost":"free"},
+    {"adapter":"pubmed","enabled":true,"cost":"free","optional_key_env":"NCBI_API_KEY"},
+    {"adapter":"semantic_scholar","enabled":true,"cost":"free","optional_key_env":"SEMANTIC_SCHOLAR_API_KEY"},
+    {"adapter":"hacker_news","enabled":true,"cost":"free"},
+    {"adapter":"product_hunt","enabled":true,"cost":"free"},
+    {"adapter":"rss_atom","enabled":true,"feeds":[]}
+  ],
+  "rule":"Public feeds/APIs only. Topic tags and original source provenance are retained."
+}

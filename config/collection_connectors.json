@@ -17,6 +17,15 @@
       "restriction": "public search results only; staging and owner review before tracking"
     },
     {
+      "key": "research-news-venture-free",
+      "adapter": "registry_group",
+      "type": "official_api_and_feeds",
+      "enabled": true,
+      "registry": "config/research_news_sources.json",
+      "cost": "free",
+      "restriction": "public APIs/feeds only"
+    },
+    {
       "key": "scholarship-public-sites",
       "adapter": "public_scholarship_sites",
       "type": "public_page",

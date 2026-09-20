@@ -1,12 +1,20 @@
 """Config-selectable collector registry. Registry names are explicit allow-lists."""
 from .discovery import InterestWebDiscoveryCollector
 from .channels import DiscordBotCollector, GmailNewsletterCollector
+from .research_news import ArxivCollector, BioMedRxivCollector, PubMedCollector, SemanticScholarCollector, FeedCollector, HackerNewsCollector, ProductHuntCollector
 from .linkedin import PublicLinkedInCollector
 from .contacts import ApolloPeopleCollector, HunterDomainCollector
 from .scholarships import ScholarshipSiteCollector
 from .social import ApifyInstagramCollector, BrightDataInstagramCollector, PublicInstagramCollector, PublicPinterestCollector, PinterestApiCollector, XApiCollector, YouTubeDataCollector
 
 COLLECTORS = {
+    "arxiv": ArxivCollector,
+    "biorxiv_medrxiv": BioMedRxivCollector,
+    "pubmed": PubMedCollector,
+    "semantic_scholar": SemanticScholarCollector,
+    "rss_atom": FeedCollector,
+    "hacker_news": HackerNewsCollector,
+    "product_hunt": ProductHuntCollector,
     "interest_web_discovery": InterestWebDiscoveryCollector,
     "public_scholarship_sites": ScholarshipSiteCollector,
     "public_linkedin": PublicLinkedInCollector,
