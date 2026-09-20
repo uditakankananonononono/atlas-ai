@@ -23,3 +23,23 @@ def test_behavioral_telemetry_is_owner_opt_in_and_scope_limited(tmp_path):
  with pytest.raises(PermissionError):a.log_telemetry('draft_edit_time',{'seconds':9})
  a.set_telemetry_consent(False,[])
  with pytest.raises(PermissionError):a.log_telemetry('link_click',{'url':'x'})
+
+def test_voice_lora_requires_real_owner_samples_and_is_approval_gated():
+ from app.core.approvals import ApprovalStore
+ from app.modules.m21_claire.training import TrainingService
+ a=ApprovalStore();s=TrainingService(a)
+ with pytest.raises(ValueError):s.voice_dataset(['short']*49)
+ dataset=s.voice_dataset([f'Owner writing sample {i} with real content.' for i in range(50)])
+ p=s.propose_training(dataset,'llama3.1:8b','lora')
+ assert p['status']=='pending' and p['payload']['example_count']==50 and p['payload']['publishing'] is False
+ assert a.list()[0].action_type=='train_personalization_model'
+
+def test_preference_dataset_needs_complete_real_rankings_and_minimum_signal():
+ from app.core.approvals import ApprovalStore
+ from app.modules.m21_claire.training import TrainingService
+ s=TrainingService(ApprovalStore())
+ with pytest.raises(ValueError):s.preference_dataset([{'options':['a','b'],'ranking':['a']}]*20)
+ with pytest.raises(ValueError):s.preference_dataset([{'options':['a','b'],'ranking':['a','b']}]*19)
+ d=s.preference_dataset([{'context':f'c{i}','options':['a','b'],'ranking':['b','a']} for i in range(20)])
+ assert d.kind=='preference' and all(x['provenance']=='owner_ranked' for x in d.examples)
+ assert s.propose_training(d,'local-ranking-model','pairwise')['status']=='pending'
