@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "target_count": 200,
+  "sources": [
+    "opportunitydesk.org",
+    "opportunitiesforyouth.org",
+    "bold.org",
+    "unigo.com",
+    "fastweb.com",
+    "joinsucceed.com",
+    "scholarships360.org",
+    "scholarships.com",
+    "hackclub.com",
+    "kaggle.com",
+    "devpost.com",
+    "challengerocket.com",
+    "raiseme.com",
+    "girls-on-campus.org",
+    "societyforscience.org",
+    "cokescholarsfoundation.org",
+    "questbridge.org",
+    "possefoundation.org",
+    "theuniversitynetwork.com"
+  ],
+  "missing_count": 181,
+  "rule": "Only verified official/permitted sources may fill missing slots."
+}
