@@ -9,7 +9,7 @@ class Module:
 
 MODULES = [
     Module(0, "approval-center", "Human Approval Center", "implemented"),
-    Module(1, "opportunity-discovery", "Opportunity Discovery Engine"),
+    Module(1, "opportunity-discovery", "Opportunity Discovery Engine", "implemented"),
     Module(2, "competition-manager", "Competition Manager", "implemented"),
     Module(3, "grant-writer", "Grant & Fellowship Writer", "implemented"),
     Module(4, "research-scientist", "Research Scientist", "implemented"),
