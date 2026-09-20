@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
+  "audited_head": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
   "counts": {
-    "verified-pushed": 333,
+    "verified-pushed": 372,
     "thin": 3,
-    "missing": 1674
+    "missing": 1635
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -9786,8 +9786,14 @@
       "category": "Social & Communication",
       "requirement": "Trust Building",
       "description": "Creates confidence",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9796,8 +9802,14 @@
       "category": "Social & Communication",
       "requirement": "Psychological Safety",
       "description": "Enables risk-taking",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9806,8 +9818,14 @@
       "category": "Social & Communication",
       "requirement": "Inclusion",
       "description": "Includes all",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9816,8 +9834,14 @@
       "category": "Social & Communication",
       "requirement": "Diversity",
       "description": "Values differences",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9826,8 +9850,14 @@
       "category": "Social & Communication",
       "requirement": "Equity",
       "description": "Ensures fairness",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9836,8 +9866,14 @@
       "category": "Social & Communication",
       "requirement": "Justice",
       "description": "Upholds rights",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9846,8 +9882,14 @@
       "category": "Social & Communication",
       "requirement": "Ethics",
       "description": "Does right",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9856,8 +9898,14 @@
       "category": "Social & Communication",
       "requirement": "Integrity",
       "description": "Acts consistently",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9866,8 +9914,14 @@
       "category": "Social & Communication",
       "requirement": "Honesty",
       "description": "Tells truth",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9876,8 +9930,14 @@
       "category": "Social & Communication",
       "requirement": "Transparency",
       "description": "Shares openly",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9886,8 +9946,14 @@
       "category": "Social & Communication",
       "requirement": "Accountability",
       "description": "Takes responsibility",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9896,8 +9962,14 @@
       "category": "Social & Communication",
       "requirement": "Reliability",
       "description": "Keeps promises",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9906,8 +9978,14 @@
       "category": "Social & Communication",
       "requirement": "Dependability",
       "description": "Can be counted on",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9916,8 +9994,14 @@
       "category": "Social & Communication",
       "requirement": "Consistency",
       "description": "Acts predictably",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9926,8 +10010,14 @@
       "category": "Social & Communication",
       "requirement": "Patience",
       "description": "Tolerates delay",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9936,8 +10026,14 @@
       "category": "Social & Communication",
       "requirement": "Tolerance",
       "description": "Accepts differences",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9946,8 +10042,14 @@
       "category": "Social & Communication",
       "requirement": "Forgiveness",
       "description": "Releases resentment",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9956,8 +10058,14 @@
       "category": "Social & Communication",
       "requirement": "Gratitude",
       "description": "Appreciates",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9966,8 +10074,14 @@
       "category": "Social & Communication",
       "requirement": "Humility",
       "description": "Acknowledges limits",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9976,8 +10090,14 @@
       "category": "Social & Communication",
       "requirement": "Curiosity",
       "description": "Seeks knowledge",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9986,8 +10106,14 @@
       "category": "Social & Communication",
       "requirement": "Open-mindedness",
       "description": "Considers alternatives",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -9996,8 +10122,14 @@
       "category": "Social & Communication",
       "requirement": "Intellectual Humility",
       "description": "Knows what doesn't know",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10006,8 +10138,14 @@
       "category": "Social & Communication",
       "requirement": "Wisdom",
       "description": "Applies knowledge well",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10016,8 +10154,14 @@
       "category": "Social & Communication",
       "requirement": "Prudence",
       "description": "Acts carefully",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10026,8 +10170,14 @@
       "category": "Social & Communication",
       "requirement": "Temperance",
       "description": "Moderates desires",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10036,8 +10186,14 @@
       "category": "Social & Communication",
       "requirement": "Courage",
       "description": "Faces fear",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10046,8 +10202,14 @@
       "category": "Social & Communication",
       "requirement": "Resilience",
       "description": "Recovers from setbacks",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10056,8 +10218,14 @@
       "category": "Social & Communication",
       "requirement": "Grit",
       "description": "Persists long-term",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10066,8 +10234,14 @@
       "category": "Social & Communication",
       "requirement": "Self-Control",
       "description": "Manages impulses",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10076,8 +10250,14 @@
       "category": "Social & Communication",
       "requirement": "Delayed Gratification",
       "description": "Waits for reward",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10086,8 +10266,14 @@
       "category": "Social & Communication",
       "requirement": "Impulse Control",
       "description": "Resists temptation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10096,8 +10282,14 @@
       "category": "Social & Communication",
       "requirement": "Emotional Regulation",
       "description": "Manages feelings",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10106,8 +10298,14 @@
       "category": "Social & Communication",
       "requirement": "Stress Management",
       "description": "Handles pressure",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10116,8 +10314,14 @@
       "category": "Social & Communication",
       "requirement": "Coping Strategies",
       "description": "Deals with challenges",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10126,8 +10330,14 @@
       "category": "Social & Communication",
       "requirement": "Mindfulness",
       "description": "Present awareness",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10136,8 +10346,14 @@
       "category": "Social & Communication",
       "requirement": "Meditation",
       "description": "Trains attention",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10146,8 +10362,14 @@
       "category": "Social & Communication",
       "requirement": "Relaxation",
       "description": "Reduces tension",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10156,8 +10378,14 @@
       "category": "Social & Communication",
       "requirement": "Sleep Hygiene",
       "description": "Promotes rest",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -10166,8 +10394,14 @@
       "category": "Social & Communication",
       "requirement": "Exercise",
       "description": "Maintains health",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e9e6dc68d1e35a99ca2a1fa07ef9493908273cd8",
+        "implementation_path": "backend/app/modules/m17_advice_essay/trust_wellbeing_coaching.py",
+        "test_path": "tests/modules/test_m17_rows_771_809.py",
+        "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_771_809.md",
+        "caveats": "No diagnosis, treatment, crisis assessment, therapy, tracking, outcome promises, or scoring of trust/wellbeing. Every response includes crisis/clinician escalation boundaries."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
