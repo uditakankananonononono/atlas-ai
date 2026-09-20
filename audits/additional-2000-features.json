@@ -4,9 +4,9 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 481,
-    "thin": 3,
-    "missing": 1526
+    "missing": 1522,
+    "verified-pushed": 485,
+    "thin": 3
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -13280,8 +13280,12 @@
       "category": "Data & Analytics",
       "requirement": "Kalman Filters",
       "description": "Linear state estimation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "85cd8a8a621440234f51180ce98b31a4e02f56c8",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1035_1038.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13290,8 +13294,12 @@
       "category": "Data & Analytics",
       "requirement": "Extended Kalman Filters",
       "description": "Nonlinear estimation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "85cd8a8a621440234f51180ce98b31a4e02f56c8",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1035_1038.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13300,8 +13308,12 @@
       "category": "Data & Analytics",
       "requirement": "Unscented Kalman Filters",
       "description": "Better nonlinear estimation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "85cd8a8a621440234f51180ce98b31a4e02f56c8",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1035_1038.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13310,8 +13322,12 @@
       "category": "Data & Analytics",
       "requirement": "Hidden Markov Models",
       "description": "Latent state sequences",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "85cd8a8a621440234f51180ce98b31a4e02f56c8",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1035_1038.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
