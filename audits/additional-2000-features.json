@@ -2,11 +2,11 @@
   "schema_version": 4,
   "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
-  "audited_head": "a60ae5e156a516d17a053b5db95a44422059e6bf",
+  "audited_head": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
   "counts": {
-    "verified-pushed": 102,
+    "verified-pushed": 129,
     "thin": 3,
-    "missing": 1905
+    "missing": 1878
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -4518,8 +4518,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Sample Size Calculation",
       "description": "Ensures adequate power",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4528,8 +4534,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Segmentation Analysis",
       "description": "Divides markets",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4538,8 +4550,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Targeting Strategy",
       "description": "Selects segments",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4548,8 +4566,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Positioning Strategy",
       "description": "Claims mental space",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4558,8 +4582,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Brand Architecture",
       "description": "Organizes brand portfolio",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4568,8 +4598,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Brand Voice Development",
       "description": "Creates consistent tone",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4578,8 +4614,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Messaging Framework",
       "description": "Structures key messages",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4588,8 +4630,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Copywriting",
       "description": "Writes persuasive text",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4598,8 +4646,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Content Strategy",
       "description": "Plans content creation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4608,8 +4662,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Editorial Calendar",
       "description": "Schedules publications",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4618,8 +4678,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "SEO Optimization",
       "description": "Improves search visibility",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4628,8 +4694,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Keyword Research",
       "description": "Finds search terms",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4638,8 +4710,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Link Building",
       "description": "Earns backlinks",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4648,8 +4726,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Technical SEO",
       "description": "Optimizes site structure",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4658,8 +4742,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Local SEO",
       "description": "Optimizes for location",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4668,8 +4758,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Content Marketing",
       "description": "Creates valuable content",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4678,8 +4774,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Thought Leadership",
       "description": "Establishes expertise",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4688,8 +4790,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Public Relations",
       "description": "Manages reputation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4698,8 +4806,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Media Relations",
       "description": "Builds press relationships",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4708,8 +4822,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Crisis Communication",
       "description": "Handles emergencies",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4718,8 +4838,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Social Media Strategy",
       "description": "Plans social presence",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4728,8 +4854,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Community Management",
       "description": "Nurtures online communities",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4738,8 +4870,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Influencer Marketing",
       "description": "Leverages creators",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4748,8 +4886,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Affiliate Marketing",
       "description": "Partners for performance",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4758,8 +4902,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Referral Programs",
       "description": "Incentivizes sharing",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4768,8 +4918,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Email Marketing",
       "description": "Nurtures leads",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -4778,8 +4934,14 @@
       "category": "Business & Entrepreneurship",
       "requirement": "Marketing Automation",
       "description": "Scales personalization",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "48dcef89b3c0516bfa58e5c19920b991e74f1a5b",
+        "implementation_path": "backend/app/modules/m06_social_media_manager/marketing.py",
+        "test_path": "tests/modules/test_m06_marketing.py",
+        "evidence_path": "backend/app/modules/m06_social_media_manager/ROW_EVIDENCE.md",
+        "caveats": "Review-only draft artifacts. Quality depends on configured BYOK model; SEO uses caller facts only and does not crawl; email and automation never send."
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
