@@ -21,3 +21,9 @@ def test_verified_rows_have_real_code_commit_and_test_evidence():
 
 def test_all_product_modules_are_live_registered():
     assert {spec.id for spec in IMPLEMENTED_SPECS} == set(range(24))
+
+
+def test_narrative_checkpoint_counts_match_machine_ledger():
+    from collections import Counter
+    counts=Counter(row["status"] for row in AUDIT["rows"])
+    assert counts == {"verified-pushed":27,"thin":84,"missing":29}
