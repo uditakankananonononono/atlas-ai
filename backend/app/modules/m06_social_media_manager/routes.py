@@ -28,12 +28,14 @@ from .scheduler import (
     ScheduleStateError,
 )
 from .models import Platform
+from .creative import CREATIVE_SPECS
 from .marketing import ARTIFACT_SPECS, ArtifactParseError, MarketingArtifact
 from .schemas import (
     ArtifactIn,
     ArtifactOut,
     BestTimeOut,
     CopywritingIn,
+    CreativeSpecIn,
     CopywritingOut,
     EditorialCalendarIn,
     SampleSizeIn,
@@ -330,6 +332,43 @@ async def marketing_editorial_calendar(request: EditorialCalendarIn, service: Se
 def list_marketing_artifacts(kind: str | None = None, service: Service = Depends(get_service)) -> object:
     """List stored draft artifacts, optionally filtered by kind."""
     return [_artifact_out(a) for a in service.marketing.list_artifacts(kind)]
+
+
+# -- rows 281-305: creative specifications (review-only, never rendered) -----
+
+
+async def _run_creative(slug: str, request: CreativeSpecIn, service: Service) -> dict:
+    try:
+        artifact = await service.creative.generate(
+            slug,
+            business=request.business,
+            subject=request.subject,
+            goals=request.goals,
+            facts=request.facts,
+            constraints=request.constraints,
+        )
+        return _artifact_out(artifact)
+    except ArtifactParseError as error:
+        raise HTTPException(status_code=502, detail=str(error)) from error
+    except ProviderError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
+
+
+def _register_creative_route(slug: str) -> None:
+    """Mount POST /creative/<slug> for one registry row (281-305)."""
+
+    async def handler(request: CreativeSpecIn, service: Service = Depends(get_service)) -> object:
+        return await _run_creative(slug, request, service)
+
+    handler.__name__ = f"creative_{slug.replace('-', '_')}"
+    router.add_api_route(
+        f"/creative/{slug}", handler, methods=["POST"],
+        response_model=ArtifactOut, name=handler.__name__,
+    )
+
+
+for _slug in CREATIVE_SPECS:
+    _register_creative_route(_slug)
 
 
 # -- scheduler (approval-verified execution gate) -------------------------------

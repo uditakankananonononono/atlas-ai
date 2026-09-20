@@ -259,3 +259,16 @@ class ArtifactOut(BaseModel):
 class CopywritingOut(BaseModel):
     artifact: ArtifactOut
     findings: list[ComplianceIssueOut]
+
+
+# -- rows 281-305: creative specifications ------------------------------------
+
+
+class CreativeSpecIn(BaseModel):
+    """Typed input for rows 281-305 (LLM-backed draft specifications)."""
+
+    business: str = Field(min_length=2, max_length=500)
+    subject: str = Field(min_length=3, max_length=2000)
+    goals: list[str] = Field(default_factory=list, max_length=20)
+    facts: dict[str, Any] = Field(default_factory=dict)
+    constraints: list[str] = Field(default_factory=list, max_length=50)

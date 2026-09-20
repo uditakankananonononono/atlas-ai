@@ -251,6 +251,7 @@ class Service:
         self._model = model
         self._repository = repository or MemorySocialRepository()
         self._scheduler = scheduler
+        self._creative = None
         from .marketing import MarketingEngine
 
         self._marketing = MarketingEngine(
@@ -262,6 +263,18 @@ class Service:
     def marketing(self):
         """The rows-400-426 marketing engine (draft/review-first)."""
         return self._marketing
+
+    @property
+    def creative(self):
+        """The rows-281-305 creative-spec engine (renders nothing)."""
+        if self._creative is None:
+            from .creative import CreativeEngine
+
+            self._creative = CreativeEngine(
+                repository=self._repository, generate=self._generate,
+                provider=self._provider, model=self._model,
+            )
+        return self._creative
 
     # -- content generation pipeline -------------------------------------
 
