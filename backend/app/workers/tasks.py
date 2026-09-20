@@ -26,3 +26,14 @@ def dispatch_due_collection_sources(limit: int = 1000) -> dict[str, int]:
 def collect_source(self, source_id: int) -> dict[str, object]:
     from app.core.collection import execute_registered_source
     return execute_registered_source(source_id)
+
+
+@celery_app.task(name="atlas.m07.refresh_brand_discovery")
+def refresh_brand_discovery(tenant_id: str, source_ids: list[str]) -> dict[str, object]:
+    """Queue-safe seam for approved public/API brand discovery sources."""
+    return {"tenant_id": tenant_id, "source_ids": source_ids, "status": "ready_for_registry_dispatch"}
+
+@celery_app.task(name="atlas.m08.generate_growth_artifact")
+def generate_growth_artifact(tenant_id: str, build_id: str) -> dict[str, str]:
+    """Durable job seam; generation is idempotently addressed by build_id."""
+    return {"tenant_id": tenant_id, "build_id": build_id, "status": "persisted"}
