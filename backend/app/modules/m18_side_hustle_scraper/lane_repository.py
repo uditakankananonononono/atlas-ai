@@ -14,6 +14,7 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 from typing import Any, Iterable, Optional, Protocol
 
+from .lane_freshness import SourceStatus, WatchedSource
 from .lane_models import RawDocument, RightsClass, SourceKind, utcnow
 from .lane_validation import ValidationReport
 
@@ -88,6 +89,23 @@ CREATE TABLE IF NOT EXISTS events (
     occurred_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_events_tenant_kind ON events (tenant_id, kind);
+CREATE TABLE IF NOT EXISTS freshness_state (
+    tenant_id TEXT NOT NULL,
+    url TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    interval_seconds REAL NOT NULL,
+    last_checked_at TEXT,
+    last_changed_at TEXT,
+    etag TEXT,
+    last_modified TEXT,
+    content_hash TEXT,
+    consecutive_unchanged INTEGER NOT NULL DEFAULT 0,
+    consecutive_errors INTEGER NOT NULL DEFAULT 0,
+    total_checks INTEGER NOT NULL DEFAULT 0,
+    total_changes INTEGER NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'alive',
+    PRIMARY KEY (tenant_id, url)
+);
 """
 
 
@@ -202,6 +220,63 @@ class SQLiteDocumentRepository:
         with self._lock:
             row = self._db.execute("SELECT COUNT(*) AS c FROM documents WHERE tenant_id=?", (tenant_id,)).fetchone()
         return int(row["c"])
+
+    # --- FreshnessStore protocol -------------------------------------
+
+    def upsert_watched(self, source: WatchedSource) -> None:
+        with self._lock, self._db:
+            self._db.execute(
+                """INSERT INTO freshness_state
+                   (tenant_id, url, kind, interval_seconds, last_checked_at, last_changed_at,
+                    etag, last_modified, content_hash, consecutive_unchanged, consecutive_errors,
+                    total_checks, total_changes, status)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                   ON CONFLICT (tenant_id, url) DO UPDATE SET
+                    kind=excluded.kind, interval_seconds=excluded.interval_seconds,
+                    last_checked_at=excluded.last_checked_at, last_changed_at=excluded.last_changed_at,
+                    etag=excluded.etag, last_modified=excluded.last_modified,
+                    content_hash=excluded.content_hash,
+                    consecutive_unchanged=excluded.consecutive_unchanged,
+                    consecutive_errors=excluded.consecutive_errors,
+                    total_checks=excluded.total_checks, total_changes=excluded.total_changes,
+                    status=excluded.status""",
+                (
+                    source.tenant_id, source.url, source.kind.value, source.interval_seconds,
+                    _dt(source.last_checked_at), _dt(source.last_changed_at), source.etag,
+                    source.last_modified, source.content_hash, source.consecutive_unchanged,
+                    source.consecutive_errors, source.total_checks, source.total_changes,
+                    source.status.value,
+                ),
+            )
+
+    def get_watched(self, tenant_id: str, url: str) -> Optional[WatchedSource]:
+        with self._lock:
+            row = self._db.execute(
+                "SELECT * FROM freshness_state WHERE tenant_id=? AND url=?", (tenant_id, url)
+            ).fetchone()
+        return self._row_to_watched(row) if row else None
+
+    def iter_watched(self, tenant_id: str) -> list[WatchedSource]:
+        with self._lock:
+            rows = self._db.execute(
+                "SELECT * FROM freshness_state WHERE tenant_id=? ORDER BY url", (tenant_id,)
+            ).fetchall()
+        return [self._row_to_watched(r) for r in rows]
+
+    @staticmethod
+    def _row_to_watched(row: sqlite3.Row) -> WatchedSource:
+        return WatchedSource(
+            tenant_id=row["tenant_id"], url=row["url"], kind=SourceKind(row["kind"]),
+            interval_seconds=row["interval_seconds"],
+            last_checked_at=_parse(row["last_checked_at"]),
+            last_changed_at=_parse(row["last_changed_at"]),
+            etag=row["etag"], last_modified=row["last_modified"],
+            content_hash=row["content_hash"],
+            consecutive_unchanged=row["consecutive_unchanged"],
+            consecutive_errors=row["consecutive_errors"],
+            total_checks=row["total_checks"], total_changes=row["total_changes"],
+            status=SourceStatus(row["status"]),
+        )
 
     @staticmethod
     def _row_to_doc(row: sqlite3.Row) -> RawDocument:
