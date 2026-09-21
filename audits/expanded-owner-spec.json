@@ -2,9 +2,9 @@
   "schema_version": 1,
   "source": "User owner-channel expanded M1-M4, Tools and Claire specification, September 20 2026",
   "counts": {
-    "verified-pushed": 116,
+    "verified-pushed": 114,
     "thin": 0,
-    "missing": 213
+    "missing": 215
   },
   "rows": [
     {
@@ -1556,13 +1556,9 @@
       "module": "M1",
       "requirement": "10,000+ keyword registry",
       "description": "10,000+ keyword registry",
-      "status": "verified-pushed",
-      "evidence": {
-        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
-        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
-        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
-      },
-      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
+      "status": "missing",
+      "evidence": null,
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects. Literal scale target remains visible but unverified until load/capacity evidence proves it.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1572,13 +1568,9 @@
       "module": "M1",
       "requirement": "500,000 accounts per platform target",
       "description": "500,000 accounts per platform target",
-      "status": "verified-pushed",
-      "evidence": {
-        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
-        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
-        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
-      },
-      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
+      "status": "missing",
+      "evidence": null,
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects. Literal scale target remains visible but unverified until load/capacity evidence proves it.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
