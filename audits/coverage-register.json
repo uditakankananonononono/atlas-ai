@@ -11827,11 +11827,11 @@
       "description": "Solves problems exponentially faster",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_910",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 911,
@@ -11840,11 +11840,11 @@
       "description": "Creates quantum solutions",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_911",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 912,
@@ -11853,11 +11853,11 @@
       "description": "Handles decoherence",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_912",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 913,
@@ -11866,11 +11866,11 @@
       "description": "Combines quantum and ML",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_913",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 914,
@@ -11879,11 +11879,11 @@
       "description": "Models quantum systems",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_914",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 915,
@@ -11892,11 +11892,11 @@
       "description": "Unbreakable encryption",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_915",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 916,
@@ -11905,11 +11905,11 @@
       "description": "Ultra-precise measurement",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_916",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 917,
@@ -11918,11 +11918,11 @@
       "description": "Entanglement distribution",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_917",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 918,
@@ -11931,11 +11931,11 @@
       "description": "Brain-inspired hardware",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_918",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 919,
@@ -11944,11 +11944,11 @@
       "description": "Event-based processing",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_919",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 920,
@@ -11957,11 +11957,11 @@
       "description": "In-memory processing",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_920",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 921,
@@ -11970,11 +11970,11 @@
       "description": "Light-based processing",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_921",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 922,
@@ -11983,11 +11983,11 @@
       "description": "Biological computation",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_922",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 923,
@@ -11996,11 +11996,11 @@
       "description": "Chemical computation",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_923",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 924,
@@ -12009,11 +12009,11 @@
       "description": "Living systems as computers",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_924",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 925,
@@ -12022,11 +12022,11 @@
       "description": "Collective behavior algorithms",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_925",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 926,
@@ -12035,11 +12035,11 @@
       "description": "Pheromone-based solving",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_926",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 927,
@@ -12048,11 +12048,11 @@
       "description": "Honeybee-inspired optimization",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_927",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 928,
@@ -12061,11 +12061,11 @@
       "description": "Bioluminescence-inspired",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_928",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 929,
@@ -12074,11 +12074,11 @@
       "description": "Brood parasitism-inspired",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_929",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 930,
@@ -12087,11 +12087,11 @@
       "description": "Echolocation-inspired",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_930",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 931,
@@ -12100,11 +12100,11 @@
       "description": "Pack hunting-inspired",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_931",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 932,
@@ -12113,11 +12113,11 @@
       "description": "Bubble-net feeding-inspired",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_932",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 933,
@@ -12126,11 +12126,11 @@
       "description": "Immune-inspired computing",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_933",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 934,
@@ -12139,11 +12139,11 @@
       "description": "Simulates living systems",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_934",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 935,
@@ -12152,11 +12152,11 @@
       "description": "Evolves programs",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_935",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 936,
@@ -12165,11 +12165,11 @@
       "description": "Evolves grammar-based solutions",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_936",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 937,
@@ -12178,11 +12178,11 @@
       "description": "Evolves expressions",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_937",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 938,
@@ -12191,11 +12191,11 @@
       "description": "Evolves strategies",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_938",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 939,
@@ -12204,11 +12204,11 @@
       "description": "Evolves neural networks",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_939",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 940,
@@ -12217,11 +12217,11 @@
       "description": "Learns like children",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_940",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 941,
@@ -12230,11 +12230,11 @@
       "description": "Development through interaction",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_941",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 942,
@@ -12243,11 +12243,11 @@
       "description": "Body as computation",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_942",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 943,
@@ -12256,11 +12256,11 @@
       "description": "Flexible robots",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_943",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 944,
@@ -12269,11 +12269,11 @@
       "description": "Coordinated robot teams",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_944",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 945,
@@ -12282,11 +12282,11 @@
       "description": "Reconfigurable robots",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_945",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 946,
@@ -12295,11 +12295,11 @@
       "description": "Change own shape",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_946",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 947,
@@ -12308,11 +12308,11 @@
       "description": "Reproduce themselves",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_947",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 948,
@@ -12321,11 +12321,11 @@
       "description": "Atom-precise manufacturing",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_948",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 949,
@@ -12334,11 +12334,11 @@
       "description": "Shape-changing materials",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_949",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 950,
@@ -12347,11 +12347,11 @@
       "description": "Engineered properties",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_950",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 951,
@@ -12360,11 +12360,11 @@
       "description": "Reverse refraction",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_951",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 952,
@@ -12373,11 +12373,11 @@
       "description": "Invisibility",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_952",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 953,
@@ -12386,11 +12386,11 @@
       "description": "Sound manipulation",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_953",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 954,
@@ -12399,11 +12399,11 @@
       "description": "Heat manipulation",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_954",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 955,
@@ -12412,11 +12412,11 @@
       "description": "Unusual mechanical properties",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_955",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 956,
@@ -12425,11 +12425,11 @@
       "description": "Self-assembling structures",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_956",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 957,
@@ -12438,11 +12438,11 @@
       "description": "Printing living tissue",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_957",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 958,
@@ -12451,11 +12451,11 @@
       "description": "Creating replacement organs",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_958",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 959,
@@ -12464,11 +12464,11 @@
       "description": "Growing tissues",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
       "test_path": "tests/modules/test_m16_emerging_0910_0959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_emerging_0910_0959.py::test_row_959",
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Functions: run. Boundaries: Reference design/evaluation calculations for emerging capabilities 910-959.\nPure, deterministic, evidence-bearing; no physical fabrication or unsafe execution.; caller-supplied design and measurement evidence; unsupported emerging method; No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Distinctive row-specific emerging-capability algorithm, deterministic seed where stochastic, method-specific invariants/limits, mounted route and failure tests."
     },
     {
       "row": 960,
