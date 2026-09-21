@@ -44,3 +44,13 @@ async def generate_text(request: GenerateRequest) -> GenerateResponse:
     except ProviderError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
     return GenerateResponse(provider=request.provider, model=model, text=text)
+
+@router.get('/technical-spec-34-66')
+def technical_spec_catalog_34_66():
+    from app.technical_spec_34_66 import ROWS
+    return [{'row':i,'requirement_id':x[0],'requirement':x[1],'source_line_start':x[2],'source_line_end':x[3]} for i,x in ROWS.items()]
+@router.post('/technical-spec-34-66/{row}')
+def technical_spec_run_34_66(row:int,payload:dict):
+    from app.technical_spec_34_66 import SpecError,execute
+    try:return execute(row,payload)
+    except SpecError as exc:raise HTTPException(422,detail=str(exc)) from exc
