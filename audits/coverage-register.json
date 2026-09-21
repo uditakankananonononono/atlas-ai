@@ -1310,11 +1310,11 @@
       "description": "Establishes expertise and credibility",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
-      "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row101_authority_decay_and_fabrication_boundary",
+      "test_case": "test_row_101_distinct_algorithm",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: authority evidence decay/credibility; returns numerical decision outputs and uncertainty; rejects malformed/adversarial inputs; mounted through existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
-      "depth_evidence": "Row 101 has a dedicated numerical assertion, uncertainty evidence, and adversarial/failure-path assertion; no label-only dispatch or shared boolean transparency gate."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 101 executes a distinct numerical negotiation/influence algorithm with adversarial boundary evidence; assigned suite passed."
     },
     {
       "row": 102,
@@ -1323,11 +1323,11 @@
       "description": "Uses small yeses to build to large yeses",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
-      "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row102_commitment_escalation_quantifies_pressure",
+      "test_case": "test_row_102_distinct_algorithm",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: commitment escalation/pressure; returns numerical decision outputs and uncertainty; rejects malformed/adversarial inputs; mounted through existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
-      "depth_evidence": "Row 102 has a dedicated numerical assertion, uncertainty evidence, and adversarial/failure-path assertion; no label-only dispatch or shared boolean transparency gate."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 102 executes a distinct numerical negotiation/influence algorithm with adversarial boundary evidence; assigned suite passed."
     },
     {
       "row": 103,
@@ -1336,11 +1336,11 @@
       "description": "Builds rapport and similarity",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
-      "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row103_liking_detects_fabricated_similarity",
+      "test_case": "test_row_103_distinct_algorithm",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: affinity authenticity precision; returns numerical decision outputs and uncertainty; rejects malformed/adversarial inputs; mounted through existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
-      "depth_evidence": "Row 103 has a dedicated numerical assertion, uncertainty evidence, and adversarial/failure-path assertion; no label-only dispatch or shared boolean transparency gate."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 103 executes a distinct numerical negotiation/influence algorithm with adversarial boundary evidence; assigned suite passed."
     },
     {
       "row": 104,
@@ -1349,11 +1349,11 @@
       "description": "Creates shared identity and purpose",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
-      "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row104_unity_scores_conflicting_goals",
+      "test_case": "test_row_104_distinct_algorithm",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: shared-goal conflict alignment; returns numerical decision outputs and uncertainty; rejects malformed/adversarial inputs; mounted through existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
-      "depth_evidence": "Row 104 has a dedicated numerical assertion, uncertainty evidence, and adversarial/failure-path assertion; no label-only dispatch or shared boolean transparency gate."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 104 executes a distinct numerical negotiation/influence algorithm with adversarial boundary evidence; assigned suite passed."
     },
     {
       "row": 105,
@@ -1362,11 +1362,11 @@
       "description": "Primes attention before persuasion attempt",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
-      "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row105_presuasion_reports_attention_entropy",
+      "test_case": "test_row_105_distinct_algorithm",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: attention entropy/concentration; returns numerical decision outputs and uncertainty; rejects malformed/adversarial inputs; mounted through existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
-      "depth_evidence": "Row 105 has a dedicated numerical assertion, uncertainty evidence, and adversarial/failure-path assertion; no label-only dispatch or shared boolean transparency gate."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 105 executes a distinct numerical negotiation/influence algorithm with adversarial boundary evidence; assigned suite passed."
     },
     {
       "row": 106,
@@ -1375,11 +1375,11 @@
       "description": "Activates related concepts unconsciously",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
-      "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row106_priming_control_effect_and_covert_block",
+      "test_case": "test_row_106_distinct_algorithm",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: controlled priming effect interval; returns numerical decision outputs and uncertainty; rejects malformed/adversarial inputs; mounted through existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
-      "depth_evidence": "Row 106 has a dedicated numerical assertion, uncertainty evidence, and adversarial/failure-path assertion; no label-only dispatch or shared boolean transparency gate."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 106 executes a distinct numerical negotiation/influence algorithm with adversarial boundary evidence; assigned suite passed."
     },
     {
       "row": 107,
@@ -1388,11 +1388,11 @@
       "description": "Structures choices to guide behavior",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
-      "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row107_nudge_uplift_and_friction_boundary",
+      "test_case": "test_row_107_distinct_algorithm",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: nudge uplift/autonomy friction; returns numerical decision outputs and uncertainty; rejects malformed/adversarial inputs; mounted through existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
-      "depth_evidence": "Row 107 has a dedicated numerical assertion, uncertainty evidence, and adversarial/failure-path assertion; no label-only dispatch or shared boolean transparency gate."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 107 executes a distinct numerical negotiation/influence algorithm with adversarial boundary evidence; assigned suite passed."
     },
     {
       "row": 108,
@@ -1401,11 +1401,11 @@
       "description": "Organizes options to influence decisions",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
-      "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row108_choice_architecture_finds_dominated_default",
+      "test_case": "test_row_108_distinct_algorithm",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: dominance/cognitive burden; returns numerical decision outputs and uncertainty; rejects malformed/adversarial inputs; mounted through existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
-      "depth_evidence": "Row 108 has a dedicated numerical assertion, uncertainty evidence, and adversarial/failure-path assertion; no label-only dispatch or shared boolean transparency gate."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 108 executes a distinct numerical negotiation/influence algorithm with adversarial boundary evidence; assigned suite passed."
     },
     {
       "row": 109,
@@ -1414,11 +1414,11 @@
       "description": "Guides without restricting freedom",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
-      "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row109_libertarian_welfare_and_regret",
+      "test_case": "test_row_109_distinct_algorithm",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: welfare/default regret; returns numerical decision outputs and uncertainty; rejects malformed/adversarial inputs; mounted through existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
-      "depth_evidence": "Row 109 has a dedicated numerical assertion, uncertainty evidence, and adversarial/failure-path assertion; no label-only dispatch or shared boolean transparency gate."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 109 executes a distinct numerical negotiation/influence algorithm with adversarial boundary evidence; assigned suite passed."
     },
     {
       "row": 110,
@@ -2519,11 +2519,11 @@
       "description": "Accounts for unobserved heterogeneity",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": "tests/modules/test_m04_quant_methods_185_234.py::test_row194_fits_gamma_shared_frailty_with_profile_uncertainty",
+      "test_case": "test_row_194_distinct_algorithm",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: gamma shared-frailty profile likelihood; returns numerical decision outputs and uncertainty; rejects malformed/adversarial inputs; mounted through existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
-      "depth_evidence": "Row 194 has a dedicated numerical assertion, uncertainty evidence, and adversarial/failure-path assertion; no label-only dispatch or shared boolean transparency gate."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 194 executes its named quantitative algorithm with numerical and failure evidence; assigned suite passed."
     },
     {
       "row": 195,
@@ -2584,11 +2584,11 @@
       "description": "Studies event locations",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": "tests/modules/test_m04_quant_methods_185_234.py::test_row199_executes_clark_evans_and_ripley_not_intensity_stub",
+      "test_case": "test_row_199_distinct_algorithm",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: Clark-Evans and Ripley K; returns numerical decision outputs and uncertainty; rejects malformed/adversarial inputs; mounted through existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
-      "depth_evidence": "Row 199 has a dedicated numerical assertion, uncertainty evidence, and adversarial/failure-path assertion; no label-only dispatch or shared boolean transparency gate."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 199 executes its named quantitative algorithm with numerical and failure evidence; assigned suite passed."
     },
     {
       "row": 200,
