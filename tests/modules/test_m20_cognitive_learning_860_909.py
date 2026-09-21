@@ -54,3 +54,26 @@ def test_capabilities_route_lists_fifty():
  a=FastAPI();a.include_router(router);assert len(TestClient(a).get('/cognitive-learning-860-909/capabilities').json())==50
 def test_unknown_row_rejected():
  a=FastAPI();a.include_router(router);assert TestClient(a).post('/cognitive-learning-860-909/859',json={'payload':{}}).status_code==422
+
+def test_critical_thinking_weights_evidence_and_reports_uncertainty():
+ p={'tenant_id':'school-a','sources':[{'source_id':'s','observed_at':'2026-09-21','kind':'primary'}],
+    'inputs':{k:'present' for k in STAGES[861]}}
+ p['inputs']['evidence']=[{'id':'e1','relevance':.8,'reliability':.5,'independence':.5,'direction':'support'},{'id':'e2','relevance':.6,'reliability':1,'direction':'against'}]
+ p['inputs']['alternatives']=['rival']
+ o=execute(861,p)
+ assert o['tenant_id']=='school-a' and o['computed']['total_support']==.2
+ assert o['computed']['total_counterevidence']==.6 and o['evaluation']['uncertainty']<.2
+
+def test_graph_validation_finds_dangling_edges():
+ p={'sources':[{'source_id':'s','observed_at':'2026-09-21'}], 'inputs':{k:'x' for k in STAGES[876]}}
+ p['inputs'].update(nodes=['a'],typed_edges=[{'source':'a','target':'missing','type':'supports'}])
+ assert execute(876,p)['computed']['graph_valid'] is False
+
+def test_cross_tenant_reference_is_rejected():
+ p={'tenant_id':'a','resource_refs':[{'tenant_id':'b','id':'secret'}],'sources':[{'source_id':'s','observed_at':'2026'}],'inputs':{'claim':'x'}}
+ with pytest.raises(CognitiveLearningError,match='cross-tenant'): execute(861,p)
+
+def test_bad_evidence_score_is_rejected():
+ p={'sources':[{'source_id':'s','observed_at':'2026'}],'inputs':{k:'x' for k in STAGES[861]}}
+ p['inputs']['evidence']=[{'relevance':2,'reliability':1}]
+ with pytest.raises(CognitiveLearningError,match='scores'): execute(861,p)

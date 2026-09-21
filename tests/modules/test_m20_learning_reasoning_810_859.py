@@ -67,3 +67,11 @@ def test_validation_and_route():
  with pytest.raises(LearningReasoningError):execute('nope',{})
  with pytest.raises(LearningReasoningError):L('probabilistic_reasoning',prior=2)
  app=FastAPI();app.include_router(router,prefix='/m20');c=TestClient(app);assert len(c.get('/m20/learning-reasoning-810-859/capabilities').json())==50;assert c.post('/m20/learning-reasoning-810-859/spaced_repetition',json={'payload':{}}).status_code==422
+
+def test_evaluation_and_tenant_are_explicit():
+ o=execute('scientific_thinking',{'tenant_id':'lab-a','problem':'p','source':SRC,'evidence':['e']})
+ assert o['tenant_id']=='lab-a' and 0 <= o['evaluation']['input_completeness'] <= 1
+
+def test_learning_reasoning_rejects_cross_tenant_reference():
+ with pytest.raises(LearningReasoningError,match='cross-tenant'):
+  execute('retrieval_practice',{'tenant_id':'a','resource_refs':[{'tenant_id':'b'}],'objective':'x','source':SRC})

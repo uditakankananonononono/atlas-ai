@@ -66,3 +66,12 @@ def test_route_is_mounted_at_module_boundary():
 
 def test_unknown_method_rejected_by_engine():
  with pytest.raises(ValueError): legal_support('not_a_method',BASE)
+
+def test_legal_output_quantifies_provenance_and_uncertainty():
+ o=legal_support('case_law_analysis',{**BASE,'tenant_id':'firm-a','issues':[{'issue':'duty','supporting_authority_ids':['A1']}]})
+ assert o['tenant_id']=='firm-a' and o['evaluation']['authority_verification_rate']==1
+ assert o['evaluation']['issue_support_rate']==1 and o['evaluation']['uncertainty_status']=='bounded'
+
+def test_legal_workbench_rejects_cross_tenant_references():
+ with pytest.raises(ValueError,match='cross-tenant'):
+  legal_support('legal_research',{**BASE,'tenant_id':'a','resource_refs':[{'tenant_id':'b'}]})

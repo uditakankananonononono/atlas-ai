@@ -99,11 +99,13 @@ def inquiry(row,p):
  if row==859:out['science']={'question':p.get('question'),'hypothesis':p.get('hypothesis'),'prediction':p.get('prediction'),'design':p.get('design'),'controls':p.get('controls',[]),'measurements':p.get('measurements',[]),'analysis_plan':p.get('analysis_plan'),'falsification_condition':p.get('falsification_condition'),'replication_and_open_materials':True}
  return out
 def execute(method,payload):
+ tenant=str(payload.get('tenant_id','default')).strip() if isinstance(payload,dict) else ''
+ if not tenant:raise LearningReasoningError('tenant_id must not be empty')
+ for ref in payload.get('resource_refs',[]):
+  if str(ref.get('tenant_id','')).strip()!=tenant:raise LearningReasoningError('cross-tenant resource reference rejected')
  key=slug(method);row=KEYS.get(key)
  if row is None:raise LearningReasoningError(f'unknown method: {method}')
  if not isinstance(payload,dict):raise LearningReasoningError('payload must be an object')
  source=src(payload);family=FAMILY[row];result={'learning':learning,'transfer':transfer,'reasoning':reasoning,'inquiry':inquiry}[family](row,payload)
- return {'row_id':row,'capability':ROWS[row],'family':family,'source':source,'result':result,
-  'evaluation':{'method':key,'required_inputs_present':True,'result_fields':sorted(result),'independent_verification_required':True,'failure_tests':['missing source','empty required input','invalid probability or membership','unsupported method']},
-  'uncertainty':{'level':'high' if family in {'reasoning','inquiry'} else 'medium','assumptions':payload.get('assumptions',[]),'unknowns':payload.get('uncertainties',[]),'calibration':'A complete workflow is not proof that the conclusion or learning outcome is correct.'},
-  'boundary':'Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.'}
+ completeness=sum(v not in (None,[],{}) for v in payload.values())/max(1,len(payload));uncertainties=result.get('uncertainties',payload.get('uncertainties',[]))
+ return {'tenant_id':tenant,'row_id':row,'capability':ROWS[row],'family':family,'source':source,'result':result,'evaluation':{'input_completeness':round(completeness,3),'uncertainty_count':len(uncertainties),'status':'reviewable' if completeness>=.5 else 'insufficient_evidence'},'boundary':'Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.'}
