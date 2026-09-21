@@ -1506,3 +1506,7 @@ router.include_router(cognitive_learning_router_860_909)
 # Distributed/platform engineering workbench, rows 585-634.
 from .platform_engineering_routes_585_634 import router as platform_engineering_router_585_634
 router.include_router(platform_engineering_router_585_634)
+
+# Optimization and original-story workbench, owner-ledger rows 235-280.
+from .optimization_story_routes_235_280 import router as optimization_story_router_235_280
+router.include_router(optimization_story_router_235_280)
