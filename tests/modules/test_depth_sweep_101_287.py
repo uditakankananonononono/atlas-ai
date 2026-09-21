@@ -29,6 +29,6 @@ def test_185_quant_reports_reference_evaluation_uncertainty():
  out=quant(185,d);assert out['evaluation']['reference_result_only'] and out['uncertainty']['expert_review_required']
 
 def test_235_280_distinct_review_envelopes():
- a=workbench('admm',{'source':SRC,'objective':{'expression':'x^2'}});b=workbench('dialogue_writing',{'source':SRC,'premise':'Two rivals cooperate'})
+ a=workbench('admm',{'source':SRC,'objective':[1.0,2.0],'initial':[0.0,0.0],'constraint_matrix':[[1.0,0.0],[0.0,1.0]],'constraint_rhs':[1.0,1.0]});b=workbench('dialogue_writing',{'source':SRC,'scenes':[{'text':'Two rivals cooperate','character':'A','goal':'trust','tension':0.7,'duration':2,'location':'lab'}]})
  assert 'convergence' in a['evaluation']['review_checks'] and 'continuity' in b['evaluation']['review_checks']
  assert a['uncertainty']['human_review_required'] and b['uncertainty']['human_review_required']
