@@ -22,3 +22,6 @@ def expanded_259_278(row_id:int,payload:dict):
  from .expanded_259_278 import run
  try:return run(row_id,payload)
  except (ValueError,TypeError,KeyError) as exc:raise HTTPException(status_code=422,detail=str(exc)) from exc
+
+from .native_capability_routes import router as native_capability_router
+router.include_router(native_capability_router)
