@@ -49,7 +49,7 @@ All module routers below are mounted by `backend/app/main.py`. "Implemented core
 | 16 | Executive Dashboard | approval queue, command previews, critical paths and graph UI | live SSE/Redis fan-out and fuller operational UI |
 | 17 | Narrative Architect | bounded narrative drafting/critique with default Reddit and optional official YouTube/Pinterest/allowlisted public-source wiring | live provider acceptance and full editing workflow |
 | 18 | Side Hustle Scraper | approval-bound adapter receipts and measured outcome ingestion,  wired public/official source collectors plus artifact-first experiment checklists with separate publish/send/spend approvals | effect adapters, observed outcome ingestion and live-provider acceptance |
-| 19 | Idea Incubator | budget-capped previews and approval gates | durable long-running incubation orchestration |
+| 19 | Idea Incubator | information-gain assumption burn-down and budget-feasible experiment selection,  budget-capped previews and approval gates | durable long-running incubation orchestration |
 | 20 | General Cognitive Worker | plans, dependencies, bounded retries, budgets, memory and supervision | durable distributed execution and broader real tool adapters |
 | 21 | Claire | in-Atlas workflows, bounded capabilities, expiring fingerprinted device pairing/revocation, per-action gates and deception refusal | installable signed paired-PC daemon and durable orchestration |
 | 22 | Tools Hub | free official GitHub/PyPI/npm discovery, ranked candidates, approval proposals and separate scanner/installer primitives | connect proposal to installer with tenant persistence and receipts |

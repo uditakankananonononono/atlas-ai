@@ -71,3 +71,11 @@ router.include_router(operations_router)
 
 from .research_router import router as research_router
 router.include_router(research_router)
+
+class AssumptionBurnDownIn(BaseModel):
+ assumptions:list[dict]=Field(min_length=1,max_length=500);tests:list[dict]=Field(min_length=1,max_length=1000);budget:float=Field(default=0,ge=0)
+@router.post('/assumption-burn-down')
+def assumption_burn_down(data:AssumptionBurnDownIn):
+ from .assumption_tests import rank_assumption_tests
+ try:return rank_assumption_tests(data.assumptions,data.tests,data.budget)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
