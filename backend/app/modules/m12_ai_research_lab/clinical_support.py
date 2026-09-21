@@ -56,7 +56,7 @@ def clinical_support(method:str,data:dict)->dict:
     result=dict(result)
     urgent=bool(result.get('immediate_human_response_required') or result.get('urgent') or result.get('red_flags'))
     result['evaluation']={'method_executed':method,'input_fields':sorted(data),'output_fields':sorted(result),'qualified_clinician_review_required':True,'urgent_human_response_required':urgent}
-    result['uncertainty']={'caller_supplied_data_not_independently_verified':True,'diagnosis_or_treatment_authorized':False,'patient_exam_performed':False,'missing_or_unknown_fields':result.get('missing_safety_fields',result.get('unknowns',[]))}
+    result['uncertainty_report']={'caller_supplied_data_not_independently_verified':True,'diagnosis_or_treatment_authorized':False,'patient_exam_performed':False,'missing_or_unknown_fields':result.get('missing_safety_fields',result.get('unknowns',[])),'existing_uncertainty':result.get('uncertainty')}
     return result
 
 def imaging_support(method:str,data:dict)->dict:
