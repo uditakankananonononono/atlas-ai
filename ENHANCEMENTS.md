@@ -59,7 +59,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 ## M23 - Study Abroad
 - **Next:** application evidence matrix linking each requirement and essay claim to owner records, official program sources and missing inputs.
 ## M24 - Billing
-- **Next:** pre-commit cost/cancellation preview that binds plan, currency, renewal, tax, cancellation deadline and exact approved charge.
+- **Landed:** pre-commit commitment preview binds plan, USD currency, quantity, renewal interval, caller-supplied tax, cancellation policy/deadline and exact charge into a content hash; it refuses guessed FX and never executes payment.
+- **Next:** bind the approved preview hash to checkout execution and reconcile Stripe’s final amount before commit.
 ## M25 - Knowledge Copilot & Training
 - **Landed:** mounted contradiction review and claim-substantiation endpoints expose existing citation and provenance checks.
 - **Next:** common artifact-ingestion event contract adopted by every module, plus device capture adapter for the visible copilot.

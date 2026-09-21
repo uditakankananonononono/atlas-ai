@@ -3,7 +3,7 @@ from fastapi import APIRouter,Depends,HTTPException
 from app.auth.context import TenantContext,require_tenant
 from app.core.approvals import approvals
 from .schemas import *
-from .service import Service
+from .service import Service,PLANS
 from .repository import Repository
 from .stripe_client import StripeClient
 router=APIRouter(prefix="/billing",tags=["billing"])
@@ -51,3 +51,11 @@ def meter(start:datetime,end:datetime,t:TenantContext=Depends(require_tenant),s:
 def subscription(t:TenantContext=Depends(require_tenant),s:Service=Depends(get_service)):return s.subscription(t.tenant_id)
 @router.get('/invoices',response_model=list[InvoiceOut])
 def invoices(t:TenantContext=Depends(require_tenant),s:Service=Depends(get_service)):return s.invoices(t.tenant_id)
+
+@router.post('/commitment-preview')
+def commitment_preview(data:CommitmentPreviewIn,s:Service=Depends(get_service)):
+ from .precommit import preview_commitment
+ plan=PLANS.get(data.plan_id)
+ if not plan:raise HTTPException(404,'plan not found')
+ try:return preview_commitment(plan=plan.model_dump(),**data.model_dump(exclude={'plan_id'}))
+ except ValueError as error:raise HTTPException(422,str(error)) from error
