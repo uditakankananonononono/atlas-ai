@@ -59,3 +59,9 @@ def commitment_preview(data:CommitmentPreviewIn,s:Service=Depends(get_service)):
  if not plan:raise HTTPException(404,'plan not found')
  try:return preview_commitment(plan=plan.model_dump(),**data.model_dump(exclude={'plan_id'}))
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+@router.post('/commitment-checkout-proposals',response_model=ApprovalProposal,status_code=201)
+def commitment_checkout_proposal(data:PreviewedCheckoutIn,t:TenantContext=Depends(require_tenant),s:Service=Depends(get_service)):
+ try:return s.propose_previewed_checkout(t.tenant_id,data)
+ except KeyError as error:raise HTTPException(404,str(error)) from error
+ except ValueError as error:raise HTTPException(422,str(error)) from error
