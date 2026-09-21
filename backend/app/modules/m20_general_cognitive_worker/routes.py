@@ -1499,3 +1499,6 @@ router.include_router(cognitive_router_1960_2009)
 # Humanities analysis rows 1810-1859.
 from .humanities_routes_1810_1859 import router as humanities_router_1810_1859
 router.include_router(humanities_router_1810_1859)
+
+from .cognitive_learning_routes_860_909 import router as cognitive_learning_router_860_909
+router.include_router(cognitive_learning_router_860_909)
