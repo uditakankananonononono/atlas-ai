@@ -26,3 +26,16 @@ def preview_commitment(*,plan:dict[str,Any],currency:str='USD',quantity:int=1,ta
  if not body['plan_id'] or not body['cancellation_policy']:raise ValueError('plan id and cancellation policy are required')
  digest=sha256(json.dumps(body,sort_keys=True,separators=(',',':')).encode()).hexdigest()
  return {**body,'preview_sha256':digest,'requires_exact_charge_approval':True,'executed':False,'warnings':(['Cancellation deadline has passed.'] if cancellation_deadline and cancellation_deadline<=now else [])+(['Tax rate was supplied by the caller and must be verified for the buyer jurisdiction.'] if tax_rate_percent else [])}
+
+def verify_commitment_preview(preview:dict[str,Any],plan:dict[str,Any],*,checkout_supported:bool=False)->dict[str,Any]:
+ body={k:preview.get(k) for k in ('plan_id','plan_name','currency','quantity','renewal_interval','subtotal','tax_rate_percent','tax','exact_charge','cancellation_policy','cancellation_deadline','generated_at')}
+ expected=sha256(json.dumps(body,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+ if preview.get('preview_sha256')!=expected:raise ValueError('commitment preview hash mismatch')
+ if body['plan_id']!=plan.get('id') or body['plan_name']!=plan.get('name'):raise ValueError('commitment preview plan no longer matches catalog')
+ if body['currency']!='USD':raise ValueError('checkout currency must be USD')
+ recomputed=preview_commitment(plan=plan,currency=body['currency'],quantity=int(body['quantity']),tax_rate_percent=float(body['tax_rate_percent']),renewal_interval=body['renewal_interval'],cancellation_policy=body['cancellation_policy'],cancellation_deadline=datetime.fromisoformat(body['cancellation_deadline']) if body['cancellation_deadline'] else None,as_of=datetime.fromisoformat(body['generated_at']))
+ 
+ for key in ('plan_id','plan_name','currency','quantity','renewal_interval','subtotal','tax','exact_charge','cancellation_policy','cancellation_deadline'):
+  if recomputed[key]!=body[key]:raise ValueError('commitment preview totals no longer match catalog')
+ if checkout_supported and (body['quantity']!=1 or body['renewal_interval']!='month' or Decimal(str(body['tax']))!=0):raise ValueError('Stripe checkout currently supports one monthly seat with zero Atlas-calculated tax only')
+ return {**preview,'preview_sha256':expected}

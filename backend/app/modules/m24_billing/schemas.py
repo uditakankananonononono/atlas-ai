@@ -26,3 +26,6 @@ class InvoiceOut(BaseModel):
 
 class CommitmentPreviewIn(BaseModel):
  plan_id:str=Field(min_length=1,max_length=40);currency:str=Field(default='USD',min_length=3,max_length=3);quantity:int=Field(default=1,ge=1,le=10000);tax_rate_percent:float=Field(default=0,ge=0,le=100);renewal_interval:Literal['month','year']='month';cancellation_policy:str=Field(min_length=1,max_length=5000);cancellation_deadline:datetime|None=None;as_of:datetime|None=None
+
+class PreviewedCheckoutIn(BaseModel):
+ success_url:str;cancel_url:str;commitment_preview:dict

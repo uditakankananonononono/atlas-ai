@@ -1,5 +1,6 @@
 """Official Stripe billing with test-mode validation and Module-0 money gates."""
 from datetime import datetime,timezone
+from decimal import Decimal
 from uuid import uuid4
 from app.core.models import ApprovalRequest
 from .schemas import *
@@ -8,6 +9,13 @@ PLANS={p.id:p for p in [Plan(id="free",name="Free",monthly_price_usd=0,included_
 class Service:
  def __init__(self,approvals,repo,stripe):self.approvals=approvals;self.repo=repo;self.stripe=stripe
  def plans(self):return list(PLANS.values())
+ def propose_previewed_checkout(self,tenant_id,data:PreviewedCheckoutIn):
+  from .precommit import verify_commitment_preview
+  plan_id=str(data.commitment_preview.get("plan_id", ""));plan=PLANS.get(plan_id)
+  if not plan:raise KeyError("plan not found")
+  preview=verify_commitment_preview(data.commitment_preview,plan.model_dump(),checkout_supported=True)
+  payload={"tenant_id":tenant_id,"plan":plan.model_dump(),"success_url":data.success_url,"cancel_url":data.cancel_url,"mode":"subscription","provider":"stripe","commitment_preview":preview,"commitment_preview_sha256":preview["preview_sha256"],"expected_charge_cents":int(Decimal(preview["exact_charge"])*100)}
+  req=self.approvals.put(ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type="create_subscription_checkout",payload=payload));return ApprovalProposal(approval_id=req.id,action_type=req.action_type,payload=payload)
  def propose_checkout(self,tenant_id,data:CheckoutIn):
   plan=PLANS.get(data.plan_id)
   if not plan:raise KeyError("plan not found")
@@ -17,6 +25,10 @@ class Service:
   view=self.repo.approval(approval_id)
   if view["status"]!="approved" or view["payload"]["tenant_id"]!=tenant_id:raise PermissionError("approved tenant-bound billing action required")
   plan=PLANS[view["payload"]["plan"]["id"]]
+  if view["payload"].get("commitment_preview"):
+   from .precommit import verify_commitment_preview
+   verified=verify_commitment_preview(view["payload"]["commitment_preview"],plan.model_dump(),checkout_supported=True)
+   if verified["preview_sha256"]!=view["payload"].get("commitment_preview_sha256") or int(Decimal(verified["exact_charge"])*100)!=view["payload"].get("expected_charge_cents"):raise ValueError("approved commitment no longer matches checkout")
   if plan.monthly_price_usd<=0:raise ValueError("free plan does not need checkout")
   result=await self.stripe.create_checkout(plan,view["payload"]["success_url"],view["payload"]["cancel_url"],tenant_id,approval_id)
   self.repo.record_execution(approval_id,result);return result
