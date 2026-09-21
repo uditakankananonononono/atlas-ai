@@ -238,3 +238,18 @@ def execute(capability:str,payload:dict[str,Any])->dict[str,Any]:
         "not_a_mastery_or_credential_claim":True,
     }
     return {"row_id":row,"capability":cap.name,"key":key,"family":family,"source":src,"evidence_checks":list(cap.evidence),"result":result,"evaluation":evaluation,"uncertainty":uncertainty,"boundary":"Decision support only. A qualified educator reviews accuracy, accessibility, fairness, privacy, and high-stakes uses."}
+
+# Education rows preserve method-specific artifacts and report evidence/input
+# coverage without inferring learner ability, affect, disability, or grades.
+_original_execute = execute
+from app.core.depth_quality import attach_quality as _attach_quality
+
+def execute(capability:str|int,payload:dict[str,Any])->dict[str,Any]:
+    out=_original_execute(capability,payload)
+    evidence=[x for key in ('sources','evidence','learner_evidence') for x in payload.get(key,[]) if isinstance(x,dict)]
+    required=[k for k in payload if k not in {'assumptions','sources','evidence','learner_evidence'}]
+    method=str(capability)
+    return _attach_quality(out,domain='education',method=method,inputs=payload,
+        required_inputs=required,evidence=evidence,assumptions=payload.get('assumptions',[]),
+        limitations=['Planning and formative support only; no enrollment, credential, high-stakes grade, diagnosis, or learner profiling.',
+                     'An educator must review pedagogy, accessibility, culture, privacy, evidence, and learner agency.'])
