@@ -31,3 +31,13 @@ def decision(rid:str,data:ApprovalDecision,t:TenantContext=Depends(require_tenan
 def failure(sid:str,data:FailureReport,t:TenantContext=Depends(require_tenant),s:Service=Depends(service)):return call(s.failure,t.tenant_id,t.actor_id,sid,data)
 @router.get('/audit')
 def audit(t:TenantContext=Depends(require_tenant),s:Service=Depends(service)):return s.audit_log(t.tenant_id,t.actor_id)
+
+class ArtifactEventIn(BaseModel):
+ event:dict
+@router.post('/artifact-events/validate')
+def validate_artifact_event(data:ArtifactEventIn,t:TenantContext=Depends(require_tenant)):
+ from .artifact_events import ingest_artifact_event
+ try:
+  event={**data.event,'tenant_id':t.tenant_id}
+  return ingest_artifact_event(event)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
