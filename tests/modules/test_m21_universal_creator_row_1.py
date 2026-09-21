@@ -27,3 +27,9 @@ def test_row_1_mounted_authenticated_boundary_and_validation():
  h={"X-Tenant-ID":"u","X-Actor-ID":"u"};r=c.post(url,headers=h,json={"goal":"find research tools","kind":"tool_discovery","candidates":[],"owner_facts":{}})
  assert r.status_code==200 and r.json()["feature_row"]==1
  bad=c.post(url,headers=h,json={"goal":"x","kind":"bad","candidates":[],"owner_facts":{}});assert bad.status_code==422
+
+def test_row_1_fit_confidence_tracks_supplied_owner_facts():
+ result=plan("Apply","summer_program_application",[{"name":"Lab A","url":"https://a.example","requirements":["age","transcript"],"preferences":["biology"]},{"name":"Lab B","url":"https://b.example","requirements":["age"],"preferences":[]}],{"age":17})
+ a,b=result["ranked_candidates"]
+ assert a["name"]=="Lab B" and a["fit_confidence"]==1.0
+ assert b["fit_confidence"]==pytest.approx(1/3,abs=1e-4) and "unreported facts" in b["fit_uncertainty"]

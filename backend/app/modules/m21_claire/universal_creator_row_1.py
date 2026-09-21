@@ -17,7 +17,10 @@ def plan(goal:str,kind:str,candidates:list[dict],owner_facts:dict,requested_acti
   if not c.name or not _official_url(c.url):raise ValueError("each candidate needs a name and HTTPS source URL")
   missing=[x for x in c.requirements if x not in owner_facts or owner_facts[x] in (None,"")]
   fit=sum(1 for x in c.preferences if owner_facts.get(x) not in (None,""))/len(c.preferences) if c.preferences else 1
-  checked.append({"name":c.name,"official_url":c.url,"source":c.source,"requirements":list(c.requirements),"missing_requirements":missing,"fit_score":fit,"eligible_from_known_facts":not missing})
+  evidence_known=sum(1 for x in c.requirements if x in owner_facts and owner_facts[x] not in (None,""))+sum(1 for x in c.preferences if owner_facts.get(x) not in (None,""))
+  evidence_total=len(c.requirements)+len(c.preferences)
+  fit_confidence=round(evidence_known/evidence_total,4) if evidence_total else .5
+  checked.append({"name":c.name,"official_url":c.url,"source":c.source,"requirements":list(c.requirements),"missing_requirements":missing,"fit_score":fit,"fit_confidence":fit_confidence,"fit_uncertainty":"fit reflects only owner facts supplied; unreported facts can change eligibility and fit" if fit_confidence<1 else "all declared requirements and preferences matched against supplied owner facts","eligible_from_known_facts":not missing})
  checked.sort(key=lambda x:(x["eligible_from_known_facts"],x["fit_score"]),reverse=True)
  actions=requested_actions or []
  external=any(a in {"submit","sign_up","send","publish","pay"} for a in actions)
