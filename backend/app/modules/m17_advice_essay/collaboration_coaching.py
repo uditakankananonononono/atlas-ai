@@ -70,6 +70,8 @@ class CollaborationCoach:
             review_required=True,
             external_action_proposed=False,
             authorship_notice=notice,
+            evaluation={"row_id": ROW_BY_SKILL[request.skill], "participant_coverage": len(request.participants), "evidence_coverage": min(1.0, len(request.known_facts) / 3), "proposal_supplied": request.proposal_or_argument is not None, "adversarial_checks": ["minority voice", "coercion", "fabricated consensus", "reversibility"]},
+            uncertainty={"level": "high" if not request.known_facts else "medium", "unknowns": ["participant consent", "private incentives", "unheard perspectives"], "calibration": "No consensus or mental state is inferred from silence."},
         )
 
     @staticmethod

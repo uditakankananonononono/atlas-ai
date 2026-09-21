@@ -197,6 +197,8 @@ class CommunicationCoachingResponse(BaseModel):
     external_action_proposed: bool = False
     caveats: list[str] = Field(default_factory=list)
     authorship_notice: str | None = None
+    evaluation: dict[str, Any] = Field(default_factory=dict)
+    uncertainty: dict[str, Any] = Field(default_factory=dict)
 
 
 class CollaborationSkill(str, Enum):
@@ -254,6 +256,8 @@ class CollaborationCoachingResponse(BaseModel):
     review_required: bool = True
     external_action_proposed: bool = False
     authorship_notice: str | None = None
+    evaluation: dict[str, Any] = Field(default_factory=dict)
+    uncertainty: dict[str, Any] = Field(default_factory=dict)
 
 
 class TrustWellbeingSkill(str, Enum):
@@ -318,4 +322,6 @@ class TrustWellbeingCoachingResponse(BaseModel):
     escalation_boundary: str
     review_required: bool = True
     external_action_proposed: bool = False
+    evaluation: dict[str, Any] = Field(default_factory=dict)
+    uncertainty: dict[str, Any] = Field(default_factory=dict)
     authorship_notice: str | None = None

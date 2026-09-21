@@ -90,6 +90,18 @@ class CommunicationCoach:
             external_action_proposed=False,
             caveats=caveats,
             authorship_notice=authorship_notice,
+            evaluation={
+                "row_id": ROW_BY_SKILL[request.skill],
+                "evidence_coverage": min(1.0, len(request.known_facts) / 3),
+                "draft_supplied": request.draft is not None,
+                "checks": ["truth", "tone", "consent", "privacy", "pressure"],
+                "issues_found": len(feedback),
+            },
+            uncertainty={
+                "level": "high" if not request.known_facts else "medium",
+                "unknowns": ["audience response", "unstated preferences", "unverified context"],
+                "calibration": "Treat interpretations as hypotheses and verify with the audience.",
+            },
         )
 
     @staticmethod
