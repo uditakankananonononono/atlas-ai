@@ -1524,3 +1524,7 @@ router.include_router(technical_spec_router_0133_0165)
 # Technical specification rows 199-229: semantic controls and honest attestations.
 from .technical_spec_routes_round8_199_229 import router as technical_spec_round8_router
 router.include_router(technical_spec_round8_router)
+
+# Atomic unpacked concept engines, audit rows 93-115.
+from .atomic_concepts_routes_0093_0115 import router as atomic_concepts_router_0093_0115
+router.include_router(atomic_concepts_router_0093_0115)
