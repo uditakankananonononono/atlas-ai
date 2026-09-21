@@ -35,6 +35,7 @@ def test_row85_asymmetry_index_severity_and_unknown_material():
  assert o['material_facts_not_yet_known_to_proposer']==['pending_bid']
  empty=run('information_asymmetry_exploitation',{'known_by_proposer':[],'shared_with_counterparty':[],'material_facts':[]})['output']
  assert empty['asymmetry_index']==0 and empty['confidence']<0.5 and not empty['exploitation_blocked']
+ with pytest.raises(ValueError):run('information_asymmetry_exploitation',{'known_by_proposer':'defect','shared_with_counterparty':[],'material_facts':[]})
 def test_row86_adverse_selection_z_score_and_small_sample_uncertainty():
  o=run('adverse_selection_detection',{'offered_risk_scores':[.8,.9],'population_mean_risk':.5})['output']
  assert o['sample_std']==pytest.approx(math.sqrt(.005)) and o['standard_error']==pytest.approx(.05)
@@ -52,6 +53,7 @@ def test_row88_screening_separation_spread_and_pooling_pairs():
  assert o['self_selection_separates'] and o['net_utility_spread']==pytest.approx(4) and not o['pooling_risk_pairs']
  pooled=run('screening_mechanism_design',{'types':['x','y'],'signal_costs':[1.0,1.001],'benefits':[2.0,2.001]})['output']
  assert not pooled['self_selection_separates'] or pooled['pooling_risk_pairs']
+ with pytest.raises(ValueError):run('screening_mechanism_design',{'types':['low','high'],'signal_costs':[1],'benefits':[2,8]})
 def test_row89_commitment_device_strength_and_deadline_validation():
  o=run('commitment_device_creation',{'goal':'save','deadline':'2027-01-01','checkins':['monthly'],'reversible':True,'self_selected_penalty':'donate 500'})['output']
  assert o['device_strength_score']==pytest.approx(.8) and o['adherence_support_estimate']['point']==pytest.approx(.72)
@@ -61,6 +63,7 @@ def test_row89_commitment_device_strength_and_deadline_validation():
 def test_row90_threat_credibility_components():
  o=run('credible_threat_construction',{'proposed_consequence':'terminate per contract','lawful':True,'proportionate':True,'authorized':True})['output']
  assert o['credible'] and o['credibility_score']==1.0 and o['credibility_components']=={'lawful':True,'proportionate':True,'authorized':True}
+ b=run('credible_threat_construction',{'proposed_consequence':'x','lawful':True,'proportionate':True,'authorized':False})['output'];assert not b['may_communicate'] and b['credibility_score']==pytest.approx(2/3,abs=1e-4) and b['blocked_reasons']==['not_authorized']
 def test_row91_bargaining_power_weighted_score_and_interval():
  o=run('bargaining_power_assessment',{'alternative_strength':.8,'time_pressure':.2,'information_quality':.7,'dependence':.3})['output']
  expected=(.35*.8+.25*.7)/.6-(.2*.2+.2*.3)/.4
@@ -73,12 +76,14 @@ def test_row92_batna_sensitivity_and_fragility():
  assert o['runner_up_swing_to_flip']==2 and o['choice_fragility']=='robust'
  fragile=run('batna_identification',{'alternatives':['a','b'],'values':[10,10.05],'costs':[0,0]})['output']
  assert fragile['choice_fragility']=='fragile' and fragile['confidence']<0.5
+ with pytest.raises(ValueError):run('batna_identification',{'alternatives':['a','b'],'values':[1],'costs':[0,0]})
 def test_row93_zopa_surplus_splits_and_no_deal_zone():
  o=run('zopa_mapping',{'seller_reservation':80,'buyer_reservation':100})['output']
  assert o['zopa_exists'] and o['width']==20 and o['midpoint']==90
  assert o['surplus_split_options']['buyer_favored_75_25_price']==85 and o['surplus_split_options']['seller_favored_75_25_price']==95
  nope=run('zopa_mapping',{'seller_reservation':110,'buyer_reservation':100})['output']
  assert not nope['zopa_exists'] and nope['width']==0 and nope['surplus_split_options']=={}
+ with pytest.raises(ValueError):run('zopa_mapping',{'seller_reservation':float('nan'),'buyer_reservation':100})
 def test_row94_integrative_logrolling_gain_and_distributive_detection():
  o=run('integrative_bargaining',{'issues':['price','time'],'party_a_weights':[.9,.1],'party_b_weights':[.2,.8]})['output']
  assert o['efficient_allocation'][0]['efficient_holder']=='party_a' and o['efficient_allocation'][1]['efficient_holder']=='party_b'
@@ -91,6 +96,7 @@ def test_row95_anchoring_rejects_objective_outside_evidence():
  assert o['evidence_based_anchor']==95 and o['estimated_adjustment_band']==5 and o['expected_settlement_zone']==[90,95]
  bad=run('anchoring_strategy',{'objective_value':130,'evidence_low':80,'evidence_high':100})['output']
  assert bad['evidence_based_anchor'] is None and not bad['deployment_allowed'] and 'rejection' in bad
+ with pytest.raises(ValueError):run('anchoring_strategy',{'objective_value':95,'evidence_low':100,'evidence_high':80})
 def test_row96_framing_numeric_equivalence_gate():
  o=run('framing_effects_utilization',{'gain_frame':'gain 10','loss_frame':'lose 10','facts':{'delta':10}})['output']
  assert o['numeric_equivalence'] and o['consistent_with_facts'] and o['deployment_allowed']
@@ -102,6 +108,7 @@ def test_row97_loss_aversion_reports_reference_lambda_and_asymmetry():
  assert o['reference_loss_aversion_lambda']==2.25 and o['frame_asymmetry_ratio']==pytest.approx(1.0)
  skewed=run('loss_aversion_leverage',{'gain_frame':'keep 5','loss_frame':'lose 20','facts':{'delta':5}})['output']
  assert skewed['frame_asymmetry_ratio']==pytest.approx(.25) and not skewed['numeric_equivalence']
+ with pytest.raises(ValueError):run('loss_aversion_leverage',{'gain_frame':'','loss_frame':'','facts':{}})
 def test_row98_social_proof_wilson_interval_and_sample_floor():
  o=run('social_proof_deployment',{'claim':'60% chose it','evidence':'survey-1','claimed_proportion':.6,'sample_size':100})['output']
  lo,hi=o['wilson_interval_95'];assert lo==pytest.approx(.502,abs=.005) and hi==pytest.approx(.691,abs=.005)
@@ -110,6 +117,8 @@ def test_row98_social_proof_wilson_interval_and_sample_floor():
  assert not tiny['statistically_supported'] and not tiny['deployment_allowed']
  unquantified=run('social_proof_deployment',{'claim':'popular','evidence':'survey-1','claimed_proportion':.6})['output']
  assert not unquantified['deployment_allowed']
+ with pytest.raises(ValueError):run('social_proof_deployment',{'claim':'','evidence':'survey-1'})
+ with pytest.raises(ValueError):run('social_proof_deployment',{'claim':'60% chose it','evidence':'s','claimed_proportion':.6,'sample_size':0})
 def test_row99_scarcity_arithmetic_verification():
  o=run('scarcity_creation',{'claim':'3 remain','evidence':'inventory snapshot','total_units':50,'sold_units':47,'claimed_remaining':3})['output']
  assert o['scarcity_arithmetic']['computed_remaining']==3 and o['arithmetic_consistent'] and o['deployment_allowed']

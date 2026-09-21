@@ -224,6 +224,8 @@ def test_row51_leverage_ranking_prefers_reinforcing_loops():
     assert points[0].score > next(p for p in points if p.variable == "logo color").score
     loop_point = next(p for p in points if p.variable == "users")
     assert loop_point.level == "structure" and "reinforcing loop" in loop_point.rationale
+    with pytest.raises(ValueError):
+        LeverageFinder().rank(SystemsModel())  # no causal links supplied
 
 
 def test_row52_constraint_analysis_finds_bottleneck():
@@ -237,6 +239,10 @@ def test_row52_constraint_analysis_finds_bottleneck():
     review = next(s for s in out["stages"] if s["name"] == "review")
     assert review["is_bottleneck"] and review["utilization"] == pytest.approx(3.0)
     assert any("ELEVATE" in step for step in out["focusing_steps"])
+    with pytest.raises(ValueError):
+        ConstraintAnalyzer().analyze(stages=[])
+    with pytest.raises(ValueError):
+        ConstraintAnalyzer().analyze(stages=[{"name": "x", "capacity": 0, "demand": 1}])
 
 
 def test_row53_antifragility_classification():
@@ -251,6 +257,8 @@ def test_row53_antifragility_classification():
     assert by_name["open source community"]["classification"] == "antifragile"
     assert by_name["single supplier"]["redesign"]
     assert out["verdict"] in {"fragile-heavy", "mixed"}
+    with pytest.raises(ValueError):
+        AntifragilityAssessor().assess(components=[])
 
 
 def test_row54_optionality_scoring():
@@ -264,6 +272,9 @@ def test_row54_optionality_scoring():
         decision="month-to-month office", options_kept=["a", "b", "c"],
         options_closed=["d"], reversible=True)
     assert high["optionality_score"] > low["optionality_score"]
+    with pytest.raises(ValueError):
+        OptionalityAnalyzer().assess(decision="d", options_kept=[], options_closed=[],
+                                     reversible=True)
 
 
 def test_row55_reversibility_doors():
@@ -279,6 +290,10 @@ def test_row55_reversibility_doors():
     mid = assessor.assess(decision="migrate database", undo_cost=5, undo_days=14,
                           blast_radius=5)
     assert mid["classification"] == "costly_reversible"
+    with pytest.raises(ValueError):
+        assessor.assess(decision="d", undo_cost=11.0, undo_days=1.0, blast_radius=1.0)
+    with pytest.raises(ValueError):
+        assessor.assess(decision="d", undo_cost=1.0, undo_days=-1.0, blast_radius=1.0)
 
 
 def test_row56_asymmetry_flags_and_rejects_unbounded():
@@ -292,6 +307,10 @@ def test_row56_asymmetry_flags_and_rejects_unbounded():
     assert by_name["unhedged short"]["flag"].startswith("unbounded downside")
     assert not by_name["safe chore"]["asymmetric"]
     assert out["caveat"] == DECISION_SUPPORT_CAVEAT
+    with pytest.raises(ValueError):
+        AsymmetryFinder().evaluate(options=[])
+    with pytest.raises(ValueError):
+        AsymmetryFinder().evaluate(options=[{"name": "x", "upside": 10.0, "prob_upside": 1.5}])
 
 
 def test_row57_expected_value_ranked_with_sensitivity():
@@ -304,6 +323,10 @@ def test_row57_expected_value_ranked_with_sensitivity():
     assert out["options"][1]["ev"] == pytest.approx(17.0)
     assert out["options"][0]["ev_if_best_+10pp"] > out["options"][0]["ev_if_best_-10pp"]
     assert out["caveat"] == DECISION_SUPPORT_CAVEAT
+    with pytest.raises(ValueError):
+        EVCalculator().compute(options=[])
+    with pytest.raises(ValueError):
+        EVCalculator().compute(options=[{"name": "x", "outcomes": [[0.9, 1.0], [0.9, 2.0]]}])
 
 
 def test_row58_risk_of_ruin_verdicts():
@@ -318,6 +341,10 @@ def test_row58_risk_of_ruin_verdicts():
     assert mc["method"] == "monte_carlo"
     assert 0.0 <= mc["ruin_probability"] <= 1.0
     assert mc["caveat"] == DECISION_SUPPORT_CAVEAT
+    with pytest.raises(ValueError):
+        analyzer.analyze(capital=100.0, bet_size=500.0, win_prob=0.5)
+    with pytest.raises(ValueError):
+        analyzer.analyze(capital=100.0, bet_size=10.0, win_prob=1.5)
 
 
 def test_row59_kelly_sizing():
@@ -331,3 +358,7 @@ def test_row59_kelly_sizing():
     no_edge = sizer.size(win_prob=0.4, payoff_ratio=1.0)
     assert no_edge["recommended"] == 0.0 and "No edge" in no_edge["note"]
     assert out["caveat"] == DECISION_SUPPORT_CAVEAT
+    with pytest.raises(ValueError):
+        sizer.size(win_prob=1.5, payoff_ratio=1.0)
+    with pytest.raises(ValueError):
+        KellySizer(fraction=0.0, cap=0.25)
