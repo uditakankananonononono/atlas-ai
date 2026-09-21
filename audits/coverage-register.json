@@ -1313,7 +1313,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
     },
     {
       "row": 102,
@@ -1325,7 +1326,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
     },
     {
       "row": 103,
@@ -1337,7 +1339,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
     },
     {
       "row": 104,
@@ -1349,7 +1352,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
     },
     {
       "row": 105,
@@ -1361,7 +1365,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
     },
     {
       "row": 106,
@@ -1373,7 +1378,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
     },
     {
       "row": 107,
@@ -1385,7 +1391,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
     },
     {
       "row": 108,
@@ -1397,7 +1404,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
     },
     {
       "row": 109,
@@ -1409,7 +1417,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
     },
     {
       "row": 110,
@@ -1421,7 +1430,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[110-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 111,
@@ -1433,7 +1443,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[111-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 112,
@@ -1445,7 +1456,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[112-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 113,
@@ -1457,7 +1469,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[113-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 114,
@@ -1469,7 +1482,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[114-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 115,
@@ -1481,7 +1495,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_115_power_with_method_caveat",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 116,
@@ -1493,7 +1508,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[116-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 117,
@@ -1505,7 +1521,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[117-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 118,
@@ -1517,7 +1534,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[118-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 119,
@@ -1529,7 +1547,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[119-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 120,
@@ -1541,7 +1560,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_120_meta_analysis",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 121,
@@ -1553,7 +1573,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_121_effect_sizes",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 122,
@@ -1565,7 +1586,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[122-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 123,
@@ -1577,7 +1599,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[123-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 124,
@@ -1589,7 +1612,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[124-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 125,
@@ -1601,7 +1625,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[125-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 126,
@@ -1613,7 +1638,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[126-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 127,
@@ -1625,7 +1651,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[127-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 128,
@@ -1637,7 +1664,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[128-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 129,
@@ -1649,7 +1677,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[129-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 130,
@@ -1661,7 +1690,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[130-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 131,
@@ -1673,7 +1703,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[131-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 132,
@@ -1685,7 +1716,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[132-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 133,
@@ -1697,7 +1729,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[133-",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 134,
@@ -1709,7 +1742,8 @@
       "test_case": "tests/modules/test_m19_research_110_134.py::test_row_134_bayesian_update",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchAnalysisService. Functions: analyze. Boundaries: Deterministic and evidence-bound research methods; no invented papers or outcomes.; evidence-gap map; pre-submission peer-review rubric; evidence_bound; unsupported research feature row",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research artifact depth: provenance-bound method execution plus per-result evaluation, uncertainty, assumption and selective-reporting checks."
     },
     {
       "row": 135,
@@ -1721,7 +1755,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 136,
@@ -1733,7 +1768,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 137,
@@ -1745,7 +1781,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 138,
@@ -1757,7 +1794,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 139,
@@ -1769,7 +1807,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 140,
@@ -1781,7 +1820,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 141,
@@ -1793,7 +1833,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 142,
@@ -1805,7 +1846,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 143,
@@ -1817,7 +1859,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 144,
@@ -1829,7 +1872,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 145,
@@ -1841,7 +1885,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 146,
@@ -1853,7 +1898,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 147,
@@ -1865,7 +1911,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 148,
@@ -1877,7 +1924,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 149,
@@ -1889,7 +1937,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 150,
@@ -1901,7 +1950,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 151,
@@ -1913,7 +1963,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 152,
@@ -1925,7 +1976,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 153,
@@ -1937,7 +1989,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 154,
@@ -1949,7 +2002,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 155,
@@ -1961,7 +2015,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 156,
@@ -1973,7 +2028,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 157,
@@ -1985,7 +2041,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 158,
@@ -1997,7 +2054,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 159,
@@ -2009,7 +2067,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 160,
@@ -2021,7 +2080,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 161,
@@ -2033,7 +2093,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 162,
@@ -2045,7 +2106,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 163,
@@ -2057,7 +2119,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 164,
@@ -2069,7 +2132,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 165,
@@ -2081,7 +2145,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 166,
@@ -2093,7 +2158,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 167,
@@ -2105,7 +2171,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 168,
@@ -2117,7 +2184,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 169,
@@ -2129,7 +2197,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 170,
@@ -2141,7 +2210,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 171,
@@ -2153,7 +2223,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 172,
@@ -2165,7 +2236,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 173,
@@ -2177,7 +2249,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 174,
@@ -2189,7 +2262,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 175,
@@ -2201,7 +2275,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 176,
@@ -2213,7 +2288,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 177,
@@ -2225,7 +2301,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 178,
@@ -2237,7 +2314,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 179,
@@ -2249,7 +2327,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 180,
@@ -2261,7 +2340,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 181,
@@ -2273,7 +2353,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 182,
@@ -2285,7 +2366,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 183,
@@ -2297,7 +2379,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 184,
@@ -2309,7 +2392,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: ResearchMethodError. Functions: slug, capabilities, req, source, statistics, ml, special_ml, causal, timeseries, execute, visit. Boundaries: boundary; Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.; false_negative_review; expert_consent_and_provenance; parallel_trends_evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Research workbench depth: mounted method execution plus diagnostics, leakage/assumption/shift evaluation and uncertainty reporting."
     },
     {
       "row": 185,
@@ -2321,7 +2405,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 186,
@@ -2333,7 +2418,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 187,
@@ -2345,7 +2431,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 188,
@@ -2357,7 +2444,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 189,
@@ -2369,7 +2457,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 190,
@@ -2381,7 +2470,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 191,
@@ -2393,7 +2483,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 192,
@@ -2405,7 +2496,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 193,
@@ -2417,7 +2509,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 194,
@@ -2429,7 +2522,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 195,
@@ -2441,7 +2535,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 196,
@@ -2453,7 +2548,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 197,
@@ -2465,7 +2561,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 198,
@@ -2477,7 +2574,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 199,
@@ -2489,7 +2587,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 200,
@@ -2501,7 +2600,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 201,
@@ -2513,7 +2613,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 202,
@@ -2525,7 +2626,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 203,
@@ -2537,7 +2639,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 204,
@@ -2549,7 +2652,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 205,
@@ -2561,7 +2665,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 206,
@@ -2573,7 +2678,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 207,
@@ -2585,7 +2691,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 208,
@@ -2597,7 +2704,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 209,
@@ -2609,7 +2717,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 210,
@@ -2621,7 +2730,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 211,
@@ -2633,7 +2743,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 212,
@@ -2645,7 +2756,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 213,
@@ -2657,7 +2769,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 214,
@@ -2669,7 +2782,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 215,
@@ -2681,7 +2795,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 216,
@@ -2693,7 +2808,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 217,
@@ -2705,7 +2821,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 218,
@@ -2717,7 +2834,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 219,
@@ -2729,7 +2847,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 220,
@@ -2741,7 +2860,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 221,
@@ -2753,7 +2873,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 222,
@@ -2765,7 +2886,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 223,
@@ -2777,7 +2899,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 224,
@@ -2789,7 +2912,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 225,
@@ -2801,7 +2925,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 226,
@@ -2813,7 +2938,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 227,
@@ -2825,7 +2951,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 228,
@@ -2837,7 +2964,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 229,
@@ -2849,7 +2977,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 230,
@@ -2861,7 +2990,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 231,
@@ -2873,7 +3003,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 232,
@@ -2885,7 +3016,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 233,
@@ -2897,7 +3029,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 234,
@@ -2909,7 +3042,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
     },
     {
       "row": 235,
@@ -2921,7 +3055,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 236,
@@ -2933,7 +3068,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 237,
@@ -2945,7 +3081,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 238,
@@ -2957,7 +3094,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 239,
@@ -2969,7 +3107,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 240,
@@ -2981,7 +3120,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 241,
@@ -2993,7 +3133,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 242,
@@ -3005,7 +3146,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 243,
@@ -3017,7 +3159,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 244,
@@ -3029,7 +3172,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 245,
@@ -3041,7 +3185,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 246,
@@ -3053,7 +3198,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 247,
@@ -3065,7 +3211,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 248,
@@ -3077,7 +3224,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 249,
@@ -3089,7 +3237,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 250,
@@ -3101,7 +3250,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 251,
@@ -3113,7 +3263,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 252,
@@ -3125,7 +3276,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 253,
@@ -3137,7 +3289,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 254,
@@ -3149,7 +3302,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 255,
@@ -3161,7 +3315,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 256,
@@ -3173,7 +3328,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 257,
@@ -3185,7 +3341,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 258,
@@ -3197,7 +3354,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 259,
@@ -3209,7 +3367,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
     },
     {
       "row": 260,
@@ -3221,7 +3380,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 261,
@@ -3233,7 +3393,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 262,
@@ -3245,7 +3406,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 263,
@@ -3257,7 +3419,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 264,
@@ -3269,7 +3432,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 265,
@@ -3281,7 +3445,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 266,
@@ -3293,7 +3458,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 267,
@@ -3305,7 +3471,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 268,
@@ -3317,7 +3484,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 269,
@@ -3329,7 +3497,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 270,
@@ -3341,7 +3510,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 271,
@@ -3353,7 +3523,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 272,
@@ -3365,7 +3536,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 273,
@@ -3377,7 +3549,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 274,
@@ -3389,7 +3562,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 275,
@@ -3401,7 +3575,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 276,
@@ -3413,7 +3588,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 277,
@@ -3425,7 +3601,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 278,
@@ -3437,7 +3614,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 279,
@@ -3449,7 +3627,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 280,
@@ -3461,7 +3640,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
     },
     {
       "row": 281,
@@ -3473,7 +3653,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: CreativeEngine. Functions: redact_imitations, list_artifacts, generate. Boundaries: Specify a color palette (hex values, roles: primary/secondary/accent/background), the emotional rationale per choice, WCAG contrast notes for text pairings, and usage rules. Hex values are proposals for human review, not extracted from any tool.; Specify render settings per quality target (draft/preview/final), the quality-vs-time tradeoff per setting, and a validation plan.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Creative depth already supplies mounted typed specifications with required-section evaluation, accessibility/rights/feasibility checks and uncertainty."
     },
     {
       "row": 282,
@@ -3485,7 +3666,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: CreativeEngine. Functions: redact_imitations, list_artifacts, generate. Boundaries: Specify a color palette (hex values, roles: primary/secondary/accent/background), the emotional rationale per choice, WCAG contrast notes for text pairings, and usage rules. Hex values are proposals for human review, not extracted from any tool.; Specify render settings per quality target (draft/preview/final), the quality-vs-time tradeoff per setting, and a validation plan.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Creative depth already supplies mounted typed specifications with required-section evaluation, accessibility/rights/feasibility checks and uncertainty."
     },
     {
       "row": 283,
@@ -3497,7 +3679,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: CreativeEngine. Functions: redact_imitations, list_artifacts, generate. Boundaries: Specify a color palette (hex values, roles: primary/secondary/accent/background), the emotional rationale per choice, WCAG contrast notes for text pairings, and usage rules. Hex values are proposals for human review, not extracted from any tool.; Specify render settings per quality target (draft/preview/final), the quality-vs-time tradeoff per setting, and a validation plan.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Creative depth already supplies mounted typed specifications with required-section evaluation, accessibility/rights/feasibility checks and uncertainty."
     },
     {
       "row": 284,
@@ -3509,7 +3692,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: CreativeEngine. Functions: redact_imitations, list_artifacts, generate. Boundaries: Specify a color palette (hex values, roles: primary/secondary/accent/background), the emotional rationale per choice, WCAG contrast notes for text pairings, and usage rules. Hex values are proposals for human review, not extracted from any tool.; Specify render settings per quality target (draft/preview/final), the quality-vs-time tradeoff per setting, and a validation plan.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Creative depth already supplies mounted typed specifications with required-section evaluation, accessibility/rights/feasibility checks and uncertainty."
     },
     {
       "row": 285,
@@ -3521,7 +3705,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: CreativeEngine. Functions: redact_imitations, list_artifacts, generate. Boundaries: Specify a color palette (hex values, roles: primary/secondary/accent/background), the emotional rationale per choice, WCAG contrast notes for text pairings, and usage rules. Hex values are proposals for human review, not extracted from any tool.; Specify render settings per quality target (draft/preview/final), the quality-vs-time tradeoff per setting, and a validation plan.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Creative depth already supplies mounted typed specifications with required-section evaluation, accessibility/rights/feasibility checks and uncertainty."
     },
     {
       "row": 286,
@@ -3533,7 +3718,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: CreativeEngine. Functions: redact_imitations, list_artifacts, generate. Boundaries: Specify a color palette (hex values, roles: primary/secondary/accent/background), the emotional rationale per choice, WCAG contrast notes for text pairings, and usage rules. Hex values are proposals for human review, not extracted from any tool.; Specify render settings per quality target (draft/preview/final), the quality-vs-time tradeoff per setting, and a validation plan.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Creative depth already supplies mounted typed specifications with required-section evaluation, accessibility/rights/feasibility checks and uncertainty."
     },
     {
       "row": 287,
@@ -3545,7 +3731,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: CreativeEngine. Functions: redact_imitations, list_artifacts, generate. Boundaries: Specify a color palette (hex values, roles: primary/secondary/accent/background), the emotional rationale per choice, WCAG contrast notes for text pairings, and usage rules. Hex values are proposals for human review, not extracted from any tool.; Specify render settings per quality target (draft/preview/final), the quality-vs-time tradeoff per setting, and a validation plan.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Creative depth already supplies mounted typed specifications with required-section evaluation, accessibility/rights/feasibility checks and uncertainty."
     },
     {
       "row": 288,
