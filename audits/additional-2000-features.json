@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1374,
-    "verified-pushed": 633,
+    "missing": 1362,
+    "verified-pushed": 645,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -15408,9 +15408,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Medication Adherence",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7d989cb8f6cc54c7895be29f0b97e8154c062b98",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1187_1198.py"
+      },
+      "boundary": "Nonjudgmental, consent-centered support only. Preserve missing observations, patient barriers, goals, contraindications, stated identity/preferences and consent checkpoints. Immediate overdose, withdrawal, suicidality or danger requires local human emergency/crisis response; Atlas never prescribes, compels, monitors, contacts services, or treats missing flags as safety."
     },
     {
       "id": 1188,
@@ -15418,9 +15422,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Lifestyle Modification",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7d989cb8f6cc54c7895be29f0b97e8154c062b98",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1187_1198.py"
+      },
+      "boundary": "Nonjudgmental, consent-centered support only. Preserve missing observations, patient barriers, goals, contraindications, stated identity/preferences and consent checkpoints. Immediate overdose, withdrawal, suicidality or danger requires local human emergency/crisis response; Atlas never prescribes, compels, monitors, contacts services, or treats missing flags as safety."
     },
     {
       "id": 1189,
@@ -15428,9 +15436,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Nutrition Planning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7d989cb8f6cc54c7895be29f0b97e8154c062b98",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1187_1198.py"
+      },
+      "boundary": "Nonjudgmental, consent-centered support only. Preserve missing observations, patient barriers, goals, contraindications, stated identity/preferences and consent checkpoints. Immediate overdose, withdrawal, suicidality or danger requires local human emergency/crisis response; Atlas never prescribes, compels, monitors, contacts services, or treats missing flags as safety."
     },
     {
       "id": 1190,
@@ -15438,9 +15450,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Exercise Prescription",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7d989cb8f6cc54c7895be29f0b97e8154c062b98",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1187_1198.py"
+      },
+      "boundary": "Nonjudgmental, consent-centered support only. Preserve missing observations, patient barriers, goals, contraindications, stated identity/preferences and consent checkpoints. Immediate overdose, withdrawal, suicidality or danger requires local human emergency/crisis response; Atlas never prescribes, compels, monitors, contacts services, or treats missing flags as safety."
     },
     {
       "id": 1191,
@@ -15448,9 +15464,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Sleep Hygiene",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7d989cb8f6cc54c7895be29f0b97e8154c062b98",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1187_1198.py"
+      },
+      "boundary": "Nonjudgmental, consent-centered support only. Preserve missing observations, patient barriers, goals, contraindications, stated identity/preferences and consent checkpoints. Immediate overdose, withdrawal, suicidality or danger requires local human emergency/crisis response; Atlas never prescribes, compels, monitors, contacts services, or treats missing flags as safety."
     },
     {
       "id": 1192,
@@ -15458,9 +15478,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Stress Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7d989cb8f6cc54c7895be29f0b97e8154c062b98",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1187_1198.py"
+      },
+      "boundary": "Nonjudgmental, consent-centered support only. Preserve missing observations, patient barriers, goals, contraindications, stated identity/preferences and consent checkpoints. Immediate overdose, withdrawal, suicidality or danger requires local human emergency/crisis response; Atlas never prescribes, compels, monitors, contacts services, or treats missing flags as safety."
     },
     {
       "id": 1193,
@@ -15468,9 +15492,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Substance Abuse Treatment",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7d989cb8f6cc54c7895be29f0b97e8154c062b98",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1187_1198.py"
+      },
+      "boundary": "Nonjudgmental, consent-centered support only. Preserve missing observations, patient barriers, goals, contraindications, stated identity/preferences and consent checkpoints. Immediate overdose, withdrawal, suicidality or danger requires local human emergency/crisis response; Atlas never prescribes, compels, monitors, contacts services, or treats missing flags as safety."
     },
     {
       "id": 1194,
@@ -15478,9 +15506,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Harm Reduction",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7d989cb8f6cc54c7895be29f0b97e8154c062b98",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1187_1198.py"
+      },
+      "boundary": "Nonjudgmental, consent-centered support only. Preserve missing observations, patient barriers, goals, contraindications, stated identity/preferences and consent checkpoints. Immediate overdose, withdrawal, suicidality or danger requires local human emergency/crisis response; Atlas never prescribes, compels, monitors, contacts services, or treats missing flags as safety."
     },
     {
       "id": 1195,
@@ -15488,9 +15520,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Crisis Intervention",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7d989cb8f6cc54c7895be29f0b97e8154c062b98",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1187_1198.py"
+      },
+      "boundary": "Nonjudgmental, consent-centered support only. Preserve missing observations, patient barriers, goals, contraindications, stated identity/preferences and consent checkpoints. Immediate overdose, withdrawal, suicidality or danger requires local human emergency/crisis response; Atlas never prescribes, compels, monitors, contacts services, or treats missing flags as safety."
     },
     {
       "id": 1196,
@@ -15498,9 +15534,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Suicide Prevention",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7d989cb8f6cc54c7895be29f0b97e8154c062b98",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1187_1198.py"
+      },
+      "boundary": "Nonjudgmental, consent-centered support only. Preserve missing observations, patient barriers, goals, contraindications, stated identity/preferences and consent checkpoints. Immediate overdose, withdrawal, suicidality or danger requires local human emergency/crisis response; Atlas never prescribes, compels, monitors, contacts services, or treats missing flags as safety."
     },
     {
       "id": 1197,
@@ -15508,9 +15548,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Trauma-Informed Care",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7d989cb8f6cc54c7895be29f0b97e8154c062b98",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1187_1198.py"
+      },
+      "boundary": "Nonjudgmental, consent-centered support only. Preserve missing observations, patient barriers, goals, contraindications, stated identity/preferences and consent checkpoints. Immediate overdose, withdrawal, suicidality or danger requires local human emergency/crisis response; Atlas never prescribes, compels, monitors, contacts services, or treats missing flags as safety."
     },
     {
       "id": 1198,
@@ -15518,9 +15562,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Culturally Competent Care",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7d989cb8f6cc54c7895be29f0b97e8154c062b98",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1187_1198.py"
+      },
+      "boundary": "Nonjudgmental, consent-centered support only. Preserve missing observations, patient barriers, goals, contraindications, stated identity/preferences and consent checkpoints. Immediate overdose, withdrawal, suicidality or danger requires local human emergency/crisis response; Atlas never prescribes, compels, monitors, contacts services, or treats missing flags as safety."
     },
     {
       "id": 1199,
