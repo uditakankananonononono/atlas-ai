@@ -195,3 +195,17 @@ def legal_support(method: str, data: dict[str, Any]) -> dict[str, Any]:
                       "can_file_or_send":False,"can_sign_or_pay":False,
                       "required_reviewer":data.get("required_reviewer","licensed lawyer in the relevant jurisdiction")}
     return result
+
+# Practitioner-depth envelope for rows 1210-1259. It measures source and input
+# coverage; it never predicts a legal outcome or authorizes filing/contact.
+_original_legal_support = legal_support
+from app.core.depth_quality import attach_quality as _attach_quality
+
+def legal_support(method:str, data:dict[str,Any])->dict[str,Any]:
+    out=_original_legal_support(method,data)
+    evidence=[x for key in ('authorities','sources','evidence') for x in data.get(key,[]) if isinstance(x,dict)]
+    required=['jurisdiction'] + [k for k in ('facts','document','issues','transaction','parties') if k in data]
+    return _attach_quality(out,domain='legal',method=method,inputs=data,
+        required_inputs=required,evidence=evidence,assumptions=data.get('assumptions',[]),
+        limitations=['Draft research work product only; no filing, signature, negotiation, contact, or legal advice.',
+                     'Counsel must verify current law, jurisdiction, deadlines, privilege, conflicts, and facts.'])

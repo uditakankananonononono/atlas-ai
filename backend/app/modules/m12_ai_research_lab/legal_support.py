@@ -95,3 +95,16 @@ def legal_support(method:str,data:dict[str,Any])->dict[str,Any]:
     if method in ETHICS:return _ethics(method,data)
     if method in TECH:return _tech(method,data)
     return _ops(method,data)
+
+# Research-depth envelope for rows 1260-1309.
+_original_legal_support = legal_support
+from app.core.depth_quality import attach_quality as _attach_quality
+
+def legal_support(method:str, data:dict[str,Any])->dict[str,Any]:
+    out=_original_legal_support(method,data)
+    evidence=[x for key in ('authorities','sources','evidence','documents') for x in data.get(key,[]) if isinstance(x,dict)]
+    required=['jurisdiction'] + [k for k in ('facts','record','issues','query','documents') if k in data]
+    return _attach_quality(out,domain='legal',method=method,inputs=data,
+        required_inputs=required,evidence=evidence,assumptions=data.get('assumptions',[]),
+        limitations=['Research and review support only; no legal conclusion, prediction, filing, or representation.',
+                     'Counsel must validate authority currency, record completeness, citations, duties, and deadlines.'])
