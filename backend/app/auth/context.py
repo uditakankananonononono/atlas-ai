@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import httpx
-from cryptography.hazmat.primitives.asymmetric import padding, rsa
+from cryptography.hazmat.primitives.asymmetric import padding, rsa, ec
 from cryptography.hazmat.primitives import hashes
 from fastapi import Header, HTTPException
 
@@ -61,7 +61,7 @@ class OIDCVerifier:
             jwks = await client.get(jwks_uri)
             jwks.raise_for_status()
             keys = jwks.json().get("keys", [])
-        self._keys = {str(k["kid"]): k for k in keys if k.get("kid") and k.get("kty") == "RSA" and k.get("use", "sig") == "sig"}
+        self._keys = {str(k["kid"]): k for k in keys if k.get("kid") and k.get("kty") in {"RSA", "EC"} and k.get("use", "sig") == "sig"}
         if not self._keys:
             raise HTTPException(503, "OIDC provider returned no signing keys")
         self._expires = time.monotonic() + self.cache_seconds
@@ -74,7 +74,7 @@ class OIDCVerifier:
             header = json.loads(_decode(parts[0])); claims = json.loads(_decode(parts[1]))
         except (json.JSONDecodeError, UnicodeDecodeError) as exc:
             raise HTTPException(401, "malformed bearer token") from exc
-        if header.get("alg") != "RS256" or not header.get("kid"):
+        if header.get("alg") not in {"RS256", "ES256"} or not header.get("kid"):
             raise HTTPException(401, "unsupported bearer-token signature")
         kid = str(header["kid"])
         if time.monotonic() >= self._expires or kid not in self._keys:
@@ -90,10 +90,20 @@ class OIDCVerifier:
         if not jwk:
             raise HTTPException(401, "unknown bearer-token signing key")
         try:
-            n = int.from_bytes(_decode(str(jwk["n"])), "big"); e = int.from_bytes(_decode(str(jwk["e"])), "big")
-            rsa.RSAPublicNumbers(e, n).public_key().verify(
-                _decode(parts[2]), f"{parts[0]}.{parts[1]}".encode(), padding.PKCS1v15(), hashes.SHA256()
-            )
+            signing_input = f"{parts[0]}.{parts[1]}".encode()
+            signature = _decode(parts[2])
+            if header["alg"] == "RS256" and jwk.get("kty") == "RSA":
+                n = int.from_bytes(_decode(str(jwk["n"])), "big"); e = int.from_bytes(_decode(str(jwk["e"])), "big")
+                rsa.RSAPublicNumbers(e, n).public_key().verify(signature, signing_input, padding.PKCS1v15(), hashes.SHA256())
+            elif header["alg"] == "ES256" and jwk.get("kty") == "EC" and jwk.get("crv") == "P-256":
+                if len(signature) != 64:
+                    raise ValueError("invalid ES256 signature length")
+                from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
+                der = encode_dss_signature(int.from_bytes(signature[:32], "big"), int.from_bytes(signature[32:], "big"))
+                x = int.from_bytes(_decode(str(jwk["x"])), "big"); y = int.from_bytes(_decode(str(jwk["y"])), "big")
+                ec.EllipticCurvePublicNumbers(x, y, ec.SECP256R1()).public_key().verify(der, signing_input, ec.ECDSA(hashes.SHA256()))
+            else:
+                raise ValueError("token algorithm does not match signing key")
         except Exception as exc:
             raise HTTPException(401, "invalid bearer-token signature") from exc
         now = int(time.time()); leeway = int(os.getenv("ATLAS_OIDC_CLOCK_SKEW_SECONDS", "30"))

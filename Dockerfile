@@ -12,6 +12,8 @@ COPY --from=builder /wheels /wheels
 RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels
 COPY --chown=atlas:atlas backend ./backend
 COPY --chown=atlas:atlas scripts ./scripts
+COPY --chown=atlas:atlas migrations ./migrations
+COPY --chown=atlas:atlas alembic.ini ./alembic.ini
 USER atlas
 EXPOSE 8080
-CMD ["sh","-c","python scripts/validate_config.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080} --proxy-headers"]
+CMD ["sh","-c","python scripts/validate_config.py && python scripts/migrate.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080} --proxy-headers"]

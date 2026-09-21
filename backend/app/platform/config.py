@@ -34,11 +34,12 @@ class ProductionConfig:
             limit=int(e.get("ATLAS_RATE_LIMIT_PER_MINUTE","120")); timeout=float(e.get("ATLAS_REQUEST_TIMEOUT_SECONDS","30"))
         except ValueError as exc: raise ConfigError("rate limit and timeout must be numeric") from exc
         if limit < 1 or timeout <= 0: raise ConfigError("rate limit and timeout must be positive")
-        if provider not in {"environment","gcp-secret-manager","vault-literal"}: raise ConfigError("unsupported ATLAS_SECRET_PROVIDER")
+        if provider not in {"environment","platform-environment","gcp-secret-manager","vault-literal"}: raise ConfigError("unsupported ATLAS_SECRET_PROVIDER")
         if environment == "production":
             database_url=required("ATLAS_DATABASE_URL"); redis_url=required("ATLAS_REDIS_URL")
             issuer=required("ATLAS_OIDC_ISSUER"); audience=required("ATLAS_OIDC_AUDIENCE")
             if urlparse(database_url).scheme not in {"postgresql","postgresql+psycopg"}: raise ConfigError("production database must be PostgreSQL")
             if urlparse(redis_url).scheme not in {"redis","rediss"}: raise ConfigError("production cache must be Redis")
             if provider == "environment": raise ConfigError("production requires an external secret provider")
+            if provider == "platform-environment" and e.get("ATLAS_TRUST_PLATFORM_SECRETS") != "1": raise ConfigError("platform environment secrets require explicit trust")
         return cls(environment,database_url,redis_url,provider,issuer,audience,limit,timeout,e.get("ATLAS_LOG_LEVEL","INFO"))

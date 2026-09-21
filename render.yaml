@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: atlas-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ATLAS_ENV
+        value: production
+      - key: ATLAS_DATABASE_URL
+        sync: false
+      - key: ATLAS_REDIS_URL
+        sync: false
+      - key: ATLAS_SECRET_PROVIDER
+        value: platform-environment
+      - key: ATLAS_TRUST_PLATFORM_SECRETS
+        value: "1"
+      - key: ATLAS_OIDC_ISSUER
+        sync: false
+      - key: ATLAS_OIDC_AUDIENCE
+        value: authenticated
+      - key: ATLAS_OIDC_TENANT_CLAIM
+        value: sub
+      - key: ATLAS_RATE_LIMIT_PER_MINUTE
+        value: "60"
+      - key: ATLAS_REQUEST_TIMEOUT_SECONDS
+        value: "25"
+      - key: ATLAS_LOG_LEVEL
+        value: INFO
+      - key: ATLAS_FREE_TIER
+        value: "1"
+      - key: ATLAS_LOCAL_OLLAMA_ENABLED
+        value: "0"
