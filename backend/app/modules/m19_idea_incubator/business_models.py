@@ -21,7 +21,7 @@ class BusinessAnalysisRequest(BaseModel):
   if not v:raise ValueError("inputs are required; Atlas will not invent market evidence")
   return v
 class BusinessArtifact(BaseModel):
- id:str=Field(default_factory=lambda:str(uuid4()));idea_id:str;feature:BusinessFeature;method:str;inputs:dict[str,Any];assumptions:list[Assumption];provenance:list[Provenance];result:dict[str,Any];uncertainty:Uncertainty;decision:dict[str,Any];created_at:datetime=Field(default_factory=lambda:datetime.now(timezone.utc))
+ id:str=Field(default_factory=lambda:str(uuid4()));idea_id:str;feature:BusinessFeature;method:str;inputs:dict[str,Any];assumptions:list[Assumption];provenance:list[Provenance];result:dict[str,Any];uncertainty:Uncertainty;evaluation:dict[str,Any];decision:dict[str,Any];created_at:datetime=Field(default_factory=lambda:datetime.now(timezone.utc))
 
 class MarketSizingInput(BaseModel): total_entities:float=Field(gt=0);annual_revenue_per_entity:float=Field(ge=0);serviceable_fraction:float=Field(gt=0,le=1);obtainable_fraction:float=Field(gt=0,le=1)
 class ViralInput(BaseModel): invitations_per_user:float=Field(ge=0);invite_conversion_rate:float=Field(ge=0,le=1);cycle_days:float=Field(gt=0)

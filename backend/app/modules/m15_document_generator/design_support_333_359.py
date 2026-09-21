@@ -9,7 +9,7 @@ DISCLAIMER="Design decision support only. Validate with domain specialists, affe
 def _base(fid,d):
  if fid not in FEATURES:raise ValueError('feature_id must be 333-359')
  if not d.get('brief') or not d.get('decision_owner'):raise ValueError('brief and decision_owner are required')
- return {'feature_id':fid,'concept':FEATURES[fid],'brief':d['brief'],'decision_owner':d['decision_owner'],'assumptions':d.get('assumptions',[]),'unknowns':d.get('unknowns',[]),'review_required':True,'disclaimer':DISCLAIMER}
+ return {'feature_id':fid,'concept':FEATURES[fid],'brief':d['brief'],'decision_owner':d['decision_owner'],'assumptions':d.get('assumptions',[]),'unknowns':d.get('unknowns',[]),'review_required':True,'evaluation':{'acceptance_criteria':d.get('acceptance_criteria',[]),'verification_plan':d.get('verification_plan',[]),'affected_people_review':d.get('affected_people_review',[])},'uncertainty':{'level':'not_quantified','drivers':['prototype not executed','participant and context variation','open unknowns'],'release_or_safety_claimed':False},'disclaimer':DISCLAIMER}
 def _product(fid,d):
  o=_base(fid,d);requirements=d.get('requirements',[]);hazards=d.get('hazards',[])
  if not requirements or not hazards:raise ValueError('requirements and hazards are required')

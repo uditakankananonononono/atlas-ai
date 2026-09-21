@@ -16,7 +16,7 @@ class OperationsAnalysisRequest(BaseModel):
   if not v:raise ValueError("inputs are required; no operational facts will be invented")
   return v
 class OperationsArtifact(BaseModel):
- id:str=Field(default_factory=lambda:str(uuid4()));idea_id:str;feature:OperationsFeature;method:str;inputs:dict[str,Any];provenance:list[Provenance];assumptions:list[Assumption];analysis:dict[str,Any];uncertainty:Uncertainty;plan:dict[str,Any];execution_status:Literal["not_executed"]="not_executed";created_at:datetime=Field(default_factory=lambda:datetime.now(timezone.utc))
+ id:str=Field(default_factory=lambda:str(uuid4()));idea_id:str;feature:OperationsFeature;method:str;inputs:dict[str,Any];provenance:list[Provenance];assumptions:list[Assumption];analysis:dict[str,Any];uncertainty:Uncertainty;evaluation:dict[str,Any];plan:dict[str,Any];execution_status:Literal["not_executed"]="not_executed";created_at:datetime=Field(default_factory=lambda:datetime.now(timezone.utc))
 class Vendor(BaseModel): id:str;cost:float=Field(ge=0);quality:float=Field(ge=0,le=100);delivery:float=Field(ge=0,le=100);risk:float=Field(ge=0,le=100)
 class DemandInput(BaseModel): history:list[float]=Field(min_length=2);horizon:int=Field(default=1,ge=1,le=52);window:int=Field(default=3,ge=1)
 class InventoryInput(BaseModel): annual_demand:float=Field(gt=0);order_cost:float=Field(gt=0);annual_holding_cost_per_unit:float=Field(gt=0);lead_time_days:float=Field(ge=0);daily_demand:float=Field(ge=0);safety_stock:float=Field(default=0,ge=0)

@@ -244,6 +244,8 @@ class CreativeEngine:
             kind=slug,
             title=spec.title,
             sections=sections,
+            evaluation={"required_sections": list(spec.section_keys), "observed_sections": sorted(sections), "review_checks": ["originality", "accessibility", "technical feasibility", "rights"], "human_review_required": True},
+            uncertainty={"level": "not_quantified", "drivers": ["unrendered specification", "caller-supplied constraints", "human aesthetic judgment"], "render_or_physical_result_claimed": False},
             inputs=inputs,
             model=model,
         )

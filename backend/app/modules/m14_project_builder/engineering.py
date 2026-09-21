@@ -759,6 +759,8 @@ class DesignDocument:
     title: str
     markdown: str
     generated_at: str
+    evaluation: Dict[str, object] = field(default_factory=dict)
+    uncertainty: Dict[str, object] = field(default_factory=dict)
 
 
 def generate_design(
@@ -797,6 +799,8 @@ def generate_design(
     return DesignDocument(
         kind=spec.kind, row=spec.row, title=spec.title,
         markdown="\n".join(lines), generated_at=stamp,
+        evaluation={"required_sections": list(spec.required_sections), "context_sections_supplied": sorted(context), "validation_required": True},
+        uncertainty={"level": "not_quantified", "drivers": ["design assumptions", "unimplemented system", "unmeasured workload and operating conditions"], "deployment_or_performance_claimed": False},
     )
 
 

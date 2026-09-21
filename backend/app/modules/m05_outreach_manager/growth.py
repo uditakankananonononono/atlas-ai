@@ -63,6 +63,8 @@ class BusinessArtifact(BaseModel):
     scope_checks: list[str]
     gated_effects: list[str]
     manual_steps: list[str]
+    evaluation: dict[str, Any] = Field(default_factory=dict)
+    uncertainty: dict[str, Any] = Field(default_factory=dict)
 
 
 # --- typed inputs --------------------------------------------------------------
@@ -227,6 +229,8 @@ def _artifact(
             *(gated_effects or []),
         ],
         manual_steps=manual_steps or [],
+        evaluation={"evidence_items": len(evidence), "sections_checked": [section.title for section in sections], "human_review_required": True},
+        uncertainty={"level": "not_quantified", "drivers": ["caller-supplied evidence", "market and organizational change", "implementation quality"], "external_effect_or_outcome_claimed": False},
     )
 
 
