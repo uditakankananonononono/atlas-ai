@@ -4,8 +4,20 @@ from .models import RouteRequest
 from .schemas import RunIn,WorkflowIn
 from .workflow import Workflow,WorkflowValidationError
 router=APIRouter(prefix="/ai-research-lab",tags=["ai-research-lab"])
-def get_service(): raise RuntimeError("bind Module 12 Service/provider in app dependency overrides")
-def get_dag_engine(): raise RuntimeError("bind Celery-backed DagEngine in app dependency overrides")
+_service=None
+_dag=None
+def get_service():
+ global _service
+ if _service is None:
+  from .wiring import build_service
+  _service=build_service()
+ return _service
+def get_dag_engine():
+ global _dag
+ if _dag is None:
+  from .wiring import build_dag_engine
+  _dag=build_dag_engine(get_service())
+ return _dag
 @router.post("/run")
 async def run(body:RunIn,tenant:TenantContext=Depends(require_tenant),service=Depends(get_service)):
     try:return await service.execute(RouteRequest(body.task_type,body.output_tokens,body.budget_cents,body.latency_tolerance_ms,tenant.tenant_id),body.prompt)
