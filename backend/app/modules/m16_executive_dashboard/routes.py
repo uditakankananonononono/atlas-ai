@@ -1,5 +1,5 @@
 import asyncio,json
-from fastapi import APIRouter,Depends,HTTPException,Request
+from fastapi import Header, APIRouter,Depends,HTTPException,Request
 from fastapi.responses import StreamingResponse
 from app.auth.context import TenantContext,require_tenant
 from .repository import SqlDashboardRepository
@@ -228,9 +228,12 @@ def finance_methods():
     return [FinanceMethodInfo(method=m,feature_row=row) for m,row in ROWS.items()]
 
 @router.post("/finance/analyze")
-def finance_analyze(data:FinanceAnalysisIn):
+def finance_analyze(data:FinanceAnalysisIn,x_tenant_id:str=Header(min_length=1,alias="X-Tenant-ID"),x_actor_id:str=Header(min_length=1,alias="X-Actor-ID")):
     from .finance import run
-    try:return run(data.method,data.data,data.seed)
+    try:
+        result=run(data.method,data.data,data.seed)
+        result["scope"]={"tenant_id":x_tenant_id,"actor_id":x_actor_id}
+        return result
     except ValueError as e:raise HTTPException(422,str(e))
 
 # Direct, mounted semantic surface for emerging capability rows 910-959.
