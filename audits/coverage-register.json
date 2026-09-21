@@ -3071,11 +3071,11 @@
       "description": "Splits large problems",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_235_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 235 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 236,
@@ -3084,11 +3084,11 @@
       "description": "Alternates between subproblems",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_236_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 236 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 237,
@@ -3097,11 +3097,11 @@
       "description": "Optimizes one variable at a time",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_237_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 237 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 238,
@@ -3110,11 +3110,11 @@
       "description": "Handles non-smooth objectives",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_238_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 238 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 239,
@@ -3123,11 +3123,11 @@
       "description": "Solves constrained problems",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_239_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 239 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 240,
@@ -3136,11 +3136,11 @@
       "description": "Iteratively refines approximations",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_240_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 240 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 241,
@@ -3149,11 +3149,11 @@
       "description": "Prunes search space",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_241_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 241 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 242,
@@ -3162,11 +3162,11 @@
       "description": "Handles many variables",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_242_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 242 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 243,
@@ -3175,11 +3175,11 @@
       "description": "Separates complicating variables",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_243_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 243 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 244,
@@ -3188,11 +3188,11 @@
       "description": "Relaxes constraints",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_244_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 244 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 245,
@@ -3201,11 +3201,11 @@
       "description": "Optimizes over matrices",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_245_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 245 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 246,
@@ -3214,11 +3214,11 @@
       "description": "Handles quadratic constraints",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_246_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 246 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 247,
@@ -3227,11 +3227,11 @@
       "description": "Solves posynomial problems",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_247_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 247 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 248,
@@ -3240,11 +3240,11 @@
       "description": "Optimizes ratios",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_248_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 248 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 249,
@@ -3253,11 +3253,11 @@
       "description": "Handles hierarchical decisions",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_249_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 249 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 250,
@@ -3266,11 +3266,11 @@
       "description": "Learns from noisy observations",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_250_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 250 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 251,
@@ -3279,11 +3279,11 @@
       "description": "Adapts to streaming data",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_251_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 251 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 252,
@@ -3292,11 +3292,11 @@
       "description": "Balances exploration and exploitation",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_252_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 252 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 253,
@@ -3305,11 +3305,11 @@
       "description": "Uses side information",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_253_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 253 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 254,
@@ -3318,11 +3318,11 @@
       "description": "Bayesian approach to bandits",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_254_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 254 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 255,
@@ -3331,11 +3331,11 @@
       "description": "Optimistic exploration",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_255_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 255 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 256,
@@ -3344,11 +3344,11 @@
       "description": "Combines predictions",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_256_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 256 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 257,
@@ -3357,11 +3357,11 @@
       "description": "Learns optimal strategies",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_257_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 257 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 258,
@@ -3370,11 +3370,11 @@
       "description": "Converges to equilibria",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_258_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 258 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 259,
@@ -3383,11 +3383,11 @@
       "description": "Models learning in games",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_259_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 259 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 260,
@@ -3396,11 +3396,11 @@
       "description": "Creates unexpected comparisons that illuminate",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_260_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 260 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 261,
@@ -3409,11 +3409,11 @@
       "description": "Builds compelling story structures",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_261_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 261 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 262,
@@ -3422,11 +3422,11 @@
       "description": "Creates multi-dimensional fictional people",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_262_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 262 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 263,
@@ -3435,11 +3435,11 @@
       "description": "Generates natural conversation",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_263_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 263 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 264,
@@ -3448,11 +3448,11 @@
       "description": "Creates coherent fictional universes",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_264_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 264 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 265,
@@ -3461,11 +3461,11 @@
       "description": "Surprises while maintaining plausibility",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_265_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 265 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 266,
@@ -3474,11 +3474,11 @@
       "description": "Plants subtle hints",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_266_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 266 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 267,
@@ -3487,11 +3487,11 @@
       "description": "Creates and releases dramatic tension",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_267_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 267 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 268,
@@ -3500,11 +3500,11 @@
       "description": "Manages story rhythm",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_268_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 268 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 269,
@@ -3513,11 +3513,11 @@
       "description": "Creates distinctive narrative voices",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_269_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 269 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 270,
@@ -3526,11 +3526,11 @@
       "description": "Combines conventions innovatively",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_270_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 270 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 271,
@@ -3539,11 +3539,11 @@
       "description": "Plays with and against expectations",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_271_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 271 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 272,
@@ -3552,11 +3552,11 @@
       "description": "Invents foundational stories",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_272_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 272 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 273,
@@ -3565,11 +3565,11 @@
       "description": "Creates verse in various forms",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_273_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 273 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 274,
@@ -3578,11 +3578,11 @@
       "description": "Writes lyrics with meter and rhyme",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_274_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 274 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 275,
@@ -3591,11 +3591,11 @@
       "description": "Structures for visual media",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_275_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 275 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 276,
@@ -3604,11 +3604,11 @@
       "description": "Handles theatrical constraints",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_276_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 276 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 277,
@@ -3617,11 +3617,11 @@
       "description": "Balances words and visuals",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_277_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 277 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 278,
@@ -3630,11 +3630,11 @@
       "description": "Creates branching narratives",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_278_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 278 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 279,
@@ -3643,11 +3643,11 @@
       "description": "Integrates story with mechanics",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_279_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 279 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 280,
@@ -3656,11 +3656,11 @@
       "description": "Plans sequential visuals",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "test_path": "tests/modules/test_m20_optimization_story_235_280.py",
-      "test_case": null,
+      "test_case": "test_row_280_distinct_optimization/story_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 280 executes distinct input-derived optimization/story behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 281,
@@ -11296,11 +11296,11 @@
       "description": "Contextualizes",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_860_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 860 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 861,
@@ -11309,11 +11309,11 @@
       "description": "Evaluates arguments",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_861_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 861 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 862,
@@ -11322,11 +11322,11 @@
       "description": "Generates novel ideas",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_862_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 862 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 863,
@@ -11335,11 +11335,11 @@
       "description": "Approaches indirectly",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_863_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 863 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 864,
@@ -11348,11 +11348,11 @@
       "description": "Generates many ideas",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_864_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 864 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 865,
@@ -11361,11 +11361,11 @@
       "description": "Narrows to best",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_865_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 865 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 866,
@@ -11374,11 +11374,11 @@
       "description": "Connects concepts",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_866_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 866 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 867,
@@ -11387,11 +11387,11 @@
       "description": "Changes perspective",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_867_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 867 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 868,
@@ -11400,11 +11400,11 @@
       "description": "Sees differently",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_868_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 868 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 869,
@@ -11413,11 +11413,11 @@
       "description": "Changes fundamental assumptions",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_869_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 869 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 870,
@@ -11426,11 +11426,11 @@
       "description": "Creates categories",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_870_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 870 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 871,
@@ -11439,11 +11439,11 @@
       "description": "Visualizes relationships",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_871_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 871 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 872,
@@ -11452,11 +11452,11 @@
       "description": "Radiates associations",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_872_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 872 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 873,
@@ -11465,11 +11465,11 @@
       "description": "Structures information",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_873_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 873 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 874,
@@ -11478,11 +11478,11 @@
       "description": "Classifies",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_874_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 874 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 875,
@@ -11491,11 +11491,11 @@
       "description": "Formalizes concepts",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_875_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 875 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 876,
@@ -11504,11 +11504,11 @@
       "description": "Links meanings",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_876_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 876 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 877,
@@ -11517,11 +11517,11 @@
       "description": "Builds frameworks",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_877_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 877 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 878,
@@ -11530,11 +11530,11 @@
       "description": "Creates representations",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_878_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 878 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 879,
@@ -11543,11 +11543,11 @@
       "description": "Revises understanding",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_879_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 879 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 880,
@@ -11556,11 +11556,11 @@
       "description": "Changes mind",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_880_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 880 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 881,
@@ -11569,11 +11569,11 @@
       "description": "Shifts paradigms",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_881_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 881 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 882,
@@ -11582,11 +11582,11 @@
       "description": "Transforms understanding",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_882_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 882 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 883,
@@ -11595,11 +11595,11 @@
       "description": "Teaches to learn",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_883_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 883 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 884,
@@ -11608,11 +11608,11 @@
       "description": "Practices actively",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_884_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 884 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 885,
@@ -11621,11 +11621,11 @@
       "description": "Watches others",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_885_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 885 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 886,
@@ -11634,11 +11634,11 @@
       "description": "Copies behavior",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_886_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 886 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 887,
@@ -11647,11 +11647,11 @@
       "description": "Experiments",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_887_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 887 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 888,
@@ -11660,11 +11660,11 @@
       "description": "Sudden understanding",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_888_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 888 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 889,
@@ -11673,11 +11673,11 @@
       "description": "Connects stimuli",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_889_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 889 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 890,
@@ -11686,11 +11686,11 @@
       "description": "Associates stimuli",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_890_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 890 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 891,
@@ -11699,11 +11699,11 @@
       "description": "Associates behavior and consequence",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_891_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 891 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 892,
@@ -11712,11 +11712,11 @@
       "description": "Learns from models",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_892_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 892 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 893,
@@ -11725,11 +11725,11 @@
       "description": "Learns from others",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_893_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 893 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 894,
@@ -11738,11 +11738,11 @@
       "description": "Learns from others' experience",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_894_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 894 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 895,
@@ -11751,11 +11751,11 @@
       "description": "Learns from experience",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_895_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 895 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 896,
@@ -11764,11 +11764,11 @@
       "description": "Learns from reflection",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_896_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 896 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 897,
@@ -11777,11 +11777,11 @@
       "description": "Learns while solving",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_897_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 897 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 898,
@@ -11790,11 +11790,11 @@
       "description": "Learns through projects",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_898_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 898 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 899,
@@ -11803,11 +11803,11 @@
       "description": "Learns through problems",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_899_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 899 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 900,
@@ -11816,11 +11816,11 @@
       "description": "Learns through questions",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_900_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 900 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 901,
@@ -11829,11 +11829,11 @@
       "description": "Learns through exploration",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_901_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 901 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 902,
@@ -11842,11 +11842,11 @@
       "description": "Learns with support",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_902_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 902 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 903,
@@ -11855,11 +11855,11 @@
       "description": "Learns from teaching",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_903_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 903 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 904,
@@ -11868,11 +11868,11 @@
       "description": "Learns from clear explanation",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_904_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 904 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 905,
@@ -11881,11 +11881,11 @@
       "description": "Learns without awareness",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_905_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 905 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 906,
@@ -11894,11 +11894,11 @@
       "description": "Learns by accident",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_906_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 906 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 907,
@@ -11907,11 +11907,11 @@
       "description": "Learns deliberately",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_907_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 907 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 908,
@@ -11920,11 +11920,11 @@
       "description": "Learns in institutions",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_908_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 908 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 909,
@@ -11933,11 +11933,11 @@
       "description": "Learns in daily life",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
       "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
-      "test_case": null,
+      "test_case": "test_row_909_distinct_cognitive_learning_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 909 executes distinct input-derived cognitive learning behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 910,
@@ -24081,600 +24081,650 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Narrative Theory",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1860_narrative_theory]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1860_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Narrative Theory uses distinct handler narrative_theory, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1860 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1861,
       "category": "Specialized Domain Expertise",
       "requirement": "Reader Response",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1861_reader_response]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1861_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Reader Response uses distinct handler reader_response, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1861 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1862,
       "category": "Specialized Domain Expertise",
       "requirement": "Deconstruction",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1862_deconstruction]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1862_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Deconstruction uses distinct handler deconstruction, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1862 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1863,
       "category": "Specialized Domain Expertise",
       "requirement": "Psychoanalytic Criticism",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1863_psychoanalytic_criticism]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1863_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Psychoanalytic Criticism uses distinct handler psychoanalytic_criticism, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1863 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1864,
       "category": "Specialized Domain Expertise",
       "requirement": "Marxist Criticism",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1864_marxist_criticism]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1864_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Marxist Criticism uses distinct handler marxist_criticism, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1864 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1865,
       "category": "Specialized Domain Expertise",
       "requirement": "Feminist Criticism",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1865_feminist_criticism]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1865_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Feminist Criticism uses distinct handler feminist_criticism, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1865 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1866,
       "category": "Specialized Domain Expertise",
       "requirement": "Postcolonial Criticism",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1866_postcolonial_criticism]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1866_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Postcolonial Criticism uses distinct handler postcolonial_criticism, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1866 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1867,
       "category": "Specialized Domain Expertise",
       "requirement": "Ecocriticism",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1867_ecocriticism]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1867_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Ecocriticism uses distinct handler ecocriticism, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1867 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1868,
       "category": "Specialized Domain Expertise",
       "requirement": "Linguistics",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1868_linguistics]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1868_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Linguistics uses distinct handler linguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1868 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1869,
       "category": "Specialized Domain Expertise",
       "requirement": "Phonetics",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1869_phonetics]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1869_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Phonetics uses distinct handler phonetics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1869 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1870,
       "category": "Specialized Domain Expertise",
       "requirement": "Phonology",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1870_phonology]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1870_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Phonology uses distinct handler phonology, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1870 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1871,
       "category": "Specialized Domain Expertise",
       "requirement": "Morphology",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1871_morphology]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1871_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Morphology uses distinct handler morphology, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1871 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1872,
       "category": "Specialized Domain Expertise",
       "requirement": "Syntax",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1872_syntax]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1872_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Syntax uses distinct handler syntax, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1872 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1873,
       "category": "Specialized Domain Expertise",
       "requirement": "Semantics",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1873_semantics]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1873_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Semantics uses distinct handler semantics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1873 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1874,
       "category": "Specialized Domain Expertise",
       "requirement": "Pragmatics",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1874_pragmatics]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1874_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Pragmatics uses distinct handler pragmatics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1874 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1875,
       "category": "Specialized Domain Expertise",
       "requirement": "Sociolinguistics",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1875_sociolinguistics]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1875_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Sociolinguistics uses distinct handler sociolinguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1875 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1876,
       "category": "Specialized Domain Expertise",
       "requirement": "Psycholinguistics",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1876_psycholinguistics]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1876_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Psycholinguistics uses distinct handler psycholinguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1876 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1877,
       "category": "Specialized Domain Expertise",
       "requirement": "Neurolinguistics",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1877_neurolinguistics]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1877_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Neurolinguistics uses distinct handler neurolinguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1877 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1878,
       "category": "Specialized Domain Expertise",
       "requirement": "Historical Linguistics",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1878_historical_linguistics]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1878_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Historical Linguistics uses distinct handler historical_linguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1878 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1879,
       "category": "Specialized Domain Expertise",
       "requirement": "Comparative Linguistics",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1879_comparative_linguistics]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1879_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Comparative Linguistics uses distinct handler comparative_linguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1879 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1880,
       "category": "Specialized Domain Expertise",
       "requirement": "Computational Linguistics",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1880_computational_linguistics]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1880_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Computational Linguistics uses distinct handler computational_linguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1880 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1881,
       "category": "Specialized Domain Expertise",
       "requirement": "Corpus Linguistics",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1881_corpus_linguistics]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1881_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Corpus Linguistics uses distinct handler corpus_linguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1881 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1882,
       "category": "Specialized Domain Expertise",
       "requirement": "Translation Studies",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1882_translation_studies]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1882_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Translation Studies uses distinct handler translation_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1882 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1883,
       "category": "Specialized Domain Expertise",
       "requirement": "Interpretation Studies",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1883_interpretation_studies]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1883_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Interpretation Studies uses distinct handler interpretation_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1883 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1884,
       "category": "Specialized Domain Expertise",
       "requirement": "Religion",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1884_religion]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1884_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Religion uses distinct handler religion, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1884 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1885,
       "category": "Specialized Domain Expertise",
       "requirement": "Theology",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1885_theology]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1885_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Theology uses distinct handler theology, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1885 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1886,
       "category": "Specialized Domain Expertise",
       "requirement": "Comparative Religion",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1886_comparative_religion]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1886_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Comparative Religion uses distinct handler comparative_religion, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1886 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1887,
       "category": "Specialized Domain Expertise",
       "requirement": "History of Religion",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1887_history_of_religion]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1887_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: History of Religion uses distinct handler history_of_religion, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1887 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1888,
       "category": "Specialized Domain Expertise",
       "requirement": "Sociology of Religion",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1888_sociology_of_religion]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1888_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Sociology of Religion uses distinct handler sociology_of_religion, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1888 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1889,
       "category": "Specialized Domain Expertise",
       "requirement": "Psychology of Religion",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1889_psychology_of_religion]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1889_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Psychology of Religion uses distinct handler psychology_of_religion, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1889 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1890,
       "category": "Specialized Domain Expertise",
       "requirement": "Anthropology of Religion",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1890_anthropology_of_religion]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1890_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Anthropology of Religion uses distinct handler anthropology_of_religion, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1890 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1891,
       "category": "Specialized Domain Expertise",
       "requirement": "Mythology",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1891_mythology]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1891_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Mythology uses distinct handler mythology, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1891 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1892,
       "category": "Specialized Domain Expertise",
       "requirement": "Folklore",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1892_folklore]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1892_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Folklore uses distinct handler folklore, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1892 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1893,
       "category": "Specialized Domain Expertise",
       "requirement": "Ritual Studies",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1893_ritual_studies]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1893_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Ritual Studies uses distinct handler ritual_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1893 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1894,
       "category": "Specialized Domain Expertise",
       "requirement": "Art History",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1894_art_history]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1894_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Art History uses distinct handler art_history, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1894 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1895,
       "category": "Specialized Domain Expertise",
       "requirement": "Visual Culture",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1895_visual_culture]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1895_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Visual Culture uses distinct handler visual_culture, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1895 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1896,
       "category": "Specialized Domain Expertise",
       "requirement": "Architecture",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1896_architecture]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1896_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Architecture uses distinct handler architecture, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1896 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1897,
       "category": "Specialized Domain Expertise",
       "requirement": "Musicology",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1897_musicology]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1897_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Musicology uses distinct handler musicology, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1897 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1898,
       "category": "Specialized Domain Expertise",
       "requirement": "Ethnomusicology",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1898_ethnomusicology]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1898_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Ethnomusicology uses distinct handler ethnomusicology, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1898 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1899,
       "category": "Specialized Domain Expertise",
       "requirement": "Film Studies",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1899_film_studies]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1899_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Film Studies uses distinct handler film_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1899 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1900,
       "category": "Specialized Domain Expertise",
       "requirement": "Media Studies",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1900_media_studies]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1900_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Media Studies uses distinct handler media_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1900 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1901,
       "category": "Specialized Domain Expertise",
       "requirement": "Performance Studies",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1901_performance_studies]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1901_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Performance Studies uses distinct handler performance_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1901 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1902,
       "category": "Specialized Domain Expertise",
       "requirement": "Dance Studies",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1902_dance_studies]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1902_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Dance Studies uses distinct handler dance_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1902 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1903,
       "category": "Specialized Domain Expertise",
       "requirement": "Theater Studies",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1903_theater_studies]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1903_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Theater Studies uses distinct handler theater_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1903 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1904,
       "category": "Specialized Domain Expertise",
       "requirement": "Cultural Studies",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1904_cultural_studies]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1904_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Cultural Studies uses distinct handler cultural_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1904 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1905,
       "category": "Specialized Domain Expertise",
       "requirement": "Popular Culture",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1905_popular_culture]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1905_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Popular Culture uses distinct handler popular_culture, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1905 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1906,
       "category": "Specialized Domain Expertise",
       "requirement": "Subculture Studies",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1906_subculture_studies]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1906_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Subculture Studies uses distinct handler subculture_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1906 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1907,
       "category": "Specialized Domain Expertise",
       "requirement": "Museum Studies",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1907_museum_studies]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1907_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Museum Studies uses distinct handler museum_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1907 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1908,
       "category": "Specialized Domain Expertise",
       "requirement": "Heritage Studies",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1908_heritage_studies]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1908_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Heritage Studies uses distinct handler heritage_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1908 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1909,
       "category": "Specialized Domain Expertise",
       "requirement": "Digital Humanities",
       "description": "",
-      "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
-      "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1909_digital_humanities]",
+      "implementation_path": "backend/app/modules/m12_ai_research_lab/humanities_support_1860_1909.py",
+      "test_path": "tests/modules/test_m12_humanities_1860_1909.py",
+      "test_case": "test_row_1909_distinct_humanities_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Practitioner mechanism: Digital Humanities uses distinct handler digital_humanities, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1909 executes distinct input-derived humanities behavior with row-level computation and invalid/degenerate/provenance failure evidence; focused Python 3.12 suite passed."
     },
     {
       "row": 1910,
