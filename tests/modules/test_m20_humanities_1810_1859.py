@@ -80,3 +80,74 @@ def test_route_mounted_and_literal_validated():
  app=FastAPI();app.include_router(router);c=TestClient(app)
  assert c.post('/api/modules/20/humanities/1810-1859/analyze',json={'method':'genre_studies','data':BASE}).status_code==200
  assert c.post('/api/modules/20/humanities/1810-1859/analyze',json={'method':'fake','data':{}}).status_code==422
+
+# --- audit family D: computed metric artifacts, failure paths, tenant boundary
+def M(m,d):return H(m,{**BASE,**d})['metrics']
+def test_1810_historical_analysis_metrics():
+ m=M('historical_analysis',{'events':[{'date':'1850'},{'date':'1901'}],'changes':['a','b'],'continuities':['c']})
+ assert m['span_years']==51 and m['change_count']==2 and m['continuity_count']==1
+def test_1811_historiography_metrics():assert M('historiography',{'schools':['social','social','cultural']})['school_counts']=={'social':2,'cultural':1}
+def test_1812_archival_metrics():assert M('archival_research',{'repositories':['r1'],'fonds_series_boxes':['a','b'],'restrictions':['x']})=={'repository_count':1,'holding_unit_count':2,'restriction_count':1}
+def test_1813_1814_primary_linkage_metrics():
+ m=M('primary_sources',{'claims':[{'claim':'x','source_ids':['S1']},{'claim':'y','source_ids':['ZZ']}]})
+ assert m['claims_linked_to_primary']==1 and m['cited_source_ids']==['S1','ZZ']
+def test_1815_oral_history_metrics():
+ m=M('oral_history',{'consent_recorded':True,'access_restrictions':['a','b']});assert m['access_restriction_count']==2 and m['consent_recorded'] is True
+def test_1816_public_history_metrics():assert M('public_history',{'scope':{'stakeholders':['a','b','c']}})['stakeholder_count']==3
+def test_1817_digital_history_metrics():
+ m=M('digital_history',{'corpus_manifest':['d1','d2','d3'],'ocr_error_rate':.02});assert m['corpus_document_count']==3 and m['estimated_ocr_errors_per_10k_tokens']==200
+def test_1818_comparative_matrix_metrics():assert M('comparative_history',{'comparison_matrix':[{'case':'A','x':1}]})['matrix_rows']==1
+def test_1819_world_history_languages():
+ m=M('world_history',{'sources':[{**SRC,'language':'en','translation_by':'T'}]});assert m['languages_represented']==['en'] and m['translation_marked_sources']==1
+def test_1821_macrohistory_span():assert M('macrohistory',{'events':[{'date':'-0300'},{'date':'1900'}]})['long_run_span_years']==2200
+def test_1822_biography_span():
+ m=M('biography',{'events':[{'date':'1880'},{'date':'1955'}]});assert m['documented_life_span_years']==75 and m['first_documented_year']==1880
+def test_1823_prosopography_metrics():assert M('prosopography',{'people':[{'role':'x'}],'variables':['role']})=={'member_count':1,'variables_assessed':1}
+def test_1824_genealogy_metrics():
+ m=M('genealogy',{'relationships':[{'parent':'a','child':'b','confidence':'verified'},{'parent':'b','child':'c'}]});assert m['verified_count']==1 and m['unverified_count']==1
+def test_1825_chronology_metrics():
+ m=M('chronology',{'events':[{'date':'1899','date_disputed':True},{'date':'1901'}]});assert m['disputed_date_count']==1 and m['span_years']==2
+def test_1826_periodization_durations():
+ m=M('periodization',{'periods':[{'name':'modern','start':'1789','end':'1914'}]});assert m['period_durations']==[{'name':'modern','duration_years':125}]
+def test_1827_causation_metric_counts():
+ m=M('historical_causation',{'conditions':['c'],'mechanisms':['m1','m2'],'triggers':['t'],'rival_explanations':['r']})
+ assert m['condition_count']==1 and m['mechanism_count']==2 and m['rival_explanation_count']==1
+def test_1828_1829_alternative_evidence_metrics():
+ for m_ in ('historical_contingency','counterfactual_history'):
+  m=M(m_,{'alternatives':[{'outcome':'z','plausibility_evidence':['e']},{'outcome':'y'}]});assert m['alternatives_with_plausibility_evidence']==1
+def test_1830_1835_argument_metrics():
+ for m_ in ('philosophy','analytic_philosophy','logic'):
+  m=M(m_,{'arguments':[{'premises':['p','q'],'conclusion':'r'},{'premises':['s'],'conclusion':'t','objections':['o']}]})
+  assert m['argument_count']==2 and m['arguments_without_objections']==1 and m['premise_count_total']==3
+def test_1832_epistemology_defeater_index():assert M('epistemology',{'beliefs':[{'statement':'b1','defeaters':['d1','d2']}]})['defeater_index']=={'b1':2}
+def test_1833_ethics_unvoiced():assert M('ethics',{'stakeholders':[{'name':'x'},{'name':'y','voice_source':'interview'}]})['unvoiced_stakeholders']==['x']
+def test_1834_aesthetics_device_counts():assert M('aesthetics',{'passages':[{'locator':'1','device':'irony'},{'locator':'2','device':'irony'}]})['device_counts']=={'irony':2}
+def test_1849_indigenous_protocol_metrics():
+ m=M('indigenous_philosophy',{'nation_or_community':'N','knowledge_authorities':['a','b'],'permissions':['p']});assert m['knowledge_authority_count']==2 and m['permission_count']==1
+def test_1850_literature_passage_metrics():
+ m=M('literature',{'passages':[{'locator':'1','quotation':'q','verified_against_edition':True},{'locator':'2','quotation':'r'}]})
+ assert m['verified_passage_count']==1 and m['unverified_passage_count']==1
+def test_1855_poetry_prosody_computation():
+ m=H('poetry',{**BASE,'lines':['The cat sat on the mat','He wore a funny hat','The dog ran fast']})['metrics']
+ assert m['rhyme_scheme']=='AAB' and m['syllables_per_line']==[6,6,4]
+def test_1856_drama_turn_counts():
+ m=M('drama',{'script':[{'speaker':'Hamlet','line':'x'},{'speaker':'Ophelia','line':'y'},{'speaker':'Hamlet','line':'z'}]});assert m['turn_counts_by_speaker']=={'Hamlet':2,'Ophelia':1}
+def test_1857_fiction_order_metrics():
+ m=M('fiction',{'story_order':[1,2,3],'discourse_order':[2,1,3]});assert m['order_disagreement_positions']==2 and m['anachrony_present'] is True
+def test_1858_nonfiction_verification_tally():
+ m=M('non_fiction',{'truth_claims':[{'claim':'a','verification_status':'verified'},{'claim':'b'}]});assert m['verification_status_counts']=={'verified':1,'unverified':1}
+def test_1859_genre_convention_metrics():
+ m=M('genre_studies',{'claimed_genres':['memoir'],'conventions':[{'genre':'memoir','convention':'first person'}],'hybridities':['essay']})
+ assert m['claimed_genres_with_documented_conventions']==['memoir'] and m['hybridity_count']==1
+def test_humanities_failure_paths():
+ with pytest.raises(ValueError,match='unsupported'):H('not_a_method',BASE)
+ with pytest.raises(ValueError,match=r'sources\[0\]'):H('historical_analysis',{'sources':['not-a-dict']})
+ with pytest.raises(ValueError,match=r'claims\[0\]'):H('historical_analysis',{**BASE,'claims':['x']})
+ with pytest.raises(ValueError,match=r'events\[0\]'):H('chronology',{**BASE,'events':['1901']})
+def test_humanities_tenant_boundary(monkeypatch):
+ from app.main import app
+ monkeypatch.setenv('ATLAS_ENV','production')
+ c=TestClient(app)
+ assert c.post('/api/v1/api/modules/20/humanities/1810-1859/analyze',json={'method':'chronology','data':BASE}).status_code==401
+ h={'X-Atlas-Tenant':'tenant-a','X-Atlas-Actor':'tester'}
+ r=c.post('/api/v1/api/modules/20/humanities/1810-1859/analyze',headers=h,json={'method':'chronology','data':BASE});assert r.status_code==200 and 'metrics' in r.json()

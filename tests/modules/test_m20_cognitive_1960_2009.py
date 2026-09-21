@@ -28,3 +28,67 @@ def test_validation_and_mounted_surface():
  assert len(c.get("/api/v1/api/modules/20/cognitive-1960-2009/methods",headers=h).json())==50
  r=c.post("/api/v1/api/modules/20/cognitive-1960-2009/analyze",headers=h,json={"method":"metacognition","data":C["metacognition"]});assert r.status_code==200 and r.json()["feature_row"]==2009
  assert c.post("/api/v1/api/modules/20/cognitive-1960-2009/analyze",headers=h,json={"method":"bad"}).status_code==422
+
+# --- audit family D: distinctive per-row value assertions, failure paths, tenant boundary
+def _out(m):return run(m,C[m],7)["output"]
+def test_distinctive_value_per_row():
+ assert _out("graph_of_thought")["cost"]==2 and _out("graph_of_thought")["reachable"] is True
+ assert _out("self_consistency")["consensus"]=="x" and _out("self_consistency")["vote_share"]==pytest.approx(2/3)
+ assert _out("retrieval_augmented_generation")["retrieved"][0]["score"]==pytest.approx(1)
+ assert _out("vector_databases")["nearest"][0]["id"]=="a"
+ e=_out("embeddings");assert e["dimensions"]==8 and all(abs(sum(v*v for v in x)**.5-1)<1e-9 for x in e["embeddings"])
+ assert _out("semantic_search")["results"][0]["id"]=="a"
+ assert _out("knowledge_graphs")["entity_count"]==2 and _out("knowledge_graphs")["predicate_count"]==1
+ assert _out("ontologies")["ancestor_chain"]==["mammal","animal"] and _out("ontologies")["depth"]==2
+ assert _out("linked_data")["triples"][0]["predicate"]=="type"
+ assert _out("knowledge_representation")["inferred_count"]==1 and _out("knowledge_representation")["closure"]==["a","b"]
+ assert _out("automated_reasoning")["proved"] is True and _out("theorem_proving")["proved"] is True
+ assert _out("symbolic_ai")["closure"]==["a","b"]
+ assert _out("neuro_symbolic_ai")["accepted"]==["a","b"] and _out("hybrid_ai")["combined_scores"]["b"]==pytest.approx(.9)
+ assert _out("cognitive_computing")["calibration_brier"]==pytest.approx(.04)
+ assert _out("affective_computing")["quadrant"]=="excited" and _out("emotion_recognition")["quadrant"]=="sad"
+ s=_out("sentiment_analysis");assert s["net_sentiment"]==1 and [x["label"] for x in s["opinions"]]==["positive","negative"]
+ assert _out("opinion_mining")["opinions"][0]["label"]=="positive"
+ assert _out("social_computing")["most_connected"]=="a" and _out("social_computing")["edge_count"]==2
+ for m in ["crowdsourcing","human_computation","collective_intelligence"]:
+  o=_out(m);assert o["aggregate_answer"]=="a" and o["weighted_support"]==pytest.approx(2/3) and o["contributors"]==3
+ for m in ["swarm_intelligence","evolutionary_computation","genetic_algorithms"]:
+  o=_out(m);assert o["best_distance"]<=1 and len(o["history"])==3
+ assert _out("genetic_programming")["best_coefficients"]==[0,1] and _out("genetic_programming")["mse"]==pytest.approx(0)
+ d=_out("digital_twins");assert d["rmse"]==pytest.approx((1/3)**.5) and d["bias"]==pytest.approx(1/3)
+ assert _out("simulation")["terminal"]==pytest.approx(1.1**10) and _out("modeling")["terminal"]==pytest.approx(1.1**10)
+ o=_out("optimization");assert o["chosen_indices"]==[1] and o["objective_value"]==8 and o["used_budget"]==3
+ assert _out("operations_research")["objective_value"]==8
+ r=_out("decision_science")["ranked"];assert r[0]["name"]=="a" and r[0]["score"]==pytest.approx(.8)
+ for m in ["systems_science","complexity_science","network_science"]:
+  o=_out(m);assert o["density"]==pytest.approx(2/3) and o["degree_distribution"]=={"a":1,"b":2,"c":1}
+ assert len(_out("chaos_theory")["trajectory_separation"])==50
+ assert _out("fractal_geometry")["box_counting_dimension"]==pytest.approx(1)
+ assert _out("cybernetics")["final_error"]<.01 and len(_out("second_order_cybernetics")["trajectory"])==10
+ m=_out("metacognition");assert m["review_tasks"]==["b"] and m["accuracy"]==pytest.approx(.5) and m["calibration_brier"]==pytest.approx(.065)
+ for m in ["artificial_life","self_organization","emergence","adaptation","evolution","co_evolution","symbiosis","autopoiesis"]:
+  o=_out(m);assert len(o["trajectory"])==4 and 0<=o["order_parameter"]<=1
+def test_graph_of_thought_unreachable_and_edge_validation():
+ o=run("graph_of_thought",{"nodes":["a","b"],"edges":[],"start":"a","goal":"b"})["output"];assert o["best_path"] is None and o["reachable"] is False
+ with pytest.raises(ValueError,match="undeclared"):run("graph_of_thought",{"nodes":["a","b"],"edges":[["a","z",1]],"start":"a","goal":"b"})
+ with pytest.raises(ValueError,match="non-negative"):run("graph_of_thought",{"nodes":["a","b"],"edges":[["a","b",-1]],"start":"a","goal":"b"})
+def test_failure_paths_raise_value_error():
+ with pytest.raises(ValueError):run("self_consistency",{"answers":[]})
+ with pytest.raises(ValueError,match="cycle"):run("ontologies",{"parent_map":{"a":"b","b":"a"},"concept":"a"})
+ with pytest.raises(ValueError,match="align"):run("decision_science",{"weights":[1,1],"options":[{"name":"a","criteria":[1]}]})
+ with pytest.raises(ValueError,match="pairs"):run("social_computing",{"edges":[["a"]]})
+ with pytest.raises(ValueError,match="answer"):run("crowdsourcing",{"responses":[{"weight":1}]})
+ with pytest.raises(ValueError,match="non-empty"):run("genetic_programming",{"candidate_coefficients":[],"x":[1],"y":[1]})
+ with pytest.raises(ValueError,match="finite"):run("vector_databases",{"query":[float("nan"),0],"vectors":{"a":[1,0]}})
+ with pytest.raises(ValueError,match="triples"):run("knowledge_graphs",{"triples":[["a","is"]]})
+ with pytest.raises(ValueError,match="aligned"):run("digital_twins",{"observed":[1],"simulated":[1,2]})
+ with pytest.raises(ValueError,match="unsupported"):run("not_a_method",{})
+def test_tenant_boundary_enforced_on_mounted_surface(monkeypatch):
+ from app.main import app
+ monkeypatch.setenv("ATLAS_ENV","production")
+ c=TestClient(app)
+ assert c.get("/api/v1/api/modules/20/cognitive-1960-2009/methods").status_code==401
+ assert c.post("/api/v1/api/modules/20/cognitive-1960-2009/analyze",json={"method":"self_consistency","data":{"answers":["a"]}}).status_code==401
+ h={"X-Atlas-Tenant":"tenant-a","X-Atlas-Actor":"tester"}
+ assert c.get("/api/v1/api/modules/20/cognitive-1960-2009/methods",headers=h).status_code==200
+ assert c.post("/api/v1/api/modules/20/cognitive-1960-2009/analyze",headers=h,json={"method":"self_consistency","data":{"answers":["a","a"]}}).status_code==200
