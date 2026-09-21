@@ -8,8 +8,8 @@
   "delta_over_base_rows": 107,
   "atomic_concept_count": 2117,
   "counts": {
-    "verified-pushed": 68,
-    "missing": 92
+    "verified-pushed": 91,
+    "missing": 69
   },
   "rowization_rule": "Replace each identified packed parent row with its atomic subrows; all other base rows remain one atomic concept. Examples and benefit statements are not counted as separate concepts unless they specify distinct behavior.",
   "rows": [
@@ -20,10 +20,10 @@
       "atomic_requirement": "Research-project creation workflow",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -33,10 +33,10 @@
       "atomic_requirement": "Bioinformatics-project creation workflow",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -46,10 +46,10 @@
       "atomic_requirement": "Computer-science-project creation workflow",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -59,10 +59,10 @@
       "atomic_requirement": "Source-grounded summer-program application structuring",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -72,10 +72,10 @@
       "atomic_requirement": "Source-grounded competition application structuring",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -85,10 +85,10 @@
       "atomic_requirement": "Essay opportunity workflow",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -98,10 +98,10 @@
       "atomic_requirement": "Debate opportunity workflow",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -111,10 +111,10 @@
       "atomic_requirement": "Model United Nations opportunity workflow",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -124,10 +124,10 @@
       "atomic_requirement": "Olympiad opportunity workflow",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -137,10 +137,10 @@
       "atomic_requirement": "Hackathon opportunity workflow",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -150,10 +150,10 @@
       "atomic_requirement": "Official-source device and tool discovery",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -163,10 +163,10 @@
       "atomic_requirement": "Named-tool comparison for Instinct/Grok Bots/Replit/Astra-class products",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -176,10 +176,10 @@
       "atomic_requirement": "Resilient fallback selection when the preferred path fails",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -189,10 +189,10 @@
       "atomic_requirement": "Exact-review signup proposal without automatic submission",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -202,10 +202,10 @@
       "atomic_requirement": "Factual owner-voice humanization without detection evasion",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -215,10 +215,10 @@
       "atomic_requirement": "Broad public advice retrieval with provenance",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -228,10 +228,10 @@
       "atomic_requirement": "Careful advice-to-plan implementation and verification",
       "source_feature_title": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -241,10 +241,10 @@
       "atomic_requirement": "Decision capture with one-line owner reason",
       "source_feature_title": "Decision Journaling + Retrieval (Most Powerful, Easiest)",
       "source_description": "What it is: Every time you make a decision — \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" — you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -254,10 +254,10 @@
       "atomic_requirement": "Persistent decision journal storage",
       "source_feature_title": "Decision Journaling + Retrieval (Most Powerful, Easiest)",
       "source_description": "What it is: Every time you make a decision — \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" — you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -267,10 +267,10 @@
       "atomic_requirement": "Decision-note vector embedding",
       "source_feature_title": "Decision Journaling + Retrieval (Most Powerful, Easiest)",
       "source_description": "What it is: Every time you make a decision — \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" — you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -280,10 +280,10 @@
       "atomic_requirement": "Similarity retrieval over past decisions",
       "source_feature_title": "Decision Journaling + Retrieval (Most Powerful, Easiest)",
       "source_description": "What it is: Every time you make a decision — \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" — you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -293,10 +293,10 @@
       "atomic_requirement": "Recommendation adaptation from retrieved owner decisions",
       "source_feature_title": "Decision Journaling + Retrieval (Most Powerful, Easiest)",
       "source_description": "What it is: Every time you make a decision — \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" — you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -306,10 +306,10 @@
       "atomic_requirement": "Original-output and owner-correction pair capture",
       "source_feature_title": "Correction Loop (Reinforcement From You)",
       "source_description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output → your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
