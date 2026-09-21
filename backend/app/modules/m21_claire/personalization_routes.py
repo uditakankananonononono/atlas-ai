@@ -31,3 +31,7 @@ def consent(x:ConsentIn,r=Depends(repo)):r.set_telemetry_consent(x.enabled,x.sco
 def telemetry(x:TelemetryIn,r=Depends(repo)):
  try:return {'id':r.log_telemetry(x.kind,x.payload)}
  except PermissionError as e:raise HTTPException(403,str(e))
+
+# Universal cross-domain creation/application planning, owner ledger row 1.
+from .universal_creator_routes_row_1 import router as universal_creator_router_row_1
+router.include_router(universal_creator_router_row_1)
