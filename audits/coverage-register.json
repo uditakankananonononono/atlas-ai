@@ -1313,8 +1313,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 102,
@@ -1326,8 +1326,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 103,
@@ -1339,8 +1339,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 104,
@@ -1352,8 +1352,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 105,
@@ -1365,8 +1365,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 106,
@@ -1378,8 +1378,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 107,
@@ -1391,8 +1391,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 108,
@@ -1404,8 +1404,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 109,
@@ -1417,8 +1417,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 110,
@@ -2522,8 +2522,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 195,
@@ -2587,8 +2587,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 200,
@@ -2743,8 +2743,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 212,
@@ -2756,8 +2756,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 213,
@@ -2769,8 +2769,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 214,
@@ -2782,8 +2782,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 215,
@@ -2795,8 +2795,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 216,
@@ -2808,8 +2808,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 217,
@@ -2821,8 +2821,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 218,
@@ -2834,8 +2834,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 219,
@@ -2847,8 +2847,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 220,
@@ -2860,8 +2860,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 221,
@@ -2873,8 +2873,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 222,
@@ -2886,8 +2886,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 223,
@@ -2899,8 +2899,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 224,
@@ -2912,8 +2912,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 225,
@@ -2925,8 +2925,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 226,
@@ -2938,8 +2938,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 227,
@@ -2951,8 +2951,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 228,
@@ -2964,8 +2964,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 229,
@@ -2977,8 +2977,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 230,
@@ -2990,8 +2990,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 231,
@@ -3003,8 +3003,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 232,
@@ -3016,8 +3016,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 233,
@@ -3029,8 +3029,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 234,
@@ -3042,8 +3042,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 235,
@@ -3055,8 +3055,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 236,
@@ -3068,8 +3068,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 237,
@@ -3081,8 +3081,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 238,
@@ -3094,8 +3094,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 239,
@@ -3107,8 +3107,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 240,
@@ -3120,8 +3120,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 241,
@@ -3133,8 +3133,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 242,
@@ -3146,8 +3146,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 243,
@@ -3159,8 +3159,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 244,
@@ -3172,8 +3172,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 245,
@@ -3185,8 +3185,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 246,
@@ -3198,8 +3198,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 247,
@@ -3211,8 +3211,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 248,
@@ -3224,8 +3224,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 249,
@@ -3237,8 +3237,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 250,
@@ -3250,8 +3250,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 251,
@@ -3263,8 +3263,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 252,
@@ -3276,8 +3276,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 253,
@@ -3289,8 +3289,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 254,
@@ -3302,8 +3302,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 255,
@@ -3315,8 +3315,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 256,
@@ -3328,8 +3328,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 257,
@@ -3341,8 +3341,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 258,
@@ -3354,8 +3354,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 259,
@@ -3367,8 +3367,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 260,
@@ -3380,8 +3380,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 261,
@@ -3393,8 +3393,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 262,
@@ -3406,8 +3406,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 263,
@@ -3419,8 +3419,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 264,
@@ -3432,8 +3432,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 265,
@@ -3445,8 +3445,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 266,
@@ -3458,8 +3458,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 267,
@@ -3471,8 +3471,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 268,
@@ -3484,8 +3484,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 269,
@@ -3497,8 +3497,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 270,
@@ -3510,8 +3510,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 271,
@@ -3523,8 +3523,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 272,
@@ -3536,8 +3536,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 273,
@@ -3549,8 +3549,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 274,
@@ -3562,8 +3562,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 275,
@@ -3575,8 +3575,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 276,
@@ -3588,8 +3588,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 277,
@@ -3601,8 +3601,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 278,
@@ -3614,8 +3614,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 279,
@@ -3627,8 +3627,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 280,
@@ -3640,8 +3640,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
     },
     {
       "row": 281,
