@@ -2,10 +2,11 @@ from fastapi import APIRouter,Depends,HTTPException
 from app.core.approvals import approvals
 from .schemas import DiscoveryIn,InstallIn
 from .service import Service
+from .collectors import default_collectors
 router=APIRouter(prefix="/tools-hub",tags=["tools-hub"]);_service=None
 def get_service():
  global _service
- if _service is None:_service=Service(approvals,[])
+ if _service is None:_service=Service(approvals,default_collectors())
  return _service
 @router.post("/discoveries")
 async def discover(req:DiscoveryIn,s:Service=Depends(get_service)):return await s.discover(req.query)

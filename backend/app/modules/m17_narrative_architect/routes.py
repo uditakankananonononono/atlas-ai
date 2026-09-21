@@ -5,11 +5,12 @@ from app.auth.context import TenantContext,require_tenant
 from app.core.providers import generate
 from .schemas import *
 from .service import Service
+from .wiring import build_narrative_collectors
 
 router=APIRouter(prefix="/narrative-architect",tags=["narrative-architect"])
 # The process service holds a bounded evidence cache partitioned by authenticated tenant.
 # Production collectors are injected at startup; an absent collector fails closed.
-_service=Service(generate=generate,collectors={})
+_service=Service(generate=generate,collectors=build_narrative_collectors())
 def get_service()->Service:return _service
 
 def _tenant_copy(request,tenant:TenantContext):

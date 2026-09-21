@@ -1,0 +1,63 @@
+# Atlas module enhancements
+
+Status legend: **Landed** is working code with a named test. **Next** is a proposed enhancement, not an implementation claim.
+
+## M00 - Human Approval Center
+- **Next:** approval impact preview that compares the exact effect payload with the current external state immediately before consumption.
+## M01 - Opportunity Discovery
+- **Next:** deadline-change monitor with source snapshots and owner-visible eligibility deltas.
+## M02 - Competition Manager
+- **Next:** evidence completeness score that links each answer claim to a profile-corpus source or `[NEEDS INPUT]`.
+## M03 - Grant Writer
+- **Next:** funder-rule linter for page, budget, attachment and evaluation-criterion compliance before export.
+## M04 - Research Scientist
+- **Next:** reproducibility bundle containing data hashes, environment lock, analysis script, seeds and result manifest.
+## M05 - Outreach Manager
+- **Next:** relationship-aware contact cadence that prevents duplicate or socially excessive outreach across campaigns.
+## M06 - Social Media Manager
+- **Next:** cross-platform content adaptation preview with claim/citation parity and platform-limit checks.
+## M07 - Brand Collaboration
+- **Next:** deliverable obligation tracker linking contract promises, approvals, deadlines, evidence and invoice status.
+## M08 - Startup Growth
+- **Next:** free-first experiment board that records hypothesis, cap, observed conversion and stop decision without auto-spend.
+## M09 - Knowledge Workspace
+- **Next:** contradiction inbox with source freshness, confidence and explicit merge/retain-both decisions.
+## M10 - Email Assistant
+- **Next:** thread promise tracker that extracts owner commitments and asks before creating follow-ups.
+## M11 - Calendar Intelligence
+- **Next:** schedule-risk view combining travel buffer, preparation work, dependency conflicts and cancellation terms.
+## M12 - AI Research Lab
+- **Landed:** shipped provider and DAG wiring now constructs without dependency overrides and supports OpenAI, Anthropic, DeepSeek and local Ollama through the shared provider boundary.
+- **Next:** durable queued DAG resumes with per-node budget receipts and reproducible provider/model manifests.
+## M13 - Browser Agent
+- **Next:** readback diff before submit, showing changed fields, destination, price and irreversible controls against the approved snapshot.
+## M14 - Project Builder
+- **Next:** acceptance-criterion coverage map linking each criterion to artifact, test, result and unresolved blocker.
+## M15 - Document Generator
+- **Landed:** version preflight endpoint checks empty content, duplicate citations/figures, missing citation URLs, empty PPTX and likely slide overflow before export approval.
+- **Next:** approval consumption that renders and publishes a private downloadable File with a verified hash.
+## M16 - Executive Dashboard
+- **Next:** gap-to-proof dashboard separating code-complete, test-complete and live-acceptance-complete requirements.
+## M17 - Narrative Architect
+- **Landed:** canonical service now legally wires Reddit by default and optional official YouTube/Pinterest plus allowlisted public pages through shared bounded collectors.
+- **Next:** owner-material evidence completeness meter for each essay concept and critique suggestion.
+## M18 - Side Hustle & Knowledge Scraper
+- **Landed:** default public collectors, optional official Pinterest/X/Instagram/YouTube paths, and a five-artifact experiment checklist with separate publish/send/spend approvals.
+- **Next:** adapter receipts and observed outcome ingestion so a permitted experiment can be measured without fabricated completion.
+## M19 - Idea Incubator
+- **Next:** assumption burn-down ordered by expected information gain per zero/low-cost test.
+## M20 - General Cognitive Worker
+- **Next:** execution truth ledger that rolls up planned, simulated, externally executed and independently verified outcomes.
+## M21 - Claire
+- **Landed:** mounted expiring device-pairing challenge, fingerprint/capability validation, device listing and revocation.
+- **Next:** installable paired-PC daemon with OS keystore identity, native approval prompts and signed result receipts.
+## M22 - Tools Hub
+- **Landed:** free official discovery sources for GitHub, PyPI and npm replace the shipped empty collector list.
+- **Next:** connect approved discovery proposals to the existing scanner/installer with tenant persistence and rollback receipts.
+## M23 - Study Abroad
+- **Next:** application evidence matrix linking each requirement and essay claim to owner records, official program sources and missing inputs.
+## M24 - Billing
+- **Next:** pre-commit cost/cancellation preview that binds plan, currency, renewal, tax, cancellation deadline and exact approved charge.
+## M25 - Knowledge Copilot & Training
+- **Landed:** mounted contradiction review and claim-substantiation endpoints expose existing citation and provenance checks.
+- **Next:** common artifact-ingestion event contract adopted by every module, plus device capture adapter for the visible copilot.
