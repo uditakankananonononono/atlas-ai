@@ -106,9 +106,43 @@ class Architecture635To684In(BaseModel):
     feature_id:int=Field(ge=635,le=684)
     data:dict[str,Any]=Field(default_factory=dict)
 @router.post('/architecture-635-684/support')
-def architecture_635_684_route(body:Architecture635To684In,tenant_id:str=Depends(tenant)):
-    try:return {'tenant_id':tenant_id,**architecture_support_635_684(body.feature_id,body.data)}
+def architecture_635_684_route(body:Architecture635To684In,context:TenantContext=Depends(require_tenant)):
+    try:return {'tenant_id':context.tenant_id,'actor_id':context.actor_id,**architecture_support_635_684(body.feature_id,body.data)}
     except ValueError as error:raise HTTPException(422,str(error)) from error
+
+class ArchitectureWorkflowDraftIn(Architecture635To684In):
+    provenance:dict[str,Any]
+class ArchitectureWorkflowApprovalIn(BaseModel):
+    approval_id:str=Field(min_length=1,max_length=200)
+class ArchitectureWorkflowRollbackIn(BaseModel):
+    reason:str=Field(min_length=1,max_length=1000)
+
+def _architecture_workflow():
+    from .architecture_workflow_635_684 import ArchitectureWorkflowRepository,ArchitectureWorkflowService
+    return ArchitectureWorkflowService(ArchitectureWorkflowRepository())
+def _workflow_call(operation):
+    try:return operation().view()
+    except KeyError as error:raise HTTPException(404,str(error)) from error
+    except ValueError as error:raise HTTPException(422,str(error)) from error
+
+@router.post('/architecture-635-684/workflows',status_code=201)
+def draft_architecture_workflow(body:ArchitectureWorkflowDraftIn,context:TenantContext=Depends(require_tenant)):
+    return _workflow_call(lambda:_architecture_workflow().draft(context.tenant_id,context.actor_id,body.feature_id,body.data,body.provenance))
+@router.get('/architecture-635-684/workflows/{record_id}')
+def get_architecture_workflow(record_id:str,context:TenantContext=Depends(require_tenant)):
+    return _workflow_call(lambda:_architecture_workflow().repository.get(context.tenant_id,record_id))
+@router.post('/architecture-635-684/workflows/{record_id}/submit')
+def submit_architecture_workflow(record_id:str,context:TenantContext=Depends(require_tenant)):
+    return _workflow_call(lambda:_architecture_workflow().submit(context.tenant_id,context.actor_id,record_id))
+@router.post('/architecture-635-684/workflows/{record_id}/approve')
+def approve_architecture_workflow(record_id:str,body:ArchitectureWorkflowApprovalIn,context:TenantContext=Depends(require_tenant)):
+    return _workflow_call(lambda:_architecture_workflow().approve(context.tenant_id,context.actor_id,record_id,body.approval_id))
+@router.post('/architecture-635-684/workflows/{record_id}/apply')
+def apply_architecture_workflow(record_id:str,body:ArchitectureWorkflowApprovalIn,context:TenantContext=Depends(require_tenant)):
+    return _workflow_call(lambda:_architecture_workflow().apply(context.tenant_id,context.actor_id,record_id,body.approval_id))
+@router.post('/architecture-635-684/workflows/{record_id}/rollback')
+def rollback_architecture_workflow(record_id:str,body:ArchitectureWorkflowRollbackIn,context:TenantContext=Depends(require_tenant)):
+    return _workflow_call(lambda:_architecture_workflow().rollback(context.tenant_id,context.actor_id,record_id,body.reason))
 
 @router.post('/semantic-engines-575-584/{row_id}')
 def semantic_engines_575_584(row_id:int,payload:dict):
