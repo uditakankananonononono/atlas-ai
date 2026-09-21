@@ -1476,3 +1476,7 @@ def legal_support_route(request: LegalSupportRequest) -> dict[str, Any]:
 # Specialized-domain education surface, rows 1410-1459.
 from .education_routes import router as education_router
 router.include_router(education_router)
+
+# Specialized social-research surface, ledger rows 1710-1759.
+from .social_research_routes_1710_1759 import router as social_research_router_1710_1759
+router.include_router(social_research_router_1710_1759)
