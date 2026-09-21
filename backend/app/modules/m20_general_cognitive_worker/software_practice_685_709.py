@@ -82,4 +82,8 @@ def _lint(d):
 DISPATCH={'example_mapping':_example,'behavior_driven_development':_bdd,'test_driven_development':_tdd,'acceptance_test_driven_development':_atdd,'refactoring':_refactor,'code_review':_review,'pair_programming':lambda d:_pair(d),'mob_programming':lambda d:_pair(d,True),'technical_debt_management':_debt,'legacy_code_modernization':_legacy,'strangler_fig_pattern':_strangler,'branch_by_abstraction':_branch_abs,'feature_toggle':_flags,'trunk_based_development':_trunk,'git_flow':_gitflow,'semantic_versioning':_semver,'changelog_generation':_changelog,'release_notes':_release,'documentation_generation':_docs,'api_documentation':_api,'architecture_decision_records':_adr,'code_comments':_comments,'naming_conventions':_names,'code_formatting':_format,'linting':_lint}
 def software_practice_685_709(method:str,data:dict[str,Any])->dict[str,Any]:
  if method not in METHODS:raise ValueError(f'unsupported method: {method}')
- _need(method,data);return {'method':method,'capability':NAMES[method],'result':DISPATCH[method](data),'boundary':'Prepared engineering evidence only. No merge, release, deployment, approval, or repository mutation is performed.','human_review_required':True}
+ _need(method,data);result=DISPATCH[method](data)
+ return {'method':method,'capability':NAMES[method],'result':result,
+  'evaluation':{'required_fields':REQUIRED[method],'required_fields_present':True,'output_fields':sorted(result),'failure_tests':['missing required field','malformed method input','unsafe release or mutation claim'],'independent_verification_required':True},
+  'uncertainty':{'level':'medium','assumptions':data.get('assumptions',[]),'unknowns':data.get('unknowns',[]),'calibration':'Prepared evidence does not prove the practice was performed or that repository behavior is correct.'},
+  'boundary':'Prepared engineering evidence only. No merge, release, deployment, approval, or repository mutation is performed.','human_review_required':True}
