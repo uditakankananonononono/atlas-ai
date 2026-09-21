@@ -76,9 +76,16 @@ compliance rules. They are NOT implemented; compliant replacements:
   embedding provider or pgvector wiring yet. Phase 1 uses token-vector cosine
   similarity (`cosine_similarity`). Swap the internals of `match_score` when
   embeddings exist.
-- **Expected impact logistic regression**: needs historical applied/won
-  labels that do not exist. Phase 1 uses a documented heuristic
-  (`expected_impact`). Re-train and swap later.
+- **Expected impact logistic regression**: disabled because no verified open
+  dataset contains row-level applicants, comparable decision-time features,
+  and both awarded and declined outcomes across Atlas opportunity types. The
+  public API exposes `impact_heuristic` with `score_kind="heuristic"` and
+  `advisory_only=true`; it is never a win probability. `program_priors.py`
+  accepts versioned official aggregate counts keyed by sponsor, mechanism,
+  cycle and geography and returns a provenance-bearing Wilson interval.
+  Training must wait for a consented first-party outcome ledger spanning
+  multiple cycles, temporal holdout evaluation, and calibrated lift over the
+  program-prior baseline.
 - **Hourly Celery Beat crawls**: this module exposes `run_scan`; the
   integrator should schedule it (e.g. Celery Beat) once workers exist.
 - **SSE instant alerts (>0.8)**: `Service` accepts a `notifier` callable and

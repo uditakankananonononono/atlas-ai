@@ -69,3 +69,4 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 ## M25 - Knowledge Copilot & Training
 - **Landed:** common M00-M25 provenance events now have durable tenant-scoped SQLite WAL storage, idempotent replay, conflicting-replay rejection, canonical event hashing, and optional artifact-byte SHA-256 verification.
 - **Next:** verify remote source bytes/freshness, adopt the contract at every producer, and add the device capture adapter.
+- **Landed (M01, honest scoring):** opportunity output now names the deterministic value `impact_heuristic`, tags it `score_kind=heuristic` and `advisory_only=true`, while a provenance-bearing ProgramPrior adapter ingests official sponsor/mechanism/cycle/geography application and award counts with Wilson uncertainty. It does not claim an applicant win probability or train on award-only open data.
