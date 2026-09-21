@@ -53,3 +53,7 @@ class Engineering1560To1609In(BaseModel):
 def engineering_1560_1609_route(body:Engineering1560To1609In,tenant:TenantContext=Depends(require_tenant)):
     try:return {'tenant_id':tenant.tenant_id,**engineering_support_1560_1609(body.feature_id,body.data)}
     except ValueError as error:raise HTTPException(422,str(error)) from error
+
+# Research and scientific discovery workbench, owner-ledger rows 135-184.
+from .research_methods_routes_135_184 import router as research_methods_router_135_184
+router.include_router(research_methods_router_135_184)
