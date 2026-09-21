@@ -226,4 +226,15 @@ def execute(capability:str,payload:dict[str,Any])->dict[str,Any]:
     cap=Capability(row,_CAPABILITY_ROWS[row],family,_STAGE_OVERRIDES.get(key,default),_EVIDENCE[family])
     handler={"design":_design,"inclusion":_inclusion,"pedagogy":_pedagogy,"delivery":_delivery,"immersive":_immersive,"analytics":_analytics}[family]
     result=handler(cap,payload)
-    return {"row_id":row,"capability":cap.name,"key":key,"family":family,"source":src,"evidence_checks":list(cap.evidence),"result":result,"boundary":"Decision support only. A qualified educator reviews accuracy, accessibility, fairness, privacy, and high-stakes uses."}
+    evaluation={
+        "criteria":list(cap.evidence),
+        "observed_evidence":sorted(k for k,v in result.items() if v not in (None,[],{})),
+        "open_questions":list(payload.get("open_questions",[])),
+        "reviewer":"qualified educator and affected learner",
+    }
+    uncertainty={
+        "level":"not_quantified",
+        "drivers":["caller-supplied learner context","transfer beyond observed work","accessibility and cultural fit"],
+        "not_a_mastery_or_credential_claim":True,
+    }
+    return {"row_id":row,"capability":cap.name,"key":key,"family":family,"source":src,"evidence_checks":list(cap.evidence),"result":result,"evaluation":evaluation,"uncertainty":uncertainty,"boundary":"Decision support only. A qualified educator reviews accuracy, accessibility, fairness, privacy, and high-stakes uses."}
