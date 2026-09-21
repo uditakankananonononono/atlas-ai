@@ -6,13 +6,18 @@ def expire_approval_requests() -> list[str]:
     return default_service().expire_overdue()
 
 @celery_app.task(name="atlas.modules.execute_approved")
-def execute_approved_action(approval_id: str) -> dict[str, str]:
-    """Worker seam. Dispatchers must verify approved state and a registered action handler."""
+def execute_approved_action(approval_id: str, effect_id: str) -> dict[str, object]:
+    """Consume one approved permit, then invoke its exact registered executor."""
     from app.modules.m00_approval_center.service import default_service
+    from app.workers.action_registry import execute_registered
     view = default_service().get(approval_id)
-    if view["status"].value != "approved":
-        raise ValueError("approval is not approved")
-    return {"approval_id": approval_id, "status": "ready_for_registered_handler"}
+    status = view["status"].value if hasattr(view["status"], "value") else view["status"]
+    if status != "approved": raise ValueError("approval is not approved")
+    permit = default_service().consume_effect(approval_id, module_id=view["module_id"],
+        action_type=view["action_type"], payload=view["payload"], user_id=view["user_id"],
+        effect_id=effect_id, actor="celery-worker")
+    result = execute_registered(view["module_id"], view["action_type"], view["payload"])
+    return {"approval_id":approval_id,"effect_id":permit["effect_id"],"status":"executed","result":result}
 
 @celery_app.task(name="atlas.collection.dispatch_due")
 def dispatch_due_collection_sources(limit: int = 1000) -> dict[str, int]:

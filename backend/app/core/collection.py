@@ -91,8 +91,12 @@ def execute_registered_source(source_id: int) -> dict[str, Any]:
         run = CollectionRunRow(tenant_id=source.tenant_id, source_key=source.source_key, status="running", started_at=started)
         db.add(run); db.commit()
         try:
-            batch = asyncio.run(collector.collect(config))
-            asyncio.run(collector.close())
+            async def collect_and_close():
+                try:
+                    return await collector.collect(config)
+                finally:
+                    await collector.close()
+            batch = asyncio.run(collect_and_close())
             created = 0
             for item in batch.items:
                 digest = hashlib.sha256(json.dumps(item.payload, sort_keys=True, default=str).encode()).hexdigest()

@@ -16,6 +16,9 @@ class PlannedStep(BaseModel):
     module_name: str
     action: str
     requires_approval: bool
+    operation: str
+    payload: dict[str, Any]
+    evidence: list[dict[str, Any]] = Field(default_factory=list)
 
 class ApprovalRequest(BaseModel):
     id: str
