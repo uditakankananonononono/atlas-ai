@@ -188,6 +188,7 @@ class OpportunityRow(Base):
     __tablename__ = "m01_opportunities"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    tenant_id: Mapped[str] = mapped_column(String(120), index=True)
     source_id: Mapped[str] = mapped_column(String(100), index=True)
     title: Mapped[str] = mapped_column(String(500))
     url: Mapped[str] = mapped_column(String(2000), index=True)
@@ -492,7 +493,11 @@ class Service:
         sources: Iterable[Source] | None = None,
         normalizer: Normalizer | None = None,
         embedding_matcher: EmbeddingMatcher | None = None,
+        tenant_id: str = "local",
     ) -> None:
+        if not tenant_id.strip():
+            raise ValueError("tenant_id is required")
+        self.tenant_id = tenant_id.strip()
         self._session_factory = session_factory or SessionLocal
         self._fetcher = fetcher or default_fetcher
         self._approval_putter = approval_putter or self._default_approval_putter
@@ -592,13 +597,17 @@ class Service:
         if self._normalizer:
             tags = sorted({*tags, *self._normalizer.entities(text)})
         now = datetime.now(timezone.utc)
-        row_id = opportunity_id(url)
+        # The storage identity includes the authenticated tenant. This prevents
+        # the same canonical URL from colliding across tenants while remaining
+        # deterministic for rescans inside one tenant.
+        row_id = str(uuid5(NAMESPACE_URL, f"{self.tenant_id}\n{url.strip()}"))
         with self._session_factory() as session:
             row = session.get(OpportunityRow, row_id)
             is_new = row is None
             if row is None:
                 row = OpportunityRow(
                     id=row_id,
+                    tenant_id=self.tenant_id,
                     source_id=source.id,
                     first_seen=now,
                     title=title,
@@ -634,7 +643,10 @@ class Service:
         with self._session_factory() as session:
             statement = (
                 select(OpportunityRow)
-                .where(OpportunityRow.match_score >= min_score)
+                .where(
+                    OpportunityRow.tenant_id == self.tenant_id,
+                    OpportunityRow.match_score >= min_score,
+                )
                 .order_by(OpportunityRow.match_score.desc(), OpportunityRow.last_seen.desc())
                 .limit(limit)
             )
@@ -647,7 +659,12 @@ class Service:
 
         self._ensure_tables()
         with self._session_factory() as session:
-            row = session.get(OpportunityRow, opportunity)
+            row = session.scalar(
+                select(OpportunityRow).where(
+                    OpportunityRow.id == opportunity,
+                    OpportunityRow.tenant_id == self.tenant_id,
+                )
+            )
             return self._to_out(row) if row is not None else None
 
     def top_opportunities(self, min_score: float, limit: int) -> list[OpportunityOut]:
@@ -713,6 +730,7 @@ class Service:
                 "body": body,
                 "recipient": recipient,
                 "item_ids": [item.id for item in items],
+                "tenant_id": self.tenant_id,
                 "execution_enabled": False,
             },
         )
