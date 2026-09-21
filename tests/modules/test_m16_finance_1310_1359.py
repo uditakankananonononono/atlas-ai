@@ -61,3 +61,20 @@ def test_invalid_finance_inputs_fail_loudly():
  with pytest.raises(ValueError):analysis.run('irr_analysis',{'cash_flows':[1,2,3]})
  with pytest.raises(ValueError):analysis.run('garch_models',{'returns':[.1,.2,.3]},{'omega':.1,'alpha':.7,'beta':.4})
  with pytest.raises(ValueError):analysis.run('portfolio_optimization',{'expected_returns':[.1,.2],'covariance':[[1],[2]]})
+
+def test_rows_1310_1359_have_unique_named_non_transactional_computations():
+ names=[]
+ for method,(data,params) in CASES.items():
+  marker=analysis.run(method,data,params)["output"]["distinctive_computation"]
+  assert marker["row_id"]==finance.ROWS[method] and marker["caller_supplied_inputs_only"]
+  assert marker["transactional"] is False and marker["advice"] is False
+  names.append(marker["name"])
+ assert len(set(names))==50
+
+def test_row_1315_npv_changes_with_discount_rate():
+ data,params=CASES['npv_calculation']; higher=dict(params,discount_rate=.2)
+ assert analysis.run('npv_calculation',data,params)['output']['npv'] != analysis.run('npv_calculation',data,higher)['output']['npv']
+
+def test_row_1342_seeded_monte_carlo_changes_with_volatility():
+ data,params=CASES['monte_carlo_pricing']; volatile=dict(data,volatility=.4)
+ assert analysis.run('monte_carlo_pricing',data,params,seed=1)['output']['price'] != analysis.run('monte_carlo_pricing',volatile,params,seed=1)['output']['price']

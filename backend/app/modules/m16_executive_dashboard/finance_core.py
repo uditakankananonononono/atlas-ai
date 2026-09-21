@@ -11,6 +11,59 @@ ROWS={
 SUMMARIES={m:m.replace('_',' ').title() for m in ROWS}
 INPUTS={m:['documented caller-supplied finance inputs'] for m in ROWS}
 
+COMPUTATION_NAMES = {
+ 1310: 'financial_statement_margin_liquidity',
+ 1311: 'ratio_analysis_ratio_set',
+ 1312: 'cash_flow_reconciliation',
+ 1313: 'cash_conversion_cycle',
+ 1314: 'capital_budgeting_npv',
+ 1315: 'net_present_value',
+ 1316: 'internal_rate_of_return',
+ 1317: 'fractional_payback_period',
+ 1318: 'real_option_expected_value',
+ 1319: 'weighted_cost_of_capital',
+ 1320: 'wacc_calculation',
+ 1321: 'capital_asset_pricing_return',
+ 1322: 'market_beta_covariance',
+ 1323: 'risk_adjusted_return_bundle',
+ 1324: 'minimum_variance_weights',
+ 1325: 'markowitz_target_return',
+ 1326: 'black_litterman_posterior',
+ 1327: 'factor_regression_loadings',
+ 1328: 'fama_french_factor_loadings',
+ 1329: 'inverse_volatility_risk_parity',
+ 1330: 'score_constrained_allocation',
+ 1331: 'threshold_rebalancing_trades',
+ 1332: 'brinson_active_return_attribution',
+ 1333: 'annualized_sharpe_ratio',
+ 1334: 'downside_sortino_ratio',
+ 1335: 'tracking_error_information_ratio',
+ 1336: 'jensen_alpha_generation',
+ 1337: 'target_beta_hedge',
+ 1338: 'futures_hedge_contract_count',
+ 1339: 'black_scholes_price',
+ 1340: 'black_scholes_closed_form',
+ 1341: 'cox_ross_rubinstein_tree',
+ 1342: 'seeded_monte_carlo_price',
+ 1343: 'option_finite_difference_greeks',
+ 1344: 'ewma_volatility_path',
+ 1345: 'garch_variance_recursion',
+ 1346: 'stochastic_volatility_proxy',
+ 1347: 'merton_jump_diffusion_moment',
+ 1348: 'discounted_bond_risk',
+ 1349: 'bootstrapped_spot_curve',
+ 1350: 'cashflow_macaulay_duration',
+ 1351: 'cashflow_convexity',
+ 1352: 'credit_coverage_altman_score',
+ 1353: 'default_risk_proxy',
+ 1354: 'net_recovery_and_lgd',
+ 1355: 'cds_hazard_legs',
+ 1356: 'cds_pricing_mark_to_model',
+ 1357: 'securitization_static_pool_loss',
+ 1358: 'mbs_static_pool_loss',
+ 1359: 'abs_static_pool_loss'
+}
+
 def _f(x,name):
  if isinstance(x,bool) or not isinstance(x,(int,float)) or not math.isfinite(x):raise ValueError(f'{name} must be finite')
  return float(x)
@@ -188,6 +241,7 @@ from app.core.depth_quality import attach_quality as _attach_quality
 
 def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
     out=_original_run(method,data,params,seed)
+    out['output']['distinctive_computation']={'name':COMPUTATION_NAMES[ROWS[method]],'row_id':ROWS[method],'caller_supplied_inputs_only':True,'transactional':False,'advice':False}
     required=[k for k in data if k not in {'assumptions','sources','evidence'}]
     evidence=[x for key in ('sources','evidence') for x in data.get(key,[]) if isinstance(x,dict)]
     return _attach_quality(out,domain='finance',method=method,inputs=data,

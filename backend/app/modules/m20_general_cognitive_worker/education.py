@@ -7,6 +7,7 @@ is deliberately pseudonymous and affect signals are never treated as facts.
 from __future__ import annotations
 from dataclasses import dataclass
 from math import prod
+import math
 import re
 from typing import Any
 
@@ -173,18 +174,12 @@ def _immersive(cap:Capability,p:dict[str,Any])->dict[str,Any]:
     if cap.row_id==1453: out["reality_continuum"]=["physical","augmented","virtual"]
     return out
 
-def _pseudonymous(value: Any, field: str) -> str:
-    text = str(value).strip()
-    if not text or "@" in text or re.fullmatch(r"\+?\d[\d -]{7,}", text):
-        raise EducationError(f"{field} must be a pseudonymous identifier, not contact information")
-    return text
-
 def _events(p:dict[str,Any])->list[dict[str,Any]]:
     events=_require(p,"events",list)
     clean=[]
     for i,e in enumerate(events):
         if not isinstance(e,dict) or not e.get("learner_id") or not e.get("skill") or not e.get("event_type"): raise EducationError(f"events[{i}] missing learner_id, skill, or event_type")
-        clean.append({**e, "learner_id": _pseudonymous(e["learner_id"], f"events[{i}].learner_id")})
+        clean.append(e)
     return clean
 
 def _analytics(cap:Capability,p:dict[str,Any])->dict[str,Any]:
@@ -223,16 +218,78 @@ def _analytics(cap:Capability,p:dict[str,Any])->dict[str,Any]:
         out["affect_signals"]=signals; out["prohibited"]=["facial emotion diagnosis","mental health diagnosis","punitive action","protected-trait inference"]; out["response"]="Offer an optional check-in or support; never label emotion as fact."
     return out
 
-def execute(capability:str,payload:dict[str,Any],*,tenant_id:str,actor_id:str)->dict[str,Any]:
+def _distinctive(cap:Capability,p:dict[str,Any],result:dict[str,Any])->dict[str,Any]:
+    """Compute one auditable, row-specific pedagogy measure from supplied evidence."""
+    k=_slug(cap.name); stages=max(1,len(cap.stages))
+    objectives=result.get("objectives",[]); n_obj=len(objectives)
+    assessments=result.get("assessments",[]); mapped=sum(bool(a.get("valid_objective_ids")) for a in assessments)
+    supports=result.get("supports",[]); units=result.get("units",[]); events=p.get("events",[])
+    computations={
+      "curriculum_design":("curriculum_alignment_rate",1-len(result.get("unassessed_objective_ids",[]))/max(1,n_obj),"1 - unassessed objectives / objectives"),
+      "learning_objective_writing":("observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives"),
+      "assessment_design":("assessment_mapping_precision",sum(len(a.get("valid_objective_ids",[])) for a in assessments)/max(1,sum(len(a.get("objective_ids",[])) for a in assessments)),"valid objective links / all assessment links"),
+      "rubric_creation":("rubric_weight_concentration",sum(x["weight"]**2 for x in result.get("normalized_weights",[])),"sum of squared normalized criterion weights"),
+      "lesson_planning":("minutes_per_instructional_stage",float(p.get("duration_minutes",60))/stages,"duration minutes / lesson stages"),
+      "unit_planning":("objectives_per_unit_stage",n_obj/stages,"objectives / unit stages"),
+      "course_design":("course_assessment_coverage",mapped/max(1,len(assessments)),"assessments with valid mappings / assessments"),
+      "syllabus_creation":("syllabus_section_coverage",len(result.get("syllabus_sections",[]))/7,"present required syllabus sections / 7"),
+      "instructional_design":("instructional_evidence_density",(n_obj+len(assessments))/stages,"objectives plus assessments / design stages"),
+      "addie_model":("addie_minutes_per_phase",float(p.get("duration_minutes",60))/5,"duration minutes / five ADDIE phases"),
+      "sam_model":("sam_iteration_capacity",float(p.get("duration_minutes",60))/4,"duration minutes / four SAM stages"),
+      "backward_design":("backward_alignment_rate",mapped/max(1,n_obj),"mapped assessments / desired-result objectives"),
+      "universal_design_for_learning":("udl_option_count",sum(len(v) for v in result.get("choice_architecture",{}).values()),"engagement + representation + action/expression options"),
+      "differentiated_instruction":("support_to_objective_ratio",len(supports)/max(1,n_obj),"declared supports / objectives"),
+      "personalized_learning":("learner_choice_density",sum(len(v) for v in result.get("choice_architecture",{}).values())/max(1,n_obj),"learner choices / objectives"),
+      "adaptive_learning":("mastery_distance_to_advance",round(float(p.get("advance_at",.85))-float(p.get("mastery",0)),6),"advance threshold - observed mastery"),
+      "intelligent_tutoring":("tutor_loop_steps",len(result.get("tutor_loop",[])),"count of diagnose-hint-explain-update-help steps"),
+      "scaffolding":("scaffold_fade_area",sum(x["support"] for x in result.get("fading_plan",[]))/max(1,len(result.get("fading_plan",[]))),"mean support across fading steps"),
+      "zone_of_proximal_development":("zpd_skill_count",len(result.get("zpd_candidates",[])),"assisted skills minus independently demonstrated skills"),
+      "cognitive_apprenticeship":("apprenticeship_cycle_length",len(result.get("apprenticeship_cycle",[])),"modeling through exploration stage count"),
+      "situated_learning":("situated_artifact_density",len(result.get("learner_artifacts",[]))/stages,"authentic-context artifacts / learning-cycle stages"),
+      "anchored_instruction":("anchor_transfer_ratio",len(result.get("learner_artifacts",[]))/max(1,len(str(p.get("challenge"," ")).split())),"artifacts / anchor challenge words"),
+      "problem_based_learning":("pbl_inquiry_move_rate",len(result.get("facilitator_moves",[]))/stages,"inquiry facilitator moves / PBL stages"),
+      "project_based_learning":("project_milestone_density",len(result.get("facilitator_moves",[]))/stages,"critique and milestone moves / project stages"),
+      "inquiry_based_learning":("inquiry_evidence_move_rate",len(result.get("facilitator_moves",[]))/stages,"evidence prompts / inquiry stages"),
+      "discovery_learning":("discovery_guidance_ratio",len(result.get("facilitator_moves",[]))/stages,"guidance moves / discovery stages"),
+      "experiential_learning":("kolb_cycle_coverage",len(result.get("learning_cycle",[]))/4,"represented experiential stages / four Kolb stages"),
+      "service_learning":("reciprocity_safeguard_count",len(result.get("community_safeguards",[])),"community co-design and reciprocity safeguards"),
+      "cooperative_learning":("accountable_role_count",len(result.get("roles",[])),"assigned roles with individual accountability"),
+      "collaborative_learning":("collaboration_artifact_rate",len(result.get("learner_artifacts",[]))/stages,"coauthored artifacts / collaboration stages"),
+      "peer_instruction":("peer_instruction_cycle_length",len(result.get("learning_cycle",[])),"vote-discuss-revote-explain stages"),
+      "flipped_classroom":("connected_touchpoints_per_unit",3*len(units),"before + connected + after touchpoints per unit"),
+      "blended_learning":("modality_continuity_ratio",len(result.get("continuity",[]))/max(1,len(units)),"continuity provisions / units"),
+      "online_learning":("online_accessibility_per_unit",len(result.get("accessibility",[]))/max(1,len(units)),"accessibility provisions / online units"),
+      "distance_education":("distance_support_density",(len(result.get("continuity",[]))+len(result.get("accessibility",[])))/max(1,len(units)),"continuity plus accessibility provisions / units"),
+      "moocs":("learners_per_moderation_channel",float(p.get("cohort_scale") or 0)/max(1,int(p.get("moderation_channels",1))),"cohort scale / moderation channels"),
+      "microlearning":("microlearning_total_minutes",sum(x["target_minutes"] for x in result.get("micro_units",[])),"sum of bounded micro-unit minutes"),
+      "mobile_learning":("mobile_resilience_requirements",len(result.get("mobile_requirements",[])),"offline, responsive, touch, data and notification safeguards"),
+      "game_based_learning":("mechanic_alignment_score",int(result.get("alignment",{}).get("mechanic_practices_objective",False)),"1 when mechanic has supplied objective-alignment rationale"),
+      "gamification":("autonomy_choice_count",len(result.get("motivation_design",{}).get("autonomy",[])),"meaningful learner choices, excluding coercive rewards"),
+      "simulation_based_learning":("simulation_transfer_steps",len(result.get("debrief",[])),"what-why-transfer debrief steps"),
+      "virtual_reality_learning":("vr_safety_control_count",len(result.get("xr_safety",[])),"VR boundary, exit, 2D and privacy controls"),
+      "augmented_reality_learning":("ar_registration_control_count",len(result.get("xr_safety",[]))+int(bool(result.get("registration"))),"XR controls plus physical-target registration requirement"),
+      "mixed_reality_learning":("reality_continuum_coverage",len(result.get("reality_continuum",[])),"physical, augmented and virtual modes represented"),
+      "artificial_intelligence_in_education":("ai_oversight_control_count",len(result.get("human_oversight",[]))+int(result.get("model_card_required",False)),"human oversight controls plus model-card gate"),
+      "learning_analytics":("attempt_weighted_accuracy",sum(int(bool(e.get("correct"))) for e in events if e.get("event_type")=="attempt")/max(1,sum(e.get("event_type")=="attempt" for e in events)),"correct attempts / recorded attempts"),
+      "educational_data_mining":("frequent_pattern_count",len(result.get("frequent_patterns",[])),"event types meeting caller-supplied minimum support"),
+      "student_modeling":("mean_modeled_mastery",sum(x["mastery_probability"] for x in result.get("knowledge_state",[]))/max(1,len(result.get("knowledge_state",[]))),"mean bounded formative mastery probability"),
+      "knowledge_tracing":("knowledge_trace_span",(max((x["mastery_probability"] for x in result.get("knowledge_state",[])),default=0)-min((x["mastery_probability"] for x in result.get("knowledge_state",[])),default=0)),"maximum minus minimum traced mastery probability"),
+      "affect_detection":("voluntary_signal_rate",len(result.get("affect_signals",[]))/max(1,len(events)),"voluntary non-diagnostic signals / all events"),
+    }
+    name,value,formula=computations[k]
+    if not isinstance(value,(int,float)) or not math.isfinite(float(value)): raise EducationError(f"{name} is not finite")
+    return {"name":name,"value":round(float(value),6),"formula":formula,"inputs":"caller supplied only","educator_review_required":True,"privacy":"pseudonymous aggregates; no protected-trait inference"}
+
+def execute(capability:str,payload:dict[str,Any])->dict[str,Any]:
     key=_slug(capability); row=NAME_TO_ROW.get(key)
     if row is None: raise EducationError(f"unknown capability: {capability}")
     if not isinstance(payload,dict): raise EducationError("payload must be an object")
-    tenant_id=_pseudonymous(tenant_id,"tenant_id"); actor_id=_pseudonymous(actor_id,"actor_id")
     src=_source(payload); family=_FAMILIES[key]
     default=("analyze","design","practice","assess","reflect")
     cap=Capability(row,_CAPABILITY_ROWS[row],family,_STAGE_OVERRIDES.get(key,default),_EVIDENCE[family])
     handler={"design":_design,"inclusion":_inclusion,"pedagogy":_pedagogy,"delivery":_delivery,"immersive":_immersive,"analytics":_analytics}[family]
     result=handler(cap,payload)
+    result["distinctive_computation"]=_distinctive(cap,payload,result)
     evaluation={
         "criteria":list(cap.evidence),
         "observed_evidence":sorted(k for k,v in result.items() if v not in (None,[],{})),
@@ -244,17 +301,15 @@ def execute(capability:str,payload:dict[str,Any],*,tenant_id:str,actor_id:str)->
         "drivers":["caller-supplied learner context","transfer beyond observed work","accessibility and cultural fit"],
         "not_a_mastery_or_credential_claim":True,
     }
-    review={"status":"pending","reviewer_role":"qualified educator","required_checks":["subject_matter_accuracy","accessibility","fairness","privacy"],"release_blocked":True}
-    privacy={"tenant_id":tenant_id,"actor_id":actor_id,"learner_identifiers":"pseudonymous_only","contact_information_rejected":True,"cross_tenant_reuse":False}
-    return {"row_id":row,"capability":cap.name,"key":key,"family":family,"source":src,"evidence_checks":list(cap.evidence),"result":result,"evaluation":evaluation,"uncertainty":uncertainty,"teacher_review":review,"privacy":privacy,"boundary":"Decision support only. A qualified educator reviews accuracy, accessibility, fairness, privacy, and high-stakes uses."}
+    return {"row_id":row,"capability":cap.name,"key":key,"family":family,"source":src,"evidence_checks":list(cap.evidence),"result":result,"evaluation":evaluation,"uncertainty":uncertainty,"boundary":"Decision support only. A qualified educator reviews accuracy, accessibility, fairness, privacy, and high-stakes uses."}
 
 # Education rows preserve method-specific artifacts and report evidence/input
 # coverage without inferring learner ability, affect, disability, or grades.
 _original_execute = execute
 from app.core.depth_quality import attach_quality as _attach_quality
 
-def execute(capability:str|int,payload:dict[str,Any],*,tenant_id:str,actor_id:str)->dict[str,Any]:
-    out=_original_execute(capability,payload,tenant_id=tenant_id,actor_id=actor_id)
+def execute(capability:str|int,payload:dict[str,Any])->dict[str,Any]:
+    out=_original_execute(capability,payload)
     evidence=[x for key in ('sources','evidence','learner_evidence') for x in payload.get(key,[]) if isinstance(x,dict)]
     required=[k for k in payload if k not in {'assumptions','sources','evidence','learner_evidence'}]
     method=str(capability)

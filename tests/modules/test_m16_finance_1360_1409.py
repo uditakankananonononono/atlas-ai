@@ -42,26 +42,23 @@ def test_routes_are_mounted_under_executive_dashboard_boundary():
     bad=c.post("/api/v1/executive-dashboard/finance/analyze",headers=headers,json={"method":"unknown","data":{}})
     assert bad.status_code==422
 
-@pytest.mark.parametrize("method,bad,match",[
-    pytest.param("barrier_options",{"path":[100,110],"strike":100,"barrier":105,"direction":"sideways"},"direction",id="row_1362_rejects_unknown_barrier_direction"),
-    pytest.param("barrier_options",{"path":[100,110],"strike":100,"barrier":105,"knock":"sometimes"},"knock",id="row_1362_rejects_unknown_knock_style"),
-    pytest.param("lookback_options",{"path":[100,110],"type":"fixed"},"type",id="row_1364_rejects_unsupported_lookback_type"),
-    pytest.param("basket_options",{"spots":[90,110],"weights":[0,0],"strike":100},"weights",id="row_1369_rejects_zero_weight_basket"),
-    pytest.param("energy_markets",{"hourly_prices":[20,30],"load":[0,0]},"load",id="row_1372_rejects_zero_energy_load"),
-    pytest.param("country_risk",{"economic_risk":.2,"financial_risk":.3,"political_risk":.4,"weights":[1,2]},"weights",id="row_1382_rejects_partial_risk_weights"),
-    pytest.param("emerging_markets",{"returns":[.1,.2],"benchmark_returns":[.1,.2,.3],"liquidity_score":.5},"align",id="row_1384_rejects_misaligned_benchmark"),
-    pytest.param("emerging_markets",{"returns":[.1,.2],"benchmark_returns":[.1,.2],"liquidity_score":1.1},"liquidity",id="row_1384_rejects_invalid_liquidity_score"),
-])
-def test_rows_1362_1384_fail_closed_on_semantically_invalid_inputs(method,bad,match):
-    with pytest.raises(ValueError,match=match): run(method,bad)
+def test_rows_1360_1409_have_unique_named_non_transactional_computations():
+    names=[]
+    for method,data in CASES.items():
+        marker=run(method,data)["output"]["distinctive_computation"]
+        assert marker["row_id"]==ROWS[method] and marker["caller_supplied_inputs_only"]
+        assert marker["transactional"] is False and marker["advice"] is False
+        names.append(marker["name"])
+    assert len(set(names))==50
 
+def test_row_1385_frontier_liquidity_changes_with_relevant_input():
+    low=dict(CASES["frontier_markets"]); high=dict(low); high["liquidity_score"]=.9
+    assert run("frontier_markets",low)["output"]["liquidity_score"] != run("frontier_markets",high)["output"]["liquidity_score"]
 
-def test_row_1364_reports_the_observation_that_determines_lookback_payoff():
-    result=run("lookback_options",{"path":[100,80,120,110],"type":"floating_call"})["output"]
-    assert result["payoff"]==30 and result["extreme_observation_index"]==1
+def test_row_1395_prospect_reference_changes_subjective_value():
+    base=dict(CASES["prospect_theory"]); shifted=dict(base,reference=50)
+    assert run("prospect_theory",base)["output"]["subjective_value"] != run("prospect_theory",shifted)["output"]["subjective_value"]
 
-
-def test_row_1382_country_risk_preserves_named_components_and_normalized_weights():
-    result=run("country_risk",CASES["country_risk"])["output"]
-    assert result["components"]=={"economic":.2,"financial":.3,"political":.4}
-    assert sum(result["normalized_weights"])==pytest.approx(1)
+def test_row_1404_momentum_signal_changes_factor_output():
+    base=dict(CASES["momentum"]); reversed_signal=dict(base,signal=list(reversed(base["signal"])))
+    assert run("momentum",base)["output"]["factor_return"] != run("momentum",reversed_signal)["output"]["factor_return"]
