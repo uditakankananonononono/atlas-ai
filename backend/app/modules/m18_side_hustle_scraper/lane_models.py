@@ -49,6 +49,9 @@ class SourceKind(str, Enum):
     HACKER_NEWS = "hacker_news"          # official HN Algolia API
     DEV_TO = "dev_to"                    # dev.to public articles API
     PUBLIC_WEB = "public_web"            # robots-permitted public page fetch
+    PINTEREST_API = "pinterest_api"      # official Pinterest API v5
+    X_API = "x_api"                      # official X API v2
+    INSTAGRAM_GRAPH_API = "instagram_graph_api"  # official Graph API, user-provided links
 
 
 # Platforms the user asked for that the compliance decision refuses. Collectors
