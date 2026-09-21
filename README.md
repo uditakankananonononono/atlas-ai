@@ -44,7 +44,7 @@ All module routers below are mounted by `backend/app/main.py`. "Implemented core
 | 11 | Calendar Intelligence | Google/CalDAV sync, solver, travel/prep/focus constraints, conflict proposals | production credentials and live apply verification |
 | 12 | AI Research Lab | cost/latency/capability router, bounded retries, confidence, YAML DAG execution, and shipped Atlas-provider wiring | durable distributed node runner and live-provider acceptance |
 | 13 | Browser Agent | sessions, URL safety, form matching, screenshot-bound single-use approvals | deployed Playwright/VLM runtime and artifact storage |
-| 14 | Project Builder | tenant project plans, tasks, dependencies and approval gates | richer project executors and integrations |
+| 14 | Project Builder | scientific acceptance-to-artifact/test matrix,  tenant project plans, tasks, dependencies and approval gates | richer project executors and integrations |
 | 15 | Document Generator | versioned documents, structural diffs, export proposals, renderers, and preflight checks for citations/figures/slide usability | approval consumption that delivers a verified downloadable File |
 | 16 | Executive Dashboard | approval queue, command previews, critical paths and graph UI | live SSE/Redis fan-out and fuller operational UI |
 | 17 | Narrative Architect | bounded narrative drafting/critique with default Reddit and optional official YouTube/Pinterest/allowlisted public-source wiring | live provider acceptance and full editing workflow |

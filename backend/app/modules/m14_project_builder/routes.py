@@ -163,3 +163,13 @@ def engineering_design_510_574(method:str,body:EngineeringMethod510To574In,tenan
     from .engineering_methods_510_574 import run_engineering_method
     try:return {'tenant_id':tenant_id,**run_engineering_method(method,body.data)}
     except (ValueError,TypeError,KeyError,ZeroDivisionError) as exc:raise HTTPException(422,str(exc)) from exc
+
+class AcceptanceMatrixIn(BaseModel):
+    criteria:list[dict[str,Any]]=Field(min_length=1,max_length=500)
+    artifacts:list[dict[str,Any]]=Field(default_factory=list,max_length=2000)
+    tests:list[dict[str,Any]]=Field(default_factory=list,max_length=2000)
+@router.post('/acceptance-matrix')
+def acceptance_matrix(body:AcceptanceMatrixIn):
+    from .acceptance_trace import build_acceptance_matrix
+    try:return build_acceptance_matrix(body.criteria,body.artifacts,body.tests)
+    except ValueError as error:raise HTTPException(422,str(error)) from error
