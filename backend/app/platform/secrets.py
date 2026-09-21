@@ -36,3 +36,15 @@ class VaultLiteralProvider:
         value=self.read(self.mount,name).get("value","")
         if not value: raise SecretError(f"secret {name!r} is unavailable")
         return value
+
+def authenticated_vault_provider(url:str,token:str,mount:str='secret')->VaultLiteralProvider:
+    """Build a real authenticated Vault KV v2 reader; token stays in process memory."""
+    import hvac
+    client=hvac.Client(url=url,token=token)
+    if not client.is_authenticated():raise SecretError('Vault authentication failed')
+    def read(_mount:str,name:str)->dict[str,str]:
+        result=client.secrets.kv.v2.read_secret_version(path=name,mount_point=_mount)
+        data=result.get('data',{}).get('data',{})
+        value=data.get('value')
+        return {'value':str(value) if value is not None else ''}
+    return VaultLiteralProvider(mount,read)
