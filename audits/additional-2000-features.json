@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 151,
-    "verified-pushed": 1856,
+    "missing": 0,
+    "verified-pushed": 2007,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -21,9 +21,13 @@
       "category": "Claire personalization additions",
       "requirement": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only. Applications and sign-ups require exact-preview human review. Humanization may improve factual clarity and natural voice but never evade detection, conceal authorship, deceive, or fabricate activities."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a83940dbaff73114dde0219f3057ad3d5b74197e",
+        "implementation_path": "backend/app/modules/m21_claire/universal_creator_row_1.py",
+        "test_path": "tests/modules/test_m21_universal_creator_row_1.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 2,
@@ -1344,9 +1348,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Information Asymmetry Exploitation",
       "description": "Profits from knowledge differences",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 86,
@@ -1354,9 +1362,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Adverse Selection Detection",
       "description": "Identifies when bad actors self-select",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 87,
@@ -1364,9 +1376,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Moral Hazard Prevention",
       "description": "Structures deals to prevent reckless behavior",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 88,
@@ -1374,9 +1390,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Screening Mechanism Design",
       "description": "Creates self-selection filters",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 89,
@@ -1384,9 +1404,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Commitment Device Creation",
       "description": "Locks in future behavior",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 90,
@@ -1394,9 +1418,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Credible Threat Construction",
       "description": "Makes threats believable",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 91,
@@ -1404,9 +1432,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Bargaining Power Assessment",
       "description": "Evaluates negotiating positions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 92,
@@ -1414,9 +1446,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "BATNA Identification",
       "description": "Knows best alternative to negotiated agreement",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 93,
@@ -1424,9 +1460,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "ZOPA Mapping",
       "description": "Finds zone of possible agreement",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 94,
@@ -1434,9 +1474,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Integrative Bargaining",
       "description": "Creates win-win solutions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 95,
@@ -1444,9 +1488,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Anchoring Strategy",
       "description": "Sets negotiation reference points",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 96,
@@ -1454,9 +1502,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Framing Effects Utilization",
       "description": "Presents options to influence choices",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 97,
@@ -1464,9 +1516,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Loss Aversion Leverage",
       "description": "Uses fear of loss to motivate",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 98,
@@ -1474,9 +1530,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Social Proof Deployment",
       "description": "Leverages herd behavior",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 99,
@@ -1484,9 +1544,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Scarcity Creation",
       "description": "Manufactures urgency through limited availability",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 100,
@@ -1494,9 +1558,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Reciprocity Triggers",
       "description": "Gives first to create obligation",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 101,
@@ -1504,9 +1572,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Authority Positioning",
       "description": "Establishes expertise and credibility",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 102,
@@ -1514,9 +1586,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Consistency Commitment",
       "description": "Uses small yeses to build to large yeses",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 103,
@@ -1524,9 +1600,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Liking Enhancement",
       "description": "Builds rapport and similarity",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 104,
@@ -1534,9 +1614,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Unity Building",
       "description": "Creates shared identity and purpose",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 105,
@@ -1544,9 +1628,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Pre-Suasion",
       "description": "Primes attention before persuasion attempt",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 106,
@@ -1554,9 +1642,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Priming Effects",
       "description": "Activates related concepts unconsciously",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 107,
@@ -1564,9 +1656,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Nudge Design",
       "description": "Structures choices to guide behavior",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 108,
@@ -1574,9 +1670,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Choice Architecture",
       "description": "Organizes options to influence decisions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 109,
@@ -1584,9 +1684,13 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Libertarian Paternalism",
       "description": "Guides without restricting freedom",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 110,
@@ -3394,9 +3498,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Dual Decomposition",
       "description": "Splits large problems",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 236,
@@ -3404,9 +3512,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "ADMM",
       "description": "Alternates between subproblems",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 237,
@@ -3414,9 +3526,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Coordinate Descent",
       "description": "Optimizes one variable at a time",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 238,
@@ -3424,9 +3540,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Proximal Methods",
       "description": "Handles non-smooth objectives",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 239,
@@ -3434,9 +3554,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Frank-Wolfe Algorithm",
       "description": "Solves constrained problems",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 240,
@@ -3444,9 +3568,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Cutting Plane Methods",
       "description": "Iteratively refines approximations",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 241,
@@ -3454,9 +3582,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Branch and Bound",
       "description": "Prunes search space",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 242,
@@ -3464,9 +3596,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Column Generation",
       "description": "Handles many variables",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 243,
@@ -3474,9 +3610,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Benders Decomposition",
       "description": "Separates complicating variables",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 244,
@@ -3484,9 +3624,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Lagrangian Relaxation",
       "description": "Relaxes constraints",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 245,
@@ -3494,9 +3638,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Semidefinite Programming",
       "description": "Optimizes over matrices",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 246,
@@ -3504,9 +3652,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Second-Order Cone Programming",
       "description": "Handles quadratic constraints",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 247,
@@ -3514,9 +3666,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Geometric Programming",
       "description": "Solves posynomial problems",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 248,
@@ -3524,9 +3680,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Fractional Programming",
       "description": "Optimizes ratios",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 249,
@@ -3534,9 +3694,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Bilevel Optimization",
       "description": "Handles hierarchical decisions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 250,
@@ -3544,9 +3708,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Stochastic Approximation",
       "description": "Learns from noisy observations",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 251,
@@ -3554,9 +3722,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Online Learning",
       "description": "Adapts to streaming data",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 252,
@@ -3564,9 +3736,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Bandit Algorithms",
       "description": "Balances exploration and exploitation",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 253,
@@ -3574,9 +3750,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Contextual Bandits",
       "description": "Uses side information",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 254,
@@ -3584,9 +3764,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Thompson Sampling",
       "description": "Bayesian approach to bandits",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 255,
@@ -3594,9 +3778,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Upper Confidence Bound",
       "description": "Optimistic exploration",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 256,
@@ -3604,9 +3792,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Expert Advice Aggregation",
       "description": "Combines predictions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 257,
@@ -3614,9 +3806,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Regret Minimization",
       "description": "Learns optimal strategies",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 258,
@@ -3624,9 +3820,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Game-Theoretic Learning",
       "description": "Converges to equilibria",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 259,
@@ -3634,9 +3834,13 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Fictitious Play",
       "description": "Models learning in games",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 260,
@@ -3644,9 +3848,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Novel Metaphor Generation",
       "description": "Creates unexpected comparisons that illuminate",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 261,
@@ -3654,9 +3862,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Narrative Arc Construction",
       "description": "Builds compelling story structures",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 262,
@@ -3664,9 +3876,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Character Development",
       "description": "Creates multi-dimensional fictional people",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 263,
@@ -3674,9 +3890,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Dialogue Writing",
       "description": "Generates natural conversation",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 264,
@@ -3684,9 +3904,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Worldbuilding",
       "description": "Creates coherent fictional universes",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 265,
@@ -3694,9 +3918,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Plot Twist Design",
       "description": "Surprises while maintaining plausibility",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 266,
@@ -3704,9 +3932,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Foreshadowing Placement",
       "description": "Plants subtle hints",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 267,
@@ -3714,9 +3946,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Tension Building",
       "description": "Creates and releases dramatic tension",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 268,
@@ -3724,9 +3960,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Pacing Control",
       "description": "Manages story rhythm",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 269,
@@ -3734,9 +3974,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Voice Development",
       "description": "Creates distinctive narrative voices",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 270,
@@ -3744,9 +3988,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Genre Blending",
       "description": "Combines conventions innovatively",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 271,
@@ -3754,9 +4002,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Trope Subversion",
       "description": "Plays with and against expectations",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 272,
@@ -3764,9 +4016,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Myth Creation",
       "description": "Invents foundational stories",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 273,
@@ -3774,9 +4030,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Poetry Generation",
       "description": "Creates verse in various forms",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 274,
@@ -3784,9 +4044,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Songwriting",
       "description": "Writes lyrics with meter and rhyme",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 275,
@@ -3794,9 +4058,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Screenplay Formatting",
       "description": "Structures for visual media",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 276,
@@ -3804,9 +4072,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Stage Play Construction",
       "description": "Handles theatrical constraints",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 277,
@@ -3814,9 +4086,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Comic Script Writing",
       "description": "Balances words and visuals",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 278,
@@ -3824,9 +4100,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Interactive Fiction",
       "description": "Creates branching narratives",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 279,
@@ -3834,9 +4114,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Game Narrative Design",
       "description": "Integrates story with mechanics",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 280,
@@ -3844,9 +4128,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Visual Storyboarding",
       "description": "Plans sequential visuals",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 281,
@@ -4254,9 +4542,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Mixing",
       "description": "Balances audio elements",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 307,
@@ -4264,9 +4556,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Mastering",
       "description": "Prepares audio for distribution",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 308,
@@ -4274,9 +4570,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Foley Creation",
       "description": "Makes everyday sound effects",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 309,
@@ -4284,9 +4584,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Voice Acting Direction",
       "description": "Guides vocal performance",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 310,
@@ -4294,9 +4598,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Podcast Production",
       "description": "Creates audio content",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 311,
@@ -4304,9 +4612,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Audiobook Narration",
       "description": "Reads text engagingly",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 312,
@@ -4314,9 +4626,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Radio Drama",
       "description": "Creates audio-only stories",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 313,
@@ -4324,9 +4640,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Sound Installation Design",
       "description": "Creates immersive audio spaces",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 314,
@@ -4334,9 +4654,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Interactive Art",
       "description": "Creates responsive installations",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 315,
@@ -4344,9 +4668,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Generative Art",
       "description": "Creates algorithmic visuals",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 316,
@@ -4354,9 +4682,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Data Visualization",
       "description": "Makes data beautiful and clear",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 317,
@@ -4364,9 +4696,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Infographic Design",
       "description": "Combines text and visuals",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 318,
@@ -4374,9 +4710,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Map Design",
       "description": "Creates navigational visuals",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 319,
@@ -4384,9 +4724,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Scientific Illustration",
       "description": "Accurately depicts research",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 320,
@@ -4394,9 +4738,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Medical Illustration",
       "description": "Visualizes anatomy and procedures",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 321,
@@ -4404,9 +4752,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Technical Drawing",
       "description": "Creates precise diagrams",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 322,
@@ -4414,9 +4766,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Architectural Rendering",
       "description": "Visualizes buildings",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 323,
@@ -4424,9 +4780,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Interior Design",
       "description": "Plans functional spaces",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 324,
@@ -4434,9 +4794,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Landscape Design",
       "description": "Creates outdoor environments",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 325,
@@ -4444,9 +4808,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Urban Planning",
       "description": "Designs communities",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 326,
@@ -4454,9 +4822,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Fashion Design",
       "description": "Creates clothing concepts",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 327,
@@ -4464,9 +4836,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Textile Design",
       "description": "Develops fabric patterns",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 328,
@@ -4474,9 +4850,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Jewelry Design",
       "description": "Creates wearable art",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 329,
@@ -4484,9 +4864,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Furniture Design",
       "description": "Creates functional objects",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 330,
@@ -4494,9 +4878,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Industrial Design",
       "description": "Develops manufactured products",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 331,
@@ -4504,9 +4892,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Automotive Design",
       "description": "Creates vehicle concepts",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 332,
@@ -4514,9 +4906,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Aerospace Design",
       "description": "Develops aircraft and spacecraft",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "74791bd5e9e596243fad32c472a4d34e2555a778",
+        "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
+        "test_path": "tests/modules/test_m15_creative_306_332.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 333,
@@ -4524,9 +4920,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Marine Design",
       "description": "Creates watercraft",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 334,
@@ -4534,9 +4934,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Toy Design",
       "description": "Creates play experiences",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 335,
@@ -4544,9 +4948,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Game Design",
       "description": "Creates interactive entertainment",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 336,
@@ -4554,9 +4962,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Level Design",
       "description": "Creates game spaces",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 337,
@@ -4564,9 +4976,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Puzzle Design",
       "description": "Creates satisfying challenges",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 338,
@@ -4574,9 +4990,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Mechanic Design",
       "description": "Creates game systems",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 339,
@@ -4584,9 +5004,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Economy Design",
       "description": "Balances virtual economies",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 340,
@@ -4594,9 +5018,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Narrative Design",
       "description": "Integrates story and gameplay",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 341,
@@ -4604,9 +5032,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Quest Design",
       "description": "Creates meaningful objectives",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 342,
@@ -4614,9 +5046,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Difficulty Balancing",
       "description": "Manages challenge curves",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 343,
@@ -4624,9 +5060,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Player Experience Design",
       "description": "Optimizes engagement",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 344,
@@ -4634,9 +5074,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Accessibility Design",
       "description": "Makes content available to all",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 345,
@@ -4644,9 +5088,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Localization",
       "description": "Adapts content for cultures",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 346,
@@ -4654,9 +5102,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Transcreation",
       "description": "Recreates rather than translates",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 347,
@@ -4664,9 +5116,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Cultural Adaptation",
       "description": "Respects local norms",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 348,
@@ -4674,9 +5130,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Sensitivity Review",
       "description": "Avoids offensive content",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 349,
@@ -4684,9 +5144,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Inclusive Design",
       "description": "Represents diverse perspectives",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 350,
@@ -4694,9 +5158,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Universal Design",
       "description": "Creates for all abilities",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 351,
@@ -4704,9 +5172,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Participatory Design",
       "description": "Involves users in creation",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 352,
@@ -4714,9 +5186,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Co-Design",
       "description": "Collaborates with stakeholders",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 353,
@@ -4724,9 +5200,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Design Thinking",
       "description": "Applies human-centered process",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 354,
@@ -4734,9 +5214,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Design Sprint",
       "description": "Rapidly prototypes solutions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 355,
@@ -4744,9 +5228,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Speculative Design",
       "description": "Explores future possibilities",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 356,
@@ -4754,9 +5242,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Critical Design",
       "description": "Challenges assumptions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 357,
@@ -4764,9 +5256,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Adversarial Design",
       "description": "Creates productive friction",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 358,
@@ -4774,9 +5270,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Transition Design",
       "description": "Guides systemic change",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 359,
@@ -4784,9 +5284,13 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Service Design",
       "description": "Orchestrates experiences",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
+        "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
+        "test_path": "tests/modules/test_m15_design_333_359.py"
+      },
+      "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
     {
       "id": 360,
@@ -9830,9 +10334,13 @@
       "category": "Technical & Engineering",
       "requirement": "Example Mapping",
       "description": "Clarifies requirements",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 686,
@@ -9840,9 +10348,13 @@
       "category": "Technical & Engineering",
       "requirement": "Behavior-Driven Development",
       "description": "Specifies behavior",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 687,
@@ -9850,9 +10362,13 @@
       "category": "Technical & Engineering",
       "requirement": "Test-Driven Development",
       "description": "Writes tests first",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 688,
@@ -9860,9 +10376,13 @@
       "category": "Technical & Engineering",
       "requirement": "Acceptance Test-Driven Development",
       "description": "Tests from user perspective",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 689,
@@ -9870,9 +10390,13 @@
       "category": "Technical & Engineering",
       "requirement": "Refactoring",
       "description": "Improves without changing behavior",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 690,
@@ -9880,9 +10404,13 @@
       "category": "Technical & Engineering",
       "requirement": "Code Review",
       "description": "Improves quality",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 691,
@@ -9890,9 +10418,13 @@
       "category": "Technical & Engineering",
       "requirement": "Pair Programming",
       "description": "Collaborates on code",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 692,
@@ -9900,9 +10432,13 @@
       "category": "Technical & Engineering",
       "requirement": "Mob Programming",
       "description": "Teams on one problem",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 693,
@@ -9910,9 +10446,13 @@
       "category": "Technical & Engineering",
       "requirement": "Technical Debt Management",
       "description": "Balances speed and quality",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 694,
@@ -9920,9 +10460,13 @@
       "category": "Technical & Engineering",
       "requirement": "Legacy Code Modernization",
       "description": "Updates old systems",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 695,
@@ -9930,9 +10474,13 @@
       "category": "Technical & Engineering",
       "requirement": "Strangler Fig Pattern",
       "description": "Gradually replaces",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 696,
@@ -9940,9 +10488,13 @@
       "category": "Technical & Engineering",
       "requirement": "Branch by Abstraction",
       "description": "Enables large changes",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 697,
@@ -9950,9 +10502,13 @@
       "category": "Technical & Engineering",
       "requirement": "Feature Toggle",
       "description": "Controls deployment",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 698,
@@ -9960,9 +10516,13 @@
       "category": "Technical & Engineering",
       "requirement": "Trunk-Based Development",
       "description": "Integrates frequently",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 699,
@@ -9970,9 +10530,13 @@
       "category": "Technical & Engineering",
       "requirement": "Git Flow",
       "description": "Manages branches",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 700,
@@ -9980,9 +10544,13 @@
       "category": "Technical & Engineering",
       "requirement": "Semantic Versioning",
       "description": "Communicates changes",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 701,
@@ -9990,9 +10558,13 @@
       "category": "Technical & Engineering",
       "requirement": "Changelog Generation",
       "description": "Documents changes",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 702,
@@ -10000,9 +10572,13 @@
       "category": "Technical & Engineering",
       "requirement": "Release Notes",
       "description": "Informs users",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 703,
@@ -10010,9 +10586,13 @@
       "category": "Technical & Engineering",
       "requirement": "Documentation Generation",
       "description": "Creates docs",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 704,
@@ -10020,9 +10600,13 @@
       "category": "Technical & Engineering",
       "requirement": "API Documentation",
       "description": "Describes interfaces",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 705,
@@ -10030,9 +10614,13 @@
       "category": "Technical & Engineering",
       "requirement": "Architecture Decision Records",
       "description": "Documents decisions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 706,
@@ -10040,9 +10628,13 @@
       "category": "Technical & Engineering",
       "requirement": "Code Comments",
       "description": "Explains code",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 707,
@@ -10050,9 +10642,13 @@
       "category": "Technical & Engineering",
       "requirement": "Naming Conventions",
       "description": "Creates consistency",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 708,
@@ -10060,9 +10656,13 @@
       "category": "Technical & Engineering",
       "requirement": "Code Formatting",
       "description": "Ensures style",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 709,
@@ -10070,9 +10670,13 @@
       "category": "Technical & Engineering",
       "requirement": "Linting",
       "description": "Catches issues",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      },
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
     {
       "id": 710,
