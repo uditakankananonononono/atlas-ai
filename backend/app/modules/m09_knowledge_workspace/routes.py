@@ -36,7 +36,7 @@ class Humanities1860To1909In(BaseModel):
     data:dict[str,Any]=Field(default_factory=dict)
 @router.post('/humanities-1860-1909/support')
 def humanities_1860_1909_route(body:Humanities1860To1909In,tenant:TenantContext=Depends(require_tenant)):
-    try:return {'tenant_id':tenant.tenant_id,**humanities_support_1860_1909(body.feature_id,body.data)}
+    try:return {'tenant_id':tenant.tenant_id,'actor_id':tenant.actor_id,**humanities_support_1860_1909(body.feature_id,body.data)}
     except ValueError as error:raise HTTPException(422,str(error)) from error
 @router.post('/technical-95-99/{row_id}')
 def technical_95_99(row_id:int,payload:dict):

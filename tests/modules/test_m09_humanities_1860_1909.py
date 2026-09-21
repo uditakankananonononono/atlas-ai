@@ -1,31 +1,82 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.modules.m09_knowledge_workspace.humanities_support_1860_1909 import FEATURES,humanities_support_1860_1909
-SRC={'id':'s','title':'Primary source','source_url':'https://archive.example/s','provenance':'archive scan'}
-def payload(fid):
- d={'sources':[SRC],'research_question':'How is the evidence structured?'}
- if fid<1868:d|={'passages':[{'id':'p','source_id':'s','quotation':'text','location':'p. 1','observations':['repetition'],'interpretations':['framing'],'counter_readings':['alternative']}],'lens':{'principles':['situated reading']},'reader_positions':['historical']}
- elif fid<1884:d|={'tokens':['a','b','a'],'annotations':[{'start':0,'end':1,'label':'x'}],'languages_or_varieties':['documented variety']}
- elif fid<1894:d|={'traditions':[{'name':'T','self_designation':'T'}],'claims':[{'claim':'documented practice','tradition_or_community':'T','source_ids':['s'],'insider_views':['account'],'scholarly_views':['analysis']}]}
- elif fid<1909:d|={'works':[{'id':'w','title':'Work','creator_or_community':'Community','source_ids':['s'],'formal_features':['rhythm'],'rights':{'status':'review'}}],'contexts':[{'period':'P'}]}
- else:d|={'schema':[{'name':'id','required':True},{'name':'title'}],'records':[{'id':'1','title':'A'},{'id':'','title':'B'}],'edges':[{'source':'1','target':'2'}],'transform_log':['OCR reviewed']}
- return d
-@pytest.mark.parametrize('fid',range(1860,1910))
-def test_all_50_rows_are_exact_and_substantive(fid):
- o=humanities_support_1860_1909(fid,payload(fid));assert o['feature_id']==fid and o['concept']==FEATURES[fid] and o['review_required'] and o['boundary'] and o['sources'][0]['provenance']=='archive scan'
-def test_criticism_preserves_quote_location_and_counter_reading():
- o=humanities_support_1860_1909(1860,payload(1860));r=o['close_readings'][0];assert r['location']=='p. 1' and r['counter_readings']==['alternative'] and r['source_resolved']
-def test_linguistics_computes_reproducible_corpus_metrics_and_span_validation():
- d=payload(1881);d['annotations'].append({'start':2,'end':5,'label':'bad'});o=humanities_support_1860_1909(1881,d);assert o['corpus_summary']['tokens']==3 and o['frequencies']['a']==2 and len(o['invalid_spans'])==1
-def test_religion_separates_claim_views_and_support():
- o=humanities_support_1860_1909(1886,payload(1886));assert o['claim_matrix'][0]['evidence_status']=='supported' and o['claim_matrix'][0]['insider_views']==['account']
-def test_heritage_catalog_retains_rights_and_attribution_status():
- o=humanities_support_1860_1909(1908,payload(1908));assert o['catalog'][0]['rights']['status']=='review' and o['catalog'][0]['attribution_status']=='unverified'
-def test_digital_humanities_reports_missing_data_and_network_summary():
- o=humanities_support_1860_1909(1909,payload(1909));assert o['missing_required']=={'id':[1]} and o['network_summary']['nodes']==2 and o['network_summary']['edges']==1
-def test_fails_closed_without_sources_or_required_domain_inputs():
- with pytest.raises(ValueError):humanities_support_1860_1909(1860,{})
- with pytest.raises(ValueError):humanities_support_1860_1909(1909,{'sources':[SRC]})
-def test_mounted_route_is_tenant_scoped():
- r=TestClient(app).post('/api/v1/knowledge-workspace/humanities-1860-1909/support',headers={'x-atlas-tenant':'humanities-t'},json={'feature_id':1909,'data':payload(1909)});assert r.status_code==200 and r.json()['tenant_id']=='humanities-t' and r.json()['concept']=='Digital Humanities'
+from app.modules.m09_knowledge_workspace.humanities_support_1860_1909 import HANDLERS, METHOD_SPECS, humanities_support_1860_1909
+
+SOURCE = {"id": "s1", "title": "Archive item", "source_url": "https://archive.example/item", "provenance": "catalogue record A-1"}
+
+def golden(row: int) -> dict:
+    field = METHOD_SPECS[row]["input_field"]
+    return {
+        "sources": [SOURCE],
+        field: [{
+            "id": f"e-{row}", "source_ids": ["s1"], "citation": "Archive item, fol. 2r",
+            "quotation": "supplied excerpt", "observations": [f"observed for {row}"],
+            "interpretations": [f"reading for {row}"], "alternatives": [f"alternative for {row}"],
+            "uncertainty": "dating remains uncertain", "data": {"row": row},
+        }],
+    }
+
+ROWS = list(range(1860, 1910))
+ROW_IDS = [f"row_{row}_{METHOD_SPECS[row]['handler']}" for row in ROWS]
+
+@pytest.mark.parametrize("row", ROWS, ids=ROW_IDS)
+def test_row_level_golden_fixture_has_distinct_method_and_exact_wording(row):
+    result = humanities_support_1860_1909(row, golden(row))
+    spec = METHOD_SPECS[row]
+    assert result["feature_id"] == row
+    assert result["concept"] == spec["name"]
+    assert result["method"] == spec["handler"]
+    assert result["operation"] == spec["operation"]
+    assert result["input_field"] == spec["input_field"]
+    assert result["citation_index"] == {"Archive item, fol. 2r": 1}
+    assert result["interpretive_alternatives"] == [f"alternative for {row}"]
+    assert result["uncertainties"] == ["dating remains uncertain"]
+    assert result["no_fabricated_evidence"] is True
+
+def test_registry_exposes_fifty_distinct_named_handlers_and_mechanisms():
+    assert len(HANDLERS) == len(METHOD_SPECS) == 50
+    assert len({handler.__name__ for handler in HANDLERS.values()}) == 50
+    assert len({spec["operation"] for spec in METHOD_SPECS.values()}) == 50
+    assert len({spec["input_field"] for spec in METHOD_SPECS.values()}) == 50
+
+@pytest.mark.parametrize("row", ROWS, ids=ROW_IDS)
+def test_row_fails_when_its_required_corpus_is_missing(row):
+    with pytest.raises(ValueError, match="non-empty corpus"):
+        humanities_support_1860_1909(row, {"sources": [SOURCE]})
+
+@pytest.mark.parametrize("row", ROWS, ids=ROW_IDS)
+def test_row_fails_when_citation_is_missing(row):
+    payload = golden(row)
+    payload[METHOD_SPECS[row]["input_field"]][0].pop("citation")
+    with pytest.raises(ValueError, match="requires a citation"):
+        humanities_support_1860_1909(row, payload)
+
+@pytest.mark.parametrize("row", ROWS, ids=ROW_IDS)
+def test_row_rejects_unsupported_inference(row):
+    payload = golden(row)
+    payload[METHOD_SPECS[row]["input_field"]][0]["source_ids"] = ["invented-source"]
+    with pytest.raises(ValueError, match="unsupported inference"):
+        humanities_support_1860_1909(row, payload)
+
+def test_never_synthesizes_a_missing_quotation():
+    payload = golden(1860)
+    payload["narrative_units"][0].pop("quotation")
+    result = humanities_support_1860_1909(1860, payload)
+    assert result["evidence"][0]["quotation"] is None
+
+def test_interpretation_requires_an_alternative():
+    payload = golden(1894)
+    payload["art_objects"][0]["alternatives"] = []
+    with pytest.raises(ValueError, match="interpretive alternatives"):
+        humanities_support_1860_1909(1894, payload)
+
+def test_exact_route_mount_and_tenant_actor_isolation():
+    client = TestClient(app)
+    payload = {"feature_id": 1909, "data": golden(1909)}
+    one = client.post("/api/v1/knowledge-workspace/humanities-1860-1909/support", headers={"x-atlas-tenant": "tenant-a", "x-atlas-actor": "actor-a"}, json=payload)
+    two = client.post("/api/v1/knowledge-workspace/humanities-1860-1909/support", headers={"x-atlas-tenant": "tenant-b", "x-atlas-actor": "actor-b"}, json=payload)
+    assert one.status_code == two.status_code == 200
+    assert one.json()["tenant_id"] == "tenant-a" and one.json()["actor_id"] == "actor-a"
+    assert two.json()["tenant_id"] == "tenant-b" and two.json()["actor_id"] == "actor-b"
+    assert one.json()["operation"] == "reproducible corpus encoding and network analysis"

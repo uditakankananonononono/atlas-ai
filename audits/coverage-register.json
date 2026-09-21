@@ -23933,9 +23933,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1860_narrative_theory]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Narrative Theory uses distinct handler narrative_theory, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -23945,9 +23945,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1861_reader_response]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Reader Response uses distinct handler reader_response, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -23957,9 +23957,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1862_deconstruction]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Deconstruction uses distinct handler deconstruction, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -23969,9 +23969,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1863_psychoanalytic_criticism]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Psychoanalytic Criticism uses distinct handler psychoanalytic_criticism, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -23981,9 +23981,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1864_marxist_criticism]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Marxist Criticism uses distinct handler marxist_criticism, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -23993,9 +23993,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1865_feminist_criticism]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Feminist Criticism uses distinct handler feminist_criticism, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24005,9 +24005,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1866_postcolonial_criticism]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Postcolonial Criticism uses distinct handler postcolonial_criticism, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24017,9 +24017,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1867_ecocriticism]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Ecocriticism uses distinct handler ecocriticism, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24029,9 +24029,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1868_linguistics]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Linguistics uses distinct handler linguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24041,9 +24041,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1869_phonetics]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Phonetics uses distinct handler phonetics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24053,9 +24053,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1870_phonology]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Phonology uses distinct handler phonology, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24065,9 +24065,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1871_morphology]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Morphology uses distinct handler morphology, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24077,9 +24077,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1872_syntax]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Syntax uses distinct handler syntax, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24089,9 +24089,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1873_semantics]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Semantics uses distinct handler semantics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24101,9 +24101,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1874_pragmatics]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Pragmatics uses distinct handler pragmatics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24113,9 +24113,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1875_sociolinguistics]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Sociolinguistics uses distinct handler sociolinguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24125,9 +24125,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1876_psycholinguistics]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Psycholinguistics uses distinct handler psycholinguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24137,9 +24137,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1877_neurolinguistics]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Neurolinguistics uses distinct handler neurolinguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24149,9 +24149,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1878_historical_linguistics]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Historical Linguistics uses distinct handler historical_linguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24161,9 +24161,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1879_comparative_linguistics]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Comparative Linguistics uses distinct handler comparative_linguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24173,9 +24173,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1880_computational_linguistics]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Computational Linguistics uses distinct handler computational_linguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24185,9 +24185,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1881_corpus_linguistics]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Corpus Linguistics uses distinct handler corpus_linguistics, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24197,9 +24197,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1882_translation_studies]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Translation Studies uses distinct handler translation_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24209,9 +24209,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1883_interpretation_studies]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Interpretation Studies uses distinct handler interpretation_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24221,9 +24221,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1884_religion]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Religion uses distinct handler religion, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24233,9 +24233,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1885_theology]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Theology uses distinct handler theology, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24245,9 +24245,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1886_comparative_religion]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Comparative Religion uses distinct handler comparative_religion, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24257,9 +24257,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1887_history_of_religion]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: History of Religion uses distinct handler history_of_religion, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24269,9 +24269,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1888_sociology_of_religion]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Sociology of Religion uses distinct handler sociology_of_religion, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24281,9 +24281,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1889_psychology_of_religion]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Psychology of Religion uses distinct handler psychology_of_religion, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24293,9 +24293,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1890_anthropology_of_religion]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Anthropology of Religion uses distinct handler anthropology_of_religion, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24305,9 +24305,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1891_mythology]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Mythology uses distinct handler mythology, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24317,9 +24317,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1892_folklore]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Folklore uses distinct handler folklore, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24329,9 +24329,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1893_ritual_studies]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Ritual Studies uses distinct handler ritual_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24341,9 +24341,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1894_art_history]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Art History uses distinct handler art_history, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24353,9 +24353,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1895_visual_culture]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Visual Culture uses distinct handler visual_culture, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24365,9 +24365,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1896_architecture]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Architecture uses distinct handler architecture, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24377,9 +24377,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1897_musicology]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Musicology uses distinct handler musicology, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24389,9 +24389,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1898_ethnomusicology]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Ethnomusicology uses distinct handler ethnomusicology, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24401,9 +24401,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1899_film_studies]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Film Studies uses distinct handler film_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24413,9 +24413,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1900_media_studies]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Media Studies uses distinct handler media_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24425,9 +24425,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1901_performance_studies]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Performance Studies uses distinct handler performance_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24437,9 +24437,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1902_dance_studies]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Dance Studies uses distinct handler dance_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24449,9 +24449,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1903_theater_studies]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Theater Studies uses distinct handler theater_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24461,9 +24461,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1904_cultural_studies]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Cultural Studies uses distinct handler cultural_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24473,9 +24473,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1905_popular_culture]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Popular Culture uses distinct handler popular_culture, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24485,9 +24485,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1906_subculture_studies]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Subculture Studies uses distinct handler subculture_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24497,9 +24497,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1907_museum_studies]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Museum Studies uses distinct handler museum_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24509,9 +24509,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1908_heritage_studies]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Heritage Studies uses distinct handler heritage_studies, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
@@ -24521,9 +24521,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m09_knowledge_workspace/humanities_support_1860_1909.py",
       "test_path": "tests/modules/test_m09_humanities_1860_1909.py",
-      "test_case": null,
+      "test_case": "test_row_level_golden_fixture_has_distinct_method_and_exact_wording[row_1909_digital_humanities]",
       "post_semantic_status": "verified",
-      "implementation_details": "Functions: humanities_support_1860_1909. Boundaries: Evidence-grounded humanities workbench for owner rows 1860-1909.; Interpretive and research support only. Claims are bounded to supplied evidence; qualified researchers and represented communities must review framing, context, rights and conclusions.; review_required; boundary; invalid_spans",
+      "implementation_details": "Practitioner mechanism: Digital Humanities uses distinct handler digital_humanities, row-specific corpus field and operation; requires provenance-linked source IDs and citations, preserves supplied quotation only, interpretive alternatives and uncertainty; rejects missing corpus/citation and unsupported inference. Evidence: named row-level golden/failure tests in tests/modules/test_m09_humanities_1860_1909.py.",
       "depth_sweep_status": "pending"
     },
     {
