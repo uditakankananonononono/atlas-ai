@@ -527,3 +527,644 @@ def test_corporate_http_scope_is_echoed_without_execution_claim():
     assert (body["tenant_id"], body["actor_id"]) == ("tenant-a", "analyst-7")
     assert body["provenance"]["source-1"] == "board minutes"
     assert body["execution_claimed"] is False
+
+
+# --- per-row discriminating input-perturbation + invalid-domain tests (476-509) ----
+#
+# Acceptance bar: for each feature row, one named test that perturbs one relevant
+# input and asserts the row's specific output value/decision changes, plus one named
+# invalid-domain failure assertion.
+
+from pydantic import ValidationError
+
+
+def test_row_477_discriminating_message_facts_perturbation_changes_matrix():
+    base = plan_communication(
+        initiative="Pricing change",
+        audiences=[AudienceComm(audience="customers", message_facts=["ARR is 240000"], channel="email", frequency="once")],
+        evidence=EV,
+    )
+    perturbed = plan_communication(
+        initiative="Pricing change",
+        audiences=[AudienceComm(audience="customers", message_facts=["ARR is 300000"], channel="email", frequency="once")],
+        evidence=EV,
+    )
+    assert "ARR is 240000" in base.sections[0].body
+    assert "ARR is 300000" in perturbed.sections[0].body
+    assert base.sections[0].body != perturbed.sections[0].body
+
+
+def test_row_477_invalid_domain_rejects_audience_without_message_facts():
+    with pytest.raises(GrowthPlanError, match="message_facts"):
+        plan_communication(
+            initiative="x",
+            audiences=[AudienceComm(audience="customers", message_facts=[], channel="email", frequency="once")],
+            evidence=EV,
+        )
+
+
+def test_row_478_discriminating_gap_size_perturbation_changes_intervention():
+    coaching = design_training(
+        program="Sales enablement",
+        gaps=[SkillGap(skill="discovery calls", audience="AEs", current_level=2, target_level=3)],
+        evidence=EV,
+    )
+    course = design_training(
+        program="Sales enablement",
+        gaps=[SkillGap(skill="discovery calls", audience="AEs", current_level=2, target_level=4)],
+        evidence=EV,
+    )
+    assert "coaching" in coaching.sections[0].body
+    assert "structured course + practice" in course.sections[0].body
+    assert coaching.sections[0].body != course.sections[0].body
+
+
+def test_row_478_invalid_domain_rejects_target_not_above_current():
+    with pytest.raises(GrowthPlanError, match="must exceed current"):
+        design_training(
+            program="x",
+            gaps=[SkillGap(skill="s", audience="a", current_level=3, target_level=3)],
+            evidence=EV,
+        )
+
+
+def test_row_479_discriminating_team_size_perturbation_changes_org_mix():
+    six = design_organization(
+        teams=[TeamSpec(name="Eng", mission="build", size=6), TeamSpec(name="Sales", mission="sell", size=4)],
+        design_drivers=["ship faster"],
+        evidence=EV,
+    )
+    nine = design_organization(
+        teams=[TeamSpec(name="Eng", mission="build", size=9), TeamSpec(name="Sales", mission="sell", size=4)],
+        design_drivers=["ship faster"],
+        evidence=EV,
+    )
+    assert "60.0% of org" in six.sections[0].body
+    assert "69.2% of org" in nine.sections[0].body
+    assert six.sections[0].body != nine.sections[0].body
+
+
+def test_row_479_invalid_domain_rejects_empty_team_roster():
+    with pytest.raises(GrowthPlanError, match="teams"):
+        design_organization(teams=[], design_drivers=["ship faster"], evidence=EV)
+
+
+def test_row_480_discriminating_reports_perturbation_changes_average_and_flags():
+    flagged = analyze_span_of_control(
+        managers=[ManagerSpan(manager="A", reports=12), ManagerSpan(manager="B", reports=4)], evidence=EV
+    )
+    clean = analyze_span_of_control(
+        managers=[ManagerSpan(manager="A", reports=8), ManagerSpan(manager="B", reports=4)], evidence=EV
+    )
+    assert "Average span 8.0" in flagged.sections[0].body
+    assert "above the common 10-report ceiling" in flagged.sections[0].body
+    assert "Average span 6.0" in clean.sections[0].body
+    assert "No outliers flagged." in clean.sections[0].body
+
+
+def test_row_480_invalid_domain_rejects_empty_manager_list():
+    with pytest.raises(GrowthPlanError, match="managers"):
+        analyze_span_of_control(managers=[], evidence=EV)
+
+
+def test_row_481_discriminating_product_axis_perturbation_changes_cell_count():
+    one = design_matrix_organization(functions=["engineering", "design"], products=["atlas"], evidence=EV)
+    two = design_matrix_organization(functions=["engineering", "design"], products=["atlas", "atlas-pro"], evidence=EV)
+    assert "= 2 cells" in one.sections[0].body
+    assert "= 4 cells" in two.sections[0].body
+    assert "atlas-pro x design" in two.sections[0].body
+
+
+def test_row_481_invalid_domain_rejects_empty_function_axis():
+    with pytest.raises(GrowthPlanError, match="functions"):
+        design_matrix_organization(functions=[], products=["atlas"], evidence=EV)
+
+
+def test_row_482_discriminating_team_type_perturbation_changes_topology_map():
+    platform = design_team_topology(
+        teams=[
+            TopologyTeam(name="App", type="stream-aligned", interacts_with=["Platform"]),
+            TopologyTeam(name="Platform", type="platform"),
+        ],
+        evidence=EV,
+    )
+    enabling = design_team_topology(
+        teams=[
+            TopologyTeam(name="App", type="stream-aligned", interacts_with=["Platform"]),
+            TopologyTeam(name="Platform", type="enabling"),
+        ],
+        evidence=EV,
+    )
+    assert "Platform [platform]" in platform.sections[0].body
+    assert "Platform [enabling]" in enabling.sections[0].body
+    assert platform.sections[0].body != enabling.sections[0].body
+
+
+def test_row_482_invalid_domain_rejects_interaction_with_unknown_team():
+    with pytest.raises(GrowthPlanError, match="unknown team"):
+        design_team_topology(
+            teams=[TopologyTeam(name="App", type="stream-aligned", interacts_with=["Ghost"])], evidence=EV
+        )
+
+
+def test_row_483_discriminating_behavior_perturbation_changes_values_body():
+    straight = design_culture(
+        values=[ValueSpec(name="Candor", description="say it straight", behaviors=["disagree in the meeting"])],
+        evidence=EV,
+    )
+    written = design_culture(
+        values=[ValueSpec(name="Candor", description="say it straight", behaviors=["write it down"])],
+        evidence=EV,
+    )
+    assert "observable as: disagree in the meeting" in straight.sections[0].body
+    assert "observable as: write it down" in written.sections[0].body
+
+
+def test_row_483_invalid_domain_rejects_value_without_behaviors():
+    with pytest.raises(GrowthPlanError, match="behaviors"):
+        design_culture(values=[ValueSpec(name="Candor", description="x", behaviors=[])], evidence=EV)
+
+
+def test_row_484_discriminating_behavior_perturbation_changes_decision_test():
+    straight = define_values(
+        values=[ValueSpec(name="Candor", description="say it straight", behaviors=["disagree in the meeting"])],
+        evidence=EV,
+    )
+    written = define_values(
+        values=[ValueSpec(name="Candor", description="say it straight", behaviors=["write it down"])],
+        evidence=EV,
+    )
+    assert "does this choice show disagree in the meeting" in straight.sections[1].body
+    assert "does this choice show write it down" in written.sections[1].body
+    assert straight.sections[1].body != written.sections[1].body
+
+
+def test_row_484_invalid_domain_rejects_value_without_behaviors():
+    with pytest.raises(GrowthPlanError, match="behaviors"):
+        define_values(values=[ValueSpec(name="Candor", description="x", behaviors=[])], evidence=EV)
+
+
+def test_row_485_discriminating_purpose_perturbation_changes_statement():
+    busywork = create_mission_statement(
+        purpose_facts=["remove busywork"], audience="founders", differentiator="doing the work, not advising", evidence=EV
+    )
+    answers = create_mission_statement(
+        purpose_facts=["surface answers"], audience="founders", differentiator="doing the work, not advising", evidence=EV
+    )
+    assert "We exist to remove busywork for founders" in busywork.sections[0].body
+    assert "We exist to surface answers for founders" in answers.sections[0].body
+
+
+def test_row_485_invalid_domain_rejects_empty_purpose_facts():
+    with pytest.raises(GrowthPlanError, match="purpose_facts"):
+        create_mission_statement(purpose_facts=[], audience="founders", differentiator="x", evidence=EV)
+
+
+def test_row_486_discriminating_horizon_perturbation_changes_statement():
+    five = create_vision_statement(aspiration_facts=["every founder has a chief of staff"], horizon_years=5, evidence=EV)
+    ten = create_vision_statement(aspiration_facts=["every founder has a chief of staff"], horizon_years=10, evidence=EV)
+    assert "'In 5 years," in five.sections[0].body
+    assert "'In 10 years," in ten.sections[0].body
+    assert five.sections[0].body != ten.sections[0].body
+
+
+def test_row_486_invalid_domain_rejects_out_of_range_horizon():
+    with pytest.raises(GrowthPlanError, match="horizon_years"):
+        create_vision_statement(aspiration_facts=["x"], horizon_years=0, evidence=EV)
+
+
+def test_row_487_discriminating_capability_perturbation_changes_consistency_check():
+    matched = develop_strategy(
+        winning_aspiration="default assistant for founders",
+        where_to_play=["solo founders"],
+        differentiators=["execution"],
+        capabilities=["execution engine"],
+        evidence=EV,
+    )
+    unmatched = develop_strategy(
+        winning_aspiration="default assistant for founders",
+        where_to_play=["solo founders"],
+        differentiators=["execution"],
+        capabilities=["approval-gated sending"],
+        evidence=EV,
+    )
+    assert "Unmatched differentiator(s) flagged" not in matched.sections[1].body
+    assert "Unmatched differentiator(s) flagged: execution" in unmatched.sections[1].body
+
+
+def test_row_487_invalid_domain_rejects_empty_where_to_play():
+    with pytest.raises(GrowthPlanError, match="where_to_play"):
+        develop_strategy(
+            winning_aspiration="x", where_to_play=[], differentiators=["d"], capabilities=["c"], evidence=EV
+        )
+
+
+def test_row_488_discriminating_strength_perturbation_changes_pairings():
+    fast = analyze_swot(
+        subject="Atlas", strengths=["fast execution"], weaknesses=["small team"],
+        opportunities=["founder market"], threats=["big copilots"], evidence=EV,
+    )
+    deep = analyze_swot(
+        subject="Atlas", strengths=["deep integrations"], weaknesses=["small team"],
+        opportunities=["founder market"], threats=["big copilots"], evidence=EV,
+    )
+    assert "SO: use 'fast execution' to capture 'founder market'" in fast.sections[1].body
+    assert "SO: use 'deep integrations' to capture 'founder market'" in deep.sections[1].body
+    assert fast.sections[1].body != deep.sections[1].body
+
+
+def test_row_488_invalid_domain_rejects_empty_strengths():
+    with pytest.raises(GrowthPlanError, match="strengths"):
+        analyze_swot(subject="x", strengths=[], weaknesses=["w"], opportunities=["o"], threats=["t"], evidence=EV)
+
+
+def test_row_489_discriminating_impact_perturbation_changes_attention_list():
+    negative = analyze_pestle(
+        subject="Atlas",
+        factors=[PESTLEFactor(category="legal", fact="AI disclosure rules tightening", impact="negative")],
+        evidence=EV,
+    )
+    positive = analyze_pestle(
+        subject="Atlas",
+        factors=[PESTLEFactor(category="legal", fact="AI disclosure rules tightening", impact="positive")],
+        evidence=EV,
+    )
+    assert "1 negative factor(s) need a response plan" in negative.sections[1].body
+    assert "No negative factors supplied." in positive.sections[1].body
+
+
+def test_row_489_invalid_domain_rejects_empty_factor_list():
+    with pytest.raises(GrowthPlanError, match="factors"):
+        analyze_pestle(subject="x", factors=[], evidence=EV)
+
+
+def test_row_490_discriminating_driver_states_perturbation_changes_grid_size():
+    two_states = plan_scenarios(
+        subject="2027",
+        drivers=[StrategicDriver(name="regulation", states=["strict", "loose"]), StrategicDriver(name="demand", states=["high", "low"])],
+        evidence=EV,
+    )
+    three_states = plan_scenarios(
+        subject="2027",
+        drivers=[StrategicDriver(name="regulation", states=["strict", "loose", "none"]), StrategicDriver(name="demand", states=["high", "low"])],
+        evidence=EV,
+    )
+    assert "4 scenario(s)" in two_states.sections[0].body
+    assert "6 scenario(s)" in three_states.sections[0].body
+
+
+def test_row_490_invalid_domain_rejects_more_than_two_drivers():
+    with pytest.raises(GrowthPlanError, match="two most uncertain drivers"):
+        plan_scenarios(
+            subject="x",
+            drivers=[
+                StrategicDriver(name="a", states=["h", "l"]),
+                StrategicDriver(name="b", states=["h", "l"]),
+                StrategicDriver(name="c", states=["h", "l"]),
+            ],
+            evidence=EV,
+        )
+
+
+def test_row_491_discriminating_horizon_perturbation_changes_balance():
+    three_year = plan_strategy(
+        goals=[StrategicGoal(objective="default assistant", horizon="three_year", owner="CEO", measures=["ARR"])],
+        evidence=EV,
+    )
+    quarter = plan_strategy(
+        goals=[StrategicGoal(objective="default assistant", horizon="quarter", owner="CEO", measures=["ARR"])],
+        evidence=EV,
+    )
+    assert "three_year: 1" in three_year.sections[1].body
+    assert "three_year: 0" in quarter.sections[1].body
+    assert "quarter: 1" in quarter.sections[1].body
+
+
+def test_row_491_invalid_domain_rejects_goal_without_measures():
+    with pytest.raises(ValidationError):
+        StrategicGoal(objective="x", horizon="quarter", owner="o", measures=[])
+
+
+def test_row_492_discriminating_target_perturbation_changes_kr_line():
+    four_hundred = set_okrs(
+        period="Q4",
+        objectives=[Objective(objective="Grow", key_results=[KeyResult(description="ARR", baseline=240000, target=400000, unit="USD")])],
+        evidence=EV,
+    )
+    three_hundred = set_okrs(
+        period="Q4",
+        objectives=[Objective(objective="Grow", key_results=[KeyResult(description="ARR", baseline=240000, target=300000, unit="USD")])],
+        evidence=EV,
+    )
+    assert "240000.0 -> 400000.0" in four_hundred.sections[0].body
+    assert "240000.0 -> 300000.0" in three_hundred.sections[0].body
+
+
+def test_row_492_invalid_domain_rejects_baseline_equal_target():
+    with pytest.raises(GrowthPlanError, match="baseline == target"):
+        set_okrs(
+            period="Q4",
+            objectives=[Objective(objective="x", key_results=[KeyResult(description="k", baseline=1, target=1)])],
+            evidence=EV,
+        )
+
+
+def test_row_493_discriminating_kind_perturbation_changes_balance():
+    mixed = select_kpis(
+        candidates=[
+            KPICandidate(name="WAU", formula="active users / total", data_source="product db", frequency="weekly", kind="leading"),
+            KPICandidate(name="ARR", formula="sum of subscriptions", data_source="billing", frequency="monthly", kind="lagging"),
+        ],
+        evidence=EV,
+    )
+    lagging_only = select_kpis(
+        candidates=[
+            KPICandidate(name="WAU", formula="active users / total", data_source="product db", frequency="weekly", kind="lagging"),
+            KPICandidate(name="ARR", formula="sum of subscriptions", data_source="billing", frequency="monthly", kind="lagging"),
+        ],
+        evidence=EV,
+    )
+    assert "1 leading vs 1 lagging" in mixed.sections[1].body
+    assert "0 leading vs 2 lagging" in lagging_only.sections[1].body
+    assert "No leading indicator supplied" in lagging_only.sections[1].body
+
+
+def test_row_493_invalid_domain_rejects_empty_candidate_list():
+    with pytest.raises(GrowthPlanError, match="candidates"):
+        select_kpis(candidates=[], evidence=EV)
+
+
+def test_row_494_discriminating_measure_perturbation_changes_perspective_body():
+    arr = build_balanced_scorecard(
+        financial=["ARR"], customer=["NPS"], internal_process=["cycle time"], learning_growth=["training hours"], evidence=EV
+    )
+    margin = build_balanced_scorecard(
+        financial=["gross margin"], customer=["NPS"], internal_process=["cycle time"], learning_growth=["training hours"], evidence=EV
+    )
+    assert "Financial: ARR." in arr.sections[0].body
+    assert "Financial: gross margin." in margin.sections[0].body
+    assert arr.sections[0].body != margin.sections[0].body
+
+
+def test_row_494_invalid_domain_rejects_empty_perspective():
+    with pytest.raises(GrowthPlanError, match="financial"):
+        build_balanced_scorecard(financial=[], customer=["x"], internal_process=["y"], learning_growth=["z"], evidence=EV)
+
+
+def test_row_495_discriminating_cadence_perturbation_changes_review_cycle():
+    quarterly = plan_performance_management(roles=["AE"], cadence="quarterly", expectations=["ship weekly"], evidence=EV)
+    monthly = plan_performance_management(roles=["AE"], cadence="monthly", expectations=["ship weekly"], evidence=EV)
+    assert "Quarterly reviews for: AE" in quarterly.sections[0].body
+    assert "Monthly reviews for: AE" in monthly.sections[0].body
+
+
+def test_row_495_invalid_domain_rejects_empty_expectations():
+    with pytest.raises(GrowthPlanError, match="expectations"):
+        plan_performance_management(roles=["AE"], cadence="quarterly", expectations=[], evidence=EV)
+
+
+def test_row_496_discriminating_component_value_perturbation_changes_pay_mix():
+    high_base = design_compensation(
+        role="Senior engineer",
+        components=[CompComponent(name="Salary", type="base", annual_value=120000), CompComponent(name="Bonus", type="bonus", annual_value=30000)],
+        evidence=EV,
+    )
+    low_base = design_compensation(
+        role="Senior engineer",
+        components=[CompComponent(name="Salary", type="base", annual_value=60000), CompComponent(name="Bonus", type="bonus", annual_value=30000)],
+        evidence=EV,
+    )
+    assert "80.0%" in high_base.sections[0].body
+    assert "66.7%" in low_base.sections[0].body
+    assert "Total 150000" in high_base.sections[0].body
+    assert "Total 90000" in low_base.sections[0].body
+
+
+def test_row_496_invalid_domain_rejects_zero_total_value():
+    with pytest.raises(GrowthPlanError, match="total annual value must be positive"):
+        design_compensation(
+            role="x", components=[CompComponent(name="Salary", type="base", annual_value=0)], evidence=EV
+        )
+
+
+def test_row_497_discriminating_grant_size_perturbation_changes_ownership():
+    large = plan_equity_distribution(
+        grants=[EquityGrant(holder="Founder", shares=600000)], total_shares=1000000, evidence=EV
+    )
+    small = plan_equity_distribution(
+        grants=[EquityGrant(holder="Founder", shares=300000)], total_shares=1000000, evidence=EV
+    )
+    assert "600000 shares (60.0%)" in large.sections[0].body
+    assert "Unallocated: 400000" in large.sections[0].body
+    assert "300000 shares (30.0%)" in small.sections[0].body
+    assert "Unallocated: 700000" in small.sections[0].body
+
+
+def test_row_497_invalid_domain_rejects_grants_exceeding_total():
+    with pytest.raises(GrowthPlanError, match="exceeding"):
+        plan_equity_distribution(grants=[EquityGrant(holder="X", shares=11)], total_shares=10, evidence=EV)
+
+
+def test_row_498_discriminating_share_class_perturbation_changes_class_reconciliation():
+    preferred = manage_cap_table(
+        entries=[EquityGrant(holder="Investor", shares=300000, share_class="preferred")],
+        authorized_shares=1000000,
+        evidence=EV,
+    )
+    common = manage_cap_table(
+        entries=[EquityGrant(holder="Investor", shares=300000, share_class="common")],
+        authorized_shares=1000000,
+        evidence=EV,
+    )
+    assert "preferred: 300000" in preferred.sections[1].body
+    assert "common: 300000" in common.sections[1].body
+    assert preferred.sections[1].body != common.sections[1].body
+
+
+def test_row_498_invalid_domain_rejects_issued_exceeding_authorized():
+    with pytest.raises(GrowthPlanError, match="exceeds"):
+        manage_cap_table(entries=[EquityGrant(holder="X", shares=11)], authorized_shares=10, evidence=EV)
+
+
+def test_row_499_discriminating_burn_perturbation_changes_runway_math():
+    high_burn = plan_fundraising(
+        target_amount=600000, runway_months=12, milestones=["hire 2 engineers"], current_monthly_burn=40000, evidence=EV
+    )
+    low_burn = plan_fundraising(
+        target_amount=600000, runway_months=12, milestones=["hire 2 engineers"], current_monthly_burn=20000, evidence=EV
+    )
+    assert "need 480000" in high_burn.sections[0].body
+    assert "buffer 120000" in high_burn.sections[0].body
+    assert "need 240000" in low_burn.sections[0].body
+    assert "buffer 360000" in low_burn.sections[0].body
+
+
+def test_row_499_invalid_domain_rejects_nonpositive_target():
+    with pytest.raises(GrowthPlanError, match="target_amount > 0"):
+        plan_fundraising(target_amount=-1, runway_months=12, milestones=["x"], current_monthly_burn=40000, evidence=EV)
+
+
+def test_row_500_discriminating_supplied_facts_perturbation_changes_gap_list():
+    complete = create_pitch_deck(
+        company="Atlas",
+        facts=DeckFacts(problem="busywork", solution="agent", traction="100 users", market="founders", team="ex-X", ask="600k seed"),
+        evidence=EV,
+    )
+    gapped = create_pitch_deck(
+        company="Atlas",
+        facts=DeckFacts(problem="busywork", traction="100 users", market="founders", team="ex-X", ask="600k seed"),
+        evidence=EV,
+    )
+    assert complete.sections[-1].body == "All core sections supplied."
+    assert "solution" in gapped.sections[-1].body
+    assert "Missing sections" in gapped.sections[-1].body
+
+
+def test_row_500_invalid_domain_rejects_missing_evidence():
+    with pytest.raises(GrowthPlanError, match="at least one evidence item"):
+        create_pitch_deck(company="Atlas", facts=DeckFacts(), evidence=[])
+
+
+def test_row_501_invalid_domain_rejects_zero_month_horizon():
+    with pytest.raises(GrowthPlanError, match="months in 1..60"):
+        build_financial_model(starting_revenue=100, monthly_growth_pct=10, monthly_costs=50, months=0, evidence=EV)
+
+
+def test_row_502_discriminating_multiple_perturbation_changes_estimate():
+    six = analyze_valuation(method="revenue_multiple", base_amount=240000, multiple=6, evidence=EV)
+    three = analyze_valuation(method="revenue_multiple", base_amount=240000, multiple=3, evidence=EV)
+    assert "1440000" in six.sections[0].body
+    assert "720000" in three.sections[0].body
+    assert six.sections[0].body != three.sections[0].body
+
+
+def test_row_502_invalid_domain_rejects_nonpositive_base():
+    with pytest.raises(GrowthPlanError, match="must be positive"):
+        analyze_valuation(method="revenue_multiple", base_amount=0, multiple=6, evidence=EV)
+
+
+def test_row_503_discriminating_document_perturbation_changes_coverage():
+    partial = prepare_due_diligence(
+        company="Atlas",
+        areas=[DiligenceArea(category="financial", documents=["P&L"], required=["P&L", "bank statements"])],
+        evidence=EV,
+    )
+    full = prepare_due_diligence(
+        company="Atlas",
+        areas=[DiligenceArea(category="financial", documents=["P&L", "bank statements"], required=["P&L", "bank statements"])],
+        evidence=EV,
+    )
+    assert "coverage 50.0%" in partial.sections[0].body
+    assert "missing required: bank statements" in partial.sections[0].body
+    assert "coverage 100.0%" in full.sections[0].body
+    assert "all required present" in full.sections[0].body
+
+
+def test_row_503_invalid_domain_rejects_empty_area_list():
+    with pytest.raises(GrowthPlanError, match="areas"):
+        prepare_due_diligence(company="x", areas=[], evidence=EV)
+
+
+def test_row_504_discriminating_position_perturbation_changes_alignment_count():
+    aligned = negotiate_term_sheet(
+        parties=["Atlas", "Investor"],
+        terms=[TermPosition(term="valuation", our_position="4m", their_position="4m", priority="must")],
+        evidence=EV,
+    )
+    contested = negotiate_term_sheet(
+        parties=["Atlas", "Investor"],
+        terms=[TermPosition(term="valuation", our_position="4m", their_position="3m", priority="must")],
+        evidence=EV,
+    )
+    assert "1 aligned, 0 open" in aligned.sections[0].body
+    assert "0 aligned, 1 open" in contested.sections[0].body
+    assert "(aligned)" in aligned.sections[0].body
+    assert "(open)" in contested.sections[0].body
+
+
+def test_row_504_invalid_domain_rejects_empty_term_list():
+    with pytest.raises(GrowthPlanError, match="terms"):
+        negotiate_term_sheet(parties=["Atlas", "Investor"], terms=[], evidence=EV)
+
+
+def test_row_505_discriminating_cadence_perturbation_changes_update_calendar():
+    monthly = plan_investor_relations(investors=[{"name": "Ana", "firm": "SeedCo"}], update_cadence="monthly", evidence=EV)
+    quarterly = plan_investor_relations(investors=[{"name": "Ana", "firm": "SeedCo"}], update_cadence="quarterly", evidence=EV)
+    assert "Monthly updates to 1 supplied investor(s)" in monthly.sections[0].body
+    assert "Quarterly updates to 1 supplied investor(s)" in quarterly.sections[0].body
+
+
+def test_row_505_invalid_domain_rejects_investor_without_name():
+    with pytest.raises(GrowthPlanError, match="investor name"):
+        plan_investor_relations(investors=[{"firm": "SeedCo"}], update_cadence="monthly", evidence=EV)
+
+
+def test_row_506_discriminating_cadence_perturbation_changes_board_calendar():
+    monthly = manage_board(directors=[{"name": "Udita", "role": "CEO"}], meeting_cadence="monthly", evidence=EV)
+    quarterly = manage_board(directors=[{"name": "Udita", "role": "CEO"}], meeting_cadence="quarterly", evidence=EV)
+    assert "Monthly meetings with: Udita" in monthly.sections[0].body
+    assert "Quarterly meetings with: Udita" in quarterly.sections[0].body
+
+
+def test_row_506_invalid_domain_rejects_director_without_name():
+    with pytest.raises(GrowthPlanError, match="director name"):
+        manage_board(directors=[{"role": "CEO"}], meeting_cadence="quarterly", evidence=EV)
+
+
+def test_row_507_discriminating_readiness_perturbation_changes_gap_list():
+    evidenced = plan_exit(options=[ExitOption(type="ipo", readiness_facts=["audited financials"])], evidence=EV)
+    unevidenced = plan_exit(options=[ExitOption(type="ipo")], evidence=EV)
+    assert "Every option carries readiness facts." in evidenced.sections[1].body
+    assert "Options with no readiness evidence: ipo" in unevidenced.sections[1].body
+
+
+def test_row_507_invalid_domain_rejects_empty_option_list():
+    with pytest.raises(GrowthPlanError, match="options"):
+        plan_exit(options=[], evidence=EV)
+
+
+def test_row_508_discriminating_price_perturbation_changes_price_commentary():
+    priced = analyze_acquisition(
+        target_name="SmallCo", rationale_facts=["their team built a competitor"],
+        target_revenue=100000, asking_price=500000, evidence=EV,
+    )
+    unpriced = analyze_acquisition(
+        target_name="SmallCo", rationale_facts=["their team built a competitor"], evidence=EV
+    )
+    assert "5.0x revenue" in priced.sections[1].body
+    assert "no price commentary" in unpriced.sections[1].body
+    assert priced.sections[1].body != unpriced.sections[1].body
+
+
+def test_row_508_invalid_domain_rejects_nonpositive_financials():
+    with pytest.raises(GrowthPlanError, match="must be positive"):
+        analyze_acquisition(
+            target_name="SmallCo", rationale_facts=["fit"], target_revenue=0, asking_price=500000, evidence=EV
+        )
+
+
+def test_row_509_discriminating_status_perturbation_changes_readiness_ratio():
+    one_ready = prepare_ipo(
+        company="Atlas",
+        areas=[ReadinessArea(area="audited financials", status="ready"), ReadinessArea(area="internal controls", status="gap"), ReadinessArea(area="board composition", status="gap")],
+        evidence=EV,
+    )
+    two_ready = prepare_ipo(
+        company="Atlas",
+        areas=[ReadinessArea(area="audited financials", status="ready"), ReadinessArea(area="internal controls", status="ready"), ReadinessArea(area="board composition", status="gap")],
+        evidence=EV,
+    )
+    assert "1 of 3 areas ready (33.3%)" in one_ready.sections[0].body
+    assert "2 of 3 areas ready (66.7%)" in two_ready.sections[0].body
+    assert "internal controls" in one_ready.sections[1].body
+    assert "internal controls" not in two_ready.sections[1].body
+
+
+def test_row_509_invalid_domain_rejects_empty_area_list():
+    with pytest.raises(GrowthPlanError, match="areas"):
+        prepare_ipo(company="x", areas=[], evidence=EV)
+
+
+def test_row_476_invalid_domain_rejects_empty_stakeholder_list():
+    with pytest.raises(GrowthPlanError, match="stakeholders"):
+        analyze_stakeholders(initiative="x", stakeholders=[], evidence=EV)
