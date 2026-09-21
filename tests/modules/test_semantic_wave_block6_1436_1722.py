@@ -94,7 +94,7 @@ def test_semantic_engineering_http_boundary_is_mounted():
 def test_education_1436_to_1509_exposes_evaluation_and_uncertainty():
  from app.modules.m20_general_cognitive_worker.education import execute
  from app.modules.m12_ai_research_lab.education_support import education_support
- e=execute('experiential_learning',{'challenge':'Improve a process','objectives':['Evaluate evidence'],'source':{'title':'source','url':'https://example.test'}})
+ e=execute('experiential_learning',{'challenge':'Improve a process','objectives':['Evaluate evidence'],'source':{'title':'source','url':'https://example.test'}},tenant_id='sem6',actor_id='educator')
  assert e['evaluation']['reviewer'] and e['uncertainty']['not_a_mastery_or_credential_claim']
  a=education_support(1460,{'signals':[{'value':.5}],'sources':[{'source_id':'s','observed_at':'2026-09-21'}]})
  assert 'bias and subgroup performance' in a['evaluation']['review_checks'] and a['uncertainty']['prediction_is_not_fact']

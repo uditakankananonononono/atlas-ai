@@ -41,3 +41,13 @@ def test_routes_are_mounted_under_executive_dashboard_boundary():
     assert r.status_code==200 and r.json()["feature_row"]==1409
     bad=c.post("/api/v1/executive-dashboard/finance/analyze",headers=headers,json={"method":"unknown","data":{}})
     assert bad.status_code==422
+
+def test_finance_rows_are_scoped_and_remain_non_transactional():
+    c=TestClient(app)
+    payload={"method":"microfinance","data":CASES["microfinance"]}
+    assert c.post("/api/v1/executive-dashboard/finance/analyze",json=payload).status_code==422
+    h={"X-Tenant-ID":"tenant-fin","X-Actor-ID":"analyst-fin"}
+    out=c.post("/api/v1/executive-dashboard/finance/analyze",headers=h,json=payload).json()
+    assert out["scope"]=={"tenant_id":"tenant-fin","actor_id":"analyst-fin"}
+    assert "trade" not in out and "transaction" not in out
+    assert any("no order" in x.lower() for x in out["output"]["method_limits"])

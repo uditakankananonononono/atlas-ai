@@ -100,10 +100,10 @@ def _finance(row_id: int, data: dict[str, Any], options: dict[str, Any]) -> tupl
     return method, executive_analysis.run(method, data, params, seed=seed)
 
 
-def _education(row_id: int, data: dict[str, Any], _options: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+def _education(row_id: int, data: dict[str, Any], _options: dict[str, Any], scope: TenantScope) -> tuple[str, dict[str, Any]]:
     if row_id in ROW_TO_FOUNDATION_EDUCATION:
         method = ROW_TO_FOUNDATION_EDUCATION[row_id]
-        return method, education_execute(method, data)
+        return method, education_execute(method, data, tenant_id=scope.tenant_id, actor_id=scope.actor_id)
     return EDUCATION_ADVANCED_ROWS[row_id], education_support(row_id, data)
 
 
@@ -133,7 +133,7 @@ def analyze_specialized_domain(
         drivers = ("caller-supplied financial inputs", "model assumptions", "market and accounting regime")
     elif row_id < 1510:
         domain = "education"
-        capability, raw = _education(row_id, payload, opts)
+        capability, raw = _education(row_id, payload, opts, scope)
         result = _mapping(raw.get("result"), "education result")
         source_evaluation = raw.get("evaluation", {})
         checks = tuple(source_evaluation.get("criteria", source_evaluation.get("review_checks", sorted(result))))

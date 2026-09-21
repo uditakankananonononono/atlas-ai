@@ -173,12 +173,18 @@ def _immersive(cap:Capability,p:dict[str,Any])->dict[str,Any]:
     if cap.row_id==1453: out["reality_continuum"]=["physical","augmented","virtual"]
     return out
 
+def _pseudonymous(value: Any, field: str) -> str:
+    text = str(value).strip()
+    if not text or "@" in text or re.fullmatch(r"\+?\d[\d -]{7,}", text):
+        raise EducationError(f"{field} must be a pseudonymous identifier, not contact information")
+    return text
+
 def _events(p:dict[str,Any])->list[dict[str,Any]]:
     events=_require(p,"events",list)
     clean=[]
     for i,e in enumerate(events):
         if not isinstance(e,dict) or not e.get("learner_id") or not e.get("skill") or not e.get("event_type"): raise EducationError(f"events[{i}] missing learner_id, skill, or event_type")
-        clean.append(e)
+        clean.append({**e, "learner_id": _pseudonymous(e["learner_id"], f"events[{i}].learner_id")})
     return clean
 
 def _analytics(cap:Capability,p:dict[str,Any])->dict[str,Any]:
@@ -217,10 +223,11 @@ def _analytics(cap:Capability,p:dict[str,Any])->dict[str,Any]:
         out["affect_signals"]=signals; out["prohibited"]=["facial emotion diagnosis","mental health diagnosis","punitive action","protected-trait inference"]; out["response"]="Offer an optional check-in or support; never label emotion as fact."
     return out
 
-def execute(capability:str,payload:dict[str,Any])->dict[str,Any]:
+def execute(capability:str,payload:dict[str,Any],*,tenant_id:str,actor_id:str)->dict[str,Any]:
     key=_slug(capability); row=NAME_TO_ROW.get(key)
     if row is None: raise EducationError(f"unknown capability: {capability}")
     if not isinstance(payload,dict): raise EducationError("payload must be an object")
+    tenant_id=_pseudonymous(tenant_id,"tenant_id"); actor_id=_pseudonymous(actor_id,"actor_id")
     src=_source(payload); family=_FAMILIES[key]
     default=("analyze","design","practice","assess","reflect")
     cap=Capability(row,_CAPABILITY_ROWS[row],family,_STAGE_OVERRIDES.get(key,default),_EVIDENCE[family])
@@ -237,15 +244,17 @@ def execute(capability:str,payload:dict[str,Any])->dict[str,Any]:
         "drivers":["caller-supplied learner context","transfer beyond observed work","accessibility and cultural fit"],
         "not_a_mastery_or_credential_claim":True,
     }
-    return {"row_id":row,"capability":cap.name,"key":key,"family":family,"source":src,"evidence_checks":list(cap.evidence),"result":result,"evaluation":evaluation,"uncertainty":uncertainty,"boundary":"Decision support only. A qualified educator reviews accuracy, accessibility, fairness, privacy, and high-stakes uses."}
+    review={"status":"pending","reviewer_role":"qualified educator","required_checks":["subject_matter_accuracy","accessibility","fairness","privacy"],"release_blocked":True}
+    privacy={"tenant_id":tenant_id,"actor_id":actor_id,"learner_identifiers":"pseudonymous_only","contact_information_rejected":True,"cross_tenant_reuse":False}
+    return {"row_id":row,"capability":cap.name,"key":key,"family":family,"source":src,"evidence_checks":list(cap.evidence),"result":result,"evaluation":evaluation,"uncertainty":uncertainty,"teacher_review":review,"privacy":privacy,"boundary":"Decision support only. A qualified educator reviews accuracy, accessibility, fairness, privacy, and high-stakes uses."}
 
 # Education rows preserve method-specific artifacts and report evidence/input
 # coverage without inferring learner ability, affect, disability, or grades.
 _original_execute = execute
 from app.core.depth_quality import attach_quality as _attach_quality
 
-def execute(capability:str|int,payload:dict[str,Any])->dict[str,Any]:
-    out=_original_execute(capability,payload)
+def execute(capability:str|int,payload:dict[str,Any],*,tenant_id:str,actor_id:str)->dict[str,Any]:
+    out=_original_execute(capability,payload,tenant_id=tenant_id,actor_id=actor_id)
     evidence=[x for key in ('sources','evidence','learner_evidence') for x in payload.get(key,[]) if isinstance(x,dict)]
     required=[k for k in payload if k not in {'assumptions','sources','evidence','learner_evidence'}]
     method=str(capability)
