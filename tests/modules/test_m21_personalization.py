@@ -62,3 +62,55 @@ def test_retrieved_decision_includes_outcome_lessons_for_future_recommendations(
  result=a.retrieve([1,0],1)[0]
  assert result['content']['outcomes'][0]['rating']=='better'
  assert result['content']['outcomes'][0]['lesson']=='Prefer stable versioned APIs'
+
+def scoped(tmp_path,tenant='tenant-a',actor='actor-a'):
+ from app.modules.m21_claire.personalization import ScopedPersonalizationRepository
+ e=create_engine(f"sqlite:///{tmp_path/'scoped.db'}");Base.metadata.create_all(e)
+ return ScopedPersonalizationRepository(tenant,actor,sessionmaker(bind=e))
+
+def test_row2_decision_journal_has_reasoned_similarity_and_actor_isolation(tmp_path):
+ a=scoped(tmp_path); other=scoped(tmp_path,actor='actor-b')
+ a.add_decision('Use official API','stable and auditable','collectors',[1,0])
+ other.add_decision('Scrape private pages','not permitted','collectors',[1,0])
+ got=a.retrieve_decisions([1,0]);assert got==[{'decision_id':got[0]['decision_id'],'decision':'Use official API','reason':'stable and auditable','context':'collectors','similarity':1.0}]
+
+def test_row3_correction_loop_returns_owner_few_shot_pair_and_rejects_noop(tmp_path):
+ a=scoped(tmp_path);a.add_correction('Dear Sir or Madam','Hi Maya','email',[1,0])
+ assert a.correction_examples([1,0])[0]['preferred_output']=='Hi Maya'
+ with pytest.raises(ValueError):a.add_correction('same','same','email',[1,0])
+
+def test_row4_voice_fine_tuning_is_hashed_local_approval_proposal():
+ from app.core.approvals import ApprovalStore
+ from app.modules.m21_claire.training import TrainingService
+ s=TrainingService(ApprovalStore());d=s.voice_dataset([f'Owner-authored sample number {i} with enough text.' for i in range(50)])
+ out=s.propose_training(d,'llama3.1:8b','lora');assert out['status']=='pending' and len(d.sha256)==64 and out['payload']['publishing'] is False
+
+def test_row5_owner_reasoning_notes_never_capture_hidden_chain_of_thought(tmp_path):
+ a=scoped(tmp_path)
+ with pytest.raises(PermissionError):a.add_owner_reasoning('Choice','private thought',[1,0],False)
+ a.add_owner_reasoning('Choice','I prefer reversible choices',[1,0],True)
+ assert a.reasoning_templates([1,0])[0]['hidden_chain_of_thought'] is False
+
+def test_row6_preference_ranking_computes_distinct_ordered_scores(tmp_path):
+ a=scoped(tmp_path);a.add_ranking('tools',['api','browser','manual'],['api','browser','manual']);a.add_ranking('tools',['api','manual'],['manual','api'])
+ score=a.preference_scores();assert score['api']>score['manual']>score['browser']
+ with pytest.raises(ValueError):a.add_ranking('bad',['a','b'],['a'])
+
+def test_row7_telemetry_is_explicit_scoped_and_never_hidden(tmp_path):
+ a,_=repos(tmp_path)
+ with pytest.raises(PermissionError):a.log_telemetry('link_click',{'url':'x'})
+ a.set_telemetry_consent(True,['link_click']);assert a.log_telemetry('link_click',{'url':'x'})
+ with pytest.raises(PermissionError):a.log_telemetry('tool_choice',{'tool':'x'})
+
+def test_row8_cognitive_twin_combines_only_consented_actor_records(tmp_path):
+ a=scoped(tmp_path);a.add_decision('A','reason','ctx',[1,0]);a.add_correction('x','y','ctx',[1,0]);a.add_owner_reasoning('t','note',[1,0],True);a.add_ranking('ctx',['a','b'],['b','a'])
+ out=a.cognitive_twin_context([1,0]);assert set(out)=={'decisions','corrections','reasoning_notes','preference_scores','provenance','external_effects'} and out['external_effects']==[]
+
+def test_row9_weekly_reinforcement_is_review_signal_not_silent_mutation(tmp_path):
+ a=scoped(tmp_path);a.add_weekly_review('draft-1','good','Keep the opening');a.add_weekly_review('draft-2','unclear','Ask me first')
+ out=a.weekly_signal();assert out['ratings']=={'good':1,'bad':0,'unclear':1} and out['requires_owner_approval_before_behavior_change']
+
+def test_rows2_9_export_delete_and_tenant_actor_boundaries(tmp_path):
+ a=scoped(tmp_path);b=scoped(tmp_path,tenant='tenant-b');a.add_decision('A','r','c',[1,0]);b.add_decision('B','r','c',[1,0])
+ exported=a.export_data();assert exported['actor_id']=='actor-a' and exported['records']['m21_decisions'][0]['decision']=='A'
+ assert a.delete_data()['deleted']['m21_decisions']==1 and a.retrieve_decisions([1,0])==[] and b.retrieve_decisions([1,0])[0]['decision']=='B'
