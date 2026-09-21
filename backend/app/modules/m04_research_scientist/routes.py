@@ -107,3 +107,14 @@ def environmental_1660_1709_route(row_id:int, body:Environmental1660To1709In, te
         return {'tenant_id':tenant.tenant_id,'actor_id':tenant.actor_id,**result}
     except (ValueError,TypeError,KeyError,ZeroDivisionError) as exc:
         raise HTTPException(422,str(exc)) from exc
+
+from pydantic import BaseModel
+from fastapi.responses import Response
+class ReproducibilityBundleIn(BaseModel):
+ title:str;code:str;language:str='python';inputs:dict={};parameters:dict={};seed:int=0;expected_outputs:list[str]=[];dependencies:list[str]=[];source_urls:list[str]=[]
+@router.post('/reproducibility/bundle')
+def reproducibility_bundle(body:ReproducibilityBundleIn):
+ from .reproducibility_bundle import build_bundle
+ try:payload,manifest=build_bundle(**body.model_dump())
+ except ValueError as e:raise HTTPException(422,str(e))
+ return Response(payload,media_type='application/zip',headers={'Content-Disposition':'attachment; filename="atlas-reproducibility-bundle.zip"','X-Atlas-Bundle-SHA256':manifest['bundle_sha256']})
