@@ -22,3 +22,8 @@ def report(data:ReportIn,service:Service=Depends(get_service)): return service.r
 def propose_send(artifact_id:str,recipient:str,service:Service=Depends(get_service)):
     try:return service.propose_send(artifact_id,recipient)
     except NotFoundError as e: raise HTTPException(404,"artifact not found") from e
+@router.post('/technical-76-84/{row_id}')
+def technical_76_84(row_id:int,payload:dict):
+ from .technical_76_84 import run
+ try:return run(row_id,payload)
+ except (ValueError,TypeError,KeyError) as exc:raise HTTPException(422,str(exc)) from exc

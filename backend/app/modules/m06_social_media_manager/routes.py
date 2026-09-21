@@ -526,3 +526,9 @@ def conclude_ab_test(test_id: str, analytics: Analytics = Depends(get_analytics)
         raise HTTPException(status_code=404, detail="A/B test not found") from error
     except ABTestStateError as error:
         raise HTTPException(status_code=409, detail=str(error)) from error
+
+@router.post('/technical-67-75/{row_id}')
+def technical_67_75(row_id:int,payload:dict):
+    from .technical_67_75 import run
+    try:return run(row_id,payload)
+    except (ValueError,TypeError,KeyError) as exc:raise HTTPException(status_code=422,detail=str(exc)) from exc

@@ -17,3 +17,8 @@ def docs(data:DocumentationIn,service:Service=Depends(get_service)):return servi
 def propose(build_id:str,action:Literal["push_startup_site","deploy_startup_site","share_pitch_deck","publish_documentation"],service:Service=Depends(get_service)):
     try:return service.propose(build_id,action)
     except NotFoundError as e:raise HTTPException(404,"build not found") from e
+@router.post('/technical-85-94/{row_id}')
+def technical_85_94(row_id:int,payload:dict):
+ from .technical_85_94 import run
+ try:return run(row_id,payload)
+ except (ValueError,TypeError,KeyError) as exc:raise HTTPException(422,str(exc)) from exc
