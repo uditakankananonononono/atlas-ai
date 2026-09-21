@@ -12,7 +12,7 @@ def test_expanded_owner_spec_is_fully_rowized():
     assert len(rows) == 329
     assert [row['id'] for row in rows] == list(range(1, 330))
     assert Counter(row['module'] for row in rows) == EXPECTED
-    assert AUDIT['counts'] == {'verified-pushed': 51, 'thin': 0, 'missing': 278}
+    assert AUDIT['counts'] == {'verified-pushed': 116, 'thin': 0, 'missing': 213}
 
 
 def test_rows_are_complete_unique_and_source_linked():
