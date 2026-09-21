@@ -87,3 +87,9 @@ def quant_method_185_234(row_id:int,payload:dict):
 
 from .core_spec_round6 import router as core_spec_round6_router
 router.include_router(core_spec_round6_router)
+
+@router.post('/expanded-211-258/{row_id}')
+def expanded_211_258(row_id:int,payload:dict):
+ from .expanded_211_258 import run
+ try:return run(row_id,payload)
+ except (ValueError,TypeError,KeyError) as exc:raise HTTPException(status_code=422,detail=str(exc)) from exc
