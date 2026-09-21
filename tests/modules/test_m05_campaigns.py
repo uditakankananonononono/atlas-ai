@@ -248,3 +248,16 @@ def test_module_zero_decision_callback_uses_stored_id_and_updates_message():
     assert campaigns.get_message(message.id).approval_id == "module-zero-id"
     approvals.callbacks[approval.id]({"status": "approved", "approved_by": "udita"})
     assert campaigns.get_message(message.id).status == "approved"
+
+
+def test_corrupt_sent_message_without_timestamp_fails_explicitly():
+    """A damaged durable record must not become a TypeError or vanish under -O."""
+    now = [datetime(2026, 9, 20, tzinfo=timezone.utc)]
+    service, campaigns, approvals, contact, campaign = make_setup(now)
+    first = service.add_draft(campaign.id, contact.id, subject="Hi", body="Body")
+    service.submit_for_approval(first.id)
+    service.record_decision(first.id, approved=True)
+    service.mark_sent(first.id)
+    campaigns._messages[first.id].sent_at = None
+    with pytest.raises(CampaignStateError, match="has no sent_at timestamp"):
+        service.due_follow_ups()

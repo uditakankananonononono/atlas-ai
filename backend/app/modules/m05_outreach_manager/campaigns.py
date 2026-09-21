@@ -432,7 +432,10 @@ class CampaignService:
                 continue
             if message.sequence > campaign.max_follow_ups:
                 continue
-            assert message.sent_at is not None
+            if message.sent_at is None:
+                raise CampaignStateError(
+                    f"sent message {message.id!r} has no sent_at timestamp"
+                )
             sent_at = message.sent_at
             if sent_at.tzinfo is None:
                 sent_at = sent_at.replace(tzinfo=timezone.utc)
@@ -465,7 +468,10 @@ class CampaignService:
             raise CampaignStateError("message is not due for a follow-up")
         contact = self._contact(message.contact_id)
         campaign = self.get_campaign(message.campaign_id)
-        assert message.sent_at is not None
+        if message.sent_at is None:
+            raise CampaignStateError(
+                f"sent message {message.id!r} has no sent_at timestamp"
+            )
         sent_at = message.sent_at
         if sent_at.tzinfo is None:
             sent_at = sent_at.replace(tzinfo=timezone.utc)
