@@ -1,0 +1,46 @@
+"""Production-ready planning contracts for creative rows 306-332.
+Outputs are inspectable briefs, specifications and review gates, never false claims that
+media or regulated designs were rendered, mastered, fabricated, engineered or approved.
+"""
+from __future__ import annotations
+import re
+from typing import Any
+ROWS=dict(enumerate('''Mixing|Mastering|Foley Creation|Voice Acting Direction|Podcast Production|Audiobook Narration|Radio Drama|Sound Installation Design|Interactive Art|Generative Art|Data Visualization|Infographic Design|Map Design|Scientific Illustration|Medical Illustration|Technical Drawing|Architectural Rendering|Interior Design|Landscape Design|Urban Planning|Fashion Design|Textile Design|Jewelry Design|Furniture Design|Industrial Design|Automotive Design|Aerospace Design'''.split('|'),306))
+class CreativeError(ValueError):pass
+def slug(s):return re.sub('[^a-z0-9]+','_',s.lower()).strip('_')
+SPECS={
+306:('audio_post',['tracks','sample_rate','target_platform'],['gain_staging','pan','eq','dynamics','spatial_fx','automation','reference_check']),307:('audio_post',['mix','target_platform','loudness_standard'],['mix_qc','sequence','tonal_balance','dynamics','loudness','true_peak','codec_preview']),308:('sound_story',['cue_sheet','scene','recording_context'],['spot','prop_or_surface','performance','mic_perspective','sync','edit_layers']),309:('performance_direction',['script','character_bible','performer_constraints'],['intent','beats','subtext','physicality','pace','pronunciation','takes','consent']),310:('spoken_audio',['episodes','audience','distribution'],['format','research','run_of_show','record','edit','fact_check','mix','metadata','publish_approval']),311:('spoken_audio',['manuscript','rights_status','narration_style'],['text_prep','pronunciation_guide','character_voices','recording_blocks','pickup_log','proof_listen','mastering_spec']),312:('sound_story',['script','cast','rights_status'],['dramaturgy','casting','table_read','performance','foley','soundscape','edit','mix','credits']),313:('spatial_audio',['site','speaker_layout','experience_goal'],['site_acoustics','zones','routing','content','interaction','accessibility','safety','commissioning']),314:('interactive_media',['concept','inputs','outputs'],['interaction_loop','state_model','sensors','feedback','failure_modes','accessibility','privacy','exhibition']),315:('generative_media',['concept','system_rules','seed_policy'],['algorithm','parameters','constraints','variation','curation','provenance','export']),
+316:('information_design',['dataset','question','audience'],['data_audit','encoding','scale','layout','annotation','uncertainty','accessibility','source_note']),317:('information_design',['facts','audience','format'],['story_hierarchy','fact_check','visual_system','charts','icons','copy','sources','accessibility']),318:('information_design',['geodata','purpose','audience'],['projection','extent','scale','classification','symbols','labels','legend','north_scale','source_date','accessibility']),319:('scientific_visual',['subject','evidence_sources','purpose'],['evidence_review','viewpoint','scale','structure','uncertainty','labels','caption','expert_review']),320:('scientific_visual',['anatomy','evidence_sources','use_context'],['clinical_scope','anatomical_accuracy','viewpoint','layering','pathology_distinction','labels','patient_accessibility','clinician_review']),321:('technical_design',['object','dimensions','standard'],['views','projection','dimensions','tolerances','materials','finish','symbols','revision','checker']),322:('built_environment',['model','camera','materials'],['geometry_audit','camera','lighting','materials','context','people_scale','render_passes','post','truthfulness']),323:('built_environment',['space','users','constraints'],['brief','survey','adjacency','circulation','furniture','lighting','materials','accessibility','code_review','budget']),324:('built_environment',['site','users','ecology'],['site_analysis','program','grading','drainage','planting','habitat','accessibility','maintenance','climate_resilience']),325:('built_environment',['study_area','population','objectives'],['baseline','land_use','mobility','housing','infrastructure','public_realm','environment','equity','scenarios','participation','policy_review']),
+326:('product_design',['wearer','garment_type','constraints'],['research','silhouette','materials','color','pattern','prototype','fit','construction','costing','sustainability']),327:('surface_material',['application','fiber_or_substrate','constraints'],['motif','repeat','colorways','weave_or_print','scale','strikeoff','fastness','hand','production']),328:('product_design',['wearer','object_type','materials'],['concept','dimensions','mechanism','stone_setting','ergonomics','prototype','tolerances','hallmark','safety']),329:('product_design',['users','furniture_type','constraints'],['ergonomics','dimensions','structure','joinery','materials','prototype','load_test','finish','manufacturing']),330:('product_design',['users','product','requirements'],['research','requirements','concepts','human_factors','architecture','prototype','verification','manufacturing','lifecycle']),331:('transport_design',['vehicle_type','users','requirements'],['package','proportion','aerodynamics','ergonomics','visibility','crash_constraints','surface','interior','prototype','homologation']),332:('transport_design',['aircraft_type','mission','requirements'],['mission_profile','mass_budget','aerodynamics','propulsion','structures','stability_control','systems','human_factors','safety','verification','certification'])}
+def _need(p,keys):
+ m=[k for k in keys if p.get(k) in (None,[],{})]
+ if m:raise CreativeError('missing required inputs: '+', '.join(m))
+def _sources(p):
+ s=p.get('sources',[])
+ if not s or any(not x.get('source_id') or not x.get('observed_at') for x in s):raise CreativeError('timestamped source_id provenance required')
+ return s
+def plan(row:int,p:dict[str,Any])->dict[str,Any]:
+ if row not in ROWS:raise CreativeError('unsupported row')
+ family,required,stages=SPECS[row];_need(p,required);sources=_sources(p)
+ decisions=p.get('decisions',{});workflow=[]
+ for stage in stages:
+  value=decisions.get(stage);workflow.append({'stage':stage,'decision':value,'status':'specified' if value not in (None,[],{}) else 'open'})
+ if row==306:
+  sr=float(p['sample_rate'])
+  if sr not in (44100,48000,88200,96000):raise CreativeError('sample_rate must be a standard Hz value')
+ if row==307 and not p.get('loudness_standard',{}).get('integrated_lufs'):raise CreativeError('mastering requires integrated_lufs target')
+ if row==315 and not isinstance(p['seed_policy'],dict):raise CreativeError('seed_policy must describe reproducibility')
+ if row==316:
+  enc=p.get('encoding',{})
+  if enc.get('zero_required') and enc.get('axis_min',0)!=0:raise CreativeError('zero-baseline encoding requires axis_min=0')
+ if row==318 and not p.get('geodata',{}).get('crs'):raise CreativeError('map geodata requires CRS')
+ if row in (319,320) and not p.get('evidence_sources'):raise CreativeError('illustration requires evidence sources')
+ if row==321 and any(float(x.get('tolerance',0))<0 for x in p.get('dimensions',[])):raise CreativeError('dimension tolerance cannot be negative')
+ if row>=323 and not p.get('human_review',False):raise CreativeError('built/product/transport design requires human_review=true')
+ safety=[]
+ if row in (320,323,324,325,331,332):safety.append('qualified regulatory and safety review required')
+ if row in (306,307):safety+=['monitor true peak and loudness','preserve headroom and hearing-safe monitoring']
+ if row in (313,314):safety+=['electrical/physical safety review','accessible non-interactive alternative']
+ deliverables=[{'name':x,'status':'planned_not_rendered'} for x in p.get('deliverables',['design brief','review checklist'])]
+ return {'row_id':row,'capability':ROWS[row],'key':slug(ROWS[row]),'family':family,'workflow':workflow,'open_stages':[x['stage'] for x in workflow if x['status']=='open'],'deliverables':deliverables,'sources':sources,'rights':p.get('rights',{'status':'review_required'}),'accessibility':p.get('accessibility',[]),'safety_reviews':safety,'status':'design_plan_for_human_review','rendered_or_fabricated':False,'side_effects':[],'boundary':'Planning and specification only. Verify rights, attribution, factual accuracy, accessibility, consent, dimensions, materials, codes, engineering, safety, manufacturing and certification with qualified humans. Never claim unrendered, unrecorded, unbuilt, untested or uncertified work is complete.'}
+def catalog():return [{'row_id':i,'capability':ROWS[i],'key':slug(ROWS[i]),'family':SPECS[i][0],'required':SPECS[i][1],'stages':SPECS[i][2]} for i in ROWS]
