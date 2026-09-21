@@ -1,0 +1,7 @@
+# Provision with Terraform/gcloud; runtime adapter is CloudStorageAssets.
+bucket: gs://PROJECT-atlas-assets
+uniform_bucket_level_access: true
+versioning: true
+public_access_prevention: enforced
+retention_policy_days: 30
+service_account_role: roles/storage.objectUser
