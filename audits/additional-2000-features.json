@@ -4,9 +4,9 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 0,
-    "verified-pushed": 2007,
-    "thin": 3
+    "verified-pushed": 2010,
+    "thin": 0,
+    "missing": 0
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -63,13 +63,13 @@
       "category": "Claire personalization additions",
       "requirement": "Voice Fine-Tuning (Style Transfer to You)",
       "description": "What it is: You collect 50–200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
-      "status": "thin",
+      "status": "verified-pushed",
       "evidence": {
-        "commit": "a0b2ada7c54d95dd521a7f29997cb3c465b4c72f",
-        "implementation_path": "backend/app/modules/m21_claire/training.py",
-        "test_path": "tests/modules/test_m21_personalization.py"
+        "commit": "93c65c5c4e2bbdf91632d10a1433de8e114c87bc",
+        "implementation_path": "backend/app/modules/m21_claire/owner_workflow_279_329.py",
+        "test_path": "tests/modules/test_m21_claire_owner_279_329.py"
       },
-      "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects."
+      "boundary": "Consented, attributable preference learning with revocation, holdout evaluation and owner approval before promotion. No silent mutation, impersonation or detector evasion."
     },
     {
       "id": 5,
@@ -92,13 +92,13 @@
       "category": "Claire personalization additions",
       "requirement": "Preference Ranking",
       "description": "What it is: Claire generates 3–5 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
-      "status": "thin",
+      "status": "verified-pushed",
       "evidence": {
-        "commit": "a0b2ada7c54d95dd521a7f29997cb3c465b4c72f",
-        "implementation_path": "backend/app/modules/m21_claire/training.py",
-        "test_path": "tests/modules/test_m21_personalization.py"
+        "commit": "93c65c5c4e2bbdf91632d10a1433de8e114c87bc",
+        "implementation_path": "backend/app/modules/m21_claire/owner_workflow_279_329.py",
+        "test_path": "tests/modules/test_m21_claire_owner_279_329.py"
       },
-      "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects."
+      "boundary": "Consented, attributable preference learning with revocation, holdout evaluation and owner approval before promotion. No silent mutation, impersonation or detector evasion."
     },
     {
       "id": 7,
@@ -134,13 +134,13 @@
       "category": "Claire personalization additions",
       "requirement": "Human-in-the-Loop Reinforcement (Weekly)",
       "description": "What it is: Once a week, Claire shows you what she did, you mark each action: good / bad / unclear. That becomes training signal. Implementation: A review UI + a small reward model. Real, buildable. What it achieves: Continuous alignment to you, not to generic human values.",
-      "status": "thin",
+      "status": "verified-pushed",
       "evidence": {
-        "commit": "a0b2ada7c54d95dd521a7f29997cb3c465b4c72f",
-        "implementation_path": "backend/app/modules/m21_claire/training.py",
-        "test_path": "tests/modules/test_m21_personalization.py"
+        "commit": "93c65c5c4e2bbdf91632d10a1433de8e114c87bc",
+        "implementation_path": "backend/app/modules/m21_claire/owner_workflow_279_329.py",
+        "test_path": "tests/modules/test_m21_claire_owner_279_329.py"
       },
-      "boundary": "No hidden telemetry without owner opt-in; no hidden chain-of-thought capture; use owner-authored reasoning notes and consented data only; exact approval for effects."
+      "boundary": "Consented, attributable preference learning with revocation, holdout evaluation and owner approval before promotion. No silent mutation, impersonation or detector evasion."
     },
     {
       "id": 10,
