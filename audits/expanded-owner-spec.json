@@ -3898,7 +3898,7 @@
         "implementation_path": "backend/app/modules/m21_claire/owner_workflow_279_329.py",
         "test_path": "tests/modules/test_m21_claire_owner_279_329.py"
       },
-      "boundary": "Verified completion evidence, honest limits, exact approval for external effects, inspectable decision evidence without hidden chain-of-thought, consented attributable memory and persistent monitored follow-through are mandatory.",
+      "boundary": "Verified completion evidence, honest limits, exact approval for external effects, inspectable decision evidence without hidden chain-of-thought, consented attributable memory and persistent monitored follow-through are mandatory. No \"unbounded/no ethics\" mode is permitted.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
