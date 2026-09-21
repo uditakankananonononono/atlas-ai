@@ -8,8 +8,8 @@
   "delta_over_base_rows": 107,
   "atomic_concept_count": 2117,
   "counts": {
-    "verified-pushed": 46,
-    "missing": 114
+    "verified-pushed": 68,
+    "missing": 92
   },
   "rowization_rule": "Replace each identified packed parent row with its atomic subrows; all other base rows remain one atomic concept. Examples and benefit statements are not counted as separate concepts unless they specify distinct behavior.",
   "rows": [
@@ -1814,10 +1814,10 @@
       "atomic_requirement": "TAM calculation",
       "source_feature_title": "Market Size Estimation",
       "source_description": "Calculates TAM, SAM, SOM",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1827,10 +1827,10 @@
       "atomic_requirement": "SAM calculation",
       "source_feature_title": "Market Size Estimation",
       "source_description": "Calculates TAM, SAM, SOM",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1840,10 +1840,10 @@
       "atomic_requirement": "SOM calculation",
       "source_feature_title": "Market Size Estimation",
       "source_description": "Calculates TAM, SAM, SOM",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1853,10 +1853,10 @@
       "atomic_requirement": "Competitor-strength mapping",
       "source_feature_title": "Competitive Analysis",
       "source_description": "Maps competitor strengths and weaknesses",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1866,10 +1866,10 @@
       "atomic_requirement": "Competitor-weakness mapping",
       "source_feature_title": "Competitive Analysis",
       "source_description": "Maps competitor strengths and weaknesses",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1879,10 +1879,10 @@
       "atomic_requirement": "Culture-value design",
       "source_feature_title": "Culture Design",
       "source_description": "Shapes values and norms",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1892,10 +1892,10 @@
       "atomic_requirement": "Culture-norm design",
       "source_feature_title": "Culture Design",
       "source_description": "Shapes values and norms",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1905,10 +1905,10 @@
       "atomic_requirement": "Objective definition",
       "source_feature_title": "OKR Setting",
       "source_description": "Defines objectives and key results",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1918,10 +1918,10 @@
       "atomic_requirement": "Key-result definition",
       "source_feature_title": "OKR Setting",
       "source_description": "Defines objectives and key results",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1931,10 +1931,10 @@
       "atomic_requirement": "Performance evaluation",
       "source_feature_title": "Performance Management",
       "source_description": "Evaluates and improves",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1944,10 +1944,10 @@
       "atomic_requirement": "Performance improvement plan",
       "source_feature_title": "Performance Management",
       "source_description": "Evaluates and improves",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1957,10 +1957,10 @@
       "atomic_requirement": "Data movement pipeline",
       "source_feature_title": "ETL Pipeline Design",
       "source_description": "Moves and transforms data",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1970,10 +1970,10 @@
       "atomic_requirement": "Data transformation pipeline",
       "source_feature_title": "ETL Pipeline Design",
       "source_description": "Moves and transforms data",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1983,10 +1983,10 @@
       "atomic_requirement": "Emotion-signal recognition",
       "source_feature_title": "Emotional Intelligence",
       "source_description": "Reads and responds to emotions",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1996,10 +1996,10 @@
       "atomic_requirement": "Context-appropriate response selection",
       "source_feature_title": "Emotional Intelligence",
       "source_description": "Reads and responds to emotions",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -2009,10 +2009,10 @@
       "atomic_requirement": "AIC computation and interpretation",
       "source_feature_title": "Information Criteria",
       "source_description": "AIC, BIC, etc.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -2022,10 +2022,10 @@
       "atomic_requirement": "BIC computation and interpretation",
       "source_feature_title": "Information Criteria",
       "source_description": "AIC, BIC, etc.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -2035,10 +2035,10 @@
       "atomic_requirement": "Owner writing-source connection/selection",
       "source_feature_title": "Launch onboarding prompts for application source corpus",
       "source_description": "At launch/onboarding, proactively ask the user to connect or select writings, essays, and activity descriptions; index them as the source of truth for grounded application drafting.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -2048,10 +2048,10 @@
       "atomic_requirement": "Owner essay-source connection/selection",
       "source_feature_title": "Launch onboarding prompts for application source corpus",
       "source_description": "At launch/onboarding, proactively ask the user to connect or select writings, essays, and activity descriptions; index them as the source of truth for grounded application drafting.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -2061,10 +2061,10 @@
       "atomic_requirement": "Owner activity-description connection/selection",
       "source_feature_title": "Launch onboarding prompts for application source corpus",
       "source_description": "At launch/onboarding, proactively ask the user to connect or select writings, essays, and activity descriptions; index them as the source of truth for grounded application drafting.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -2074,10 +2074,10 @@
       "atomic_requirement": "Source-corpus indexing",
       "source_feature_title": "Launch onboarding prompts for application source corpus",
       "source_description": "At launch/onboarding, proactively ask the user to connect or select writings, essays, and activity descriptions; index them as the source of truth for grounded application drafting.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -2087,10 +2087,10 @@
       "atomic_requirement": "Grounded application-drafting retrieval from source corpus",
       "source_feature_title": "Launch onboarding prompts for application source corpus",
       "source_description": "At launch/onboarding, proactively ask the user to connect or select writings, essays, and activity descriptions; index them as the source of truth for grounded application drafting.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_round9_139_160.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_round9_139_160.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     }
   ]
