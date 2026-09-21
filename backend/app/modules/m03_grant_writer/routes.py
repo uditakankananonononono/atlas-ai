@@ -72,3 +72,6 @@ def expanded_owner_run_180_210(row_id:int,payload:dict):
     from .expanded_owner_180_210 import ExpandedM3Error,run
     try:return run(row_id,payload)
     except ExpandedM3Error as exc:raise HTTPException(422,detail=str(exc)) from exc
+
+from .core_spec_round6 import router as core_spec_round6_router
+router.include_router(core_spec_round6_router)
