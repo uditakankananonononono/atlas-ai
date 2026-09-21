@@ -2,6 +2,7 @@
 from __future__ import annotations
 from math import sqrt
 from statistics import fmean,pstdev
+from collections import defaultdict
 from .operations_models import *
 METHODS={452:"supply-chain network plan",456:"finite-capacity scheduling plan",457:"quality control plan",458:"Six Sigma defect analysis",459:"lean waste audit",460:"just-in-time readiness assessment",461:"total quality management plan",462:"Kaizen improvement backlog",463:"root-cause evidence matrix",464:"Ishikawa fishbone",465:"5 Whys chain",466:"PDCA cycle",467:"DMAIC charter",468:"value-stream map",469:"process-mining discovery specification",470:"workflow simplification plan",471:"RPA suitability assessment",472:"business process reengineering charter",473:"change-management plan",474:"Kotter eight-step plan",475:"ADKAR assessment"}
 REQUIRED={452:("nodes","lanes","capacities","service_targets"),456:("orders","resources","capacities","durations","due_dates"),457:("standards","characteristics","sampling_plan","acceptance_criteria"),458:("opportunities","defects","units","target_sigma"),459:("process_steps","observed_waste","customer_value_definition"),460:("demand_signal","lead_times","lot_sizes","supplier_reliability","buffers"),461:("quality_policy","customer_requirements","process_owners","measures"),462:("observations","improvement_ideas","owners","review_cadence"),463:("problem_statement","evidence","candidate_causes","disconfirming_evidence"),464:("problem","people","process","equipment","materials","environment","measurement"),465:("problem","why_chain","evidence_by_step"),466:("plan","baseline","intervention","check_metrics","act_rule"),467:("define","measure","analyze","improve","control"),468:("steps","cycle_times","wait_times","inventory","value_added"),469:("event_log_fields","case_id","activity","timestamp","data_quality"),470:("steps","handoffs","approvals","manual_effort"),471:("tasks","rule_stability","volumes","exceptions","systems","security_constraints"),472:("current_outcomes","target_outcomes","constraints","redesign_principles"),473:("stakeholders","impacts","readiness","communications","training","resistance_risks"),474:("urgency","coalition","vision","communications","barriers","short_term_wins","acceleration","anchoring"),475:("awareness","desire","knowledge","ability","reinforcement")}
@@ -20,13 +21,32 @@ class OperationsAnalysisService:
   if f==451:
    vendors=[Vendor.model_validate(v) for v in x.get("vendors",[])];weights=x.get("weights",{"cost":.3,"quality":.3,"delivery":.2,"risk":.2})
    if not vendors:raise ValueError("vendors are required")
-   if set(weights)!={"cost","quality","delivery","risk"} or abs(sum(weights.values())-1)>1e-6:raise ValueError("vendor weights must cover four criteria and sum to 1")
-   max_cost=max(v.cost for v in vendors) or 1;ranked=sorted(({"id":v.id,"score":weights["cost"]*(100*(1-v.cost/max_cost))+weights["quality"]*v.quality+weights["delivery"]*v.delivery+weights["risk"]*(100-v.risk)} for v in vendors),key=lambda q:q["score"],reverse=True)
-   return {"ranked_vendors":ranked,"recommendation":"review highest score with due diligence; no vendor selected"},"weighted vendor scorecard"
+   if len({v.id for v in vendors})!=len(vendors):raise ValueError("vendor ids must be unique")
+   if set(weights)!={"cost","quality","delivery","risk"} or any(not isinstance(v,(int,float)) or v<0 for v in weights.values()) or abs(sum(weights.values())-1)>1e-6:raise ValueError("vendor weights must be non-negative, cover four criteria, and sum to 1")
+   costs=[v.cost for v in vendors];lo,hi=min(costs),max(costs)
+   def cost_score(cost):return 100.0 if hi==lo else 100*(hi-cost)/(hi-lo)
+   ranked=sorted(({"id":v.id,"score":round(weights["cost"]*cost_score(v.cost)+weights["quality"]*v.quality+weights["delivery"]*v.delivery+weights["risk"]*(100-v.risk),4),"components":{"cost":round(cost_score(v.cost),4),"quality":v.quality,"delivery":v.delivery,"risk":100-v.risk}} for v in vendors),key=lambda q:(-q["score"],q["id"]))
+   return {"ranked_vendors":ranked,"weights":weights,"recommendation":"review highest score with due diligence; no vendor selected","sensitivity_required":len(ranked)>1 and ranked[0]["score"]-ranked[1]["score"]<5},"weighted vendor scorecard"
+  if f==452:
+   d=SupplyChainInput.model_validate(x);inbound=defaultdict(float);eligible=defaultdict(float);costs=defaultdict(list)
+   for lane in d.lanes:
+    inbound[lane.destination]+=lane.capacity;costs[lane.destination].append(lane.unit_cost)
+    for target in d.service_targets:
+     if lane.destination==target.destination and (target.max_lead_time_days is None or lane.lead_time_days<=target.max_lead_time_days):eligible[target.destination]+=lane.capacity
+   coverage=[]
+   for target in d.service_targets:
+    cap=eligible[target.destination];coverage.append({"destination":target.destination,"required_units":target.required_units,"eligible_capacity":cap,"shortfall":max(0,target.required_units-cap),"coverage_ratio":cap/target.required_units,"lowest_unit_cost":min(costs[target.destination]) if costs[target.destination] else None})
+   return {"nodes":[n.model_dump() for n in d.nodes],"lanes":[lane.model_dump() for lane in d.lanes],"service_coverage":coverage,"total_capacity":sum(l.capacity for l in d.lanes),"feasible":all(c["shortfall"]==0 for c in coverage),"design_note":"capacity screen only; shared upstream constraints and multi-hop flow require optimization before execution","evidence_bound":True,"execution_claim":False},"capacity and service-target network screen"
   if f==453:
-   d=InventoryInput.model_validate(x);eoq=sqrt(2*d.annual_demand*d.order_cost/d.annual_holding_cost_per_unit);return {"economic_order_quantity":eoq,"reorder_point":d.daily_demand*d.lead_time_days+d.safety_stock,"annual_cycle_inventory":eoq/2,"formula_scope":"deterministic EOQ; excludes quantity discounts and variable demand"},"EOQ and reorder-point analysis"
+   d=InventoryInput.model_validate(x);eoq=sqrt(2*d.annual_demand*d.order_cost/d.annual_holding_cost_per_unit);rp=d.daily_demand*d.lead_time_days+d.safety_stock;orders=d.annual_demand/eoq;ordering=orders*d.order_cost;holding=eoq/2*d.annual_holding_cost_per_unit
+   position=None if d.current_stock is None else d.current_stock+d.on_order
+   return {"economic_order_quantity":eoq,"reorder_point":rp,"annual_cycle_inventory":eoq/2,"estimated_orders_per_year":orders,"annual_ordering_cost":ordering,"annual_cycle_holding_cost":holding,"inventory_position":position,"reorder_recommended":None if position is None else position<=rp,"formula_scope":"deterministic EOQ; excludes quantity discounts and variable demand"},"EOQ, reorder-point, and inventory-position analysis"
   if f==454:
-   d=DemandInput.model_validate(x);w=min(d.window,len(d.history));forecast=fmean(d.history[-w:]);sd=pstdev(d.history[-w:]) if w>1 else 0;return {"forecast":[forecast]*d.horizon,"window":w,"history_points":len(d.history),"interval_low":max(0,forecast-1.96*sd),"interval_high":forecast+1.96*sd,"warning":"naive moving average; no seasonality or causal variables"},"moving-average demand forecast"
+   d=DemandInput.model_validate(x);errors=[]
+   for i in range(d.window,len(d.history)):
+    predicted=fmean(d.history[i-d.window:i]);errors.append(d.history[i]-predicted)
+   forecast=fmean(d.history[-d.window:]);mae=fmean(abs(e) for e in errors);bias=fmean(errors);sd=pstdev(errors) if len(errors)>1 else abs(errors[0]);half=1.96*sd
+   return {"forecast":[forecast]*d.horizon,"window":d.window,"history_points":len(d.history),"backtest_points":len(errors),"backtest_mae":mae,"backtest_bias":bias,"interval_low":max(0,forecast-half),"interval_high":forecast+half,"interval_basis":"95% normal approximation from rolling one-step residuals","warning":"naive moving average; no seasonality or causal variables"},"backtested moving-average demand forecast"
   if f==455:
    legs=x.get("legs",[])
    if not legs:raise ValueError("legs are required")
