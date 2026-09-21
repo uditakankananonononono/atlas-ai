@@ -5,11 +5,65 @@ and projections expose assumptions and material limits. Nothing operates physica
 infrastructure or claims a regulatory determination.
 """
 from __future__ import annotations
+import hashlib
+import json
 import math
+from typing import Any, Mapping
 NAMES=['climate_modeling','global_warming_projections','carbon_cycle_analysis','ocean_acidification','sea_level_rise','extreme_weather','climate_attribution','mitigation_strategies','adaptation_planning','carbon_capture','carbon_sequestration','negative_emissions','geoengineering','solar_radiation_management','ocean_fertilization','afforestation','reforestation','biochar','soil_carbon','blue_carbon','renewable_energy','energy_efficiency','sustainable_transport','electric_vehicles','hydrogen_economy','circular_economy','waste_reduction','recycling','composting','anaerobic_digestion','waste_to_energy','landfill_management','water_treatment','wastewater_treatment','desalination','water_conservation','water_quality','groundwater_management','watershed_management','integrated_water_resources','air_quality','air_pollution_control','emissions_monitoring','atmospheric_chemistry','indoor_air_quality','soil_health','soil_remediation','contaminated_land','brownfield_redevelopment','phytoremediation']
 ROWS={name:1610+i for i,name in enumerate(NAMES)}
 SUMMARIES={name:name.replace('_',' ').title() for name in NAMES}
 INPUTS={name:['documented caller-supplied measurements and scenario parameters'] for name in NAMES}
+# Row-specific result dimensions. These are deliberately dimensions rather than
+# guessed jurisdictional units: callers must name their units in params.
+RESULT_DIMENSIONS = {
+ 'climate_modeling':'temperature', 'global_warming_projections':'temperature',
+ 'carbon_cycle_analysis':'mass', 'ocean_acidification':'dimensionless',
+ 'sea_level_rise':'length', 'extreme_weather':'probability',
+ 'climate_attribution':'probability', 'mitigation_strategies':'currency and mass',
+ 'adaptation_planning':'currency', 'carbon_capture':'mass and energy',
+ 'carbon_sequestration':'mass', 'negative_emissions':'mass',
+ 'geoengineering':'temperature and impact score', 'solar_radiation_management':'forcing and temperature',
+ 'ocean_fertilization':'mass', 'afforestation':'mass', 'reforestation':'mass',
+ 'biochar':'mass', 'soil_carbon':'mass', 'blue_carbon':'mass',
+ 'renewable_energy':'energy and mass', 'energy_efficiency':'energy and currency',
+ 'sustainable_transport':'distance and mass', 'electric_vehicles':'energy and mass',
+ 'hydrogen_economy':'energy and mass', 'circular_economy':'mass',
+ 'waste_reduction':'mass', 'recycling':'mass', 'composting':'mass',
+ 'anaerobic_digestion':'volume and energy', 'waste_to_energy':'mass and energy',
+ 'landfill_management':'mass', 'water_treatment':'volume and mass',
+ 'wastewater_treatment':'volume and mass', 'desalination':'volume and energy',
+ 'water_conservation':'volume', 'water_quality':'standard-relative index',
+ 'groundwater_management':'volume', 'watershed_management':'volume',
+ 'integrated_water_resources':'volume', 'air_quality':'standard-relative index',
+ 'air_pollution_control':'mass', 'emissions_monitoring':'mass rate',
+ 'atmospheric_chemistry':'concentration and time', 'indoor_air_quality':'concentration',
+ 'soil_health':'target-relative index', 'soil_remediation':'concentration',
+ 'contaminated_land':'risk index', 'brownfield_redevelopment':'currency',
+ 'phytoremediation':'concentration',
+}
+FRACTION_FIELDS = {
+ 'capture_efficiency','permanence_factor','leakage_fraction','deep_sequestration_fraction',
+ 'durability_fraction','survival_fraction','carbon_fraction','stable_fraction',
+ 'disturbance_loss_fraction','capacity_factor','electrolyzer_efficiency','end_use_efficiency',
+ 'contamination_fraction','compost_yield_fraction','electrical_efficiency',
+ 'methane_generation_fraction','oxidation_fraction','recovery_fraction','runoff_coefficient',
+ 'control_efficiency','reduction_fraction',
+}
+def _validate_fraction_fields(data: Mapping[str, Any], params: Mapping[str, Any]) -> None:
+ for field in FRACTION_FIELDS:
+  if field in data or field in params:
+   value = data[field] if field in data else params[field]
+   value = _f(value, field)
+   if not 0 <= value <= 1:
+    raise ValueError(f'{field} must be between 0 and 1')
+def _provenance(method: str, data: Mapping[str, Any], params: Mapping[str, Any]) -> dict[str, Any]:
+ source = params.get('source')
+ if source is not None and (not isinstance(source,str) or not source.strip()):
+  raise ValueError('source must be a non-empty string when supplied')
+ payload=json.dumps({'method':method,'data':data,'params':params},sort_keys=True,separators=(',',':'),default=str)
+ return {'input_origin':source or 'caller-supplied (source not identified)',
+         'input_sha256':hashlib.sha256(payload.encode()).hexdigest(),
+         'observed_or_fetched_evidence':False}
 def _f(x,n):
  if isinstance(x,bool) or not isinstance(x,(int,float)) or not math.isfinite(x):raise ValueError(f'{n} must be finite')
  return float(x)
@@ -26,7 +80,9 @@ def _positive(x,n,zero=False):
 def _base(method,data,params):return {'method':method,'feature_row':ROWS[method],'inputs':{'data':data,'params':params},'assumptions':[],'method_limits':[]}
 def run(method,data,params=None,seed=0):
  if method not in ROWS:raise ValueError(f'unsupported environmental method {method}')
- p=params or {};o=_base(method,data,p);a=o['assumptions'];lim=o['method_limits'];out={}
+ if not isinstance(data,dict):raise TypeError('data must be a mapping')
+ if params is not None and not isinstance(params,dict):raise TypeError('params must be a mapping')
+ p=params or {};_validate_fraction_fields(data,p);o=_base(method,data,p);a=o['assumptions'];lim=o['method_limits'];out={}
  if method=='climate_modeling':
   forcing=_v(data,'radiative_forcing');feedback=_positive(p.get('feedback_parameter',1.2),'feedback_parameter');capacity=_positive(p.get('heat_capacity',10),'heat_capacity');dt=_positive(p.get('time_step',1),'time_step');t=_f(data.get('initial_temperature_anomaly',0),'initial_temperature_anomaly');path=[]
   for f in forcing:t+=dt*(f-feedback*t)/capacity;path.append(t)
@@ -152,6 +208,23 @@ def run(method,data,params=None,seed=0):
   c0=_positive(data['initial_soil_concentration'],'initial',True);k=_positive(data['plant_uptake_rate'],'uptake',True);biomass=_positive(data['biomass_factor'],'biomass',True);time=_positive(data['time'],'time',True);ct=c0*math.exp(-k*biomass*time);out={'final_soil_concentration':ct,'removed_concentration':c0-ct,'removal_fraction':1-ct/c0 if c0 else None};a+=['First-order uptake with constant viable biomass and no contaminant rebound.']
  else:raise AssertionError(method)
  o['output']=out
+ o['provenance']=_provenance(method,data,p)
+ units=p.get('units')
+ if units is not None and (not isinstance(units,dict) or not all(isinstance(k,str) and isinstance(v,str) and v.strip() for k,v in units.items())):
+  raise ValueError('units must map field names to non-empty unit strings')
+ o['measurement_context']={'result_dimension':RESULT_DIMENSIONS[method],
+                           'caller_units':units or {},
+                           'standard':p.get('standard'),
+                           'unit_conversion_performed':False}
+ o['safety']={'advisory_calculation_only':True,'external_effects_performed':False,
+              'requires_qualified_review':method in {'geoengineering','solar_radiation_management','ocean_fertilization','water_treatment','wastewater_treatment','air_pollution_control','soil_remediation','contaminated_land','brownfield_redevelopment','phytoremediation'}}
  o['evaluation']={'computed_outputs':sorted(out),'scenario_or_standard':p.get('scenario') or p.get('standard'),'validation_data_supplied':bool(data.get('validation_data')),'review_required':True}
- o['uncertainty']={'level':'not_quantified','drivers':['input-data quality','scenario choice','model structure and excluded feedbacks'],'physical_or_policy_outcome_claimed':False}
+ uncertainty=p.get('relative_uncertainty')
+ if uncertainty is not None:
+  uncertainty=_f(uncertainty,'relative_uncertainty')
+  if not 0<=uncertainty<=1:raise ValueError('relative_uncertainty must be between 0 and 1')
+ o['uncertainty']={'level':'caller-quantified' if uncertainty is not None else 'not_quantified',
+                   'relative_uncertainty':uncertainty,
+                   'drivers':['input-data quality','scenario choice','model structure and excluded feedbacks'],
+                   'physical_or_policy_outcome_claimed':False}
  return o
