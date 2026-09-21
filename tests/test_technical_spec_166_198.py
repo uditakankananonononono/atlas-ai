@@ -96,27 +96,27 @@ def test_row_188_m20_16():
  assert x["technical_spec_row"]==188 and x["requirement_id"]=="M20-16" and x["result"]
 
 def test_row_189_m20_17():
- x=execute(189,{'tools': [{'name': 'x', 'description': 'd', 'parameters': {}, 'preconditions': []}]})
+ x=execute(189,{'tenant_id': 'tenant-a', 'actor_id': 'actor-a', 'routes': [{'route': 'api', 'name': 'free-api'}], 'tools': [{'name': 'x', 'description': 'd', 'parameters': {}, 'preconditions': []}]})
  assert x["technical_spec_row"]==189 and x["requirement_id"]=="M20-17" and x["result"]
 
 def test_row_190_m20_18():
- x=execute(190,{'expression': '2+3'})
+ x=execute(190,{'tenant_id': 'tenant-a', 'actor_id': 'actor-a', 'routes': [{'route': 'api', 'name': 'free-api'}], 'expression': '2+3'})
  assert x["technical_spec_row"]==190 and x["requirement_id"]=="M20-18" and x["result"]
 
 def test_row_191_m20_19():
- x=execute(191,{'command': ['ls']})
+ x=execute(191,{'tenant_id': 'tenant-a', 'actor_id': 'actor-a', 'routes': [{'route': 'api', 'name': 'free-api'}], 'command': ['ls']})
  assert x["technical_spec_row"]==191 and x["requirement_id"]=="M20-19" and x["result"]
 
 def test_row_192_m20_20():
- x=execute(192,{'adapter': 'brave', 'query': 'q'})
+ x=execute(192,{'tenant_id': 'tenant-a', 'actor_id': 'actor-a', 'routes': [{'route': 'api', 'name': 'free-api'}], 'adapter': 'brave', 'query': 'q'})
  assert x["technical_spec_row"]==192 and x["requirement_id"]=="M20-20" and x["result"]
 
 def test_row_193_m20_21():
- x=execute(193,{'path': 'workspace/a', 'operation': 'read'})
+ x=execute(193,{'tenant_id': 'tenant-a', 'actor_id': 'actor-a', 'routes': [{'route': 'api', 'name': 'free-api'}], 'path': 'workspace/a', 'operation': 'read'})
  assert x["technical_spec_row"]==193 and x["requirement_id"]=="M20-21" and x["result"]
 
 def test_row_194_m20_22():
- x=execute(194,{'adapter': 'x', 'allowlist': ['x'], 'reviewed': True})
+ x=execute(194,{'tenant_id': 'tenant-a', 'actor_id': 'actor-a', 'routes': [{'route': 'api', 'name': 'free-api'}], 'adapter': 'x', 'allowlist': ['x'], 'reviewed': True})
  assert x["technical_spec_row"]==194 and x["requirement_id"]=="M20-22" and x["result"]
 
 def test_row_195_m20_23():
@@ -137,10 +137,10 @@ def test_row_198_m20_26():
 
 def test_negative_paths_fail_closed():
  with pytest.raises(ValueError):execute(166,{"results":[{"url":"http://bad"}]})
- with pytest.raises(ValueError):execute(190,{"expression":"__import__('os')"})
- with pytest.raises(ValueError):execute(191,{"command":["rm"]})
- with pytest.raises(ValueError):execute(193,{"path":"etc/passwd"})
- with pytest.raises(ValueError):execute(194,{"adapter":"x","allowlist":[],"reviewed":False})
+ with pytest.raises(ValueError):execute(190,{"tenant_id":"t","actor_id":"a","expression":"__import__('os')"})
+ with pytest.raises(ValueError):execute(191,{"tenant_id":"t","actor_id":"a","command":["rm"]})
+ with pytest.raises(ValueError):execute(193,{"tenant_id":"t","actor_id":"a","path":"etc/passwd","operation":"read"})
+ with pytest.raises(ValueError):execute(194,{"tenant_id":"t","actor_id":"a","adapter":"x","allowlist":[],"reviewed":False})
 
 def test_mounted_boundary():
  c=TestClient(app);base="/api/v1/runtime/technical-spec-166-198"

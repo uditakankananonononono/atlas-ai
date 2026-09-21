@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast,math
 from datetime import datetime,timezone
 from pathlib import PurePosixPath
+from .gcw_tool_integration import plan_tool_route
 MAP={**{166+i:f'M19-{i+4:02d}' for i in range(7)},**{173+i:f'M20-{i+1:02d}' for i in range(26)}}
 def _base(row,out):return {'technical_spec_row':row,'requirement_id':MAP[row],'result':out}
 def execute(row,d):
@@ -73,26 +74,31 @@ def execute(row,d):
   paths=d.get('paths');budget=int(d.get('simulation_budget',0))
   if not isinstance(paths,list) or not paths or not 1<=budget<=10000:raise ValueError('paths and bounded budget required')
   ranked=sorted(paths,key=lambda x:float(x['reward'])/max(1,float(x.get('visits',1))),reverse=True);return _base(row,{'selected':ranked[0],'simulations':min(budget,len(paths)*100),'budget':budget})
- if row==189:
-  tools=d.get('tools');
-  if not isinstance(tools,list) or any(not {'name','description','parameters','preconditions'}<=set(x) for x in tools):raise ValueError('typed tools required')
-  return _base(row,{'tools':tools,'function_call_schema':True})
- if row==190:
-  expr=str(d.get('expression',''));tree=ast.parse(expr,mode='eval');allowed=(ast.Expression,ast.BinOp,ast.UnaryOp,ast.Constant,ast.Add,ast.Sub,ast.Mult,ast.Div,ast.Pow,ast.USub)
-  if any(not isinstance(n,allowed) for n in ast.walk(tree)):raise ValueError('unsafe python expression')
-  return _base(row,{'sandboxed':True,'result':eval(compile(tree,'<sandbox>','eval'),{'__builtins__':{}},{})})
- if row==191:
-  cmd=d.get('command');allow={'pwd','ls','cat','head','tail','wc'}
-  if not isinstance(cmd,list) or not cmd or cmd[0] not in allow or any(x in ';&|`$()' for x in ' '.join(cmd)):raise ValueError('command outside permission boundary')
-  return _base(row,{'command':cmd,'allowed':True,'execute':False,'workspace_only':True})
- if row==192:return _base(row,{'adapter':d.get('adapter'),'query':d.get('query'),'public_only':True,'credentials_in_query':False,'status':'request_plan'})
- if row==193:
-  p=PurePosixPath('/'+str(d.get('path','')).lstrip('/'))
-  if '..' in p.parts or not str(p).startswith('/workspace/'):raise ValueError('path outside owner workspace')
-  return _base(row,{'path':str(p),'operation':d.get('operation'),'workspace_bounded':True})
- if row==194:
-  if d.get('adapter') not in d.get('allowlist',[]) or d.get('reviewed') is not True:raise ValueError('reviewed allow-listed adapter required')
-  return _base(row,{'adapter':d['adapter'],'request':d.get('request'),'allowed':True,'direct_generated_request':False})
+ if row in {189,190,191,192,193,194}:
+  route=plan_tool_route(row,d)
+  if row==189:
+   tools=d.get('tools')
+   if not isinstance(tools,list) or any(not {'name','description','parameters','preconditions'}<=set(x) for x in tools):raise ValueError('typed tools required')
+   return _base(row,{**route,'tools':tools,'function_call_schema':True,'mechanism':'typed_registry_with_ui_routes'})
+  if row==190:
+   expr=str(d.get('expression',''));tree=ast.parse(expr,mode='eval');allowed=(ast.Expression,ast.BinOp,ast.UnaryOp,ast.Constant,ast.Add,ast.Sub,ast.Mult,ast.Div,ast.Pow,ast.USub)
+   if any(not isinstance(n,allowed) for n in ast.walk(tree)):raise ValueError('unsafe python expression')
+   return _base(row,{**route,'sandboxed':True,'result':eval(compile(tree,'<sandbox>','eval'),{'__builtins__':{}},{}),'mechanism':'sandbox_or_compliant_ui_route'})
+  if row==191:
+   cmd=d.get('command');allow={'pwd','ls','cat','head','tail','wc'}
+   if not isinstance(cmd,list) or not cmd or cmd[0] not in allow or any(x in ';&|`$()' for x in ' '.join(cmd)):raise ValueError('command outside permission boundary')
+   return _base(row,{**route,'command':cmd,'allowed':True,'execute':False,'workspace_only':True,'mechanism':'permission_bounded_shell_with_ui_route'})
+  if row==192:
+   if not str(d.get('query','')).strip():raise ValueError('search query required')
+   return _base(row,{**route,'query':d['query'],'public_only':True,'credentials_in_query':False,'mechanism':'public_search_api_or_compliant_ui'})
+  if row==193:
+   p=PurePosixPath('/'+str(d.get('path','')).lstrip('/'))
+   if '..' in p.parts or not str(p).startswith('/workspace/'):raise ValueError('path outside owner workspace')
+   if d.get('operation') not in {'read','write'}:raise ValueError('workspace operation must be read or write')
+   return _base(row,{**route,'path':str(p),'operation':d['operation'],'workspace_bounded':True,'mechanism':'owner_workspace_or_paired_pc_ui'})
+  adapter=d.get('adapter')
+  if adapter and (adapter not in d.get('allowlist',[]) or d.get('reviewed') is not True):raise ValueError('reviewed allow-listed adapter required')
+  return _base(row,{**route,'adapter':adapter,'request':d.get('request'),'direct_generated_request':False,'mechanism':'allowlisted_api_or_compliant_ui_or_native_build'})
  if row in {195,197}:
   contexts=d.get('contexts');
   if not isinstance(contexts,dict) or len(contexts)<2:raise ValueError('separate contexts required')

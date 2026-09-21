@@ -2467,9 +2467,11 @@
       "source_line_end": 159,
       "source_excerpt": "4.2.5 Tool Integration The GCW can use any API or software tool via a unified function‑calling interface. It has access to: All other Atlas AI modules (browser agent, email, calendar, etc.) A Python interpreter sandbox (for data analysis, custom scripts) Shell access to a Linux environment (with strict permission boundaries) Internet search (Brave API, Google Programmable Search) File system read/write within the user’s workspace Any third‑party REST API by reading its documentation and generating requests The system maintains a tool registry with each tool’s description, parameters, and preconditions. When the executive decides to use a tool, it formats a tool call in the OpenAI function‑calling format and passes it to the appropriate handler.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/runtime/gcw_tool_integration.py",
+      "test_evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_189_typed_registry_selects_browser_when_no_free_api_and_emits_audit",
+      "kind": "functional",
+      "implementation_mechanism": "typed registry routes reviewed free APIs first, then browser/paired-PC UI",
+      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior"
     },
     {
       "row": 190,
@@ -2480,9 +2482,11 @@
       "source_line_end": 159,
       "source_excerpt": "4.2.5 Tool Integration The GCW can use any API or software tool via a unified function‑calling interface. It has access to: All other Atlas AI modules (browser agent, email, calendar, etc.) A Python interpreter sandbox (for data analysis, custom scripts) Shell access to a Linux environment (with strict permission boundaries) Internet search (Brave API, Google Programmable Search) File system read/write within the user’s workspace Any third‑party REST API by reading its documentation and generating requests The system maintains a tool registry with each tool’s description, parameters, and preconditions. When the executive decides to use a tool, it formats a tool call in the OpenAI function‑calling format and passes it to the appropriate handler.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/runtime/gcw_tool_integration.py",
+      "test_evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_190_python_sandbox_preserves_api_when_available_and_validates_types",
+      "kind": "functional",
+      "implementation_mechanism": "Python sandbox retains API execution while exposing compliant UI route fallback",
+      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior"
     },
     {
       "row": 191,
@@ -2493,9 +2497,11 @@
       "source_line_end": 159,
       "source_excerpt": "4.2.5 Tool Integration The GCW can use any API or software tool via a unified function‑calling interface. It has access to: All other Atlas AI modules (browser agent, email, calendar, etc.) A Python interpreter sandbox (for data analysis, custom scripts) Shell access to a Linux environment (with strict permission boundaries) Internet search (Brave API, Google Programmable Search) File system read/write within the user’s workspace Any third‑party REST API by reading its documentation and generating requests The system maintains a tool registry with each tool’s description, parameters, and preconditions. When the executive decides to use a tool, it formats a tool call in the OpenAI function‑calling format and passes it to the appropriate handler.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/runtime/gcw_tool_integration.py",
+      "test_evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_191_shell_keeps_permission_boundary_and_actor_isolation",
+      "kind": "functional",
+      "implementation_mechanism": "permission-bounded shell with tenant/actor-isolated route and audit plan",
+      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior"
     },
     {
       "row": 192,
@@ -2506,9 +2512,11 @@
       "source_line_end": 159,
       "source_excerpt": "4.2.5 Tool Integration The GCW can use any API or software tool via a unified function‑calling interface. It has access to: All other Atlas AI modules (browser agent, email, calendar, etc.) A Python interpreter sandbox (for data analysis, custom scripts) Shell access to a Linux environment (with strict permission boundaries) Internet search (Brave API, Google Programmable Search) File system read/write within the user’s workspace Any third‑party REST API by reading its documentation and generating requests The system maintains a tool registry with each tool’s description, parameters, and preconditions. When the executive decides to use a tool, it formats a tool call in the OpenAI function‑calling format and passes it to the appropriate handler.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/runtime/gcw_tool_integration.py",
+      "test_evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_192_search_free_first_order_and_final_submit_approval_gate",
+      "kind": "functional",
+      "implementation_mechanism": "public search free-first API/UI selection with final-submit approval gate",
+      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior"
     },
     {
       "row": 193,
@@ -2519,9 +2527,11 @@
       "source_line_end": 159,
       "source_excerpt": "4.2.5 Tool Integration The GCW can use any API or software tool via a unified function‑calling interface. It has access to: All other Atlas AI modules (browser agent, email, calendar, etc.) A Python interpreter sandbox (for data analysis, custom scripts) Shell access to a Linux environment (with strict permission boundaries) Internet search (Brave API, Google Programmable Search) File system read/write within the user’s workspace Any third‑party REST API by reading its documentation and generating requests The system maintains a tool registry with each tool’s description, parameters, and preconditions. When the executive decides to use a tool, it formats a tool call in the OpenAI function‑calling format and passes it to the appropriate handler.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/runtime/gcw_tool_integration.py",
+      "test_evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_193_workspace_route_fails_honestly_when_site_blocks_automation",
+      "kind": "functional",
+      "implementation_mechanism": "workspace-bounded read/write through browser/paired-PC route with honest blocked-site failure",
+      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior"
     },
     {
       "row": 194,
@@ -2532,9 +2542,11 @@
       "source_line_end": 159,
       "source_excerpt": "4.2.5 Tool Integration The GCW can use any API or software tool via a unified function‑calling interface. It has access to: All other Atlas AI modules (browser agent, email, calendar, etc.) A Python interpreter sandbox (for data analysis, custom scripts) Shell access to a Linux environment (with strict permission boundaries) Internet search (Brave API, Google Programmable Search) File system read/write within the user’s workspace Any third‑party REST API by reading its documentation and generating requests The system maintains a tool registry with each tool’s description, parameters, and preconditions. When the executive decides to use a tool, it formats a tool call in the OpenAI function‑calling format and passes it to the appropriate handler.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/runtime/gcw_tool_integration.py",
+      "test_evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_194_rest_paid_only_falls_back-to-github-build-test-review-deploy-pipeline",
+      "kind": "functional",
+      "implementation_mechanism": "reviewed API or compliant UI, with paid-only GitHub discover/build/test/review/deploy proposal",
+      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior"
     },
     {
       "row": 195,
