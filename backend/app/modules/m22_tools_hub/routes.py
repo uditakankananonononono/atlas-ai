@@ -1,4 +1,6 @@
 from fastapi import APIRouter,Depends,HTTPException
+from typing import Any
+from pydantic import BaseModel
 from app.core.approvals import approvals
 from .schemas import DiscoveryIn,InstallIn
 from .service import Service
@@ -26,3 +28,10 @@ def expanded_259_278(row_id:int,payload:dict):
 
 from .native_capability_routes import router as native_capability_router
 router.include_router(native_capability_router)
+
+class IntegrationReceiptIn(BaseModel):evidence:dict[str,Any]
+@router.post('/installation-proposals/{proposal_id}/receipts',status_code=201)
+def integration_receipt(proposal_id:str,body:IntegrationReceiptIn,s:Service=Depends(get_service)):
+ try:return s.mark_integrated(proposal_id,body.evidence)
+ except KeyError:raise HTTPException(404,'installation proposal not found')
+ except ValueError as error:raise HTTPException(422,str(error)) from error

@@ -47,5 +47,14 @@ class Service:
         req=self.approvals.put(ApprovalRequest(id=str(uuid.uuid4()),module_id=MODULE_ID,action_type="integrate_tool",payload={"candidate_id":c.id,"name":c.name,"url":c.url,"adapter_type":adapter_type,"config_preview":{k:v for k,v in config.items() if "secret" not in k.lower() and "token" not in k.lower()},"requested_scopes":scopes,"rollback_plan":rollback,"score":c.score}))
         p=InstallationProposal(c.id,adapter_type,config,scopes,rollback,req.id);self.proposals[p.id]=p;return p
     def mark_integrated(self,proposal_id:str,evidence:dict[str,Any]):
-        p=self.proposals[proposal_id];self.installed[p.candidate_id]={"proposal":p,"evidence":evidence,"installed_at":now()};return self.installed[p.candidate_id]
+        p=self.proposals[proposal_id]
+        required=("operation_id","artifact_sha256","manifest_digest","installed_at","receipt_path")
+        missing=[x for x in required if not evidence.get(x)]
+        if missing:raise ValueError("integration evidence missing: "+", ".join(missing))
+        digest=lambda x:isinstance(x,str) and bool(re.fullmatch(r"[0-9a-f]{64}",x))
+        if not digest(evidence["artifact_sha256"]) or not digest(evidence["manifest_digest"]):raise ValueError("integration evidence digests must be lowercase SHA-256")
+        if evidence.get("approval_id")!=p.approval_id:raise ValueError("integration receipt approval does not match proposal")
+        if evidence.get("candidate_id")!=p.candidate_id:raise ValueError("integration receipt candidate does not match proposal")
+        receipt={**evidence,"verified_binding":True,"rollback_available":bool(evidence.get("backup_id")),"execution_claim":"installer receipt supplied and proposal binding verified; runtime behavior not independently verified"}
+        self.installed[p.candidate_id]={"proposal":p,"evidence":receipt,"installed_at":now()};return self.installed[p.candidate_id]
     def portfolio(self):return [{"candidate":self.candidates[k],**v} for k,v in self.installed.items()]
