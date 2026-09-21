@@ -169,3 +169,16 @@ def run(method:str,data:dict[str,Any],seed:int=0)->dict[str,Any]:
     else: raise AssertionError(method)
     o["output"]["assumptions"]=a; o["output"]["method_limits"]=lim
     return o
+
+# Specialized-finance model-risk envelope for rows 1360-1409.
+_original_run = run
+from app.core.depth_quality import attach_quality as _attach_quality
+
+def run(method:str,data:dict,seed:int=0)->dict:
+    out=_original_run(method,data,seed)
+    required=[k for k in data if k not in {'assumptions','sources','evidence'}]
+    evidence=[x for key in ('sources','evidence') for x in data.get(key,[]) if isinstance(x,dict)]
+    return _attach_quality(out,domain='finance',method=method,inputs=data,
+        required_inputs=required,evidence=evidence,assumptions=data.get('assumptions',[]),
+        limitations=['Illustrative analytics only; no trade, transfer, commitment, or regulated advice.',
+                     'Independent review must validate data, calibration, conventions, liquidity, counterparty and model risk.'])
