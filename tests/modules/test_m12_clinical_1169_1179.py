@@ -23,3 +23,44 @@ def test_knowledge_citations_are_required():
 def test_1178_mens_health_keeps_screening_and_symptoms_for_clinician_review():
  o=clinical_support('mens_health',{'profile':{'age':30},'concerns':['symptom'],'recommendations':[{'name':'blood pressure screening',**SRC}]})
  assert o['mode']=='mens_health' and o['recommendations_for_shared_review'][0]['topic'] is None and 'clinician' in o['boundary'].lower()
+
+
+def test_1171_prenatal_marks_unrecorded_visits_without_assuming_missed():
+ d={'observations':{},'milestones':[{'name':'anatomy_scan','due_at':'week20'},{'name':'glucose_screen','due_at':'week26'}],'completed_visits':['anatomy_scan'],'source':SRC}
+ o=clinical_support('prenatal_care',d)
+ assert o['unrecorded_visits']==['glucose_screen'] and o['visit_schedule_review'][0]['recorded']=='completed'
+
+def test_1172_labor_preserves_documented_timeline_order():
+ d={'observations':{},'milestones':[{'name':'m'}],'events':[{'event':'rupture','at':'10:00','documented_by':'rn'},{'event':'admission','at':'08:00'}],'source':SRC}
+ o=clinical_support('labor_and_delivery_management',d)
+ assert [e['event'] for e in o['labor_timeline']]==['admission','rupture']
+
+def test_1173_neonatal_screening_review_marks_not_recorded():
+ d={'observations':{},'milestones':[{'name':'m'}],'required_screenings':['hearing','metabolic'],'screenings':[{'name':'hearing','status':'done','result':'pass'}],'source':SRC}
+ o=clinical_support('neonatal_care',d)
+ assert o['newborn_screening_review'][1]=={'screening':'metabolic','status':'not_recorded','result_for_clinician_review':None}
+
+def test_1174_pediatric_bands_only_from_supplied_age_and_keeps_growth_inputs():
+ d={'profile':{'age_years':3},'concerns':[],'growth_measurements':[{'metric':'height','value':95,'unit':'cm','observed_at':'2026-09-01'}],'recommendations':[{**SRC}]}
+ o=clinical_support('pediatric_care',d)
+ assert o['age_band_from_supplied_age']=='child' and o['growth_inputs'][0]['unit']=='cm'
+ with pytest.raises(ValueError):clinical_support('pediatric_care',{'profile':{'age_years':-1},'recommendations':[{**SRC}]})
+
+def test_1175_adolescent_surfaces_confidentiality_topics_and_consent_fields():
+ d={'profile':{'age_group':'adolescent'},'concerns':[],'consent':{'confidential_visit':True},'recommendations':[{**SRC,'topic':'confidentiality'},{**SRC,'topic':'vaccines'}]}
+ o=clinical_support('adolescent_medicine',d)
+ assert o['confidentiality_review']=={'confidentiality_topics':['confidentiality'],'consent_fields_supplied':['confidential_visit']}
+
+def test_1176_geriatric_counts_medications_for_polypharmacy_review_prompt():
+ d={'profile':{'medications':['a','b','c','d','e'],'fall_history':'none'},'concerns':[],'recommendations':[{**SRC}]}
+ o=clinical_support('geriatric_care',d)
+ assert o['medication_count']==5 and o['polypharmacy_review_prompt'] is True
+ assert {'field':'cognition','documented':False} in o['geriatric_screen_fields']
+
+def test_1177_1179_distinct_inclusive_outputs_keyed_to_anatomy_and_identity():
+ recs=[{**SRC,'topic':'cervical screen','organ':'cervix'}]
+ w=clinical_support('womens_health',{'profile':{'organs':['cervix']},'concerns':[],'recommendations':recs})
+ m=clinical_support('mens_health',{'profile':{'organs':['prostate']},'concerns':['urinary'], 'recommendations':recs})
+ q=clinical_support('lgbtq_health',{'profile':{'chosen_name':'A','pronouns':'they/them','organs':['cervix']},'concerns':[],'recommendations':recs})
+ assert w['anatomy_keyed_screening'][0]['applicable'] is True and m['anatomy_keyed_screening'][0]['applicable'] is False
+ assert m['symptom_review_inputs']==['urinary'] and q['affirming_care_inputs']['pronouns']=='they/them'
