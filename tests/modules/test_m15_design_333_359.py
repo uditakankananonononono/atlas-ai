@@ -29,3 +29,14 @@ def test_negative_paths_reject_missing_owner_and_domain_inputs():
  with pytest.raises(ValueError):design_support_333_359(360,BASE)
 def test_mounted_route_is_tenant_scoped():
  r=TestClient(app).post('/api/v1/document-generator/design-333-359/support',headers={'x-atlas-tenant':'design-t'},json={'feature_id':359,'data':payload(359)});assert r.status_code==200 and r.json()['tenant_id']=='design-t' and r.json()['concept']=='Service Design'
+
+DESIGN_KEYS={344:"accessibility_audit",345:"localization_qa",346:"transcreation_matrix",347:"cultural_adaptation",348:"sensitivity_register",349:"inclusion_matrix",350:"universal_principles",351:"participation_plan",352:"codesign_trace",353:"design_thinking_cycle",354:"sprint_board",355:"speculative_scenarios",356:"critical_provocation",357:"adversarial_review",358:"transition_portfolio",359:"service_blueprint_analysis"}
+@pytest.mark.parametrize("row",range(344,360))
+def test_rows_344_359_have_named_distinct_instruments(row):
+ out=design_support_333_359(row,payload(row));assert DESIGN_KEYS[row] in out;assert out["method_engine"]==FEATURES[row].lower().replace(" ","_")
+
+def test_row_355_speculative_design_does_not_claim_forecast():
+ assert design_support_333_359(355,payload(355))["speculative_scenarios"]["not_forecast"] is True
+
+def test_row_357_adversarial_design_requires_authorization():
+ assert design_support_333_359(357,payload(357))["adversarial_review"]["authorization_required"] is True

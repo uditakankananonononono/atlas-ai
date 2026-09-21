@@ -52,3 +52,81 @@ class BusinessAnalysisService:
   if f==381 and r["contribution_margin_per_unit"]<=0:return "fix unit economics before scaling"
   if f==378 and not r["viral"]:return "do not assume self-sustaining virality"
   return "review artifact against decision threshold"
+
+# Row-specific business instruments. These deliberately return different schemas so a
+# caller cannot mistake a generic section echo for implemented analysis.
+def _row_specific_business(f:int,x:dict):
+ def need(*ks):
+  missing=[k for k in ks if x.get(k) in (None,"",[],{})]
+  if missing: raise ValueError("missing required inputs: "+", ".join(missing))
+ if f==361:
+  need("competitors","criteria"); rows=[]
+  for c in x["competitors"]:
+   scores=c.get("scores",{}) if isinstance(c,dict) else {};rows.append({"competitor":c.get("id") if isinstance(c,dict) else c,"criterion_scores":scores,"score":sum(float(scores.get(k.get("id",k),0))*float(k.get("weight",1) if isinstance(k,dict) else 1) for k in x["criteria"])})
+  return {"competitor_matrix":sorted(rows,key=lambda z:z["score"],reverse=True),"evidence_only":True},"weighted competitor matrix"
+ if f==362:
+  need("supplier_power","buyer_power","new_entrants","substitutes","rivalry");scale={"low":1,"medium":2,"high":3};vals={k:scale.get(str(x[k]).lower(),float(x[k]) if isinstance(x[k],(int,float)) else 0) for k in ("supplier_power","buyer_power","new_entrants","substitutes","rivalry")};return {"force_scores":vals,"industry_pressure_index":sum(vals.values())/5},"Five Forces pressure index"
+ if f==363:
+  need("customer_jobs","pains","gains","products_services","pain_relievers","gain_creators");return {"fit_map":{"job_coverage":min(len(x["products_services"])/len(x["customer_jobs"]),1),"pain_coverage":min(len(x["pain_relievers"])/len(x["pains"]),1),"gain_coverage":min(len(x["gain_creators"])/len(x["gains"]),1)},"unverified_offer":True},"value proposition fit map"
+ if f==364:
+  need("partners","activities","resources","value_propositions","relationships","channels","segments","costs","revenues");return {"canvas":{"infrastructure":{"partners":x["partners"],"activities":x["activities"],"resources":x["resources"]},"offer":x["value_propositions"],"customers":{"relationships":x["relationships"],"channels":x["channels"],"segments":x["segments"]},"finances":{"costs":x["costs"],"revenues":x["revenues"]}}},"business model canvas"
+ if f==365:
+  need("assumptions","tests");tests={t.get("assumption_id"):t for t in x["tests"] if isinstance(t,dict)};return {"assumption_board":[{"assumption":a.get("id"),"risk":a.get("risk","unknown"),"test":tests.get(a.get("id")),"status":"test_defined" if a.get("id") in tests else "untested"} for a in x["assumptions"]]},"lean assumption board"
+ if f==366:
+  need("segments","criteria");return {"segment_ranking":sorted([{"segment":s.get("id"),"score":sum(float(s.get("scores",{}).get(c.get("id"),0))*float(c.get("weight",1)) for c in x["criteria"])} for s in x["segments"]],key=lambda z:z["score"],reverse=True)},"segment attractiveness ranking"
+ if f==367:
+  need("observations","behaviors","goals","pain_points");return {"persona":{"observed_behaviors":x["behaviors"],"goals":x["goals"],"pain_points":x["pain_points"],"observation_count":len(x["observations"]),"fictional_details_added":False}},"evidence-backed persona"
+ if f==368:
+  need("stages","touchpoints","customer_actions","pain_points");return {"journey":[{"stage":s,"touchpoints":[t for t in x["touchpoints"] if not isinstance(t,dict) or t.get("stage")==s],"actions":[a for a in x["customer_actions"] if not isinstance(a,dict) or a.get("stage")==s],"pain_points":[p for p in x["pain_points"] if not isinstance(p,dict) or p.get("stage")==s]} for s in x["stages"]]},"customer journey"
+ if f==369:
+  need("observations","needs");return {"unmet_needs":[{"need":n.get("id",n) if isinstance(n,dict) else n,"evidence_count":sum((n.get("id",n) if isinstance(n,dict) else n) in o.get("need_ids",[]) for o in x["observations"] if isinstance(o,dict))} for n in x["needs"]]},"unmet-needs evidence count"
+ if f==370:
+  need("situations","outcomes","importance","satisfaction");return {"opportunity_scores":[{"situation":s,"outcome":o,"score":float(i)+max(float(i)-float(q),0)} for s,o,i,q in zip(x["situations"],x["outcomes"],x["importance"],x["satisfaction"])]},"outcome opportunity scoring"
+ if f==371:
+  need("push","pull","anxiety","habit");return {"forces":{"progress":len(x["push"])+len(x["pull"]),"inertia":len(x["anxiety"])+len(x["habit"]),"push":x["push"],"pull":x["pull"],"anxiety":x["anxiety"],"habit":x["habit"]}},"jobs-to-be-done forces"
+ if f==372:
+  need("hypothesis","metric","threshold","method");return {"test_card":{"hypothesis":x["hypothesis"],"metric":x["metric"],"threshold":x["threshold"],"method":x["method"],"outcome":"not_run"}},"hypothesis test card"
+ if f==373:
+  need("core_hypothesis","minimum_capabilities","excluded_scope","success_metric");return {"mvp_scope":{"core_hypothesis":x["core_hypothesis"],"included":x["minimum_capabilities"],"excluded":x["excluded_scope"],"success_metric":x["success_metric"],"deployed":False}},"MVP scope boundary"
+ if f==374:
+  need("channels","questions","sampling","coding_scheme");return {"user_test_protocol":{"channels":x["channels"],"question_count":len(x["questions"]),"sampling":x["sampling"],"coding_scheme":x["coding_scheme"],"responses_collected":0}},"user testing protocol"
+ if f==375:
+  need("signals","thresholds","observations");pairs=list(zip(x["signals"],x["thresholds"],x["observations"]));return {"pmf_scorecard":[{"signal":s,"threshold":t,"observed":o,"passed":float(o)>=float(t)} for s,t,o in pairs],"validated":bool(pairs) and all(float(o)>=float(t) for s,t,o in pairs)},"product-market-fit scorecard"
+ if f==376:
+  need("original_hypothesis","evidence","pivot_options","decision_rule");return {"pivot_review":{"hypothesis":x["original_hypothesis"],"evidence":x["evidence"],"options":x["pivot_options"],"decision_rule":x["decision_rule"],"decision":"human_required"}},"pivot/persevere gate"
+ if f==377:
+  need("tactics","constraints","expected_mechanisms");return {"growth_experiments":[{"tactic":t,"mechanism":m,"constraints":x["constraints"],"status":"proposed"} for t,m in zip(x["tactics"],x["expected_mechanisms"])]},"constraint-bound growth experiments"
+ if f==384:
+  need("customers","risk_signals","weights");return {"churn_risk":[{"customer":c.get("id"),"score":sum(float(c.get("signals",{}).get(s,0))*float(w) for s,w in zip(x["risk_signals"],x["weights"])),"prediction_only":True} for c in x["customers"]]},"weighted churn-risk rubric"
+ if f==386:
+  need("responses","scale");vals=[float(v) for v in x["responses"]];return {"csat":{"mean":fmean(vals),"responses":len(vals),"scale":x["scale"]}},"customer satisfaction mean"
+ if f==387:
+  need("feedback","coding_scheme");codes=x["coding_scheme"] if isinstance(x["coding_scheme"],dict) else {};return {"voice_of_customer":{"themes":{k:sum(any(term.lower() in str(v).lower() for term in terms) for v in x["feedback"]) for k,terms in codes.items()},"uncoded_count":len(x["feedback"]) if not codes else None}},"rule-based voice-of-customer coding"
+ if f==389:
+  need("outcomes","initiatives","dependencies","time_horizons");return {"roadmap":[{"horizon":h,"outcomes":[o for o in x["outcomes"] if not isinstance(o,dict) or o.get("horizon")==h],"initiatives":[i for i in x["initiatives"] if not isinstance(i,dict) or i.get("horizon")==h]} for h in x["time_horizons"]],"dependencies":x["dependencies"]},"outcome roadmap"
+ if f==390:
+  need("roles","cadence","definition_of_done","work_item_types");return {"sprint_plan":{"roles":x["roles"],"cadence":x["cadence"],"definition_of_done":x["definition_of_done"],"work_item_types":x["work_item_types"],"commitment":"not_started"}},"sprint operating plan"
+ if f==391:
+  need("items");return {"backlog":sorted(x["items"],key=lambda i:(i.get("priority",999),-float(i.get("value",0))))},"ordered backlog"
+ if f==393:
+  need("planned","completed","dates");return {"burndown":[{"date":d,"remaining":max(float(p)-float(c),0)} for p,c,d in zip(x["planned"],x["completed"],x["dates"])]},"burndown series"
+ if f==394:
+  need("states","wip_limits","policies");return {"kanban":{"columns":[{"state":s,"wip_limit":x["wip_limits"].get(s)} for s in x["states"]],"policies":x["policies"]}},"kanban policy board"
+ if f==395:
+  need("meetings","participants","cadence","outcomes");return {"ceremonies":[{"meeting":m,"participants":x["participants"],"cadence":x["cadence"],"expected_outcomes":x["outcomes"],"facilitated":False} for m in x["meetings"]]},"scrum ceremony plan"
+ if f==396:
+  need("went_well","did_not","actions","owners");return {"retrospective":{"went_well":x["went_well"],"did_not":x["did_not"],"action_register":[{"action":a,"owner":o,"status":"open"} for a,o in zip(x["actions"],x["owners"])]}},"retrospective action register"
+ if f==397:
+  need("hypothesis","primary_metric","randomization_unit","control","treatment","stopping_rule");return {"ab_test":{"hypothesis":x["hypothesis"],"primary_metric":x["primary_metric"],"randomization_unit":x["randomization_unit"],"arms":{"control":x["control"],"treatment":x["treatment"]},"stopping_rule":x["stopping_rule"],"status":"designed_not_run"}},"controlled A/B protocol"
+ if f==398:
+  need("factors","levels","primary_metric","allocation","multiple_testing_method");cells=1
+  for level in x["levels"]: cells*=len(level)
+  return {"multivariate_design":{"factors":x["factors"],"levels":x["levels"],"cell_count":cells,"primary_metric":x["primary_metric"],"allocation":x["allocation"],"multiple_testing_method":x["multiple_testing_method"],"status":"designed_not_run"}},"factorial test protocol"
+ return None
+
+_original_compute=BusinessAnalysisService._compute
+def _compute_distinct(self,f:int,x:dict):
+ specific=_row_specific_business(f,x)
+ if specific is None: return _original_compute(self,f,x)
+ result,method=specific;result["source_bound"]=True;result["fabricated_claims"]=False;return result,method
+BusinessAnalysisService._compute=_compute_distinct
