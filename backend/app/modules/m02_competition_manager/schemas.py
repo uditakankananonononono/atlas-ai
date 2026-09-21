@@ -100,7 +100,7 @@ class ProposedAction(BaseModel):
 class StatusEvidence(BaseModel):
     """Evidence obtained from a compliant upstream source."""
 
-    source: str = Field(pattern="^(official_api|email|manual)$")
+    source: str = Field(pattern="^(official_api|email|manual|browser_readback)$")
     reference: str = Field(min_length=1, max_length=1000)
     observed_at: datetime
     status: SubmissionStatus

@@ -128,3 +128,7 @@ def expanded_owner_run_132_179(row_id:int,payload:dict):
 
 from .core_spec_round6 import router as core_spec_round6_router
 router.include_router(core_spec_round6_router)
+
+# End-to-end opportunity application browser workflow (M1/M2/M13).
+# Imported for side effects: it declares its routes on this router directly.
+from . import application_routes as _application_workflow_routes  # noqa: F401
