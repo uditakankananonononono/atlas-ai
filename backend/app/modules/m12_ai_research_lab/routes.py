@@ -57,3 +57,7 @@ def engineering_1560_1609_route(body:Engineering1560To1609In,tenant:TenantContex
 # Research and scientific discovery workbench, owner-ledger rows 135-184.
 from .research_methods_routes_135_184 import router as research_methods_router_135_184
 router.include_router(research_methods_router_135_184)
+
+# Emerging biomedical support rows 960-1009.
+from .emerging_biomed_routes_960_1009 import router as emerging_biomed_router_960_1009
+router.include_router(emerging_biomed_router_960_1009)
