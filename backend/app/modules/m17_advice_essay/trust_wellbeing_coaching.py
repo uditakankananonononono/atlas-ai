@@ -77,4 +77,6 @@ class TrustWellbeingCoach:
             low_risk_steps=[step, "Choose one small step, review its effect, and stop or change course if it is not helpful."],
             safeguards=safeguards, escalation_boundary=escalation,
             review_required=True, external_action_proposed=False, authorship_notice=notice,
+            evaluation={"row_id": ROW_BY_SKILL[request.skill], "preference_coverage": min(1.0, len(request.preferences) / 3), "constraint_count": len(request.constraints), "reflection_supplied": request.reflection is not None, "safety_checks": ["agency", "non-diagnosis", "accessibility", "escalation"]},
+            uncertainty={"level": "high", "unknowns": ["health status", "personal safety", "resource access", "suitability"], "calibration": "Wellbeing guidance is general and must not replace qualified care."},
         )
