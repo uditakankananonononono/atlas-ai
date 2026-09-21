@@ -68,3 +68,10 @@ def devices():return list(_pairing.devices.values())
 def revoke_device(device_id:str):
  try:_pairing.revoke(device_id);return {'device_id':device_id,'revoked':True}
  except KeyError:raise HTTPException(404,'device not found')
+
+class DeviceReceiptIn(BaseModel):events:list[dict[str,Any]]=Field(min_length=1,max_length=10000)
+@router.post('/devices/{device_id}/verify-receipt')
+def verify_device_receipt(device_id:str,body:DeviceReceiptIn):
+ try:return _pairing.verify_receipt(device_id,body.events)
+ except KeyError:raise HTTPException(404,'device not found')
+ except ValueError as error:raise HTTPException(422,str(error)) from error
