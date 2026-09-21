@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1446,
-    "verified-pushed": 561,
+    "missing": 1440,
+    "verified-pushed": 567,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -14400,9 +14400,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Medical Image Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d3736c307d4246481176cd3228e201fbf5fc955f",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1115_1120.py"
+      },
+      "boundary": "Specialist evidence-review support only. Atlas organizes supplied model/clinician findings, signal statistics or curated variant records; it does not inspect source pixels/tracings independently, diagnose disease, or replace radiology/pathology/cardiology/neurology/genetics review."
     },
     {
       "id": 1116,
@@ -14410,9 +14414,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Radiology Report Generation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d3736c307d4246481176cd3228e201fbf5fc955f",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1115_1120.py"
+      },
+      "boundary": "Specialist evidence-review support only. Atlas organizes supplied model/clinician findings, signal statistics or curated variant records; it does not inspect source pixels/tracings independently, diagnose disease, or replace radiology/pathology/cardiology/neurology/genetics review."
     },
     {
       "id": 1117,
@@ -14420,9 +14428,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Pathology Slide Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d3736c307d4246481176cd3228e201fbf5fc955f",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1115_1120.py"
+      },
+      "boundary": "Specialist evidence-review support only. Atlas organizes supplied model/clinician findings, signal statistics or curated variant records; it does not inspect source pixels/tracings independently, diagnose disease, or replace radiology/pathology/cardiology/neurology/genetics review."
     },
     {
       "id": 1118,
@@ -14430,9 +14442,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "ECG Interpretation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d3736c307d4246481176cd3228e201fbf5fc955f",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1115_1120.py"
+      },
+      "boundary": "Specialist evidence-review support only. Atlas organizes supplied model/clinician findings, signal statistics or curated variant records; it does not inspect source pixels/tracings independently, diagnose disease, or replace radiology/pathology/cardiology/neurology/genetics review."
     },
     {
       "id": 1119,
@@ -14440,9 +14456,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "EEG Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d3736c307d4246481176cd3228e201fbf5fc955f",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1115_1120.py"
+      },
+      "boundary": "Specialist evidence-review support only. Atlas organizes supplied model/clinician findings, signal statistics or curated variant records; it does not inspect source pixels/tracings independently, diagnose disease, or replace radiology/pathology/cardiology/neurology/genetics review."
     },
     {
       "id": 1120,
@@ -14450,9 +14470,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Genomics Interpretation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d3736c307d4246481176cd3228e201fbf5fc955f",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1115_1120.py"
+      },
+      "boundary": "Specialist evidence-review support only. Atlas organizes supplied model/clinician findings, signal statistics or curated variant records; it does not inspect source pixels/tracings independently, diagnose disease, or replace radiology/pathology/cardiology/neurology/genetics review."
     },
     {
       "id": 1121,
