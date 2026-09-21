@@ -1,38 +1,158 @@
-"""Inspectable optimization plans and original story-design artifacts, rows 235-280."""
+"""Executable optimization and narrative analysis for ledger rows 235-280.
+
+The workbench is deliberately deterministic: it analyses caller-supplied observations and
+never claims to have run an external solver or generated evidence it was not given.
+"""
 from __future__ import annotations
-from math import log,sqrt
+
+from collections import Counter, defaultdict, deque
+from math import exp, log, sqrt
 import re
-from typing import Any
-class WorkbenchError(ValueError):pass
+from typing import Any, Callable
+
+class WorkbenchError(ValueError):
+    pass
+
 ROWS={235:'Dual Decomposition',236:'ADMM',237:'Coordinate Descent',238:'Proximal Methods',239:'Frank-Wolfe Algorithm',240:'Cutting Plane Methods',241:'Branch and Bound',242:'Column Generation',243:'Benders Decomposition',244:'Lagrangian Relaxation',245:'Semidefinite Programming',246:'Second-Order Cone Programming',247:'Geometric Programming',248:'Fractional Programming',249:'Bilevel Optimization',250:'Stochastic Approximation',251:'Online Learning',252:'Bandit Algorithms',253:'Contextual Bandits',254:'Thompson Sampling',255:'Upper Confidence Bound',256:'Expert Advice Aggregation',257:'Regret Minimization',258:'Game-Theoretic Learning',259:'Fictitious Play',260:'Novel Metaphor Generation',261:'Narrative Arc Construction',262:'Character Development',263:'Dialogue Writing',264:'Worldbuilding',265:'Plot Twist Design',266:'Foreshadowing Placement',267:'Tension Building',268:'Pacing Control',269:'Voice Development',270:'Genre Blending',271:'Trope Subversion',272:'Myth Creation',273:'Poetry Generation',274:'Songwriting',275:'Screenplay Formatting',276:'Stage Play Construction',277:'Comic Script Writing',278:'Interactive Fiction',279:'Game Narrative Design',280:'Visual Storyboarding'}
-def slug(s):return re.sub(r'[^a-z0-9]+','_',s.lower()).strip('_')
-KEYS={slug(v):k for k,v in ROWS.items()};FAMILY={**{i:'optimization' for i in range(235,260)},**{i:'story' for i in range(260,281)}}
+FAMILY={i:('optimization' if i<260 else 'story') for i in ROWS}
+def slug(s:str)->str:return re.sub(r'[^a-z0-9]+','_',s.lower()).strip('_')
+KEYS={slug(v):k for k,v in ROWS.items()}
 def capabilities():return [{'row_id':i,'key':slug(n),'name':n,'family':FAMILY[i]} for i,n in ROWS.items()]
-def req(p,k,t):
- v=p.get(k)
- if not isinstance(v,t) or (t in (str,list,dict) and not v):raise WorkbenchError(f'{k} must be a non-empty {t.__name__}')
- return v
-def source(p):
- s=req(p,'source',dict)
- if not s.get('title') or not isinstance(s.get('url'),str) or not s['url'].startswith(('http://','https://')):raise WorkbenchError('source requires title and http(s) url')
- return {'title':s['title'],'url':s['url']}
-def optimization(row,p):
- obj=req(p,'objective',dict);constraints=p.get('constraints',[])
- if not isinstance(constraints,list):raise WorkbenchError('constraints must be a list')
- out={'objective':obj,'constraints':constraints,'sense':p.get('sense','minimize'),'tolerance':float(p.get('tolerance',1e-6)),'max_iterations':int(p.get('max_iterations',1000)),'convergence_log_required':True,'infeasibility_and_unboundedness_checks':True}
- methods={235:{'split_blocks':p.get('blocks',[]),'coupling_constraints':p.get('coupling_constraints',[]),'dual_update':'lambda <- lambda + step * coupling_residual','primal_recovery':True,'duality_gap_track':True},236:{'updates':['x minimization','z proximal minimization','dual ascent'],'rho':p.get('rho',1.0),'primal_residual':'Ax+Bz-c','dual_residual':'rho*A^T*B*(z_k-z_prev)','adaptive_rho_with_scaled_dual':True},237:{'selection':p.get('selection','cyclic'),'coordinate_updates':p.get('coordinate_updates',[]),'stop_on_projected_gradient':True,'randomized_seed':p.get('seed')},238:{'smooth_term':p.get('smooth_term'),'nonsmooth_term':p.get('nonsmooth_term'),'prox_operator':p.get('prox_operator'),'step_size':p.get('step_size'),'backtracking':True,'composite_gradient_mapping_stop':True},239:{'linear_minimization_oracle':p.get('oracle'),'update':'x_next=(1-gamma)x+gamma*s','step_rule':p.get('step_rule','line search'),'duality_gap_certificate':True,'projection_free':True},240:{'master_problem':p.get('master_problem'),'separation_oracle':p.get('separation_oracle'),'cut_pool':p.get('cuts',[]),'lower_upper_bound_track':True,'remove_inactive_cuts_carefully':True},241:{'relaxation':p.get('relaxation'),'branching_rule':p.get('branching_rule','strong branching'),'incumbent':p.get('incumbent'),'node_bound_pruning':True,'optimality_gap':True,'infeasibility_pruning':True},242:{'restricted_master':p.get('restricted_master'),'pricing_problem':p.get('pricing_problem'),'reduced_cost_formula':p.get('reduced_cost_formula'),'add_negative_reduced_cost_columns':True,'final_integer_recovery_if_needed':True},243:{'master_variables':p.get('master_variables'),'subproblem_variables':p.get('subproblem_variables'),'optimality_cuts':p.get('optimality_cuts',[]),'feasibility_cuts':p.get('feasibility_cuts',[]),'lower_upper_bound_track':True},244:{'relaxed_constraints':p.get('relaxed_constraints',[]),'multipliers_nonnegative_where_required':True,'subgradient_update':True,'dual_bound_orientation_checked':True,'primal_heuristic_for_incumbent':True},245:{'matrix_variable':p.get('matrix_variable'),'psd_constraint':True,'linear_matrix_constraints':p.get('linear_matrix_constraints',[]),'symmetry_enforced':True,'eigenvalue_feasibility_check':True},246:{'cone_constraints':p.get('cone_constraints',[]),'canonical_form':'||A_i x+b_i||_2 <= c_i^T x+d_i','cone_domain_check':True,'primal_dual_residuals':True},247:{'positive_variables':True,'monomials':p.get('monomials',[]),'posynomials':p.get('posynomials',[]),'log_transform_to_convex':True,'domain_strictly_positive':True},248:{'numerator':p.get('numerator'),'denominator':p.get('denominator'),'denominator_positive_required':True,'method':p.get('method','Dinkelbach'),'parametric_residual_stop':True},249:{'leader_problem':p.get('leader_problem'),'follower_problem':p.get('follower_problem'),'follower_optimality_reformulation':p.get('reformulation','KKT when justified'),'constraint_qualification_check':True,'optimistic_or_pessimistic':p.get('solution_concept')},250:{'gradient_estimator':p.get('gradient_estimator'),'step_schedule':p.get('step_schedule','Robbins-Monro'),'conditions':['sum steps diverges','sum squared steps converges'],'iterate_averaging':p.get('iterate_averaging',True),'noise_diagnostics':True},251:{'round_protocol':['predict','observe loss','update'],'hypothesis_class':p.get('hypothesis_class'),'loss':p.get('loss'),'regret_comparator':p.get('comparator','best fixed decision in hindsight'),'no_future_data':True},252:{'arms':p.get('arms',[]),'reward_bounds':p.get('reward_bounds'),'policy':p.get('policy','epsilon-greedy'),'exploration_required':True,'cumulative_regret_track':True},253:{'contexts':p.get('contexts'),'arms':p.get('arms',[]),'policy_model':p.get('policy_model'),'propensity_logging':True,'off_policy_evaluation':True,'overlap_check':True},254:{'prior':p.get('prior'),'posterior_update':p.get('posterior_update'),'sample_each_arm_then_argmax':True,'reward_model_check':True,'random_seed':p.get('seed')},255:{'counts':p.get('counts',{}),'means':p.get('means',{}),'confidence_radius':'sqrt(2*log(t)/n_i)','unseen_arms_infinite_bonus':True,'select_mean_plus_bonus':True},256:{'experts':p.get('experts',[]),'learning_rate':p.get('learning_rate'),'weight_update':'w_i <- w_i*exp(-eta*loss_i)','normalize_weights':True,'expert_losses_logged':True},257:{'decision_set':p.get('decision_set'),'losses':p.get('losses',[]),'comparator':p.get('comparator'),'cumulative_regret':'learner loss - comparator loss','average_regret_target_zero':True},258:{'players':p.get('players',[]),'actions':p.get('actions',{}),'payoffs':p.get('payoffs',{}),'learning_rule':p.get('learning_rule'),'equilibrium_gap_track':True,'nonstationarity_disclosed':True},259:{'empirical_frequencies':p.get('empirical_frequencies',{}),'best_response':p.get('best_response'),'simultaneous_or_alternating':p.get('update_mode','simultaneous'),'exploitability_track':True,'convergence_not_guaranteed_all_games':True}}
- out['method']=methods[row];return out
-def story(row,p):
- premise=req(p,'premise',str);theme=p.get('theme');out={'premise':premise,'theme':theme,'originality_guard':'Do not imitate a living author or reproduce supplied copyrighted passages; use abstract craft constraints only.','audience':p.get('audience'),'content_limits':p.get('content_limits',[])}
- specs={260:{'source_domain':p.get('source_domain'),'target_domain':p.get('target_domain'),'shared_relational_structure':p.get('shared_structure'),'candidate':f"{p.get('target_domain','The idea')} is {p.get('source_domain','a changing weather system')}",'literal_mismatch_check':True},261:{'beats':['setup','inciting incident','progressive complications','midpoint reversal','crisis','climax','resolution'],'causal_link_required':True,'theme_pressure_test':True},262:{'character':p.get('character'),'want':p.get('want'),'need':p.get('need'),'misbelief':p.get('misbelief'),'stakes':p.get('stakes'),'contradictions':p.get('contradictions',[]),'arc_turns':p.get('arc_turns',[])},263:{'speakers':p.get('speakers',[]),'scene_goal':p.get('scene_goal'),'conflict':p.get('conflict'),'subtext':p.get('subtext'),'beats':p.get('beats',[]),'distinct_idiolect_without_stereotype':True,'exposition_filter':True},264:{'physical_rules':p.get('physical_rules',[]),'institutions':p.get('institutions',[]),'economy':p.get('economy'),'ecology':p.get('ecology'),'history':p.get('history',[]),'cultures':p.get('cultures',[]),'consistency_ledger':True,'avoid_culture_monoliths':True},265:{'reveal':p.get('reveal'),'prior_assumptions_reframed':p.get('reframed',[]),'evidence_seeded':p.get('evidence',[]),'surprising_yet_inevitable_test':True,'character_consequence_required':True},266:{'payoffs':p.get('payoffs',[]),'seeds':p.get('seeds',[]),'placement_rule':'visible in retrospect, non-obvious on first encounter','red_herrings_must_be_fair':True},267:{'stakes':p.get('stakes'),'uncertainty':p.get('uncertainty'),'time_pressure':p.get('time_pressure'),'escalation_steps':p.get('escalation_steps',[]),'release_valves':p.get('release_valves',[]),'vary_tension_not_monotonic':True},268:{'scene_lengths':p.get('scene_lengths',[]),'scene_sequel_balance':p.get('scene_sequel_balance'),'information_rate':p.get('information_rate'),'rhythm_plan':p.get('rhythm_plan',[]),'intentional_breathing_space':True},269:{'diction':p.get('diction'),'syntax':p.get('syntax'),'distance':p.get('distance'),'attitude':p.get('attitude'),'image_system':p.get('image_system'),'consistency_samples':p.get('samples',[]),'no_living_author_imitation':True},270:{'genres':p.get('genres',[]),'contracts_to_honor':p.get('contracts_to_honor',{}),'dominant_spine':p.get('dominant_spine'),'blend_points':p.get('blend_points',[]),'tone_transition_plan':True},271:{'trope':p.get('trope'),'audience_expectation':p.get('expectation'),'subversion':p.get('subversion'),'retained_pleasure':p.get('retained_pleasure'),'thematic_reason':p.get('thematic_reason'),'not_subversion_for_shock_only':True},272:{'cosmology':p.get('cosmology'),'origin':p.get('origin'),'sacred_conflict':p.get('sacred_conflict'),'rituals':p.get('rituals',[]),'variants':p.get('variants',[]),'cultural_function':p.get('cultural_function'),'avoid_appropriating_living_traditions':True},273:{'form':p.get('form','free verse'),'speaker':p.get('speaker'),'image_system':p.get('image_system'),'sound_devices':p.get('sound_devices',[]),'lineation':p.get('lineation'),'turn':p.get('turn'),'cliche_audit':True},274:{'song_form':p.get('song_form',['verse','chorus','verse','chorus','bridge','chorus']),'hook':p.get('hook'),'point_of_view':p.get('point_of_view'),'rhyme_scheme':p.get('rhyme_scheme'),'meter_or_flow':p.get('meter_or_flow'),'melodic_space_notes':p.get('melodic_space_notes'),'prosody_check':True},275:{'elements':['scene heading','action','character cue','dialogue','parenthetical','transition'],'sluglines':p.get('sluglines',[]),'present_tense_visual_action':True,'page_time_estimate':'about one minute per properly formatted page'},276:{'acts':p.get('acts',[]),'scenes':p.get('scenes',[]),'stage_directions':p.get('stage_directions',[]),'entrances_exits':p.get('entrances_exits',[]),'live_space_and_audience_considered':True,'technical_feasibility_check':True},277:{'pages':p.get('pages',[]),'panel_beats':p.get('panel_beats',[]),'captions':p.get('captions',[]),'balloons':p.get('balloons',[]),'page_turn_reveals':p.get('page_turn_reveals',[]),'one_primary_action_per_panel':True,'artist_freedom_preserved':True},278:{'nodes':p.get('nodes',[]),'choices':p.get('choices',[]),'state_variables':p.get('state_variables',[]),'consequence_visibility':p.get('consequence_visibility'),'reachability_and_dead_end_test':True,'meaningful_choices_not_cosmetic':True},279:{'player_role':p.get('player_role'),'core_loop':p.get('core_loop'),'quest_lines':p.get('quest_lines',[]),'environmental_storytelling':p.get('environmental_storytelling',[]),'branching_model':p.get('branching_model'),'ludonarrative_alignment_check':True,'fail_forward':True},280:{'shots':p.get('shots',[]),'each_shot_fields':['shot_number','framing','angle','action','dialogue_or_audio','duration','transition'],'continuity_checks':['screen direction','eyelines','props','lighting'],'coverage_and_editability':True,'accessibility_notes':True}}
- out['artifact']=specs[row];return out
+
+def _source(p):
+    s=p.get('source')
+    if not isinstance(s,dict) or not isinstance(s.get('title'),str) or not s['title'].strip() or not isinstance(s.get('url'),str) or not s['url'].startswith(('http://','https://')):
+        raise WorkbenchError('source requires non-empty title and http(s) url')
+    return {'title':s['title'].strip(),'url':s['url']}
+def _nums(value,name,*,nonempty=True):
+    if not isinstance(value,list) or (nonempty and not value):raise WorkbenchError(f'{name} must be a non-empty list')
+    if any(isinstance(x,bool) or not isinstance(x,(int,float)) for x in value):raise WorkbenchError(f'{name} must contain numbers')
+    return [float(x) for x in value]
+def _matrix(value,name):
+    if not isinstance(value,list) or not value or any(not isinstance(r,list) or not r for r in value):raise WorkbenchError(f'{name} must be a non-empty numeric matrix')
+    rows=[_nums(r,name) for r in value]
+    if len({len(r) for r in rows})!=1:raise WorkbenchError(f'{name} rows must have equal length')
+    return rows
+def _dot(a,b):return sum(x*y for x,y in zip(a,b))
+def _mean(x):return sum(x)/len(x) if x else 0.0
+def _variance(x):
+    m=_mean(x);return _mean([(v-m)**2 for v in x])
+def _confidence(values):return 1.0/(1.0+sqrt(_variance(values))) if values else 0.0
+
+def _problem(p):
+    c=_nums(p.get('objective'),'objective');x=_nums(p.get('initial'),'initial')
+    if len(c)!=len(x):raise WorkbenchError('objective and initial dimensions differ')
+    A=p.get('constraint_matrix',[]);b=p.get('bounds',[])
+    if A:
+        A=_matrix(A,'constraint_matrix');b=_nums(b,'bounds')
+        if len(A)!=len(b) or any(len(r)!=len(x) for r in A):raise WorkbenchError('constraint dimensions differ')
+    elif b:raise WorkbenchError('bounds require constraint_matrix')
+    sense=p.get('constraint_sense',['<=']*len(A))
+    if not isinstance(sense,list) or len(sense)!=len(A) or any(s not in ('<=','>=','=') for s in sense):raise WorkbenchError('constraint_sense must align and use <=, >=, or =')
+    residual=[]
+    for r,z,s in zip(A,b,sense):
+        raw=_dot(r,x)-z; residual.append(raw if s=='<=' else -raw if s=='>=' else abs(raw))
+    violations=[max(0.0,v) for v in residual]
+    return c,x,A,b,sense,{'objective_value':_dot(c,x),'max_violation':max(violations,default=0.0),'violation_count':sum(v>1e-9 for v in violations),'feasible':not any(v>1e-9 for v in violations),'constraint_residuals':residual}
+
+def _opt(row,p):
+    c,x,A,b,sense,d=_problem(p); step=float(p.get('step_size',0.1)); it=int(p.get('iteration',1))
+    if step<=0 or it<1:raise WorkbenchError('step_size must be positive and iteration must be >= 1')
+    r=[_dot(a,x)-z for a,z in zip(A,b)]; grad=[c[j]+sum(max(0,q)*a[j] for q,a in zip(r,A)) for j in range(len(x))]
+    common={'diagnostics':d,'metrics':{'gradient_norm':sqrt(_dot(grad,grad)),'confidence':_confidence(r or c)},'uncertainty':{'kind':'deterministic_input_diagnostic','solver_executed':False}}
+    H={
+235:lambda:{'block_values':[sum(c[j]*x[j] for j in block) for block in p.get('blocks',[list(range(len(x)))])],'dual_multipliers':[max(0,q*step) for q in r],'coupling_residual_norm':sqrt(_dot(r,r))},
+236:lambda:{'x_update':[v-step*g for v,g in zip(x,grad)],'z_update':[max(0,v-step*g) for v,g in zip(x,grad)],'primal_residual_norm':sqrt(_dot(r,r)),'dual_residual_norm':step*sqrt(_dot(grad,grad)),'rho':float(p.get('rho',1.0))},
+237:lambda:{'selected_coordinate':(it-1)%len(x),'coordinate_gradient':grad[(it-1)%len(x)],'next_value':x[(it-1)%len(x)]-step*grad[(it-1)%len(x)]},
+238:lambda:{'proximal_point':[max(0,v-step*g) for v,g in zip(x,grad)],'gradient_mapping_norm':sqrt(sum((min(v/step,g))**2 for v,g in zip(x,grad)))},
+239:lambda:{'oracle_vertex':min(range(len(c)),key=c.__getitem__),'duality_gap':max(0,_dot(grad,x)-min(grad)),'step_fraction':2/(it+2)},
+240:lambda:{'most_violated_constraint':(max(range(len(r)),key=r.__getitem__) if r else None),'cut_violation':max(r,default=0.0),'cut_added':bool(r and max(r)>0)},
+241:lambda:{'fractional_indices':[i for i,v in enumerate(x) if abs(v-round(v))>1e-9],'branch_index':next((i for i,v in enumerate(x) if abs(v-round(v))>1e-9),None),'relaxation_bound':_dot(c,x),'pruned_infeasible':not d['feasible']},
+242:lambda:{'reduced_costs':[c[j]-sum((p.get('duals') or [0]*len(A))[i]*A[i][j] for i in range(len(A))) for j in range(len(c))],'entering_column':min(range(len(c)),key=lambda j:c[j]-sum((p.get('duals') or [0]*len(A))[i]*A[i][j] for i in range(len(A))))},
+243:lambda:{'subproblem_feasible':d['feasible'],'cut_type':'optimality' if d['feasible'] else 'feasibility','cut_rhs':_dot(c,x) if d['feasible'] else d['max_violation']},
+244:lambda:{'lagrangian_value':_dot(c,x)+sum(max(0,q)*q for q in r),'subgradient':r,'multiplier_update':[max(0,step*q) for q in r]},
+245:lambda:{'symmetric':all(abs(A[i][j]-A[j][i])<1e-9 for i in range(len(A)) for j in range(len(A))) if A and len(A)==len(A[0]) else False,'gershgorin_lower_bound':min((A[i][i]-sum(abs(v) for j,v in enumerate(A[i]) if j!=i) for i in range(len(A))),default=0.0)},
+246:lambda:{'cone_lhs_norm':sqrt(_dot(x,x)),'cone_rhs':float(p.get('cone_rhs',0)),'cone_slack':float(p.get('cone_rhs',0))-sqrt(_dot(x,x))},
+247:lambda:{'positive_domain':all(v>0 for v in x),'log_variables':[log(v) for v in x] if all(v>0 for v in x) else [],'monomial_value':exp(sum(a*log(v) for a,v in zip(c,x))) if all(v>0 for v in x) else None},
+248:lambda:{'ratio':_dot(c,x)/float(p.get('denominator',0)) if float(p.get('denominator',0))>0 else None,'dinkelbach_residual':_dot(c,x)-float(p.get('parameter',0))*float(p.get('denominator',0))},
+249:lambda:{'leader_value':_dot(c,x),'follower_best_index':min(range(len(x)),key=lambda i:x[i]),'stationarity_residual':sqrt(_dot(grad,grad))},
+250:lambda:{'noisy_gradient_mean':[_mean(list(v)) for v in zip(*p.get('gradient_samples',[grad]))],'robbins_monro_step':step/sqrt(it),'sample_variance':_variance([z for q in p.get('gradient_samples',[grad]) for z in q])},
+251:lambda:{'round_loss':_dot(c,x),'best_fixed_loss':min(_nums(p.get('historical_losses',[0]),'historical_losses')),'regret':_dot(c,x)-min(_nums(p.get('historical_losses',[0]),'historical_losses'))},
+252:lambda:{'arm_means':[_mean(_nums(v,'arm_rewards',nonempty=False)) for v in p.get('arm_rewards',[])],'selected_arm':max(range(len(p.get('arm_rewards',[]))),key=lambda i:_mean(p['arm_rewards'][i])) if p.get('arm_rewards') else None},
+253:lambda:{'context_score':[_dot(_nums(w,'model_weights'),x) for w in p.get('model_weights',[])],'overlap_ok':all(float(q)>0 for q in p.get('propensities',[]))},
+254:lambda:{'posterior_means':[(a+s)/(a+b+s+f) for (a,b),(s,f) in zip(p.get('priors',[]),p.get('outcomes',[]))],'selected_arm':max(range(len(p.get('priors',[]))),key=lambda i:(p['priors'][i][0]+p['outcomes'][i][0])/sum(p['priors'][i]+p['outcomes'][i])) if p.get('priors') else None},
+255:lambda:{'ucb_scores':[float('inf') if n==0 else m+sqrt(2*log(max(2,it))/n) for m,n in zip(_nums(p.get('means',[]),'means',nonempty=False),_nums(p.get('counts',[]),'counts',nonempty=False))]},
+256:lambda:{'normalized_weights':(lambda ws:[w/sum(ws) for w in ws])([exp(-step*v) for v in _nums(p.get('expert_losses',[0]),'expert_losses')]),'aggregate_loss':_mean(_nums(p.get('expert_losses',[0]),'expert_losses'))},
+257:lambda:{'cumulative_regret':sum(_nums(p.get('learner_losses',[0]),'learner_losses'))-sum(_nums(p.get('comparator_losses',[0]),'comparator_losses')),'average_regret':(sum(p.get('learner_losses',[0]))-sum(p.get('comparator_losses',[0])))/len(p.get('learner_losses',[0]))},
+258:lambda:{'best_response_gaps':[max(row)-_mean(row) for row in _matrix(p.get('payoff_matrix',[[0]]),'payoff_matrix')],'equilibrium_gap':max((max(row)-_mean(row) for row in p.get('payoff_matrix',[[0]])),default=0)},
+259:lambda:{'empirical_frequencies':[(v+1)/(sum(_nums(p.get('action_counts',[0]),'action_counts'))+len(p.get('action_counts',[0]))) for v in _nums(p.get('action_counts',[0]),'action_counts')],'best_response':max(range(len(c)),key=lambda i:c[i]),'exploitability':max(c)-_mean(c)},
+    }
+    if row==247 and not all(v>0 for v in x):raise WorkbenchError('geometric programming requires strictly positive initial values')
+    if row==248 and float(p.get('denominator',0))<=0:raise WorkbenchError('fractional programming denominator must be positive')
+    if row in (252,) and not p.get('arm_rewards'):raise WorkbenchError('arm_rewards must be non-empty')
+    if row==255 and len(p.get('means',[]))!=len(p.get('counts',[])):raise WorkbenchError('means and counts must align')
+    if row==257 and len(p.get('learner_losses',[0]))!=len(p.get('comparator_losses',[0])):raise WorkbenchError('loss histories must align')
+    out=H[row]();out.update(common);return out
+
+def _scenes(p):
+    premise=p.get('premise')
+    if not isinstance(premise,str) or not premise.strip():raise WorkbenchError('premise must be a non-empty string')
+    raw=p.get('scenes')
+    if not isinstance(raw,list) or not raw:raise WorkbenchError('scenes must be a non-empty list')
+    out=[]
+    for i,s in enumerate(raw):
+        if not isinstance(s,dict) or not isinstance(s.get('text'),str) or not s['text'].strip():raise WorkbenchError(f'scenes[{i}].text must be non-empty')
+        out.append({'text':s['text'].strip(),'tension':float(s.get('tension',0)),'duration':float(s.get('duration',1)),'character':s.get('character',''),'goal':s.get('goal',''),'outcome':s.get('outcome',''),'location':s.get('location','')})
+    if any(s['duration']<=0 for s in out):raise WorkbenchError('scene duration must be positive')
+    return premise.strip(),out
+
+def _story(row,p):
+    premise,ss=_scenes(p); words=[re.findall(r"[A-Za-z']+",s['text'].lower()) for s in ss]; flat=[w for z in words for w in z]
+    tensions=[s['tension'] for s in ss]; durations=[s['duration'] for s in ss]; chars=[s['character'] for s in ss if s['character']]
+    transitions=[tensions[i+1]-tensions[i] for i in range(len(ss)-1)]
+    common={'metrics':{'scene_count':len(ss),'word_count':len(flat),'mean_tension':_mean(tensions),'confidence':min(1.0,len(ss)/5)},'uncertainty':{'kind':'structural_heuristic','requires_human_editorial_review':True}}
+    motifs=Counter(flat)
+    H={
+260:lambda:{'metaphors':[f"{p.get('target_domain','the premise')} is {p.get('source_domain','a tide')} because both {p.get('shared_structure','change under pressure')}"] ,'novelty_score':1/(1+sum(motifs[w] for w in set(re.findall(r'\w+',str(p.get('source_domain','')).lower()))))},
+261:lambda:{'arc_shape':tensions,'peak_scene':tensions.index(max(tensions))+1,'resolution_drop':tensions[-2]-tensions[-1] if len(ss)>1 else 0,'causal_links':sum(bool(s['outcome'] and ss[i+1]['goal']) for i,s in enumerate(ss[:-1]))},
+262:lambda:{'character_scene_counts':dict(Counter(chars)),'goal_changes':sum(ss[i]['goal']!=ss[i-1]['goal'] for i in range(1,len(ss))),'arc_delta':tensions[-1]-tensions[0]},
+263:lambda:{'speaker_turns':dict(Counter(chars)),'question_rate':sum(s['text'].count('?') for s in ss)/max(1,len(flat)),'lexical_distinctness':len(set(flat))/max(1,len(flat))},
+264:lambda:{'locations':sorted({s['location'] for s in ss if s['location']}),'location_continuity_breaks':sum(ss[i]['location']!=ss[i-1]['location'] for i in range(1,len(ss))),'repeated_world_terms':[w for w,n in motifs.items() if n>=2 and len(w)>5]},
+265:lambda:{'reversal_scene':max(range(len(transitions)),key=lambda i:abs(transitions[i]))+2 if transitions else 1,'reversal_magnitude':max(map(abs,transitions),default=0),'seed_terms':[w for w,n in motifs.items() if n>1]},
+266:lambda:{'motif_positions':{w:[i+1 for i,z in enumerate(words) if w in z] for w,n in motifs.items() if n>1},'payoff_candidates':[w for w,n in motifs.items() if n>1 and w in words[-1]]},
+267:lambda:{'tension_curve':tensions,'escalation_ratio':sum(v>0 for v in transitions)/max(1,len(transitions)),'release_count':sum(v<0 for v in transitions),'peak':max(tensions)},
+268:lambda:{'words_per_duration':[len(w)/d for w,d in zip(words,durations)],'pace_variance':_variance([len(w)/d for w,d in zip(words,durations)]),'slowest_scene':min(range(len(ss)),key=lambda i:len(words[i])/durations[i])+1},
+269:lambda:{'lexical_diversity':len(set(flat))/max(1,len(flat)),'mean_sentence_words':len(flat)/max(1,sum(s['text'].count('.')+s['text'].count('!')+s['text'].count('?') for s in ss)),'dominant_words':motifs.most_common(5)},
+270:lambda:{'genre_signals':{g:sum(str(g).lower() in s['text'].lower() for s in ss) for g in p.get('genres',[])},'transition_smoothness':1/(1+_mean(list(map(abs,transitions))))},
+271:lambda:{'expectation_present':str(p.get('trope','')).lower() in ' '.join(flat),'subversion_scene':max(range(len(transitions)),key=lambda i:abs(transitions[i]))+2 if transitions else None,'retained_motif_count':sum(n>1 for n in motifs.values())},
+272:lambda:{'origin_markers':sum(w in {'first','origin','born','created','before'} for w in flat),'ritual_markers':sum(w in {'ritual','sacred','offering','festival'} for w in flat),'variant_count':len(set(chars))},
+273:lambda:{'line_count':sum(s['text'].count('\n')+1 for s in ss),'alliteration_pairs':sum(a[:1]==b[:1] for a,b in zip(flat,flat[1:])),'image_repetition':sum(n-1 for w,n in motifs.items() if len(w)>4 and n>1)},
+274:lambda:{'section_labels':[s['goal'] for s in ss],'hook_repetitions':sum(' '.join(flat).count(str(p.get('hook','')).lower()) for _ in [0]) if p.get('hook') else 0,'rhyme_proxy':sum(a[-2:]==b[-2:] for a,b in zip(flat,flat[1:]))},
+275:lambda:{'formatted_scenes':[{'heading':f"INT. {s['location'].upper() or 'UNSPECIFIED'} - DAY",'action':s['text'],'character':s['character'].upper()} for s in ss],'estimated_pages':round(len(flat)/180,2)},
+276:lambda:{'acts':max(1,int(p.get('acts',3))),'location_changes':sum(ss[i]['location']!=ss[i-1]['location'] for i in range(1,len(ss))),'cast_size':len(set(chars)),'live_complexity':len(set(chars))*len(set(s['location'] for s in ss))},
+277:lambda:{'panel_plan':[{'panel':i+1,'action':s['text'],'caption_words':len(words[i])} for i,s in enumerate(ss)],'overloaded_panels':[i+1 for i,w in enumerate(words) if len(w)>35],'page_turn_candidate':tensions.index(max(tensions))+1},
+278:lambda:_interactive(ss,p),
+279:lambda:{'quest_threads':dict(Counter(s['goal'] for s in ss if s['goal'])),'fail_forward_count':sum(bool(s['outcome']) for s in ss),'loop_alignment':sum(bool(s['goal'] and s['outcome']) for s in ss)/len(ss)},
+280:lambda:{'shots':[{'shot_number':i+1,'framing':'close' if s['tension']>=_mean(tensions) else 'wide','action':s['text'],'duration':s['duration'],'location':s['location']} for i,s in enumerate(ss)],'continuity_breaks':sum(ss[i]['location']!=ss[i-1]['location'] and not p.get('allow_location_cuts',True) for i in range(1,len(ss))),'total_duration':sum(durations)},
+    }
+    out=H[row]();out.update(common);return out
+
+def _interactive(ss,p):
+    edges=p.get('choices',[])
+    if not isinstance(edges,list) or any(not isinstance(e,dict) or not isinstance(e.get('from'),int) or not isinstance(e.get('to'),int) for e in edges):raise WorkbenchError('choices must contain integer from/to edges')
+    n=len(ss)
+    if any(e['from']<0 or e['from']>=n or e['to']<0 or e['to']>=n for e in edges):raise WorkbenchError('choice endpoint outside scenes')
+    g=defaultdict(list)
+    for e in edges:g[e['from']].append(e['to'])
+    seen={0};q=deque([0])
+    while q:
+        for v in g[q.popleft()]:
+            if v not in seen:seen.add(v);q.append(v)
+    return {'reachable_scenes':sorted(i+1 for i in seen),'unreachable_scenes':sorted(i+1 for i in set(range(n))-seen),'dead_ends':sorted(i+1 for i in seen if not g[i]),'branch_count':sum(len(v)>1 for v in g.values())}
+
 def execute(method,payload):
- key=slug(method);row=KEYS.get(key)
- if row is None:raise WorkbenchError(f'unknown method: {method}')
- if not isinstance(payload,dict):raise WorkbenchError('payload must be object')
- s=source(payload);fam=FAMILY[row];result=optimization(row,payload) if fam=='optimization' else story(row,payload)
- checks=(['feasibility','convergence','sensitivity','independent solver validation'] if fam=='optimization' else ['originality','continuity','audience fit','editorial review'])
- return {'row_id':row,'capability':ROWS[row],'family':fam,'source':s,'result':result,
-         'evaluation':{'method_specific':True,'review_checks':checks,'completion_criteria':'all named checks recorded'},
-         'uncertainty':{'level':'not automatically quantified','drivers':(['solver/model assumptions','numerical tolerance','input completeness'] if fam=='optimization' else ['editorial judgment','audience response','production constraints']),'human_review_required':True},
-         'boundary':'Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.'}
+    row=KEYS.get(slug(str(method)))
+    if row is None:raise WorkbenchError(f'unknown method: {method}')
+    if not isinstance(payload,dict):raise WorkbenchError('payload must be object')
+    result=_opt(row,payload) if row<260 else _story(row,payload)
+    return {'row_id':row,'capability':ROWS[row],'family':FAMILY[row],'source':_source(payload),'result':result,'boundary':'Computed only from supplied data; diagnostics and heuristic uncertainty require human review.'}
