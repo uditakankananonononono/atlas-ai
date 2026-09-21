@@ -1,3 +1,4 @@
+import {authFetch} from "../../lib/supabase";
 // Typed client for Module 16 planning & measurement endpoints (rows 388-399).
 export type WorkItem={id:string;title:string;item_type:string;status:string;estimate:number|null;reach:number|null;impact:number|null;confidence:number|null;effort:number|null;value:number|null;sprint_id:string|null;roadmap_id:string|null;planned_start:string|null;planned_end:string|null;rank:number;created_at:string;updated_at:string;completed_at:string|null};
 export type PrioritizedItem={item:WorkItem;method:string;score:number|null;inputs:Record<string,number|null>;formula:string;missing_inputs:string[]};
@@ -7,7 +8,7 @@ export type VelocityReport={sprints:{sprint_id:string;sprint_name:string;committ
 export type Experiment={id:string;name:string;hypothesis:string;metric:string;kind:string;variants:{key:string;name:string;allocation:number;factors:Record<string,string>;trials:number;successes:number}[];status:string;created_at:string;updated_at:string};
 export type SignificanceReport={test:string;p_value:number|null;significant:boolean;alpha:number;uplift:number|null;confidence_interval:[number,number]|null;inputs:Record<string,unknown>;assumptions:string[]};
 async function req<T>(base:string,path:string,init?:RequestInit):Promise<T>{
-  const r=await fetch(`${base}${path}`,init);
+  const r=await authFetch(`${base}${path}`,init);
   if(!r.ok)throw new Error(`${init?.method??"GET"} ${path} failed: ${r.status}`);
   return r.json() as Promise<T>;
 }

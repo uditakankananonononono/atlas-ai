@@ -37,7 +37,7 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
       setView(v);setKpis(k);setModules(m);setBlockers(b);setApprovals(a);setDigest(d);setSnapshot(s);setError(null);
     }catch(e){setError(e instanceof Error?e.message:"dashboard refresh failed")}
   },[api]);
-  useEffect(()=>{refresh();const source=new EventSource(api.liveUrl);source.onopen=()=>setLive(true);source.onerror=()=>setLive(false);source.onmessage=()=>refresh();return()=>source.close()},[api,refresh]);
+  useEffect(()=>{refresh();setLive(true);const timer=window.setInterval(refresh,30000);return()=>window.clearInterval(timer)},[refresh]);
   async function submitCommand(e:FormEvent){e.preventDefault();if(!command.trim())return;setPreview(await api.preview(command))}
   async function runCommand(){if(!preview)return;await api.execute(preview.id);setPreview(null);setCommand("");refresh()}
   async function decideOne(id:string,approve:boolean){await api.decide(id,approve);refresh()}

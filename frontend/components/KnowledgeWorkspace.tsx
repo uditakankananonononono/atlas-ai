@@ -1,5 +1,6 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
+import {authFetch} from "../lib/supabase";
 import {Background,Controls,Handle,MiniMap,Position,ReactFlow,type Edge as FlowEdge,type Node as FlowNode} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 type GraphNode={id:string;node_type:string;title:string;body?:string;metadata:Record<string,unknown>};
@@ -8,7 +9,7 @@ function Card({data}:{data:any}){return <div className="min-w-44 rounded-xl bord
 const nodeTypes={card:Card};
 export default function KnowledgeWorkspace({seedId,apiBase="/api/v1"}:{seedId:string;apiBase?:string}){
  const [nodes,setNodes]=useState<GraphNode[]>([]),[edges,setEdges]=useState<GraphEdge[]>([]),[types,setTypes]=useState<Set<string>>(new Set()),[selected,setSelected]=useState<GraphNode|null>(null),[error,setError]=useState("");
- useEffect(()=>{fetch(`${apiBase}/knowledge-workspace/nodes/${seedId}/neighborhood?depth=2`).then(r=>{if(!r.ok)throw Error("Could not load graph");return r.json()}).then(d=>{setNodes(d.nodes);setEdges(d.edges);setTypes(new Set(d.nodes.map((n:GraphNode)=>n.node_type)))}).catch(e=>setError(e.message))},[seedId,apiBase]);
+ useEffect(()=>{authFetch(`${apiBase}/knowledge-workspace/nodes/${seedId}/neighborhood?depth=2`).then(r=>{if(!r.ok)throw Error("Could not load graph");return r.json()}).then(d=>{setNodes(d.nodes);setEdges(d.edges);setTypes(new Set(d.nodes.map((n:GraphNode)=>n.node_type)))}).catch(e=>setError(e.message))},[seedId,apiBase]);
  const shown=useMemo(()=>nodes.filter(n=>types.has(n.node_type)),[nodes,types]),visible=new Set(shown.map(n=>n.id));
  const flowNodes:FlowNode[]=shown.map((n,i)=>({id:n.id,type:"card",data:n,position:{x:(i%4)*240,y:Math.floor(i/4)*140}}));
  const flowEdges:FlowEdge[]=edges.filter(e=>visible.has(e.source_id)&&visible.has(e.target_id)).map(e=>({id:e.id,source:e.source_id,target:e.target_id,label:e.relationship,animated:e.confidence<1,style:{stroke:"#22d3ee"}}));

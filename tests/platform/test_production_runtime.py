@@ -84,3 +84,15 @@ async def test_oidc_rejects_wrong_audience_and_expiration():
  key=rsa.generate_private_key(public_exponent=65537,key_size=2048); pub=key.public_key().public_numbers(); now=__import__('time').time(); verifier=auth.OIDCVerifier("https://issuer","atlas"); verifier._keys={"k":{"kid":"k","kty":"RSA","n":_b64(pub.n.to_bytes((pub.n.bit_length()+7)//8,'big')),"e":_b64(pub.e.to_bytes((pub.e.bit_length()+7)//8,'big'))}}; verifier._expires=__import__('time').monotonic()+60
  for claims in ({"iss":"https://issuer","aud":"wrong","exp":now+60,"sub":"u","atlas_tenant":"t"},{"iss":"https://issuer","aud":"atlas","exp":now-100,"sub":"u","atlas_tenant":"t"}):
   with pytest.raises(HTTPException): await verifier.verify(_token(key,"k",claims))
+
+@pytest.mark.asyncio
+async def test_supabase_compatible_es256_oidc_identity(monkeypatch):
+ from cryptography.hazmat.primitives.asymmetric import ec
+ from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
+ key=ec.generate_private_key(ec.SECP256R1());pub=key.public_key().public_numbers();now=__import__('time').time()
+ header=_b64(json.dumps({'alg':'ES256','kid':'ec'}).encode());payload=_b64(json.dumps({'iss':'https://project.supabase.co/auth/v1','aud':'authenticated','sub':'owner','atlas_tenant':'tenant-a','exp':now+60}).encode())
+ der=key.sign(f'{header}.{payload}'.encode(),ec.ECDSA(hashes.SHA256()));r,s=decode_dss_signature(der);token=f'{header}.{payload}.{_b64(r.to_bytes(32,"big")+s.to_bytes(32,"big"))}'
+ verifier=auth.OIDCVerifier('https://project.supabase.co/auth/v1','authenticated');verifier._keys={'ec':{'kid':'ec','kty':'EC','crv':'P-256','x':_b64(pub.x.to_bytes(32,'big')),'y':_b64(pub.y.to_bytes(32,'big'))}};verifier._expires=__import__('time').monotonic()+60
+ monkeypatch.setenv('ATLAS_ENV','production');monkeypatch.setattr(auth,'_production_verifier',lambda:verifier)
+ ctx=await auth.require_tenant(f'Bearer {token}',None,None)
+ assert ctx.tenant_id=='tenant-a' and ctx.actor_id=='owner'

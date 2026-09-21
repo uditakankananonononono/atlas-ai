@@ -1,3 +1,4 @@
+import {authFetch} from "../../lib/supabase";
 // Typed client for the Module 16 executive dashboard API.
 export type ApprovalState="pending"|"approved"|"rejected"|"expired";
 export type Approval={id:string;module_id:number;action_type:string;title:string;summary:string;risk:string;evidence:Record<string,unknown>;proposed_payload:Record<string,unknown>;state:ApprovalState;created_at:string;expires_at:string|null;reviewed_at:string|null};
@@ -16,7 +17,7 @@ export type DashboardView={widgets:WidgetConfig[];updated_at:string};
 export type CommandPreview={id:string;utterance:string;intent:string;parameters:Record<string,unknown>;plan:Array<Record<string,unknown>>;read_only:boolean;confidence:number;expires_at:string;created_at:string};
 export type BulkDecisionResult={decided:Approval[];skipped:{id:string;reason:string}[]};
 async function req<T>(base:string,path:string,init?:RequestInit):Promise<T>{
-  const r=await fetch(`${base}${path}`,init);
+  const r=await authFetch(`${base}${path}`,init);
   if(!r.ok)throw new Error(`${init?.method??"GET"} ${path} failed: ${r.status}`);
   return r.json() as Promise<T>;
 }
