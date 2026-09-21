@@ -23,7 +23,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 ## M08 - Startup Growth
 - **Next:** free-first experiment board that records hypothesis, cap, observed conversion and stop decision without auto-spend.
 ## M09 - Knowledge Workspace
-- **Next (science):** contradiction inbox with source freshness, confidence and explicit merge/retain-both decisions.
+- **Landed (science):** tenant-scoped contradiction inbox groups conflicting claim values, exposes source freshness and confidence, ranks review order, records explicit prefer/retain-both decisions, and hashes the deterministic review artifact without claiming source authentication or truth.
+- **Next:** persist append-only decision revisions and verify referenced source bytes against captured hashes.
 ## M10 - Email Assistant
 - **Next:** thread promise tracker that extracts owner commitments and asks before creating follow-ups.
 ## M11 - Calendar Intelligence
