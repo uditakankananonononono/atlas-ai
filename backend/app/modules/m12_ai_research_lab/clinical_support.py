@@ -679,3 +679,43 @@ CLINICAL_EXTRA.update({
  'healthcare_operations':lambda d:healthcare_operations('healthcare_operations',d),'hospital_administration':lambda d:healthcare_operations('hospital_administration',d),'healthcare_finance':lambda d:healthcare_operations('healthcare_finance',d),
  'medical_education':medical_education,
 })
+
+# Depth-sweep contract: preserve every method's distinctive output while adding a
+# common, explicit uncertainty and review report.  Wrapping at module load also
+# covers direct Python callers, not only the HTTP route.
+from functools import wraps as _wraps
+from app.core.depth_quality import attach_quality as _attach_quality
+
+_DEPTH_CLINICAL_METHODS = (
+ 'medication_management','chronic_care_plan','oncology_coordination','oncology_plan',
+ 'palliative_plan','pain_plan','wound_care','infection_control','antimicrobial_stewardship',
+ 'vaccination_schedule','preventive_care','genetic_counseling','reproductive_plan',
+ 'perinatal_plan','life_stage_care','global_health','public_health_surveillance',
+ 'epidemic_response','contact_tracing','quarantine_management','health_education',
+ 'adherence_support','wellbeing_plan','substance_support','crisis_support',
+ 'trauma_cultural_care','equity_analysis','social_needs','community_assessment',
+ 'policy_analysis','quality_improvement','safety_review','healthcare_operations',
+ 'medical_education'
+)
+
+def _depth_clinical_wrap(name, fn):
+    @_wraps(fn)
+    def wrapped(*args, **kwargs):
+        out=fn(*args, **kwargs)
+        payload=next((x for x in reversed(args) if isinstance(x,dict)), kwargs.get('data',{}))
+        evidence=[]
+        for key in ('sources','evidence','guidelines','authorities'):
+            value=payload.get(key,[]) if isinstance(payload,dict) else []
+            if isinstance(value,list): evidence.extend(x for x in value if isinstance(x,dict))
+        source=payload.get('source') if isinstance(payload,dict) else None
+        if isinstance(source,dict): evidence.append(source)
+        required=[k for k in payload if k not in {'source','sources','evidence','guidelines','authorities'}]
+        return _attach_quality(out,domain='clinical',method=name,inputs=payload,
+            required_inputs=required,evidence=evidence,
+            assumptions=payload.get('assumptions',[]) if isinstance(payload,dict) else [],
+            limitations=['Decision support does not diagnose, prescribe, or execute care.',
+                         'Urgent symptoms require local emergency or clinical services.'])
+    return wrapped
+
+for _name in _DEPTH_CLINICAL_METHODS:
+    globals()[_name]=_depth_clinical_wrap(_name,globals()[_name])
