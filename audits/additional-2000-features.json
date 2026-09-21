@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1440,
-    "verified-pushed": 567,
+    "missing": 1436,
+    "verified-pushed": 571,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -14484,9 +14484,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Pharmacogenomic Recommendations",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "8b6999150cdc69f337520a36cba212560e524cb4",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1121_1124.py"
+      },
+      "boundary": "Cited pre-screening and evidence organization only. Require current curated rules/models, preserve missing/unknown state and provenance, and require pharmacist/clinician/trial-staff review. No diagnosis, prescribing, enrollment, causality claim, reporting decision, or treatment execution."
     },
     {
       "id": 1122,
@@ -14494,9 +14498,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Clinical Trial Matching",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "8b6999150cdc69f337520a36cba212560e524cb4",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1121_1124.py"
+      },
+      "boundary": "Cited pre-screening and evidence organization only. Require current curated rules/models, preserve missing/unknown state and provenance, and require pharmacist/clinician/trial-staff review. No diagnosis, prescribing, enrollment, causality claim, reporting decision, or treatment execution."
     },
     {
       "id": 1123,
@@ -14504,9 +14512,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Adverse Event Detection",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "8b6999150cdc69f337520a36cba212560e524cb4",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1121_1124.py"
+      },
+      "boundary": "Cited pre-screening and evidence organization only. Require current curated rules/models, preserve missing/unknown state and provenance, and require pharmacist/clinician/trial-staff review. No diagnosis, prescribing, enrollment, causality claim, reporting decision, or treatment execution."
     },
     {
       "id": 1124,
@@ -14514,9 +14526,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Patient Risk Stratification",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "8b6999150cdc69f337520a36cba212560e524cb4",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1121_1124.py"
+      },
+      "boundary": "Cited pre-screening and evidence organization only. Require current curated rules/models, preserve missing/unknown state and provenance, and require pharmacist/clinician/trial-staff review. No diagnosis, prescribing, enrollment, causality claim, reporting decision, or treatment execution."
     },
     {
       "id": 1125,
