@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
+from app.auth.context import TenantContext, require_tenant
 from app.core.providers import ProviderError, generate
 
 from .schemas import (
@@ -26,16 +27,9 @@ from .service import Service
 
 router = APIRouter(tags=["opportunity-discovery"])
 
-_service: Service | None = None
-
-
-def get_service() -> Service:
-    """Lazily build the default service; overridable via FastAPI dependency_overrides."""
-
-    global _service
-    if _service is None:
-        _service = Service()
-    return _service
+def get_service(tenant: TenantContext = Depends(require_tenant)) -> Service:
+    """Build a tenant-bound service; tests may override this dependency."""
+    return Service(tenant_id=tenant.tenant_id)
 
 
 @router.get("/opportunity-discovery/sources", response_model=list[SourceOut])

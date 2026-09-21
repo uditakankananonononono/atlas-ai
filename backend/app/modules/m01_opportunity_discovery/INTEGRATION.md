@@ -132,3 +132,12 @@ that evidence; expiry purges them. Declines and awards use the same validation
 and provenance path. The ledger is advisory-only and deliberately has no
 training, feature export, or model-fitting API. A later training proposal needs
 fresh owner approval plus the multi-cycle and temporal-validation gates above.
+
+## 10. Tenant isolation
+
+The primary discovery service is bound to the authenticated tenant. Stored
+opportunity identities include tenant identity, all list/get queries filter by
+tenant, and digest approval payloads retain the tenant boundary. The HTTP
+routes construct services from `require_tenant`; callers cannot select another
+tenant in request data. Alembic revision `20260922_m01_tenant_isolation`
+assigns pre-existing development rows to `local` and adds the tenant index.
