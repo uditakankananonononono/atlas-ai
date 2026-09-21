@@ -53,8 +53,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** execution truth ledger preserves planned, simulated, externally executed and independently verified states per claim, requiring evidence for effects and evidence plus verifier for independent verification.
 - **Next (science):** persist append-only state transitions and cryptographically bind receipts from all modules.
 ## M21 - Claire
-- **Landed:** mounted expiring device-pairing challenge, fingerprint/capability validation, device listing and revocation.
-- **Next:** installable paired-PC daemon with OS keystore identity, native approval prompts and signed result receipts.
+- **Landed:** mounted expiring device pairing plus paired-device result-receipt verification over a tamper-evident hash chain, with revocation enforcement and explicit limits on attesting OS behavior.
+- **Next:** installable paired-PC daemon with OS-keystore identity, native approval prompts and certificate signatures over receipt heads.
 ## M22 - Tools Hub
 - **Landed:** free official discovery sources for GitHub, PyPI and npm replace the shipped empty collector list.
 - **Next:** connect approved discovery proposals to the existing scanner/installer with tenant persistence and rollback receipts.
