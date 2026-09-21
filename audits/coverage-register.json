@@ -19019,12 +19019,12 @@
       "requirement": "Engagement Detection",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1460_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1460 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1461,
@@ -19032,12 +19032,12 @@
       "requirement": "Dropout Prediction",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1461_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1461 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1462,
@@ -19045,12 +19045,12 @@
       "requirement": "Performance Prediction",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1462_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1462 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1463,
@@ -19058,12 +19058,12 @@
       "requirement": "Recommendation Systems",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1463_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1463 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1464,
@@ -19071,12 +19071,12 @@
       "requirement": "Content Recommendation",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1464_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1464 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1465,
@@ -19084,12 +19084,12 @@
       "requirement": "Peer Recommendation",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1465_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1465 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1466,
@@ -19097,12 +19097,12 @@
       "requirement": "Path Recommendation",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1466_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1466 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1467,
@@ -19110,12 +19110,12 @@
       "requirement": "Automated Essay Scoring",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1467_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1467 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1468,
@@ -19123,12 +19123,12 @@
       "requirement": "Automated Feedback",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1468_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1468 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1469,
@@ -19137,11 +19137,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
       "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_case": "test_row_1469_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1469 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1470,
@@ -19150,11 +19150,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
       "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_case": "test_row_1470_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1470 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1471,
@@ -19163,11 +19163,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
       "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_case": "test_row_1471_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1471 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1472,
@@ -19176,11 +19176,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
       "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_case": "test_row_1472_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1472 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1473,
@@ -19189,11 +19189,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
       "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_case": "test_row_1473_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1473 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1474,
@@ -19202,11 +19202,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
       "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_case": "test_row_1474_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1474 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1475,
@@ -19215,11 +19215,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
       "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_case": "test_row_1475_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1475 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1476,
@@ -19228,11 +19228,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
       "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_case": "test_row_1476_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1476 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1477,
@@ -19241,11 +19241,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
       "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_case": "test_row_1477_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1477 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1478,
@@ -19254,11 +19254,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
       "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_case": "test_row_1478_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1478 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1479,
@@ -19267,11 +19267,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
       "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_case": "test_row_1479_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1479 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1480,
@@ -19279,12 +19279,12 @@
       "requirement": "Standards-Based Grading",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1480_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1480 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1481,
@@ -19292,12 +19292,12 @@
       "requirement": "Competency-Based Education",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1481_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1481 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1482,
@@ -19305,12 +19305,12 @@
       "requirement": "Mastery Learning",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1482_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1482 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1483,
@@ -19318,12 +19318,12 @@
       "requirement": "Precision Teaching",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1483_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1483 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1484,
@@ -19331,12 +19331,12 @@
       "requirement": "Direct Instruction",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1484_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1484 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1485,
@@ -19344,12 +19344,12 @@
       "requirement": "Explicit Instruction",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1485_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1485 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1486,
@@ -19357,12 +19357,12 @@
       "requirement": "Systematic Instruction",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1486_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1486 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1487,
@@ -19370,12 +19370,12 @@
       "requirement": "Scripted Instruction",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1487_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1487 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1488,
@@ -19383,12 +19383,12 @@
       "requirement": "Programmed Instruction",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1488_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1488 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1489,
@@ -19396,12 +19396,12 @@
       "requirement": "Computer-Assisted Instruction",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1489_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1489 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1490,
@@ -19409,12 +19409,12 @@
       "requirement": "Intelligent Tutoring Systems",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1490_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1490 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1491,
@@ -19422,12 +19422,12 @@
       "requirement": "Dialogue-Based Tutoring",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1491_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1491 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1492,
@@ -19435,12 +19435,12 @@
       "requirement": "Socratic Tutoring",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1492_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1492 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1493,
@@ -19448,12 +19448,12 @@
       "requirement": "Metacognitive Tutoring",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1493_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1493 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1494,
@@ -19461,12 +19461,12 @@
       "requirement": "Motivational Tutoring",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1494_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1494 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1495,
@@ -19474,12 +19474,12 @@
       "requirement": "Emotional Support",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1495_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1495 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1496,
@@ -19487,12 +19487,12 @@
       "requirement": "Social-Emotional Learning",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1496_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1496 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1497,
@@ -19500,12 +19500,12 @@
       "requirement": "Character Education",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1497_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1497 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1498,
@@ -19513,12 +19513,12 @@
       "requirement": "Citizenship Education",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1498_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1498 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1499,
@@ -19526,12 +19526,12 @@
       "requirement": "Global Competence",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1499_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1499 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1500,
@@ -19539,12 +19539,12 @@
       "requirement": "Cultural Competence",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1500_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1500 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1501,
@@ -19552,12 +19552,12 @@
       "requirement": "Intercultural Education",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1501_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1501 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1502,
@@ -19565,12 +19565,12 @@
       "requirement": "Multicultural Education",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1502_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1502 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1503,
@@ -19578,12 +19578,12 @@
       "requirement": "Inclusive Education",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1503_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1503 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1504,
@@ -19591,12 +19591,12 @@
       "requirement": "Special Education",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1504_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1504 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1505,
@@ -19604,12 +19604,12 @@
       "requirement": "Gifted Education",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1505_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1505 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1506,
@@ -19617,12 +19617,12 @@
       "requirement": "Remedial Education",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1506_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1506 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1507,
@@ -19630,12 +19630,12 @@
       "requirement": "Compensatory Education",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1507_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1507 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1508,
@@ -19643,12 +19643,12 @@
       "requirement": "Bilingual Education",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1508_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1508 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1509,
@@ -19656,12 +19656,12 @@
       "requirement": "Language Learning",
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-      "test_path": "tests/modules/test_m12_education_1460_1509.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_m12_education_b5_remaining.py",
+      "test_case": "test_row_1509_distinct_education_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: need, analytics, recommend, writing, assessment, progress, instruction, tutor, human, inclusion, language, education_support, sim. Boundaries: peer review; ongoing evidence; evidence; evidence_map; single_story_review_required; Practitioner depth: executable education artifacts now return method outputs plus explicit evaluation criteria, evidence observed, open questions, uncertainty drivers, contestability and qualified educator/learner review; no mastery, credential, grading or autonomous high-stakes claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1509 executes distinct input-driven education analysis with learner privacy validation, teacher review and named computation/failure evidence; focused suites passed."
     },
     {
       "row": 1510,
