@@ -808,7 +808,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "named_test": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
       "how_implemented": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 102,
@@ -816,7 +817,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "named_test": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
       "how_implemented": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 103,
@@ -824,7 +826,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "named_test": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
       "how_implemented": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 104,
@@ -832,7 +835,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "named_test": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
       "how_implemented": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 105,
@@ -840,7 +844,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "named_test": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
       "how_implemented": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 106,
@@ -848,7 +853,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "named_test": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
       "how_implemented": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 107,
@@ -856,7 +862,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "named_test": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
       "how_implemented": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 108,
@@ -864,7 +871,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "named_test": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
       "how_implemented": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 109,
@@ -872,7 +880,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
       "named_test": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
       "how_implemented": "Functions: run. Boundaries: Decision support only; disclose material facts, preserve voluntary choice, and obtain review before external use.; unsupported method; evidence_low; evidence_high; evidence_based_anchor",
-      "depth_evidence": "Practitioner review envelope: execution evidence, truthfulness/choice/reversibility checks, uncertainty drivers."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 110,
@@ -1552,7 +1561,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 195,
@@ -1592,7 +1602,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 200,
@@ -1688,7 +1699,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 212,
@@ -1696,7 +1708,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 213,
@@ -1704,7 +1717,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 214,
@@ -1712,7 +1726,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 215,
@@ -1720,7 +1735,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 216,
@@ -1728,7 +1744,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 217,
@@ -1736,7 +1753,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 218,
@@ -1744,7 +1762,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 219,
@@ -1752,7 +1771,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 220,
@@ -1760,7 +1780,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 221,
@@ -1768,7 +1789,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 222,
@@ -1776,7 +1798,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 223,
@@ -1784,7 +1807,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 224,
@@ -1792,7 +1816,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 225,
@@ -1800,7 +1825,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 226,
@@ -1808,7 +1834,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 227,
@@ -1816,7 +1843,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 228,
@@ -1824,7 +1852,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 229,
@@ -1832,7 +1861,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 230,
@@ -1840,7 +1870,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 231,
@@ -1848,7 +1879,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 232,
@@ -1856,7 +1888,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 233,
@@ -1864,7 +1897,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 234,
@@ -1872,7 +1906,8 @@
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "named_test": "tests/modules/test_m04_quant_methods_185_234.py",
       "how_implemented": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
-      "depth_evidence": "Quant depth: deterministic method output plus explicit reference-result status, diagnostics/sensitivity/replication checks and specialist uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 235,
@@ -1880,7 +1915,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 236,
@@ -1888,7 +1924,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 237,
@@ -1896,7 +1933,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 238,
@@ -1904,7 +1942,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 239,
@@ -1912,7 +1951,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 240,
@@ -1920,7 +1960,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 241,
@@ -1928,7 +1969,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 242,
@@ -1936,7 +1978,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 243,
@@ -1944,7 +1987,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 244,
@@ -1952,7 +1996,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 245,
@@ -1960,7 +2005,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 246,
@@ -1968,7 +2014,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 247,
@@ -1976,7 +2023,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 248,
@@ -1984,7 +2032,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 249,
@@ -1992,7 +2041,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 250,
@@ -2000,7 +2050,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 251,
@@ -2008,7 +2059,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 252,
@@ -2016,7 +2068,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 253,
@@ -2024,7 +2077,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 254,
@@ -2032,7 +2086,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 255,
@@ -2040,7 +2095,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 256,
@@ -2048,7 +2104,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 257,
@@ -2056,7 +2113,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 258,
@@ -2064,7 +2122,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 259,
@@ -2072,7 +2131,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Optimization depth: executable method plans plus feasibility, convergence, sensitivity, validation and uncertainty review."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 260,
@@ -2080,7 +2140,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 261,
@@ -2088,7 +2149,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 262,
@@ -2096,7 +2158,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 263,
@@ -2104,7 +2167,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 264,
@@ -2112,7 +2176,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 265,
@@ -2120,7 +2185,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 266,
@@ -2128,7 +2194,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 267,
@@ -2136,7 +2203,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 268,
@@ -2144,7 +2212,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 269,
@@ -2152,7 +2221,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 270,
@@ -2160,7 +2230,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 271,
@@ -2168,7 +2239,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 272,
@@ -2176,7 +2248,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 273,
@@ -2184,7 +2257,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 274,
@@ -2192,7 +2266,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 275,
@@ -2200,7 +2275,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 276,
@@ -2208,7 +2284,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 277,
@@ -2216,7 +2293,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 278,
@@ -2224,7 +2302,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 279,
@@ -2232,7 +2311,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 280,
@@ -2240,7 +2320,8 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
       "named_test": "tests/modules/test_m20_optimization_story_235_280.py",
       "how_implemented": "Classes: WorkbenchError. Functions: slug, capabilities, req, source, optimization, story, execute. Boundaries: boundary; Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.; evidence_seeded; evidence",
-      "depth_evidence": "Narrative depth: method-specific artifact plus originality, continuity, audience-fit, editorial evaluation and uncertainty."
+      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane.",
+      "depth_sweep_status": "pending-distinctive-fix"
     },
     {
       "row": 281,
