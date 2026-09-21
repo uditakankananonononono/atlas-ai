@@ -10,7 +10,7 @@ from __future__ import annotations
 import math,random,statistics
 from collections import Counter
 ROWS={
-"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062,"synthetic_control":1063,"matching_methods":1064,"propensity_score_matching":1065,"coarsened_exact_matching":1066,"genetic_matching":1067,"entropy_balancing":1068,"inverse_probability_weighting":1069,"doubly_robust_estimation":1070,"targeted_maximum_likelihood":1071,"machine_learning_causal_inference":1072}
+"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062,"synthetic_control":1063,"matching_methods":1064,"propensity_score_matching":1065,"coarsened_exact_matching":1066,"genetic_matching":1067,"entropy_balancing":1068,"inverse_probability_weighting":1069,"doubly_robust_estimation":1070,"targeted_maximum_likelihood":1071,"machine_learning_causal_inference":1072,"causal_forests":1073,"double_machine_learning":1074,"orthogonalized_estimation":1075,"cross_fitting":1076,"sample_splitting":1077}
 def _nums(data,key="values",min_n=1):
     v=data.get(key)
     if not isinstance(v,list) or len(v)<min_n or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in v):raise ValueError(f"{key} must contain at least {min_n} finite numbers")
@@ -601,5 +601,45 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
             for i in test:
                 m1,m0=predict(train,i);effects.append(m1-m0);pred.append({"index":i,"mu1":m1,"mu0":m0,"cate":m1-m0})
         pred.sort(key=lambda x:x["index"]);o["output"]={"algorithm":"two-fold cross-fitted_t_learner_knn","ate":_mean(effects),"individual_effects":pred,"folds":2};a += ["Unconfoundedness conditional on features, overlap, SUTVA and local smoothness for k-nearest-neighbor outcome models."];limits += ["Small deterministic reference learner; no propensity model, tuning, uncertainty or high-dimensional safeguards."]
+    elif method=="causal_forests":
+        treated=data.get("treated");outcome=_nums(data,"outcome");feature=_nums(data,"feature")
+        if not isinstance(treated,list) or not len(treated)==len(outcome)==len(feature) or len(outcome)<8:raise ValueError("at least 8 aligned rows required")
+        candidates=sorted(set((a+b)/2 for a,b in zip(sorted(set(feature))[:-1],sorted(set(feature))[1:])))
+        leaves=[]
+        for cut in candidates:
+            score=0;parts=[]
+            for lo,hi in ((-math.inf,cut),(cut,math.inf)):
+                ids=[i for i,x in enumerate(feature) if lo<x<=hi];tx=[outcome[i] for i in ids if treated[i]];ct=[outcome[i] for i in ids if not treated[i]]
+                if len(tx)<2 or len(ct)<2:score=-math.inf;break
+                effect=_mean(tx)-_mean(ct);parts.append((ids,effect));score+=len(ids)*effect*effect
+            if score>-math.inf:leaves.append((score,cut,parts))
+        if not leaves:raise ValueError("no honest split has at least two treated and controls per leaf")
+        _,cut,parts=max(leaves,key=lambda x:x[0]);effects=[0.0]*len(outcome);leafout=[]
+        for ids,effect in parts:
+            for i in ids:effects[i]=effect
+            leafout.append({"indices":ids,"effect":effect})
+        o["output"]={"algorithm":"single_honest_causal_tree_reference","split":cut,"leaves":leafout,"individual_effects":effects,"ate":_mean(effects)};a += ["Unconfoundedness given feature, overlap within leaves, SUTVA and effect heterogeneity expressible by one split."];limits += ["Single deterministic tree, not a forest; no bootstrap aggregation, honesty sample split, variance or nuisance residualization."]
+    elif method in ("double_machine_learning","orthogonalized_estimation"):
+        treated=_nums(data,"treatment");outcome=_nums(data,"outcome");feature=_nums(data,"feature")
+        if not len(treated)==len(outcome)==len(feature) or len(outcome)<6:raise ValueError("at least six aligned rows required")
+        tres=[0.0]*len(outcome);yres=[0.0]*len(outcome);folds=[i%2 for i in range(len(outcome))]
+        def linefit(x,y):
+            vx=sum((v-_mean(x))**2 for v in x);s=sum((a-_mean(x))*(b-_mean(y)) for a,b in zip(x,y))/vx if vx else 0;return _mean(y)-s*_mean(x),s
+        for fold in (0,1):
+            train=[i for i in range(len(outcome)) if folds[i]!=fold];test=[i for i in range(len(outcome)) if folds[i]==fold];ai,bi=linefit([feature[i] for i in train],[treated[i] for i in train]);aj,bj=linefit([feature[i] for i in train],[outcome[i] for i in train])
+            for i in test:tres[i]=treated[i]-(ai+bi*feature[i]);yres[i]=outcome[i]-(aj+bj*feature[i])
+        den=sum(v*v for v in tres)
+        if den<1e-12:raise ValueError("no residualized treatment variation")
+        theta=sum(a*b for a,b in zip(tres,yres))/den;psi=[tr*(yr-theta*tr)/(den/len(tres)) for tr,yr in zip(tres,yres)];o["output"]={"estimate":theta,"treatment_residuals":tres,"outcome_residuals":yres,"orthogonal_scores":psi,"standard_error":math.sqrt(_var(psi)/len(psi)),"folds":2};a += ["Partially linear model, unconfoundedness given feature, overlap and nuisance rates sufficient for orthogonal inference."];limits += ["Two-fold scalar linear nuisance models; no repeated cross-fitting, clustering or nonlinear learners."]
+    elif method=="cross_fitting":
+        ids=data.get("ids");predictions=_nums(data,"predictions");targets=_nums(data,"targets");folds=int(p.get("folds",2))
+        if not isinstance(ids,list) or not len(ids)==len(predictions)==len(targets) or folds<2 or folds>len(ids):raise ValueError("aligned ids and valid fold count required")
+        assignment=[abs(hash(str(i)))%folds for i in ids];errors=[yhat-y for yhat,y in zip(predictions,targets)];counts={f:assignment.count(f) for f in range(folds)}
+        if any(v==0 for v in counts.values()):raise ValueError("hash assignment produced empty fold; use more observations or fewer folds")
+        o["output"]={"fold_assignment":assignment,"fold_counts":counts,"out_of_fold_mse":_mean([e*e for e in errors]),"mean_error":_mean(errors)};a += ["Predictions are genuinely out-of-fold and ids are stable independent units."];limits += ["Validates/evaluates supplied predictions; does not train nuisance models or prevent leakage upstream."]
+    elif method=="sample_splitting":
+        ids=data.get("ids");train_fraction=float(p.get("train_fraction",.5));seed2=int(p.get("split_seed",seed))
+        if not isinstance(ids,list) or len(ids)<2 or not 0<train_fraction<1:raise ValueError("at least two ids and train_fraction in (0,1) required")
+        keyed=sorted([(random.Random(f"{seed2}:{i}").random(),i) for i in ids]);n=max(1,min(len(ids)-1,round(len(ids)*train_fraction)));train=[i for _,i in keyed[:n]];holdout=[i for _,i in keyed[n:]];o["output"]={"train_ids":train,"holdout_ids":holdout,"train_count":len(train),"holdout_count":len(holdout),"seed":seed2,"disjoint":set(train).isdisjoint(holdout)};a += ["IDs represent independent analysis units; deterministic seeded assignment occurs before outcome inspection."];limits += ["Single split can be unstable and less efficient; use repeated splits/cross-fitting when valid."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
     return o
