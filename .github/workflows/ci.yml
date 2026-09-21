@@ -29,7 +29,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U atlas -d atlas_test"
+          --health-cmd "psql -U atlas -d atlas_test -v ON_ERROR_STOP=1 -c 'CREATE EXTENSION IF NOT EXISTS vector' >/dev/null && psql -U atlas -d atlas_test -tAc 'SELECT 1 FROM pg_extension WHERE extname=$$vector$$' | grep -qx 1"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 12
@@ -53,6 +53,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e '.[dev]'
+      - name: Initialize and verify pgvector
+        env:
+          PGPASSWORD: atlas
+        run: |
+          psql -h localhost -p 5432 -U atlas -d atlas_test \
+            -v ON_ERROR_STOP=1 \
+            -c 'CREATE EXTENSION IF NOT EXISTS vector;'
+          test "$(psql -h localhost -p 5432 -U atlas -d atlas_test -tAc "SELECT 1 FROM pg_extension WHERE extname='vector'")" = "1"
       - name: Compile all Python sources
         run: python -m compileall -q backend tests *.py
       - name: Smoke-test application imports from repository root
