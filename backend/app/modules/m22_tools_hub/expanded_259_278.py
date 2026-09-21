@@ -1,0 +1,29 @@
+"""Tools Hub expanded owner-spec rows 259-278, all proposal/review only."""
+from __future__ import annotations
+from typing import Any
+ROWS={259:'online_tool_discovery',260:'new_technology_monitoring',261:'public_tips_workflow_research',262:'tool_provenance_license_capture',263:'tool_capability_manifest',264:'tool_security_scan',265:'tool_sandbox_evaluation',266:'tool_compatibility_test',267:'tool_ranking_recommendation',268:'atlas_integration_proposal',269:'install_preview',270:'exact_review_install_approval',271:'dependency_environment_plan',272:'tool_installation_rollback',273:'tool_version_pinning',274:'tool_update_monitoring',275:'secret_hunting_content_rejection',276:'hacks_constrained_lawful_safe_techniques',277:'post_install_verification',278:'tools_hub_audit_trail'}
+def need(d,*ks):
+ m=[k for k in ks if k not in d or d[k] in ('',None)];
+ if m:raise ValueError('missing required fields: '+', '.join(m))
+def run(row:int,d:dict[str,Any])->dict[str,Any]:
+ if row not in ROWS:raise ValueError('unsupported expanded row')
+ if row in {259,260,261}:
+  need(d,'candidates');r={'candidates':[dict(x,source_verified=bool(x.get('source_url') and x.get('observed_at'))) for x in d['candidates']],'discovery_kind':ROWS[row],'network_search_performed':False}
+ elif row==262:need(d,'tool');r={'name':d['tool'].get('name'),'source_url':d['tool'].get('source_url'),'publisher':d['tool'].get('publisher'),'license':d['tool'].get('license'),'version':d['tool'].get('version'),'complete':all(d['tool'].get(k) for k in ('source_url','publisher','license','version'))}
+ elif row==263:need(d,'tool','capabilities');r={'tool':d['tool'],'capabilities':d['capabilities'],'inputs':d.get('inputs',{}),'outputs':d.get('outputs',{}),'permissions':d.get('permissions',[]),'side_effects':d.get('side_effects',[])}
+ elif row==264:need(d,'artifact','scan_findings');r={'artifact':d['artifact'],'findings':d['scan_findings'],'blocking':[x for x in d['scan_findings'] if x.get('severity') in {'critical','high'} and not x.get('accepted_by_security')],'passed':not any(x.get('severity') in {'critical','high'} and not x.get('accepted_by_security') for x in d['scan_findings'])}
+ elif row==265:need(d,'tool','sandbox_policy','observations');r={'tool':d['tool'],'sandbox_policy':d['sandbox_policy'],'observations':d['observations'],'network_egress':d['sandbox_policy'].get('network_egress','disabled'),'promoted':False}
+ elif row==266:need(d,'tool','platform','tests');r={'tool':d['tool'],'platform':d['platform'],'tests':d['tests'],'compatible':all(x.get('passed') for x in d['tests']),'untested_requirements':d.get('untested_requirements',[])}
+ elif row==267:need(d,'candidates','weights');r={'ranked':sorted([dict(x,score=sum(float(d['weights'].get(k,0))*float(x.get('scores',{}).get(k,0)) for k in d['weights'])) for x in d['candidates']],key=lambda x:x['score'],reverse=True),'weights':d['weights'],'recommendation_not_installation':True}
+ elif row==268:need(d,'tool','adapter','scopes');r={'tool':d['tool'],'adapter':d['adapter'],'scopes':d['scopes'],'data_flows':d.get('data_flows',[]),'approval_points':d.get('approval_points',[]),'proposal_only':True}
+ elif row==269:need(d,'tool','operations');r={'tool':d['tool'],'operations':d['operations'],'files':d.get('files',[]),'dependencies':d.get('dependencies',[]),'permissions':d.get('permissions',[]),'environment_changes':d.get('environment_changes',[]),'executed':False}
+ elif row==270:need(d,'preview_hash','reviewed_operations','decision');r={'preview_hash':d['preview_hash'],'reviewed_operations':d['reviewed_operations'],'decision':d['decision'],'exact_match_required':True,'approved':d['decision']=='approve' and bool(d.get('reviewer'))}
+ elif row==271:need(d,'dependencies','environment');r={'dependencies':d['dependencies'],'environment':d['environment'],'conflicts':d.get('conflicts',[]),'lockfile_required':True,'secrets_as_references_only':True}
+ elif row==272:need(d,'installed_changes','rollback_steps');r={'installed_changes':d['installed_changes'],'rollback_steps':d['rollback_steps'],'snapshot':d.get('snapshot'),'verified':bool(d.get('rollback_tested')),'executed':False}
+ elif row==273:need(d,'dependencies');r={'pins':[x for x in d['dependencies'] if x.get('version') and not any(c in str(x['version']) for c in '*xX')],'unpinned':[x for x in d['dependencies'] if not x.get('version') or any(c in str(x.get('version')) for c in '*xX')],'hashes_required':True}
+ elif row==274:need(d,'installed','available');r={'updates':[{'name':x['name'],'installed':x.get('version'),'available':next((y.get('version') for y in d['available'] if y.get('name')==x.get('name')),None)} for x in d['installed']],'auto_update':False,'review_required':True}
+ elif row==275:need(d,'content');r={'rejected':bool(d.get('secret_indicators')),'secret_indicators':d.get('secret_indicators',[]),'content_retained':False if d.get('secret_indicators') else True,'scan_only_no_exfiltration':True}
+ elif row==276:need(d,'techniques');r={'allowed':[x for x in d['techniques'] if x.get('lawful') and x.get('authorized') and x.get('safe')],'rejected':[x for x in d['techniques'] if not (x.get('lawful') and x.get('authorized') and x.get('safe'))],'bypass_or_exploit_forbidden':True}
+ elif row==277:need(d,'expected','observed');r={'expected':d['expected'],'observed':d['observed'],'checks':[{'key':k,'passed':d['observed'].get(k)==v} for k,v in d['expected'].items()],'verified':all(d['observed'].get(k)==v for k,v in d['expected'].items())}
+ else:need(d,'events');r={'events':d['events'],'complete_chain':all(x.get('timestamp') and x.get('actor') and x.get('action') and x.get('subject') for x in d['events']),'append_only':True,'redacted_secrets_required':True}
+ return {'row':row,'capability':ROWS[row],'result':r,'boundary':'Review artifact only. Discovery does not authorize installation; every mutation requires exact reviewed operations and approval.'}
