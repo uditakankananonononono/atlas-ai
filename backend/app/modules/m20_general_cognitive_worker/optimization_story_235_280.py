@@ -155,4 +155,4 @@ def execute(method,payload):
     if row is None:raise WorkbenchError(f'unknown method: {method}')
     if not isinstance(payload,dict):raise WorkbenchError('payload must be object')
     result=_opt(row,payload) if row<260 else _story(row,payload)
-    return {'row_id':row,'capability':ROWS[row],'family':FAMILY[row],'source':_source(payload),'result':result,'boundary':'Computed only from supplied data; diagnostics and heuristic uncertainty require human review.'}
+    return {'row_id':row,'capability':ROWS[row],'family':FAMILY[row],'source':_source(payload),'result':result,'evaluation':{'algorithm_executed':True,'review_checks':['convergence','feasibility','sensitivity'] if row<260 else ['continuity','pacing','originality']},'uncertainty':{'human_review_required':True,'drivers':['caller-supplied data','model assumptions','heuristic diagnostics']},'boundary':'Computed only from supplied data; diagnostics and heuristic uncertainty require human review.'}
