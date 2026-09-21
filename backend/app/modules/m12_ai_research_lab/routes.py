@@ -19,7 +19,7 @@ from pydantic import BaseModel,Field
 from typing import Any,Literal
 from .clinical_support import clinical_support
 class ClinicalSupportIn(BaseModel):
-    method:Literal['clinical_decision_support','differential_diagnosis','treatment_protocol_selection','drug_interaction_check','dosage_calculation','medical_image_analysis','radiology_report_generation','pathology_slide_analysis','ecg_interpretation','eeg_analysis','genomics_interpretation','pharmacogenomic_recommendations','clinical_trial_matching','adverse_event_detection','patient_risk_stratification']
+    method:Literal['clinical_decision_support','differential_diagnosis','treatment_protocol_selection','drug_interaction_check','dosage_calculation','medical_image_analysis','radiology_report_generation','pathology_slide_analysis','ecg_interpretation','eeg_analysis','genomics_interpretation','pharmacogenomic_recommendations','clinical_trial_matching','adverse_event_detection','patient_risk_stratification','readmission_prediction','sepsis_early_warning','mortality_prediction','length_of_stay_prediction','icu_resource_allocation','emergency_triage']
     data:dict[str,Any]=Field(default_factory=dict)
 @router.post('/clinical/support')
 def clinical_support_route(body:ClinicalSupportIn,tenant:TenantContext=Depends(require_tenant)):
