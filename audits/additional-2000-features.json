@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1362,
-    "verified-pushed": 645,
+    "missing": 1351,
+    "verified-pushed": 656,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -15576,9 +15576,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Health Equity Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a40c3763f78d082f9ac181ee043f75f3603e5c0d",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1199_1209.py"
+      },
+      "boundary": "Aggregate, transparent and participatory health-systems support only. Preserve missing data, denominators, uncertainty, consent, affected-community voice, equity, constraints and balancing harms. Authorized human teams validate causes and approve policy, quality, safety, operational, financial and educational action; Atlas never allocates individual care or executes changes."
     },
     {
       "id": 1200,
@@ -15586,9 +15590,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Social Determinants Assessment",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a40c3763f78d082f9ac181ee043f75f3603e5c0d",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1199_1209.py"
+      },
+      "boundary": "Aggregate, transparent and participatory health-systems support only. Preserve missing data, denominators, uncertainty, consent, affected-community voice, equity, constraints and balancing harms. Authorized human teams validate causes and approve policy, quality, safety, operational, financial and educational action; Atlas never allocates individual care or executes changes."
     },
     {
       "id": 1201,
@@ -15596,9 +15604,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Community Health Assessment",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a40c3763f78d082f9ac181ee043f75f3603e5c0d",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1199_1209.py"
+      },
+      "boundary": "Aggregate, transparent and participatory health-systems support only. Preserve missing data, denominators, uncertainty, consent, affected-community voice, equity, constraints and balancing harms. Authorized human teams validate causes and approve policy, quality, safety, operational, financial and educational action; Atlas never allocates individual care or executes changes."
     },
     {
       "id": 1202,
@@ -15606,9 +15618,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Health Policy Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a40c3763f78d082f9ac181ee043f75f3603e5c0d",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1199_1209.py"
+      },
+      "boundary": "Aggregate, transparent and participatory health-systems support only. Preserve missing data, denominators, uncertainty, consent, affected-community voice, equity, constraints and balancing harms. Authorized human teams validate causes and approve policy, quality, safety, operational, financial and educational action; Atlas never allocates individual care or executes changes."
     },
     {
       "id": 1203,
@@ -15616,9 +15632,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Healthcare Quality Improvement",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a40c3763f78d082f9ac181ee043f75f3603e5c0d",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1199_1209.py"
+      },
+      "boundary": "Aggregate, transparent and participatory health-systems support only. Preserve missing data, denominators, uncertainty, consent, affected-community voice, equity, constraints and balancing harms. Authorized human teams validate causes and approve policy, quality, safety, operational, financial and educational action; Atlas never allocates individual care or executes changes."
     },
     {
       "id": 1204,
@@ -15626,9 +15646,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Patient Safety",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a40c3763f78d082f9ac181ee043f75f3603e5c0d",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1199_1209.py"
+      },
+      "boundary": "Aggregate, transparent and participatory health-systems support only. Preserve missing data, denominators, uncertainty, consent, affected-community voice, equity, constraints and balancing harms. Authorized human teams validate causes and approve policy, quality, safety, operational, financial and educational action; Atlas never allocates individual care or executes changes."
     },
     {
       "id": 1205,
@@ -15636,9 +15660,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Medical Error Prevention",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a40c3763f78d082f9ac181ee043f75f3603e5c0d",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1199_1209.py"
+      },
+      "boundary": "Aggregate, transparent and participatory health-systems support only. Preserve missing data, denominators, uncertainty, consent, affected-community voice, equity, constraints and balancing harms. Authorized human teams validate causes and approve policy, quality, safety, operational, financial and educational action; Atlas never allocates individual care or executes changes."
     },
     {
       "id": 1206,
@@ -15646,9 +15674,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Healthcare Operations",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a40c3763f78d082f9ac181ee043f75f3603e5c0d",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1199_1209.py"
+      },
+      "boundary": "Aggregate, transparent and participatory health-systems support only. Preserve missing data, denominators, uncertainty, consent, affected-community voice, equity, constraints and balancing harms. Authorized human teams validate causes and approve policy, quality, safety, operational, financial and educational action; Atlas never allocates individual care or executes changes."
     },
     {
       "id": 1207,
@@ -15656,9 +15688,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Hospital Administration",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a40c3763f78d082f9ac181ee043f75f3603e5c0d",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1199_1209.py"
+      },
+      "boundary": "Aggregate, transparent and participatory health-systems support only. Preserve missing data, denominators, uncertainty, consent, affected-community voice, equity, constraints and balancing harms. Authorized human teams validate causes and approve policy, quality, safety, operational, financial and educational action; Atlas never allocates individual care or executes changes."
     },
     {
       "id": 1208,
@@ -15666,9 +15702,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Healthcare Finance",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a40c3763f78d082f9ac181ee043f75f3603e5c0d",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1199_1209.py"
+      },
+      "boundary": "Aggregate, transparent and participatory health-systems support only. Preserve missing data, denominators, uncertainty, consent, affected-community voice, equity, constraints and balancing harms. Authorized human teams validate causes and approve policy, quality, safety, operational, financial and educational action; Atlas never allocates individual care or executes changes."
     },
     {
       "id": 1209,
@@ -15676,9 +15716,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Medical Education",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a40c3763f78d082f9ac181ee043f75f3603e5c0d",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1199_1209.py"
+      },
+      "boundary": "Aggregate, transparent and participatory health-systems support only. Preserve missing data, denominators, uncertainty, consent, affected-community voice, equity, constraints and balancing harms. Authorized human teams validate causes and approve policy, quality, safety, operational, financial and educational action; Atlas never allocates individual care or executes changes."
     },
     {
       "id": 1210,
