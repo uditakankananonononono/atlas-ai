@@ -2740,11 +2740,12 @@
       "description": "Evolves solutions",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_seeded_global_optimizers_have_distinct_diagnostics_and_converge",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Tournament genetic algorithm with elitism, arithmetic crossover and Gaussian mutation.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known-answer sphere convergence, seeded replay, GA-specific selection/crossover/mutation diagnostics.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 212,
@@ -2753,11 +2754,12 @@
       "description": "Finds optima through collective behavior",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_seeded_global_optimizers_have_distinct_diagnostics_and_converge",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Canonical particle swarm with inertia, cognitive/social velocity and personal/global bests.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known-answer sphere convergence and PSO coefficient diagnostics.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 213,
@@ -2766,11 +2768,12 @@
       "description": "Escapes local optima",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_seeded_global_optimizers_have_distinct_diagnostics_and_converge",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Metropolis simulated annealing with geometric cooling and accepted-move accounting.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known-answer convergence, temperature history diagnostics, seeded replay.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 214,
@@ -2779,11 +2782,12 @@
       "description": "Solves routing problems",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_seeded_global_optimizers_have_distinct_diagnostics_and_converge",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Continuous ant-colony optimizer using rank-weighted Gaussian pheromone archive.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known-answer convergence with archive/pheromone diagnostics.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 215,
@@ -2792,11 +2796,12 @@
       "description": "Optimizes continuous functions",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_seeded_global_optimizers_have_distinct_diagnostics_and_converge",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Differential Evolution DE/rand/1/bin with forced crossover coordinate.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known-answer sphere benchmark, strategy parameters and seeded replay.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 216,
@@ -2805,11 +2810,12 @@
       "description": "Efficiently searches parameter space",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_seeded_global_optimizers_have_distinct_diagnostics_and_converge",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Gaussian-process Bayesian optimizer with RBF posterior and lower-confidence-bound acquisition.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Sequential GP acquisition beats benchmark with observation/evaluation trace.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 217,
@@ -2818,11 +2824,12 @@
       "description": "Models smooth functions",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_gaussian_process_known_function_and_uncertainty",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "RBF Gaussian-process regression with Cholesky posterior mean and variance.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Interpolates known training value with near-zero posterior variance; malformed shapes fail.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 218,
@@ -2857,11 +2864,12 @@
       "description": "Solves constrained optimization",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_linear_program_finds_known_vertex_and_certifies; test_no_feasible_candidates_negative_path",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Two-variable LP solver enumerates all polytope vertices and returns an optimality certificate.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known optimum [4,0], all feasible vertices checked; infeasible and dimension failure paths.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 221,
@@ -2909,11 +2917,12 @@
       "description": "Handles uncertainty",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_stochastic_program_uses_probabilities_and_rejects_bad_distribution",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Finite-scenario stochastic program minimizes probability-weighted objective and reports scenario values.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known-answer solve and invalid probability distribution rejection.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 225,
@@ -2922,11 +2931,12 @@
       "description": "Performs well under uncertainty",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_robust_solution_reports_worst_case_and_validates_radii",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Box-uncertainty robust LP counterpart with coefficient-wise uncertainty radii and worst-case value.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Worst-case certificate and negative-radius rejection.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 226,
@@ -2935,11 +2945,12 @@
       "description": "Solves tractable problems",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_distinct_derivative_optimizer_known_answer[226]",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Projected convex gradient method with Armijo backtracking and gradient diagnostics.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known sphere optimum, convergence history, constraint projection.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 227,
@@ -2948,11 +2959,12 @@
       "description": "Handles complex landscapes",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_nonconvex_multistart_finds_double_well_and_reproducible",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Seeded multistart local optimization for non-convex objectives.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Finds double-well global minima from multiple basins and replays exactly by seed.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 228,
@@ -2961,11 +2973,12 @@
       "description": "Follows steepest descent",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_distinct_derivative_optimizer_known_answer[228]",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Gradient descent with finite-difference gradient and Armijo line search.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known sphere optimum, gradient norm and objective history.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 229,
@@ -2974,11 +2987,12 @@
       "description": "Scales to large data",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_distinct_derivative_optimizer_known_answer[229]",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Seeded randomized coordinate stochastic gradient descent with coordinate scaling.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known sphere optimum and reproducible coordinate sampling.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 230,
@@ -2987,11 +3001,12 @@
       "description": "Adapts learning rates",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_distinct_derivative_optimizer_known_answer[230]",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Adam with first/second moments, bias correction and bounded feasible updates.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known sphere optimum with Adam-specific optimizer state behavior.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 231,
@@ -3000,11 +3015,12 @@
       "description": "Uses second-order information",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_distinct_derivative_optimizer_known_answer[231]; test_newton_rejects_non_positive_hessian",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Damped Newton using numerical Hessian diagonal and positive-definiteness guard.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Quadratic known-answer convergence plus indefinite Hessian failure.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 232,
@@ -3013,11 +3029,12 @@
       "description": "Approximates Hessian",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_distinct_derivative_optimizer_known_answer[232]",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Full inverse-BFGS quasi-Newton update with curvature condition and Armijo search.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known-answer convergence and BFGS-specific algorithm identity.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 233,
@@ -3026,11 +3043,12 @@
       "description": "Constrains step size",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_distinct_derivative_optimizer_known_answer[233]",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Trust-region Cauchy step capped by configurable radius.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known sphere optimum with radius-limited steps and diagnostics.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 234,
@@ -3039,11 +3057,12 @@
       "description": "Handles inequality constraints",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_interior_point_stays_strictly_feasible_and_rejects_boundary_start",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Log-barrier path-following interior-point solver maintaining strict feasibility and reporting gap bound.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Constrained optimum feasibility/gap benchmark and boundary-start rejection.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 235,

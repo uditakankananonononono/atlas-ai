@@ -119,22 +119,199 @@ def objective(d,x):
  if typ=='sphere':return sum(v*v for v in x)
  if typ=='linear':return sum(a*b for a,b in zip(d['coefficients'],x))
  if typ=='rosenbrock':return sum(100*(x[j+1]-x[j]**2)**2+(1-x[j])**2 for j in range(len(x)-1))
+ if typ=='double_well':return sum((v*v-1)**2 for v in x)
  raise QuantError('unsupported objective')
+def _validate(d):
+ need(d,'bounds'); bounds=[(float(a),float(b)) for a,b in d['bounds']]
+ if not bounds or any(not a<b for a,b in bounds):raise QuantError('each bound must be finite and lower < upper')
+ cons=d.get('constraints',[])
+ if any(len(c.get('coefficients',[]))!=len(bounds) for c in cons):raise QuantError('constraint dimension mismatch')
+ return bounds
+
+def _project(x,bounds):return [min(b,max(a,v)) for v,(a,b) in zip(x,bounds)]
+def _feasible(x,bounds,cons):return all(a-1e-9<=v<=b+1e-9 for v,(a,b) in zip(x,bounds)) and all(sum(q*v for q,v in zip(c['coefficients'],x))<=c['rhs']+1e-8 for c in cons)
+def _grad(d,x,h=1e-5):
+ g=[]
+ for j in range(len(x)):
+  u=x[:];v=x[:];u[j]+=h;v[j]-=h;g.append((objective(d,u)-objective(d,v))/(2*h))
+ return g
+def _line_search(d,x,p,g,bounds,cons):
+ f=objective(d,x);t=1.
+ while t>1e-10:
+  z=_project([a+t*b for a,b in zip(x,p)],bounds)
+  if _feasible(z,bounds,cons) and objective(d,z)<=f+1e-4*t*sum(a*b for a,b in zip(g,p)):return z,t
+  t*=.5
+ return x,0.
+def _finish(i,d,x,history,evaluations,extra=None):
+ out={'best_point':x,'best_value':objective(d,x),'evaluations':evaluations,'iterations':len(history)-1,'seed':d.get('seed',0),'converged':len(history)>1 and abs(history[-1]-history[-2])<d.get('tolerance',1e-7),'objective_history':history,'global_optimum_claimed':False,'method':ROWS[i]}
+ if extra:out.update(extra)
+ return out
+
+def _population(i,d,bounds,rng):
+ n=max(8,int(d.get('population_size',20))); it=max(1,int(d.get('iterations',40))); dim=len(bounds);cons=d.get('constraints',[])
+ pop=[[(a+b)/2 for a,b in bounds]]+[[rng.uniform(a,b) for a,b in bounds] for _ in range(n-1)];ev=n;hist=[]
+ if i==211: # real-valued tournament GA, blend crossover, Gaussian mutation
+  for _ in range(it):
+   pop=sorted(pop,key=lambda x:objective(d,x));hist.append(objective(d,pop[0]));elite=pop[:2];new=elite[:]
+   while len(new)<n:
+    p=min(rng.sample(pop,min(3,n)),key=lambda x:objective(d,x));q=min(rng.sample(pop,min(3,n)),key=lambda x:objective(d,x));alpha=rng.random();child=_project([alpha*a+(1-alpha)*b+rng.gauss(0,.05*(hi-lo)) for a,b,(lo,hi) in zip(p,q,bounds)],bounds);new.append(child)
+   pop=new;ev+=n
+  x=min((z for z in pop if _feasible(z,bounds,cons)),key=lambda z:objective(d,z),default=None);algo={'selection':'tournament','crossover':'arithmetic','mutation':'gaussian'}
+ elif i==212: # canonical PSO
+  vel=[[0.]*dim for _ in pop];personal=[x[:] for x in pop];gb=min(pop,key=lambda x:objective(d,x))[:]
+  for _ in range(it):
+   for k,x in enumerate(pop):
+    vel[k]=[.7*v+1.4*rng.random()*(p-a)+1.4*rng.random()*(g-a) for v,p,g,a in zip(vel[k],personal[k],gb,x)];pop[k]=_project([a+v for a,v in zip(x,vel[k])],bounds)
+    if objective(d,pop[k])<objective(d,personal[k]):personal[k]=pop[k][:]
+   gb=min(personal,key=lambda x:objective(d,x))[:];hist.append(objective(d,gb));ev+=n
+  x=gb;algo={'inertia':.7,'cognitive':1.4,'social':1.4}
+ elif i==215: # DE/rand/1/bin
+  F=float(d.get('differential_weight',.8));CR=float(d.get('crossover_probability',.9))
+  for _ in range(it):
+   nxt=[]
+   for k,x in enumerate(pop):
+    pool=[z for j,z in enumerate(pop) if j!=k];a,b,c=rng.sample(pool,3);mut=_project([u+F*(v-w) for u,v,w in zip(a,b,c)],bounds);j0=rng.randrange(dim);trial=[mut[j] if rng.random()<CR or j==j0 else x[j] for j in range(dim)];nxt.append(trial if objective(d,trial)<objective(d,x) else x)
+   pop=nxt;x=min(pop,key=lambda z:objective(d,z));hist.append(objective(d,x));ev+=n
+  algo={'strategy':'DE/rand/1/bin','differential_weight':F,'crossover_probability':CR}
+ else:raise AssertionError
+ if x is None:raise QuantError('no feasible point: constraints are infeasible')
+ return _finish(i,d,x,hist,ev,algo)
+
+def _anneal(i,d,bounds,rng):
+ x=[(a+b)/2 for a,b in bounds];fx=objective(d,x);best=x[:];hist=[fx];accepted=0;it=max(1,int(d.get('iterations',100)))
+ for k in range(it):
+  temp=max(1e-9,float(d.get('initial_temperature',1))*(.95**k));z=_project([v+rng.gauss(0,temp*.2*(b-a)) for v,(a,b) in zip(x,bounds)],bounds);fz=objective(d,z)
+  if fz<fx or rng.random()<exp(min(0,(fx-fz)/temp)):x,fx=z,fz;accepted+=1
+  if fx<objective(d,best):best=x[:]
+  hist.append(objective(d,best))
+ return _finish(i,d,best,hist,it+1,{'temperature_schedule':'geometric','accepted_moves':accepted,'final_temperature':temp})
+
+def _ant(i,d,bounds,rng):
+ # Continuous ant-colony optimization archive: rank-weighted Gaussian sampling.
+ n=max(8,int(d.get('population_size',20))); archive=[[rng.uniform(a,b) for a,b in bounds] for _ in range(n)];hist=[];ev=n
+ for _ in range(max(1,int(d.get('iterations',40)))):
+  archive.sort(key=lambda x:objective(d,x));weights=[exp(-k*k/(2*(.3*n)**2)) for k in range(n)];sw=sum(weights);weights=[w/sw for w in weights];samples=[]
+  for __ in range(n):
+   r=rng.random();acc=0;k=0
+   for k,w in enumerate(weights):
+    acc+=w
+    if r<=acc:break
+   center=archive[k];samples.append(_project([rng.gauss(v,max(1e-6,.3*mean([abs(v-z[j]) for z in archive]))) for j,v in enumerate(center)],bounds))
+  archive=sorted(archive+samples,key=lambda x:objective(d,x))[:n];ev+=n;hist.append(objective(d,archive[0]))
+ return _finish(i,d,archive[0],hist,ev,{'pheromone_model':'rank-weighted Gaussian archive','archive_size':n})
+
+def _gp_predict(xs,ys,x,length=1.,noise=1e-6):
+ # Gaussian process posterior mean/variance using dependency-free Cholesky.
+ n=len(xs);K=[[exp(-sum((a-b)**2 for a,b in zip(xs[r],xs[c]))/(2*length*length))+(noise if r==c else 0) for c in range(n)] for r in range(n)];L=[[0.]*n for _ in range(n)]
+ for r in range(n):
+  for c in range(r+1):
+   z=K[r][c]-sum(L[r][k]*L[c][k] for k in range(c));L[r][c]=sqrt(max(z,1e-15)) if r==c else z/L[c][c]
+ def solve(v):
+  y=[]
+  for r in range(n):y.append((v[r]-sum(L[r][k]*y[k] for k in range(r)))/L[r][r])
+  z=[0.]*n
+  for r in range(n-1,-1,-1):z[r]=(y[r]-sum(L[k][r]*z[k] for k in range(r+1,n)))/L[r][r]
+  return z
+ k=[exp(-sum((a-b)**2 for a,b in zip(z,x))/(2*length*length)) for z in xs];alpha=solve(ys);v=solve(k);return sum(a*b for a,b in zip(k,alpha)),max(0,1-sum(a*b for a,b in zip(k,v)))
+
+def _bayes_or_gp(i,d,bounds,rng):
+ xs=[list(map(float,x)) for x in d.get('training_x',[])];ys=list(map(float,d.get('training_y',[])))
+ if xs and (len(xs)!=len(ys) or any(len(x)!=len(bounds) for x in xs)):raise QuantError('training_x/training_y shape mismatch')
+ if not xs:
+  xs=[[(a+b)/2 for a,b in bounds]]+[[rng.uniform(a,b) for a,b in bounds] for _ in range(max(3,2*len(bounds)))];ys=[objective(d,x) for x in xs]
+ if i==217:
+  queries=d.get('query_points',xs);pred=[_gp_predict(xs,ys,q,d.get('length_scale',1.)) for q in queries]
+  return {'method':ROWS[i],'predictions':[{'point':q,'mean':m,'variance':v} for q,(m,v) in zip(queries,pred)],'log_marginal_likelihood_optimized':False,'kernel':'RBF','training_size':len(xs)}
+ hist=[min(ys)];it=max(1,int(d.get('iterations',15)))
+ for _ in range(it):
+  grid=[[rng.uniform(a,b) for a,b in bounds] for __ in range(100)];stats=[_gp_predict(xs,ys,z,d.get('length_scale',1.)) for z in grid];z=min(zip(grid,stats),key=lambda q:q[1][0]-2*sqrt(q[1][1]))[0];xs.append(z);ys.append(objective(d,z));hist.append(min(ys))
+ k=min(range(len(ys)),key=ys.__getitem__);return _finish(i,d,xs[k],hist,len(ys),{'acquisition':'lower_confidence_bound','kernel':'RBF','observations':len(ys)})
+
+def _lp_vertices(d,bounds):
+ if len(bounds)!=2:raise QuantError('linear programming reference solver supports exactly two variables')
+ lines=[([1.,0.],bounds[0][0]),([1.,0.],bounds[0][1]),([0.,1.],bounds[1][0]),([0.,1.],bounds[1][1])]+[(list(map(float,c['coefficients'])),float(c['rhs'])) for c in d.get('constraints',[])]
+ pts=[]
+ for k,(a,r) in enumerate(lines):
+  for b,s in lines[k+1:]:
+   det=a[0]*b[1]-a[1]*b[0]
+   if abs(det)>1e-12:pts.append([(r*b[1]-a[1]*s)/det,(a[0]*s-r*b[0])/det])
+ pts=[x for x in pts if _feasible(x,bounds,d.get('constraints',[]))]
+ if not pts:raise QuantError('no feasible point: constraints are infeasible')
+ return pts
+
+def _derivative_solver(i,d,bounds,rng):
+ cons=d.get('constraints',[])
+ if 'candidates' in d and not any(_feasible(x,bounds,cons) for x in d['candidates']):raise QuantError('no feasible candidates')
+ x=list(map(float,d.get('initial_point',[(a+b)/2 for a,b in bounds])));x=_project(x,bounds)
+ if not _feasible(x,bounds,cons):raise QuantError('initial point is infeasible')
+ it=max(1,int(d.get('iterations',100)));tol=float(d.get('tolerance',1e-7));hist=[objective(d,x)];ev=1;dim=len(x);H=[[float(r==c) for c in range(dim)] for r in range(dim)];m=[0.]*dim;v=[0.]*dim
+ for k in range(1,it+1):
+  g=_grad(d,x);ev+=2*dim
+  if sqrt(sum(z*z for z in g))<tol:
+   if i==231:
+    h=1e-4;diag=[(objective(d,x[:j]+[x[j]+h]+x[j+1:])-2*objective(d,x)+objective(d,x[:j]+[x[j]-h]+x[j+1:]))/(h*h) for j in range(dim)]
+    if any(z<=1e-10 for z in diag):raise QuantError('Hessian is not positive definite')
+   break
+  if i in (226,228):p=[-z for z in g]
+  elif i==229:
+   j=rng.randrange(dim);p=[0.]*dim;p[j]=-g[j]*dim
+  elif i==230:
+   m=[.9*a+.1*b for a,b in zip(m,g)];v=[.999*a+.001*b*b for a,b in zip(v,g)];p=[-.1*(a/(1-.9**k))/(sqrt(b/(1-.999**k))+1e-8) for a,b in zip(m,v)]
+  elif i==231:
+   h=1e-4;diag=[]
+   for j in range(dim):
+    u=x[:];w=x[:];u[j]+=h;w[j]-=h;diag.append((objective(d,u)-2*objective(d,x)+objective(d,w))/(h*h));ev+=2
+   if any(z<=1e-10 for z in diag):raise QuantError('Hessian is not positive definite')
+   p=[-a/b for a,b in zip(g,diag)]
+  elif i==232:p=[-sum(H[r][c]*g[c] for c in range(dim)) for r in range(dim)]
+  elif i==233:
+   radius=float(d.get('trust_radius',1.));ng=sqrt(sum(z*z for z in g));p=[-z*min(1,radius/ng) for z in g]
+  else:raise AssertionError
+  old=x[:];oldg=g[:]
+  if i==230:
+   z=_project([a+b for a,b in zip(x,p)],bounds);x,step=(z,1.) if _feasible(z,bounds,cons) else _line_search(d,x,p,g,bounds,cons)
+  else:x,step=_line_search(d,x,p,g,bounds,cons)
+  ev+=1
+  if step==0:break
+  if i==232:
+   ng=_grad(d,x);s=[a-b for a,b in zip(x,old)];y=[a-b for a,b in zip(ng,oldg)];rho=sum(a*b for a,b in zip(s,y))
+   if rho>1e-12:
+    rho=1/rho;I=[[float(r==c)-rho*s[r]*y[c] for c in range(dim)] for r in range(dim)];T=[[sum(I[r][q]*H[q][c] for q in range(dim)) for c in range(dim)] for r in range(dim)];H=[[sum(T[r][q]*I[c][q] for q in range(dim))+rho*s[r]*s[c] for c in range(dim)] for r in range(dim)]
+  hist.append(objective(d,x))
+  if i not in (229,230) and abs(hist[-1]-hist[-2])<tol:break
+ name={226:'projected_gradient',228:'gradient_descent_armijo',229:'random_coordinate_stochastic_gradient',230:'adam',231:'damped_newton',232:'BFGS',233:'trust_region_Cauchy'}[i]
+ return _finish(i,d,x,hist,ev,{'algorithm':name,'gradient_norm':sqrt(sum(z*z for z in _grad(d,x)))})
+
+def _interior(i,d,bounds):
+ cons=d.get('constraints',[]);allc=cons+([{'coefficients':[1. if j==k else 0. for j in range(len(bounds))],'rhs':b} for k,(a,b) in enumerate(bounds)]+[{'coefficients':[-1. if j==k else 0. for j in range(len(bounds))],'rhs':-a} for k,(a,b) in enumerate(bounds)])
+ x=list(map(float,d.get('initial_point',[(a+b)/2 for a,b in bounds])))
+ if any(c['rhs']-sum(a*b for a,b in zip(c['coefficients'],x))<=0 for c in allc):raise QuantError('interior point requires a strictly feasible initial point')
+ hist=[];ev=0;mu=1.
+ for outer in range(8):
+  for _ in range(30):
+   g=_grad(d,x);ev+=2*len(x)
+   for c in allc:
+    slack=c['rhs']-sum(a*b for a,b in zip(c['coefficients'],x));g=[a+mu*q/slack for a,q in zip(g,c['coefficients'])]
+   p=[-a for a in g];x2,step=_line_search(d,x,p,g,bounds,cons)
+   if step==0:break
+   x=x2;hist.append(objective(d,x))
+  mu*=.2
+ return _finish(i,d,x,hist,ev,{'algorithm':'log_barrier_path_following','duality_gap_bound':mu*len(allc),'strict_feasibility_maintained':True})
+
 def optimize(i,d):
- need(d,'bounds');bounds=d['bounds'];dim=len(bounds);rng=Random(d.get('seed',0));cands=d.get('candidates') or [[rng.uniform(a,b) for a,b in bounds] for _ in range(d.get('iterations',30))]
- feasible=lambda x:all(a<=v<=b for v,(a,b) in zip(x,bounds)) and all(sum(q*v for q,v in zip(c.get('coefficients',[]),x))<=c.get('rhs',float('inf')) for c in d.get('constraints',[]))
- def norm(x):
-  if i in (221,):return [round(v) for v in x]
-  if i==222:return [round(v) if j in d.get('integer_indices',[]) else v for j,v in enumerate(x)]
-  return x
- scored=[(objective(d,norm(x)),norm(x)) for x in cands if feasible(norm(x))]
- if not scored:raise QuantError('no feasible candidates')
- best=min(scored,key=lambda z:z[0]);result={'best_point':best[1],'best_value':best[0],'evaluations':len(scored),'seed':d.get('seed',0),'global_optimum_claimed':False}
+ bounds=_validate(d);rng=Random(d.get('seed',0))
+ if i in (211,212,215):return _population(i,d,bounds,rng)
+ if i==213:return _anneal(i,d,bounds,rng)
+ if i==214:return _ant(i,d,bounds,rng)
+ if i in (216,217):return _bayes_or_gp(i,d,bounds,rng)
  if i in (218,219):
-  need(d,'objective_vectors');front=[]
-  for c in d['objective_vectors']:
-   if not any(all(o<=v for o,v in zip(x['values'],c['values'])) and any(o<v for o,v in zip(x['values'],c['values'])) for x in d['objective_vectors']):front.append(c)
-  result={'pareto_frontier':front,'preference_selected':False}
+  need(d,'objective_vectors');front=[c for c in d['objective_vectors'] if not any(all(o<=v for o,v in zip(x['values'],c['values'])) and any(o<v for o,v in zip(x['values'],c['values'])) for x in d['objective_vectors'])];return {'pareto_frontier':front,'preference_selected':False,'method':ROWS[i]}
+ if i==220:
+  pts=_lp_vertices(d,bounds);x=min(pts,key=lambda z:objective(d,z));return _finish(i,d,x,[objective(d,x)],len(pts),{'algorithm':'vertex_enumeration_simplex_equivalent','vertices_checked':len(pts),'optimality_certificate':'all feasible vertices enumerated'})
+ if i in (221,222):
+  cands=d.get('candidates') or [[rng.uniform(a,b) for a,b in bounds] for _ in range(d.get('iterations',100))];norm=lambda x:[round(v) if i==221 or j in d.get('integer_indices',[]) else v for j,v in enumerate(x)];cands=[norm(x) for x in cands];cands=[x for x in cands if _feasible(x,bounds,d.get('constraints',[]))]
+  if not cands:raise QuantError('no feasible candidates')
+  x=min(cands,key=lambda z:objective(d,z));return _finish(i,d,x,[objective(d,x)],len(cands),{'algorithm':'enumerative_integer_search'})
  if i==223:
   need(d,'stages','initial_state');table={d['initial_state']:0}
   for stage in d['stages']:
@@ -142,8 +319,26 @@ def optimize(i,d):
    for state,cost in table.items():
     for tr in stage['transitions'].get(str(state),[]):nxt[tr['next']]=min(nxt.get(tr['next'],float('inf')),cost+tr['cost'])
    table=nxt
-  result={'terminal_costs':table,'recurrence_applied':True}
- result['method']=ROWS[i];return result
+  return {'terminal_costs':table,'recurrence_applied':True,'method':ROWS[i]}
+ if i==224:
+  need(d,'scenarios');probs=[float(s['probability']) for s in d['scenarios']]
+  if abs(sum(probs)-1)>1e-8:raise QuantError('scenario probabilities must sum to one')
+  coeff=[sum(s['probability']*s['coefficients'][j] for s in d['scenarios']) for j in range(len(bounds))];q={**d,'objective':'linear','coefficients':coeff};pts=_lp_vertices(q,bounds);x=min(pts,key=lambda z:objective(q,z));out=_finish(i,q,x,[objective(q,x)],len(pts),{'algorithm':'finite_scenario_expected_value','scenario_values':[sum(a*b for a,b in zip(s['coefficients'],x)) for s in d['scenarios']]});out['method']=ROWS[i];return out
+ if i==225:
+  need(d,'coefficients','coefficient_uncertainty');nom=list(map(float,d['coefficients']));rad=list(map(float,d['coefficient_uncertainty']))
+  if len(rad)!=len(bounds) or any(x<0 for x in rad):raise QuantError('nonnegative uncertainty radius required per coefficient')
+  def worst(x):return sum(a*b+r*abs(b) for a,r,b in zip(nom,rad,x))
+  pts=_lp_vertices(d,bounds);x=min(pts,key=worst);out=_finish(i,{**d,'objective':'linear','coefficients':nom},x,[worst(x)],len(pts),{'algorithm':'box_uncertainty_robust_counterpart','worst_case_value':worst(x)});out['best_value']=worst(x);return out
+ if i in (226,228,229,230,231,232,233):return _derivative_solver(i,d,bounds,rng)
+ if i==227:
+  starts=d.get('starts') or [[rng.uniform(a,b) for a,b in bounds] for _ in range(max(4,d.get('restarts',8)))];sol=[]
+  for z in starts:
+   try:sol.append(_derivative_solver(228,{**d,'initial_point':z},bounds,rng))
+   except QuantError:pass
+  if not sol:raise QuantError('no feasible restart')
+  best=min(sol,key=lambda z:z['best_value']);best.update({'method':ROWS[i],'algorithm':'seeded_multistart_local_search','restart_values':[x['best_value'] for x in sol]});return best
+ if i==234:return _interior(i,d,bounds)
+ raise QuantError('unsupported optimizer row')
 def run(row:int,data:dict[str,Any]):
  if row not in ROWS:raise QuantError('unsupported row')
  sources=src(data)

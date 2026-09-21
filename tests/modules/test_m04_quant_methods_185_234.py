@@ -31,6 +31,8 @@ def data(i):
  if i in (218,219):x['objective_vectors']=[{'id':'a','values':[1,2]},{'id':'b','values':[2,1]},{'id':'c','values':[3,3]}]
  if i==223:x|={'stages':[{'transitions':{'s':[{'next':'a','cost':2},{'next':'b','cost':1}]}},{'transitions':{'a':[{'next':'z','cost':1}],'b':[{'next':'z','cost':4}]}}],'initial_state':'s'}
  if i==222:x['integer_indices']=[0]
+ if i==224:x['scenarios']=[{'probability':.25,'coefficients':[1,2]},{'probability':.75,'coefficients':[2,1]}]
+ if i==225:x|={'coefficients':[1,2],'coefficient_uncertainty':[.1,.2]}
  return x
 @pytest.mark.parametrize('i',range(185,235))
 def test_each_exact_row_executes_with_provenance_and_no_side_effect(i):
@@ -68,3 +70,55 @@ def test_mounted_route():
  c=TestClient(app);r=c.post('/api/v1/research-scientist/quant-methods-185-234/210',json=data(210));assert r.status_code==200 and r.json()['method']=='Monte Carlo Tree Search'
 def test_route_negative_path():assert TestClient(app).post('/api/v1/research-scientist/quant-methods-185-234/184',json={}).status_code==422
 def test_catalog_route_lists_50():assert len(TestClient(app).get('/api/v1/research-scientist/quant-methods-185-234').json())==50
+
+@pytest.mark.parametrize('row,algorithm',[(211,'tournament'),(212,None),(213,None),(214,None),(215,None),(216,None)])
+def test_seeded_global_optimizers_have_distinct_diagnostics_and_converge(row,algorithm):
+ d=data(row);d.pop('candidates',None);d['iterations']=60;d['population_size']=24
+ r=run(row,d)['result']
+ assert r['best_value']<.08 and r['seed']==1 and r==run(row,d)['result']
+ assert r['evaluations']>1 and len(r['objective_history'])>1
+ signatures={211:'selection',212:'inertia',213:'temperature_schedule',214:'pheromone_model',215:'strategy',216:'acquisition'}
+ assert signatures[row] in r
+
+def test_gaussian_process_known_function_and_uncertainty():
+ d=data(217);d|={'training_x':[[-1.],[0.],[1.]],'training_y':[1.,0.,1.],'query_points':[[0.],[.5]],'bounds':[[-2,2]]}
+ r=run(217,d)['result'];assert abs(r['predictions'][0]['mean'])<1e-4 and r['predictions'][0]['variance']<1e-5 and r['kernel']=='RBF'
+
+def test_linear_program_finds_known_vertex_and_certifies():
+ d=data(220);d|={'objective':'linear','coefficients':[-3,-2],'bounds':[[0,4],[0,4]],'constraints':[{'coefficients':[1,1],'rhs':4}]}
+ r=run(220,d)['result'];assert r['best_point']==pytest.approx([4,0]) and r['best_value']==pytest.approx(-12) and 'certificate' in ' '.join(r)
+
+def test_stochastic_program_uses_probabilities_and_rejects_bad_distribution():
+ d=data(224);r=run(224,d)['result'];assert r['algorithm']=='finite_scenario_expected_value' and len(r['scenario_values'])==2
+ d['scenarios'][0]['probability']=.5
+ with pytest.raises(QuantError,match='sum to one'):run(224,d)
+
+def test_robust_solution_reports_worst_case_and_validates_radii():
+ d=data(225);r=run(225,d)['result'];assert r['worst_case_value']==r['best_value'] and r['algorithm'].startswith('box_uncertainty')
+ d['coefficient_uncertainty'][0]=-1
+ with pytest.raises(QuantError,match='nonnegative'):run(225,d)
+
+@pytest.mark.parametrize('row,key,value_limit',[(226,'projected_gradient',1e-8),(228,'gradient_descent_armijo',1e-8),(229,'random_coordinate_stochastic_gradient',1e-5),(230,'adam',2e-3),(231,'damped_newton',1e-8),(232,'BFGS',1e-8),(233,'trust_region_Cauchy',1e-8)])
+def test_distinct_derivative_optimizer_known_answer(row,key,value_limit):
+ d=data(row);d.pop('candidates',None);d|={'initial_point':[1.5,-1.25],'iterations':300,'tolerance':1e-9}
+ r=run(row,d)['result'];assert r['algorithm']==key and r['best_value']<value_limit and r['gradient_norm']<.1
+
+def test_newton_rejects_non_positive_hessian():
+ d=data(231);d|={'objective':'double_well','initial_point':[0.,0.]}
+ with pytest.raises(QuantError,match='Hessian is not positive definite'):run(231,d)
+
+def test_nonconvex_multistart_finds_double_well_and_reproducible():
+ d=data(227);d|={'objective':'double_well','iterations':150,'restarts':12};d.pop('candidates',None)
+ r=run(227,d)['result'];assert r['best_value']<1e-8 and r['algorithm']=='seeded_multistart_local_search' and r==run(227,d)['result']
+
+def test_interior_point_stays_strictly_feasible_and_rejects_boundary_start():
+ d=data(234);d|={'objective':'linear','coefficients':[-1,-1],'bounds':[[0,2],[0,2]],'constraints':[{'coefficients':[1,1],'rhs':3}],'initial_point':[.5,.5]}
+ r=run(234,d)['result'];assert r['strict_feasibility_maintained'] and sum(r['best_point'])<3.000001 and r['duality_gap_bound']<.01
+ d['initial_point']=[2,1]
+ with pytest.raises(QuantError,match='strictly feasible'):run(234,d)
+
+def test_optimizer_shape_and_bound_failures():
+ d=data(228);d['bounds']=[[1,1]]
+ with pytest.raises(QuantError,match='lower < upper'):run(228,d)
+ d=data(220);d['constraints']=[{'coefficients':[1],'rhs':0}]
+ with pytest.raises(QuantError,match='dimension mismatch'):run(220,d)
