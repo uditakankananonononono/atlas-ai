@@ -1457,3 +1457,18 @@ def row84_principal_agent(request: PrincipalAgentRequest) -> dict[str, Any]:
                                                     shares=request.shares)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
+
+# ------------------------------------------------ rows 1210-1259: legal workbench
+from typing import Literal as _Literal
+from .legal_support import PROFILES as _LEGAL_PROFILES, legal_support as _legal_support
+
+class LegalSupportRequest(BaseModel):
+    method: _Literal[
+        'contract_drafting','contract_review','contract_negotiation','legal_research','case_law_analysis','statutory_interpretation','regulatory_compliance','legal_risk_assessment','due_diligence','mergers_acquisitions','corporate_governance','securities_law','intellectual_property','patent_drafting','patent_prosecution','trademark_registration','copyright_analysis','trade_secret_protection','licensing_agreements','technology_transfer','employment_law','labor_relations','discrimination_analysis','harassment_investigation','wrongful_termination','employment_contracts','non_compete_agreements','immigration_law','visa_applications','asylum_cases','refugee_law','family_law','divorce_proceedings','child_custody','adoption','estate_planning','wills_and_trusts','probate','real_estate_law','property_transactions','landlord_tenant','zoning_and_land_use','environmental_law','climate_regulation','pollution_control','natural_resources','energy_law','criminal_law','criminal_defense','prosecution_strategy'
+    ]
+    data: dict[str, Any] = Field(default_factory=dict)
+
+@router.post('/legal/support')
+def legal_support_route(request: LegalSupportRequest) -> dict[str, Any]:
+    return {"module_id":20,"method":request.method,"result":_legal_support(request.method, request.data),
+            "human_review_required":True}
