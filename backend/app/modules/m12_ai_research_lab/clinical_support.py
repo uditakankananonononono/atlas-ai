@@ -434,3 +434,58 @@ CLINICAL_EXTRA.update({
  'preventive_care_planning':lambda d:preventive_care('preventive_care_planning',d),
  'health_screening_recommendations':lambda d:preventive_care('health_screening_recommendations',d),
 })
+
+def genetic_counseling(data:dict)->dict:
+    pedigree=data.get('pedigree',[]);results=data.get('test_results',[]);knowledge=data.get('knowledge',[]);_require_citations(knowledge,'knowledge')
+    if not pedigree and not results:raise ValueError('pedigree or test_results required')
+    indexed={(str(k.get('gene')),str(k.get('variant'))):k for k in knowledge};interpreted=[]
+    for r in results:
+        k=indexed.get((str(r.get('gene')),str(r.get('variant'))));interpreted.append({**r,'classification':k.get('classification') if k else 'not_in_supplied_knowledge','inheritance':k.get('inheritance') if k else None,'source_url':k.get('source_url') if k else None,'uncertainty':k.get('uncertainty') if k else 'unresolved'})
+    return {'pedigree_as_supplied':pedigree,'result_context':interpreted,'patient_questions':data.get('patient_questions',[]),'values_and_preferences':data.get('values_and_preferences',[]),'consent_status':data.get('consent_status','unknown'),'boundary':'Educational preparation for a certified genetics professional. Atlas does not calculate undocumented familial risk, establish parentage, diagnose, order testing, or make reproductive decisions. Variants absent from supplied knowledge remain unresolved.','disclaimer':DISCLAIMER}
+
+def reproductive_plan(method:str,data:dict)->dict:
+    timeline=data.get('timeline',[]);goals=data.get('goals',[]);options=data.get('options',[]);source=data.get('source',{})
+    if not goals or not source.get('source_url'):raise ValueError('patient goals and source_url required')
+    facts=data.get('patient_facts',{});rows=[]
+    for o in options:
+        missing=[x for x in o.get('required_facts',[]) if x not in facts];contra=set(o.get('contraindications',[]))&set(facts.get('contraindications',[]));rows.append({**o,'missing_facts':missing,'matched_contraindications':sorted(contra),'review_status':'incomplete' if missing else 'blocked_for_review' if contra else 'candidate_for_specialist_discussion'})
+    return {'mode':method,'timeline':timeline,'patient_goals':goals,'option_review':rows,'source':source,'boundary':'Goal-sensitive education and checklist support only. A reproductive specialist confirms diagnosis, prognosis, eligibility, risks, consent, costs and local law. Atlas never selects treatment, creates embryos, transfers gametes/embryos or makes reproductive choices.','disclaimer':DISCLAIMER}
+
+def perinatal_plan(method:str,data:dict)->dict:
+    observations=data.get('observations',{});milestones=data.get('milestones',[]);rules=data.get('escalation_rules',[]);source=data.get('source',{})
+    if not milestones or not source.get('source_url'):raise ValueError('milestones and source_url required')
+    status=[]
+    for m in milestones:
+        value=observations.get(m.get('measure'));status.append({'name':m.get('name'),'measure':m.get('measure'),'observed':value,'due_at':m.get('due_at'),'status':'unknown' if value is None else 'documented'})
+    flags=[]
+    for r in rules:
+        value=observations.get(r.get('field'))
+        if value is None:continue
+        hit=(r.get('equals')==value if 'equals' in r else False) or ('gt' in r and float(value)>float(r['gt'])) or ('lt' in r and float(value)<float(r['lt']))
+        if hit:flags.append({'field':r['field'],'reason':r.get('reason'),'urgency':r.get('urgency'),'next_step':r.get('next_step')})
+    return {'mode':method,'milestone_status':status,'escalation_flags':flags,'birth_or_care_preferences':data.get('preferences',{}),'source':source,'boundary':'Checklist and escalation support for licensed maternal/neonatal teams. Atlas does not interpret fetal monitoring, determine labor status, choose delivery mode, resuscitate, discharge or delay emergency care.','disclaimer':DISCLAIMER}
+
+def life_stage_care(method:str,data:dict)->dict:
+    profile=data.get('profile',{});concerns=data.get('concerns',[]);recommendations=data.get('recommendations',[]);_require_citations(recommendations,'recommendations')
+    selected=[];unknown=[]
+    for r in recommendations:
+        missing=[f for f in r.get('required_fields',[]) if f not in profile]
+        applicable=not missing and all(profile.get(k)==v for k,v in r.get('match',{}).items())
+        row={'topic':r.get('topic'),'source_url':r['source_url'],'shared_decision':r.get('shared_decision',False),'missing_fields':missing}
+        if missing:unknown.append(row)
+        elif applicable:selected.append(row)
+    return {'mode':method,'profile_used':profile,'patient_concerns':concerns,'recommendations_for_shared_review':selected,'insufficient_information':unknown,'boundary':'Inclusive cited-guideline matching, not identity inference or diagnosis. Use anatomy, organs present, medications, age, exposures, goals and preferences relevant to care rather than assumptions from sex, gender, orientation or age alone. Licensed clinicians individualize care.','disclaimer':DISCLAIMER}
+
+CLINICAL_EXTRA.update({
+ 'genetic_counseling':genetic_counseling,
+ 'fertility_treatment_planning':lambda d:reproductive_plan('fertility_treatment_planning',d),
+ 'prenatal_care':lambda d:perinatal_plan('prenatal_care',d),
+ 'labor_and_delivery_management':lambda d:perinatal_plan('labor_and_delivery_management',d),
+ 'neonatal_care':lambda d:perinatal_plan('neonatal_care',d),
+ 'pediatric_care':lambda d:life_stage_care('pediatric_care',d),
+ 'adolescent_medicine':lambda d:life_stage_care('adolescent_medicine',d),
+ 'geriatric_care':lambda d:life_stage_care('geriatric_care',d),
+ 'womens_health':lambda d:life_stage_care('womens_health',d),
+ 'mens_health':lambda d:life_stage_care('mens_health',d),
+ 'lgbtq_health':lambda d:life_stage_care('lgbtq_health',d),
+})
