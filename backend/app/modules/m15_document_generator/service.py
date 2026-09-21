@@ -47,6 +47,22 @@ class Service:
                 else:out+=self._diff(before[i],after[i],f"{path}[{i}]")
             return out
         return [] if before==after else [DiffEntry(path=path,operation="replace",before=before,after=after)]
+    def preflight(self,version:DocumentVersion)->dict:
+        issues=[];warnings=[]
+        if not version.content:issues.append("document content is empty")
+        citation_keys=[c.key for c in version.citations]
+        if len(citation_keys)!=len(set(citation_keys)):issues.append("citation keys must be unique")
+        missing_urls=[c.key for c in version.citations if not c.url]
+        if missing_urls:warnings.append(f"citations without URLs: {', '.join(missing_urls)}")
+        if version.format=="pptx":
+            slides=version.content.get("slides",[])
+            if not slides:issues.append("PPTX has no slides")
+            for i,slide in enumerate(slides,1):
+                if not slide.get("title"):issues.append(f"slide {i} has no title")
+                if len(str(slide.get("body",'')))>1200:warnings.append(f"slide {i} body may overflow")
+        figure_ids=[f.id for f in version.figures]
+        if len(figure_ids)!=len(set(figure_ids)):issues.append("figure IDs must be unique")
+        return {"version_id":version.id,"ready":not issues,"issues":issues,"warnings":warnings,"content_hash":version.content_hash,"citation_count":len(version.citations),"figure_count":len(version.figures)}
     def propose_export(self,version:DocumentVersion)->ExportProposal:
         stored=self._approvals.put(ApprovalRequest(id=str(uuid4()),module_id=15,action_type="render_document",payload={"tenant_id":version.tenant_id,"document_id":version.document_id,"version_id":version.id,"format":version.format,"template_id":version.template_id,"content_hash":version.content_hash}))
         version.status="awaiting_approval";return ExportProposal(approval_id=stored.id,version_id=version.id,status=stored.status.value)

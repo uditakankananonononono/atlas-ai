@@ -21,3 +21,9 @@ def export(s:LocalKnowledgePipeline=Depends(get_service)):return s.export()
 def delete(source_id:str,s:LocalKnowledgePipeline=Depends(get_service)):
     try:return s.delete_verified(source_id)
     except KeyError:raise HTTPException(404,'source not found')
+@router.get('/contradictions')
+def contradictions(subject:str,s:LocalKnowledgePipeline=Depends(get_service)):return s.contradictions(subject)
+@router.post('/claims/substantiate')
+def substantiate(claims:list[Claim],s:LocalKnowledgePipeline=Depends(get_service)):
+    try:return [x.model_dump(mode='json') for x in s.substantiate(claims)]
+    except UnsupportedClaim as e:raise HTTPException(422,str(e))

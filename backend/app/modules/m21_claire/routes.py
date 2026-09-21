@@ -49,3 +49,22 @@ from .atomic_concepts_routes_24_46 import router as atomic_concepts_router_24_46
 router.include_router(atomic_concepts_router_24_46)
 from .atomic_concepts_routes_47_69 import router as atomic_concepts_router_47_69
 router.include_router(atomic_concepts_router_47_69)
+
+from .local_client_protocol import PairingService
+from pydantic import BaseModel
+_pairing=PairingService()
+class PairConfirmIn(BaseModel):
+ server_nonce:str;code:str;name:str;certificate_fingerprint:str;capabilities:set[str]
+@router.post('/devices/pairing-challenge')
+def pairing_challenge(ttl_seconds:int=300):
+ c=_pairing.challenge(max(60,min(ttl_seconds,600)));return {'server_nonce':c.server_nonce,'code':c.code,'expires_at':c.expires_at}
+@router.post('/devices/pair')
+def pair_device(body:PairConfirmIn):
+ try:return _pairing.confirm(body.server_nonce,body.code,body.name,body.certificate_fingerprint,body.capabilities)
+ except (KeyError,ValueError) as e:raise HTTPException(422,str(e))
+@router.get('/devices')
+def devices():return list(_pairing.devices.values())
+@router.delete('/devices/{device_id}')
+def revoke_device(device_id:str):
+ try:_pairing.revoke(device_id);return {'device_id':device_id,'revoked':True}
+ except KeyError:raise HTTPException(404,'device not found')

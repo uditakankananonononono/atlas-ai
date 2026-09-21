@@ -16,6 +16,10 @@ def create(document_id:str,request:CreateVersionRequest,tenant_id:str=Depends(te
 def diff(from_version_id:str,to_version_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     try:return service.diff(service.get(tenant_id,from_version_id),service.get(tenant_id,to_version_id))
     except KeyError as exc:raise HTTPException(404,str(exc)) from exc
+@router.get("/versions/{version_id}/preflight")
+def preflight(version_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
+    try:return service.preflight(service.get(tenant_id,version_id))
+    except KeyError as exc:raise HTTPException(404,str(exc)) from exc
 @router.post("/versions/{version_id}/export-proposals",response_model=ExportProposal,status_code=202)
 def export(version_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     try:return service.propose_export(service.get(tenant_id,version_id))
