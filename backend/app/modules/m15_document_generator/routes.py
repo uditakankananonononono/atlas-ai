@@ -30,3 +30,13 @@ class Design333To359In(BaseModel):
 def design_333_359_route(body:Design333To359In,tenant_id:str=Depends(tenant)):
     try:return {'tenant_id':tenant_id,**design_support_333_359(body.feature_id,body.data)}
     except ValueError as error:raise HTTPException(422,str(error)) from error
+
+@router.get('/creative-production-306-332')
+def creative_catalog_306_332():
+    from .creative_production_306_332 import catalog
+    return catalog()
+@router.post('/creative-production-306-332/{row_id}')
+def creative_plan_306_332(row_id:int,payload:dict):
+    from .creative_production_306_332 import CreativeError,plan
+    try:return plan(row_id,payload)
+    except CreativeError as exc:raise HTTPException(status_code=422,detail=str(exc)) from exc
