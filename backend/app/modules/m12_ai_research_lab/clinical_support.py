@@ -50,5 +50,34 @@ def clinical_support(method:str,data:dict)->dict:
     methods={'differential_diagnosis':differential,'treatment_protocol_selection':protocol,'drug_interaction_check':interactions,'dosage_calculation':dosage}
     if method=='clinical_decision_support':
         return {'sections':{'differential':differential(data['differential']) if data.get('differential') else None,'protocols':protocol(data['protocols']) if data.get('protocols') else None,'interactions':interactions(data['interactions']) if data.get('interactions') else None,'dosage':dosage(data['dosage']) if data.get('dosage') else None},'disclaimer':DISCLAIMER}
+    if method in CLINICAL_EXTRA:return CLINICAL_EXTRA[method](data)
     if method not in methods:raise ValueError('unsupported clinical support method')
     return methods[method](data)
+
+def imaging_support(method:str,data:dict)->dict:
+    """Validate externally-produced measurements/findings; no pixel-level diagnosis."""
+    findings=data.get('findings',[]);metadata=data.get('study_metadata',{});source=data.get('source',{})
+    if not isinstance(findings,list) or not findings or not metadata.get('modality') or not source.get('source_url'):raise ValueError('findings, study modality and source_url required')
+    normalized=[]
+    for f in findings:
+        if not f.get('label') or 'confidence' not in f:raise ValueError('each finding needs label and confidence')
+        confidence=float(f['confidence'])
+        if not 0<=confidence<=1:raise ValueError('confidence must be in [0,1]')
+        normalized.append({'label':f['label'],'confidence':confidence,'location':f.get('location'),'measurement':f.get('measurement'),'provenance':f.get('provenance','external_model_or_clinician')})
+    normalized.sort(key=lambda x:x['confidence'],reverse=True)
+    return {'mode':method,'study_metadata':metadata,'findings_for_specialist_review':normalized,'quality_flags':data.get('quality_flags',[]),'source':source,'coverage_warning':'Atlas did not inspect pixels/slides directly; it organizes supplied findings and cannot rule out unlisted abnormalities.','disclaimer':DISCLAIMER}
+
+def waveform_support(method:str,data:dict)->dict:
+    rate=float(data.get('sampling_rate_hz',0));samples=data.get('samples');annotations=data.get('annotations',[]);source=data.get('source',{})
+    if rate<=0 or not isinstance(samples,list) or len(samples)<3 or any(not isinstance(v,(int,float)) or not isfinite(float(v)) for v in samples) or not source.get('source_url'):raise ValueError('finite samples, positive sampling rate and source_url required')
+    values=[float(v) for v in samples];duration=len(values)/rate;mean=sum(values)/len(values);rms=(sum(v*v for v in values)/len(values))**.5;peak=max(abs(v) for v in values);zero_crossings=sum((a<mean)<(b<mean) for a,b in zip(values,values[1:]));return {'mode':method,'signal_summary':{'samples':len(values),'sampling_rate_hz':rate,'duration_seconds':duration,'mean':mean,'rms':rms,'absolute_peak':peak,'mean_crossing_rate_hz':zero_crossings/(2*duration) if duration else 0},'supplied_annotations':annotations,'quality_flags':data.get('quality_flags',[]),'source':source,'interpretation_boundary':'Signal statistics are not rhythm, seizure, or disease interpretation. Specialist review of the original tracing is required.','disclaimer':DISCLAIMER}
+
+def genomics_support(data:dict)->dict:
+    variants=data.get('variants',[]);knowledge=data.get('knowledge_records',[])
+    if not isinstance(variants,list) or not variants:raise ValueError('variants required')
+    _require_citations(knowledge,'knowledge_records');by_key={(str(r.get('gene')),str(r.get('variant'))):r for r in knowledge};rows=[]
+    for v in variants:
+        key=(str(v.get('gene')),str(v.get('variant')));record=by_key.get(key);rows.append({'gene':key[0],'variant':key[1],'classification':record.get('classification') if record else 'not_in_supplied_knowledge','evidence_level':record.get('evidence_level') if record else None,'condition':record.get('condition') if record else None,'source_url':record.get('source_url') if record else None,'review_status':'specialist_review_required'})
+    return {'variant_interpretations':rows,'coverage_warning':'Absence from supplied knowledge is not benign evidence. Confirm nomenclature, zygosity, reference build and current expert-curated sources.','disclaimer':DISCLAIMER}
+
+CLINICAL_EXTRA={'medical_image_analysis':lambda d:imaging_support('medical_image_analysis',d),'radiology_report_generation':lambda d:imaging_support('radiology_report_generation',d),'pathology_slide_analysis':lambda d:imaging_support('pathology_slide_analysis',d),'ecg_interpretation':lambda d:waveform_support('ecg_interpretation',d),'eeg_analysis':lambda d:waveform_support('eeg_analysis',d),'genomics_interpretation':genomics_support}
