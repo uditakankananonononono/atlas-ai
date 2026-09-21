@@ -20,7 +20,7 @@ def test_verified_rows_have_real_code_commit_and_test_evidence():
         assert Path(row["test_evidence"]).exists()
 
 def test_all_product_modules_are_live_registered():
-    assert {spec.id for spec in IMPLEMENTED_SPECS} == set(range(25))
+    assert {spec.id for spec in IMPLEMENTED_SPECS} == set(range(26))
 
 
 def test_narrative_checkpoint_counts_match_machine_ledger():
