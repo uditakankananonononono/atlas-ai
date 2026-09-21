@@ -35,3 +35,12 @@ def legal_support_route(body:LegalSupportIn,tenant:TenantContext=Depends(require
     if body.method not in LEGAL_METHODS: raise HTTPException(422,'unsupported legal support method')
     try:return {'tenant_id':tenant.tenant_id,'method':body.method,'result':legal_support(body.method,body.data),'requires_counsel_review':True}
     except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .education_support import education_support
+class EducationSupportIn(BaseModel):
+    feature_id:int=Field(ge=1460,le=1509)
+    data:dict[str,Any]=Field(default_factory=dict)
+@router.post('/education/support')
+def education_support_route(body:EducationSupportIn,tenant:TenantContext=Depends(require_tenant)):
+    try:return {'tenant_id':tenant.tenant_id,**education_support(body.feature_id,body.data)}
+    except ValueError as error:raise HTTPException(422,str(error)) from error
