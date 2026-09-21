@@ -221,3 +221,46 @@ def test_dashboard_freshness_and_slo_coverage():
  o=P('dashboards',{'panels':['availability','latency'],'audience':'oncall','refresh_seconds':60,'slos':['availability']})['result']
  assert o['freshness_bounded'] and o['slo_panel_coverage']==1
  with pytest.raises(ValueError):P('dashboards',{'panels':['p'],'audience':'a','refresh_seconds':0})
+
+# ---- stateful project lifecycle, provenance, exact approval and rollback ----
+from app.modules.m20_general_cognitive_worker.platform_engineering_585_634 import PlatformWorkflowStore, WorkflowIdentity, ROW_BY_METHOD
+
+
+def test_platform_workflow_exact_approval_transition_and_rollback():
+ store=PlatformWorkflowStore(); owner=WorkflowIdentity('tenant-a','owner')
+ proposed=store.propose(owner,'rate_limiting',{'limit':10,'window_seconds':1,'key':'tenant'},source_ids=['design-doc:7'])
+ assert proposed['state']=='awaiting_approval' and proposed['row_id']==619
+ with pytest.raises(ValueError,match='hash'):store.approve(owner,proposed['workflow_id'],artifact_sha256='wrong',decision='approve')
+ approved=store.approve(owner,proposed['workflow_id'],artifact_sha256=proposed['artifacts'][0]['artifact_sha256'],decision='approve')
+ assert approved['state']=='approved'
+ applied=store.apply(owner,proposed['workflow_id']);assert applied['state']=='applied_in_atlas_only' and not applied['external_effects_executed']
+ rolled=store.rollback(owner,proposed['workflow_id'],reason='metric regression');assert rolled['state']=='rolled_back_in_atlas_only'
+ assert [e['event'] for e in rolled['history']]==['proposed','approved','applied_in_atlas_only','rolled_back_in_atlas_only']
+
+
+def test_platform_workflow_tenant_and_actor_isolation():
+ store=PlatformWorkflowStore(); owner=WorkflowIdentity('tenant-a','owner')
+ proposed=store.propose(owner,'observability',sample('observability'),source_ids=['slo:1'])
+ with pytest.raises(KeyError):store.view(WorkflowIdentity('tenant-b','owner'),proposed['workflow_id'])
+ with pytest.raises(PermissionError):store.approve(WorkflowIdentity('tenant-a','intruder'),proposed['workflow_id'],artifact_sha256=proposed['artifacts'][0]['artifact_sha256'],decision='approve')
+
+
+def test_platform_workflow_requires_provenance_and_rejects_apply_without_approval():
+ store=PlatformWorkflowStore(); owner=WorkflowIdentity('tenant-a','owner')
+ with pytest.raises(ValueError,match='provenance'):store.propose(owner,'dashboards',sample('dashboards'),source_ids=[])
+ proposed=store.propose(owner,'dashboards',sample('dashboards'),source_ids=['dashboard-spec'])
+ with pytest.raises(ValueError,match='approval'):store.apply(owner,proposed['workflow_id'])
+ assert proposed['artifacts'][0]['provenance']['fabricated_external_evidence'] is False
+
+
+def _row_lifecycle_test(method):
+ def test():
+  store=PlatformWorkflowStore(); identity=WorkflowIdentity('tenant-row',f'actor-{ROW_BY_METHOD[method]}')
+  proposed=store.propose(identity,method,sample(method),source_ids=[f'requirement:{ROW_BY_METHOD[method]}'])
+  assert proposed['row_id']==ROW_BY_METHOD[method]
+  assert proposed['artifacts'][0]['analysis']==P(method,sample(method))['result']
+  assert proposed['artifacts'][0]['provenance']['derived_by']==f'row-{ROW_BY_METHOD[method]}:{method}'
+ return test
+
+for _method in METHODS:
+ globals()[f'test_row_{ROW_BY_METHOD[_method]}_{_method}_workflow_artifact']=_row_lifecycle_test(_method)
