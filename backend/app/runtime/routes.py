@@ -26,3 +26,7 @@ router.include_router(technical_spec_router_166_198)
 # Executable technical architecture contracts, source-mapped rows A01-A33.
 from .technical_architecture_routes_a01_a33 import router as technical_architecture_router_a01_a33
 router.include_router(technical_architecture_router_a01_a33)
+
+# Semantic verification report, owner-feature rows 1723-2010.
+from .semantic_wave_routes_1723_2010 import router as semantic_wave_router_1723_2010
+router.include_router(semantic_wave_router_1723_2010)

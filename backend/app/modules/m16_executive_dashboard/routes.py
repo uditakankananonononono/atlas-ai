@@ -249,3 +249,7 @@ def emerging_analyze_910_959(body:EmergingAnalysisIn):
     if body.method not in ROWS:raise HTTPException(422,'unsupported emerging method')
     try:return run(body.method,body.data,body.params,body.seed)
     except (ValueError,TypeError,KeyError,ZeroDivisionError) as exc:raise HTTPException(422,str(exc)) from exc
+
+# Direct semantic evidence surface for owner-feature rows 1910-1959.
+from .semantic_ai_routes_1910_1959 import router as semantic_ai_router_1910_1959
+router.include_router(semantic_ai_router_1910_1959)
