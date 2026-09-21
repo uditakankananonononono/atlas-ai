@@ -1,7 +1,7 @@
 """Focused evidence for finance feature rows 1310-1359."""
 import math
 import pytest
-from app.modules.m16_executive_dashboard import analysis, finance
+from app.modules.m16_executive_dashboard import analysis, finance_core as finance
 
 CASES={
 'financial_statement_analysis':({'revenue':100,'cogs':60,'operating_expenses':20,'assets':200,'liabilities':80,'current_assets':70,'current_liabilities':35,'inventory':20,'net_income':12},{}),
