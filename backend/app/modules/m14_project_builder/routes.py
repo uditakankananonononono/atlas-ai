@@ -99,3 +99,13 @@ def export_project(project_id:str,tenant_id:str=Depends(tenant),service:Service=
     project=_get_or_404(service,tenant_id,project_id)
     try:return service.export_project(project)
     except ValueError as exc:raise HTTPException(422,str(exc)) from exc
+
+from typing import Any
+from .architecture_support_635_684 import architecture_support_635_684
+class Architecture635To684In(BaseModel):
+    feature_id:int=Field(ge=635,le=684)
+    data:dict[str,Any]=Field(default_factory=dict)
+@router.post('/architecture-635-684/support')
+def architecture_635_684_route(body:Architecture635To684In,tenant_id:str=Depends(tenant)):
+    try:return {'tenant_id':tenant_id,**architecture_support_635_684(body.feature_id,body.data)}
+    except ValueError as error:raise HTTPException(422,str(error)) from error
