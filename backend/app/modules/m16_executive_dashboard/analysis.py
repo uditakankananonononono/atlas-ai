@@ -10,7 +10,7 @@ from __future__ import annotations
 import math,random,statistics
 from collections import Counter
 ROWS={
-"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062,"synthetic_control":1063,"matching_methods":1064,"propensity_score_matching":1065,"coarsened_exact_matching":1066,"genetic_matching":1067,"entropy_balancing":1068,"inverse_probability_weighting":1069,"doubly_robust_estimation":1070,"targeted_maximum_likelihood":1071,"machine_learning_causal_inference":1072,"causal_forests":1073,"double_machine_learning":1074,"orthogonalized_estimation":1075,"cross_fitting":1076,"sample_splitting":1077}
+"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062,"synthetic_control":1063,"matching_methods":1064,"propensity_score_matching":1065,"coarsened_exact_matching":1066,"genetic_matching":1067,"entropy_balancing":1068,"inverse_probability_weighting":1069,"doubly_robust_estimation":1070,"targeted_maximum_likelihood":1071,"machine_learning_causal_inference":1072,"causal_forests":1073,"double_machine_learning":1074,"orthogonalized_estimation":1075,"cross_fitting":1076,"sample_splitting":1077,"post_selection_inference":1078,"selective_inference":1079,"simultaneous_inference":1080,"false_discovery_rate_control":1081,"family_wise_error_rate":1082}
 def _nums(data,key="values",min_n=1):
     v=data.get(key)
     if not isinstance(v,list) or len(v)<min_n or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in v):raise ValueError(f"{key} must contain at least {min_n} finite numbers")
@@ -641,5 +641,45 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
         ids=data.get("ids");train_fraction=float(p.get("train_fraction",.5));seed2=int(p.get("split_seed",seed))
         if not isinstance(ids,list) or len(ids)<2 or not 0<train_fraction<1:raise ValueError("at least two ids and train_fraction in (0,1) required")
         keyed=sorted([(random.Random(f"{seed2}:{i}").random(),i) for i in ids]);n=max(1,min(len(ids)-1,round(len(ids)*train_fraction)));train=[i for _,i in keyed[:n]];holdout=[i for _,i in keyed[n:]];o["output"]={"train_ids":train,"holdout_ids":holdout,"train_count":len(train),"holdout_count":len(holdout),"seed":seed2,"disjoint":set(train).isdisjoint(holdout)};a += ["IDs represent independent analysis units; deterministic seeded assignment occurs before outcome inspection."];limits += ["Single split can be unstable and less efficient; use repeated splits/cross-fitting when valid."]
+    elif method=="post_selection_inference":
+        estimates=_nums(data,"estimates");ses=_nums(data,"standard_errors");selected=data.get("selected_indices");alpha=float(p.get("alpha",.05))
+        if len(estimates)!=len(ses) or not isinstance(selected,list) or not selected or any(not isinstance(i,int) or i<0 or i>=len(estimates) for i in selected) or any(v<=0 for v in ses):raise ValueError("aligned estimates/SEs and valid selected indices required")
+        zcrit=float(p.get("z_critical",1.96));adjusted_alpha=alpha/len(selected);adj_z=float(p.get("adjusted_z",2.576 if adjusted_alpha<=.01 else 2.24 if adjusted_alpha<.05 else 1.96));rows=[]
+        for i in selected:rows.append({"index":i,"estimate":estimates[i],"naive_interval":[estimates[i]-zcrit*ses[i],estimates[i]+zcrit*ses[i]],"selection_adjusted_interval":[estimates[i]-adj_z*ses[i],estimates[i]+adj_z*ses[i]],"adjusted_alpha":adjusted_alpha})
+        o["output"]={"selected":rows,"selection_count":len(selected),"correction":"Bonferroni over selected targets"};a += ["Selected target set is caller supplied and intervals use asymptotic Normal standard errors."];limits += ["Multiplicity correction is not full conditional selective inference for a data-dependent selection event."]
+    elif method=="selective_inference":
+        estimate=float(data.get("estimate"));se=float(data.get("standard_error"));threshold=float(data.get("selection_threshold"));direction=p.get("direction","greater")
+        if se<=0 or direction not in {"greater","less"}:raise ValueError("positive standard_error and direction greater/less required")
+        z=estimate/se;t=threshold/se
+        if direction=="greater":
+            if estimate<threshold:raise ValueError("estimate does not satisfy selection event")
+            psel=(1-_normal_cdf(z))/max(1-_normal_cdf(t),1e-300)
+        else:
+            if estimate>threshold:raise ValueError("estimate does not satisfy selection event")
+            psel=_normal_cdf(z)/max(_normal_cdf(t),1e-300)
+        o["output"]={"z":z,"selection_z":t,"conditional_one_sided_p_value":min(1,psel),"selection_event":f"estimate {direction} {threshold}"};a += ["Single Gaussian estimate selected by one-sided thresholding; known/asymptotic standard error."];limits += ["One-dimensional truncated-Normal pivot only; no lasso/polyhedral selection or confidence interval inversion."]
+    elif method=="simultaneous_inference":
+        estimates=_nums(data,"estimates");ses=_nums(data,"standard_errors");alpha=float(p.get("alpha",.05));method=p.get("correction","bonferroni")
+        if len(estimates)!=len(ses) or any(v<=0 for v in ses) or method not in {"bonferroni","sidak"}:raise ValueError("aligned positive SEs and supported correction required")
+        m=len(estimates);per=alpha/m if method=="bonferroni" else 1-(1-alpha)**(1/m);z=float(p.get("critical_value",2.576 if per<=.01 else 1.96));intervals=[[b-z*s,b+z*s] for b,s in zip(estimates,ses)];o["output"]={"intervals":intervals,"family_confidence":1-alpha,"per_comparison_alpha":per,"critical_value":z,"correction":method};a += ["Asymptotic Normal estimates; Sidak additionally relies on independence."];limits += ["Critical value uses caller override/coarse default; production should compute exact Normal quantile and account for covariance."]
+    elif method=="false_discovery_rate_control":
+        pvals=_nums(data,"p_values");alpha=float(p.get("alpha",.05));method=p.get("method","benjamini_hochberg")
+        if any(v<0 or v>1 for v in pvals) or method not in {"benjamini_hochberg","benjamini_yekutieli"}:raise ValueError("p-values in [0,1] and supported method required")
+        m=len(pvals);order=sorted(range(m),key=lambda i:pvals[i]);c=sum(1/i for i in range(1,m+1)) if method=="benjamini_yekutieli" else 1;k=-1
+        for rank,i in enumerate(order,1):
+            if pvals[i]<=alpha*rank/(m*c):k=rank
+        rejected=sorted(order[:k]) if k>0 else [];adj=[1.0]*m;running=1.0
+        for rank,i in reversed(list(enumerate(order,1))):running=min(running,pvals[i]*m*c/rank);adj[i]=min(1,running)
+        o["output"]={"rejected_indices":rejected,"adjusted_p_values":adj,"discoveries":len(rejected),"method":method,"alpha":alpha};a += ["Valid p-values; BH controls FDR under independence/positive dependence, BY under arbitrary dependence."];limits += ["No adaptive pi0 estimation or hierarchical/online FDR."]
+    elif method=="family_wise_error_rate":
+        pvals=_nums(data,"p_values");alpha=float(p.get("alpha",.05));method=p.get("method","holm")
+        if any(v<0 or v>1 for v in pvals) or method not in {"bonferroni","holm","sidak"}:raise ValueError("p-values in [0,1] and supported method required")
+        m=len(pvals)
+        if method=="bonferroni":adj=[min(1,v*m) for v in pvals]
+        elif method=="sidak":adj=[min(1,1-(1-v)**m) for v in pvals]
+        else:
+            order=sorted(range(m),key=lambda i:pvals[i]);adj=[1.0]*m;running=0
+            for rank,i in enumerate(order):running=max(running,(m-rank)*pvals[i]);adj[i]=min(1,running)
+        rejected=[i for i,v in enumerate(adj) if v<=alpha];o["output"]={"adjusted_p_values":adj,"rejected_indices":rejected,"method":method,"alpha":alpha};a += ["Input p-values are valid; Sidak exact control relies on independence."];limits += ["Controls probability of at least one false rejection; can be conservative with many/dependent tests."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
     return o
