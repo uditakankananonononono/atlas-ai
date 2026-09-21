@@ -206,3 +206,45 @@ def test683_functional_core_purity():
 def test684_event_storming_chronology():
  o=A(684,{'event_storm':[{'sequence':2,'command':'Ship','produces':'OrderPlaced'},{'sequence':1,'command':'Place'}],'domain_events':[{'context_id':'sales','past_tense_name':'OrderPlaced'}]})
  assert o['chronologically_ordered'] is False and o['commands_without_produced_events']==['Place']
+
+# ---- durable state, provenance, approval and rollback -----------------------
+def test_workflow_persists_artifact_provenance_and_real_transitions(tmp_path):
+ from app.modules.m14_project_builder.architecture_workflow_635_684 import ArchitectureWorkflowRepository,ArchitectureWorkflowService
+ service=ArchitectureWorkflowService(ArchitectureWorkflowRepository(tmp_path/'workflow.db'))
+ draft=service.draft('tenant-a','architect',646,payload(646),{'source_id':'owner-brief-7','observed_at':'2026-09-21T10:00:00Z'})
+ assert draft.state=='draft' and len(draft.artifact_sha256)==64 and draft.provenance['source_id']=='owner-brief-7'
+ review=service.submit('tenant-a','architect',draft.id)
+ approved=service.approve('tenant-a','reviewer',draft.id,'approval-646')
+ applied=service.apply('tenant-a','worker',draft.id,'approval-646')
+ rolled=service.rollback('tenant-a','reviewer',draft.id,'replaced by measured dependency durations')
+ assert [draft.version,review.version,approved.version,applied.version,rolled.version]==[1,2,3,4,5]
+ assert rolled.state=='rolled_back' and rolled.rollback_reason.startswith('replaced')
+ assert rolled.analysis['critical_path']==['a','b']
+
+def test_workflow_fails_closed_on_wrong_tenant_actor_approval_and_transition(tmp_path):
+ from app.modules.m14_project_builder.architecture_workflow_635_684 import ArchitectureWorkflowError,ArchitectureWorkflowRepository,ArchitectureWorkflowService
+ service=ArchitectureWorkflowService(ArchitectureWorkflowRepository(tmp_path/'workflow.db'))
+ record=service.draft('tenant-a','architect',635,payload(635),{'source_id':'monitor-export','observed_at':'2026-09-21T10:00:00Z'})
+ with pytest.raises(KeyError):service.repository.get('tenant-b',record.id)
+ with pytest.raises(ArchitectureWorkflowError,match='drafting actor'):service.submit('tenant-a','intruder',record.id)
+ service.submit('tenant-a','architect',record.id)
+ with pytest.raises(ArchitectureWorkflowError,match='matching approval'):service.apply('tenant-a','worker',record.id,'invented')
+ service.approve('tenant-a','reviewer',record.id,'real-approval')
+ with pytest.raises(ArchitectureWorkflowError,match='matching approval'):service.apply('tenant-a','worker',record.id,'wrong-approval')
+ with pytest.raises(ArchitectureWorkflowError,match='applied'):service.rollback('tenant-a','reviewer',record.id,'too early')
+
+def test_workflow_route_is_tenant_actor_scoped_and_does_not_claim_external_effect(tmp_path,monkeypatch):
+ monkeypatch.chdir(tmp_path)
+ client=TestClient(app); headers={'x-atlas-tenant':'tenant-route','x-atlas-actor':'architect'}
+ body={'feature_id':652,'data':payload(652),'provenance':{'source_id':'queue-sample','observed_at':'2026-09-21T10:00:00Z'}}
+ made=client.post('/api/v1/project-builder/architecture-635-684/workflows',headers=headers,json=body)
+ assert made.status_code==201; record=made.json(); assert record['tenant_id']=='tenant-route' and record['actor_id']=='architect'
+ hidden=client.get(f"/api/v1/project-builder/architecture-635-684/workflows/{record['id']}",headers={'x-atlas-tenant':'other','x-atlas-actor':'x'})
+ assert hidden.status_code==404
+ assert record['analysis']['boundary'].startswith('Simulation only')
+
+def test_workflow_rejects_missing_provenance_and_invalid_scope(tmp_path):
+ from app.modules.m14_project_builder.architecture_workflow_635_684 import ArchitectureWorkflowError,ArchitectureWorkflowRepository,ArchitectureWorkflowService
+ service=ArchitectureWorkflowService(ArchitectureWorkflowRepository(tmp_path/'workflow.db'))
+ with pytest.raises(ArchitectureWorkflowError,match='provenance'):service.draft('tenant','actor',684,payload(684),{'source_id':'x'})
+ with pytest.raises(ArchitectureWorkflowError,match='tenant_id'):service.draft('','actor',684,payload(684),{'source_id':'x','observed_at':'now'})
