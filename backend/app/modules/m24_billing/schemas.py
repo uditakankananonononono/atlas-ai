@@ -23,3 +23,6 @@ class SubscriptionOut(BaseModel):
  tenant_id:str;plan_id:str;status:SubscriptionStatus;customer_id:str|None=None;subscription_id:str|None=None;current_period_start:datetime|None=None;current_period_end:datetime|None=None;cancel_at_period_end:bool=False
 class InvoiceOut(BaseModel):
  id:str;status:str;currency:str;amount_due:int;amount_paid:int;period_start:datetime|None=None;period_end:datetime|None=None;hosted_invoice_url:str|None=None
+
+class CommitmentPreviewIn(BaseModel):
+ plan_id:str=Field(min_length=1,max_length=40);currency:str=Field(default='USD',min_length=3,max_length=3);quantity:int=Field(default=1,ge=1,le=10000);tax_rate_percent:float=Field(default=0,ge=0,le=100);renewal_interval:Literal['month','year']='month';cancellation_policy:str=Field(min_length=1,max_length=5000);cancellation_deadline:datetime|None=None;as_of:datetime|None=None

@@ -54,7 +54,7 @@ All module routers below are mounted by `backend/app/main.py`. "Implemented core
 | 21 | Claire | in-Atlas workflows, bounded capabilities, expiring fingerprinted device pairing/revocation, per-action gates and deception refusal | installable signed paired-PC daemon and durable orchestration |
 | 22 | Tools Hub | free official GitHub/PyPI/npm discovery, ranked candidates, approval proposals and separate scanner/installer primitives | connect proposal to installer with tenant persistence and receipts |
 | 23 | Study Abroad | advising, identity interview, essay tools and lifecycle planning | live program-source and application acceptance |
-| 24 | Billing | plan metadata, test-mode checkout/cancel/invoice approvals, signed idempotent webhook, entitlements and metering | live Stripe acceptance and production pricing/tax setup |
+| 24 | Billing | exact-charge and cancellation commitment preview,  plan metadata, test-mode checkout/cancel/invoice approvals, signed idempotent webhook, entitlements and metering | live Stripe acceptance and production pricing/tax setup |
 | 25 | Knowledge Copilot & Training | consent-bound local ingestion/search/export plus mounted contradiction and claim-substantiation checks | universal module artifact routing and device capture adapter |
 
 See [`ENHANCEMENTS.md`](ENHANCEMENTS.md) for module-by-module landed enhancements and clearly separated next candidates, prioritizing computational-science workflows.
