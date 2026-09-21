@@ -13,10 +13,15 @@ for m in ["cochlear_implants","retinal_implants","memory_prosthetics"]:C[m]={"ba
 for m in ["deep_brain_stimulation","optogenetics","chemogenetics","neurofeedback","neurostimulation","transcranial_magnetic_stimulation","focused_ultrasound"]:C[m]={"successes":8,"total":10,"control_successes":4,"control_total":10,"adverse_events":1,"frequency_hz":10,"intensity":.5,"duration_minutes":20}
 C.update({"brain_mapping":{"regional_activation":[1,4,2],"region_labels":["a","b","c"]},"connectomics":{"nodes":["a","b","c"],"edges":[["a","b"],["b","c"]]},"neural_encoding":{"stimulus":[1,2,3],"response":[2,4,6]},"neural_dust":{"packets_transmitted":100,"packets_received":90,"energy_mj":9,"hours":5}})
 
-def test_every_row_concept_specific_and_bounded():
+def test_case_registry_covers_exact_ledger_range():
  assert set(C)==set(ROWS) and sorted(ROWS.values())==list(range(960,1010))
- for m,d in C.items():
-  r=run(m,d);assert r["feature_row"]==ROWS[m] and r["inputs"]==d and any("not medical advice" in x for x in r["output"]["method_limits"])
+
+@pytest.mark.parametrize("method", sorted(ROWS, key=ROWS.get))
+def test_every_row_is_concept_specific_auditable_and_bounded(method):
+ data=C[method]; result=run(method,data)
+ assert result["feature_row"]==ROWS[method]
+ assert result["inputs"]==data
+ assert result["output"] and any("not medical advice" in x for x in result["output"]["method_limits"])
 
 def test_scientific_semantics():
  assert run("crispr_applications",C["crispr_applications"])["output"]["edit_efficiency"]==.8
