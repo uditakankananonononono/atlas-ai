@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1436,
-    "verified-pushed": 571,
+    "missing": 1430,
+    "verified-pushed": 577,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -14540,9 +14540,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Readmission Prediction",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "17e06c8521dd37c7cdc3a59566dd977c04e603bf",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1125_1130.py"
+      },
+      "boundary": "Cited validated-model or transparent rule execution only. Refuse missing factors, expose model version/population/calibration and never use output autonomously for diagnosis, prognosis, emergency disposition, treatment, or resource allocation. Licensed clinical review and local emergency policy control."
     },
     {
       "id": 1126,
@@ -14550,9 +14554,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Sepsis Early Warning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "17e06c8521dd37c7cdc3a59566dd977c04e603bf",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1125_1130.py"
+      },
+      "boundary": "Cited validated-model or transparent rule execution only. Refuse missing factors, expose model version/population/calibration and never use output autonomously for diagnosis, prognosis, emergency disposition, treatment, or resource allocation. Licensed clinical review and local emergency policy control."
     },
     {
       "id": 1127,
@@ -14560,9 +14568,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Mortality Prediction",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "17e06c8521dd37c7cdc3a59566dd977c04e603bf",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1125_1130.py"
+      },
+      "boundary": "Cited validated-model or transparent rule execution only. Refuse missing factors, expose model version/population/calibration and never use output autonomously for diagnosis, prognosis, emergency disposition, treatment, or resource allocation. Licensed clinical review and local emergency policy control."
     },
     {
       "id": 1128,
@@ -14570,9 +14582,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Length of Stay Prediction",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "17e06c8521dd37c7cdc3a59566dd977c04e603bf",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1125_1130.py"
+      },
+      "boundary": "Cited validated-model or transparent rule execution only. Refuse missing factors, expose model version/population/calibration and never use output autonomously for diagnosis, prognosis, emergency disposition, treatment, or resource allocation. Licensed clinical review and local emergency policy control."
     },
     {
       "id": 1129,
@@ -14580,9 +14596,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "ICU Resource Allocation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "17e06c8521dd37c7cdc3a59566dd977c04e603bf",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1125_1130.py"
+      },
+      "boundary": "Cited validated-model or transparent rule execution only. Refuse missing factors, expose model version/population/calibration and never use output autonomously for diagnosis, prognosis, emergency disposition, treatment, or resource allocation. Licensed clinical review and local emergency policy control."
     },
     {
       "id": 1130,
@@ -14590,9 +14610,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Emergency Triage",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "17e06c8521dd37c7cdc3a59566dd977c04e603bf",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1125_1130.py"
+      },
+      "boundary": "Cited validated-model or transparent rule execution only. Refuse missing factors, expose model version/population/calibration and never use output autonomously for diagnosis, prognosis, emergency disposition, treatment, or resource allocation. Licensed clinical review and local emergency policy control."
     },
     {
       "id": 1131,
