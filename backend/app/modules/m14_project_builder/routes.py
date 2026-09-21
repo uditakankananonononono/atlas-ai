@@ -120,3 +120,12 @@ def semantic_architecture_635_684(row_id:int,payload:dict):
  from .semantic_architecture_635_684 import run
  try:return run(row_id,payload)
  except (ValueError,TypeError,KeyError,ZeroDivisionError) as exc:raise HTTPException(422,str(exc)) from exc
+
+class EngineeringMethod510To574In(BaseModel):
+    data:dict[str,Any]
+
+@router.post('/engineering-design-510-574/{method}')
+def engineering_design_510_574(method:str,body:EngineeringMethod510To574In,tenant_id:str=Depends(tenant)):
+    from .engineering_methods_510_574 import run_engineering_method
+    try:return {'tenant_id':tenant_id,**run_engineering_method(method,body.data)}
+    except (ValueError,TypeError,KeyError,ZeroDivisionError) as exc:raise HTTPException(422,str(exc)) from exc
