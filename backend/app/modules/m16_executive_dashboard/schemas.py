@@ -70,3 +70,11 @@ class AnalysisJobOut(BaseModel):
     id:str;method:str;feature_row:int;data:dict[str,Any];params:dict[str,Any];seed:int;status:str;output:dict[str,Any]|None;error:str|None;created_at:datetime;completed_at:datetime|None
 class AnalysisMethodInfo(BaseModel):
     method:str;feature_row:int;summary:str;required_inputs:list[str];limits:list[str]
+
+class FinanceAnalysisIn(BaseModel):
+    method:str=Field(min_length=1,max_length=80)
+    data:dict[str,Any]=Field(default_factory=dict)
+    seed:int=Field(0,ge=0)
+class FinanceMethodInfo(BaseModel):
+    method:str
+    feature_row:int
