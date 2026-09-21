@@ -634,7 +634,7 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
     elif method=="cross_fitting":
         ids=data.get("ids");predictions=_nums(data,"predictions");targets=_nums(data,"targets");folds=int(p.get("folds",2))
         if not isinstance(ids,list) or not len(ids)==len(predictions)==len(targets) or folds<2 or folds>len(ids):raise ValueError("aligned ids and valid fold count required")
-        assignment=[abs(hash(str(i)))%folds for i in ids];errors=[yhat-y for yhat,y in zip(predictions,targets)];counts={f:assignment.count(f) for f in range(folds)}
+        assignment=[int.from_bytes(__import__("hashlib").sha256(str(i).encode()).digest()[:8],"big")%folds for i in ids];errors=[yhat-y for yhat,y in zip(predictions,targets)];counts={f:assignment.count(f) for f in range(folds)}
         if any(v==0 for v in counts.values()):raise ValueError("hash assignment produced empty fold; use more observations or fewer folds")
         o["output"]={"fold_assignment":assignment,"fold_counts":counts,"out_of_fold_mse":_mean([e*e for e in errors]),"mean_error":_mean(errors)};a += ["Predictions are genuinely out-of-fold and ids are stable independent units."];limits += ["Validates/evaluates supplied predictions; does not train nuisance models or prevent leakage upstream."]
     elif method=="sample_splitting":
