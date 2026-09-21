@@ -1559,7 +1559,7 @@ from .specialized_domain_routes import router as specialized_domain_router
 router.include_router(specialized_domain_router)
 
 # Distinct legal support engines, owner feature rows 1260-1309.
-from .legal_support_1260_1309 import analyze as _analyze_legal_feature
+from .legal_support_1260_1309 import analyze_legal_feature as _analyze_legal_feature
 class Legal1260To1309Request(BaseModel):
     feature_id: int = Field(ge=1260, le=1309)
     actor_id: str = Field(min_length=1)
