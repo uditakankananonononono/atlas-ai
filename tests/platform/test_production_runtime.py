@@ -51,3 +51,36 @@ def test_readiness_requires_database_cache_and_current_migration():
  ready,checks=readiness(lambda:True,lambda:True,lambda:False); assert not ready and checks["migrations"] is False
 def test_cloud_logging_json_and_trace_propagation():
  trace=bind_trace("trace-123"); rec=logging.LogRecord("atlas",logging.INFO,"",0,"ready",(),None); data=json.loads(CloudJsonFormatter().format(rec)); assert data["trace_id"]==trace and inject_trace({})["traceparent"]==trace
+
+from base64 import urlsafe_b64encode
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import hashes
+from app.auth import context as auth
+from fastapi import HTTPException
+
+def _b64(value: bytes) -> str: return urlsafe_b64encode(value).rstrip(b"=").decode()
+def _token(key, kid, claims):
+ header=_b64(json.dumps({"alg":"RS256","kid":kid}).encode()); payload=_b64(json.dumps(claims).encode())
+ signature=key.sign(f"{header}.{payload}".encode(),padding.PKCS1v15(),hashes.SHA256())
+ return f"{header}.{payload}.{_b64(signature)}"
+
+@pytest.mark.asyncio
+async def test_production_auth_verifies_oidc_and_ignores_spoofed_headers(monkeypatch):
+ key=rsa.generate_private_key(public_exponent=65537,key_size=2048); pub=key.public_key().public_numbers(); now=__import__('time').time()
+ verifier=auth.OIDCVerifier("https://issuer","atlas"); verifier._keys={"k1":{"kid":"k1","kty":"RSA","n":_b64(pub.n.to_bytes((pub.n.bit_length()+7)//8,'big')),"e":_b64(pub.e.to_bytes((pub.e.bit_length()+7)//8,'big'))}}; verifier._expires=__import__('time').monotonic()+60
+ token=_token(key,"k1",{"iss":"https://issuer","aud":"atlas","exp":now+60,"sub":"immutable-user","atlas_tenant":"real-tenant","roles":["atlas-admin"]})
+ monkeypatch.setenv("ATLAS_ENV","production"); monkeypatch.setattr(auth,"_production_verifier",lambda:verifier)
+ ctx=await auth.require_tenant(f"Bearer {token}","victim","administrator")
+ assert ctx.tenant_id=="real-tenant" and ctx.actor_id=="immutable-user" and ctx.has_role("atlas-admin")
+
+@pytest.mark.asyncio
+async def test_production_auth_rejects_headers_without_bearer(monkeypatch):
+ monkeypatch.setenv("ATLAS_ENV","production")
+ with pytest.raises(HTTPException) as error: await auth.require_tenant(None,"victim","administrator")
+ assert error.value.status_code==401
+
+@pytest.mark.asyncio
+async def test_oidc_rejects_wrong_audience_and_expiration():
+ key=rsa.generate_private_key(public_exponent=65537,key_size=2048); pub=key.public_key().public_numbers(); now=__import__('time').time(); verifier=auth.OIDCVerifier("https://issuer","atlas"); verifier._keys={"k":{"kid":"k","kty":"RSA","n":_b64(pub.n.to_bytes((pub.n.bit_length()+7)//8,'big')),"e":_b64(pub.e.to_bytes((pub.e.bit_length()+7)//8,'big'))}}; verifier._expires=__import__('time').monotonic()+60
+ for claims in ({"iss":"https://issuer","aud":"wrong","exp":now+60,"sub":"u","atlas_tenant":"t"},{"iss":"https://issuer","aud":"atlas","exp":now-100,"sub":"u","atlas_tenant":"t"}):
+  with pytest.raises(HTTPException): await verifier.verify(_token(key,"k",claims))

@@ -9,7 +9,7 @@ import queue
 
 from fastapi import APIRouter, Depends, HTTPException, Response
 
-from app.auth.context import TenantContext, require_tenant
+from app.auth.context import TenantContext, require_admin, require_tenant, require_worker
 from fastapi.responses import StreamingResponse
 
 from app.core.models import ApprovalStatus
@@ -109,13 +109,13 @@ def audit_request(approval_id: str, service: Service = Depends(get_service), ten
 
 
 @router.post("/expire", response_model=schemas.ExpireResult)
-def expire_overdue(service: Service = Depends(get_service)) -> dict:
+def expire_overdue(service: Service = Depends(get_service), worker: TenantContext = Depends(require_worker)) -> dict:
     """Sweep pending requests past their deadline into expired."""
     return {"expired_ids": service.expire_overdue()}
 
 
 @router.get("/events")
-async def stream_events(response: Response, service: Service = Depends(get_service)) -> StreamingResponse:
+async def stream_events(response: Response, service: Service = Depends(get_service), tenant: TenantContext = Depends(require_tenant)) -> StreamingResponse:
     """Server-Sent Events feed of approval requests, decisions, and expiries."""
     subscriber = service.broadcaster.subscribe()
 
@@ -124,6 +124,16 @@ async def stream_events(response: Response, service: Service = Depends(get_servi
             while True:
                 try:
                     event = await asyncio.to_thread(subscriber.get, True, SSE_HEARTBEAT_SECONDS)
+                    approval = event.get("approval") if isinstance(event, dict) else None
+                    if isinstance(approval, dict) and approval.get("user_id") != tenant.tenant_id:
+                        continue
+                    if isinstance(event, dict) and event.get("type") == "approval_expired":
+                        try:
+                            expired = service.get(str(event.get("approval_id", "")))
+                        except ApprovalNotFoundError:
+                            continue
+                        if expired.get("user_id") != tenant.tenant_id:
+                            continue
                     yield f"data: {json.dumps(event)}\n\n"
                 except queue.Empty:
                     yield ": heartbeat\n\n"
@@ -138,17 +148,18 @@ async def stream_events(response: Response, service: Service = Depends(get_servi
 
 @router.put("/policies/{policy_id}", response_model=schemas.PolicyView)
 def upsert_policy(policy_id: str, body: schemas.PolicyUpsert,
-                  service: Service = Depends(get_service)) -> dict:
+                  service: Service = Depends(get_service),
+                  admin: TenantContext = Depends(require_admin)) -> dict:
     if policy_id != body.id:
         raise HTTPException(status_code=422, detail="path policy id must match body id")
     return service.upsert_policy(policy_id=body.id, name=body.name,
-        action_pattern=body.action_pattern, effect=body.effect, actor="api",
+        action_pattern=body.action_pattern, effect=body.effect, actor=admin.actor_id,
         module_id=body.module_id, priority=body.priority, enabled=body.enabled,
         conditions=body.conditions, review_ttl_seconds=body.review_ttl_seconds)
 
 
 @router.get("/policies", response_model=list[schemas.PolicyView])
-def list_policies(enabled_only: bool = False, service: Service = Depends(get_service)) -> list[dict]:
+def list_policies(enabled_only: bool = False, service: Service = Depends(get_service), admin: TenantContext = Depends(require_admin)) -> list[dict]:
     return service.list_policies(enabled_only=enabled_only)
 
 

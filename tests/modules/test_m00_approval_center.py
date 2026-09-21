@@ -15,6 +15,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.core.database import Base
+from app.auth.context import TenantContext, require_admin, require_worker
 from app.core.models import ApprovalStatus
 from app.modules.m00_approval_center import routes
 from app.modules.m00_approval_center.service import (
@@ -239,6 +240,7 @@ def test_unapproved_effect_is_blocked(service):
 
 
 def test_policy_and_gate_routes(client):
+    client.app.dependency_overrides[require_admin] = lambda: TenantContext("system", "admin-1", frozenset({"atlas-admin"}))
     policy = {"id": "allow-safe", "name": "safe", "module_id": 5,
               "action_pattern": "read_*", "effect": "allow", "priority": 1,
               "conditions": {}, "review_ttl_seconds": 60}
@@ -263,3 +265,13 @@ def test_routes_enforce_tenant_scope_and_identity(client):
         json={"decision": "approved", "decided_by": "spoof"})
     assert decided.status_code == 200
     assert decided.json()["approved_by"] == "reviewer-7"
+
+
+def test_admin_worker_routes_reject_ordinary_user(client):
+    assert client.put("/approval-center/policies/x", json={"id":"x","name":"x","action_pattern":"*","effect":"deny","conditions":{}}).status_code == 403
+    assert client.get("/approval-center/policies").status_code == 403
+    assert client.post("/approval-center/expire").status_code == 403
+
+def test_expire_accepts_internal_worker(client):
+    client.app.dependency_overrides[require_worker] = lambda: TenantContext("system", "worker-1", frozenset({"atlas-worker"}))
+    assert client.post("/approval-center/expire").status_code == 200
