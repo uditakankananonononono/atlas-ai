@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1483,
-    "verified-pushed": 524,
+    "missing": 1478,
+    "verified-pushed": 529,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -13882,8 +13882,12 @@
       "category": "Data & Analytics",
       "requirement": "Post-Selection Inference",
       "description": "Valid after selection",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7a2bda6b2e33def862b248e272532b8ca32de7c3",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1078_1082.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13892,8 +13896,12 @@
       "category": "Data & Analytics",
       "requirement": "Selective Inference",
       "description": "Conditional inference",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7a2bda6b2e33def862b248e272532b8ca32de7c3",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1078_1082.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13902,8 +13910,12 @@
       "category": "Data & Analytics",
       "requirement": "Simultaneous Inference",
       "description": "Multiple comparisons",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7a2bda6b2e33def862b248e272532b8ca32de7c3",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1078_1082.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13912,8 +13924,12 @@
       "category": "Data & Analytics",
       "requirement": "False Discovery Rate Control",
       "description": "Manage false positives",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7a2bda6b2e33def862b248e272532b8ca32de7c3",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1078_1082.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13922,8 +13938,12 @@
       "category": "Data & Analytics",
       "requirement": "Family-Wise Error Rate",
       "description": "Control any false positive",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "7a2bda6b2e33def862b248e272532b8ca32de7c3",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1078_1082.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
