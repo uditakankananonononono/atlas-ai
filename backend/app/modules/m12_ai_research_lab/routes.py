@@ -42,7 +42,7 @@ class EducationSupportIn(BaseModel):
     data:dict[str,Any]=Field(default_factory=dict)
 @router.post('/education/support')
 def education_support_route(body:EducationSupportIn,tenant:TenantContext=Depends(require_tenant)):
-    try:return {'tenant_id':tenant.tenant_id,**education_support(body.feature_id,body.data)}
+    try:return {'tenant_id':tenant.tenant_id,'actor_id':tenant.actor_id,**education_support(body.feature_id,body.data)}
     except ValueError as error:raise HTTPException(422,str(error)) from error
 
 from .engineering_support_1560_1609 import engineering_support_1560_1609

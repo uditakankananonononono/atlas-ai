@@ -1,29 +1,35 @@
 """Grounded education support for owner feature rows 1460-1509."""
 from math import exp,sqrt
 from statistics import mean
-
-PRIVATE_FIELDS={'learner_name','student_name','email','phone','address','date_of_birth'}
-def protect_learner_data(value):
- """Reject unnecessary direct identifiers; analytics accept deidentified inputs only."""
- if isinstance(value,dict):
-  exposed=PRIVATE_FIELDS & set(value)
-  if exposed: raise ValueError('direct learner identifiers are not accepted: '+', '.join(sorted(exposed)))
-  for child in value.values(): protect_learner_data(child)
- elif isinstance(value,list):
-  for child in value: protect_learner_data(child)
-
+import re
+FEATURES=dict(enumerate('''Engagement Detection|Dropout Prediction|Performance Prediction|Recommendation Systems|Content Recommendation|Peer Recommendation|Path Recommendation|Automated Essay Scoring|Automated Feedback|Formative Assessment|Summative Assessment|Diagnostic Assessment|Authentic Assessment|Performance Assessment|Portfolio Assessment|Self-Assessment|Peer Assessment|Assessment for Learning|Assessment as Learning|Assessment of Learning|Standards-Based Grading|Competency-Based Education|Mastery Learning|Precision Teaching|Direct Instruction|Explicit Instruction|Systematic Instruction|Scripted Instruction|Programmed Instruction|Computer-Assisted Instruction|Intelligent Tutoring Systems|Dialogue-Based Tutoring|Socratic Tutoring|Metacognitive Tutoring|Motivational Tutoring|Emotional Support|Social-Emotional Learning|Character Education|Citizenship Education|Global Competence|Cultural Competence|Intercultural Education|Multicultural Education|Inclusive Education|Special Education|Gifted Education|Remedial Education|Compensatory Education|Bilingual Education|Language Learning'''.split('|'),1460))
 def finite_number(value,label):
  try: number=float(value)
  except (TypeError,ValueError): raise ValueError(label+' must be numeric')
  if number != number or number in (float('inf'),float('-inf')): raise ValueError(label+' must be finite')
  return number
-FEATURES=dict(enumerate('''Engagement Detection|Dropout Prediction|Performance Prediction|Recommendation Systems|Content Recommendation|Peer Recommendation|Path Recommendation|Automated Essay Scoring|Automated Feedback|Formative Assessment|Summative Assessment|Diagnostic Assessment|Authentic Assessment|Performance Assessment|Portfolio Assessment|Self-Assessment|Peer Assessment|Assessment for Learning|Assessment as Learning|Assessment of Learning|Standards-Based Grading|Competency-Based Education|Mastery Learning|Precision Teaching|Direct Instruction|Explicit Instruction|Systematic Instruction|Scripted Instruction|Programmed Instruction|Computer-Assisted Instruction|Intelligent Tutoring Systems|Dialogue-Based Tutoring|Socratic Tutoring|Metacognitive Tutoring|Motivational Tutoring|Emotional Support|Social-Emotional Learning|Character Education|Citizenship Education|Global Competence|Cultural Competence|Intercultural Education|Multicultural Education|Inclusive Education|Special Education|Gifted Education|Remedial Education|Compensatory Education|Bilingual Education|Language Learning'''.split('|'),1460))
 def need(d,*ks):
  m=[k for k in ks if d.get(k) in (None,[],{})]
  if m:raise ValueError('missing required inputs: '+', '.join(m))
+
+DIRECT_IDENTIFIERS={"learner_id","student_id","pupil_id","email","phone","full_name"}
+def reject_direct_identifiers(value,path="data"):
+ if isinstance(value,dict):
+  for k,v in value.items():
+   if k.lower() in DIRECT_IDENTIFIERS: raise ValueError(f"direct learner identifier prohibited; direct learner identifiers are not accepted: {path}.{k}")
+   reject_direct_identifiers(v,f"{path}.{k}")
+ elif isinstance(value,list):
+  for n,v in enumerate(value):reject_direct_identifiers(v,f"{path}[{n}]")
+
+def number(value,label,low=None,high=None,positive=False):
+ if isinstance(value,bool) or not isinstance(value,(int,float)):raise ValueError(f"{label} must be numeric")
+ x=float(value)
+ if positive and x<=0:raise ValueError(f"{label} must be positive")
+ if low is not None and x<low or high is not None and x>high:raise ValueError(f"{label} out of range")
+ return x
 def analytics(i,d):
  if i==1460:
-  need(d,'signals'); vs=[(float(x['value']),float(x.get('weight',1))) for x in d['signals']]
+  need(d,'signals'); vs=[(number(x.get('value'),'signal value',0,1),number(x.get('weight',1),'signal weight',positive=True)) for x in d['signals']]
   if any(v<0 or v>1 or w<=0 for v,w in vs):raise ValueError('signals must be [0,1] with positive weights')
   s=sum(v*w for v,w in vs)/sum(w for _,w in vs);return {'engagement_score':round(s,4),'band':'high' if s>=.7 else 'medium' if s>=.4 else 'low','interpretation':'descriptive signal, not attention or intent'}
  need(d,'features','coefficients');x=d['features'];c=d['coefficients'];missing=set(c)-set(x)-{'intercept'}
@@ -81,25 +87,37 @@ def progress(i,d):
  if i==1480:
   need(d,'standards','evidence');rows=[]
   for s in d['standards']:
-   v=[x['score'] for x in d['evidence'] if x['standard_id']==s['id']];rows.append({'standard_id':s['id'],'level':round(mean(v),2) if v else None,'status':'insufficient_evidence' if not v else 'meets' if mean(v)>=s['threshold'] else 'developing'})
+   threshold=number(s.get('threshold'),'standard threshold',0,100);v=[number(x.get('score'),'evidence score',0,100) for x in d['evidence'] if x.get('standard_id')==s['id']];rows.append({'standard_id':s['id'],'level':round(mean(v),2) if v else None,'status':'insufficient_evidence' if not v else 'meets' if mean(v)>=threshold else 'developing'})
   return {'standards':rows,'averaged_into_single_grade':False}
- need(d,'competencies','evidence');ev={x['competency_id']:x['score'] for x in d['evidence']};rows=[{'competency_id':c['id'],'score':ev.get(c['id'],0),'threshold':c['mastery_threshold'],'mastered':ev.get(c['id'],0)>=c['mastery_threshold']} for c in d['competencies']]
+ need(d,'competencies','evidence');ev={x['competency_id']:number(x.get('score'),'competency score',0,1) for x in d['evidence']};rows=[{'competency_id':c['id'],'score':ev.get(c['id'],0),'threshold':number(c.get('mastery_threshold'),'mastery threshold',0,1),'mastered':ev.get(c['id'],0)>=number(c.get('mastery_threshold'),'mastery threshold',0,1)} for c in d['competencies']]
  if i==1481:return {'competency_progress':rows,'advancement_candidates':[x['competency_id'] for x in rows if x['mastered']],'advancement_requires_review':True}
  if i==1482:return {'mastery_status':rows,'reteach':[x['competency_id'] for x in rows if not x['mastered']],'reassessment_required':True}
- need(d,'timed_probes');rates=[x['correct']/x['minutes'] for x in d['timed_probes']];return {'frequency_per_minute':rates,'celeration_ratio':None if len(rates)<2 or rates[0]==0 else round(rates[-1]/rates[0],3),'decision':'review teaching' if d.get('aim') and rates[-1]<d['aim'] else 'continue and monitor'}
+ need(d,'timed_probes');rates=[number(x.get('correct'),'probe correct',0)/number(x.get('minutes'),'probe minutes',positive=True) for x in d['timed_probes']];return {'frequency_per_minute':rates,'celeration_ratio':None if len(rates)<2 or rates[0]==0 else round(rates[-1]/rates[0],3),'decision':'review teaching' if d.get('aim') and rates[-1]<d['aim'] else 'continue and monitor'}
 I={1484:('direct_instruction',['review','model','guided practice','independent practice','check']),1485:('explicit_instruction',['state objective','explain','model think-aloud','guided practice','check understanding','independent practice']),1486:('systematic_instruction',['prerequisite','small step','cumulative review','mastery check']),1487:('scripted_instruction',['teacher cue','expected response','correction','recheck']),1488:('programmed_instruction',['frame','learner response','immediate feedback','branch']),1489:('computer_assisted_instruction',['present','capture response','score','feedback','adapt'])}
 def instruction(i,d):
- need(d,'objective','examples');name,phases=I[i];o={'instruction_model':name,'objective':d['objective'],'sequence':[{'order':n+1,'phase':p,'requires_educator_review':True} for n,p in enumerate(phases)],'examples':d['examples'],'delivered':False}
- if i==1487:o['script_deviation_notes_required']=True
- if i in (1488,1489):o['branch_rules']=d.get('branch_rules',[])
- return o
+ need(d,'objective','examples');name,phases=I[i]
+ base={'instruction_model':name,'objective':d['objective'],'sequence':[{'order':n+1,'phase':p,'requires_educator_review':True} for n,p in enumerate(phases)],'examples':d['examples'],'delivered':False}
+ if i==1484:
+  checks=d.get('response_checks',[]);base['guided_practice_accuracy']=None if not checks else round(sum(bool(x) for x in checks)/len(checks),3);base['release_to_independent']=bool(checks) and base['guided_practice_accuracy']>=.8
+ elif i==1485:
+  base['explicit_checks']=[{'misconception':m,'prompt':f'Explain why {m} is not supported by the example.'} for m in d.get('misconceptions',[])]
+ elif i==1486:
+  steps=d.get('skill_steps',[]);base['cumulative_progression']=[{'step':x,'review':steps[:n]} for n,x in enumerate(steps,1)]
+ elif i==1487:
+  base['script_deviation_notes_required']=True;base['cue_response_map']=[{'cue':x.get('cue'),'expected_response':x.get('expected_response'),'correction':x.get('correction')} for x in d.get('script_turns',[])]
+ elif i==1488:
+  base['program_frames']=[{'frame_id':x['id'],'correct_next':x.get('correct_next'),'retry_next':x.get('retry_next')} for x in d.get('frames',[])];base['learner_paced']=True
+ else:
+  attempts=d.get('attempts',[]);weak=sorted(attempts,key=lambda x:(x.get('score',0),x.get('item_id','')));base['adaptive_next_item']=weak[0].get('item_id') if weak else None;base['attempt_summary']={'count':len(attempts),'mean_score':round(mean([number(x.get('score'),'attempt score',0,1) for x in attempts]),3) if attempts else None}
+ return base
 def tutor(i,d):
  need(d,'objective','learner_state');s=d['learner_state']
  if i==1490:
   need(d,'knowledge_components');w=min(d['knowledge_components'],key=lambda x:(x['mastery'],x['id']));return {'learner_model':d['knowledge_components'],'next_action':{'type':'worked_example' if w['mastery']<.5 else 'practice','knowledge_component_id':w['id']},'automatic_high_stakes_action':False}
- if i==1491:return {'dialogue_turn':{'response':'ask_clarifying_question','question':d.get('prompt','Can you explain your reasoning?')},'answer_revealed':False}
- if i==1492:return {'socratic_sequence':['What do you know?','What evidence supports that?','What counterexample?','How would you revise?'],'direct_answer_withheld':True}
- if i==1493:return {'metacognitive_prompts':['What is your plan?','How will you know it works?','What will you try next?'],'self_explanation_required':True}
+ if i==1491:return {'dialogue_turn':{'response':'ask_clarifying_question','question':d.get('prompt','Can you explain your reasoning?'),'prior_turn_count':len(d.get('dialogue_history',[]))},'answer_revealed':False}
+ if i==1492:
+  claim=d.get('claim',s.get('answer'));return {'socratic_sequence':[f'What supports {claim}?',f'What challenges {claim}?','How would you revise?'],'claim_under_examination':claim,'direct_answer_withheld':True}
+ if i==1493:return {'metacognitive_prompts':[f"Plan for {d.get('strategy','this task')}",f"Monitor with {d.get('success_measure','evidence')}",'What will you try next?'],'self_explanation_required':True}
  return {'goal':s.get('goal'),'autonomy_support':['offer meaningful choice','connect task to learner goal','process-specific encouragement'],'next_step':d.get('small_next_step'),'no_pressure_or_deception':True}
 def human(i,d):
  if i==1495:
@@ -121,17 +139,14 @@ def language(i,d):
   need(d,'home_language');return {'home_language':d['home_language'],'target_language':d['target_language'],'model':d.get('model','dual-language'),'language_allocation':d.get('language_allocation',{}),'objectives':d['objectives'],'home_language_treated_as_asset':True,'family_review':True}
  need(d,'items');now=d.get('day',0);out=[]
  for x in d['items']:
-  q=x.get('quality',0);ease=max(1.3,x.get('ease',2.5)+.1-(5-q)*(.08+(5-q)*.02));interval=1 if q<3 else max(1,round(x.get('interval',1)*ease));out.append({'item_id':x['id'],'next_day':now+interval,'interval':interval,'ease':round(ease,2),'needs_relearning':q<3})
+  q=number(x.get('quality',0),'item quality',0,5);ease=max(1.3,x.get('ease',2.5)+.1-(5-q)*(.08+(5-q)*.02));interval=1 if q<3 else max(1,round(x.get('interval',1)*ease));out.append({'item_id':x['id'],'next_day':now+interval,'interval':interval,'ease':round(ease,2),'needs_relearning':q<3})
  return {'target_language':d['target_language'],'proficiency':d['proficiency'],'objectives':d['objectives'],'spaced_repetition':out,'practice_modes':['comprehensible input','retrieval','interaction','pronunciation feedback','writing feedback'],'proficiency_claimed':False}
 def education_support(i,d):
  if i not in FEATURES:raise ValueError('unsupported education feature')
- if not isinstance(d,dict):raise ValueError('data must be an object')
- protect_learner_data(d)
+ reject_direct_identifiers(d)
  sources=d.get('sources',[])
  if not sources or any(not x.get('source_id') or not x.get('observed_at') for x in sources):raise ValueError('source_id and observed_at required')
  f=analytics if i<=1462 else recommend if i<=1466 else writing if i<=1468 else assessment if i<=1479 else progress if i<=1483 else instruction if i<=1489 else tutor if i<=1494 else human if i<=1502 else inclusion if i<=1507 else language
  result=f(i,d)
- result['mechanism_key']=FEATURES[i].lower().replace('-','_').replace(' ','_')
- result['teacher_review_required']=True
  observed=sorted(k for k,v in result.items() if v not in (None,[],{}))
- return {'feature_id':i,'feature':FEATURES[i],'result':result,'evaluation':{'observed_outputs':observed,'review_checks':['validity for intended use','bias and subgroup performance','accessibility','learner contestability'],'open_questions':list(d.get('open_questions',[]))},'uncertainty':{'level':'not_quantified','drivers':['caller-supplied evidence','model or rubric validity','missing learner context'],'prediction_is_not_fact':i in range(1460,1467)},'sources':sources,'status':'draft_for_learner_and_qualified_educator_review','side_effects':[],'boundary':'Education decision support only. Preserve consent, privacy, accessibility and learner agency; do not infer protected traits, diagnose, award credentials, contact people, enroll, grade, punish, or change records without authorized human review.'}
+ return {'feature_id':i,'feature':FEATURES[i],'mechanism_key':re.sub(r'[^a-z0-9]+','_',FEATURES[i].lower()).strip('_'),'result':result,'evaluation':{'observed_outputs':observed,'review_checks':['validity for intended use','bias and subgroup performance','accessibility','learner contestability'],'open_questions':list(d.get('open_questions',[]))},'uncertainty':{'level':'not_quantified','drivers':['caller-supplied evidence','model or rubric validity','missing learner context'],'prediction_is_not_fact':i in range(1460,1467)},'sources':sources,'status':'draft_for_learner_and_qualified_teacher_review','qualified_teacher_review_required':True,'side_effects':[],'boundary':'Education decision support only. Preserve consent, privacy, accessibility and learner agency; do not infer protected traits, diagnose, award credentials, contact people, enroll, grade, punish, or change records without authorized human review.'}
