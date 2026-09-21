@@ -29,6 +29,14 @@ def _tokens(value: str) -> set[str]:
 
 def match_fields(fields: list[FieldDescriptor], data: dict[str, str], threshold: float = .38) -> dict[str, str]:
     """Return conservative one-to-one matches; ties are intentionally left unfilled."""
+    mapping, _ = match_fields_detailed(fields, data, threshold)
+    return mapping
+
+
+def match_fields_detailed(
+    fields: list[FieldDescriptor], data: dict[str, str], threshold: float = .38
+) -> tuple[dict[str, str], set[str]]:
+    """Same matching as ``match_fields`` plus the set of consumed data keys."""
     result: dict[str, str] = {}
     used: set[str] = set()
     for field in fields:
@@ -52,4 +60,4 @@ def match_fields(fields: list[FieldDescriptor], data: dict[str, str], threshold:
         _, key, value = scored[0]
         result[field.selector] = value
         used.add(key)
-    return result
+    return result, used

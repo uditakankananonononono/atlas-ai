@@ -13,6 +13,7 @@ Default: paired owner PC, free-first. Paid Google Cloud is declined and is not a
 | Backup/rollback | runbooks | owner backup destination | timed restore/rollback drill |
 | CI/SBOM/scanning | scripts/local tests | GitHub workflow permission | signed artifacts and scan history |
 | SLO/load tests | targets and bounded harness | chosen runtime | error budget and capacity curve |
+| Paired-browser application workflow (M1/M2/M13) | mounted fake-session suite: login pause/resume, credential rejection, tenant/actor denial, grounded staging, exact approval binding (values/URL/screenshot), denied/stale/expired/replay refusal, exactly-once submit, CAPTCHA/redesign/click-failure honesty | owner completing login in their paired session on a real site | real-site selector stability, screenshot byte-stability across benign rendering changes, session capacity under concurrent applications |
 
 ## Claims deliberately blocked
 

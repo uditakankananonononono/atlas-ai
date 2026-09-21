@@ -22,6 +22,8 @@ class ActionType(str, Enum):
     SCREENSHOT = "screenshot"
     SCROLL = "scroll"
     SUBMIT = "submit"
+    LOGIN = "login"
+    READBACK = "readback"
 
 
 @dataclass(frozen=True)

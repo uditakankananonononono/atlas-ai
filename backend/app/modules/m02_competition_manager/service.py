@@ -177,6 +177,20 @@ class Service:
                 SubmissionStatus.REJECTED,
             },
         }
+        # A submission itself is only ever recorded from the site's own
+        # readback (paired browser flow) or an official API - never asserted.
+        if (
+            evidence.status == SubmissionStatus.SUBMITTED
+            and competition.status in {
+                SubmissionStatus.DRAFT,
+                SubmissionStatus.READY_FOR_REVIEW,
+                SubmissionStatus.SUBMISSION_PROPOSED,
+            }
+            and evidence.source in {"browser_readback", "official_api"}
+        ):
+            competition.status = evidence.status
+            competition.status_evidence.append(evidence)
+            return self._repository.save(competition)
         if evidence.status not in allowed.get(competition.status, set()):
             raise UnsafeStatusTransitionError(
                 f"cannot change {competition.status.value} to {evidence.status.value}"

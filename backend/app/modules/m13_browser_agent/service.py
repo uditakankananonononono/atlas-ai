@@ -40,14 +40,25 @@ class Service:
         await self.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.CLICK, {"selector": selector}))
         return {"status": "ok"}
 
-    async def screenshot(self, tenant_id: str, session_id: str) -> str:
+    async def screenshot(self, tenant_id: str, session_id: str, mask_selectors: list[str] | None = None) -> str:
+        """Full-page screenshot; masked selectors are covered so field values never land in the image."""
         directory = self.root / tenant_id / session_id
         directory.mkdir(parents=True, exist_ok=True)
         path = directory / f"{secrets.token_hex(12)}.png"
         page = await self.sessions.page(tenant_id, session_id, False)
-        await page.screenshot(path=str(path), full_page=True)
-        await self.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.SCREENSHOT, {"path": str(path), "sha256": file_digest(str(path))}))
+        mask = [page.locator(selector) for selector in (mask_selectors or [])]
+        await page.screenshot(path=str(path), full_page=True, mask=mask)
+        await self.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.SCREENSHOT, {"path": str(path), "sha256": file_digest(str(path)), "masked_count": len(mask)}))
         return str(path)
+
+    async def read_values(self, tenant_id: str, session_id: str, selectors: list[str]) -> dict[str, str]:
+        """Read back the exact on-page value of each selector; missing selectors raise."""
+        page = await self.sessions.page(tenant_id, session_id, False)
+        values: dict[str, str] = {}
+        for selector in selectors:
+            values[selector] = await page.locator(selector).input_value()
+        await self.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.READBACK, {"selectors": sorted(selectors), "count": len(values)}))
+        return values
 
     async def extract(self, tenant_id: str, session_id: str) -> str:
         page = await self.sessions.page(tenant_id, session_id, False)
