@@ -134,3 +134,14 @@ def request_step_approval(run_id:str,step_id:str,payload:dict):
  try:return _runner.view(_runner.get(run_id)) | {"requested_step":_runner.view(_runner.get(run_id))["steps"][[x.id for x in _runner.get(run_id).steps].index(step_id)]} if _runner.request_action(run_id,step_id,str(payload.get("user_id","default"))) else {}
  except KeyError:raise HTTPException(404,"run or step not found")
  except ValueError as e:raise HTTPException(422,str(e))
+
+@router.post('/runs/{run_id}/steps/{step_id}/receipts')
+def record_receipt(run_id:str,step_id:str,payload:dict):
+ try:return _runner.record_adapter_receipt(run_id,step_id,adapter=str(payload.get('adapter','')),provider_receipt_id=str(payload.get('provider_receipt_id','')),status=str(payload.get('status','')),observed_at=str(payload.get('observed_at','')),payload_sha256=str(payload.get('payload_sha256','')))
+ except KeyError:raise HTTPException(404,'run or step not found')
+ except ValueError as error:raise HTTPException(422,str(error)) from error
+@router.post('/runs/{run_id}/outcomes')
+def record_outcome(run_id:str,payload:dict):
+ try:return _runner.record_outcome(run_id,metric=str(payload.get('metric','')),value=float(payload.get('value')),unit=str(payload.get('unit','')),observed_at=str(payload.get('observed_at','')),source_url=payload.get('source_url'),receipt_sha256=payload.get('receipt_sha256'))
+ except KeyError:raise HTTPException(404,'run not found')
+ except (ValueError,TypeError) as error:raise HTTPException(422,str(error)) from error

@@ -20,7 +20,7 @@ class ExperimentStep:
  state:StepState=StepState.READY;approval_id:str|None=None
 @dataclass
 class HustleRun:
- id:str;title:str;hypothesis:str;max_budget:float;steps:list[ExperimentStep]=field(default_factory=list)
+ id:str;title:str;hypothesis:str;max_budget:float;steps:list[ExperimentStep]=field(default_factory=list);receipts:list[dict[str,Any]]=field(default_factory=list);outcomes:list[dict[str,Any]]=field(default_factory=list)
 
 def _id(run_id:str,kind:str)->str:return sha256(f"{run_id}:{kind}".encode()).hexdigest()[:20]
 class HustleRunner:
@@ -57,6 +57,19 @@ class HustleRunner:
   permit=self.approvals.consume_effect(step.approval_id,module_id=18,action_type=step.external_action["action_type"],payload=payload,user_id=user_id,effect_id=f"m18:{run_id}:{step.id}",actor=actor)
   step.state=StepState.COMPLETED
   return {"permit":permit,"action":step.external_action,"artifact":step.artifact,"executed":False,"note":"permit only; a separately configured official adapter must perform the exact action"}
+ def record_adapter_receipt(self,run_id:str,step_id:str,*,adapter:str,provider_receipt_id:str,status:str,observed_at:str,payload_sha256:str)->dict[str,Any]:
+  step=self._step(run_id,step_id)
+  if step.state is not StepState.COMPLETED or not step.approval_id:raise ValueError("a consumed approval is required before recording an adapter receipt")
+  if status not in {"succeeded","failed","unknown"}:raise ValueError("receipt status must be succeeded, failed, or unknown")
+  if len(payload_sha256)!=64 or any(c not in "0123456789abcdef" for c in payload_sha256.lower()):raise ValueError("payload_sha256 must be a SHA-256 hex digest")
+  receipt={"step_id":step_id,"approval_id":step.approval_id,"adapter":adapter,"provider_receipt_id":provider_receipt_id,"status":status,"observed_at":observed_at,"payload_sha256":payload_sha256.lower()}
+  receipt["receipt_sha256"]=sha256(repr(sorted(receipt.items())).encode()).hexdigest();self.get(run_id).receipts.append(receipt);return receipt
+ def record_outcome(self,run_id:str,*,metric:str,value:float,unit:str,observed_at:str,source_url:str|None=None,receipt_sha256:str|None=None)->dict[str,Any]:
+  run=self.get(run_id)
+  if not metric.strip() or not unit.strip() or not observed_at.strip():raise ValueError("metric, unit, and observed_at are required")
+  if receipt_sha256 and receipt_sha256 not in {x["receipt_sha256"] for x in run.receipts}:raise ValueError("outcome receipt does not belong to this run")
+  outcome={"metric":metric,"value":value,"unit":unit,"observed_at":observed_at,"source_url":source_url,"receipt_sha256":receipt_sha256,"claim":"observed input; not independently verified by Atlas"}
+  run.outcomes.append(outcome);return outcome
  def _step(self,run_id,step_id):
   run=self.get(run_id)
   for step in run.steps:
