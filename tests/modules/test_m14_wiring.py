@@ -243,10 +243,15 @@ class TestServiceFeedbackAndExport:
 
 class TestSqlRepository:
     def test_tenant_isolation(self):
-        a = SqlProjectRepository("tenant-a")
-        b = SqlProjectRepository("tenant-b")
+        # Durable repositories may retain data from prior processes; isolate this
+        # test run instead of assuming the shared development database is empty.
+        import uuid
+        suffix = uuid.uuid4().hex
+        tenant_a, tenant_b = f"tenant-a-{suffix}", f"tenant-b-{suffix}"
+        a = SqlProjectRepository(tenant_a)
+        b = SqlProjectRepository(tenant_b)
         svc_a = Service(FakeSink(), generate_fn=fake_generate, repository=a)
-        project = svc_a.create("tenant-a", CreateProjectRequest(goal="secret project"))
+        project = svc_a.create(tenant_a, CreateProjectRequest(goal="secret project"))
         assert b.get(project.id) is None
         assert [p.id for p in a.list()] == [project.id]
         assert b.list() == []
