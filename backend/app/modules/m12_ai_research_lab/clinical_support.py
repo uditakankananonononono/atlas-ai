@@ -602,3 +602,75 @@ CLINICAL_EXTRA.update({
  'trauma_informed_care':lambda d:trauma_cultural_care('trauma_informed_care',d),
  'culturally_competent_care':lambda d:trauma_cultural_care('culturally_competent_care',d),
 })
+
+def equity_analysis(data:dict)->dict:
+    groups=data.get('groups',[]);metrics=data.get('metrics',[]);source=data.get('source',{})
+    if len(groups)<2 or not metrics or not source.get('source_url'):raise ValueError('at least two groups, metrics and source_url required')
+    rows=[]
+    for metric in metrics:
+        values={g.get('group_token'):g.get('values',{}).get(metric) for g in groups};known=[float(v) for v in values.values() if v is not None];rows.append({'metric':metric,'values':values,'absolute_gap':max(known)-min(known) if len(known)>=2 else None,'missing_groups':[k for k,v in values.items() if v is None]})
+    return {'metric_gaps':rows,'stratification_dimensions':data.get('stratification_dimensions',[]),'community_interpretation':data.get('community_interpretation',[]),'source':source,'boundary':'Descriptive disparity analysis on supplied aggregate data. Gaps do not identify causes or justify individual decisions. Affected communities and domain experts validate categories, denominators, privacy, structural context and remedies.','disclaimer':DISCLAIMER}
+
+def social_needs(data:dict)->dict:
+    responses=data.get('responses',{});domains=data.get('domains',[]);resources=data.get('resources',[]);source=data.get('source',{})
+    if not domains or not source.get('source_url'):raise ValueError('domains and source_url required')
+    needs=[];declined=[];unknown=[]
+    for d in domains:
+        key=d.get('id');value=responses.get(key)
+        if value is None:unknown.append(key)
+        elif value=='decline_to_answer':declined.append(key)
+        elif value in d.get('need_values',[]):needs.append({'domain':key,'response':value,'resources':[r for r in resources if key in r.get('domains',[])]})
+    return {'identified_needs':needs,'unknown_domains':unknown,'declined_domains':declined,'consent_to_referral':data.get('consent_to_referral',{}),'source':source,'boundary':'Voluntary needs screening, never a worthiness or risk score. Declining or missing answers cannot reduce care. Human staff verify resources and obtain specific consent before any referral or disclosure.','disclaimer':DISCLAIMER}
+
+def community_assessment(data:dict)->dict:
+    indicators=data.get('indicators',[]);voices=data.get('community_inputs',[]);source=data.get('source',{})
+    if not indicators or not voices or not source.get('source_url'):raise ValueError('indicators, community inputs and source_url required')
+    priorities=[]
+    for i in indicators:
+        supporting=[v for v in voices if i.get('topic') in v.get('topics',[])];priorities.append({'indicator':i,'community_inputs':supporting,'evidence_complete':bool(supporting)})
+    return {'candidate_priorities':priorities,'represented_groups':sorted({x.get('group') for x in voices if x.get('group')}),'missing_representation':data.get('missing_representation',[]),'source':source,'boundary':'Participatory assessment draft, not a substitute for community governance. Do not rank a priority as settled without affected-community input, representative data, privacy review and transparent limitations.','disclaimer':DISCLAIMER}
+
+def policy_analysis(data:dict)->dict:
+    options=data.get('options',[]);criteria=data.get('criteria',[]);source=data.get('source',{})
+    if not options or not criteria or not source.get('source_url'):raise ValueError('options, criteria and source_url required')
+    rows=[]
+    for o in options:
+        values=o.get('scores',{});missing=[c.get('id') for c in criteria if c.get('id') not in values];total=None if missing else sum(float(values[c['id']])*float(c.get('weight',1)) for c in criteria);rows.append({'option':o.get('name'),'criterion_scores':values,'weighted_score':total,'missing_criteria':missing,'distributional_effects':o.get('distributional_effects',[]),'legal_or_operational_dependencies':o.get('dependencies',[])})
+    return {'option_matrix':rows,'criteria':criteria,'assumptions':data.get('assumptions',[]),'source':source,'boundary':'Transparent comparison under supplied criteria, not advocacy or legal authority. Decision-makers and affected communities review evidence quality, rights, equity, costs, uncertainty and implementation before policy action.','disclaimer':DISCLAIMER}
+
+def quality_improvement(method:str,data:dict)->dict:
+    measures=data.get('measures',[]);changes=data.get('change_ideas',[]);source=data.get('source',{})
+    if not measures or not source.get('source_url'):raise ValueError('measures and source_url required')
+    evaluated=[]
+    for m in measures:
+        numerator=float(m.get('numerator',0));denominator=float(m.get('denominator',0));evaluated.append({**m,'rate':numerator/denominator if denominator>0 else None,'valid_denominator':denominator>0})
+    return {'mode':method,'measure_results':evaluated,'change_ideas_for_review':changes,'balancing_measures':data.get('balancing_measures',[]),'source':source,'boundary':'Quality-learning support, not individual blame or autonomous clinical/operational change. Teams validate measure definitions, case mix, data quality, balancing harms and human-factors causes before testing a change.','disclaimer':DISCLAIMER}
+
+def safety_review(method:str,data:dict)->dict:
+    event=data.get('event',{});factors=data.get('contributing_factors',[]);controls=data.get('controls',[]);source=data.get('source',{})
+    if not event or not source.get('source_url'):raise ValueError('event and source_url required')
+    actions=[]
+    for c in controls:
+        matched=set(c.get('addresses',[]))&{f.get('id') for f in factors};actions.append({**c,'matched_factors':sorted(matched),'review_status':'candidate' if matched else 'unlinked'})
+    return {'mode':method,'event_timeline':event.get('timeline',[]),'known_facts':event.get('known_facts',[]),'unknowns':event.get('unknowns',[]),'contributing_factors':factors,'candidate_system_controls':actions,'source':source,'boundary':'Just-culture systems analysis, not culpability, diagnosis or disciplinary evidence. Preserve uncertainty and separate facts from hypotheses; authorized safety teams investigate and approve controls.','disclaimer':DISCLAIMER}
+
+def healthcare_operations(method:str,data:dict)->dict:
+    demand=data.get('demand',[]);capacity=data.get('capacity',[]);constraints=data.get('constraints',[]);source=data.get('source',{})
+    if not demand or not capacity or not source.get('source_url'):raise ValueError('demand, capacity and source_url required')
+    totals={'demand':sum(float(x.get('units',0)) for x in demand),'capacity':sum(float(x.get('units',0)) for x in capacity)};gap=totals['capacity']-totals['demand']
+    return {'mode':method,'totals':totals,'capacity_gap':gap,'constraints':constraints,'options':data.get('options',[]),'equity_and_safety_checks':data.get('equity_and_safety_checks',[]),'source':source,'boundary':'Aggregate planning only. Administrators and clinical leaders validate staffing, acuity, labor rules, safety and equity. Atlas does not schedule staff, allocate individual care, admit/discharge patients or execute financial changes.','disclaimer':DISCLAIMER}
+
+def medical_education(data:dict)->dict:
+    objectives=data.get('objectives',[]);cases=data.get('cases',[]);rubric=data.get('rubric',[]);source=data.get('source',{})
+    if not objectives or not cases or not rubric or not source.get('source_url'):raise ValueError('objectives, cases, rubric and source_url required')
+    mapped=[]
+    for c in cases:mapped.append({'case_id':c.get('id'),'objective_ids':[o.get('id') for o in objectives if o.get('id') in c.get('objective_ids',[])],'deidentified_or_synthetic':c.get('deidentified_or_synthetic',False),'answer_key':c.get('answer_key')})
+    return {'objectives':objectives,'case_map':mapped,'assessment_rubric':rubric,'source':source,'boundary':'Educator-reviewed learning support. Use deidentified or synthetic cases, distinguish evidence from uncertainty, and do not treat scores as licensure, credentialing or permission for unsupervised patient care.','disclaimer':DISCLAIMER}
+
+CLINICAL_EXTRA.update({
+ 'health_equity_analysis':equity_analysis,'social_determinants_assessment':social_needs,'community_health_assessment':community_assessment,'health_policy_analysis':policy_analysis,
+ 'healthcare_quality_improvement':lambda d:quality_improvement('healthcare_quality_improvement',d),
+ 'patient_safety':lambda d:safety_review('patient_safety',d),'medical_error_prevention':lambda d:safety_review('medical_error_prevention',d),
+ 'healthcare_operations':lambda d:healthcare_operations('healthcare_operations',d),'hospital_administration':lambda d:healthcare_operations('hospital_administration',d),'healthcare_finance':lambda d:healthcare_operations('healthcare_finance',d),
+ 'medical_education':medical_education,
+})
