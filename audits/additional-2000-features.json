@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1478,
-    "verified-pushed": 529,
+    "missing": 1473,
+    "verified-pushed": 534,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -13952,8 +13952,12 @@
       "category": "Data & Analytics",
       "requirement": "Bonferroni Correction",
       "description": "Conservative adjustment",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "327d56fb8066ad4a07d9f6167cd3edea84992c88",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1083_1087.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13962,8 +13966,12 @@
       "category": "Data & Analytics",
       "requirement": "Holm-Bonferroni",
       "description": "Step-down correction",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "327d56fb8066ad4a07d9f6167cd3edea84992c88",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1083_1087.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13972,8 +13980,12 @@
       "category": "Data & Analytics",
       "requirement": "Benjamini-Hochberg",
       "description": "FDR control",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "327d56fb8066ad4a07d9f6167cd3edea84992c88",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1083_1087.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13982,8 +13994,12 @@
       "category": "Data & Analytics",
       "requirement": "Storey's Method",
       "description": "Adaptive FDR",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "327d56fb8066ad4a07d9f6167cd3edea84992c88",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1083_1087.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13992,8 +14008,12 @@
       "category": "Data & Analytics",
       "requirement": "Local FDR",
       "description": "Per-hypothesis FDR",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "327d56fb8066ad4a07d9f6167cd3edea84992c88",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1083_1087.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
