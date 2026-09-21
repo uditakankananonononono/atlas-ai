@@ -121,3 +121,25 @@ def test_row100_reciprocity_obligation_risk_blocks_strings():
  assert o['allowed'] and o['obligation_risk_score']==0
  quid=run('reciprocity_triggers',{'benefit':'free guide','strings_attached':True,'expected_return':'a referral'})['output']
  assert not quid['allowed'] and quid['blocked'] and quid['obligation_risk_score']==pytest.approx(1.0)
+
+# Rows 101-109: distinct numerical engines and adversarial paths.
+def test_row101_authority_decay_and_fabrication_boundary():
+ o=run('authority_positioning',{'claim':'licensed','evidence_records':[{'source':'registry','reliability':.9,'relevance':.8,'age_days':0}]})['output'];assert o['credibility_score']==pytest.approx(.72) and o['deployment_allowed']
+ assert not run('authority_positioning',{'claim':'expert','evidence_records':[]})['output']['deployment_allowed']
+def test_row102_commitment_escalation_quantifies_pressure():
+ o=run('consistency_commitment',{'prior_commitment':'trial','current_choice':'annual','freely_chosen':False,'commitment_scale':1,'requested_step':3})['output'];assert o['escalation_ratio']==3 and o['pressure_risk_score']==1 and not o['may_reference']
+def test_row103_liking_detects_fabricated_similarity():
+ o=run('liking_enhancement',{'genuine_commonalities':['art'],'claimed_commonalities':['art','school']})['output'];assert o['authenticity_precision']==.5 and o['unsupported_claims']==['school'] and not o['usable']
+def test_row104_unity_scores_conflicting_goals():
+ o=run('unity_building',{'genuine_commonalities':['team'],'shared_goals':['ship'],'conflicting_goals':['privacy']})['output'];assert o['identity_alignment_score']==.5 and o['conflict_risk_score']==.5 and not o['usable']
+def test_row105_presuasion_reports_attention_entropy():
+ o=run('pre_suasion',{'context':'cost','disclosed':True,'attention_weights':[9,1]})['output'];assert o['salience_concentration']==.9 and o['attention_balance']<.5
+def test_row106_priming_control_effect_and_covert_block():
+ o=run('priming_effects',{'context':'safety','disclosed':True,'exposed_successes':70,'exposed_total':100,'control_successes':50,'control_total':100})['output'];assert o['absolute_effect']==.2 and o['effect_interval_95'][0]>0
+ assert not run('priming_effects',{'context':'hidden','disclosed':False,'exposed_successes':7,'exposed_total':10,'control_successes':5,'control_total':10})['output']['allowed']
+def test_row107_nudge_uplift_and_friction_boundary():
+ x={**C['nudge_design'],'baseline_uptake':.3,'default_uptake':.6,'opt_out_steps':4};o=run('nudge_design',x)['output'];assert o['estimated_uptake_lift']==.3 and not o['deployment_allowed']
+def test_row108_choice_architecture_finds_dominated_default():
+ x={**C['choice_architecture'],'attribute_matrix':{'monthly':[1,1],'annual':[2,2]}};o=run('choice_architecture',x)['output'];assert o['dominated_options']==['monthly'] and not o['deployment_allowed']
+def test_row109_libertarian_welfare_and_regret():
+ x={**C['libertarian_paternalism'],'expected_utilities':{'opt in':5,'opt out':2},'population_shares':{'opt in':.5,'opt out':.5}};o=run('libertarian_paternalism',x)['output'];assert o['expected_population_welfare']==3.5 and o['default_regret']==3 and not o['deployment_allowed']
