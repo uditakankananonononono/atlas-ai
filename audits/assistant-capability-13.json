@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "source": "docs/IMPLEMENTATION_AUDIT.md#expanded-module-and-assistant-capability-audit",
+  "row_count": 13,
+  "rows": [
+    {
+      "id": 1,
+      "surface": "Module 0 approval center",
+      "module_ids": [
+        0
+      ],
+      "required_evidence": [
+        "backend/app/modules/m00_approval_center/routes.py",
+        "tests/modules/test_m00_approval_center.py"
+      ],
+      "failure_contract": "unknown, expired, or already-decided approvals cannot execute"
+    },
+    {
+      "id": 2,
+      "surface": "Modules 1-4",
+      "module_ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "required_evidence": [
+        "backend/app/modules/m01_opportunity_discovery/routes.py",
+        "backend/app/modules/m02_competition_manager/routes.py",
+        "backend/app/modules/m03_grant_writer/routes.py",
+        "backend/app/modules/m04_research_scientist/routes.py"
+      ],
+      "failure_contract": "invalid source, application, document, and research inputs fail closed"
+    },
+    {
+      "id": 3,
+      "surface": "Modules 5-6",
+      "module_ids": [
+        5,
+        6
+      ],
+      "required_evidence": [
+        "backend/app/modules/m05_outreach_manager/routes.py",
+        "backend/app/modules/m06_social_media_manager/routes.py",
+        "tests/modules/test_m05_delivery.py",
+        "tests/modules/test_m06_routes_extended.py"
+      ],
+      "failure_contract": "outreach and publishing effects require exact approval/provider readiness"
+    },
+    {
+      "id": 4,
+      "surface": "Modules 7-20",
+      "module_ids": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "required_evidence": [
+        "backend/app/modules/registry.py",
+        "tests/test_implementation_audit.py"
+      ],
+      "failure_contract": "all registered domain surfaces preserve tenant and approval boundaries"
+    },
+    {
+      "id": 5,
+      "surface": "Claire / Module 21",
+      "module_ids": [
+        21
+      ],
+      "required_evidence": [
+        "backend/app/modules/m21_claire/routes.py",
+        "backend/app/modules/m21_claire/personalization_routes.py",
+        "tests/modules/test_m21_claire_resilience.py"
+      ],
+      "failure_contract": "deception, unsupported paired actions, and unapproved effects are rejected"
+    },
+    {
+      "id": 6,
+      "surface": "Tools Hub / Module 22",
+      "module_ids": [
+        22
+      ],
+      "required_evidence": [
+        "backend/app/modules/m22_tools_hub/routes.py",
+        "backend/app/modules/m22_tools_hub/installer.py",
+        "tests/modules/test_m22_secure_installer.py"
+      ],
+      "failure_contract": "untrusted provenance, disallowed tools, or absent approval cannot install"
+    },
+    {
+      "id": 7,
+      "surface": "Billing / Module 24",
+      "module_ids": [
+        24
+      ],
+      "required_evidence": [
+        "backend/app/modules/m24_billing/routes.py",
+        "backend/app/modules/m24_billing/webhooks.py",
+        "tests/test_billing.py"
+      ],
+      "failure_contract": "bad webhook signatures, duplicate events, and unapproved charges fail closed"
+    },
+    {
+      "id": 8,
+      "surface": "Email assistant alignment",
+      "module_ids": [
+        10
+      ],
+      "required_evidence": [
+        "backend/app/modules/m10_email_assistant/routes.py",
+        "tests/modules/test_m10_email_assistant.py"
+      ],
+      "failure_contract": "send requires reviewed exact payload and configured provider"
+    },
+    {
+      "id": 9,
+      "surface": "Calendar alignment",
+      "module_ids": [
+        11
+      ],
+      "required_evidence": [
+        "backend/app/modules/m11_calendar_intelligence/routes.py",
+        "tests/modules/test_m11_calendar_intelligence.py"
+      ],
+      "failure_contract": "invalid times, conflicts, and unapproved mutations are rejected"
+    },
+    {
+      "id": 10,
+      "surface": "Browsing alignment",
+      "module_ids": [
+        13
+      ],
+      "required_evidence": [
+        "backend/app/modules/m13_browser_agent/routes.py",
+        "tests/modules/test_m13_browser_agent.py"
+      ],
+      "failure_contract": "unsafe URLs and stale/single-use approval replay are rejected"
+    },
+    {
+      "id": 11,
+      "surface": "Monitoring alignment",
+      "module_ids": [],
+      "required_evidence": [
+        "backend/app/collectors/monitoring.py",
+        "tests/test_monitoring_collectors.py",
+        "backend/app/workers/celery_app.py"
+      ],
+      "failure_contract": "invalid source state and duplicate lifecycle events do not alert twice"
+    },
+    {
+      "id": 12,
+      "surface": "Drafting/research/files alignment",
+      "module_ids": [
+        3,
+        4,
+        15
+      ],
+      "required_evidence": [
+        "backend/app/modules/m03_grant_writer/routes.py",
+        "backend/app/modules/m04_research_scientist/routes.py",
+        "backend/app/modules/m15_document_generator/routes.py",
+        "tests/modules/test_m15_lane_builder.py"
+      ],
+      "failure_contract": "missing provenance, malformed artifacts, and unsupported rendering fail explicitly"
+    },
+    {
+      "id": 13,
+      "surface": "Deployment/scaling",
+      "module_ids": [],
+      "required_evidence": [
+        "docker-compose.prod.yml",
+        "Dockerfile",
+        ".env.production.example"
+      ],
+      "failure_contract": "production readiness stays false until secrets, TLS, migrations, observability, and backups are attested"
+    }
+  ]
+}
