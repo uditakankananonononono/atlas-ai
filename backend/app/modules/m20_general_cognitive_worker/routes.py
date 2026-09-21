@@ -1543,3 +1543,13 @@ def atomic_concepts_70_92_route(body:AtomicConcept70To92In):
 # Atomic concept ledger rows 139-160.
 from .atomic_concepts_routes_round9_139_160 import router as atomic_concepts_round9_router
 router.include_router(atomic_concepts_round9_router)
+
+# Durable GCW runtime (technical-spec M20-01..M20-35).
+from app.core.database import engine as atlas_engine
+from .runtime import GCWRuntime
+from .runtime_routes import router as durable_runtime_router, bind_runtime
+from .sql_repository import GCWRepository
+_durable_runtime_repo = GCWRepository(atlas_engine, tenant_id="local")
+_durable_runtime_repo.create_schema()
+bind_runtime(GCWRuntime(_durable_runtime_repo))
+router.include_router(durable_runtime_router)
