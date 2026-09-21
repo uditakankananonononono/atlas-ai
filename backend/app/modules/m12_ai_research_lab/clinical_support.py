@@ -271,3 +271,48 @@ CLINICAL_EXTRA.update({
  'cbt_protocol_design':lambda d:psychotherapy_plan('cbt_protocol_design',d),
  'dbt_skill_selection':dbt_skills,
 })
+
+def medication_management(data:dict)->dict:
+    lists=data.get('medication_lists',[]);rules=data.get('interaction_rules',[]);source=data.get('source',{})
+    if len(lists)<2 or not source.get('source_url'):raise ValueError('at least two medication lists and source_url required')
+    by_name={};conflicts=[]
+    for record in lists:
+        origin=record.get('origin')
+        for med in record.get('medications',[]):
+            name=str(med.get('name','')).strip().lower()
+            if not name:raise ValueError('each medication needs name')
+            row={**med,'origin':origin};by_name.setdefault(name,[]).append(row)
+    reconciled=[]
+    for name,records in by_name.items():
+        signatures={(r.get('dose'),r.get('route'),r.get('frequency'),r.get('status')) for r in records}
+        if len(signatures)>1:conflicts.append({'medication':name,'records':records,'resolution':'prescriber_or_pharmacist_review'})
+        reconciled.append({'medication':name,'records':records,'consistent':len(signatures)==1})
+    interaction_result=interactions({'medications':[{'name':x} for x in by_name],'interaction_rules':rules}) if rules else {'interactions':[],'coverage_warning':'No interaction rules supplied; interaction safety was not assessed.'}
+    return {'reconciled_medications':reconciled,'discrepancies':conflicts,'interaction_review':interaction_result,'source':source,'approval_status':'draft_for_prescriber_or_pharmacist','boundary':'Reconciliation and cited rule matching only. Atlas does not start, stop, refill or change medication; verify indication, allergies, organ function, adherence, interactions and the actual containers with patient and clinician.','disclaimer':DISCLAIMER}
+
+def chronic_care_plan(method:str,data:dict)->dict:
+    observations=data.get('observations',{});targets=data.get('targets',[]);actions=data.get('actions',[]);source=data.get('source',{})
+    if not targets or not source.get('source_url'):raise ValueError('targets and source_url required')
+    status=[];missing=[];alerts=[]
+    for t in targets:
+        metric=t.get('metric');value=observations.get(metric)
+        if value is None:missing.append(metric);status.append({'metric':metric,'status':'missing','value':None,'target':t});continue
+        within=True
+        if t.get('minimum') is not None and float(value)<float(t['minimum']):within=False
+        if t.get('maximum') is not None and float(value)>float(t['maximum']):within=False
+        row={'metric':metric,'value':value,'status':'within_target' if within else 'outside_target','target':t,'observed_at':data.get('observed_at')};status.append(row)
+        if not within:alerts.append(row)
+    candidates=[]
+    for a in actions:
+        if a.get('trigger_metric') in {x['metric'] for x in alerts} and not set(a.get('contraindications',[]))&set(data.get('contraindications',[])):candidates.append(a)
+    return {'mode':method,'metric_status':status,'missing_metrics':missing,'outside_target':alerts,'candidate_actions_for_shared_review':candidates,'patient_goals':data.get('patient_goals',[]),'source':source,'boundary':'Longitudinal tracking against clinician-supplied targets only. Targets and actions require patient-specific licensed review; Atlas does not diagnose exacerbation, prescribe, titrate treatment or replace urgent assessment.','disclaimer':DISCLAIMER}
+
+CLINICAL_EXTRA.update({
+ 'medication_management':medication_management,
+ 'chronic_disease_management':lambda d:chronic_care_plan('chronic_disease_management',d),
+ 'diabetes_management':lambda d:chronic_care_plan('diabetes_management',d),
+ 'hypertension_management':lambda d:chronic_care_plan('hypertension_management',d),
+ 'asthma_management':lambda d:chronic_care_plan('asthma_management',d),
+ 'copd_management':lambda d:chronic_care_plan('copd_management',d),
+ 'heart_failure_management':lambda d:chronic_care_plan('heart_failure_management',d),
+})
