@@ -81,3 +81,46 @@ def genomics_support(data:dict)->dict:
     return {'variant_interpretations':rows,'coverage_warning':'Absence from supplied knowledge is not benign evidence. Confirm nomenclature, zygosity, reference build and current expert-curated sources.','disclaimer':DISCLAIMER}
 
 CLINICAL_EXTRA={'medical_image_analysis':lambda d:imaging_support('medical_image_analysis',d),'radiology_report_generation':lambda d:imaging_support('radiology_report_generation',d),'pathology_slide_analysis':lambda d:imaging_support('pathology_slide_analysis',d),'ecg_interpretation':lambda d:waveform_support('ecg_interpretation',d),'eeg_analysis':lambda d:waveform_support('eeg_analysis',d),'genomics_interpretation':genomics_support}
+
+def pharmacogenomics(data:dict)->dict:
+    genotypes=data.get('genotypes',[]);rules=data.get('guideline_rules',[]);_require_citations(rules,'guideline_rules');matched=[]
+    for g in genotypes:
+        for r in rules:
+            if str(r.get('gene'))==str(g.get('gene')) and str(r.get('diplotype'))==str(g.get('diplotype')):matched.append({'gene':g.get('gene'),'diplotype':g.get('diplotype'),'phenotype':r.get('phenotype'),'drug':r.get('drug'),'guideline_text':r.get('guideline_text'),'source_url':r['source_url'],'source_title':r['source_title'],'version':r.get('version'),'review_status':'pharmacist_or_specialist_review_required'})
+    return {'matched_guidelines':matched,'unmatched_genotypes':[g for g in genotypes if not any(m['gene']==g.get('gene') and m['diplotype']==g.get('diplotype') for m in matched)],'boundary':'Guideline lookup only. Confirm genotype calling, allele function, phenotype translation, drug indication, interactions and current guideline version.','disclaimer':DISCLAIMER}
+
+def trial_match(data:dict)->dict:
+    profile=data.get('profile',{});trials=data.get('trials',[]);_require_citations(trials,'trials');rows=[]
+    for t in trials:
+        unmet=[];excluded=[]
+        for k,v in t.get('inclusion',{}).items():
+            if k not in profile:unmet.append({'field':k,'reason':'missing'})
+            elif profile[k]!=v:unmet.append({'field':k,'reason':'not_met'})
+        for k,v in t.get('exclusion',{}).items():
+            if profile.get(k)==v:excluded.append(k)
+        status='potential_match' if not unmet and not excluded else 'needs_information' if any(x['reason']=='missing' for x in unmet) and not excluded else 'not_matched'
+        rows.append({'trial_id':t.get('trial_id'),'title':t.get('title'),'status':status,'unmet_or_missing_inclusion':unmet,'matched_exclusions':excluded,'source_url':t['source_url'],'last_verified_at':t.get('last_verified_at')})
+    order={'potential_match':0,'needs_information':1,'not_matched':2};rows.sort(key=lambda x:order[x['status']]);return {'matches':rows,'boundary':'Pre-screen only. Trial staff must confirm current recruitment, complete eligibility and consent. No enrollment or contact is performed.','disclaimer':DISCLAIMER}
+
+def adverse_events(data:dict)->dict:
+    notes=data.get('notes',[]);terms=data.get('event_terms',[])
+    if not isinstance(notes,list) or not isinstance(terms,list) or not terms:raise ValueError('notes and event_terms required')
+    hits=[]
+    for i,note in enumerate(notes):
+        text=str(note.get('text','')).lower()
+        for term in terms:
+            token=str(term).lower()
+            if token and token in text:hits.append({'note_index':i,'term':term,'snippet':note.get('text'),'occurred_at':note.get('occurred_at'),'provenance':note.get('provenance')})
+    return {'signals_for_review':hits,'signal_count':len(hits),'boundary':'Keyword surveillance only. A signal is not causality, severity or a reportable diagnosis. Clinicians/safety staff must review and follow applicable reporting rules.','disclaimer':DISCLAIMER}
+
+def risk_stratification(data:dict)->dict:
+    factors=data.get('factors',{});model=data.get('model',{});source=model.get('source',{})
+    if not source.get('source_url') or not isinstance(model.get('coefficients'),dict):raise ValueError('cited model coefficients required')
+    missing=[k for k in model['coefficients'] if k not in factors]
+    if missing:return {'status':'insufficient_data','missing_factors':missing,'source':source,'disclaimer':DISCLAIMER}
+    score=float(model.get('intercept',0))+sum(float(w)*float(factors[k]) for k,w in model['coefficients'].items());thresholds=sorted(model.get('thresholds',[]),key=lambda x:float(x['minimum']));band='unclassified'
+    for t in thresholds:
+        if score>=float(t['minimum']):band=t['label']
+    return {'status':'scored','score':score,'risk_band':band,'factors_used':factors,'model_name':model.get('name'),'model_version':model.get('version'),'source':source,'calibration_context':model.get('calibration_context'),'boundary':'Use only in the population and setting for which the model is validated. Risk score is not a diagnosis or treatment order.','disclaimer':DISCLAIMER}
+
+CLINICAL_EXTRA.update({'pharmacogenomic_recommendations':pharmacogenomics,'clinical_trial_matching':trial_match,'adverse_event_detection':adverse_events,'patient_risk_stratification':risk_stratification})
