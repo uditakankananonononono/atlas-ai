@@ -112,3 +112,6 @@ router.include_router(expanded_spec_router_67_131)
 
 from .core_spec_round6 import router as core_spec_round6_router
 router.include_router(core_spec_round6_router)
+
+from .expanded_spec_routes_1_66 import router as expanded_spec_router_1_66
+router.include_router(expanded_spec_router_1_66)
