@@ -1,6 +1,6 @@
 """FastAPI routes local to the grant-writer module."""
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.auth.context import TenantContext, require_tenant
 
 from .schemas import (
@@ -62,3 +62,13 @@ async def ingest_funded_corpus(request:CorpusIngestRequest,tenant:TenantContext=
 def search_funded_corpus(query:str,tenant:TenantContext=Depends(require_tenant)):
     from .corpus import FundedCorpusRepository
     return [CorpusSearchResult(**x.__dict__) for x in FundedCorpusRepository(tenant.tenant_id).search_text(query)]
+
+@router.get('/expanded-owner-180-210')
+def expanded_owner_catalog_180_210():
+    from .expanded_owner_180_210 import ROWS
+    return [{'row_id':i,'requirement':x} for i,x in ROWS.items()]
+@router.post('/expanded-owner-180-210/{row_id}')
+def expanded_owner_run_180_210(row_id:int,payload:dict):
+    from .expanded_owner_180_210 import ExpandedM3Error,run
+    try:return run(row_id,payload)
+    except ExpandedM3Error as exc:raise HTTPException(422,detail=str(exc)) from exc

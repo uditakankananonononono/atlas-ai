@@ -115,3 +115,13 @@ async def integrated_application(competition_id:str,request:IntegratedApplicatio
     flow=IntegratedApplicationFlow(ProfileCorpus(tenant.tenant_id,get_embedding_provider(request.embedding_provider)),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),approvals)
     try:return await flow.prepare(competition_id,request.official_url,[x.model_dump() for x in request.fields],request.provider)
     except ValueError as e:raise HTTPException(422,str(e))
+
+@router.get('/expanded-owner-132-179')
+def expanded_owner_catalog_132_179():
+    from .expanded_owner_132_179 import ROWS
+    return [{'row_id':i,'requirement':x} for i,x in ROWS.items()]
+@router.post('/expanded-owner-132-179/{row_id}')
+def expanded_owner_run_132_179(row_id:int,payload:dict):
+    from .expanded_owner_132_179 import ExpandedM2Error,run
+    try:return run(row_id,payload)
+    except ExpandedM2Error as exc:raise HTTPException(422,detail=str(exc)) from exc
