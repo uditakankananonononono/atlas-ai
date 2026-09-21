@@ -220,3 +220,15 @@ def list_analysis_jobs(method:str|None=None,service:Service=Depends(get_service)
 def get_analysis_job(job_id:str,service:Service=Depends(get_service)):
     try:return service.get_analysis_job(job_id)
     except LookupError:raise HTTPException(404,"analysis job not found")
+
+# Specialized finance analytics (owner feature rows 1360-1409).
+@router.get("/finance/methods",response_model=list[FinanceMethodInfo])
+def finance_methods():
+    from .finance import ROWS
+    return [FinanceMethodInfo(method=m,feature_row=row) for m,row in ROWS.items()]
+
+@router.post("/finance/analyze")
+def finance_analyze(data:FinanceAnalysisIn):
+    from .finance import run
+    try:return run(data.method,data.data,data.seed)
+    except ValueError as e:raise HTTPException(422,str(e))
