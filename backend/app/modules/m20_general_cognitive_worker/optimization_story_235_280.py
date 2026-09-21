@@ -31,4 +31,8 @@ def execute(method,payload):
  if row is None:raise WorkbenchError(f'unknown method: {method}')
  if not isinstance(payload,dict):raise WorkbenchError('payload must be object')
  s=source(payload);fam=FAMILY[row];result=optimization(row,payload) if fam=='optimization' else story(row,payload)
- return {'row_id':row,'capability':ROWS[row],'family':fam,'source':s,'result':result,'boundary':'Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.'}
+ checks=(['feasibility','convergence','sensitivity','independent solver validation'] if fam=='optimization' else ['originality','continuity','audience fit','editorial review'])
+ return {'row_id':row,'capability':ROWS[row],'family':fam,'source':s,'result':result,
+         'evaluation':{'method_specific':True,'review_checks':checks,'completion_criteria':'all named checks recorded'},
+         'uncertainty':{'level':'not automatically quantified','drivers':(['solver/model assumptions','numerical tolerance','input completeness'] if fam=='optimization' else ['editorial judgment','audience response','production constraints']),'human_review_required':True},
+         'boundary':'Review assumptions, convergence and feasibility for optimization. For story work, preserve originality, audience constraints, internal consistency, and human editorial control.'}

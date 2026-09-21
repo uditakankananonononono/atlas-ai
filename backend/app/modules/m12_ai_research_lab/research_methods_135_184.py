@@ -73,4 +73,8 @@ def execute(method,payload):
  if row is None:raise ResearchMethodError(f'unknown method: {method}')
  if not isinstance(payload,dict):raise ResearchMethodError('payload must be object')
  s=source(payload);fam=FAMILY[row];result={'statistics':lambda r,p:statistics(p),'ml':ml,'causal':causal,'timeseries':timeseries}[fam](row,payload)
- return {'row_id':row,'capability':ROWS[row],'family':fam,'source':s,'result':result,'boundary':'Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.'}
+ observed=[k for k,v in payload.items() if k!='source' and v not in (None,'',[],{})]
+ return {'row_id':row,'capability':ROWS[row],'family':fam,'source':s,'result':result,
+         'evaluation':{'method_specific':True,'input_fields_observed':observed,'diagnostics_required':True,'adversarial_checks':['leakage','assumption violation','distribution shift']},
+         'uncertainty':{'level':'requires empirical estimation','drivers':['sampling variation','model specification','measurement quality'],'reported_metrics':payload.get('uncertainty_metrics',[]),'expert_review_required':True},
+         'boundary':'Research support only. Lock test data, preserve provenance and assumptions, quantify uncertainty, test alternatives, and require expert review before consequential use.'}
