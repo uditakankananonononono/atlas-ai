@@ -47,8 +47,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** canonical service now legally wires Reddit by default and optional official YouTube/Pinterest plus allowlisted public pages through shared bounded collectors.
 - **Next:** owner-material evidence completeness meter for each essay concept and critique suggestion.
 ## M18 - Side Hustle & Knowledge Scraper
-- **Landed:** default public collectors, optional official Pinterest/X/Instagram/YouTube paths, a five-artifact experiment checklist with separate publish/send/spend approvals, and adapter receipts plus observed-outcome ingestion bound to consumed approvals.
-- **Next:** durable tenant-scoped run storage and signed provider receipt verification.
+- **Landed:** default public/official collectors, approval-gated experiments, adapter receipts and outcomes now extend to tenant-scoped durable SQLite WAL run snapshots that survive runner restarts and preserve exact approval/receipt links.
+- **Next:** signed provider receipt verification and shared Postgres storage for horizontally scaled workers.
 ## M19 - Idea Incubator
 - **Landed:** assumption burn-down ranks tests by expected entropy reduction per cost/time burden and selects a budget-feasible learning portfolio while preserving caller-supplied uncertainty.
 - **Next:** update priors from observed experiment evidence with auditable Bayesian revisions.
