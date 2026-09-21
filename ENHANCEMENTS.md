@@ -58,7 +58,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** free official discovery sources for GitHub, PyPI and npm replace the shipped empty collector list.
 - **Next:** connect approved discovery proposals to the existing scanner/installer with tenant persistence and rollback receipts.
 ## M23 - Study Abroad
-- **Next:** application evidence matrix linking each requirement and essay claim to owner records, official program sources and missing inputs.
+- **Landed:** application evidence matrix links requirements and essay claims to owner records and official program sources, exposes broken references, and returns explicit missing-input items and coverage.
+- **Next:** source-content hashes, official-page freshness checks and reviewer sign-off per matrix revision.
 ## M24 - Billing
 - **Landed:** pre-commit commitment preview binds plan, USD currency, quantity, renewal interval, caller-supplied tax, cancellation policy/deadline and exact charge into a content hash; it refuses guessed FX and never executes payment.
 - **Next:** bind the approved preview hash to checkout execution and reconcile Stripe’s final amount before commit.
