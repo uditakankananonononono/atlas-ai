@@ -10,7 +10,7 @@ from __future__ import annotations
 import math,random,statistics
 from collections import Counter
 ROWS={
-"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062,"synthetic_control":1063,"matching_methods":1064,"propensity_score_matching":1065,"coarsened_exact_matching":1066,"genetic_matching":1067}
+"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062,"synthetic_control":1063,"matching_methods":1064,"propensity_score_matching":1065,"coarsened_exact_matching":1066,"genetic_matching":1067,"entropy_balancing":1068,"inverse_probability_weighting":1069,"doubly_robust_estimation":1070,"targeted_maximum_likelihood":1071,"machine_learning_causal_inference":1072}
 def _nums(data,key="values",min_n=1):
     v=data.get(key)
     if not isinstance(v,list) or len(v)<min_n or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in v):raise ValueError(f"{key} must contain at least {min_n} finite numbers")
@@ -551,5 +551,55 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
             if t and c:effects.append((_mean([outcome[i] for i in t])-_mean([outcome[i] for i in c]),len(t)));matched+=ids
         if not effects:raise ValueError("no strata contain both groups")
         att=sum(e*w for e,w in effects)/sum(w for _,w in effects);o["output"]={"att":att,"matched_indices":sorted(matched),"matched_count":len(matched),"eligible_strata":len(effects),"total_strata":len(strata)};a += ["Ignorability within coarsened strata, overlap and meaningful pre-specified cutpoints."];limits += ["Results depend on cutpoint choice; no automated monotonic imbalance tuning or uncertainty estimate."]
+    elif method=="entropy_balancing":
+        treated=data.get("treated");outcome=_nums(data,"outcome");covariate=_nums(data,"covariate")
+        if not isinstance(treated,list) or not len(treated)==len(outcome)==len(covariate):raise ValueError("aligned treated, outcome and covariate required")
+        tx=[i for i,v in enumerate(treated) if v];ct=[i for i,v in enumerate(treated) if not v]
+        if not tx or not ct:raise ValueError("both groups required")
+        target=_mean([covariate[i] for i in tx]);lam=0.0;converged=False
+        for k in range(200):
+            raw=[math.exp(max(-700,min(700,lam*covariate[i]))) for i in ct];z=sum(raw);w=[v/z for v in raw];m=sum(q*covariate[i] for q,i in zip(w,ct));var=sum(q*(covariate[i]-m)**2 for q,i in zip(w,ct))
+            if abs(m-target)<1e-10:converged=True;break
+            if var<1e-14:break
+            lam-=(m-target)/var
+        if not converged and abs(m-target)>1e-6:raise ValueError("target moment is outside feasible control support")
+        effect=_mean([outcome[i] for i in tx])-sum(q*outcome[i] for q,i in zip(w,ct));entropy=-sum(q*math.log(max(q,1e-300)) for q in w);o["output"]={"att":effect,"control_indices":ct,"control_weights":w,"target_covariate_mean":target,"weighted_control_mean":m,"entropy":entropy,"converged":converged};a += ["Selection on observed covariate, overlap and feasible exact mean balance."];limits += ["One covariate/first moment reference; no higher moments/interactions, base weights or variance estimate."]
+    elif method=="inverse_probability_weighting":
+        treated=data.get("treated");outcome=_nums(data,"outcome");ps=_nums(data,"propensity_score")
+        if not isinstance(treated,list) or not len(treated)==len(outcome)==len(ps) or any(q<=0 or q>=1 for q in ps):raise ValueError("aligned inputs and propensity scores strictly in (0,1) required")
+        stabilized=bool(p.get("stabilized",False));pt=sum(bool(v) for v in treated)/len(treated);weights=[(pt/q if stabilized else 1/q) if t else ((1-pt)/(1-q) if stabilized else 1/(1-q)) for t,y,q in zip(treated,outcome,ps)];ty=[(w,y) for w,y,t in zip(weights,outcome,treated) if t];cy=[(w,y) for w,y,t in zip(weights,outcome,treated) if not t];mt=sum(w*y for w,y in ty)/sum(w for w,_ in ty);mc=sum(w*y for w,y in cy)/sum(w for w,_ in cy);ess=(sum(weights)**2)/sum(w*w for w in weights);o["output"]={"ate":mt-mc,"treated_mean":mt,"control_mean":mc,"weights":weights,"effective_sample_size":ess,"max_weight":max(weights),"stabilized":stabilized};a += ["Consistent propensity scores, exchangeability, positivity and SUTVA."];limits += ["Propensities are caller supplied; no trimming, robust variance or diagnostics beyond ESS/max weight."]
+    elif method=="doubly_robust_estimation":
+        treated=data.get("treated");outcome=_nums(data,"outcome");ps=_nums(data,"propensity_score");mu1=_nums(data,"outcome_model_treated");mu0=_nums(data,"outcome_model_control")
+        if not isinstance(treated,list) or not len(treated)==len(outcome)==len(ps)==len(mu1)==len(mu0) or any(q<=0 or q>=1 for q in ps):raise ValueError("aligned nuisance predictions and propensities in (0,1) required")
+        scores=[]
+        for t,y,e,m1,m0 in zip(treated,outcome,ps,mu1,mu0):scores.append(m1-m0+(y-m1)/e if t else m1-m0-(y-m0)/(1-e))
+        o["output"]={"ate":_mean(scores),"influence_scores":scores,"standard_error":math.sqrt(_var(scores)/len(scores)) if len(scores)>1 else None};a += ["At least one of propensity or outcome nuisance models is consistently estimated, plus positivity/SUTVA."];limits += ["Caller supplies in-sample nuisance predictions; production use should cross-fit to reduce overfitting bias."]
+    elif method=="targeted_maximum_likelihood":
+        treated=data.get("treated");outcome=_nums(data,"outcome");ps=_nums(data,"propensity_score");q1=_nums(data,"initial_q1");q0=_nums(data,"initial_q0")
+        if not isinstance(treated,list) or not len(treated)==len(outcome)==len(ps)==len(q1)==len(q0) or any(not 0<e<1 for e in ps) or any(not 0<q<1 for q in q1+q0) or any(not 0<=y<=1 for y in outcome):raise ValueError("aligned binary outcomes and nuisance probabilities strictly inside bounds required")
+        h=[1/e if t else -1/(1-e) for t,e in zip(treated,ps)];qobs=[a if t else b for t,a,b in zip(treated,q1,q0)];logit=lambda q:math.log(q/(1-q));eps=0
+        for _ in range(50):
+            probs=[1/(1+math.exp(-(logit(q)+eps*hh))) for q,hh in zip(qobs,h)];score=sum(hh*(y-pr) for hh,y,pr in zip(h,outcome,probs));info=sum(hh*hh*pr*(1-pr) for hh,pr in zip(h,probs));step=score/info if info else 0;eps+=step
+            if abs(step)<1e-10:break
+        expit=lambda x:1/(1+math.exp(-max(-700,min(700,x))));q1s=[expit(logit(q)+eps/e) for q,e in zip(q1,ps)];q0s=[expit(logit(q)-eps/(1-e)) for q,e in zip(q0,ps)];psi=_mean([a-b for a,b in zip(q1s,q0s)]);ic=[(a-b)-psi+((y-a)/e if t else -(y-b)/(1-e)) for t,y,e,a,b in zip(treated,outcome,ps,q1s,q0s)];o["output"]={"ate":psi,"epsilon":eps,"targeted_q1":q1s,"targeted_q0":q0s,"influence_curve_mean":_mean(ic),"standard_error":math.sqrt(_var(ic)/len(ic)) if len(ic)>1 else None};a += ["Binary bounded outcome, valid nuisance models, positivity, consistency and no unmeasured confounding."];limits += ["One-dimensional logistic fluctuation; nuisance estimates supplied and not cross-fitted; no confidence interval correction."]
+    elif method=="machine_learning_causal_inference":
+        treated=data.get("treated");outcome=_nums(data,"outcome");features=data.get("features")
+        if not isinstance(treated,list) or not isinstance(features,list) or not len(treated)==len(outcome)==len(features) or not features or any(not isinstance(r,list) or len(r)!=len(features[0]) for r in features):raise ValueError("aligned treatment, outcome and feature matrix required")
+        def predict(train_idx,test):
+            groups={False:[],True:[]}
+            for i in train_idx:groups[bool(treated[i])].append(i)
+            if not groups[False] or not groups[True]:raise ValueError("each training fold needs both groups")
+            out={}
+            for g,ids in groups.items():
+                d=[(sum((float(a)-float(b))**2 for a,b in zip(features[i],features[test])),outcome[i]) for i in ids];d.sort();k=min(3,len(d));out[g]=_mean([y for _,y in d[:k]])
+            return out[True],out[False]
+        effects=[];pred=[];fold_id={};counts={False:0,True:0}
+        for i,t in enumerate(treated):g=bool(t);fold_id[i]=counts[g]%2;counts[g]+=1
+        if min(counts.values())<2:raise ValueError("cross-fitting needs at least two observations per treatment group")
+        for fold in (0,1):
+            train=[i for i in range(len(outcome)) if fold_id[i]!=fold];test=[i for i in range(len(outcome)) if fold_id[i]==fold]
+            for i in test:
+                m1,m0=predict(train,i);effects.append(m1-m0);pred.append({"index":i,"mu1":m1,"mu0":m0,"cate":m1-m0})
+        pred.sort(key=lambda x:x["index"]);o["output"]={"algorithm":"two-fold cross-fitted_t_learner_knn","ate":_mean(effects),"individual_effects":pred,"folds":2};a += ["Unconfoundedness conditional on features, overlap, SUTVA and local smoothness for k-nearest-neighbor outcome models."];limits += ["Small deterministic reference learner; no propensity model, tuning, uncertainty or high-dimensional safeguards."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
     return o
