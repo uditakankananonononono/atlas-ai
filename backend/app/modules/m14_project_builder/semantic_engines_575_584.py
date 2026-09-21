@@ -50,4 +50,18 @@ def run(row:int,d:dict[str,Any]):
   parity=str(sum(map(int,bits))%2);received=str(d.get('received_bits',bits+parity));r={'encoded_bits':bits+parity,'parity':'even','received_bits':received,'error_detected':sum(map(int,received))%2!=0,'correction_capability':0,'limitation':'single parity detects odd-count bit errors but cannot correct'}
  else:
   need(d,'roles','messages','security_goals','threats');r={'roles':d['roles'],'message_flow':d['messages'],'security_goals':d['security_goals'],'threats':d['threats'],'primitive_requirements':d.get('primitive_requirements',[]),'replay_protection':d.get('replay_protection'),'key_confirmation':d.get('key_confirmation'),'formal_security_proof':False,'custom_cryptography_forbidden':True}
- return {'row':row,'engine':ROWS[row],'result':r,'runtime_effect_performed':False}
+ evaluation = {
+  'method': ROWS[row],
+  'output_fields': sorted(r),
+  'executed': row in {575,576,577,582,583},
+  'validation_checks': [k for k,v in r.items() if k.endswith(('verified','detected','risk','deterministic','deliverable'))],
+ }
+ uncertainty = {
+  'level': 'high' if row in {577,578,579,580,581,584} else 'medium',
+  'limitations': [v for k,v in r.items() if k in {'limitation'}] + ([
+   'Model output is bounded to supplied inputs and simplified local computation.',
+   'Production performance, safety, interoperability, and external effects are not established.'
+  ]),
+  'assumptions': d.get('assumptions',[]),
+ }
+ return {'row':row,'engine':ROWS[row],'result':r,'evaluation':evaluation,'uncertainty':uncertainty,'runtime_effect_performed':False}

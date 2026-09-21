@@ -103,4 +103,7 @@ def execute(method,payload):
  if row is None:raise LearningReasoningError(f'unknown method: {method}')
  if not isinstance(payload,dict):raise LearningReasoningError('payload must be an object')
  source=src(payload);family=FAMILY[row];result={'learning':learning,'transfer':transfer,'reasoning':reasoning,'inquiry':inquiry}[family](row,payload)
- return {'row_id':row,'capability':ROWS[row],'family':family,'source':source,'result':result,'boundary':'Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.'}
+ return {'row_id':row,'capability':ROWS[row],'family':family,'source':source,'result':result,
+  'evaluation':{'method':key,'required_inputs_present':True,'result_fields':sorted(result),'independent_verification_required':True,'failure_tests':['missing source','empty required input','invalid probability or membership','unsupported method']},
+  'uncertainty':{'level':'high' if family in {'reasoning','inquiry'} else 'medium','assumptions':payload.get('assumptions',[]),'unknowns':payload.get('uncertainties',[]),'calibration':'A complete workflow is not proof that the conclusion or learning outcome is correct.'},
+  'boundary':'Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.'}
