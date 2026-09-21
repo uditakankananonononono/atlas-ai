@@ -162,10 +162,10 @@ def test_social_research_failure_paths():
  with pytest.raises(SocialResearchError,match='unknown actor'):execute('social_network_analysis',{'actors':['a'],'source':SRC,'edges':[{'source':'a','target':'zzz'}]})
  with pytest.raises(SocialResearchError,match='time and value'):execute('time_series_analysis',{'observations':[{'time':1}],'source':SRC})
  with pytest.raises(SocialResearchError,match='at most 20'):execute('coalition_theory',{'actors':['a'],'source':SRC,'weights':{str(i):1 for i in range(21)},'winning_threshold':3})
-def test_social_research_tenant_boundary(monkeypatch):
+def test_social_research_tenant_boundary(monkeypatch, oidc_auth_headers):
  from app.main import app
  monkeypatch.setenv('ATLAS_ENV','production')
  c=TestClient(app)
  assert c.get('/api/v1/api/modules/20/social-research-1710-1759/capabilities').status_code==401
- h={'X-Atlas-Tenant':'tenant-a','X-Atlas-Actor':'tester'}
+ h=oidc_auth_headers("tenant-a", "tester")
  r=c.get('/api/v1/api/modules/20/social-research-1710-1759/capabilities',headers=h);assert r.status_code==200 and len(r.json())==50

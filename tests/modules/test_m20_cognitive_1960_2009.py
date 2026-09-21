@@ -83,12 +83,12 @@ def test_failure_paths_raise_value_error():
  with pytest.raises(ValueError,match="triples"):run("knowledge_graphs",{"triples":[["a","is"]]})
  with pytest.raises(ValueError,match="aligned"):run("digital_twins",{"observed":[1],"simulated":[1,2]})
  with pytest.raises(ValueError,match="unsupported"):run("not_a_method",{})
-def test_tenant_boundary_enforced_on_mounted_surface(monkeypatch):
+def test_tenant_boundary_enforced_on_mounted_surface(monkeypatch, oidc_auth_headers):
  from app.main import app
  monkeypatch.setenv("ATLAS_ENV","production")
  c=TestClient(app)
  assert c.get("/api/v1/api/modules/20/cognitive-1960-2009/methods").status_code==401
  assert c.post("/api/v1/api/modules/20/cognitive-1960-2009/analyze",json={"method":"self_consistency","data":{"answers":["a"]}}).status_code==401
- h={"X-Atlas-Tenant":"tenant-a","X-Atlas-Actor":"tester"}
+ h=oidc_auth_headers("tenant-a", "tester")
  assert c.get("/api/v1/api/modules/20/cognitive-1960-2009/methods",headers=h).status_code==200
  assert c.post("/api/v1/api/modules/20/cognitive-1960-2009/analyze",headers=h,json={"method":"self_consistency","data":{"answers":["a","a"]}}).status_code==200

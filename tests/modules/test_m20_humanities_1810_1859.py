@@ -144,10 +144,10 @@ def test_humanities_failure_paths():
  with pytest.raises(ValueError,match=r'sources\[0\]'):H('historical_analysis',{'sources':['not-a-dict']})
  with pytest.raises(ValueError,match=r'claims\[0\]'):H('historical_analysis',{**BASE,'claims':['x']})
  with pytest.raises(ValueError,match=r'events\[0\]'):H('chronology',{**BASE,'events':['1901']})
-def test_humanities_tenant_boundary(monkeypatch):
+def test_humanities_tenant_boundary(monkeypatch, oidc_auth_headers):
  from app.main import app
  monkeypatch.setenv('ATLAS_ENV','production')
  c=TestClient(app)
  assert c.post('/api/v1/api/modules/20/humanities/1810-1859/analyze',json={'method':'chronology','data':BASE}).status_code==401
- h={'X-Atlas-Tenant':'tenant-a','X-Atlas-Actor':'tester'}
+ h=oidc_auth_headers("tenant-a", "tester")
  r=c.post('/api/v1/api/modules/20/humanities/1810-1859/analyze',headers=h,json={'method':'chronology','data':BASE});assert r.status_code==200 and 'metrics' in r.json()

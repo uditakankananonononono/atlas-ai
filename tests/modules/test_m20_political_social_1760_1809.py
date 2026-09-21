@@ -112,10 +112,10 @@ def test_political_failure_paths():
  with pytest.raises(AnalysisError,match='align'):analyze(1783,{'media_salience':[1],'public_salience':[1,2],'sources':S})
  with pytest.raises(AnalysisError,match='2\+ non-empty'):analyze(1794,{'group_positions':{'a':[1]},'sources':S})
  with pytest.raises(AnalysisError,match='unsupported'):analyze(9999,{'sources':S})
-def test_political_tenant_boundary(monkeypatch):
+def test_political_tenant_boundary(monkeypatch, oidc_auth_headers):
  from app.main import app
  monkeypatch.setenv('ATLAS_ENV','production')
  c=TestClient(app)
  assert c.get('/api/v1/api/modules/20/political-social-1760-1809/capabilities').status_code==401
- h={'X-Atlas-Tenant':'tenant-a','X-Atlas-Actor':'tester'}
+ h=oidc_auth_headers("tenant-a", "tester")
  r=c.get('/api/v1/api/modules/20/political-social-1760-1809/capabilities',headers=h);assert r.status_code==200 and len(r.json())==50
