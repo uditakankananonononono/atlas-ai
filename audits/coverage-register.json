@@ -3759,12 +3759,12 @@
       "requirement": "Information Architecture",
       "description": "Organizes content logically",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_288_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 288 'Information Architecture': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 288 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 289,
@@ -3772,12 +3772,12 @@
       "requirement": "Interaction Design",
       "description": "Creates engaging experiences",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_289_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 289 'Interaction Design': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 289 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 290,
@@ -3785,12 +3785,12 @@
       "requirement": "Motion Design",
       "description": "Animates with purpose",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_290_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 290 'Motion Design': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 290 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 291,
@@ -3798,12 +3798,12 @@
       "requirement": "3D Modeling",
       "description": "Creates digital objects",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_291_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 291 '3D Modeling': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 291 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 292,
@@ -3811,12 +3811,12 @@
       "requirement": "Texture Creation",
       "description": "Develops surface appearance",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_292_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 292 'Texture Creation': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 292 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 293,
@@ -3824,12 +3824,12 @@
       "requirement": "Lighting Design",
       "description": "Sets mood through illumination",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_293_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 293 'Lighting Design': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 293 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 294,
@@ -3837,12 +3837,12 @@
       "requirement": "Rendering Optimization",
       "description": "Balances quality and speed",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_294_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 294 'Rendering Optimization': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 294 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 295,
@@ -3850,12 +3850,12 @@
       "requirement": "Animation Principles",
       "description": "Applies squash, stretch, anticipation",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_295_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 295 'Animation Principles': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 295 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 296,
@@ -3863,12 +3863,12 @@
       "requirement": "Character Rigging",
       "description": "Creates animation skeletons",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_296_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 296 'Character Rigging': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 296 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 297,
@@ -3876,12 +3876,12 @@
       "requirement": "Facial Animation",
       "description": "Conveys emotion through expression",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_297_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 297 'Facial Animation': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 297 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 298,
@@ -3889,12 +3889,12 @@
       "requirement": "Physics Simulation",
       "description": "Creates realistic motion",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_298_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 298 'Physics Simulation': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 298 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 299,
@@ -3902,12 +3902,12 @@
       "requirement": "Particle Effects",
       "description": "Generates dynamic elements",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_299_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 299 'Particle Effects': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 299 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 300,
@@ -3915,12 +3915,12 @@
       "requirement": "Procedural Generation",
       "description": "Creates content algorithmically",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_300_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 300 'Procedural Generation': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 300 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 301,
@@ -3928,12 +3928,12 @@
       "requirement": "Sound Design",
       "description": "Creates auditory experiences",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_301_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 301 'Sound Design': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 301 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 302,
@@ -3941,12 +3941,12 @@
       "requirement": "Music Composition",
       "description": "Writes original melodies",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_302_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 302 'Music Composition': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 302 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 303,
@@ -3954,12 +3954,12 @@
       "requirement": "Harmony Arrangement",
       "description": "Combines notes pleasingly",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_303_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 303 'Harmony Arrangement': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 303 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 304,
@@ -3967,12 +3967,12 @@
       "requirement": "Rhythm Programming",
       "description": "Creates beats and grooves",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_304_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 304 'Rhythm Programming': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 304 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 305,
@@ -3980,12 +3980,12 @@
       "requirement": "Orchestration",
       "description": "Assigns instruments to parts",
       "implementation_path": "backend/app/modules/m06_social_media_manager/creative.py",
-      "test_path": "tests/modules/test_m06_creative.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_305_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 305 'Orchestration': engine-level mechanism (classes: CreativeEngine; functions: redact_imitations) in backend/app/modules/m06_social_media_manager/creative.py. Boundary: Creative-discipline briefs and specifications for feature rows 281-305.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 305 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 306,
@@ -3993,12 +3993,12 @@
       "requirement": "Mixing",
       "description": "Balances audio elements",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_mixing_stages_are_domain_specific",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_306_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 306 'Mixing': row-keyed registry entry SPECS[306], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 306 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 307,
@@ -4006,12 +4006,12 @@
       "requirement": "Mastering",
       "description": "Prepares audio for distribution",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_mastering_requires_lufs",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_307_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 307 'Mastering': row-keyed registry entry SPECS[307], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 307 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 308,
@@ -4019,12 +4019,12 @@
       "requirement": "Foley Creation",
       "description": "Makes everyday sound effects",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_308_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 308 'Foley Creation': row-keyed registry entry SPECS[308], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 308 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 309,
@@ -4032,12 +4032,12 @@
       "requirement": "Voice Acting Direction",
       "description": "Guides vocal performance",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_voice_direction_contains_consent",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_309_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 309 'Voice Acting Direction': row-keyed registry entry SPECS[309], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 309 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 310,
@@ -4045,12 +4045,12 @@
       "requirement": "Podcast Production",
       "description": "Creates audio content",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_podcast_includes_factcheck_and_publish_gate",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_310_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 310 'Podcast Production': row-keyed registry entry SPECS[310], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 310 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 311,
@@ -4058,12 +4058,12 @@
       "requirement": "Audiobook Narration",
       "description": "Reads text engagingly",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_audiobook_includes_pronunciation_and_pickups",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_311_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 311 'Audiobook Narration': row-keyed registry entry SPECS[311], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 311 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 312,
@@ -4071,12 +4071,12 @@
       "requirement": "Radio Drama",
       "description": "Creates audio-only stories",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_radio_drama_integrates_cast_foley_soundscape",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_312_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 312 'Radio Drama': row-keyed registry entry SPECS[312], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 312 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 313,
@@ -4084,12 +4084,12 @@
       "requirement": "Sound Installation Design",
       "description": "Creates immersive audio spaces",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_313_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 313 'Sound Installation Design': row-keyed registry entry SPECS[313], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 313 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 314,
@@ -4097,12 +4097,12 @@
       "requirement": "Interactive Art",
       "description": "Creates responsive installations",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_interactive_art_has_state_privacy_accessibility",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_314_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 314 'Interactive Art': row-keyed registry entry SPECS[314], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 314 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 315,
@@ -4110,12 +4110,12 @@
       "requirement": "Generative Art",
       "description": "Creates algorithmic visuals",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_generative_art_seed_must_be_structured",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_315_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 315 'Generative Art': row-keyed registry entry SPECS[315], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 315 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 316,
@@ -4123,12 +4123,12 @@
       "requirement": "Data Visualization",
       "description": "Makes data beautiful and clear",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_316_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 316 'Data Visualization': row-keyed registry entry SPECS[316], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 316 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 317,
@@ -4136,12 +4136,12 @@
       "requirement": "Infographic Design",
       "description": "Combines text and visuals",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_infographic_keeps_factcheck_sources_accessibility",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_317_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 317 'Infographic Design': row-keyed registry entry SPECS[317], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 317 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 318,
@@ -4149,12 +4149,12 @@
       "requirement": "Map Design",
       "description": "Creates navigational visuals",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_318_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 318 'Map Design': row-keyed registry entry SPECS[318], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 318 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 319,
@@ -4162,12 +4162,12 @@
       "requirement": "Scientific Illustration",
       "description": "Accurately depicts research",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_scientific_and_medical_distinct",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_319_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 319 'Scientific Illustration': row-keyed registry entry SPECS[319], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 319 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 320,
@@ -4175,12 +4175,12 @@
       "requirement": "Medical Illustration",
       "description": "Visualizes anatomy and procedures",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_scientific_and_medical_distinct",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_320_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 320 'Medical Illustration': row-keyed registry entry SPECS[320], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 320 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 321,
@@ -4188,12 +4188,12 @@
       "requirement": "Technical Drawing",
       "description": "Creates precise diagrams",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_technical_drawing_rejects_negative_tolerance",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_321_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 321 'Technical Drawing': row-keyed registry entry SPECS[321], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 321 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 322,
@@ -4201,12 +4201,12 @@
       "requirement": "Architectural Rendering",
       "description": "Visualizes buildings",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_322_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 322 'Architectural Rendering': row-keyed registry entry SPECS[322], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 322 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 323,
@@ -4214,12 +4214,12 @@
       "requirement": "Interior Design",
       "description": "Plans functional spaces",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_323_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 323 'Interior Design': row-keyed registry entry SPECS[323], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 323 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 324,
@@ -4227,12 +4227,12 @@
       "requirement": "Landscape Design",
       "description": "Creates outdoor environments",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_324_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 324 'Landscape Design': row-keyed registry entry SPECS[324], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 324 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 325,
@@ -4240,12 +4240,12 @@
       "requirement": "Urban Planning",
       "description": "Designs communities",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_325_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 325 'Urban Planning': row-keyed registry entry SPECS[325], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 325 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 326,
@@ -4253,12 +4253,12 @@
       "requirement": "Fashion Design",
       "description": "Creates clothing concepts",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_fashion_textile_jewelry_furniture_distinct",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_326_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 326 'Fashion Design': row-keyed registry entry SPECS[326], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 326 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 327,
@@ -4266,12 +4266,12 @@
       "requirement": "Textile Design",
       "description": "Develops fabric patterns",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_fashion_textile_jewelry_furniture_distinct",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_327_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 327 'Textile Design': row-keyed registry entry SPECS[327], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 327 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 328,
@@ -4279,12 +4279,12 @@
       "requirement": "Jewelry Design",
       "description": "Creates wearable art",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_fashion_textile_jewelry_furniture_distinct",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_328_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 328 'Jewelry Design': row-keyed registry entry SPECS[328], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 328 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 329,
@@ -4292,12 +4292,12 @@
       "requirement": "Furniture Design",
       "description": "Creates functional objects",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_fashion_textile_jewelry_furniture_distinct",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_329_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 329 'Furniture Design': row-keyed registry entry SPECS[329], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 329 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 330,
@@ -4305,12 +4305,12 @@
       "requirement": "Industrial Design",
       "description": "Develops manufactured products",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_industrial_has_lifecycle",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_330_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 330 'Industrial Design': row-keyed registry entry SPECS[330], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 330 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 331,
@@ -4318,12 +4318,12 @@
       "requirement": "Automotive Design",
       "description": "Creates vehicle concepts",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_automotive_has_crash_and_homologation",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_331_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 331 'Automotive Design': row-keyed registry entry SPECS[331], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 331 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 332,
@@ -4331,12 +4331,12 @@
       "requirement": "Aerospace Design",
       "description": "Develops aircraft and spacecraft",
       "implementation_path": "backend/app/modules/m15_document_generator/creative_production_306_332.py",
-      "test_path": "tests/modules/test_m15_creative_306_332.py",
-      "test_case": "tests/modules/test_m15_creative_306_332.py::test_aerospace_has_mass_stability_certification",
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_332_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Row 332 'Aerospace Design': row-keyed registry entry SPECS[332], served through plan() in backend/app/modules/m15_document_generator/creative_production_306_332.py. Boundary: Production-ready planning contracts for creative rows 306-332.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 332 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 333,
@@ -4344,12 +4344,12 @@
       "requirement": "Marine Design",
       "description": "Creates watercraft",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-      "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_333_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 333 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 334,
@@ -4357,12 +4357,12 @@
       "requirement": "Toy Design",
       "description": "Creates play experiences",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-      "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_334_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 334 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 335,
@@ -4370,12 +4370,12 @@
       "requirement": "Game Design",
       "description": "Creates interactive entertainment",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-      "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_335_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 335 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 336,
@@ -4383,12 +4383,12 @@
       "requirement": "Level Design",
       "description": "Creates game spaces",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-      "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_336_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 336 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 337,
@@ -4396,12 +4396,12 @@
       "requirement": "Puzzle Design",
       "description": "Creates satisfying challenges",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-      "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_337_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 337 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 338,
@@ -4409,12 +4409,12 @@
       "requirement": "Mechanic Design",
       "description": "Creates game systems",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-      "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_338_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 338 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 339,
@@ -4422,12 +4422,12 @@
       "requirement": "Economy Design",
       "description": "Balances virtual economies",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-      "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_339_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 339 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 340,
@@ -4435,12 +4435,12 @@
       "requirement": "Narrative Design",
       "description": "Integrates story and gameplay",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-      "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_340_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 340 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 341,
@@ -4448,12 +4448,12 @@
       "requirement": "Quest Design",
       "description": "Creates meaningful objectives",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-      "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_341_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 341 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 342,
@@ -4461,12 +4461,12 @@
       "requirement": "Difficulty Balancing",
       "description": "Manages challenge curves",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-      "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_342_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 342 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 343,
@@ -4474,12 +4474,12 @@
       "requirement": "Player Experience Design",
       "description": "Optimizes engagement",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-      "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_path": "tests/modules/test_rows_288_343_evidence.py",
+      "test_case": "test_row_343_distinct_typed_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 343 executes a row-keyed typed mechanism with unique metric, model/version and source evidence, empty external-effects record and named row test; focused Python 3.12 suite passed."
     },
     {
       "row": 344,
