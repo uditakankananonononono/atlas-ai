@@ -24738,9 +24738,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1910_large_language_models",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['large_language_models'] (_r1910): Token-level likelihood, perplexity and context-window utilization of a supplied language-model trace. Required inputs: token_log_probabilities: list of per-token log probs from the eval run; context_window: model context size. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24750,9 +24750,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1911_multimodal_ai",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['multimodal_ai'] (_r1911): Score-level late fusion across declared modalities with weight entropy and weakest-modality diagnostics. Required inputs: modalities: modality label per score; modality_scores: one score per modality; weights: fusion weight per modality. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24762,9 +24762,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1912_vision_language_models",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['vision_language_models'] (_r1912): Image-caption embedding alignment with thresholded grounding rate and per-image misses. Required inputs: image_ids: evaluated image identifiers; captions: paired captions; similarities: embedding similarity per pair. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24774,9 +24774,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1913_text_to_image_generation",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['text_to_image_generation'] (_r1913): Prompt adherence, scored quality, requested-resolution fit and provenance/watermark flags for a generated image. Required inputs: prompt; artifact_description: what the image actually shows; quality_scores: per-rater or per-metric quality scores; width/height vs requested_width/requested_height. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24786,9 +24786,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1914_text_to_video_generation",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['text_to_video_generation'] (_r1914): Frame-quality trace analysis: temporal flicker, worst frame, and scored-frame coverage of the clip. Required inputs: prompt; artifact_description; frame_quality_scores: sampled per-frame scores; fps and duration_seconds. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24798,9 +24798,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1915_text_to_3d_generation",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['text_to_3d_generation'] (_r1915): Mesh integrity statistics: manifold checks, bounding volume, face budget and face-to-vertex ratio. Required inputs: vertex_count; face_count; non_manifold_edges; watertight: bool; bounding_box: {x,y,z} dimensions. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24810,9 +24810,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1916_text_to_audio_generation",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['text_to_audio_generation'] (_r1916): Waveform statistics: sample-rate adequacy, crest factor, estimated loudness and clipping rate. Required inputs: sample_rate_hz; duration_seconds; peak_amplitude and rms_amplitude (0-1); clipping_samples and total_samples. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24822,9 +24822,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1917_music_generation",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['music_generation'] (_r1917): Duration-weighted pitch-class histogram correlated with the declared key profile plus tempo stability. Required inputs: note_events: {pitch_class 0-11, duration}; declared_key: pitch class 0-11; tempo_bpm_samples: tempo trace. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24834,9 +24834,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1918_voice_cloning",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['voice_cloning'] (_r1918): Consent/provenance/watermark release gate with identity-similarity and speaker-verification scores. Required inputs: consent_verified: bool; provenance: signed provenance record; watermark: bool; identity_similarity and speaker_verification_score. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24846,9 +24846,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1919_deepfakes",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['deepfakes'] (_r1919): Forensic detector aggregation with manipulation-risk score, release block and recommended action. Required inputs: consent_verified: bool; provenance; watermark: bool; face_swap_artifact_score, temporal_inconsistency, identity_similarity from detectors. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24858,9 +24858,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1920_ai_art",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_art'] (_r1920): Reference-palette distance and rule-of-thirds composition scoring for a supplied artwork record. Required inputs: palette: #rrggbb colors used; reference_palette: intended colors; composition_focal_point {x,y} and canvas {width,height}; style_match_scores. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24870,9 +24870,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1921_ai_writing",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_writing'] (_r1921): Readability grade, citation coverage and duplication metrics for a drafted text. Required inputs: text: the draft; sources: cited sources; claims: checkable claims extracted by the caller. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24882,9 +24882,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1922_ai_coding",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_coding'] (_r1922): Suite-level pass rates, coverage floor and static/dependency gates for a code change. Required inputs: tests_passed/tests_total per suite; coverage_percent; static_analysis_issues; dependency_scan_clean: bool. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24894,9 +24894,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1923_ai_agents",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_agents'] (_r1923): Human-supervised agent run audit: approval coverage over irreversible steps and execution safety. Required inputs: steps: run steps with irreversible/approved/blocked flags; goal_completed; human_overrides. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24906,9 +24906,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1924_autonomous_agents",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['autonomous_agents'] (_r1924): Autonomy index, override/escalation rates and constraint-violation check from a run trace. Required inputs: steps: run steps with human_assisted flags; human_overrides; escalation_events; constraint_violations; goal_completed. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24918,9 +24918,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1925_multi_agent_systems",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['multi_agent_systems'] (_r1925): Delegation-graph validity, depth and cycle detection across declared agents. Required inputs: agents: declared agent ids; delegations: {from,to} edges. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24930,9 +24930,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1926_agent_communication",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['agent_communication'] (_r1926): Message schema validity, protocol violations, unmatched replies and orphaned request correlations. Required inputs: messages: logged messages with sender/recipient/type/correlation_id. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24942,9 +24942,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1927_agent_coordination",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['agent_coordination'] (_r1927): Task-DAG audit: ownership gaps, unknown dependencies, cycle rejection and critical path length. Required inputs: tasks: {id, owner, depends_on} records. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24954,9 +24954,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1928_agent_negotiation",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['agent_negotiation'] (_r1928): Reservation-utility offer selection with concession counting and advisory-only commitment. Required inputs: offers: the offers on the table; utilities: one utility per offer. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24966,9 +24966,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1929_agent_learning",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['agent_learning'] (_r1929): Before/after score deltas with effect size and per-task regression list. Required inputs: before_scores; after_scores on the same held-out tasks. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24978,9 +24978,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1930_reinforcement_learning_from_human_feedback",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['reinforcement_learning_from_human_feedback'] (_r1930): Preference-pair reward margins, accuracy and its normal-approximation confidence interval. Required inputs: chosen_rewards; rejected_rewards aligned per preference pair. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -24990,9 +24990,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1931_constitutional_ai",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['constitutional_ai'] (_r1931): Principle-critique-revision chain coverage with uncritiqued-principle detection. Required inputs: principles; critiques naming principles; revisions answering critiques. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25002,9 +25002,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1932_ai_alignment",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_alignment'] (_r1932): Intended-vs-observed objective gap with tolerance rate and worst-case identification. Required inputs: intended_scores; observed_scores on matched objectives. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25014,9 +25014,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1933_ai_safety",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_safety'] (_r1933): Failure-mode risk priority numbers with unacceptable-hazard screening. Required inputs: hazard_severity; hazard_likelihood; detectability aligned per hazard. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25026,9 +25026,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1934_ai_ethics",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_ethics'] (_r1934): Per-principle evidence coverage with explicit gaps and a review recommendation. Required inputs: principles; evidence: principle -> supporting artifact. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25038,9 +25038,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1935_explainable_ai",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['explainable_ai'] (_r1935): Attribution ranking with share of total importance and a removal-based faithfulness drop. Required inputs: feature_names; feature_importance; score_full; score_without_top. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25050,9 +25050,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1936_interpretable_ai",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['interpretable_ai'] (_r1936): Intrinsic model-shape audit: rule/depth complexity, monotonicity violations and surrogate fidelity. Required inputs: num_features_used; max_rule_depth; num_rules; monotonicity_checks; surrogate_fidelity. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25062,9 +25062,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1937_fair_ai",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['fair_ai'] (_r1937): Group selection rates, demographic-parity difference and equal-opportunity difference. Required inputs: groups; selected; positive_labels aligned per subject. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25074,9 +25074,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1938_responsible_ai",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['responsible_ai'] (_r1938): Weighted dimension scorecard with ranking and maturity band. Required inputs: dimensions; scores; weights. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25086,9 +25086,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1939_trustworthy_ai",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['trustworthy_ai'] (_r1939): Calibration error, robustness floor and privacy-budget gate into a certificate-readiness flag. Required inputs: calibration_errors; robustness_scores; privacy_budget_epsilon. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25098,9 +25098,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1940_ai_governance",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_governance'] (_r1940): Role/policy inventory completeness with review cadence and incident-process checks. Required inputs: roles: {name, responsibilities, filled}; policies; review_cadence_days; incident_process_documented: bool. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25110,9 +25110,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1941_ai_regulation",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_regulation'] (_r1941): Jurisdictional obligation checklist with evidence gaps; not legal advice. Required inputs: jurisdiction; requirements: obligations; evidence: obligation -> artifact. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25122,9 +25122,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1942_ai_policy",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_policy'] (_r1942): Internal policy-to-control conformance with violation counts by severity. Required inputs: policy_statements; controls: statement -> operating control; violations: {statement, severity}. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25134,9 +25134,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1943_ai_standards",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_standards'] (_r1943): Named-standard clause conformity with nonconformity severity and certification-body eligibility. Required inputs: standard: name and revision; clauses; conformity: clause -> assessment. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25146,9 +25146,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1944_ai_auditing",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_auditing'] (_r1944): Control-test exception rate, evidence completeness and audit-opinion grade. Required inputs: controls: {id, result, evidence} test records. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25158,9 +25158,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1945_ai_certification",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_certification'] (_r1945): Required-artifact completeness, accredited-body check and surveillance-expiry risk. Required inputs: required_artifacts; submitted: artifact -> document; accredited_body: bool; surveillance_audit_due_days. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25170,9 +25170,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1946_ai_testing",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_testing'] (_r1946): Input-partition pass rates and edge-case coverage into an adequacy decision. Required inputs: partitions: {name, cases, passed}; edge_cases_total; edge_cases_tested. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25182,9 +25182,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1947_ai_verification",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_verification'] (_r1947): Property-level verification with counterexamples and proof-obligation coverage. Required inputs: properties: {name, holds, checked_cases}. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25194,9 +25194,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1948_ai_validation",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_validation'] (_r1948): Stakeholder-need traceability to acceptance criteria into a fit-for-purpose decision. Required inputs: stakeholder_needs: {id, acceptance_criteria, met_criteria}. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25206,9 +25206,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1949_ai_assurance",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['ai_assurance'] (_r1949): Claim-support and independent-evidence rates with critical-claim exposure. Required inputs: claims: {id, evidence_ids}; evidence_items: {id, independent}; critical_claim_ids. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25218,9 +25218,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1950_foundation_models",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['foundation_models'] (_r1950): Benchmark-category report with aggregate score, breadth and per-category baseline gains. Required inputs: benchmark_categories: {category, score, baseline}. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25230,9 +25230,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1951_pre_trained_models",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['pre_trained_models'] (_r1951): Downstream task gains over named baselines with mean transfer ratio. Required inputs: downstream_tasks; scores; baselines. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25242,9 +25242,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1952_fine_tuning",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['fine_tuning'] (_r1952): Task gain, base-capability retention and forgetting rate for a tuned model. Required inputs: before_scores; after_scores; retained_base_scores. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25254,9 +25254,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1953_transfer_learning",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['transfer_learning'] (_r1953): Performance gain and sample-efficiency ratio of transfer versus training from scratch. Required inputs: scratch_scores; transfer_scores; scratch_examples; transfer_examples. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25266,9 +25266,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1954_few_shot_learning",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['few_shot_learning'] (_r1954): Accuracy and per-shot lift over a declared zero-shot baseline (shots>=1 enforced). Required inputs: predictions; targets; shots (>=1); zero_shot_baseline_accuracy. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25278,9 +25278,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1955_zero_shot_learning",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['zero_shot_learning'] (_r1955): Instruction-only accuracy with shots=0 enforced and prompt-token accounting. Required inputs: predictions; targets; shots (must be 0). Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25290,9 +25290,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1956_in_context_learning",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['in_context_learning'] (_r1956): Accuracy-versus-demonstrations learning curve with slope, plateau and context-budget checks. Required inputs: demonstration_counts; accuracies; context_tokens_used; context_window. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25302,9 +25302,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1957_prompt_engineering",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['prompt_engineering'] (_r1957): Token-penalized variant selection with efficiency and Pareto-optimal variant list. Required inputs: variants; scores; token_counts. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25314,9 +25314,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1958_chain_of_thought",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['chain_of_thought'] (_r1958): Step-claim completeness, independent verification rate and final-answer correctness. Required inputs: steps; final_answer; expected_answer; step_verifications. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
@@ -25326,9 +25326,9 @@
       "description": "",
       "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
       "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1959_tree_of_thought",
       "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: run. Boundaries: Deterministic AI-system design and evaluation primitives for rows 1910-1959.\n\nThese methods evaluate caller-supplied model artifacts, traces, scores and policy\nfacts. They do not train opaque models, synthesize deceptive media, or execute\nagent actions. Results retain evidence, assumptions, and explicit limitations.; documented caller-supplied artifacts, evidence, scores, or traces; unsupported AI systems method; provenance_present; consent_verified",
+      "implementation_details": "Keyed engine HANDLERS['tree_of_thought'] (_r1959): Search-tree audit: best-scoring leaf path, depth, branching factor and pruned share. Required inputs: nodes: {id, parent, score} search tree records. Deterministic, stdlib-only, typed validation with ValueError; envelope echoes inputs and declares no external effects (advisory evaluation, human approval gate).",
       "depth_sweep_status": "pending"
     },
     {
