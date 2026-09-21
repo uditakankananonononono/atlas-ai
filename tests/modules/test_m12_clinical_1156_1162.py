@@ -17,3 +17,39 @@ def test_1162_pain_management_tracks_trajectory_function_and_contraindications()
  o=clinical_support('pain_management',{'observations':[{'score':8,'observed_at':'b'},{'score':5,'observed_at':'a'}],'goals':['walk'],'options':[{'name':'safe'},{'name':'bad','contraindications':['renal']}],'contraindications':['renal'],'red_flags':['weakness'],'source':SRC});assert o['pain_trajectory'][0]['score']==5 and [x['name'] for x in o['candidate_options_for_shared_review']]==['safe'] and o['functional_goals']==['walk']
 def test_oncology_requires_source_and_regimen():
  with pytest.raises(ValueError):clinical_support('chemotherapy_planning',{'regimen':{},'source':SRC})
+
+
+def test_1157_chemo_reviews_cycle_structure_and_dosing_inputs_without_dosing():
+ d={'regimen':{'name':'c','cycles':[{'cycle':1,'days':[1],'agents':['a']},{'cycle':2}]},'patient_facts':{'marker':'positive','organ':70,'weight_kg':60},'criteria':[{'field':'marker','equals':'positive'},{'field':'organ','minimum':50}],'source':SRC}
+ o=clinical_support('chemotherapy_planning',d)
+ assert o['cycle_structure_review']['incomplete_cycles']==[{'cycle':2,'missing':['days','agents']}]
+ assert o['dosing_input_fields_for_pharmacist_review']['weight_kg']==60 and o['dosing_input_fields_for_pharmacist_review']['body_surface_area'] is None
+
+def test_1158_radiation_checks_fractionation_arithmetic_and_consistency():
+ d={'regimen':{'total_dose_gy':60,'fractions':30,'dose_per_fraction_gy':2.5},'patient_facts':{},'criteria':[],'source':SRC}
+ o=clinical_support('radiation_therapy_planning',d)
+ assert o['dose_per_fraction_gy']==2 and o['consistency_with_stated']=='inconsistent'
+
+def test_1159_immunotherapy_reviews_biomarker_panel_and_immune_risk_fields():
+ d={'regimen':{'name':'i'},'patient_facts':{'pdl1':'50%'},'criteria':[{'field':'pdl1','reason':'biomarker','equals':'50%'}],'immune_risk_fields':['thyroid','colitis_history'],'source':SRC}
+ o=clinical_support('immunotherapy_selection',d)
+ assert o['biomarker_panel_review'][0]['result_documented'] is True
+ assert o['immune_risk_checklist']==[{'field':'thyroid','value':None,'documented':False},{'field':'colitis_history','value':None,'documented':False}]
+
+def test_1160_palliative_summarizes_symptom_burden():
+ o=pall('palliative_care_planning')
+ assert o['symptom_burden_summary']['symptom_count']==1 and o['symptom_burden_summary']['urgent_count']==1 and o['symptom_burden_summary']['review_order']==['breathlessness']
+
+def test_1161_hospice_maps_unowned_coordination_tasks_and_eligibility_docs():
+ d={'symptoms':[],'goals':['comfort'],'preferences':{},'options':[],'team':[{'role':'nurse'}],'milestones':[{'name':'intake','owner_role':'nurse'},{'name':'review','owner_role':'chaplain'}],'eligibility_fields':['prognosis_months'],'eligibility_documentation':{},'source':SRC}
+ o=clinical_support('hospice_care_coordination',d)
+ assert o['unowned_milestones']==['review'] and o['eligibility_documentation_status']==[{'field':'prognosis_months','documented':False}]
+
+def test_oncology_rows_have_distinct_keyed_outputs():
+ base={'regimen':{'name':'r'},'patient_facts':{'marker':'positive'},'criteria':[{'field':'marker','equals':'positive'}],'source':SRC}
+ keys={m:set(clinical_support(m,dict(base))) for m in ['chemotherapy_planning','radiation_therapy_planning','immunotherapy_selection']}
+ assert 'cycle_structure_review' in keys['chemotherapy_planning'] and 'missing_fractionation_inputs' in keys['radiation_therapy_planning'] and 'biomarker_panel_review' in keys['immunotherapy_selection']
+ assert 'cycle_structure_review' not in keys['radiation_therapy_planning'] and 'biomarker_panel_review' not in keys['chemotherapy_planning']
+
+def test_oncology_rejects_impossible_fractionation():
+ with pytest.raises(ValueError):clinical_support('radiation_therapy_planning',{'regimen':{'total_dose_gy':60,'fractions':0},'patient_facts':{},'source':SRC})

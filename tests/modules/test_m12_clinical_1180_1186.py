@@ -17,3 +17,21 @@ def test_1185_health_education_preserves_uncertainty_and_citations():
 def test_1186_behavior_change_is_voluntary_not_manipulative():assert 'never shame, coerce, manipulate' in education('behavior_change_support')['boundary']
 def test_contact_tracing_refuses_missing_authority():
  with pytest.raises(ValueError):clinical_support('contact_tracing',{'index_case':{},'exposure_definition':{},'source':SRC})
+
+
+def test_1185_teach_back_checklist_flags_uncited_or_certain_messages():
+ o=education('health_education')
+ assert o['teach_back_checklist'][0]=={'topic':'prevention','plain_language_present':True,'uncertainty_stated':True,'cited':True}
+
+def test_1186_behavior_change_matches_supplied_readiness_stage():
+ d={'audience':{'language':'en'},'messages':[{'topic':'t','plain_language':'x','uncertainty':'u','source_ids':['s']}],'readiness_stage':'contemplation','options':[{'name':'journal','stages':['contemplation']},{'name':'quit plan','stages':['preparation']}],'sources':[SRC]}
+ o=clinical_support('behavior_change_support',d)
+ assert [x['name'] for x in o['stage_matched_options']]==['journal'] and o['deferred_options']==[{'name':'quit plan','deferred_for_stage':'contemplation'}]
+
+def test_education_rows_have_distinct_keyed_outputs():
+ a=education('health_education');b=education('behavior_change_support')
+ assert 'teach_back_checklist' in a and 'teach_back_checklist' not in b and 'stage_matched_options' in b and 'stage_matched_options' not in a
+
+def test_behavior_change_rejects_non_list_options():
+ d={'audience':{'language':'en'},'messages':[{'topic':'t'}],'options':'many','sources':[SRC]}
+ with pytest.raises(ValueError):clinical_support('behavior_change_support',d)

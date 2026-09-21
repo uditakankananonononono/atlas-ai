@@ -16,3 +16,26 @@ def test_1167_preventive_plan_preserves_shared_decision_grade():
 def test_1168_screening_recommendations_report_missing_risk_not_guess():assert preventive('health_screening_recommendations',{'age':50})['insufficient_information'][0]['missing_fields']==['risk']
 def test_cited_policies_are_required():
  with pytest.raises(ValueError):clinical_support('infection_control',{'exposures':[],'policies':[{'pathogen':'x'}]})
+
+
+def test_1167_preventive_plan_sequences_by_supplied_priority():
+ recs=[{**SRC,'service':'b','priority':2},{**SRC,'service':'a','priority':1},{**SRC,'service':'shared','shared_decision':True}]
+ o=clinical_support('preventive_care_planning',{'profile':{},'recommendations':recs})
+ assert o['plan_sequence']==['a','b','shared'] and o['shared_decision_topics']==['shared']
+
+def test_1168_screening_due_arithmetic_never_assumes_unrecorded_test():
+ recs=[{**SRC,'service':'colon','interval_months':60},{**SRC,'service':'lipid','interval_months':120}]
+ o=clinical_support('health_screening_recommendations',{'profile':{'last_done':{'colon':'2018-09-01'}},'recommendations':recs,'as_of':'2026-09-21'})
+ rows={r['service']:r for r in o['screening_due_review']}
+ assert rows['colon']['due_status']=='due_for_review' and rows['colon']['months_since_last_done']==96
+ assert rows['lipid']['due_status']=='last_done_unknown' and rows['lipid']['interval_months']==120
+
+def test_preventive_rows_have_distinct_keyed_outputs():
+ recs=[{**SRC,'service':'x','interval_months':12,'priority':1}]
+ a=clinical_support('preventive_care_planning',{'profile':{},'recommendations':recs})
+ b=clinical_support('health_screening_recommendations',{'profile':{},'recommendations':recs})
+ assert 'plan_sequence' in a and 'plan_sequence' not in b and 'screening_due_review' in b and 'screening_due_review' not in a
+
+def test_screening_rejects_bad_interval_and_bad_last_done():
+ with pytest.raises(ValueError):clinical_support('health_screening_recommendations',{'profile':{'last_done':{'x':'yesterday'}},'recommendations':[{**SRC,'service':'x','interval_months':12}],'as_of':'2026-09-21'})
+ with pytest.raises(ValueError):clinical_support('health_screening_recommendations',{'profile':{},'recommendations':[{**SRC,'service':'x','interval_months':0}]})

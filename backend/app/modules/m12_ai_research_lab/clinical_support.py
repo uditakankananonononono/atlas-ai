@@ -7,12 +7,24 @@ explicit clinician-review boundary.
 from __future__ import annotations
 from dataclasses import dataclass,asdict
 from math import isfinite
+from datetime import date
 from typing import Any
 
 DISCLAIMER="Decision support only. A licensed clinician must verify inputs, context and recommendations before any clinical action."
 
 def _require_citations(items:list[dict[str,Any]],label:str):
     if not items or any(not x.get('source_url') or not x.get('source_title') for x in items):raise ValueError(f'{label} requires source_url and source_title for every item')
+
+
+def _num(value:Any,label:str)->float:
+    try:result=float(value)
+    except (TypeError,ValueError):raise ValueError(f'{label} must be numeric') from None
+    if not isfinite(result):raise ValueError(f'{label} must be finite')
+    return result
+
+def _iso_date(value:Any,label:str)->date:
+    try:return date.fromisoformat(str(value))
+    except ValueError:raise ValueError(f'{label} must be an ISO date (YYYY-MM-DD)') from None
 
 def differential(data:dict)->dict:
     findings=data.get('findings',[]);candidates=data.get('candidates',[])
@@ -295,22 +307,115 @@ def medication_management(data:dict)->dict:
     interaction_result=interactions({'medications':[{'name':x} for x in by_name],'interaction_rules':rules}) if rules else {'interactions':[],'coverage_warning':'No interaction rules supplied; interaction safety was not assessed.'}
     return {'reconciled_medications':reconciled,'discrepancies':conflicts,'interaction_review':interaction_result,'source':source,'approval_status':'draft_for_prescriber_or_pharmacist','boundary':'Reconciliation and cited rule matching only. Atlas does not start, stop, refill or change medication; verify indication, allergies, organ function, adherence, interactions and the actual containers with patient and clinician.','disclaimer':DISCLAIMER}
 
+_CHRONIC_BOUNDARIES={
+ 'chronic_disease_management':'Longitudinal tracking across conditions against clinician-supplied targets only. Targets and actions require patient-specific licensed review; Atlas does not diagnose exacerbation, prescribe, titrate treatment or replace urgent assessment.',
+ 'diabetes_management':'Glucose tracking against clinician-supplied targets only. Below-range values, especially urgent lows, require licensed review and the patient hypoglycemia plan; Atlas does not diagnose exacerbation, dose insulin or replace urgent assessment.',
+ 'hypertension_management':'Blood-pressure reading organization against clinician-supplied targets only. Averages and thresholds require licensed review with measurement-protocol context; Atlas does not diagnose hypertension, titrate medication or replace urgent assessment.',
+ 'asthma_management':'Clinician-authored action-plan zone matching only. Zone changes and reliever use require licensed review; Atlas does not diagnose exacerbation, prescribe or replace urgent respiratory assessment.',
+ 'copd_management':'Symptom and history organization against clinician-supplied targets only. Exacerbation judgment and oxygen or inhaler changes require licensed review; Atlas does not diagnose exacerbation, prescribe or replace urgent assessment.',
+ 'heart_failure_management':'Weight and symptom tracking against clinician-supplied thresholds only. Weight alerts route to the heart-failure team for licensed review; Atlas does not diagnose exacerbation, adjust diuretics or replace urgent assessment.',
+}
+
+def _chronic_registry(data:dict,status:list)->dict:
+    measured=[x for x in status if x['status']!='missing'];within=[x for x in measured if x['status']=='within_target']
+    conditions=sorted({str((x.get('target') or {}).get('condition')) for x in status if (x.get('target') or {}).get('condition')})
+    return {'condition_registry':conditions,'control_summary':{'metrics_measured':len(measured),'metrics_within_target':len(within),'control_fraction':round(len(within)/len(measured),4) if measured else None},'registry_note':'Coverage of supplied targets only; unmeasured conditions are not controlled.'}
+
+def _diabetes_enrichment(data:dict,status:list)->dict:
+    below=[]
+    for row in status:
+        t=row.get('target') or {};value=row.get('value')
+        if value is None or t.get('minimum') is None:continue
+        if _num(value,'observation')<_num(t['minimum'],'target minimum'):
+            severe=t.get('severe_minimum');urgent=severe is not None and _num(value,'observation')<_num(severe,'severe_minimum')
+            below.append({'metric':row['metric'],'value':value,'below_range':True,'urgent_low_glucose':urgent})
+    readings=data.get('readings',[])
+    if not isinstance(readings,list):raise ValueError('readings must be a list of supplied glucose values')
+    tir=None
+    ranged=[(x.get('target') or {}) for x in status if (x.get('target') or {}).get('minimum') is not None and (x.get('target') or {}).get('maximum') is not None]
+    if readings and ranged:
+        lo=_num(ranged[0]['minimum'],'target minimum');hi=_num(ranged[0]['maximum'],'target maximum')
+        values=[_num(v,'reading') for v in readings]
+        tir=round(sum(1 for v in values if lo<=v<=hi)/len(values),4)
+    return {'glucose_safety_review':below,'time_in_range_fraction':tir,'time_in_range_note':'Computed only from supplied readings against the clinician-supplied range; not a diagnosis.'}
+
+def _hypertension_enrichment(data:dict,status:list)->dict:
+    readings=data.get('readings',[])
+    if not isinstance(readings,list):raise ValueError('readings must be a list of systolic/diastolic pairs')
+    pairs=[]
+    for r in readings:
+        if not isinstance(r,dict) or 'systolic' not in r or 'diastolic' not in r:raise ValueError('each reading needs systolic and diastolic')
+        pairs.append({'systolic':_num(r['systolic'],'systolic'),'diastolic':_num(r['diastolic'],'diastolic'),'observed_at':r.get('observed_at')})
+    summary=None
+    if pairs:summary={'reading_count':len(pairs),'average_systolic':round(sum(p['systolic'] for p in pairs)/len(pairs),2),'average_diastolic':round(sum(p['diastolic'] for p in pairs)/len(pairs),2),'review_thresholds_as_supplied':data.get('review_thresholds')}
+    return {'reading_pair_summary':summary,'readings_used':pairs,'averaging_note':'Averages only; clinicians interpret against measurement protocol and patient context.'}
+
+def _asthma_enrichment(data:dict,status:list)->dict:
+    rules=data.get('zone_rules',[])
+    if not isinstance(rules,list):raise ValueError('zone_rules must be a clinician-authored list')
+    zones=[]
+    for row in status:
+        value=row.get('value');assigned=None
+        if value is not None:
+            for z in rules:
+                ok=True
+                if z.get('minimum') is not None and _num(value,'observation')<_num(z['minimum'],'zone minimum'):ok=False
+                if z.get('maximum') is not None and _num(value,'observation')>_num(z['maximum'],'zone maximum'):ok=False
+                if ok:assigned=z.get('zone');break
+        zones.append({'metric':row['metric'],'clinician_authored_zone':assigned})
+    return {'action_plan_zones':zones,'zone_rules_supplied':bool(rules),'zone_note':'Zones come from the clinician-authored action plan only; Atlas never assigns severity.'}
+
+def _copd_enrichment(data:dict,status:list)->dict:
+    exacerbations=data.get('exacerbations',[])
+    if not isinstance(exacerbations,list):raise ValueError('exacerbations must be a list')
+    dated=sorted((x for x in exacerbations if isinstance(x,dict) and x.get('date')),key=lambda x:str(x['date']))
+    scores=data.get('symptom_scores',[])
+    if not isinstance(scores,list):raise ValueError('symptom_scores must be a list')
+    trend=sorted(({'date':s.get('date'),'score':_num(s['score'],'symptom score'),'instrument':s.get('instrument')} for s in scores if isinstance(s,dict) and 'score' in s),key=lambda x:str(x['date']))
+    return {'exacerbation_history_summary':{'recorded_count':len(exacerbations),'most_recent':dated[-1]['date'] if dated else None,'undated_records':len(exacerbations)-len(dated)},'symptom_score_trend':trend,'history_note':'History as recorded; clinicians judge exacerbation and control.'}
+
+def _heart_failure_enrichment(data:dict,status:list)->dict:
+    weights=data.get('daily_weights',[])
+    if not isinstance(weights,list):raise ValueError('daily_weights must be a list')
+    pts=sorted(({'date':w.get('date'),'weight_kg':_num(w['weight_kg'],'weight_kg')} for w in weights if isinstance(w,dict) and 'weight_kg' in w),key=lambda x:str(x['date']))
+    gains=[]
+    for i in range(len(pts)):
+        for j in range(i+1,len(pts)):
+            if j-i<=2:gains.append({'from':pts[i]['date'],'to':pts[j]['date'],'gain_kg':round(pts[j]['weight_kg']-pts[i]['weight_kg'],3)})
+    max_gain=max((g['gain_kg'] for g in gains),default=None)
+    threshold=data.get('alert_gain_kg');flag=None
+    if threshold is not None and max_gain is not None:flag=max_gain>=_num(threshold,'alert_gain_kg')
+    return {'daily_weight_trend':{'readings':pts,'max_window_gain_kg':max_gain,'alert_threshold_kg_as_supplied':threshold,'weight_review_flag':flag},'weight_note':'Weight alerts route to the care team; Atlas never adjusts diuretics.'}
+
+_CHRONIC_ENRICHMENTS={
+ 'chronic_disease_management':_chronic_registry,'diabetes_management':_diabetes_enrichment,
+ 'hypertension_management':_hypertension_enrichment,'asthma_management':_asthma_enrichment,
+ 'copd_management':_copd_enrichment,'heart_failure_management':_heart_failure_enrichment,
+}
+
 def chronic_care_plan(method:str,data:dict)->dict:
     observations=data.get('observations',{});targets=data.get('targets',[]);actions=data.get('actions',[]);source=data.get('source',{})
+    if not isinstance(observations,dict):raise ValueError('observations must be an object keyed by metric')
+    if not isinstance(targets,list) or not isinstance(actions,list):raise ValueError('targets and actions must be lists')
     if not targets or not source.get('source_url'):raise ValueError('targets and source_url required')
+    if method not in _CHRONIC_ENRICHMENTS:raise ValueError(f'unsupported chronic care method: {method}')
     status=[];missing=[];alerts=[]
     for t in targets:
         metric=t.get('metric');value=observations.get(metric)
         if value is None:missing.append(metric);status.append({'metric':metric,'status':'missing','value':None,'target':t});continue
-        within=True
-        if t.get('minimum') is not None and float(value)<float(t['minimum']):within=False
-        if t.get('maximum') is not None and float(value)>float(t['maximum']):within=False
+        value=_num(value,'observation');within=True
+        if t.get('minimum') is not None and value<_num(t['minimum'],'target minimum'):within=False
+        if t.get('maximum') is not None and value>_num(t['maximum'],'target maximum'):within=False
         row={'metric':metric,'value':value,'status':'within_target' if within else 'outside_target','target':t,'observed_at':data.get('observed_at')};status.append(row)
         if not within:alerts.append(row)
     candidates=[]
     for a in actions:
         if a.get('trigger_metric') in {x['metric'] for x in alerts} and not set(a.get('contraindications',[]))&set(data.get('contraindications',[])):candidates.append(a)
-    return {'mode':method,'metric_status':status,'missing_metrics':missing,'outside_target':alerts,'candidate_actions_for_shared_review':candidates,'patient_goals':data.get('patient_goals',[]),'source':source,'boundary':'Longitudinal tracking against clinician-supplied targets only. Targets and actions require patient-specific licensed review; Atlas does not diagnose exacerbation, prescribe, titrate treatment or replace urgent assessment.','disclaimer':DISCLAIMER}
+    result={'mode':method,'metric_status':status,'missing_metrics':missing,'outside_target':alerts,'candidate_actions_for_shared_review':candidates,'patient_goals':data.get('patient_goals',[]),'source':source}
+    result.update(_CHRONIC_ENRICHMENTS[method](data,status))
+    if method=='diabetes_management' and any(x['urgent_low_glucose'] for x in result['glucose_safety_review']):result['immediate_human_response_required']=True
+    result['boundary']=_CHRONIC_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
 
 CLINICAL_EXTRA.update({
  'medication_management':medication_management,
@@ -331,28 +436,94 @@ def oncology_coordination(data:dict)->dict:
     gaps=[x['name'] for x in tasks if not x['owner_known'] or not x.get('due_at')]
     return {'diagnosis_and_stage_as_supplied':{'diagnosis':plan.get('diagnosis'),'stage':plan.get('stage'),'pathology_version':plan.get('pathology_version')},'team':team,'coordination_tasks':tasks,'coordination_gaps':gaps,'patient_priorities':data.get('patient_priorities',[]),'source':source,'boundary':'Coordination of a clinician-authored oncology plan only. Atlas does not establish diagnosis/stage, order therapy or replace tumor-board and specialist review.','disclaimer':DISCLAIMER}
 
+def _chemo_enrichment(data:dict)->dict:
+    regimen=data.get('regimen',{});cycles=regimen.get('cycles',[])
+    if not isinstance(cycles,list):raise ValueError('regimen cycles must be a list')
+    incomplete=[{'cycle':c.get('cycle'),'missing':[k for k in ('days','agents') if not c.get(k)]} for c in cycles if isinstance(c,dict) and (not c.get('days') or not c.get('agents'))]
+    facts=data.get('patient_facts',{})
+    return {'cycle_structure_review':{'cycles_supplied':len(cycles),'incomplete_cycles':incomplete},'dosing_input_fields_for_pharmacist_review':{k:facts.get(k) for k in ('body_surface_area','weight_kg','renal_function','hepatic_function')},'dosing_note':'Presence of inputs only; Atlas never calculates or verifies a chemotherapy dose.'}
+
+def _radiation_enrichment(data:dict)->dict:
+    regimen=data.get('regimen',{});total=regimen.get('total_dose_gy');fractions=regimen.get('fractions');stated=regimen.get('dose_per_fraction_gy')
+    missing=[k for k,v in (('total_dose_gy',total),('fractions',fractions)) if v is None]
+    out={'missing_fractionation_inputs':missing,'dose_per_fraction_gy':None,'consistency_with_stated':None}
+    if not missing:
+        t=_num(total,'total_dose_gy');f=_num(fractions,'fractions')
+        if f<=0:raise ValueError('fractions must be positive')
+        dpf=round(t/f,4);out['dose_per_fraction_gy']=dpf
+        if stated is not None:out['consistency_with_stated']='consistent' if abs(dpf-_num(stated,'dose_per_fraction_gy'))<1e-6 else 'inconsistent'
+    out['arithmetic_note']='Division only; the planning team verifies prescription, technique and constraints.'
+    return out
+
+def _immunotherapy_enrichment(data:dict)->dict:
+    criteria=data.get('criteria',[]);facts=data.get('patient_facts',{})
+    biomarkers=[{'field':c.get('field'),'patient_value':facts.get(c.get('field')),'result_documented':c.get('field') in facts,'assay_and_report_for_specialist_review':True} for c in criteria if isinstance(c,dict) and (c.get('biomarker') or 'biomarker' in str(c.get('reason','')).lower())]
+    risk_fields=data.get('immune_risk_fields',[])
+    if not isinstance(risk_fields,list):raise ValueError('immune_risk_fields must be a list')
+    return {'biomarker_panel_review':biomarkers,'immune_risk_checklist':[{'field':f,'value':facts.get(f),'documented':f in facts} for f in risk_fields],'immune_note':'Immune-related risk review belongs to the oncology team; Atlas never predicts response or toxicity.'}
+
+_ONCOLOGY_ENRICHMENTS={'chemotherapy_planning':_chemo_enrichment,'radiation_therapy_planning':_radiation_enrichment,'immunotherapy_selection':_immunotherapy_enrichment}
+_ONCOLOGY_BOUNDARIES={
+ 'chemotherapy_planning':'Cited eligibility and checklist support only. Oncology specialists must confirm pathology, stage, biomarkers, organ function, interactions, consent and patient goals. Atlas never selects, doses, schedules or administers anticancer treatment.',
+ 'radiation_therapy_planning':'Cited eligibility and fractionation arithmetic support only. Radiation oncologists and physicists confirm prescription, contours, technique and constraints. Atlas never selects, doses, schedules or delivers radiation treatment.',
+ 'immunotherapy_selection':'Cited biomarker and eligibility organization only. Oncology specialists confirm assays, pathology, contraindications, immune risk and patient goals. Atlas never selects, doses, schedules or administers anticancer treatment.',
+}
+
 def oncology_plan(method:str,data:dict)->dict:
     regimen=data.get('regimen',{});patient=data.get('patient_facts',{});criteria=data.get('criteria',[]);source=data.get('source',{})
+    if not isinstance(patient,dict) or not isinstance(criteria,list):raise ValueError('patient_facts object and criteria list required')
     if not regimen or not source.get('source_url'):raise ValueError('regimen and source_url required')
+    if method not in _ONCOLOGY_ENRICHMENTS:raise ValueError(f'unsupported oncology method: {method}')
     checks=[]
     for c in criteria:
         field=c.get('field');value=patient.get(field);passed=None
         if value is not None:
             passed=True
-            if 'minimum' in c:passed=passed and float(value)>=float(c['minimum'])
-            if 'maximum' in c:passed=passed and float(value)<=float(c['maximum'])
+            if 'minimum' in c:passed=passed and _num(value,'criterion value')>=_num(c['minimum'],'criterion minimum')
+            if 'maximum' in c:passed=passed and _num(value,'criterion value')<=_num(c['maximum'],'criterion maximum')
             if 'equals' in c:passed=passed and value==c['equals']
         checks.append({'field':field,'value':value,'passed':passed,'reason':c.get('reason')})
     blockers=[x for x in checks if x['passed'] is False];missing=[x['field'] for x in checks if x['passed'] is None]
-    return {'mode':method,'regimen':regimen,'eligibility_checks':checks,'blockers':blockers,'missing_facts':missing,'status':'incomplete' if missing else 'not_eligible_for_reviewed_option' if blockers else 'eligible_for_specialist_review','source':source,'boundary':'Cited eligibility and checklist support only. Oncology specialists must confirm pathology, stage, biomarkers, organ function, interactions, consent and patient goals. Atlas never selects, doses, schedules or administers anticancer treatment.','disclaimer':DISCLAIMER}
+    result={'mode':method,'regimen':regimen,'eligibility_checks':checks,'blockers':blockers,'missing_facts':missing,'status':'incomplete' if missing else 'not_eligible_for_reviewed_option' if blockers else 'eligible_for_specialist_review','source':source}
+    result.update(_ONCOLOGY_ENRICHMENTS[method](data))
+    result['boundary']=_ONCOLOGY_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
+
+def _palliative_enrichment(data:dict)->dict:
+    symptoms=data.get('symptoms',[])
+    if not isinstance(symptoms,list):raise ValueError('symptoms must be a list')
+    ordered=sorted(symptoms,key=lambda s:(not bool(s.get('urgent')),-(_num(s['severity'],'severity') if s.get('severity') is not None else 0)))
+    return {'symptom_burden_summary':{'symptom_count':len(symptoms),'urgent_count':sum(1 for s in symptoms if s.get('urgent') is True),'unscored_count':sum(1 for s in symptoms if s.get('severity') is None),'review_order':[s.get('name') for s in ordered]},'symptom_note':'Counts of supplied entries only; the palliative team assesses symptoms in person.'}
+
+def _hospice_enrichment(data:dict)->dict:
+    team=data.get('team',[]);milestones=data.get('milestones',[])
+    if not isinstance(team,list) or not isinstance(milestones,list):raise ValueError('team and milestones must be lists')
+    roles={m.get('role') for m in team if isinstance(m,dict)}
+    tasks=[{'milestone':m.get('name'),'owner_role':m.get('owner_role'),'owner_known':m.get('owner_role') in roles,'status':m.get('status','pending')} for m in milestones if isinstance(m,dict)]
+    eligibility=data.get('eligibility_fields',[])
+    if not isinstance(eligibility,list):raise ValueError('eligibility_fields must be a list')
+    documented=data.get('eligibility_documentation',{})
+    if not isinstance(documented,dict):raise ValueError('eligibility_documentation must be an object')
+    return {'coordination_task_map':tasks,'unowned_milestones':[t['milestone'] for t in tasks if not t['owner_known']],'eligibility_documentation_status':[{'field':f,'documented':f in documented} for f in eligibility],'hospice_note':'Eligibility and enrollment are determined by the hospice team and physician; Atlas only tracks supplied documentation.'}
+
+_PALLIATIVE_ENRICHMENTS={'palliative_care_planning':_palliative_enrichment,'hospice_care_coordination':_hospice_enrichment}
+_PALLIATIVE_BOUNDARIES={
+ 'palliative_care_planning':'Patient-goal documentation and symptom-burden organization only. A palliative team assesses symptoms, capacity and treatment. Atlas never enrolls, changes code status, withdraws treatment or makes end-of-life decisions.',
+ 'hospice_care_coordination':'Coordination and documentation tracking only. The hospice team and physician determine eligibility, enrollment and plan of care. Atlas never enrolls, changes code status, withdraws treatment or makes end-of-life decisions.',
+}
 
 def palliative_plan(method:str,data:dict)->dict:
     symptoms=data.get('symptoms',[]);goals=data.get('goals',[]);preferences=data.get('preferences',{});options=data.get('options',[]);source=data.get('source',{})
+    if not isinstance(symptoms,list) or not isinstance(options,list) or not isinstance(preferences,dict):raise ValueError('symptoms list, options list and preferences object required')
     if not goals or not source.get('source_url'):raise ValueError('patient goals and source_url required')
-    urgent=[s for s in symptoms if s.get('urgent') is True];matched=[]
+    if method not in _PALLIATIVE_ENRICHMENTS:raise ValueError(f'unsupported palliative method: {method}')
+    urgent=[s for s in symptoms if isinstance(s,dict) and s.get('urgent') is True];matched=[]
     for o in options:
         if set(o.get('goal_tags',[]))&set(goals) and not set(o.get('conflicts_with',[]))&set(preferences.get('declined',[])):matched.append(o)
-    return {'mode':method,'symptom_summary':symptoms,'urgent_review':urgent,'patient_goals':goals,'preferences':preferences,'candidate_support_for_shared_decision':matched,'unresolved_decisions':data.get('unresolved_decisions',[]),'source':source,'boundary':'Patient-goal documentation and coordination only. A palliative/hospice team assesses symptoms, capacity, eligibility and treatment. Atlas never enrolls, changes code status, withdraws treatment or makes end-of-life decisions.','disclaimer':DISCLAIMER}
+    result={'mode':method,'symptom_summary':symptoms,'urgent_review':urgent,'patient_goals':goals,'preferences':preferences,'candidate_support_for_shared_decision':matched,'unresolved_decisions':data.get('unresolved_decisions',[]),'source':source}
+    result.update(_PALLIATIVE_ENRICHMENTS[method](data))
+    result['boundary']=_PALLIATIVE_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
 
 def pain_plan(data:dict)->dict:
     observations=data.get('observations',[]);goals=data.get('goals',[]);options=data.get('options',[]);source=data.get('source',{})
@@ -416,20 +587,58 @@ def vaccination_schedule(data:dict)->dict:
         elif eligible and not row['already_recorded']:due.append(row)
     return {'due_for_clinician_review':due,'blocked_for_review':blocked,'history_used':history,'source':source,'boundary':'Scheduling against supplied history and cited recommendations only. A clinician verifies records, age, indication, intervals, contraindications, precautions and current local guidance before administration.','disclaimer':DISCLAIMER}
 
+def _preventive_plan_enrichment(data:dict,due:list)->dict:
+    def key(row):
+        priority=row.get('priority')
+        return (1,0) if priority is None else (0,_num(priority,'priority'))
+    ordered=sorted(due,key=key)
+    return {'plan_sequence':[r.get('service') for r in ordered],'shared_decision_topics':[r.get('service') for r in due if r.get('shared_decision')],'plan_note':'Sequencing uses supplied priorities only; clinicians and patients decide timing.'}
+
+def _screening_enrichment(data:dict,due:list)->dict:
+    profile=data.get('profile',{});last_done=profile.get('last_done',{})
+    if not isinstance(last_done,dict):raise ValueError('profile.last_done must be an object keyed by service')
+    as_of=data.get('as_of');ref=_iso_date(as_of,'as_of') if as_of is not None else None
+    rows=[]
+    for r in due:
+        interval=r.get('interval_months');done=last_done.get(r.get('service'))
+        entry={'service':r.get('service'),'interval_months':interval,'last_done':done,'due_status':'not_computed'}
+        if interval is not None:
+            iv=_num(interval,'interval_months')
+            if iv<=0:raise ValueError('interval_months must be positive')
+            if done is None:entry['due_status']='last_done_unknown'
+            elif ref is None:entry['due_status']='as_of_not_supplied'
+            else:
+                d=_iso_date(done,'last_done');months=(ref.year-d.year)*12+(ref.month-d.month)
+                entry['months_since_last_done']=months;entry['due_status']='due_for_review' if months>=iv else 'not_yet_due'
+        rows.append(entry)
+    return {'screening_due_review':rows,'due_note':'Date arithmetic on supplied records only; an unrecorded test is never treated as done.'}
+
+_PREVENTIVE_ENRICHMENTS={'preventive_care_planning':_preventive_plan_enrichment,'health_screening_recommendations':_screening_enrichment}
+_PREVENTIVE_BOUNDARIES={
+ 'preventive_care_planning':'Cited population-guideline matching and sequencing support only. Clinicians and patients account for prior tests, symptoms, life expectancy, harms, preferences and local guidance; Atlas does not order or perform screening.',
+ 'health_screening_recommendations':'Cited screening-interval arithmetic on supplied records only. An unrecorded test is never treated as done; clinicians verify history, risk and current guidance before ordering. Atlas does not order or perform screening.',
+}
+
 def preventive_care(method:str,data:dict)->dict:
-    profile=data.get('profile',{});recommendations=data.get('recommendations',[]);_require_citations(recommendations,'recommendations');due=[];unknown=[]
+    profile=data.get('profile',{});recommendations=data.get('recommendations',[]);_require_citations(recommendations,'recommendations')
+    if not isinstance(profile,dict):raise ValueError('profile must be an object')
+    if method not in _PREVENTIVE_ENRICHMENTS:raise ValueError(f'unsupported preventive care method: {method}')
+    due=[];unknown=[]
     for r in recommendations:
         eligible=True;missing=[]
         for field,condition in r.get('eligibility',{}).items():
             value=profile.get(field)
             if value is None:missing.append(field);eligible=False;continue
             if isinstance(condition,dict):
-                if 'minimum' in condition and float(value)<float(condition['minimum']):eligible=False
-                if 'maximum' in condition and float(value)>float(condition['maximum']):eligible=False
+                if 'minimum' in condition and _num(value,'profile value')<_num(condition['minimum'],'eligibility minimum'):eligible=False
+                if 'maximum' in condition and _num(value,'profile value')>_num(condition['maximum'],'eligibility maximum'):eligible=False
             elif value!=condition:eligible=False
-        row={'service':r.get('service'),'source_url':r['source_url'],'grade':r.get('grade'),'shared_decision':r.get('shared_decision',False),'missing_fields':missing}
+        row={'service':r.get('service'),'source_url':r['source_url'],'grade':r.get('grade'),'shared_decision':r.get('shared_decision',False),'priority':r.get('priority'),'interval_months':r.get('interval_months'),'missing_fields':missing}
         (unknown if missing else due if eligible else []).append(row)
-    return {'mode':method,'recommendations_for_review':due,'insufficient_information':unknown,'profile_used':profile,'boundary':'Cited population-guideline matching only. Clinicians and patients account for prior tests, symptoms, life expectancy, harms, preferences and local guidance; Atlas does not order or perform screening.','disclaimer':DISCLAIMER}
+    result={'mode':method,'recommendations_for_review':due,'insufficient_information':unknown,'profile_used':profile}
+    result.update(_PREVENTIVE_ENRICHMENTS[method](data,due))
+    result['boundary']=_PREVENTIVE_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
 
 CLINICAL_EXTRA.update({
  'wound_care':wound_care,
@@ -456,9 +665,37 @@ def reproductive_plan(method:str,data:dict)->dict:
         missing=[x for x in o.get('required_facts',[]) if x not in facts];contra=set(o.get('contraindications',[]))&set(facts.get('contraindications',[]));rows.append({**o,'missing_facts':missing,'matched_contraindications':sorted(contra),'review_status':'incomplete' if missing else 'blocked_for_review' if contra else 'candidate_for_specialist_discussion'})
     return {'mode':method,'timeline':timeline,'patient_goals':goals,'option_review':rows,'source':source,'boundary':'Goal-sensitive education and checklist support only. A reproductive specialist confirms diagnosis, prognosis, eligibility, risks, consent, costs and local law. Atlas never selects treatment, creates embryos, transfers gametes/embryos or makes reproductive choices.','disclaimer':DISCLAIMER}
 
+def _prenatal_enrichment(data:dict)->dict:
+    completed=data.get('completed_visits',[])
+    if not isinstance(completed,list):raise ValueError('completed_visits must be a list')
+    done={str(v) for v in completed}
+    review=[{'milestone':m.get('name'),'due_at':m.get('due_at'),'recorded':'completed' if str(m.get('name')) in done else 'not_recorded'} for m in data.get('milestones',[]) if isinstance(m,dict)]
+    return {'visit_schedule_review':review,'unrecorded_visits':[r['milestone'] for r in review if r['recorded']!='completed'],'schedule_note':'A missing record is not a missed visit; the care team verifies the chart.'}
+
+def _labor_enrichment(data:dict)->dict:
+    events=data.get('events',[])
+    if not isinstance(events,list):raise ValueError('events must be a list')
+    timeline=sorted((e for e in events if isinstance(e,dict)),key=lambda e:str(e.get('at','')))
+    return {'labor_timeline':[{'event':e.get('event'),'at':e.get('at'),'documented_by':e.get('documented_by')} for e in timeline],'timeline_note':'Documentation order only; Atlas does not interpret labor progress or fetal status.'}
+
+def _neonatal_enrichment(data:dict)->dict:
+    required=data.get('required_screenings',[]);screenings=data.get('screenings',[])
+    if not isinstance(required,list) or not isinstance(screenings,list):raise ValueError('required_screenings and screenings must be lists')
+    recorded={s.get('name'):s for s in screenings if isinstance(s,dict)}
+    return {'newborn_screening_review':[{'screening':name,'status':recorded.get(name,{}).get('status','not_recorded'),'result_for_clinician_review':recorded.get(name,{}).get('result')} for name in required],'screening_note':'Screening performance and follow-up belong to the newborn care team.'}
+
+_PERINATAL_ENRICHMENTS={'prenatal_care':_prenatal_enrichment,'labor_and_delivery_management':_labor_enrichment,'neonatal_care':_neonatal_enrichment}
+_PERINATAL_BOUNDARIES={
+ 'prenatal_care':'Checklist and escalation support for licensed maternal care teams. Atlas does not interpret fetal monitoring, determine labor status, choose delivery mode, resuscitate, discharge or delay emergency care.',
+ 'labor_and_delivery_management':'Labor documentation and escalation support for licensed delivery teams. Atlas does not interpret fetal monitoring, determine labor status, choose delivery mode, resuscitate, discharge or delay emergency care.',
+ 'neonatal_care':'Newborn checklist and documentation support for licensed neonatal teams. Atlas does not interpret monitoring, choose delivery mode, resuscitate, discharge or delay emergency care.',
+}
+
 def perinatal_plan(method:str,data:dict)->dict:
     observations=data.get('observations',{});milestones=data.get('milestones',[]);rules=data.get('escalation_rules',[]);source=data.get('source',{})
+    if not isinstance(observations,dict) or not isinstance(milestones,list) or not isinstance(rules,list):raise ValueError('observations object, milestones list and escalation_rules list required')
     if not milestones or not source.get('source_url'):raise ValueError('milestones and source_url required')
+    if method not in _PERINATAL_ENRICHMENTS:raise ValueError(f'unsupported perinatal method: {method}')
     status=[]
     for m in milestones:
         value=observations.get(m.get('measure'));status.append({'name':m.get('name'),'measure':m.get('measure'),'observed':value,'due_at':m.get('due_at'),'status':'unknown' if value is None else 'documented'})
@@ -466,12 +703,72 @@ def perinatal_plan(method:str,data:dict)->dict:
     for r in rules:
         value=observations.get(r.get('field'))
         if value is None:continue
-        hit=(r.get('equals')==value if 'equals' in r else False) or ('gt' in r and float(value)>float(r['gt'])) or ('lt' in r and float(value)<float(r['lt']))
+        hit=(r.get('equals')==value if 'equals' in r else False) or ('gt' in r and _num(value,'observation')>_num(r['gt'],'rule threshold')) or ('lt' in r and _num(value,'observation')<_num(r['lt'],'rule threshold'))
         if hit:flags.append({'field':r['field'],'reason':r.get('reason'),'urgency':r.get('urgency'),'next_step':r.get('next_step')})
-    return {'mode':method,'milestone_status':status,'escalation_flags':flags,'birth_or_care_preferences':data.get('preferences',{}),'source':source,'boundary':'Checklist and escalation support for licensed maternal/neonatal teams. Atlas does not interpret fetal monitoring, determine labor status, choose delivery mode, resuscitate, discharge or delay emergency care.','disclaimer':DISCLAIMER}
+    result={'mode':method,'milestone_status':status,'escalation_flags':flags,'birth_or_care_preferences':data.get('preferences',{}),'source':source}
+    result.update(_PERINATAL_ENRICHMENTS[method](data))
+    result['boundary']=_PERINATAL_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
+
+def _pediatric_enrichment(data:dict)->dict:
+    profile=data.get('profile',{});age=profile.get('age_years');band='age_not_supplied'
+    if age is not None:
+        a=_num(age,'age_years')
+        if a<0:raise ValueError('age_years must be non-negative')
+        band='infant' if a<1 else 'child' if a<12 else 'adolescent' if a<18 else 'adult_record_review'
+    growth=data.get('growth_measurements',[])
+    if not isinstance(growth,list):raise ValueError('growth_measurements must be a list')
+    return {'age_band_from_supplied_age':band,'growth_inputs':[{'metric':g.get('metric'),'value':g.get('value'),'unit':g.get('unit'),'percentile_source':g.get('percentile_source'),'observed_at':g.get('observed_at')} for g in growth if isinstance(g,dict)],'pediatric_note':'Banding is a data label from the supplied age; growth interpretation belongs to the pediatric clinician.'}
+
+def _adolescent_enrichment(data:dict)->dict:
+    recs=data.get('recommendations',[])
+    confidential=[r.get('topic') for r in recs if isinstance(r,dict) and ('confidential' in str(r.get('topic','')).lower() or r.get('confidential'))]
+    consent=data.get('consent',{})
+    if not isinstance(consent,dict):raise ValueError('consent must be an object when supplied')
+    return {'confidentiality_review':{'confidentiality_topics':confidential,'consent_fields_supplied':sorted(consent.keys())},'adolescent_note':'Confidentiality and consent rules vary by jurisdiction and topic; clinicians apply local law with the young person.'}
+
+def _geriatric_enrichment(data:dict)->dict:
+    profile=data.get('profile',{});meds=profile.get('medications',[])
+    if not isinstance(meds,list):raise ValueError('profile.medications must be a list')
+    threshold=_num(data.get('polypharmacy_review_threshold',5),'polypharmacy_review_threshold')
+    return {'medication_count':len(meds),'polypharmacy_review_prompt':len(meds)>=threshold,'geriatric_screen_fields':[{'field':f,'documented':f in profile} for f in ('fall_history','gait_balance','orthostatic','cognition')],'geriatric_note':'Counts and field presence only; no frailty or falls diagnosis.'}
+
+def _anatomy_keyed(data:dict)->dict:
+    profile=data.get('profile',{});organs=profile.get('organs',[])
+    if not isinstance(organs,list):raise ValueError('profile.organs must be a list')
+    present=set(organs)
+    keyed=[{'topic':r.get('topic'),'organ':r.get('organ'),'applicable':(r.get('organ') in present) if r.get('organ') else None,'source_url':r.get('source_url')} for r in data.get('recommendations',[]) if isinstance(r,dict) and r.get('organ')]
+    return {'anatomy_keyed_screening':keyed,'organs_as_supplied':sorted(str(o) for o in present)}
+
+def _womens_enrichment(data:dict)->dict:
+    result=_anatomy_keyed(data)
+    result['womens_health_note']='Screening follows organs present and clinician judgment, never assumptions from identity.'
+    return result
+
+def _mens_enrichment(data:dict)->dict:
+    result=_anatomy_keyed(data)
+    result['symptom_review_inputs']=list(data.get('concerns',[]))
+    result['mens_health_note']='Symptoms and anatomy are documented for clinician review; no diagnosis is made.'
+    return result
+
+def _lgbtq_enrichment(data:dict)->dict:
+    profile=data.get('profile',{})
+    return {'affirming_care_inputs':{'chosen_name':profile.get('chosen_name'),'pronouns':profile.get('pronouns'),'organ_inventory':profile.get('organs',[]),'partners_as_stated':profile.get('partners')},'lgbtq_note':'Care follows patient-stated identity, anatomy and goals without inference.'}
+
+_LIFE_STAGE_ENRICHMENTS={'pediatric_care':_pediatric_enrichment,'adolescent_medicine':_adolescent_enrichment,'geriatric_care':_geriatric_enrichment,'womens_health':_womens_enrichment,'mens_health':_mens_enrichment,'lgbtq_health':_lgbtq_enrichment}
+_LIFE_STAGE_BOUNDARIES={
+ 'pediatric_care':'Inclusive cited-guideline matching for pediatric review, not identity inference or diagnosis. Use anatomy, organs present, medications, age, exposures, goals and preferences relevant to care rather than assumptions from sex, gender, orientation or age alone. Licensed pediatric clinicians individualize care.',
+ 'adolescent_medicine':'Inclusive cited-guideline matching with confidentiality preserved, not identity inference or diagnosis. Use anatomy, organs present, medications, age, exposures, goals and preferences relevant to care rather than assumptions from sex, gender, orientation or age alone. Licensed clinicians individualize care within local consent law.',
+ 'geriatric_care':'Inclusive cited-guideline matching for older-adult review, not identity inference or diagnosis. Use anatomy, organs present, medications, age, exposures, goals and preferences relevant to care rather than assumptions from sex, gender, orientation or age alone. Licensed clinicians individualize care.',
+ 'womens_health':'Inclusive cited-guideline matching keyed to organs present, not identity inference or diagnosis. Use anatomy, organs present, medications, age, exposures, goals and preferences relevant to care rather than assumptions from sex, gender, orientation or age alone. Licensed clinicians individualize care.',
+ 'mens_health':'Inclusive cited-guideline matching keyed to organs present and stated symptoms, not identity inference or diagnosis. Use anatomy, organs present, medications, age, exposures, goals and preferences relevant to care rather than assumptions from sex, gender, orientation or age alone. Licensed clinicians individualize care.',
+ 'lgbtq_health':'Inclusive cited-guideline matching honoring patient-stated identity, not identity inference or diagnosis. Use anatomy, organs present, medications, age, exposures, goals and preferences relevant to care rather than assumptions from sex, gender, orientation or age alone. Licensed clinicians individualize care.',
+}
 
 def life_stage_care(method:str,data:dict)->dict:
     profile=data.get('profile',{});concerns=data.get('concerns',[]);recommendations=data.get('recommendations',[]);_require_citations(recommendations,'recommendations')
+    if not isinstance(profile,dict) or not isinstance(concerns,list):raise ValueError('profile object and concerns list required')
+    if method not in _LIFE_STAGE_ENRICHMENTS:raise ValueError(f'unsupported life stage method: {method}')
     selected=[];unknown=[]
     for r in recommendations:
         missing=[f for f in r.get('required_fields',[]) if f not in profile]
@@ -479,7 +776,10 @@ def life_stage_care(method:str,data:dict)->dict:
         row={'topic':r.get('topic'),'source_url':r['source_url'],'shared_decision':r.get('shared_decision',False),'missing_fields':missing}
         if missing:unknown.append(row)
         elif applicable:selected.append(row)
-    return {'mode':method,'profile_used':profile,'patient_concerns':concerns,'recommendations_for_shared_review':selected,'insufficient_information':unknown,'boundary':'Inclusive cited-guideline matching, not identity inference or diagnosis. Use anatomy, organs present, medications, age, exposures, goals and preferences relevant to care rather than assumptions from sex, gender, orientation or age alone. Licensed clinicians individualize care.','disclaimer':DISCLAIMER}
+    result={'mode':method,'profile_used':profile,'patient_concerns':concerns,'recommendations_for_shared_review':selected,'insufficient_information':unknown}
+    result.update(_LIFE_STAGE_ENRICHMENTS[method](data))
+    result['boundary']=_LIFE_STAGE_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
 
 CLINICAL_EXTRA.update({
  'genetic_counseling':genetic_counseling,
@@ -539,12 +839,37 @@ def quarantine_management(data:dict)->dict:
         missing=[x for x in policy.get('required_fields',[]) if x not in case];reviews.append({'case_token':case.get('case_token'),'status':'insufficient_information' if missing else 'policy_review_ready','missing_fields':missing,'support_needs':case.get('support_needs',[]),'appeal_or_review_route':policy.get('appeal_or_review_route')})
     return {'case_reviews':reviews,'policy_version':policy.get('version'),'source':source,'boundary':'Administrative checklist only. Authorized public-health officials determine lawful, least-restrictive measures and provide support, review and appeal. Atlas does not order, monitor or enforce quarantine.','disclaimer':DISCLAIMER}
 
+def _education_enrichment(data:dict)->dict:
+    return {'teach_back_checklist':[{'topic':m.get('topic'),'plain_language_present':bool(m.get('plain_language')),'uncertainty_stated':bool(m.get('uncertainty')),'cited':bool(m.get('source_ids'))} for m in data.get('messages',[]) if isinstance(m,dict)],'education_note':'Teach-back confirms understanding with the learner; materials never substitute for individual clinical care.'}
+
+def _behavior_change_enrichment(data:dict)->dict:
+    stage=data.get('readiness_stage');options=data.get('options',[])
+    if not isinstance(options,list):raise ValueError('options must be a list')
+    matched=[];deferred=[]
+    for o in options:
+        if not isinstance(o,dict):raise ValueError('each option must be an object')
+        stages=o.get('stages')
+        if stages is None or stage is None or stage in stages:matched.append(o)
+        else:deferred.append({'name':o.get('name'),'deferred_for_stage':stage})
+    return {'readiness_stage_as_supplied':stage,'stage_matched_options':matched,'deferred_options':deferred,'behavior_note':'Voluntary, stage-matched support only; ambivalence is respected, never argued away.'}
+
+_EDUCATION_ENRICHMENTS={'health_education':_education_enrichment,'behavior_change_support':_behavior_change_enrichment}
+_EDUCATION_BOUNDARIES={
+ 'health_education':'Cited education and voluntary support only. Preserve uncertainty, accessibility and audience context; never shame, coerce, manipulate or substitute generic education for individual clinical care.',
+ 'behavior_change_support':'Cited voluntary behavior-change support only. Match the person stated readiness; never shame, coerce, manipulate or substitute generic education for individual clinical care.',
+}
+
 def health_education(method:str,data:dict)->dict:
     audience=data.get('audience',{});messages=data.get('messages',[]);sources=data.get('sources',[]);_require_citations(sources,'sources')
+    if not isinstance(audience,dict) or not isinstance(messages,list):raise ValueError('audience object and messages list required')
     if not audience or not messages:raise ValueError('audience and messages required')
+    if method not in _EDUCATION_ENRICHMENTS:raise ValueError(f'unsupported education method: {method}')
     rendered=[]
     for m in messages:rendered.append({'topic':m.get('topic'),'plain_language':m.get('plain_language'),'action':m.get('action'),'uncertainty':m.get('uncertainty'),'source_ids':m.get('source_ids',[]),'reading_level':m.get('reading_level')})
-    return {'mode':method,'audience':audience,'educational_messages':rendered,'cultural_and_accessibility_review':data.get('review',{}),'sources':sources,'boundary':'Cited education and voluntary support only. Preserve uncertainty, accessibility and audience context; never shame, coerce, manipulate or substitute generic education for individual clinical care.','disclaimer':DISCLAIMER}
+    result={'mode':method,'audience':audience,'educational_messages':rendered,'cultural_and_accessibility_review':data.get('review',{}),'sources':sources}
+    result.update(_EDUCATION_ENRICHMENTS[method](data))
+    result['boundary']=_EDUCATION_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
 
 CLINICAL_EXTRA.update({
  'global_health':global_health,
@@ -565,33 +890,157 @@ def adherence_support(data:dict)->dict:
         summary.append({'medication':med.get('name'),'taken_checkins':taken,'expected_checkins':expected,'observed_fraction':taken/expected if expected else None,'patient_reported_barriers':barriers,'preferences':med.get('preferences',[])})
     return {'adherence_summary':summary,'support_options':data.get('support_options',[]),'source':source,'boundary':'Nonjudgmental tracking of supplied check-ins only. Missing data is not nonadherence. Patient and clinician choose supports and any regimen changes; Atlas never pressures, penalizes or changes medication.','disclaimer':DISCLAIMER}
 
+def _lifestyle_enrichment(data:dict)->dict:
+    return {'goal_quality_review':[{'goal_id':g.get('id'),'well_specified':all(g.get(k) is not None for k in ('target','timeframe')),'missing_elements':[k for k in ('target','timeframe') if g.get(k) is None]} for g in data.get('goals',[]) if isinstance(g,dict)],'lifestyle_note':'Goals stay in the patient words; a professional checks realism and safety.'}
+
+def _nutrition_enrichment(data:dict)->dict:
+    baseline=data.get('baseline',{});keys=('weight_kg','daily_intake_kcal','daily_expenditure_kcal')
+    missing=[k for k in keys if baseline.get(k) is None];estimate=None
+    if not missing:
+        _num(baseline['weight_kg'],'weight_kg')
+        estimate=round(_num(baseline['daily_intake_kcal'],'daily_intake_kcal')-_num(baseline['daily_expenditure_kcal'],'daily_expenditure_kcal'),2)
+    return {'energy_balance_inputs':{k:baseline.get(k) for k in keys},'missing_energy_inputs':missing,'energy_balance_kcal_estimate':estimate,'nutrition_note':'Arithmetic on supplied values only; not a metabolic measurement or diet prescription.'}
+
+def _exercise_enrichment(data:dict)->dict:
+    components=[{'name':o.get('name'),'frequency':o.get('frequency'),'intensity':o.get('intensity'),'time':o.get('time'),'type':o.get('type'),'fitt_complete':all(o.get(k) for k in ('frequency','intensity','time','type'))} for o in data.get('options',[]) if isinstance(o,dict)]
+    screen=data.get('safety_screen',{})
+    if not isinstance(screen,dict):raise ValueError('safety_screen must be an object when supplied')
+    return {'fitt_components':components,'safety_screen_fields':[{'field':f,'documented':f in screen} for f in ('cardiac_symptoms','injury','pregnancy','physician_clearance')],'exercise_note':'FITT completeness is clerical; a qualified professional clears and individualizes exercise.'}
+
+def _sleep_enrichment(data:dict)->dict:
+    diary=data.get('sleep_diary',[])
+    if not isinstance(diary,list):raise ValueError('sleep_diary must be a list')
+    entries=[];skipped=0
+    for e in diary:
+        if not isinstance(e,dict) or 'time_in_bed_minutes' not in e or 'time_asleep_minutes' not in e:skipped+=1;continue
+        bed=_num(e['time_in_bed_minutes'],'time_in_bed_minutes');asleep=_num(e['time_asleep_minutes'],'time_asleep_minutes')
+        if bed<=0:raise ValueError('time_in_bed_minutes must be positive')
+        entries.append({'date':e.get('date'),'sleep_efficiency':round(asleep/bed,4)})
+    return {'sleep_diary_metrics':{'entries':entries,'average_sleep_efficiency':round(sum(x['sleep_efficiency'] for x in entries)/len(entries),4) if entries else None,'entries_skipped_missing_fields':skipped},'sleep_note':'Efficiency arithmetic only; insomnia assessment and treatment need a clinician.'}
+
+def _stress_enrichment(data:dict)->dict:
+    scores=data.get('stress_scores',[])
+    if not isinstance(scores,list):raise ValueError('stress_scores must be a list')
+    ordered=sorted(({'date':s.get('date'),'score':_num(s['score'],'stress score'),'instrument':s.get('instrument')} for s in scores if isinstance(s,dict) and 'score' in s),key=lambda x:str(x['date']))
+    deltas=[{'from':ordered[i]['date'],'to':ordered[i+1]['date'],'delta':round(ordered[i+1]['score']-ordered[i]['score'],4)} for i in range(len(ordered)-1)]
+    return {'stress_score_trend':{'scores':ordered,'deltas':deltas},'stress_note':'Score trends invite conversation; they never diagnose or escalate on their own.'}
+
+_WELLBEING_ENRICHMENTS={'lifestyle_modification':_lifestyle_enrichment,'nutrition_planning':_nutrition_enrichment,'exercise_prescription':_exercise_enrichment,'sleep_hygiene':_sleep_enrichment,'stress_management':_stress_enrichment}
+_WELLBEING_BOUNDARIES={
+ 'lifestyle_modification':'Small-step goal planning from patient goals and cited guidance. A qualified professional checks safety and clinical needs; Atlas does not prescribe diet, exercise, sleep treatment or stress therapy.',
+ 'nutrition_planning':'Intake arithmetic from patient goals and cited guidance only. A qualified professional checks medical nutrition needs, deficiencies and eating-disorder risk; Atlas does not prescribe diet.',
+ 'exercise_prescription':'Activity-component organization from patient goals and cited guidance only. A qualified professional clears cardiac, injury and pregnancy safety before exercise; Atlas does not prescribe exercise treatment.',
+ 'sleep_hygiene':'Sleep-diary arithmetic and cited guidance only. A qualified professional assesses insomnia, apnea and medication effects; Atlas does not prescribe sleep treatment.',
+ 'stress_management':'Stress-score tracking and cited guidance only. A qualified professional assesses anxiety, depression and trauma; Atlas does not provide stress therapy.',
+}
+
 def wellbeing_plan(method:str,data:dict)->dict:
     baseline=data.get('baseline',{});goals=data.get('goals',[]);options=data.get('options',[]);source=data.get('source',{})
+    if not isinstance(baseline,dict) or not isinstance(goals,list) or not isinstance(options,list):raise ValueError('baseline object, goals list and options list required')
     if not goals or not source.get('source_url'):raise ValueError('goals and source_url required')
+    if method not in _WELLBEING_ENRICHMENTS:raise ValueError(f'unsupported wellbeing method: {method}')
     contraindications=set(data.get('contraindications',[]));selected=[]
     for o in options:
         if not set(o.get('contraindications',[]))&contraindications and set(o.get('goal_ids',[]))&{g.get('id') for g in goals}:selected.append(o)
-    return {'mode':method,'baseline':baseline,'goals':goals,'candidate_steps':selected,'monitoring':data.get('monitoring',[]),'patient_preferences':data.get('patient_preferences',[]),'source':source,'approval_status':'draft_for_patient_and_qualified_professional','boundary':'Small-step planning from patient goals and cited guidance. A qualified professional checks safety and clinical needs; Atlas does not prescribe diet, exercise, sleep treatment or stress therapy.','disclaimer':DISCLAIMER}
+    result={'mode':method,'baseline':baseline,'goals':goals,'candidate_steps':selected,'monitoring':data.get('monitoring',[]),'patient_preferences':data.get('patient_preferences',[]),'source':source,'approval_status':'draft_for_patient_and_qualified_professional'}
+    result.update(_WELLBEING_ENRICHMENTS[method](data))
+    result['boundary']=_WELLBEING_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
+
+def _treatment_enrichment(data:dict)->dict:
+    dims=data.get('placement_dimensions',[])
+    if not isinstance(dims,list):raise ValueError('placement_dimensions must be a list')
+    return {'level_of_care_review':[{'dimension':d.get('dimension'),'status_as_supplied':d.get('status'),'documented':d.get('status') is not None} for d in dims if isinstance(d,dict)],'treatment_note':'Level-of-care placement is a clinician decision using validated criteria; Atlas only tracks supplied dimensions.'}
+
+def _harm_reduction_enrichment(data:dict)->dict:
+    services=data.get('services',[])
+    supplies=[s for s in services if isinstance(s,dict) and s.get('kind')=='supply']
+    overdose=[s for s in services if isinstance(s,dict) and (s.get('overdose_response') or 'overdose' in [str(t).lower() for t in s.get('goal_tags',[])])]
+    return {'supply_review':[{'name':s.get('name'),'available_as_supplied':s.get('available')} for s in supplies],'overdose_response_resources':[{'name':s.get('name'),'type':s.get('type')} for s in overdose],'harm_reduction_note':'Supplies and naloxone access need no abstinence precondition; local programs confirm availability.'}
+
+_SUBSTANCE_ENRICHMENTS={'substance_abuse_treatment':_treatment_enrichment,'harm_reduction':_harm_reduction_enrichment}
+_SUBSTANCE_BOUNDARIES={
+ 'substance_abuse_treatment':'Nonjudgmental treatment navigation only. Overdose, dangerous withdrawal, suicidality or instability requires immediate local human emergency/clinical response. Atlas does not detoxify, prescribe, compel abstinence or contact services.',
+ 'harm_reduction':'Nonjudgmental harm-reduction navigation only. Overdose risk requires immediate local human emergency response and naloxone access. Atlas does not detoxify, prescribe, compel abstinence or contact services.',
+}
 
 def substance_support(method:str,data:dict)->dict:
     assessment=data.get('assessment',{});goals=data.get('goals',[]);services=data.get('services',[]);source=data.get('source',{})
+    if not isinstance(assessment,dict) or not isinstance(goals,list) or not isinstance(services,list):raise ValueError('assessment object, goals list and services list required')
     if not assessment or not goals or not source.get('source_url'):raise ValueError('assessment, goals and source_url required')
+    if method not in _SUBSTANCE_ENRICHMENTS:raise ValueError(f'unsupported substance support method: {method}')
     urgent=[k for k in ('overdose','dangerous_withdrawal','suicidal_intent','medical_instability') if assessment.get(k) is True]
     choices=[s for s in services if not set(s.get('exclusions',[]))&set(assessment.get('constraints',[])) and (not s.get('goal_tags') or set(s['goal_tags'])&set(goals))]
-    return {'mode':method,'patient_goals':goals,'readiness':assessment.get('readiness'),'urgent_risks':urgent,'immediate_human_response_required':bool(urgent),'candidate_services_and_supplies':choices,'source':source,'boundary':'Nonjudgmental treatment/harm-reduction navigation only. Overdose, dangerous withdrawal, suicidality or instability requires immediate local human emergency/clinical response. Atlas does not detoxify, prescribe, compel abstinence or contact services.','disclaimer':DISCLAIMER}
+    result={'mode':method,'patient_goals':goals,'readiness':assessment.get('readiness'),'urgent_risks':urgent,'immediate_human_response_required':bool(urgent),'candidate_services_and_supplies':choices,'source':source}
+    result.update(_SUBSTANCE_ENRICHMENTS[method](data))
+    result['boundary']=_SUBSTANCE_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
+
+def _crisis_intervention_enrichment(data:dict)->dict:
+    plan=data.get('safety_plan',{});resources=data.get('resources',[])
+    if not isinstance(plan,dict) or not isinstance(resources,list):raise ValueError('safety_plan object and resources list required')
+    steps=[]
+    if plan.get('contact'):steps.append({'step':'contact trusted person','detail':plan.get('contact'),'source':'safety_plan'})
+    for r in resources:
+        if isinstance(r,dict):steps.append({'step':'use local resource','detail':r.get('name'),'source':'supplied_resources'})
+    return {'handoff_steps':steps,'crisis_note':'A person in danger needs human help now; Atlas stays out of the way of local emergency response.'}
+
+def _suicide_prevention_enrichment(data:dict)->dict:
+    means=data.get('means',[])
+    if not isinstance(means,list):raise ValueError('means must be a list')
+    review=[]
+    for m in means:
+        if not isinstance(m,dict):raise ValueError('each means entry must be an object')
+        secured=m.get('secured')
+        review.append({'item':m.get('item'),'secured_status':'secured' if secured is True else 'not_secured' if secured is False else 'not_assessed'})
+    return {'means_safety_review':review,'unsecured_means':[r['item'] for r in review if r['secured_status']!='secured'],'means_note':'Unassessed means are never treated as safe; a caring human confirms storage and distance.'}
+
+_CRISIS_ENRICHMENTS={'crisis_intervention':_crisis_intervention_enrichment,'suicide_prevention':_suicide_prevention_enrichment}
+_CRISIS_BOUNDARIES={
+ 'crisis_intervention':'Triage support, never autonomous crisis care. Atlas does not promise confidentiality, monitor a person, contact emergency services, or treat absence of a supplied flag as safety. Immediate danger requires local human emergency/crisis response now.',
+ 'suicide_prevention':'Safety-planning support, never autonomous crisis care. Unassessed means are never treated as safe; Atlas does not promise confidentiality, monitor a person, or contact emergency services. Immediate danger requires local human emergency/crisis response now.',
+}
 
 def crisis_support(method:str,data:dict)->dict:
     safety=data.get('safety',{});plan=data.get('safety_plan',{});resources=data.get('resources',[]);source=data.get('source',{})
+    if not isinstance(safety,dict):raise ValueError('safety must be an object of direct assessment fields')
     if not safety or not source.get('source_url'):raise ValueError('direct safety assessment and source_url required')
+    if method not in _CRISIS_ENRICHMENTS:raise ValueError(f'unsupported crisis method: {method}')
     imminent=any(safety.get(k) is True for k in ('imminent_intent','active_attempt','immediate_danger','cannot_stay_safe'))
     missing=[k for k in ('imminent_intent','active_attempt','immediate_danger','cannot_stay_safe') if k not in safety]
-    return {'mode':method,'safety_status':'incomplete' if missing else 'immediate_response' if imminent else 'no_supplied_imminent_flag','missing_safety_fields':missing,'immediate_human_response_required':imminent,'existing_safety_plan':plan,'local_resources':resources,'next_step':'contact local emergency/crisis support now and stay with a trusted human if safe' if imminent else 'qualified human follow-up and collaborative safety planning','source':source,'boundary':'Triage support, never autonomous crisis care. Atlas does not promise confidentiality, monitor a person, contact emergency services, or treat absence of a supplied flag as safety. Immediate danger requires local human emergency/crisis response now.','disclaimer':DISCLAIMER}
+    result={'mode':method,'safety_status':'incomplete' if missing else 'immediate_response' if imminent else 'no_supplied_imminent_flag','missing_safety_fields':missing,'immediate_human_response_required':imminent,'existing_safety_plan':plan,'local_resources':resources,'next_step':'contact local emergency/crisis support now and stay with a trusted human if safe' if imminent else 'qualified human follow-up and collaborative safety planning','source':source}
+    result.update(_CRISIS_ENRICHMENTS[method](data))
+    result['boundary']=_CRISIS_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
+
+def _trauma_enrichment(data:dict)->dict:
+    coping=data.get('coping_options',[])
+    if not isinstance(coping,list):raise ValueError('coping_options must be a list')
+    return {'choice_and_control_map':{'consent_checkpoints':data.get('consent_checkpoints',[]),'declinable_options':[o.get('name') for o in data.get('options',[]) if isinstance(o,dict)]},'grounding_options':[{'name':c.get('name'),'patient_endorsed':c.get('patient_endorsed')} for c in coping if isinstance(c,dict)],'trauma_note':'Choice, collaboration and pacing belong to the patient; nothing proceeds without consent.'}
+
+def _cultural_enrichment(data:dict)->dict:
+    resources=data.get('language_resources',[])
+    if not isinstance(resources,list):raise ValueError('language_resources must be a list')
+    languages={r.get('language') for r in resources if isinstance(r,dict)}
+    language=data.get('preferences',{}).get('language')
+    return {'language_access_review':{'preferred_language':language,'resource_available':(language in languages) if language else None,'unmatched_needs':[n for n in data.get('needs',[]) if n=='interpreter' and language and language not in languages]},'cultural_note':'Language access is a right, not a preference; professional interpreters replace ad-hoc translation.'}
+
+_TRAUMA_CULTURAL_ENRICHMENTS={'trauma_informed_care':_trauma_enrichment,'culturally_competent_care':_cultural_enrichment}
+_TRAUMA_CULTURAL_BOUNDARIES={
+ 'trauma_informed_care':'Use patient-stated needs, identity and preferences without inference or stereotypes. Preserve choice, control, privacy, language access and consent; clinicians and patients decide care and may decline any option.',
+ 'culturally_competent_care':'Use patient-stated needs, identity and preferences without inference or stereotypes. Provide language access and cultural humility; clinicians and patients decide care and may decline any option.',
+}
 
 def trauma_cultural_care(method:str,data:dict)->dict:
     preferences=data.get('preferences',{});needs=data.get('needs',[]);options=data.get('options',[]);source=data.get('source',{})
+    if not isinstance(preferences,dict) or not isinstance(needs,list) or not isinstance(options,list):raise ValueError('preferences object, needs list and options list required')
     if not source.get('source_url'):raise ValueError('source_url required')
+    if method not in _TRAUMA_CULTURAL_ENRICHMENTS:raise ValueError(f'unsupported trauma/cultural care method: {method}')
     selected=[o for o in options if not set(o.get('conflicts_with',[]))&set(preferences.get('declined',[]))]
-    return {'mode':method,'patient_stated_preferences':preferences,'needs':needs,'candidate_accommodations':selected,'consent_checkpoints':data.get('consent_checkpoints',[]),'source':source,'boundary':'Use patient-stated needs, identity and preferences without inference or stereotypes. Preserve choice, control, privacy, language access and consent; clinicians and patients decide care and may decline any option.','disclaimer':DISCLAIMER}
+    result={'mode':method,'patient_stated_preferences':preferences,'needs':needs,'candidate_accommodations':selected,'consent_checkpoints':data.get('consent_checkpoints',[]),'source':source}
+    result.update(_TRAUMA_CULTURAL_ENRICHMENTS[method](data))
+    result['boundary']=_TRAUMA_CULTURAL_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
 
 CLINICAL_EXTRA.update({
  'medication_adherence':adherence_support,
@@ -651,19 +1100,78 @@ def quality_improvement(method:str,data:dict)->dict:
         numerator=float(m.get('numerator',0));denominator=float(m.get('denominator',0));evaluated.append({**m,'rate':numerator/denominator if denominator>0 else None,'valid_denominator':denominator>0})
     return {'mode':method,'measure_results':evaluated,'change_ideas_for_review':changes,'balancing_measures':data.get('balancing_measures',[]),'source':source,'boundary':'Quality-learning support, not individual blame or autonomous clinical/operational change. Teams validate measure definitions, case mix, data quality, balancing harms and human-factors causes before testing a change.','disclaimer':DISCLAIMER}
 
+def _patient_safety_enrichment(data:dict,actions:list)->dict:
+    factors=data.get('contributing_factors',[])
+    return {'just_culture_inputs':[{'factor_id':f.get('id'),'factor_type_as_supplied':f.get('factor_type'),'typed':f.get('factor_type') is not None} for f in factors if isinstance(f,dict)],'patient_safety_note':'System factors and individual choices are recorded as supplied; culpability is never inferred.'}
+
+def _error_prevention_enrichment(data:dict,actions:list)->dict:
+    factors=data.get('contributing_factors',[])
+    addressed={mf for c in actions for mf in c.get('matched_factors',[])}
+    unmitigated=[f.get('id') for f in factors if isinstance(f,dict) and f.get('id') not in addressed]
+    return {'prevention_gap_analysis':{'unmitigated_factors':unmitigated,'control_coverage':round(len(addressed)/len(factors),4) if factors else None},'prevention_note':'Prospective hazard review; unmitigated factors route to the safety team before rollout.'}
+
+_SAFETY_ENRICHMENTS={'patient_safety':_patient_safety_enrichment,'medical_error_prevention':_error_prevention_enrichment}
+_SAFETY_BOUNDARIES={
+ 'patient_safety':'Just-culture systems analysis, not culpability, diagnosis or disciplinary evidence. Preserve uncertainty and separate facts from hypotheses; authorized safety teams investigate and approve controls.',
+ 'medical_error_prevention':'Prospective failure-mode review, not culpability, diagnosis or disciplinary evidence. Unmitigated hazards require authorized safety-team review before changes; Atlas never assigns blame or executes controls.',
+}
+
 def safety_review(method:str,data:dict)->dict:
     event=data.get('event',{});factors=data.get('contributing_factors',[]);controls=data.get('controls',[]);source=data.get('source',{})
+    if not isinstance(event,dict) or not isinstance(factors,list) or not isinstance(controls,list):raise ValueError('event object, contributing_factors list and controls list required')
     if not event or not source.get('source_url'):raise ValueError('event and source_url required')
+    if method not in _SAFETY_ENRICHMENTS:raise ValueError(f'unsupported safety method: {method}')
     actions=[]
     for c in controls:
         matched=set(c.get('addresses',[]))&{f.get('id') for f in factors};actions.append({**c,'matched_factors':sorted(matched),'review_status':'candidate' if matched else 'unlinked'})
-    return {'mode':method,'event_timeline':event.get('timeline',[]),'known_facts':event.get('known_facts',[]),'unknowns':event.get('unknowns',[]),'contributing_factors':factors,'candidate_system_controls':actions,'source':source,'boundary':'Just-culture systems analysis, not culpability, diagnosis or disciplinary evidence. Preserve uncertainty and separate facts from hypotheses; authorized safety teams investigate and approve controls.','disclaimer':DISCLAIMER}
+    result={'mode':method,'event_timeline':event.get('timeline',[]),'known_facts':event.get('known_facts',[]),'unknowns':event.get('unknowns',[]),'contributing_factors':factors,'candidate_system_controls':actions,'source':source}
+    result.update(_SAFETY_ENRICHMENTS[method](data,actions))
+    result['boundary']=_SAFETY_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
+
+def _operations_enrichment(data:dict,totals:dict)->dict:
+    scenarios=data.get('scenarios',[])
+    if not isinstance(scenarios,list):raise ValueError('scenarios must be a list')
+    rows=[]
+    for s in scenarios:
+        if not isinstance(s,dict):raise ValueError('each scenario must be an object')
+        mult=_num(s.get('demand_multiplier',1),'demand_multiplier')
+        if mult<0:raise ValueError('demand_multiplier must be non-negative')
+        rows.append({'scenario':s.get('name'),'demand_multiplier':mult,'projected_demand':round(totals['demand']*mult,4),'projected_gap':round(totals['capacity']-totals['demand']*mult,4)})
+    return {'scenario_review':rows,'operations_note':'Scenario arithmetic on supplied aggregates; leaders validate feasibility, safety and labor rules.'}
+
+def _administration_enrichment(data:dict,totals:dict)->dict:
+    policies=data.get('policies',[])
+    if not isinstance(policies,list):raise ValueError('policies must be a list')
+    return {'policy_checklist':[{'policy':p.get('name'),'owner':p.get('owner'),'review_date':p.get('review_date'),'status':p.get('status','unspecified')} for p in policies if isinstance(p,dict)],'administration_note':'Policy status as supplied; administrators confirm currency and compliance.'}
+
+def _finance_enrichment(data:dict,totals:dict)->dict:
+    lines=data.get('budget_lines',[])
+    if not isinstance(lines,list):raise ValueError('budget_lines must be a list')
+    rows=[]
+    for l in lines:
+        if not isinstance(l,dict):raise ValueError('each budget line must be an object')
+        budgeted=_num(l.get('budgeted',0),'budgeted');actual=_num(l.get('actual',0),'actual')
+        rows.append({'line':l.get('line'),'budgeted':budgeted,'actual':actual,'variance':round(actual-budgeted,4),'variance_note':'over' if actual>budgeted else 'under' if actual<budgeted else 'on_budget'})
+    return {'budget_variance':rows,'finance_note':'Variance arithmetic only; no payment, transfer, or accounting change is executed.'}
+
+_OPERATIONS_ENRICHMENTS={'healthcare_operations':_operations_enrichment,'hospital_administration':_administration_enrichment,'healthcare_finance':_finance_enrichment}
+_OPERATIONS_BOUNDARIES={
+ 'healthcare_operations':'Aggregate capacity planning only. Administrators and clinical leaders validate staffing, acuity, labor rules, safety and equity. Atlas does not schedule staff, allocate individual care or admit/discharge patients.',
+ 'hospital_administration':'Aggregate policy and operations checklists only. Administrators validate compliance, staffing, safety and equity. Atlas does not schedule staff, allocate individual care or admit/discharge patients.',
+ 'healthcare_finance':'Aggregate budget arithmetic only. Finance and clinical leaders validate coding, contracts and policy. Atlas does not schedule staff, allocate individual care, admit/discharge patients or execute financial changes.',
+}
 
 def healthcare_operations(method:str,data:dict)->dict:
     demand=data.get('demand',[]);capacity=data.get('capacity',[]);constraints=data.get('constraints',[]);source=data.get('source',{})
+    if not isinstance(demand,list) or not isinstance(capacity,list):raise ValueError('demand and capacity must be lists')
     if not demand or not capacity or not source.get('source_url'):raise ValueError('demand, capacity and source_url required')
-    totals={'demand':sum(float(x.get('units',0)) for x in demand),'capacity':sum(float(x.get('units',0)) for x in capacity)};gap=totals['capacity']-totals['demand']
-    return {'mode':method,'totals':totals,'capacity_gap':gap,'constraints':constraints,'options':data.get('options',[]),'equity_and_safety_checks':data.get('equity_and_safety_checks',[]),'source':source,'boundary':'Aggregate planning only. Administrators and clinical leaders validate staffing, acuity, labor rules, safety and equity. Atlas does not schedule staff, allocate individual care, admit/discharge patients or execute financial changes.','disclaimer':DISCLAIMER}
+    if method not in _OPERATIONS_ENRICHMENTS:raise ValueError(f'unsupported healthcare operations method: {method}')
+    totals={'demand':sum(_num(x.get('units',0),'demand units') for x in demand),'capacity':sum(_num(x.get('units',0),'capacity units') for x in capacity)};gap=totals['capacity']-totals['demand']
+    result={'mode':method,'totals':totals,'capacity_gap':gap,'constraints':constraints,'options':data.get('options',[]),'equity_and_safety_checks':data.get('equity_and_safety_checks',[]),'source':source}
+    result.update(_OPERATIONS_ENRICHMENTS[method](data,totals))
+    result['boundary']=_OPERATIONS_BOUNDARIES[method];result['disclaimer']=DISCLAIMER
+    return result
 
 def medical_education(data:dict)->dict:
     objectives=data.get('objectives',[]);cases=data.get('cases',[]);rubric=data.get('rubric',[]);source=data.get('source',{})

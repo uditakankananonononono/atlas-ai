@@ -22,3 +22,41 @@ def test_1207_hospital_administration_keeps_constraints_and_safety_checks():
 def test_1208_healthcare_finance_cannot_execute_changes():assert 'execute financial changes' in operations('healthcare_finance')['boundary']
 def test_1209_medical_education_maps_objectives_and_requires_safe_cases():
  o=clinical_support('medical_education',{'objectives':[{'id':'o'}],'cases':[{'id':'c','objective_ids':['o'],'deidentified_or_synthetic':True,'answer_key':'review'}],'rubric':[{'criterion':'x'}],'source':SRC});assert o['case_map'][0]['objective_ids']==['o'] and o['case_map'][0]['deidentified_or_synthetic']
+
+
+def test_1204_patient_safety_records_factor_types_without_inferring_culpability():
+ o=safety('patient_safety')
+ assert o['just_culture_inputs']==[{'factor_id':'f','factor_type_as_supplied':None,'typed':False}]
+
+def test_1205_error_prevention_reports_unmitigated_factors_and_coverage():
+ d={'event':{'known_facts':['fact']},'contributing_factors':[{'id':'f1'},{'id':'f2'}],'controls':[{'name':'check','addresses':['f1']}],'source':SRC}
+ o=clinical_support('medical_error_prevention',d)
+ assert o['prevention_gap_analysis']=={'unmitigated_factors':['f2'],'control_coverage':0.5}
+
+def test_1206_operations_projects_scenario_gaps_from_supplied_multipliers():
+ d={'demand':[{'units':12}],'capacity':[{'units':10}],'scenarios':[{'name':'surge','demand_multiplier':1.5}],'source':SRC}
+ o=clinical_support('healthcare_operations',d)
+ assert o['scenario_review']==[{'scenario':'surge','demand_multiplier':1.5,'projected_demand':18.0,'projected_gap':-8.0}]
+
+def test_1207_administration_tracks_policy_ownership_and_review_dates():
+ d={'demand':[{'units':1}],'capacity':[{'units':1}],'policies':[{'name':'handoff','owner':'cmo','review_date':'2026-01-01','status':'current'}],'source':SRC}
+ o=clinical_support('hospital_administration',d)
+ assert o['policy_checklist'][0]['owner']=='cmo' and o['policy_checklist'][0]['status']=='current'
+
+def test_1208_finance_computes_variance_without_executing_changes():
+ d={'demand':[{'units':1}],'capacity':[{'units':1}],'budget_lines':[{'line':'agency','budgeted':100,'actual':140},{'line':'supplies','budgeted':50,'actual':40}],'source':SRC}
+ o=clinical_support('healthcare_finance',d)
+ assert o['budget_variance'][0]=={'line':'agency','budgeted':100.0,'actual':140.0,'variance':40.0,'variance_note':'over'}
+ assert o['budget_variance'][1]['variance_note']=='under'
+
+def test_operations_rows_have_distinct_keyed_outputs():
+ base={'demand':[{'units':1}],'capacity':[{'units':1}],'source':SRC}
+ keys={m:set(clinical_support(m,dict(base))) for m in ['healthcare_operations','hospital_administration','healthcare_finance']}
+ for m,k in [('healthcare_operations','scenario_review'),('hospital_administration','policy_checklist'),('healthcare_finance','budget_variance')]:
+  assert k in keys[m] and all(k not in keys[o] for o in keys if o!=m)
+
+def test_operations_rows_reject_malformed_typed_inputs():
+ base={'demand':[{'units':1}],'capacity':[{'units':1}],'source':SRC}
+ with pytest.raises(ValueError):clinical_support('healthcare_finance',{**base,'budget_lines':'lots'})
+ with pytest.raises(ValueError):clinical_support('healthcare_operations',{**base,'scenarios':[{'name':'x','demand_multiplier':-1}]})
+ with pytest.raises(ValueError):clinical_support('healthcare_operations',{'demand':[{'units':'many'}],'capacity':[{'units':1}],'source':SRC})
