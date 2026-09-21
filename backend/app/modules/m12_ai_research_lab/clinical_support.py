@@ -489,3 +489,64 @@ CLINICAL_EXTRA.update({
  'mens_health':lambda d:life_stage_care('mens_health',d),
  'lgbtq_health':lambda d:life_stage_care('lgbtq_health',d),
 })
+
+def global_health(data:dict)->dict:
+    needs=data.get('needs',[]);resources=data.get('resources',[]);constraints=data.get('constraints',{});sources=data.get('sources',[]);_require_citations(sources,'sources')
+    if not needs:raise ValueError('population needs required')
+    ranked=sorted(needs,key=lambda x:(-float(x.get('severity',0)),-float(x.get('people_affected',0)),str(x.get('name',''))))
+    allocations=[]
+    for n in ranked:
+        matches=[r for r in resources if n.get('name') in r.get('addresses',[]) and not set(r.get('constraints',[]))&set(constraints.get('active',[]))];allocations.append({'need':n,'candidate_resources':matches,'unmet':not bool(matches)})
+    return {'prioritized_needs':ranked,'resource_options':allocations,'constraints':constraints,'sources':sources,'boundary':'Transparent planning aid from supplied aggregate data. Local public-health authorities and affected communities validate needs, equity, feasibility and allocation; Atlas does not ration care or act on individual records.','disclaimer':DISCLAIMER}
+
+def public_health_surveillance(data:dict)->dict:
+    series=data.get('series',[]);baseline=data.get('baseline',{});source=data.get('source',{})
+    if not series or not source.get('source_url'):raise ValueError('aggregate series and source_url required')
+    threshold=float(data.get('z_threshold',2));mean=float(baseline.get('mean',0));sd=float(baseline.get('sd',0));alerts=[];normalized=[]
+    for point in series:
+        count=float(point.get('count',0));z=(count-mean)/sd if sd>0 else None;row={**point,'z_score':z};normalized.append(row)
+        if z is not None and z>=threshold:alerts.append(row)
+    return {'aggregate_series':normalized,'statistical_signals':alerts,'baseline':baseline,'privacy_check':{'minimum_cell_size':data.get('minimum_cell_size'),'suppressed_cells':[x.get('period') for x in series if data.get('minimum_cell_size') and float(x.get('count',0))<float(data['minimum_cell_size'])]},'source':source,'boundary':'Statistical signal detection on aggregate supplied data, not outbreak confirmation or individual identification. Epidemiologists verify data quality, reporting delays, denominators and confounding before response.','disclaimer':DISCLAIMER}
+
+def epidemic_response(data:dict)->dict:
+    scenario=data.get('scenario',{});interventions=data.get('interventions',[]);source=data.get('source',{})
+    if not scenario or not source.get('source_url'):raise ValueError('scenario and source_url required')
+    assumptions=data.get('assumptions',{});rows=[]
+    for i in interventions:
+        projected=None
+        if all(k in assumptions for k in ('baseline_cases','effectiveness','uptake')):projected=float(assumptions['baseline_cases'])*(1-float(assumptions['effectiveness'])*float(assumptions['uptake']))
+        rows.append({**i,'projected_cases_under_shared_assumptions':projected,'equity_considerations':i.get('equity_considerations',[]),'operational_dependencies':i.get('operational_dependencies',[])})
+    return {'scenario':scenario,'response_options':rows,'assumptions':assumptions,'decision_status':'draft_for_public_health_authority','source':source,'boundary':'Scenario planning only. Authorities validate transmission evidence, legal authority, proportionality, equity, logistics and current guidance before public action; Atlas does not issue orders or restrictions.','disclaimer':DISCLAIMER}
+
+def contact_tracing(data:dict)->dict:
+    index_case=data.get('index_case',{});encounters=data.get('encounters',[]);definition=data.get('exposure_definition',{});source=data.get('source',{})
+    if not index_case.get('consent_or_legal_basis') or not definition or not source.get('source_url'):raise ValueError('documented authority, exposure definition and source_url required')
+    contacts=[]
+    for e in encounters:
+        duration=float(e.get('duration_minutes',0));distance=float(e.get('distance_meters',999));qualifies=duration>=float(definition.get('min_duration_minutes',0)) and distance<=float(definition.get('max_distance_meters',999));contacts.append({'contact_token':e.get('contact_token'),'qualifies':qualifies,'encounter_at':e.get('encounter_at'),'reason':'definition_matched' if qualifies else 'definition_not_matched'})
+    return {'potential_exposures':contacts,'retention_until':data.get('retention_until'),'source':source,'boundary':'Use only with documented consent/legal authority, data minimization, access control and retention limits. Public-health staff verify exposure and handle notification; Atlas never deanonymizes, tracks location, contacts people or enforces isolation.','disclaimer':DISCLAIMER}
+
+def quarantine_management(data:dict)->dict:
+    cases=data.get('cases',[]);policy=data.get('policy',{});source=policy.get('source',{})
+    if not cases or not policy or not source.get('source_url'):raise ValueError('cases and cited policy required')
+    reviews=[]
+    for case in cases:
+        missing=[x for x in policy.get('required_fields',[]) if x not in case];reviews.append({'case_token':case.get('case_token'),'status':'insufficient_information' if missing else 'policy_review_ready','missing_fields':missing,'support_needs':case.get('support_needs',[]),'appeal_or_review_route':policy.get('appeal_or_review_route')})
+    return {'case_reviews':reviews,'policy_version':policy.get('version'),'source':source,'boundary':'Administrative checklist only. Authorized public-health officials determine lawful, least-restrictive measures and provide support, review and appeal. Atlas does not order, monitor or enforce quarantine.','disclaimer':DISCLAIMER}
+
+def health_education(method:str,data:dict)->dict:
+    audience=data.get('audience',{});messages=data.get('messages',[]);sources=data.get('sources',[]);_require_citations(sources,'sources')
+    if not audience or not messages:raise ValueError('audience and messages required')
+    rendered=[]
+    for m in messages:rendered.append({'topic':m.get('topic'),'plain_language':m.get('plain_language'),'action':m.get('action'),'uncertainty':m.get('uncertainty'),'source_ids':m.get('source_ids',[]),'reading_level':m.get('reading_level')})
+    return {'mode':method,'audience':audience,'educational_messages':rendered,'cultural_and_accessibility_review':data.get('review',{}),'sources':sources,'boundary':'Cited education and voluntary support only. Preserve uncertainty, accessibility and audience context; never shame, coerce, manipulate or substitute generic education for individual clinical care.','disclaimer':DISCLAIMER}
+
+CLINICAL_EXTRA.update({
+ 'global_health':global_health,
+ 'public_health_surveillance':public_health_surveillance,
+ 'epidemic_response':epidemic_response,
+ 'contact_tracing':contact_tracing,
+ 'quarantine_management':quarantine_management,
+ 'health_education':lambda d:health_education('health_education',d),
+ 'behavior_change_support':lambda d:health_education('behavior_change_support',d),
+})
