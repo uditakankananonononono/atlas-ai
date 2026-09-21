@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1473,
-    "verified-pushed": 534,
+    "missing": 1468,
+    "verified-pushed": 539,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -14022,8 +14022,12 @@
       "category": "Data & Analytics",
       "requirement": "Permutation-Based FDR",
       "description": "Empirical null",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "6518ff9ede04f4413900bc1ba9d30e401298502c",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1088_1092.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14032,8 +14036,12 @@
       "category": "Data & Analytics",
       "requirement": "Knockoffs",
       "description": "Controlled variable selection",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "6518ff9ede04f4413900bc1ba9d30e401298502c",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1088_1092.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14042,8 +14050,12 @@
       "category": "Data & Analytics",
       "requirement": "Stability Selection",
       "description": "Stable variable selection",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "6518ff9ede04f4413900bc1ba9d30e401298502c",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1088_1092.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14052,8 +14064,12 @@
       "category": "Data & Analytics",
       "requirement": "Bootstrap Aggregation",
       "description": "Ensemble for stability",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "6518ff9ede04f4413900bc1ba9d30e401298502c",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1088_1092.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14062,8 +14078,12 @@
       "category": "Data & Analytics",
       "requirement": "Random Forests",
       "description": "Ensemble of trees",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "6518ff9ede04f4413900bc1ba9d30e401298502c",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1088_1092.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
