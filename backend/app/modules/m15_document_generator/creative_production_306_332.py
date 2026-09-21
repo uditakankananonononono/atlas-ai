@@ -44,3 +44,21 @@ def plan(row:int,p:dict[str,Any])->dict[str,Any]:
  deliverables=[{'name':x,'status':'planned_not_rendered'} for x in p.get('deliverables',['design brief','review checklist'])]
  return {'row_id':row,'capability':ROWS[row],'key':slug(ROWS[row]),'family':family,'workflow':workflow,'open_stages':[x['stage'] for x in workflow if x['status']=='open'],'deliverables':deliverables,'sources':sources,'rights':p.get('rights',{'status':'review_required'}),'accessibility':p.get('accessibility',[]),'safety_reviews':safety,'status':'design_plan_for_human_review','rendered_or_fabricated':False,'side_effects':[],'evaluation':{'specified_stages':[x['stage'] for x in workflow if x['status']=='specified'],'review_checks':['source traceability','rights and consent','accessibility','technical feasibility','acceptance testing'],'open_stages':[x['stage'] for x in workflow if x['status']=='open']},'uncertainty':{'level':'not_quantified','drivers':['open design decisions','unexecuted production','physical and audience variation'],'rendered_recorded_built_or_certified_claimed':False},'boundary':'Planning and specification only. Verify rights, attribution, factual accuracy, accessibility, consent, dimensions, materials, codes, engineering, safety, manufacturing and certification with qualified humans. Never claim unrendered, unrecorded, unbuilt, untested or uncertified work is complete.'}
 def catalog():return [{'row_id':i,'capability':ROWS[i],'key':slug(ROWS[i]),'family':SPECS[i][0],'required':SPECS[i][1],'stages':SPECS[i][2]} for i in ROWS]
+
+# Auditable typed measurements. Each row has its own named mechanism and metric;
+# values describe the plan supplied, never a fabricated production result.
+METRIC_NAMES={
+306:'mix_track_count',307:'master_sequence_count',308:'foley_cue_count',309:'directed_take_count',310:'episode_count',311:'manuscript_unit_count',312:'cast_member_count',313:'speaker_count',314:'interaction_input_count',315:'generative_rule_count',316:'dataset_record_count',317:'verified_fact_count',318:'mapped_feature_count',319:'scientific_source_count',320:'medical_source_count',321:'dimension_count',322:'camera_count',323:'space_user_count',324:'ecology_constraint_count',325:'population_segment_count',326:'garment_constraint_count',327:'textile_colorway_count',328:'jewelry_material_count',329:'furniture_user_count',330:'product_requirement_count',331:'vehicle_requirement_count',332:'mission_requirement_count'}
+METRIC_INPUT={306:'tracks',307:'sequence',308:'cue_sheet',309:'takes',310:'episodes',311:'manuscript',312:'cast',313:'speaker_layout',314:'inputs',315:'system_rules',316:'dataset',317:'facts',318:'features',319:'evidence_sources',320:'evidence_sources',321:'dimensions',322:'cameras',323:'users',324:'ecology',325:'population',326:'constraints',327:'colorways',328:'materials',329:'users',330:'requirements',331:'requirements',332:'requirements'}
+def _count_value(value:Any)->int:
+ if value in (None,''):return 0
+ if isinstance(value,(list,tuple,set,dict)):return len(value)
+ return 1
+def row_measurement(row:int,p:dict[str,Any])->dict[str,Any]:
+ key=METRIC_INPUT[row]
+ value=p.get(key)
+ if row==318:value=p.get('geodata',{}).get('features',[])
+ return {'mechanism':f'creative-production.{slug(ROWS[row])}.v1','metric':{'name':METRIC_NAMES[row],'value':_count_value(value),'unit':'input_items','value_type':'integer'},'model':{'name':'deterministic-plan-analyzer','version':'1.0.0'},'evidence':{'source_ids':[x['source_id'] for x in p.get('sources',[])],'input_key':key},'external_effects':[]}
+_original_plan=plan
+def plan(row:int,p:dict[str,Any])->dict[str,Any]:
+ out=_original_plan(row,p);out['row_evidence']=row_measurement(row,p);return out

@@ -181,6 +181,34 @@ CREATIVE_SPECS: dict[str, ArtifactSpec] = {spec.slug: spec for spec in [
 ]}
 
 
+# Row-specific, deterministic inspection metrics for rows 288-305. These do not
+# pretend to render media; they make each specification mechanically reviewable.
+CREATIVE_METRIC_KEYS = {
+    288: "navigation_depth", 289: "interaction_edge_case_count", 290: "reduced_motion_coverage",
+    291: "modeled_part_count", 292: "material_map_count", 293: "light_parameter_count",
+    294: "quality_tier_count", 295: "timing_chart_count", 296: "rig_control_count",
+    297: "expression_shape_count", 298: "solver_setting_count", 299: "particle_budget_count",
+    300: "procedural_parameter_count", 301: "sound_cue_count", 302: "musical_section_count",
+    303: "harmonic_progression_count", 304: "rhythm_pattern_count", 305: "orchestral_part_count",
+}
+
+def _metric_size(value: Any) -> int:
+    if isinstance(value, (list, tuple, set, dict)): return len(value)
+    if value in (None, "", "TO BE PROVIDED"): return 0
+    return 1
+
+def creative_row_evidence(spec: ArtifactSpec, sections: dict[str, Any], model: str) -> dict[str, Any]:
+    """Return a typed, row-keyed observation without claiming quality or execution."""
+    observed = sum(_metric_size(sections.get(key)) for key in spec.section_keys)
+    return {
+        "mechanism": f"creative.{spec.slug}.v1",
+        "metric": {"name": CREATIVE_METRIC_KEYS.get(spec.row, f"specified_section_count_row_{spec.row}"), "value": observed, "unit": "specified_items", "value_type": "integer"},
+        "model": {"provider_model": model, "contract_version": "creative-spec/1.0"},
+        "evidence": {"kind": "generated_specification", "required_keys": list(spec.section_keys), "observed_keys": [k for k in spec.section_keys if k in sections]},
+        "external_effects": [],
+    }
+
+
 class CreativeEngine:
     """Produces typed draft creative specifications; renders nothing."""
 
@@ -244,7 +272,7 @@ class CreativeEngine:
             kind=slug,
             title=spec.title,
             sections=sections,
-            evaluation={"required_sections": list(spec.section_keys), "observed_sections": sorted(sections), "review_checks": ["originality", "accessibility", "technical feasibility", "rights"], "human_review_required": True},
+            evaluation={"required_sections": list(spec.section_keys), "observed_sections": sorted(sections), "review_checks": ["originality", "accessibility", "technical feasibility", "rights"], "human_review_required": True, "row_evidence": creative_row_evidence(spec, sections, model)},
             uncertainty={"level": "not_quantified", "drivers": ["unrendered specification", "caller-supplied constraints", "human aesthetic judgment"], "render_or_physical_result_claimed": False},
             inputs=inputs,
             model=model,

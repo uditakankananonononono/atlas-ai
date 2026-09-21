@@ -85,3 +85,24 @@ def _distinctive(fid:int,d:dict[str,Any],o:dict[str,Any])->dict[str,Any]:
 _original_design_support=design_support_333_359
 def design_support_333_359(fid:int,data:dict[str,Any])->dict[str,Any]:
  return _distinctive(fid,data,_original_design_support(fid,data))
+
+DESIGN_METRIC_NAMES={333:'buoyancy_margin_kg',334:'small_part_count',335:'core_loop_count',336:'critical_path_node_count',337:'inference_step_count',338:'state_change_count',339:'economy_net_units',340:'narrative_beat_count',341:'quest_prerequisite_count',342:'observed_completion_sample_count',343:'journey_moment_count'}
+def _design_metric(fid:int,d:dict[str,Any],o:dict[str,Any])->tuple[float|int,str]:
+ if fid==333:return o.get('marine_stability',{}).get('buoyancy_margin_kg',0),'kg'
+ if fid==334:return o.get('toy_safety',{}).get('small_part_count',0),'parts'
+ if fid==335:return len(d.get('gameplay_loops',[])),'loops'
+ if fid==336:return len(d.get('critical_path',[])),'nodes'
+ if fid==337:return len(d.get('inference_steps',[])),'steps'
+ if fid==338:return len(d.get('state_changes',[])),'transitions'
+ if fid==339:return o.get('balance_metrics',{}).get('currency_net',0),'currency_units'
+ if fid==340:return len(d.get('beats',[])),'beats'
+ if fid==341:return len(d.get('prerequisites',{})),'prerequisites'
+ if fid==342:return len(d.get('playtests',[])),'samples'
+ return len(d.get('moments',[])),'moments'
+_prior_design_support=design_support_333_359
+def design_support_333_359(fid:int,data:dict[str,Any])->dict[str,Any]:
+ out=_prior_design_support(fid,data)
+ if 333<=fid<=343:
+  value,unit=_design_metric(fid,data,out)
+  out['row_evidence']={'mechanism':f'design.{FEATURES[fid].lower().replace(" ","-")}.v1','metric':{'name':DESIGN_METRIC_NAMES[fid],'value':value,'unit':unit,'value_type':'number'},'model':{'name':'deterministic-design-analyzer','version':'1.0.0'},'evidence':{'brief':data['brief'],'decision_owner':data['decision_owner']},'external_effects':[]}
+ return out
