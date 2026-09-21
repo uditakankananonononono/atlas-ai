@@ -1528,3 +1528,14 @@ router.include_router(technical_spec_round8_router)
 # Atomic unpacked concept engines, audit rows 93-115.
 from .atomic_concepts_routes_0093_0115 import router as atomic_concepts_router_0093_0115
 router.include_router(atomic_concepts_router_0093_0115)
+
+from typing import Any
+from pydantic import BaseModel,Field
+from .atomic_concepts_70_92 import AtomicError,run as run_atomic_70_92
+class AtomicConcept70To92In(BaseModel):
+    atomic_row_id:str
+    data:dict[str,Any]=Field(default_factory=dict)
+@router.post('/atomic-concepts-70-92')
+def atomic_concepts_70_92_route(body:AtomicConcept70To92In):
+    try:return run_atomic_70_92(body.atomic_row_id,body.data)
+    except AtomicError as error:raise HTTPException(422,str(error)) from error
