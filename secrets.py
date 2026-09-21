@@ -48,3 +48,34 @@ def authenticated_vault_provider(url:str,token:str,mount:str='secret')->VaultLit
         value=data.get('value')
         return {'value':str(value) if value is not None else ''}
     return VaultLiteralProvider(mount,read)
+
+# Compatibility with Python's standard-library ``secrets`` API.  This project
+# historically used the top-level module name for its provider abstraction,
+# which means it shadows stdlib ``secrets`` whenever Atlas runs from the repo
+# root.  Starlette and Atlas modules legitimately import these symbols.
+import base64 as _base64
+import binascii as _binascii
+import hmac as _hmac
+import random as _random
+
+SystemRandom = _random.SystemRandom
+_sysrand = SystemRandom()
+choice = _sysrand.choice
+randbelow = _sysrand._randbelow
+randbits = _sysrand.getrandbits
+compare_digest = _hmac.compare_digest
+
+def token_bytes(nbytes: int | None = None) -> bytes:
+    if nbytes is None:
+        nbytes = 32
+    if not isinstance(nbytes, int):
+        raise TypeError("nbytes must be an integer")
+    if nbytes < 0:
+        raise ValueError("nbytes must be non-negative")
+    return os.urandom(nbytes)
+
+def token_hex(nbytes: int | None = None) -> str:
+    return _binascii.hexlify(token_bytes(nbytes)).decode("ascii")
+
+def token_urlsafe(nbytes: int | None = None) -> str:
+    return _base64.urlsafe_b64encode(token_bytes(nbytes)).rstrip(b"=").decode("ascii")
