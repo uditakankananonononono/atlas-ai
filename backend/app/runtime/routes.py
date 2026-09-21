@@ -19,3 +19,6 @@ class TechnicalSpec100To132In(BaseModel):
 def technical_spec_100_132_route(body:TechnicalSpec100To132In):
     try:return technical_spec_100_132(body.row,body.data)
     except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .technical_spec_routes_166_198 import router as technical_spec_router_166_198
+router.include_router(technical_spec_router_166_198)
