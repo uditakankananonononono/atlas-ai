@@ -20,3 +20,13 @@ def diff(from_version_id:str,to_version_id:str,tenant_id:str=Depends(tenant),ser
 def export(version_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     try:return service.propose_export(service.get(tenant_id,version_id))
     except KeyError as exc:raise HTTPException(404,str(exc)) from exc
+
+from typing import Any
+from .design_support_333_359 import design_support_333_359
+class Design333To359In(BaseModel):
+    feature_id:int=Field(ge=333,le=359)
+    data:dict[str,Any]=Field(default_factory=dict)
+@router.post('/design-333-359/support')
+def design_333_359_route(body:Design333To359In,tenant_id:str=Depends(tenant)):
+    try:return {'tenant_id':tenant_id,**design_support_333_359(body.feature_id,body.data)}
+    except ValueError as error:raise HTTPException(422,str(error)) from error
