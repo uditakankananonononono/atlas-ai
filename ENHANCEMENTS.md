@@ -47,7 +47,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** default public collectors, optional official Pinterest/X/Instagram/YouTube paths, a five-artifact experiment checklist with separate publish/send/spend approvals, and adapter receipts plus observed-outcome ingestion bound to consumed approvals.
 - **Next:** durable tenant-scoped run storage and signed provider receipt verification.
 ## M19 - Idea Incubator
-- **Next:** assumption burn-down ordered by expected information gain per zero/low-cost test.
+- **Landed:** assumption burn-down ranks tests by expected entropy reduction per cost/time burden and selects a budget-feasible learning portfolio while preserving caller-supplied uncertainty.
+- **Next:** update priors from observed experiment evidence with auditable Bayesian revisions.
 ## M20 - General Cognitive Worker
 - **Next (science):** execution truth ledger that rolls up planned, simulated, externally executed and independently verified outcomes.
 ## M21 - Claire
