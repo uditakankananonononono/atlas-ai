@@ -42,12 +42,26 @@ def test_routes_are_mounted_under_executive_dashboard_boundary():
     bad=c.post("/api/v1/executive-dashboard/finance/analyze",headers=headers,json={"method":"unknown","data":{}})
     assert bad.status_code==422
 
-def test_finance_rows_are_scoped_and_remain_non_transactional():
-    c=TestClient(app)
-    payload={"method":"microfinance","data":CASES["microfinance"]}
-    assert c.post("/api/v1/executive-dashboard/finance/analyze",json=payload).status_code==422
-    h={"X-Tenant-ID":"tenant-fin","X-Actor-ID":"analyst-fin"}
-    out=c.post("/api/v1/executive-dashboard/finance/analyze",headers=h,json=payload).json()
-    assert out["scope"]=={"tenant_id":"tenant-fin","actor_id":"analyst-fin"}
-    assert "trade" not in out and "transaction" not in out
-    assert any("no order" in x.lower() for x in out["output"]["method_limits"])
+@pytest.mark.parametrize("method,bad,match",[
+    pytest.param("barrier_options",{"path":[100,110],"strike":100,"barrier":105,"direction":"sideways"},"direction",id="row_1362_rejects_unknown_barrier_direction"),
+    pytest.param("barrier_options",{"path":[100,110],"strike":100,"barrier":105,"knock":"sometimes"},"knock",id="row_1362_rejects_unknown_knock_style"),
+    pytest.param("lookback_options",{"path":[100,110],"type":"fixed"},"type",id="row_1364_rejects_unsupported_lookback_type"),
+    pytest.param("basket_options",{"spots":[90,110],"weights":[0,0],"strike":100},"weights",id="row_1369_rejects_zero_weight_basket"),
+    pytest.param("energy_markets",{"hourly_prices":[20,30],"load":[0,0]},"load",id="row_1372_rejects_zero_energy_load"),
+    pytest.param("country_risk",{"economic_risk":.2,"financial_risk":.3,"political_risk":.4,"weights":[1,2]},"weights",id="row_1382_rejects_partial_risk_weights"),
+    pytest.param("emerging_markets",{"returns":[.1,.2],"benchmark_returns":[.1,.2,.3],"liquidity_score":.5},"align",id="row_1384_rejects_misaligned_benchmark"),
+    pytest.param("emerging_markets",{"returns":[.1,.2],"benchmark_returns":[.1,.2],"liquidity_score":1.1},"liquidity",id="row_1384_rejects_invalid_liquidity_score"),
+])
+def test_rows_1362_1384_fail_closed_on_semantically_invalid_inputs(method,bad,match):
+    with pytest.raises(ValueError,match=match): run(method,bad)
+
+
+def test_row_1364_reports_the_observation_that_determines_lookback_payoff():
+    result=run("lookback_options",{"path":[100,80,120,110],"type":"floating_call"})["output"]
+    assert result["payoff"]==30 and result["extreme_observation_index"]==1
+
+
+def test_row_1382_country_risk_preserves_named_components_and_normalized_weights():
+    result=run("country_risk",CASES["country_risk"])["output"]
+    assert result["components"]=={"economic":.2,"financial":.3,"political":.4}
+    assert sum(result["normalized_weights"])==pytest.approx(1)

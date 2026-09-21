@@ -60,13 +60,18 @@ def run(method:str,data:dict[str,Any],seed:int=0)->dict[str,Any]:
         else: raise ValueError("payoff must be digital or range")
         o["output"]={"payoff_type":kind,"expected_payoff":_mean(vals),"standard_error":_sd(vals)/math.sqrt(len(vals)),"path_count":len(vals)}; lim+=["Values supplied paths; no model calibration."]
     elif method=="barrier_options":
-        path=_vec(data,"path",2); k=_num(data,"strike"); barrier=_num(data,"barrier"); direction=data.get("direction","up"); knock=data.get("knock","out"); hit=max(path)>=barrier if direction=="up" else min(path)<=barrier; vanilla=max(path[-1]-k,0); active=hit if knock=="in" else not hit
-        o["output"]={"barrier_hit":hit,"active":active,"payoff":vanilla if active else 0.0,"monitoring_points":len(path)}; a+=["Barrier is monitored only at supplied observations."]
+        path=_vec(data,"path",2); k=_num(data,"strike"); barrier=_num(data,"barrier"); direction=data.get("direction","up"); knock=data.get("knock","out")
+        if direction not in {"up","down"}: raise ValueError("direction must be up or down")
+        if knock not in {"in","out"}: raise ValueError("knock must be in or out")
+        hit=max(path)>=barrier if direction=="up" else min(path)<=barrier; vanilla=max(path[-1]-k,0); active=hit if knock=="in" else not hit
+        o["output"]={"barrier_hit":hit,"active":active,"payoff":vanilla if active else 0.0,"monitoring_points":len(path),"barrier_direction":direction,"knock_style":knock}; a+=["Barrier is monitored only at supplied observations."]
     elif method=="asian_options":
         path=_vec(data,"path",2); k=_num(data,"strike"); avg=statistics.geometric_mean(path) if data.get("average") == "geometric" else _mean(path); o["output"]={"average":avg,"payoff":max(avg-k,0),"observations":len(path)}; a+=["Equal-weight observation schedule."]
     elif method=="lookback_options":
-        path=_vec(data,"path",2); typ=data.get("type","floating_call"); payoff=path[-1]-min(path) if typ=="floating_call" else max(path)-path[-1]
-        o["output"]={"path_min":min(path),"path_max":max(path),"payoff":max(payoff,0),"type":typ}; a+=["Discrete supplied path, without continuous-monitoring correction."]
+        path=_vec(data,"path",2); typ=data.get("type","floating_call")
+        if typ not in {"floating_call","floating_put"}: raise ValueError("type must be floating_call or floating_put")
+        payoff=path[-1]-min(path) if typ=="floating_call" else max(path)-path[-1]
+        o["output"]={"path_min":min(path),"path_max":max(path),"payoff":max(payoff,0),"type":typ,"extreme_observation_index":path.index(min(path) if typ=="floating_call" else max(path))}; a+=["Discrete supplied path, without continuous-monitoring correction."]
     elif method=="forward_starting_options":
         start=_num(data,"start_spot"); end=_num(data,"end_spot"); m=_num(data,"strike_multiplier",1); o["output"]={"strike_fixed_at_start":m*start,"payoff":max(end-m*start,0),"forward_return":end/start-1}
     elif method=="compound_options":
@@ -76,6 +81,7 @@ def run(method:str,data:dict[str,Any],seed:int=0)->dict[str,Any]:
     elif method in {"rainbow_options","basket_options"}:
         spots=_vec(data,"spots",2); weights=_vec(data,"weights",2); strikes=_num(data,"strike");
         if len(spots)!=len(weights): raise ValueError("spots and weights must align")
+        if any(w < 0 for w in weights) or sum(weights) <= 0: raise ValueError("weights must be nonnegative with positive total")
         under=max(spots) if method=="rainbow_options" else sum(x*w for x,w in zip(spots,weights))/sum(weights); o["output"]={"reference_level":under,"payoff":max(under-strikes,0),"asset_count":len(spots),"construction":"best_of" if method=="rainbow_options" else "weighted_basket"}; lim+=["Terminal payoff only; no correlation-sensitive present value."]
     elif method=="quanto_options":
         k=_num(data,"strike"); fixed_fx=_num(data,"fixed_fx"); foreign_payoff=max(s-k,0); o["output"]={"foreign_payoff":foreign_payoff,"domestic_payoff":foreign_payoff*fixed_fx,"fixed_fx":fixed_fx}; a+=["Contractual fixed conversion rate applies."]
@@ -84,6 +90,7 @@ def run(method:str,data:dict[str,Any],seed:int=0)->dict[str,Any]:
     elif method=="energy_markets":
         prices=_vec(data,"hourly_prices",2); load=_vec(data,"load",2)
         if len(prices)!=len(load): raise ValueError("prices/load align")
+        if any(x < 0 for x in load) or sum(load) <= 0: raise ValueError("load must be nonnegative with positive total")
         o["output"]={"time_weighted_price":_mean(prices),"load_weighted_price":sum(p*l for p,l in zip(prices,load))/sum(load),"peak_offpeak_spread":max(prices)-min(prices),"total_energy":sum(load)}
     elif method in {"carbon_trading","carbon_markets"}:
         emissions=_num(data,"emissions"); allowances=_num(data,"allowances"); price=_num(data,"allowance_price"); gap=emissions-allowances; o["output"]={"net_allowance_position":-gap,"compliance_cost":max(gap,0)*price,"surplus_value":max(-gap,0)*price,"market_kind":"compliance" if method=="carbon_trading" else data.get("market_kind","compliance")}
@@ -106,13 +113,19 @@ def run(method:str,data:dict[str,Any],seed:int=0)->dict[str,Any]:
             debt=_num(data,"debt_to_gdp"); deficit=_num(data,"deficit_to_gdp"); reserves=_num(data,"reserves_to_short_debt"); spread=_num(data,"bond_spread_bps"); score=.3*min(debt/150,1)+.2*min(max(deficit,0)/15,1)+.2*(1-min(reserves,1))+.3*min(spread/1500,1)
             out={"risk_score":score,"components":{"debt":debt,"deficit":deficit,"reserves":reserves,"spread_bps":spread}}
         elif method=="country_risk":
-            vals=[_num(data,k) for k in ("economic_risk","financial_risk","political_risk")]; w=data.get("weights",[.4,.3,.3]); out={"composite_risk":sum(x*y for x,y in zip(vals,w))/sum(w),"components":vals}
+            vals=[_num(data,k) for k in ("economic_risk","financial_risk","political_risk")]; w=data.get("weights",[.4,.3,.3])
+            if not isinstance(w,list) or len(w)!=3 or any(isinstance(x,bool) or not isinstance(x,(int,float)) or x<0 for x in w) or sum(w)<=0: raise ValueError("weights need three nonnegative values with positive total")
+            out={"composite_risk":sum(x*y for x,y in zip(vals,w))/sum(w),"components":{"economic":vals[0],"financial":vals[1],"political":vals[2]},"normalized_weights":[x/sum(w) for x in w]}
         elif method=="political_risk":
             probs=_vec(data,"scenario_probabilities"); losses=_vec(data,"scenario_losses");
             if len(probs)!=len(losses) or abs(sum(probs)-1)>1e-6: raise ValueError("aligned probabilities summing to one")
             out={"expected_loss":sum(p*l for p,l in zip(probs,losses)),"worst_case_loss":max(losses),"scenarios":len(probs)}
         else:
-            returns=_vec(data,"returns",2); benchmark=_vec(data,"benchmark_returns",2); out={"annualized_return":_mean(returns)*12,"annualized_volatility":_sd(returns)*math.sqrt(12),"benchmark_correlation":_corr(returns,benchmark),"liquidity_score":_num(data,"liquidity_score"),"classification":method.replace("_markets","")}
+            returns=_vec(data,"returns",2); benchmark=_vec(data,"benchmark_returns",2)
+            if len(returns)!=len(benchmark): raise ValueError("returns and benchmark_returns must align")
+            liquidity=_num(data,"liquidity_score")
+            if not 0 <= liquidity <= 1: raise ValueError("liquidity_score must be between zero and one")
+            out={"annualized_return":_mean(returns)*12,"annualized_volatility":_sd(returns)*math.sqrt(12),"benchmark_correlation":_corr(returns,benchmark),"liquidity_score":liquidity,"classification":method.replace("_markets","")}
         o["output"]=out; lim+=["Composite/scenario score is transparent and caller-defined, not a credit rating."]
     elif method=="microfinance":
         disbursed=_num(data,"amount_disbursed"); outstanding=_num(data,"portfolio_outstanding"); overdue=_num(data,"overdue_over_30"); writeoffs=_num(data,"writeoffs"); borrowers=_num(data,"active_borrowers"); o["output"]={"portfolio_at_risk_30":overdue/outstanding,"writeoff_ratio":writeoffs/_num(data,"average_portfolio",outstanding),"average_loan_balance":outstanding/borrowers,"capital_deployment":outstanding/disbursed}
