@@ -198,3 +198,76 @@ def therapy_design(method:str,data:dict)->dict:
     return {'mode':method,'assessment_used':assessment,'goal_plans':sessions,'source':source,'approval_status':'draft_for_licensed_therapist_and_patient','boundary':'Candidate-plan generation only. Licensed therapists assess safety, personalize dosage/intensity and supervise execution.','disclaimer':DISCLAIMER}
 
 CLINICAL_EXTRA.update({'surgical_planning':lambda d:care_plan('surgical_planning',d),'anesthesia_monitoring':anesthesia_monitoring,'post_operative_care':postop,'rehabilitation_planning':lambda d:care_plan('rehabilitation_planning',d),'physical_therapy_design':lambda d:therapy_design('physical_therapy_design',d),'occupational_therapy_design':lambda d:therapy_design('occupational_therapy_design',d),'speech_therapy_design':lambda d:therapy_design('speech_therapy_design',d)})
+
+def scored_screen(method:str,data:dict)->dict:
+    """Score a supplied, cited screening instrument without converting it to diagnosis."""
+    instrument=data.get('instrument',{});answers=data.get('answers',{});items=instrument.get('items',[]);source=instrument.get('source',{})
+    if not instrument.get('name') or not items or not source.get('source_url'):raise ValueError('named instrument with items and source_url required')
+    missing=[str(i.get('id')) for i in items if str(i.get('id')) not in answers]
+    invalid=[];score=0.0
+    for item in items:
+        key=str(item.get('id')); value=answers.get(key)
+        if value is None:continue
+        allowed=item.get('allowed_values')
+        if allowed is not None and value not in allowed:invalid.append(key);continue
+        score+=float(value)*float(item.get('weight',1))
+    if missing or invalid:return {'mode':method,'status':'incomplete','missing_items':missing,'invalid_items':invalid,'instrument':instrument['name'],'source':source,'disclaimer':DISCLAIMER}
+    bands=sorted(instrument.get('bands',[]),key=lambda x:float(x['minimum']));band='unclassified'
+    for row in bands:
+        if score>=float(row['minimum']):band=row['label']
+    crisis_items=[]
+    for item in items:
+        key=str(item.get('id'))
+        if item.get('urgent_if_at_or_above') is not None and float(answers[key])>=float(item['urgent_if_at_or_above']):crisis_items.append(key)
+    return {'mode':method,'status':'scored','instrument':instrument['name'],'instrument_version':instrument.get('version'),'score':score,'screening_band':band,'urgent_response_required':bool(crisis_items),'urgent_items':crisis_items,'source':source,'boundary':'A screen is not a diagnosis. A qualified clinician must assess history, duration, impairment, differential causes and immediate safety. Any urgent response follows local crisis/emergency policy now, not a future automated workflow.','disclaimer':DISCLAIMER}
+
+def mental_health_assessment(data:dict)->dict:
+    domains=data.get('domains',[]);safety=data.get('safety',{});sources=data.get('sources',[]);_require_citations(sources,'sources')
+    if not domains:raise ValueError('assessment domains required')
+    required={'suicidal_intent','self_harm_risk','harm_to_others','unable_to_care_for_self'};missing=sorted(required-set(safety))
+    urgent=[k for k,v in safety.items() if k in required and v is True]
+    return {'domains':[{'name':d.get('name'),'observations':d.get('observations',[]),'patient_words':d.get('patient_words'),'unknowns':d.get('unknowns',[]),'functional_impact':d.get('functional_impact')} for d in domains],'safety_status':'incomplete' if missing else 'urgent' if urgent else 'no_supplied_urgent_flag','missing_safety_fields':missing,'urgent_safety_flags':urgent,'sources':sources,'boundary':'Structured documentation, not diagnosis or a substitute for direct clinical interview. Urgent flags require immediate local crisis/emergency response and human assessment.','disclaimer':DISCLAIMER}
+
+def addiction_plan(data:dict)->dict:
+    assessment=data.get('assessment',{});goals=data.get('goals',[]);options=data.get('options',[]);source=data.get('source',{})
+    if not assessment or not goals or not source.get('source_url'):raise ValueError('assessment, patient goals and source_url required')
+    risks=[k for k in ['overdose_risk','dangerous_withdrawal_risk','suicidality'] if assessment.get(k) is True]
+    suitable=[o for o in options if assessment.get('readiness_stage') in o.get('readiness_stages',[]) and not set(o.get('contraindications',[]))&set(assessment.get('contraindications',[]))]
+    return {'patient_goals':goals,'readiness_stage':assessment.get('readiness_stage'),'candidate_options_for_shared_decision':suitable,'urgent_medical_review':bool(risks),'urgent_risk_factors':risks,'source':source,'boundary':'Draft for licensed addiction care and shared decision-making. Dangerous withdrawal, overdose or suicidality needs immediate human medical/crisis response; Atlas does not detoxify, prescribe or place a patient.','disclaimer':DISCLAIMER}
+
+def cognitive_profile(method:str,data:dict)->dict:
+    results=data.get('test_results',[]);source=data.get('source',{})
+    if not results or not source.get('source_url'):raise ValueError('test_results and source_url required')
+    rows=[]
+    for r in results:
+        if not r.get('domain') or 'score' not in r or 'norm_mean' not in r or not float(r.get('norm_sd',0)):raise ValueError('each result needs domain, score, norm_mean and nonzero norm_sd')
+        z=(float(r['score'])-float(r['norm_mean']))/float(r['norm_sd']);rows.append({'domain':r['domain'],'score':r['score'],'z_score':z,'norm_group':r.get('norm_group'),'validity_flags':r.get('validity_flags',[]),'interpretation':'below_expected' if z<=-1.5 else 'above_expected' if z>=1.5 else 'within_reference_range'})
+    return {'mode':method,'domain_profile':rows,'context':data.get('context',{}),'source':source,'boundary':'Descriptive comparison to the supplied norms only. A qualified neuropsychologist must assess test validity, language, education, culture, effort, function, medical causes and longitudinal change before interpretation or diagnosis.','disclaimer':DISCLAIMER}
+
+def psychotherapy_plan(method:str,data:dict)->dict:
+    formulation=data.get('formulation',{});goals=data.get('goals',[]);interventions=data.get('interventions',[]);source=data.get('source',{})
+    if not formulation or not goals or not source.get('source_url'):raise ValueError('formulation, collaborative goals and source_url required')
+    selected=[]
+    for i in interventions:
+        if set(i.get('targets',[]))&{g.get('target') for g in goals} and not set(i.get('contraindications',[]))&set(formulation.get('contraindications',[])):selected.append(i)
+    return {'mode':method,'collaborative_formulation':formulation,'goals':goals,'candidate_interventions':selected,'outcome_measures':data.get('outcome_measures',[]),'source':source,'approval_status':'draft_for_patient_and_licensed_therapist','boundary':'Collaborative planning aid only. It does not conduct psychotherapy, infer hidden mental states, or replace therapeutic alliance, consent, safety planning and clinician judgment.','disclaimer':DISCLAIMER}
+
+def dbt_skills(data:dict)->dict:
+    target=data.get('target');skills=data.get('skills',[]);source=data.get('source',{});crisis=data.get('crisis',False)
+    if not target or not skills or not source.get('source_url'):raise ValueError('target, skills and source_url required')
+    candidates=[s for s in skills if target in s.get('targets',[]) and not s.get('requires_supervision',False)]
+    return {'target':target,'candidate_skills':candidates,'crisis':bool(crisis),'source':source,'boundary':'Skills reference for clinician/patient selection, not crisis care. If crisis is present, use the agreed safety plan and immediate local crisis/emergency support instead of relying on this output.','disclaimer':DISCLAIMER}
+
+CLINICAL_EXTRA.update({
+ 'mental_health_assessment':mental_health_assessment,
+ 'depression_screening':lambda d:scored_screen('depression_screening',d),
+ 'anxiety_assessment':lambda d:scored_screen('anxiety_assessment',d),
+ 'ptsd_evaluation':lambda d:scored_screen('ptsd_evaluation',d),
+ 'addiction_treatment_planning':addiction_plan,
+ 'cognitive_assessment':lambda d:cognitive_profile('cognitive_assessment',d),
+ 'dementia_screening':lambda d:scored_screen('dementia_screening',d),
+ 'neuropsychological_testing':lambda d:cognitive_profile('neuropsychological_testing',d),
+ 'psychotherapy_planning':lambda d:psychotherapy_plan('psychotherapy_planning',d),
+ 'cbt_protocol_design':lambda d:psychotherapy_plan('cbt_protocol_design',d),
+ 'dbt_skill_selection':dbt_skills,
+})
