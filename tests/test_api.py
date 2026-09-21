@@ -43,4 +43,9 @@ def test_production_requires_tenant_identity(monkeypatch):
     monkeypatch.setenv("ATLAS_ENV", "production")
     assert client.get("/api/v1/modules").status_code == 401
     response = client.get("/api/v1/modules", headers={"x-atlas-tenant": "tenant-1", "x-atlas-actor": "user-1"})
-    assert response.status_code == 200
+    assert response.status_code == 401
+
+def test_provider_rejects_unsafe_model_identifier(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY","x")
+    response=client.post("/api/v1/ai/generate",json={"prompt":"hello","model":"bad/model"})
+    assert response.status_code==503 and response.json()["detail"]=="invalid model identifier"

@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
     env_file: [.env.production]
     environment: *atlas-env
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${ATLAS_API_WORKERS:-4}
+    command: sh -c "python scripts/migrate.py && uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${ATLAS_API_WORKERS:-4}"
     ports: ["8000:8000"]
     healthcheck: {test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"], interval: 30s, timeout: 5s, retries: 5}
     depends_on:
