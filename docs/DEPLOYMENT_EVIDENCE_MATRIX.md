@@ -1,27 +1,29 @@
 # Deployment evidence matrix
 
-| Capability | Locally proven | Needs credentials | Needs production observation |
+Default: paired owner PC, free-first. Paid Google Cloud is declined and is not a dependency.
+
+| Capability | Locally proven | Needs owner/account action | Needs production observation |
 |---|---|---|---|
-| Cloud Run service shape and config validation | YAML/static and tests | GCP project, Artifact Registry, runtime service account | revision health, autoscaling, cold starts |
-| Managed PostgreSQL / Redis references | URL validation and readiness contracts | Cloud SQL, Memorystore, IAM/network | failover, latency, capacity, restore drill |
-| Secret providers | injected fake-client tests; no committed values | Secret Manager IAM or a real Vault client/token | rotation and access-log evidence |
-| Tenant auth / rate limit / idempotency | isolated keyed behavior tests | production OIDC issuer and shared durable stores | attack traffic, cardinality and contention |
-| Timeouts/retries/circuit breaker | deterministic failure tests | dependency endpoints | outage behavior and tuned thresholds |
-| Structured logging / trace propagation | formatter/propagation tests | Cloud Logging and OTEL exporter config | trace continuity and sampling cost |
-| Backup and rollback | reviewed runbooks | provider backups and deploy permissions | timed restore and rollback drills |
-| CI/SBOM/scanning | workflow and local tests | GitHub Actions and registry | signed artifacts and scan history |
-| SLO/alerts/load tests | targets and harness | monitoring project and load environment | error budget, alert delivery, capacity curve |
+| Paired-PC container stack | Dockerfile and Compose validation | owner PC running Docker | uptime, thermals, network reachability |
+| Local PostgreSQL / Redis | health contracts and persistent volumes | owner disk/backup destination | restore drill, capacity and latency |
+| Optional free-tier host | portable container/config | owner-selected currently-free provider account | real quota, sleep behavior, uptime and egress |
+| Secret providers | injected provider tests; no committed values | local environment/OS vault; optional provider secret store | rotation and access logs |
+| Tenant auth / rate limit / idempotency | isolated keyed tests | production issuer/shared durable stores if public | attack traffic and contention |
+| Reliability/logging | deterministic failures and structured logs | optional exporter destination | outage behavior, trace continuity |
+| Backup/rollback | runbooks | owner backup destination | timed restore/rollback drill |
+| CI/SBOM/scanning | scripts/local tests | GitHub workflow permission | signed artifacts and scan history |
+| SLO/load tests | targets and bounded harness | chosen runtime | error budget and capacity curve |
 
-## Nine scale claims deliberately blocked
+## Claims deliberately blocked
 
-1. Cloud Run serving production traffic.
+1. Any paid GCP deployment or Cloud Run traffic beyond a confirmed free allowance.
 2. Kubernetes orchestration.
 3. Full service-to-service mTLS.
 4. Live HashiCorp Vault operation.
 5. Hosted Grafana dashboards.
-6. A 32 GB Ollama runtime.
+6. A 32 GB Ollama runtime without verified owner hardware.
 7. Proven autoscaling maximums.
-8. Tested Cloud SQL disaster recovery/RPO/RTO.
+8. Managed-cloud disaster recovery/RPO/RTO.
 9. Measured production load capacity.
 
-Each stays blocked until a real GCP project, budget, credentials or hardware evidence and production observations exist. Local manifests do not satisfy them.
+These stay blocked until real free capacity or owner hardware and production observations exist. Local manifests never satisfy them. Atlas must stop rather than incur a paid upgrade.
