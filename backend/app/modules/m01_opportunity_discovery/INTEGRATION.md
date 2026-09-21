@@ -121,3 +121,14 @@ patch deliberately does not include a `tests/modules/__init__.py` (several
 lanes would collide on it); pytest runs the file fine without one under the
 repo's `pythonpath = ["backend"]` config. Add one shared `__init__.py` (or
 none) at integration time.
+
+## 9. Consented first-party outcome ledger
+
+`outcome_ledger.py` records owner-scoped pending, waitlisted, awarded, declined,
+and withdrawn application outcomes. Every row requires explicit
+`application_outcome_history` consent evidence, row-level provenance, an expiry,
+and a bounded retention period. Revoking consent deletes all rows covered by
+that evidence; expiry purges them. Declines and awards use the same validation
+and provenance path. The ledger is advisory-only and deliberately has no
+training, feature export, or model-fitting API. A later training proposal needs
+fresh owner approval plus the multi-cycle and temporal-validation gates above.
