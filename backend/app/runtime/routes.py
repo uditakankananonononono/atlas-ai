@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter,HTTPException
 from app.modules.registry import IMPLEMENTED_SPECS
 router=APIRouter(prefix="/runtime",tags=["integrated-runtime"])
 @router.get("/coherence")
@@ -8,3 +8,14 @@ def coherence():
 # Current-evidence verification for the 13 assistant-capability audit surfaces.
 from .capability_audit_routes_13 import router as capability_audit_router_13
 router.include_router(capability_audit_router_13)
+
+from typing import Any
+from pydantic import BaseModel,Field
+from .technical_spec_100_132 import technical_spec_100_132
+class TechnicalSpec100To132In(BaseModel):
+    row:int=Field(ge=100,le=132)
+    data:dict[str,Any]=Field(default_factory=dict)
+@router.post('/technical-spec-100-132')
+def technical_spec_100_132_route(body:TechnicalSpec100To132In):
+    try:return technical_spec_100_132(body.row,body.data)
+    except ValueError as error:raise HTTPException(422,str(error)) from error
