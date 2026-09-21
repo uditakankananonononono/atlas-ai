@@ -1553,3 +1553,7 @@ _durable_runtime_repo = GCWRepository(atlas_engine, tenant_id="local")
 _durable_runtime_repo.create_schema()
 bind_runtime(GCWRuntime(_durable_runtime_repo))
 router.include_router(durable_runtime_router)
+
+# Unified tenant-scoped facade over specialized-domain executive cognition rows.
+from .specialized_domain_routes import router as specialized_domain_router
+router.include_router(specialized_domain_router)
