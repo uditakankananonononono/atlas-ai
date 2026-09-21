@@ -364,3 +364,73 @@ CLINICAL_EXTRA.update({
  'hospice_care_coordination':lambda d:palliative_plan('hospice_care_coordination',d),
  'pain_management':pain_plan,
 })
+
+def wound_care(data:dict)->dict:
+    observations=data.get('observations',[]);plan=data.get('plan',{});rules=data.get('escalation_rules',[]);source=data.get('source',{})
+    if not observations or not source.get('source_url'):raise ValueError('wound observations and source_url required')
+    ordered=sorted(observations,key=lambda x:x.get('observed_at',''));latest=ordered[-1];previous=ordered[-2] if len(ordered)>1 else None
+    changes={}
+    if previous:
+        for key in ('length_cm','width_cm','depth_cm'):
+            if key in latest and key in previous:changes[key]=float(latest[key])-float(previous[key])
+    flags=[]
+    for r in rules:
+        value=latest.get(r.get('field'))
+        if value is None:continue
+        hit=value==r.get('equals') if 'equals' in r else ('gt' in r and float(value)>float(r['gt'])) or ('lt' in r and float(value)<float(r['lt']))
+        if hit:flags.append({'field':r['field'],'reason':r.get('reason'),'next_step':r.get('next_step')})
+    return {'trajectory':ordered,'latest_dimension_changes_cm':changes,'current_clinician_plan':plan,'escalation_flags':flags,'source':source,'boundary':'Structured wound documentation and clinician-authored escalation rules only. Atlas cannot assess the wound directly, debride, culture, diagnose infection or select dressings/therapy.','disclaimer':DISCLAIMER}
+
+def infection_control(data:dict)->dict:
+    exposures=data.get('exposures',[]);policies=data.get('policies',[]);_require_citations(policies,'policies');recommendations=[]
+    for e in exposures:
+        matches=[]
+        for p in policies:
+            if p.get('pathogen')==e.get('pathogen') and p.get('setting')==e.get('setting'):matches.append({'policy_id':p.get('id'),'precautions':p.get('precautions',[]),'duration_rule':p.get('duration_rule'),'source_url':p['source_url'],'version':p.get('version')})
+        recommendations.append({'exposure':e,'matching_policies':matches,'status':'policy_match' if matches else 'unresolved'})
+    return {'exposure_reviews':recommendations,'boundary':'Current cited-policy lookup only. Infection prevention professionals confirm organism, transmission route, isolation, reporting and duration; unresolved exposures must not be treated as cleared.','disclaimer':DISCLAIMER}
+
+def antimicrobial_stewardship(data:dict)->dict:
+    order=data.get('antimicrobial_order',{});micro=data.get('microbiology',{});rules=data.get('rules',[]);_require_citations(rules,'rules')
+    if not order:raise ValueError('antimicrobial_order required')
+    findings=[]
+    for r in rules:
+        when=r.get('when',{});matches=all((order|micro).get(k)==v for k,v in when.items())
+        if matches:findings.append({'type':r.get('type'),'message':r.get('message'),'source_url':r['source_url'],'review_by':r.get('review_by','prescriber_or_pharmacist')})
+    missing=[x for x in ['indication','drug','dose','route','started_at','planned_review_at'] if not order.get(x)]
+    return {'order':order,'microbiology':micro,'missing_stewardship_fields':missing,'rule_findings':findings,'boundary':'Audit prompts, not prescribing. A qualified prescriber/pharmacist reviews diagnosis, cultures, allergies, organ function, dose, route, duration, de-escalation and local resistance data before any change.','disclaimer':DISCLAIMER}
+
+def vaccination_schedule(data:dict)->dict:
+    history=data.get('history',[]);recommendations=data.get('recommendations',[]);patient=data.get('patient',{});source=data.get('source',{})
+    if not recommendations or not source.get('source_url'):raise ValueError('cited recommendations required')
+    given={(x.get('vaccine'),x.get('dose_number')) for x in history};due=[];blocked=[]
+    for r in recommendations:
+        age=patient.get('age_years');eligible=(age is not None and float(r.get('min_age_years',0))<=float(age)<=float(r.get('max_age_years',999)))
+        row={**r,'already_recorded':(r.get('vaccine'),r.get('dose_number')) in given}
+        if set(r.get('contraindications',[]))&set(patient.get('contraindications',[])):blocked.append({**row,'reason':'contraindication_review'})
+        elif eligible and not row['already_recorded']:due.append(row)
+    return {'due_for_clinician_review':due,'blocked_for_review':blocked,'history_used':history,'source':source,'boundary':'Scheduling against supplied history and cited recommendations only. A clinician verifies records, age, indication, intervals, contraindications, precautions and current local guidance before administration.','disclaimer':DISCLAIMER}
+
+def preventive_care(method:str,data:dict)->dict:
+    profile=data.get('profile',{});recommendations=data.get('recommendations',[]);_require_citations(recommendations,'recommendations');due=[];unknown=[]
+    for r in recommendations:
+        eligible=True;missing=[]
+        for field,condition in r.get('eligibility',{}).items():
+            value=profile.get(field)
+            if value is None:missing.append(field);eligible=False;continue
+            if isinstance(condition,dict):
+                if 'minimum' in condition and float(value)<float(condition['minimum']):eligible=False
+                if 'maximum' in condition and float(value)>float(condition['maximum']):eligible=False
+            elif value!=condition:eligible=False
+        row={'service':r.get('service'),'source_url':r['source_url'],'grade':r.get('grade'),'shared_decision':r.get('shared_decision',False),'missing_fields':missing}
+        (unknown if missing else due if eligible else []).append(row)
+    return {'mode':method,'recommendations_for_review':due,'insufficient_information':unknown,'profile_used':profile,'boundary':'Cited population-guideline matching only. Clinicians and patients account for prior tests, symptoms, life expectancy, harms, preferences and local guidance; Atlas does not order or perform screening.','disclaimer':DISCLAIMER}
+
+CLINICAL_EXTRA.update({
+ 'wound_care':wound_care,
+ 'infection_control':infection_control,
+ 'antimicrobial_stewardship':antimicrobial_stewardship,
+ 'vaccination_scheduling':vaccination_schedule,
+ 'preventive_care_planning':lambda d:preventive_care('preventive_care_planning',d),
+ 'health_screening_recommendations':lambda d:preventive_care('health_screening_recommendations',d),
+})
