@@ -33,5 +33,6 @@ MODULES = [
     Module(22, "tools-hub", "Tools Discovery & Integration Hub", "implemented"),
     Module(23, "study-abroad", "Study Abroad Planner & Global Admissions Intelligence", "implemented"),
     Module(24, "billing", "Billing and Subscriptions", "implemented"),
+    Module(25, "knowledge-copilot-training", "Knowledge Copilot & Training", "implemented"),
 ]
 BY_ID = {module.id: module for module in MODULES}
