@@ -109,3 +109,14 @@ class Architecture635To684In(BaseModel):
 def architecture_635_684_route(body:Architecture635To684In,tenant_id:str=Depends(tenant)):
     try:return {'tenant_id':tenant_id,**architecture_support_635_684(body.feature_id,body.data)}
     except ValueError as error:raise HTTPException(422,str(error)) from error
+
+@router.post('/semantic-engines-575-584/{row_id}')
+def semantic_engines_575_584(row_id:int,payload:dict):
+    from .semantic_engines_575_584 import run
+    try:return run(row_id,payload)
+    except (ValueError,TypeError,KeyError,ZeroDivisionError) as exc:raise HTTPException(status_code=422,detail=str(exc)) from exc
+@router.post('/semantic-architecture-635-684/{row_id}')
+def semantic_architecture_635_684(row_id:int,payload:dict):
+ from .semantic_architecture_635_684 import run
+ try:return run(row_id,payload)
+ except (ValueError,TypeError,KeyError,ZeroDivisionError) as exc:raise HTTPException(422,str(exc)) from exc

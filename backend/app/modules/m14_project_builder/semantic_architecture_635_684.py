@@ -1,0 +1,41 @@
+"""Distinct semantic invariants for architecture rows 635-684."""
+from __future__ import annotations
+from typing import Any
+ROW_NAMES=['SLO/SLI Definition','Error Budgets','Incident Management','Post-Mortem Analysis','Runbook Creation','On-Call Rotation','Capacity Planning','Cost Optimization','Resource Scheduling','Job Queuing','Workflow Orchestration','DAG Scheduling','Cron Jobs','Event Sourcing','CQRS','Saga Pattern','Two-Phase Commit','Idempotency','Exactly-Once Semantics','At-Least-Once Semantics','Dead Letter Queue','Retry Logic','Backoff Strategy','Bulkhead Pattern','Sidecar Pattern','Ambassador Pattern','Adapter Pattern','Facade Pattern','Observer Pattern','Strategy Pattern','Factory Pattern','Singleton Pattern','Dependency Injection','Inversion of Control','Repository Pattern','Unit of Work','Domain-Driven Design','Bounded Context','Ubiquitous Language','Aggregate Design','Entity Design','Value Object Design','Domain Event','Anti-Corruption Layer','Hexagonal Architecture','Clean Architecture','Onion Architecture','Ports and Adapters','Functional Core, Imperative Shell','Event Storming']
+NAMES={635+i:x for i,x in enumerate(ROW_NAMES)}
+def need(d,*ks):
+ m=[k for k in ks if k not in d or d[k] in ('',None)];
+ if m:raise ValueError('missing required fields: '+', '.join(m))
+def run(row:int,d:dict[str,Any]):
+ if row not in NAMES:raise ValueError('row must be 635-684')
+ if row==635:need(d,'indicators');r={'indicators':[dict(x,valid=all(k in x for k in ('name','good_events','valid_events','target','window'))) for x in d['indicators']],'slo_is_target_not_measurement':True}
+ elif row==636:need(d,'target','total_events','bad_events');allowed=float(d['total_events'])*(1-float(d['target']));r={'allowed_bad_events':allowed,'remaining':allowed-float(d['bad_events']),'exhausted':float(d['bad_events'])>allowed}
+ elif row==637:need(d,'severity','roles','timeline');r={'severity':d['severity'],'roles':d['roles'],'timeline':d['timeline'],'commander_present':'incident_commander' in d['roles'],'status_updates':d.get('status_updates',[]),'mitigation_executed':False}
+ elif row==638:need(d,'facts','contributing_factors','actions');r={'facts':d['facts'],'contributing_factors':d['contributing_factors'],'actions':[dict(x,owned=bool(x.get('owner') and x.get('due'))) for x in d['actions']],'blameless':True,'root_cause_person_forbidden':True}
+ elif row==639:need(d,'trigger','steps','verification','rollback');r={'trigger':d['trigger'],'steps':d['steps'],'verification':d['verification'],'rollback':d['rollback'],'complete':all([d['trigger'],d['steps'],d['verification'],d['rollback']])}
+ elif row==640:need(d,'people','shifts');r={'shifts':d['shifts'],'uncovered': [x for x in d['shifts'] if not x.get('primary')],'people':d['people'],'handoff_required':True}
+ elif row==641:need(d,'current_capacity','growth_rate','periods');r={'forecast':[float(d['current_capacity'])*(1+float(d['growth_rate']))**i for i in range(1,int(d['periods'])+1)],'headroom':d.get('headroom')}
+ elif row==642:need(d,'options');r={'options':[dict(x,net_savings=float(x.get('savings',0))-float(x.get('migration_cost',0)),service_risk=x.get('service_risk')) for x in d['options']],'slo_regression_forbidden':True}
+ elif row==643:need(d,'resources','jobs');r={'allocations':[dict(j,fits=all(float(j.get('requests',{}).get(k,0))<=float(d['resources'].get(k,0)) for k in j.get('requests',{}))) for j in d['jobs']],'overcommit_not_scheduled':True}
+ elif row==644:need(d,'jobs');r={'queue_order':[x['id'] for x in sorted(d['jobs'],key=lambda x:(-int(x.get('priority',0)),x.get('enqueued_at','')))],'fairness_key':d.get('fairness_key')}
+ elif row in {645,646}:need(d,'nodes','edges');ids=set(d['nodes']);bad=[e for e in d['edges'] if e['from'] not in ids or e['to'] not in ids];r={'nodes':d['nodes'],'edges':d['edges'],'invalid_edges':bad,'acyclicity_must_be_checked':True,'orchestration' if row==645 else 'dag':'explicit_dependencies'}
+ elif row==647:need(d,'expression','timezone');parts=str(d['expression']).split();r={'expression':d['expression'],'timezone':d['timezone'],'field_count':len(parts),'valid_shape':len(parts) in {5,6},'dst_policy':d.get('dst_policy')}
+ elif row==648:need(d,'events');r={'events':d['events'],'append_only':True,'rebuild_order':[x.get('sequence') for x in d['events']],'event_versions_required':all(x.get('version') for x in d['events'])}
+ elif row==649:need(d,'commands','queries');r={'commands':d['commands'],'queries':d['queries'],'separate_models':True,'eventual_consistency_visible':d.get('eventual_consistency_visible',False)}
+ elif row==650:need(d,'steps');r={'steps':[dict(x,compensatable=bool(x.get('compensation'))) for x in d['steps']],'uncompensated':[x.get('id') for x in d['steps'] if not x.get('compensation')],'atomicity_not_claimed':True}
+ elif row==651:need(d,'participants');r={'participants':d['participants'],'phases':['prepare','commit_or_abort'],'blocking_coordinator_failure':True,'timeouts':d.get('timeouts',{})}
+ elif row==652:need(d,'requests');seen=set();out=[]
+ elif row in {653,654}:need(d,'messages');r={'semantics':'exactly-once-effect' if row==653 else 'at-least-once-delivery','messages':d['messages'],'deduplication_required':row==653,'duplicates_possible':row==654,'end_to_end_guarantee_not_inferred':True}
+ elif row==655:need(d,'messages','max_attempts');r={'dead_letter_ids':[x['id'] for x in d['messages'] if int(x.get('attempts',0))>=int(d['max_attempts'])],'replay_requires_review':True,'original_error_preserved':True}
+ elif row==656:need(d,'error','attempt','max_attempts');transient=bool(d['error'].get('transient'));r={'retry':transient and int(d['attempt'])<int(d['max_attempts']),'transient':transient,'idempotency_required':True}
+ elif row==657:need(d,'attempt','base_seconds','cap_seconds');r={'delay_seconds':min(float(d['cap_seconds']),float(d['base_seconds'])*2**(int(d['attempt'])-1)),'jitter_required':True}
+ elif row==658:need(d,'pools');r={'pools':d['pools'],'isolated':len({x.get('resource') for x in d['pools']})==len(d['pools']),'shared_exhaustion_warning':True}
+ elif row in {659,660,661,662,663,664,665,666,667,668,669,670}:
+  need(d,'components');invariants={659:'sidecar shares lifecycle, not business ownership',660:'ambassador owns outbound proxy concerns',661:'adapter translates incompatible interface',662:'facade simplifies multiple subsystem calls',663:'observer publishes without knowing concrete subscribers',664:'strategy swaps behavior behind one contract',665:'factory centralizes creation choice',666:'singleton enforces process-local instance only',667:'dependencies supplied from composition root',668:'framework calls application hooks, not reverse',669:'repository exposes domain collection semantics',670:'unit of work commits or rolls back tracked changes'};r={'components':d['components'],'pattern_invariant':invariants[row],'interfaces':d.get('interfaces',[]),'misuse_checks':d.get('misuse_checks',[])}
+ else:
+  need(d,'model');invariants={671:'domain model reflects expert language and behavior',672:'context owns its model and translation boundary',673:'same terms have explicit context meanings',674:'aggregate root protects transactional invariants',675:'entity continuity comes from identity, not attributes',676:'value object equality is structural and immutable',677:'domain event names a past fact with aggregate/version',678:'ACL translates external model into internal language',679:'core depends on ports; adapters depend inward',680:'source dependencies point toward enterprise/application rules',681:'outer layers depend inward; domain has no outer dependency',682:'ports define use cases; adapters implement technology edges',683:'pure deterministic decisions return effects for imperative shell',684:'commands, events, actors, policies, read models and hotspots stay distinct'};r={'model':d['model'],'distinctive_invariant':invariants[row],'violations':d.get('violations',[]),'expert_review_required':row in range(671,685)}
+ if row==652:
+  for x in d['requests']:
+   k=x.get('key');out.append({'key':k,'duplicate':k in seen});seen.add(k)
+  r={'requests':out,'side_effects_once_per_key':True,'missing_keys':[x for x in d['requests'] if not x.get('key')]}
+ return {'row':row,'concept':NAMES[row],'result':r,'implementation_or_operation_performed':False}
