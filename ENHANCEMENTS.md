@@ -65,5 +65,5 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** pre-commit commitment preview binds plan, USD currency, quantity, renewal interval, caller-supplied tax, cancellation policy/deadline and exact charge into a content hash; it refuses guessed FX and never executes payment.
 - **Next:** bind the approved preview hash to checkout execution and reconcile Stripe’s final amount before commit.
 ## M25 - Knowledge Copilot & Training
-- **Landed:** mounted contradiction review and claim-substantiation endpoints expose existing citation and provenance checks.
-- **Next:** common artifact-ingestion event contract adopted by every module, plus device capture adapter for the visible copilot.
+- **Landed:** mounted contradiction review and claim-substantiation endpoints plus a common M00-M25 artifact provenance event validator with canonical event hashing and receipt requirements for executed/verified states.
+- **Next:** persist/deduplicate provenance events, verify source bytes and adopt the contract at every producer plus a device capture adapter.
