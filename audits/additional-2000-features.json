@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1463,
-    "verified-pushed": 544,
+    "missing": 1458,
+    "verified-pushed": 549,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -14162,8 +14162,12 @@
       "category": "Data & Analytics",
       "requirement": "Stacking",
       "description": "Meta-ensemble",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9306caca87235dd035b42f2a31a4d05bd0c84cb",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1098_1102.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14172,8 +14176,12 @@
       "category": "Data & Analytics",
       "requirement": "Blending",
       "description": "Holdout ensemble",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9306caca87235dd035b42f2a31a4d05bd0c84cb",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1098_1102.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14182,8 +14190,12 @@
       "category": "Data & Analytics",
       "requirement": "Bagging",
       "description": "Bootstrap aggregating",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9306caca87235dd035b42f2a31a4d05bd0c84cb",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1098_1102.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14192,8 +14204,12 @@
       "category": "Data & Analytics",
       "requirement": "Pasting",
       "description": "Small sample ensemble",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9306caca87235dd035b42f2a31a4d05bd0c84cb",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1098_1102.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14202,8 +14218,12 @@
       "category": "Data & Analytics",
       "requirement": "Voting Classifiers",
       "description": "Majority vote",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "d9306caca87235dd035b42f2a31a4d05bd0c84cb",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1098_1102.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
