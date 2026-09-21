@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1398,
-    "verified-pushed": 609,
+    "missing": 1392,
+    "verified-pushed": 615,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -15072,9 +15072,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Wound Care",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "56945b02901b403fe6fcbf74c5dacaa51674295e",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1163_1168.py"
+      },
+      "boundary": "Cited documentation, policy lookup and clinician-review support only. Preserve wound trajectories, unresolved exposures, antimicrobial audit gaps, vaccine history/contraindications, screening eligibility and unknowns. Licensed professionals confirm infection, isolation, prescribing, administration and preventive-care decisions; Atlas performs none of them."
     },
     {
       "id": 1164,
@@ -15082,9 +15086,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Infection Control",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "56945b02901b403fe6fcbf74c5dacaa51674295e",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1163_1168.py"
+      },
+      "boundary": "Cited documentation, policy lookup and clinician-review support only. Preserve wound trajectories, unresolved exposures, antimicrobial audit gaps, vaccine history/contraindications, screening eligibility and unknowns. Licensed professionals confirm infection, isolation, prescribing, administration and preventive-care decisions; Atlas performs none of them."
     },
     {
       "id": 1165,
@@ -15092,9 +15100,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Antimicrobial Stewardship",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "56945b02901b403fe6fcbf74c5dacaa51674295e",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1163_1168.py"
+      },
+      "boundary": "Cited documentation, policy lookup and clinician-review support only. Preserve wound trajectories, unresolved exposures, antimicrobial audit gaps, vaccine history/contraindications, screening eligibility and unknowns. Licensed professionals confirm infection, isolation, prescribing, administration and preventive-care decisions; Atlas performs none of them."
     },
     {
       "id": 1166,
@@ -15102,9 +15114,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Vaccination Scheduling",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "56945b02901b403fe6fcbf74c5dacaa51674295e",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1163_1168.py"
+      },
+      "boundary": "Cited documentation, policy lookup and clinician-review support only. Preserve wound trajectories, unresolved exposures, antimicrobial audit gaps, vaccine history/contraindications, screening eligibility and unknowns. Licensed professionals confirm infection, isolation, prescribing, administration and preventive-care decisions; Atlas performs none of them."
     },
     {
       "id": 1167,
@@ -15112,9 +15128,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Preventive Care Planning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "56945b02901b403fe6fcbf74c5dacaa51674295e",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1163_1168.py"
+      },
+      "boundary": "Cited documentation, policy lookup and clinician-review support only. Preserve wound trajectories, unresolved exposures, antimicrobial audit gaps, vaccine history/contraindications, screening eligibility and unknowns. Licensed professionals confirm infection, isolation, prescribing, administration and preventive-care decisions; Atlas performs none of them."
     },
     {
       "id": 1168,
@@ -15122,9 +15142,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Health Screening Recommendations",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "56945b02901b403fe6fcbf74c5dacaa51674295e",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1163_1168.py"
+      },
+      "boundary": "Cited documentation, policy lookup and clinician-review support only. Preserve wound trajectories, unresolved exposures, antimicrobial audit gaps, vaccine history/contraindications, screening eligibility and unknowns. Licensed professionals confirm infection, isolation, prescribing, administration and preventive-care decisions; Atlas performs none of them."
     },
     {
       "id": 1169,
