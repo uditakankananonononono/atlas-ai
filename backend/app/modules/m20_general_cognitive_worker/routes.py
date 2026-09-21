@@ -1487,3 +1487,7 @@ router.include_router(political_social_router_1760_1809)
 # Mechanical engineering analysis rows 1510-1559.
 from .engineering_routes_1510_1559 import router as engineering_router_1510_1559
 router.include_router(engineering_router_1510_1559)
+
+# Learning and reasoning workbench, owner-ledger rows 810-859.
+from .learning_reasoning_routes_810_859 import router as learning_reasoning_router_810_859
+router.include_router(learning_reasoning_router_810_859)
