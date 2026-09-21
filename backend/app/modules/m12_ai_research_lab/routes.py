@@ -61,3 +61,13 @@ router.include_router(research_methods_router_135_184)
 # Emerging biomedical support rows 960-1009.
 from .emerging_biomed_routes_960_1009 import router as emerging_biomed_router_960_1009
 router.include_router(emerging_biomed_router_960_1009)
+
+# Semantic-verification repair for specialized engineering rows 1560-1609.
+from .engineering_semantic_fixes_1560_1609 import engineering_semantic_1560_1609
+class EngineeringSemanticIn(BaseModel):
+    feature_id:int
+    data:dict=Field(default_factory=dict)
+@router.post('/engineering-1560-1609/semantic-support')
+def engineering_semantic_route(body:EngineeringSemanticIn,tenant:TenantContext=Depends(require_tenant)):
+    try:return {'tenant_id':tenant.tenant_id,**engineering_semantic_1560_1609(body.feature_id,body.data)}
+    except (ValueError,TypeError,KeyError,ZeroDivisionError) as exc:raise HTTPException(422,str(exc)) from exc
