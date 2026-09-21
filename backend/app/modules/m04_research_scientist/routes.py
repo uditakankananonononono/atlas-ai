@@ -93,3 +93,17 @@ def expanded_211_258(row_id:int,payload:dict):
  from .expanded_211_258 import run
  try:return run(row_id,payload)
  except (ValueError,TypeError,KeyError) as exc:raise HTTPException(status_code=422,detail=str(exc)) from exc
+
+# Owner-ledger environmental and sustainability analyses, rows 1660-1709.
+from typing import Any
+from pydantic import BaseModel, Field
+from .environmental_1660_1709 import execute_environmental_row
+class Environmental1660To1709In(BaseModel):
+    data: dict[str, Any] = Field(default_factory=dict)
+@router.post('/environmental-1660-1709/{row_id}')
+def environmental_1660_1709_route(row_id:int, body:Environmental1660To1709In, tenant:TenantContext=Depends(require_tenant)):
+    try:
+        result=execute_environmental_row(row_id,body.data)
+        return {'tenant_id':tenant.tenant_id,'actor_id':tenant.actor_id,**result}
+    except (ValueError,TypeError,KeyError,ZeroDivisionError) as exc:
+        raise HTTPException(422,str(exc)) from exc

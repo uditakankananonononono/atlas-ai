@@ -21,17 +21,29 @@ def run(method,data,seed=0):
  rng=random.Random(seed); limits=["Reference-scale, deterministic decision support on supplied data; no external retrieval, execution, or claim of human cognition."]
  if method=="graph_of_thought":
   nodes=data.get("nodes");edges=data.get("edges");start=data.get("start");goal=data.get("goal")
-  if not isinstance(nodes,list) or start not in nodes or goal not in nodes:raise ValueError("nodes/start/goal required")
-  adj=defaultdict(list)
-  for a,b,c in edges:adj[a].append((b,float(c)))
-  dist={start:0};prev={};todo=set(nodes)
+  if not isinstance(nodes,list) or not nodes or start not in nodes or goal not in nodes:raise ValueError("nodes/start/goal required")
+  if not isinstance(edges,list):raise ValueError("edges must be a list")
+  known=set(nodes);adj=defaultdict(list)
+  for e in edges:
+   if not isinstance(e,(list,tuple)) or len(e)!=3:raise ValueError("each edge must be [from,to,cost]")
+   a,b,c=e
+   if a not in known or b not in known:raise ValueError("edge references undeclared node")
+   c=float(c)
+   if not math.isfinite(c) or c<0:raise ValueError("edge costs must be finite and non-negative for shortest-path search")
+   adj[a].append((b,c))
+  dist={start:0.0};prev={};todo=set(nodes)
   while todo:
-   u=min(todo,key=lambda x:dist.get(x,math.inf));todo.remove(u)
+   u=min(todo,key=lambda x:dist.get(x,math.inf))
+   if dist.get(u,math.inf)==math.inf:break
+   todo.remove(u)
    for v,c in adj[u]:
-    if dist[u]+c<dist.get(v,math.inf):dist[v]=dist[u]+c;prev[v]=u
-  path=[];u=goal
-  while u in prev:path.append(u);u=prev[u]
-  path.append(start);out={"best_path":path[::-1],"cost":dist.get(goal,math.inf),"evaluated_nodes":len(dist)}
+    if v in todo and dist[u]+c<dist.get(v,math.inf):dist[v]=dist[u]+c;prev[v]=u
+  if goal in dist:
+   path=[];u=goal
+   while u in prev:path.append(u);u=prev[u]
+   path.append(start);path=path[::-1];cost=dist[goal]
+  else:path=None;cost=math.inf
+  out={"best_path":path,"cost":cost,"reachable":goal in dist,"evaluated_nodes":len(dist)}
  elif method=="self_consistency":
   answers=data.get("answers")
   if not isinstance(answers,list) or not answers:raise ValueError("answers required")
@@ -57,7 +69,7 @@ def run(method,data,seed=0):
   q=_vec(data,"query_embedding");items=data.get("items");ranked=sorted([{"id":x["id"],"score":_cos(q,list(map(float,x["embedding"])))} for x in items],key=lambda x:x["score"],reverse=True);out={"results":ranked}
  elif method in {"knowledge_graphs","linked_data"}:
   triples=data.get("triples");subject=data.get("subject")
-  if not isinstance(triples,list):raise ValueError("triples required")
+  if not isinstance(triples,list) or any(not isinstance(t,(list,tuple)) or len(t)!=3 for t in triples):raise ValueError("triples must be [subject,predicate,object] lists")
   matched=[{"subject":s,"predicate":p,"object":o} for s,p,o in triples if subject is None or s==subject];out={"triples":matched,"entity_count":len(set(x for t in triples for x in (t[0],t[2]))),"predicate_count":len(set(t[1] for t in triples))}
  elif method=="ontologies":
   parent=data.get("parent_map");concept=data.get("concept")
@@ -100,12 +112,15 @@ def run(method,data,seed=0):
    words=str(t).lower().split();s=sum(w.strip(".,!") in pos for w in words)-sum(w.strip(".,!") in neg for w in words);scored.append({"text":t,"score":s,"label":"positive" if s>0 else "negative" if s<0 else "neutral"})
   out={"opinions":scored,"net_sentiment":sum(x["score"] for x in scored)}
  elif method=="social_computing":
-  edges=data.get("edges");degree=Counter()
+  edges=data.get("edges")
+  if not isinstance(edges,list) or any(not isinstance(e,(list,tuple)) or len(e)!=2 for e in edges):raise ValueError("edges must be a list of [a,b] pairs")
+  degree=Counter()
   for a,b in edges:degree[a]+=1;degree[b]+=1
   out={"degree_centrality":dict(degree),"most_connected":degree.most_common(1)[0][0] if degree else None,"edge_count":len(edges)}
  elif method in {"crowdsourcing","human_computation","collective_intelligence"}:
   responses=data.get("responses")
   if not isinstance(responses,list) or not responses:raise ValueError("responses required")
+  if any(not isinstance(x,dict) or "answer" not in x for x in responses):raise ValueError("each response requires an answer")
   tally=defaultdict(float)
   for x in responses:tally[str(x["answer"])]+=float(x.get("weight",1))
   total=sum(tally.values());winner=max(tally,key=tally.get);out={"aggregate_answer":winner,"weighted_support":tally[winner]/total,"weighted_tally":dict(tally),"contributors":len(responses)}
@@ -117,7 +132,7 @@ def run(method,data,seed=0):
   out={"best_candidate":min(population,key=lambda x:abs(x-target)),"best_distance":min(abs(x-target) for x in population),"history":history}
  elif method=="genetic_programming":
   candidates=data.get("candidate_coefficients");x=_vec(data,"x");y=_vec(data,"y")
-  if not isinstance(candidates,list) or len(x)!=len(y):raise ValueError("candidate coefficients and aligned data required")
+  if not isinstance(candidates,list) or not candidates or len(x)!=len(y):raise ValueError("non-empty candidate coefficients and aligned data required")
   scored=[]
   for c in candidates:
    pred=[sum(float(a)*z**i for i,a in enumerate(c)) for z in x];scored.append((sum((a-b)**2 for a,b in zip(pred,y))/len(y),c))
@@ -144,6 +159,8 @@ def run(method,data,seed=0):
   out={"chosen_indices":chosen,"objective_value":sum(values[i] for i in chosen),"used_budget":budget-remaining,"method":"greedy_integer_knapsack"};limits += ["Greedy solution is feasible but not guaranteed globally optimal."]
  elif method=="decision_science":
   options=data.get("options");weights=_vec(data,"weights")
+  if not isinstance(options,list) or not options or any(not isinstance(x,dict) or "name" not in x or not isinstance(x.get("criteria"),list) for x in options):raise ValueError("options require name and criteria list")
+  if any(len(x["criteria"])!=len(weights) for x in options):raise ValueError("each option's criteria must align with weights")
   scored=[{"name":x["name"],"score":sum(float(a)*b for a,b in zip(x["criteria"],weights))} for x in options];out={"ranked":sorted(scored,key=lambda x:x["score"],reverse=True)}
  elif method in {"systems_science","complexity_science","network_science"}:
   nodes=data.get("nodes");edges=data.get("edges");deg=Counter()
