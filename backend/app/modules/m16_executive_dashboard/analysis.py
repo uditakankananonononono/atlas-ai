@@ -889,4 +889,6 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
             errors=[predictions[i]-targets[i] for i in ids];folds.append({"fold":fold,"n":len(ids),"mse":_mean([e*e for e in errors]),"mae":_mean([abs(e) for e in errors])})
         total=len(targets);weighted=sum(f["n"]*f["mse"] for f in folds)/total;o["output"]={"k":k,"fold_metrics":folds,"weighted_mse":weighted,"mean_fold_mse":_mean([f["mse"] for f in folds]),"fold_size_range":[min(f["n"] for f in folds),max(f["n"] for f in folds)],"every_row_held_out_once":True};a += ["Each row appears in exactly one holdout fold; preprocessing/model selection is nested inside training folds; iid rows unless grouped/time-aware splitting is used upstream."];limits += ["Evaluates supplied predictions and fold membership; does not stratify/group/order data or perform nested CV."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
+    o["evaluation"]={"algorithm_executed":True,"output_fields":sorted(o["output"]),"assumption_count":len(a),"limit_count":len(limits),"seed":seed}
+    o["uncertainty"]={"assumptions":a,"method_limits":limits,"causal_claim":False,"external_validity_established":False,"input_data_independently_verified":False}
     return o

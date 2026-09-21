@@ -49,10 +49,15 @@ def dosage(data:dict)->dict:
 def clinical_support(method:str,data:dict)->dict:
     methods={'differential_diagnosis':differential,'treatment_protocol_selection':protocol,'drug_interaction_check':interactions,'dosage_calculation':dosage}
     if method=='clinical_decision_support':
-        return {'sections':{'differential':differential(data['differential']) if data.get('differential') else None,'protocols':protocol(data['protocols']) if data.get('protocols') else None,'interactions':interactions(data['interactions']) if data.get('interactions') else None,'dosage':dosage(data['dosage']) if data.get('dosage') else None},'disclaimer':DISCLAIMER}
-    if method in CLINICAL_EXTRA:return CLINICAL_EXTRA[method](data)
-    if method not in methods:raise ValueError('unsupported clinical support method')
-    return methods[method](data)
+        result={'sections':{'differential':differential(data['differential']) if data.get('differential') else None,'protocols':protocol(data['protocols']) if data.get('protocols') else None,'interactions':interactions(data['interactions']) if data.get('interactions') else None,'dosage':dosage(data['dosage']) if data.get('dosage') else None},'disclaimer':DISCLAIMER}
+    elif method in CLINICAL_EXTRA:result=CLINICAL_EXTRA[method](data)
+    elif method in methods:result=methods[method](data)
+    else:raise ValueError('unsupported clinical support method')
+    result=dict(result)
+    urgent=bool(result.get('immediate_human_response_required') or result.get('urgent') or result.get('red_flags'))
+    result['evaluation']={'method_executed':method,'input_fields':sorted(data),'output_fields':sorted(result),'qualified_clinician_review_required':True,'urgent_human_response_required':urgent}
+    result['uncertainty']={'caller_supplied_data_not_independently_verified':True,'diagnosis_or_treatment_authorized':False,'patient_exam_performed':False,'missing_or_unknown_fields':result.get('missing_safety_fields',result.get('unknowns',[]))}
+    return result
 
 def imaging_support(method:str,data:dict)->dict:
     """Validate externally-produced measurements/findings; no pixel-level diagnosis."""
