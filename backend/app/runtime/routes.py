@@ -1,16 +1,35 @@
-from fastapi import APIRouter,HTTPException
+from fastapi import APIRouter,HTTPException,Depends
+from typing import Any
+from pydantic import BaseModel,Field
+from app.auth.context import TenantContext,require_tenant
+from .integration import Handoff,RuntimeContext
+from .production import runtime
 from app.modules.registry import IMPLEMENTED_SPECS
 router=APIRouter(prefix="/runtime",tags=["integrated-runtime"])
 @router.get("/coherence")
 def coherence():
  return {"shared_api":True,"mounted_modules":[x.id for x in IMPLEMENTED_SPECS],"shared_tenant_context":True,"shared_approval_boundary":True,"shared_workers":True,"handoff_contract":"app.runtime.integration.Handoff","integrated_workflows":["opportunity-to-application","research-to-document"]}
 
+class RuntimeDispatchIn(BaseModel):
+    source_module:int=Field(ge=0,le=25)
+    target_module:int=Field(ge=0,le=25)
+    operation:str=Field(min_length=1,max_length=100)
+    payload:dict[str,Any]=Field(default_factory=dict)
+    evidence:list[dict[str,Any]]=Field(default_factory=list)
+    requires_approval:bool=False
+@router.get('/topology')
+def runtime_topology(): return runtime.topology()
+@router.post('/dispatch')
+async def runtime_dispatch(body:RuntimeDispatchIn,tenant:TenantContext=Depends(require_tenant)):
+    try:
+        return await runtime.dispatch(RuntimeContext(tenant.tenant_id,tenant.actor_id,__import__('uuid').uuid4().hex),Handoff(**body.model_dump()))
+    except LookupError as error: raise HTTPException(404,str(error)) from error
+    except (ValueError,PermissionError) as error: raise HTTPException(422,str(error)) from error
+
 # Current-evidence verification for the 13 assistant-capability audit surfaces.
 from .capability_audit_routes_13 import router as capability_audit_router_13
 router.include_router(capability_audit_router_13)
 
-from typing import Any
-from pydantic import BaseModel,Field
 from .technical_spec_100_132 import technical_spec_100_132
 class TechnicalSpec100To132In(BaseModel):
     row:int=Field(ge=100,le=132)
