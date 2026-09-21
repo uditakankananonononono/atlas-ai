@@ -27,7 +27,7 @@
         "implementation_path": "backend/app/modules/m21_claire/universal_creator_row_1.py",
         "test_path": "tests/modules/test_m21_universal_creator_row_1.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Draft and research support only. Any external submission, signup, message, purchase, account change or other representation requires exact-preview human review; never evade detection, fabricate evidence, misstate completion or claim unavailable capability."
     },
     {
       "id": 2,
