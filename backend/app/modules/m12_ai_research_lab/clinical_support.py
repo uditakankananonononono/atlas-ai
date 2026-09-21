@@ -158,3 +158,43 @@ def triage_support(data:dict)->dict:
 for _m in ['readmission_prediction','sepsis_early_warning','mortality_prediction','length_of_stay_prediction','icu_resource_allocation']:
     CLINICAL_EXTRA[_m]=lambda d,m=_m:validated_score(m,d)
 CLINICAL_EXTRA['emergency_triage']=triage_support
+
+def care_plan(method:str,data:dict)->dict:
+    goals=data.get('goals',[]);interventions=data.get('interventions',[]);baseline=data.get('baseline',{});source=data.get('source',{})
+    if not goals or not interventions or not source.get('source_url'):raise ValueError('goals, interventions and source_url required')
+    rows=[]
+    for g in goals:
+        if not g.get('id') or not g.get('measure') or 'target' not in g:raise ValueError('each goal needs id, measure and target')
+        linked=[i for i in interventions if g['id'] in i.get('goal_ids',[])];rows.append({'goal_id':g['id'],'measure':g['measure'],'baseline':baseline.get(g['measure']),'target':g['target'],'time_horizon':g.get('time_horizon'),'linked_interventions':linked,'review_cadence':g.get('review_cadence'),'stop_or_escalate_criteria':g.get('stop_or_escalate_criteria',[])})
+    return {'mode':method,'goals':rows,'unlinked_interventions':[i for i in interventions if not i.get('goal_ids')],'source':source,'approval_status':'draft_for_multidisciplinary_review','boundary':'Planning structure only. The treating team and patient choose, authorize, adapt and stop interventions.','disclaimer':DISCLAIMER}
+
+def anesthesia_monitoring(data:dict)->dict:
+    observations=data.get('observations',[]);thresholds=data.get('thresholds',[]);_require_citations(thresholds,'thresholds')
+    if not observations:raise ValueError('observations required')
+    alerts=[]
+    for obs in observations:
+        for t in thresholds:
+            if obs.get('metric')!=t.get('metric'):continue
+            value=float(obs['value']);trigger=('lt' in t and value<float(t['lt'])) or ('gt' in t and value>float(t['gt']))
+            if trigger:alerts.append({'metric':obs['metric'],'value':value,'observed_at':obs.get('observed_at'),'severity':t.get('severity'),'response_protocol':t.get('response_protocol'),'source_url':t['source_url']})
+    return {'alerts_for_anesthesia_team':alerts,'observations_checked':len(observations),'boundary':'Supplemental threshold surveillance only. It does not control equipment, administer drugs or replace continuous anesthesiologist monitoring.','disclaimer':DISCLAIMER}
+
+def postop(data:dict)->dict:
+    observations=data.get('observations',{});milestones=data.get('milestones',[]);escalation=data.get('escalation_rules',[]);_require_citations(escalation,'escalation_rules');status=[]
+    for m in milestones:status.append({'milestone':m.get('name'),'target_by':m.get('target_by'),'observed':observations.get(m.get('measure')),'met':observations.get(m.get('measure'))==m.get('target') if m.get('measure') in observations else None})
+    flags=[]
+    for r in escalation:
+        value=observations.get(r.get('metric'))
+        if value is None:continue
+        if ('lt' in r and float(value)<float(r['lt'])) or ('gt' in r and float(value)>float(r['gt'])):flags.append({'metric':r['metric'],'value':value,'reason':r.get('reason'),'next_step':r.get('next_step'),'source_url':r['source_url']})
+    return {'milestone_status':status,'escalation_flags':flags,'boundary':'Tracking and escalation prompts only. The surgical team controls discharge, medication and intervention decisions.','disclaimer':DISCLAIMER}
+
+def therapy_design(method:str,data:dict)->dict:
+    assessment=data.get('assessment',{});goals=data.get('goals',[]);activities=data.get('activities',[]);source=data.get('source',{})
+    if not assessment or not goals or not source.get('source_url'):raise ValueError('assessment, goals and source_url required')
+    sessions=[]
+    for goal in goals:
+        selected=[a for a in activities if goal.get('domain') in a.get('domains',[]) and not set(a.get('contraindications',[]))&set(assessment.get('contraindications',[]))];sessions.append({'goal':goal,'candidate_activities':selected,'progress_measure':goal.get('measure'),'review_after_sessions':goal.get('review_after_sessions',1)})
+    return {'mode':method,'assessment_used':assessment,'goal_plans':sessions,'source':source,'approval_status':'draft_for_licensed_therapist_and_patient','boundary':'Candidate-plan generation only. Licensed therapists assess safety, personalize dosage/intensity and supervise execution.','disclaimer':DISCLAIMER}
+
+CLINICAL_EXTRA.update({'surgical_planning':lambda d:care_plan('surgical_planning',d),'anesthesia_monitoring':anesthesia_monitoring,'post_operative_care':postop,'rehabilitation_planning':lambda d:care_plan('rehabilitation_planning',d),'physical_therapy_design':lambda d:therapy_design('physical_therapy_design',d),'occupational_therapy_design':lambda d:therapy_design('occupational_therapy_design',d),'speech_therapy_design':lambda d:therapy_design('speech_therapy_design',d)})
