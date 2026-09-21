@@ -367,6 +367,15 @@ def _register_creative_route(slug: str) -> None:
     )
 
 
+
+
+from .creative_semantics_281_287 import CreativeSemanticError,validate as validate_creative_281_287
+@router.post("/creative/{slug}/semantic-validate")
+def creative_semantic_validate_281_287(slug:str,payload:dict):
+    if slug not in CREATIVE_SPECS or CREATIVE_SPECS[slug].row>287:raise HTTPException(404,"semantic validator not available")
+    try:return {"row":CREATIVE_SPECS[slug].row,"slug":slug,"invariants":validate_creative_281_287(slug,payload)}
+    except CreativeSemanticError as error:raise HTTPException(422,str(error)) from error
+
 for _slug in CREATIVE_SPECS:
     _register_creative_route(_slug)
 
