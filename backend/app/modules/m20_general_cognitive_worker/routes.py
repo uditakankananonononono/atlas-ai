@@ -1570,3 +1570,11 @@ def legal_1260_1309_support(request: Legal1260To1309Request) -> dict[str, Any]:
     try: result=_analyze_legal_feature(request.feature_id,request.data,tenant_id=request.tenant_id,actor_id=request.actor_id)
     except ValueError as exc: raise HTTPException(status_code=422,detail=str(exc)) from exc
     return {'module_id':20,'tenant_id':request.tenant_id,'actor_id':request.actor_id,'result':result,'requires_licensed_counsel':True}
+
+class ExecutionTruthIn(BaseModel):
+ items:list[dict[str,Any]]=Field(default_factory=list,max_length=10000)
+@router.post('/execution-truth-ledger')
+def execution_truth(body:ExecutionTruthIn):
+ from .execution_truth import execution_truth_ledger
+ try:return execution_truth_ledger(body.items)
+ except ValueError as error:raise HTTPException(422,str(error)) from error

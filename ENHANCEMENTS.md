@@ -50,7 +50,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** assumption burn-down ranks tests by expected entropy reduction per cost/time burden and selects a budget-feasible learning portfolio while preserving caller-supplied uncertainty.
 - **Next:** update priors from observed experiment evidence with auditable Bayesian revisions.
 ## M20 - General Cognitive Worker
-- **Next (science):** execution truth ledger that rolls up planned, simulated, externally executed and independently verified outcomes.
+- **Landed:** execution truth ledger preserves planned, simulated, externally executed and independently verified states per claim, requiring evidence for effects and evidence plus verifier for independent verification.
+- **Next (science):** persist append-only state transitions and cryptographically bind receipts from all modules.
 ## M21 - Claire
 - **Landed:** mounted expiring device-pairing challenge, fingerprint/capability validation, device listing and revocation.
 - **Next:** installable paired-PC daemon with OS keystore identity, native approval prompts and signed result receipts.
