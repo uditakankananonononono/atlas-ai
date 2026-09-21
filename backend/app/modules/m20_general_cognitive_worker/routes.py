@@ -1491,3 +1491,7 @@ router.include_router(engineering_router_1510_1559)
 # Learning and reasoning workbench, owner-ledger rows 810-859.
 from .learning_reasoning_routes_810_859 import router as learning_reasoning_router_810_859
 router.include_router(learning_reasoning_router_810_859)
+
+# Cognitive and reasoning methods rows 1960-2009.
+from .cognitive_routes_1960_2009 import router as cognitive_router_1960_2009
+router.include_router(cognitive_router_1960_2009)
