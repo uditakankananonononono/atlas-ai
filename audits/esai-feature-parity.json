@@ -18,7 +18,13 @@
     {
       "id": 2,
       "feature": "Narrative Intelligence",
-      "status": "thin"
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "2615297964cc19f9a30e1f9bb34796bb0c33a1af",
+        "implementation": "backend/app/modules/m23_study_abroad/parity_tools.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_esai_remaining_parity.py"
+      },
+      "enhancement": "Reference parity exceeded with traceable evidence, explicit unknowns/limits, student authorship and review, privacy/consent gates, and no automatic submission or billing mutation."
     },
     {
       "id": 3,
@@ -46,7 +52,13 @@
     {
       "id": 6,
       "feature": "College Track",
-      "status": "thin"
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "2615297964cc19f9a30e1f9bb34796bb0c33a1af",
+        "implementation": "backend/app/modules/m23_study_abroad/parity_tools.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_esai_remaining_parity.py"
+      },
+      "enhancement": "Reference parity exceeded with traceable evidence, explicit unknowns/limits, student authorship and review, privacy/consent gates, and no automatic submission or billing mutation."
     },
     {
       "id": 7,
@@ -62,7 +74,13 @@
     {
       "id": 8,
       "feature": "Opportunity matching for colleges",
-      "status": "thin"
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "2615297964cc19f9a30e1f9bb34796bb0c33a1af",
+        "implementation": "backend/app/modules/m23_study_abroad/parity_tools.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_esai_remaining_parity.py"
+      },
+      "enhancement": "Reference parity exceeded with traceable evidence, explicit unknowns/limits, student authorship and review, privacy/consent gates, and no automatic submission or billing mutation."
     },
     {
       "id": 9,
@@ -78,7 +96,13 @@
     {
       "id": 10,
       "feature": "Story Strategist",
-      "status": "thin"
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "2615297964cc19f9a30e1f9bb34796bb0c33a1af",
+        "implementation": "backend/app/modules/m23_study_abroad/parity_tools.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_esai_remaining_parity.py"
+      },
+      "enhancement": "Reference parity exceeded with traceable evidence, explicit unknowns/limits, student authorship and review, privacy/consent gates, and no automatic submission or billing mutation."
     },
     {
       "id": 11,
@@ -128,7 +152,13 @@
     {
       "id": 16,
       "feature": "Supplemental Essay Assistant",
-      "status": "thin"
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "2615297964cc19f9a30e1f9bb34796bb0c33a1af",
+        "implementation": "backend/app/modules/m23_study_abroad/parity_tools.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_esai_remaining_parity.py"
+      },
+      "enhancement": "Reference parity exceeded with traceable evidence, explicit unknowns/limits, student authorship and review, privacy/consent gates, and no automatic submission or billing mutation."
     },
     {
       "id": 17,
@@ -255,22 +285,46 @@
     {
       "id": 29,
       "feature": "Opportunity-specific BrandID adaptation",
-      "status": "missing"
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "2615297964cc19f9a30e1f9bb34796bb0c33a1af",
+        "implementation": "backend/app/modules/m23_study_abroad/parity_tools.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_esai_remaining_parity.py"
+      },
+      "enhancement": "Reference parity exceeded with traceable evidence, explicit unknowns/limits, student authorship and review, privacy/consent gates, and no automatic submission or billing mutation."
     },
     {
       "id": 30,
       "feature": "One/unlimited story project entitlements",
-      "status": "missing"
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "2615297964cc19f9a30e1f9bb34796bb0c33a1af",
+        "implementation": "backend/app/modules/m23_study_abroad/parity_tools.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_esai_remaining_parity.py"
+      },
+      "enhancement": "Reference parity exceeded with traceable evidence, explicit unknowns/limits, student authorship and review, privacy/consent gates, and no automatic submission or billing mutation."
     },
     {
       "id": 31,
       "feature": "Common App integration",
-      "status": "missing"
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "2615297964cc19f9a30e1f9bb34796bb0c33a1af",
+        "implementation": "backend/app/modules/m23_study_abroad/parity_tools.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_esai_remaining_parity.py"
+      },
+      "enhancement": "Reference parity exceeded with traceable evidence, explicit unknowns/limits, student authorship and review, privacy/consent gates, and no automatic submission or billing mutation."
     },
     {
       "id": 32,
       "feature": "Essay Support Suite",
-      "status": "thin"
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "2615297964cc19f9a30e1f9bb34796bb0c33a1af",
+        "implementation": "backend/app/modules/m23_study_abroad/parity_tools.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_esai_remaining_parity.py"
+      },
+      "enhancement": "Reference parity exceeded with traceable evidence, explicit unknowns/limits, student authorship and review, privacy/consent gates, and no automatic submission or billing mutation."
     },
     {
       "id": 33,
@@ -280,7 +334,13 @@
     {
       "id": 34,
       "feature": "School administrator engagement visibility",
-      "status": "missing"
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "2615297964cc19f9a30e1f9bb34796bb0c33a1af",
+        "implementation": "backend/app/modules/m23_study_abroad/parity_tools.py; backend/app/modules/m23_study_abroad/routes.py",
+        "test": "tests/modules/test_m23_esai_remaining_parity.py"
+      },
+      "enhancement": "Reference parity exceeded with traceable evidence, explicit unknowns/limits, student authorship and review, privacy/consent gates, and no automatic submission or billing mutation."
     },
     {
       "id": 35,
