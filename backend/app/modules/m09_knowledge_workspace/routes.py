@@ -27,3 +27,14 @@ def review(suggestion_id:str,data:ReviewRequest,service:Service=Depends(get_serv
     except LookupError:raise HTTPException(409,"suggestion is not pending")
 @router.post("/planner-context")
 def planner_context(data:PlannerContextRequest,service:Service=Depends(get_service)):return service.planner_context(data.node_ids)
+
+from typing import Any
+from pydantic import BaseModel,Field
+from .humanities_support_1860_1909 import humanities_support_1860_1909
+class Humanities1860To1909In(BaseModel):
+    feature_id:int=Field(ge=1860,le=1909)
+    data:dict[str,Any]=Field(default_factory=dict)
+@router.post('/humanities-1860-1909/support')
+def humanities_1860_1909_route(body:Humanities1860To1909In,tenant:TenantContext=Depends(require_tenant)):
+    try:return {'tenant_id':tenant.tenant_id,**humanities_support_1860_1909(body.feature_id,body.data)}
+    except ValueError as error:raise HTTPException(422,str(error)) from error
