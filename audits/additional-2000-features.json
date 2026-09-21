@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1301,
-    "verified-pushed": 706,
+    "missing": 1101,
+    "verified-pushed": 906,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -15730,9 +15730,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Contract Drafting",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1211,
@@ -15740,9 +15744,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Contract Review",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1212,
@@ -15750,9 +15758,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Contract Negotiation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1213,
@@ -15760,9 +15772,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Research",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1214,
@@ -15770,9 +15786,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Case Law Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1215,
@@ -15780,9 +15800,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Statutory Interpretation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1216,
@@ -15790,9 +15814,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Regulatory Compliance",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1217,
@@ -15800,9 +15828,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Risk Assessment",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1218,
@@ -15810,9 +15842,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Due Diligence",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1219,
@@ -15820,9 +15856,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Mergers & Acquisitions",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1220,
@@ -15830,9 +15870,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Corporate Governance",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1221,
@@ -15840,9 +15884,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Securities Law",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1222,
@@ -15850,9 +15898,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Intellectual Property",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1223,
@@ -15860,9 +15912,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Patent Drafting",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1224,
@@ -15870,9 +15926,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Patent Prosecution",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1225,
@@ -15880,9 +15940,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Trademark Registration",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1226,
@@ -15890,9 +15954,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Copyright Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1227,
@@ -15900,9 +15968,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Trade Secret Protection",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1228,
@@ -15910,9 +15982,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Licensing Agreements",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1229,
@@ -15920,9 +15996,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Technology Transfer",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1230,
@@ -15930,9 +16010,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Employment Law",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1231,
@@ -15940,9 +16024,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Labor Relations",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1232,
@@ -15950,9 +16038,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Discrimination Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1233,
@@ -15960,9 +16052,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Harassment Investigation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1234,
@@ -15970,9 +16066,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Wrongful Termination",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1235,
@@ -15980,9 +16080,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Employment Contracts",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1236,
@@ -15990,9 +16094,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Non-Compete Agreements",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1237,
@@ -16000,9 +16108,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Immigration Law",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1238,
@@ -16010,9 +16122,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Visa Applications",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1239,
@@ -16020,9 +16136,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Asylum Cases",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1240,
@@ -16030,9 +16150,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Refugee Law",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1241,
@@ -16040,9 +16164,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Family Law",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1242,
@@ -16050,9 +16178,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Divorce Proceedings",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1243,
@@ -16060,9 +16192,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Child Custody",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1244,
@@ -16070,9 +16206,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Adoption",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1245,
@@ -16080,9 +16220,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Estate Planning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1246,
@@ -16090,9 +16234,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Wills and Trusts",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1247,
@@ -16100,9 +16248,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Probate",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1248,
@@ -16110,9 +16262,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Real Estate Law",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1249,
@@ -16120,9 +16276,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Property Transactions",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1250,
@@ -16130,9 +16290,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Landlord-Tenant",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1251,
@@ -16140,9 +16304,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Zoning and Land Use",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1252,
@@ -16150,9 +16318,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Environmental Law",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1253,
@@ -16160,9 +16332,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Climate Regulation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1254,
@@ -16170,9 +16346,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Pollution Control",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1255,
@@ -16180,9 +16360,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Natural Resources",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1256,
@@ -16190,9 +16374,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Energy Law",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1257,
@@ -16200,9 +16388,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Criminal Law",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1258,
@@ -16210,9 +16402,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Criminal Defense",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1259,
@@ -16220,9 +16416,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Prosecution Strategy",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "fd4522f53209413892d5b5a160e056e0744ca8e8",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support.py",
+        "test_path": "tests/modules/test_m20_legal_1210_1259.py"
+      },
+      "boundary": "Jurisdiction-aware legal drafting and analysis support only. Preserve sources, unknown facts and approval gates; licensed counsel controls advice, negotiation, filing, deadlines, communication and legal effects."
     },
     {
       "id": 1260,
@@ -16930,9 +17130,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Financial Statement Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1311,
@@ -16940,9 +17144,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Ratio Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1312,
@@ -16950,9 +17158,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Cash Flow Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1313,
@@ -16960,9 +17172,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Working Capital Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1314,
@@ -16970,9 +17186,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Capital Budgeting",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1315,
@@ -16980,9 +17200,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "NPV Calculation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1316,
@@ -16990,9 +17214,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "IRR Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1317,
@@ -17000,9 +17228,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Payback Period",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1318,
@@ -17010,9 +17242,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Real Options Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1319,
@@ -17020,9 +17256,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Cost of Capital",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1320,
@@ -17030,9 +17270,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "WACC Calculation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1321,
@@ -17040,9 +17284,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "CAPM",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1322,
@@ -17050,9 +17298,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Beta Estimation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1323,
@@ -17060,9 +17312,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Risk-Adjusted Returns",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1324,
@@ -17070,9 +17326,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Portfolio Optimization",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1325,
@@ -17080,9 +17340,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Markowitz Model",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1326,
@@ -17090,9 +17354,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Black-Litterman",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1327,
@@ -17100,9 +17368,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Factor Models",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1328,
@@ -17110,9 +17382,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Fama-French",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1329,
@@ -17120,9 +17396,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Risk Parity",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1330,
@@ -17130,9 +17410,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Asset Allocation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1331,
@@ -17140,9 +17424,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Rebalancing Strategy",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1332,
@@ -17150,9 +17438,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Performance Attribution",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1333,
@@ -17160,9 +17452,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Sharpe Ratio",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1334,
@@ -17170,9 +17466,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Sortino Ratio",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1335,
@@ -17180,9 +17480,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Information Ratio",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1336,
@@ -17190,9 +17494,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Alpha Generation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1337,
@@ -17200,9 +17508,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Beta Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1338,
@@ -17210,9 +17522,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Hedging Strategies",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1339,
@@ -17220,9 +17536,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Derivatives Pricing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1340,
@@ -17230,9 +17550,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Black-Scholes",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1341,
@@ -17240,9 +17564,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Binomial Trees",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1342,
@@ -17250,9 +17578,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Monte Carlo Pricing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1343,
@@ -17260,9 +17592,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Greeks Calculation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1344,
@@ -17270,9 +17606,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Volatility Modeling",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1345,
@@ -17280,9 +17620,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "GARCH Models",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1346,
@@ -17290,9 +17634,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Stochastic Volatility",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1347,
@@ -17300,9 +17648,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Jump Diffusion",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1348,
@@ -17310,9 +17662,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Fixed Income Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1349,
@@ -17320,9 +17676,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Yield Curve Construction",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1350,
@@ -17330,9 +17690,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Duration",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1351,
@@ -17340,9 +17704,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Convexity",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1352,
@@ -17350,9 +17718,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Credit Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1353,
@@ -17360,9 +17732,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Default Prediction",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1354,
@@ -17370,9 +17746,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Recovery Rates",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1355,
@@ -17380,9 +17760,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Credit Derivatives",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1356,
@@ -17390,9 +17774,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "CDS Pricing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1357,
@@ -17400,9 +17788,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Securitization",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1358,
@@ -17410,9 +17802,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "MBS Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1359,
@@ -17420,9 +17816,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "ABS Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1360,
@@ -17430,9 +17830,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Structured Products",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1361,
@@ -17440,9 +17844,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Exotic Options",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1362,
@@ -17450,9 +17858,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Barrier Options",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1363,
@@ -17460,9 +17872,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Asian Options",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1364,
@@ -17470,9 +17886,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Lookback Options",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1365,
@@ -17480,9 +17900,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Forward Starting Options",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1366,
@@ -17490,9 +17914,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Compound Options",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1367,
@@ -17500,9 +17928,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Chooser Options",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1368,
@@ -17510,9 +17942,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Rainbow Options",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1369,
@@ -17520,9 +17956,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Basket Options",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1370,
@@ -17530,9 +17970,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Quanto Options",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1371,
@@ -17540,9 +17984,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Commodity Trading",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1372,
@@ -17550,9 +17998,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Energy Markets",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1373,
@@ -17560,9 +18012,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Carbon Trading",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1374,
@@ -17570,9 +18026,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Weather Derivatives",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1375,
@@ -17580,9 +18040,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "FX Trading",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1376,
@@ -17590,9 +18054,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Currency Hedging",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1377,
@@ -17600,9 +18068,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Carry Trade",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1378,
@@ -17610,9 +18082,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Purchasing Power Parity",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1379,
@@ -17620,9 +18096,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Interest Rate Parity",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1380,
@@ -17630,9 +18110,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "International Finance",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1381,
@@ -17640,9 +18124,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Sovereign Risk",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1382,
@@ -17650,9 +18138,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Country Risk",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1383,
@@ -17660,9 +18152,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Political Risk",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1384,
@@ -17670,9 +18166,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Emerging Markets",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1385,
@@ -17680,9 +18180,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Frontier Markets",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1386,
@@ -17690,9 +18194,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Microfinance",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1387,
@@ -17700,9 +18208,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Development Finance",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1388,
@@ -17710,9 +18222,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Impact Investing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1389,
@@ -17720,9 +18236,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "ESG Investing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1390,
@@ -17730,9 +18250,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Sustainable Finance",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1391,
@@ -17740,9 +18264,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Green Bonds",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1392,
@@ -17750,9 +18278,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Climate Finance",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1393,
@@ -17760,9 +18292,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Carbon Markets",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1394,
@@ -17770,9 +18306,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Behavioral Finance",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1395,
@@ -17780,9 +18320,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Prospect Theory",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1396,
@@ -17790,9 +18334,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Mental Accounting",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1397,
@@ -17800,9 +18348,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Loss Aversion",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1398,
@@ -17810,9 +18362,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Overconfidence",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1399,
@@ -17820,9 +18376,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Anchoring",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1400,
@@ -17830,9 +18390,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Herding",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1401,
@@ -17840,9 +18404,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Market Efficiency",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1402,
@@ -17850,9 +18418,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "EMH Testing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1403,
@@ -17860,9 +18432,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Anomalies",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1404,
@@ -17870,9 +18446,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Momentum",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1405,
@@ -17880,9 +18460,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Value",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1406,
@@ -17890,9 +18474,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Size",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1407,
@@ -17900,9 +18488,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Quality",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1408,
@@ -17910,9 +18502,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Low Volatility",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1409,
@@ -17920,9 +18516,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Profitability",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+      },
+      "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
     {
       "id": 1410,
@@ -17930,9 +18530,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Curriculum Design",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1411,
@@ -17940,9 +18544,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Learning Objective Writing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1412,
@@ -17950,9 +18558,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Assessment Design",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1413,
@@ -17960,9 +18572,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Rubric Creation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1414,
@@ -17970,9 +18586,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Lesson Planning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1415,
@@ -17980,9 +18600,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Unit Planning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1416,
@@ -17990,9 +18614,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Course Design",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1417,
@@ -18000,9 +18628,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Syllabus Creation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1418,
@@ -18010,9 +18642,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Instructional Design",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1419,
@@ -18020,9 +18656,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "ADDIE Model",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1420,
@@ -18030,9 +18670,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "SAM Model",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1421,
@@ -18040,9 +18684,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Backward Design",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1422,
@@ -18050,9 +18698,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Universal Design for Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1423,
@@ -18060,9 +18712,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Differentiated Instruction",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1424,
@@ -18070,9 +18726,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Personalized Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1425,
@@ -18080,9 +18740,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Adaptive Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1426,
@@ -18090,9 +18754,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Intelligent Tutoring",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1427,
@@ -18100,9 +18768,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Scaffolding",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1428,
@@ -18110,9 +18782,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Zone of Proximal Development",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1429,
@@ -18120,9 +18796,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Cognitive Apprenticeship",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1430,
@@ -18130,9 +18810,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Situated Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1431,
@@ -18140,9 +18824,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Anchored Instruction",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1432,
@@ -18150,9 +18838,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Problem-Based Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1433,
@@ -18160,9 +18852,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Project-Based Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1434,
@@ -18170,9 +18866,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Inquiry-Based Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1435,
@@ -18180,9 +18880,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Discovery Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1436,
@@ -18190,9 +18894,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Experiential Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1437,
@@ -18200,9 +18908,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Service Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1438,
@@ -18210,9 +18922,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Cooperative Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1439,
@@ -18220,9 +18936,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Collaborative Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1440,
@@ -18230,9 +18950,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Peer Instruction",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1441,
@@ -18240,9 +18964,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Flipped Classroom",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1442,
@@ -18250,9 +18978,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Blended Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1443,
@@ -18260,9 +18992,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Online Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1444,
@@ -18270,9 +19006,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Distance Education",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1445,
@@ -18280,9 +19020,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "MOOCs",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1446,
@@ -18290,9 +19034,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Microlearning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1447,
@@ -18300,9 +19048,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Mobile Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1448,
@@ -18310,9 +19062,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Game-Based Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1449,
@@ -18320,9 +19076,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Gamification",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1450,
@@ -18330,9 +19090,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Simulation-Based Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1451,
@@ -18340,9 +19104,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Virtual Reality Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1452,
@@ -18350,9 +19118,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Augmented Reality Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1453,
@@ -18360,9 +19132,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Mixed Reality Learning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1454,
@@ -18370,9 +19146,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Artificial Intelligence in Education",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1455,
@@ -18380,9 +19160,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Learning Analytics",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1456,
@@ -18390,9 +19174,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Educational Data Mining",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1457,
@@ -18400,9 +19188,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Student Modeling",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1458,
@@ -18410,9 +19202,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Knowledge Tracing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1459,
@@ -18420,9 +19216,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Affect Detection",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+      },
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
     {
       "id": 1460,
