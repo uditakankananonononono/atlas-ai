@@ -57,3 +57,21 @@ def essay_hook(x:HookCoachIn):return essay_tools.hook_coach(x.student_hook,x.evi
 def essay_conclusion(x:ConclusionCoachIn):return essay_tools.conclusion_coach(x.student_conclusion,x.thesis)
 @router.post('/essay-tools/clarity')
 def essay_clarity(x:ClarityReviewIn):return essay_tools.clarity_review(x.draft)
+
+from typing import Any,Literal
+from pydantic import BaseModel,Field
+from .parity_tools import opportunity_match,personal_stat,scholarship_guide,loci_tool,interview_prep,career_narrative
+class ParityToolIn(BaseModel):
+ data:dict[str,Any]=Field(default_factory=dict)
+@router.post('/parity/{tool}')
+def parity_tool(tool:Literal['career_track','career_opportunity_match','personal_stat','scholarship_guide','loci','interview_prep','resume_narrative','cover_letter_narrative','linkedin_headline'],body:ParityToolIn):
+ d=body.data
+ try:
+  if tool=='career_track':return {'track':'career','tools':['career_opportunity_match','interview_prep','resume_narrative','cover_letter_narrative','linkedin_headline'],'brand_grounded':True,'cross_tool_evidence_reuse':True}
+  if tool=='career_opportunity_match':return opportunity_match('career',d.get('profile',{}),d.get('opportunities',[]))
+  if tool=='personal_stat':return personal_stat(d.get('profile',{}),d.get('records',[]))
+  if tool=='scholarship_guide':return scholarship_guide(d.get('profile',{}),d.get('scholarships',[]))
+  if tool=='loci':return loci_tool(d.get('context',{}),d.get('evidence',[]))
+  if tool=='interview_prep':return interview_prep(d.get('opportunity',{}),d.get('brand',{}),d.get('questions',[]))
+  kind={'resume_narrative':'resume','cover_letter_narrative':'cover_letter','linkedin_headline':'linkedin_headline'}[tool];return career_narrative(kind,d.get('opportunity',{}),d.get('brand',{}),d.get('student_facts',[]))
+ except ValueError as error:raise HTTPException(422,str(error)) from error
