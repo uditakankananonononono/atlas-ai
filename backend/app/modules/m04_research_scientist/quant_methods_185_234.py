@@ -334,21 +334,46 @@ def optimize(i,d):
  if i==214:return _ant(i,d,bounds,rng)
  if i in (216,217):return _bayes_or_gp(i,d,bounds,rng)
  if i in (218,219):
-  need(d,'objective_vectors');front=[c for c in d['objective_vectors'] if not any(all(o<=v for o,v in zip(x['values'],c['values'])) and any(o<v for o,v in zip(x['values'],c['values'])) for x in d['objective_vectors'])];return {'pareto_frontier':front,'preference_selected':False,'method':ROWS[i]}
+  need(d,'objective_vectors'); candidates=d['objective_vectors']
+  if not candidates or any(not c.get('id') or not c.get('values') for c in candidates):raise QuantError('objective_vectors require id and non-empty values')
+  width=len(candidates[0]['values'])
+  if any(len(c['values'])!=width for c in candidates):raise QuantError('objective vector dimension mismatch')
+  front=[c for c in candidates if not any(all(o<=v for o,v in zip(x['values'],c['values'])) and any(o<v for o,v in zip(x['values'],c['values'])) for x in candidates)]
+  if i==219:return {'pareto_frontier':front,'dominated_ids':[c['id'] for c in candidates if c not in front],'dominance':'componentwise_minimization','method':ROWS[i]}
+  weights=list(map(float,d.get('weights',[1/width]*width)))
+  if len(weights)!=width or any(w<0 for w in weights) or sum(weights)<=0:raise QuantError('nonnegative objective weights with positive sum required')
+  weights=[w/sum(weights) for w in weights];ideal=[min(c['values'][j] for c in candidates) for j in range(width)]
+  scored=[{'id':c['id'],'weighted_chebyshev':max(weights[j]*abs(c['values'][j]-ideal[j]) for j in range(width))} for c in front]
+  selected=min(scored,key=lambda x:(x['weighted_chebyshev'],x['id']))
+  return {'pareto_frontier':front,'selected_id':selected['id'],'scalarized_scores':scored,'weights':weights,'ideal_point':ideal,'algorithm':'weighted_Chebyshev_multiobjective','method':ROWS[i]}
  if i==220:
   pts=_lp_vertices(d,bounds);x=min(pts,key=lambda z:objective(d,z));return _finish(i,d,x,[objective(d,x)],len(pts),{'algorithm':'vertex_enumeration_simplex_equivalent','vertices_checked':len(pts),'optimality_certificate':'all feasible vertices enumerated'})
  if i in (221,222):
-  cands=d.get('candidates') or [[rng.uniform(a,b) for a,b in bounds] for _ in range(d.get('iterations',100))];norm=lambda x:[round(v) if i==221 or j in d.get('integer_indices',[]) else v for j,v in enumerate(x)];cands=[norm(x) for x in cands];cands=[x for x in cands if _feasible(x,bounds,d.get('constraints',[]))]
+  integer_indices=list(range(len(bounds))) if i==221 else list(d.get('integer_indices',[]))
+  if i==222 and not integer_indices:raise QuantError('mixed-integer programming requires integer_indices')
+  if any(not isinstance(j,int) or j<0 or j>=len(bounds) for j in integer_indices):raise QuantError('integer index out of range')
+  raw=d.get('candidates') or [[rng.uniform(a,b) for a,b in bounds] for _ in range(d.get('iterations',100))]
+  if any(len(x)!=len(bounds) for x in raw):raise QuantError('candidate dimension mismatch')
+  seen=set();cands=[]
+  for rawx in raw:
+   x=[float(v) for v in rawx]
+   for j in integer_indices:x[j]=float(round(x[j]))
+   key=tuple(x)
+   if key not in seen and _feasible(x,bounds,d.get('constraints',[])):seen.add(key);cands.append(x)
   if not cands:raise QuantError('no feasible candidates')
-  x=min(cands,key=lambda z:objective(d,z));return _finish(i,d,x,[objective(d,x)],len(cands),{'algorithm':'enumerative_integer_search'})
+  x=min(cands,key=lambda z:objective(d,z));return _finish(i,d,x,[objective(d,x)],len(cands),{'algorithm':'enumerative_integer_search' if i==221 else 'enumerative_mixed_integer_search','integer_indices':integer_indices,'feasible_candidates':len(cands)})
  if i==223:
-  need(d,'stages','initial_state');table={d['initial_state']:0}
-  for stage in d['stages']:
+  need(d,'stages','initial_state');table={d['initial_state']:0};reachable=[1]
+  for number,stage in enumerate(d['stages'],1):
+   if not isinstance(stage.get('transitions'),dict):raise QuantError(f'stage {number} transitions required')
    nxt={}
    for state,cost in table.items():
-    for tr in stage['transitions'].get(str(state),[]):nxt[tr['next']]=min(nxt.get(tr['next'],float('inf')),cost+tr['cost'])
-   table=nxt
-  return {'terminal_costs':table,'recurrence_applied':True,'method':ROWS[i]}
+    for tr in stage['transitions'].get(str(state),[]):
+     if 'next' not in tr or 'cost' not in tr:raise QuantError('transition requires next and cost')
+     nxt[tr['next']]=min(nxt.get(tr['next'],float('inf')),cost+float(tr['cost']))
+   if not nxt:raise QuantError(f'no reachable states after stage {number}')
+   table=nxt;reachable.append(len(table))
+  return {'terminal_costs':table,'recurrence_applied':True,'reachable_state_counts':reachable,'optimal_terminal_state':min(table,key=table.get),'algorithm':'finite_horizon_Bellman_recurrence','method':ROWS[i]}
  if i==224:
   need(d,'scenarios');probs=[float(s['probability']) for s in d['scenarios']]
   if abs(sum(probs)-1)>1e-8:raise QuantError('scenario probabilities must sum to one')

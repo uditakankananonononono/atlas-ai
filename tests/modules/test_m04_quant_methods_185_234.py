@@ -131,3 +131,27 @@ def test_row199_executes_clark_evans_and_ripley_not_intensity_stub():
  d={'sources':S,'points':[{'x':1,'y':1},{'x':1.1,'y':1.1},{'x':8,'y':8},{'x':8.1,'y':8.1}],'window':[0,0,10,10],'radii':[.5,2]}
  o=run(199,d)['result'];assert o['algorithm'].startswith('clark_evans') and len(o['ripley'])==2 and o['clark_evans_r']<1 and o['edge_bias_warning']
  with pytest.raises(QuantError,match='outside'):run(199,{'sources':S,'points':[{'x':1,'y':1},{'x':11,'y':1}],'window':[0,0,10,10]})
+
+def test_row_218_multi_objective_optimization_uses_preferences():
+ d=data(218);d['weights']=[.8,.2]
+ o=run(218,d)['result'];assert o['algorithm']=='weighted_Chebyshev_multiobjective' and o['selected_id']=='a' and o['weights']==pytest.approx([.8,.2])
+ with pytest.raises(QuantError,match='weights'):run(218,{**d,'weights':[-1,2]})
+
+def test_row_219_pareto_frontier_identification_reports_dominance():
+ o=run(219,data(219))['result'];assert {x['id'] for x in o['pareto_frontier']}=={'a','b'} and o['dominated_ids']==['c'] and o['dominance']=='componentwise_minimization'
+ bad=data(219);bad['objective_vectors'][2]['values']=[1]
+ with pytest.raises(QuantError,match='dimension'):run(219,bad)
+
+def test_row_221_integer_programming_enforces_all_integer_dimensions():
+ d=data(221);d['candidates']=[[.2,.2],[1.2,.1]]
+ o=run(221,d)['result'];assert o['algorithm']=='enumerative_integer_search' and o['integer_indices']==[0,1] and all(v.is_integer() for v in o['best_point'])
+
+def test_row_222_mixed_integer_programming_preserves_continuous_dimensions():
+ d=data(222);d['candidates']=[[.4,.25],[1.4,.1]];d['integer_indices']=[0]
+ o=run(222,d)['result'];assert o['algorithm']=='enumerative_mixed_integer_search' and o['best_point']==pytest.approx([0,.25])
+ with pytest.raises(QuantError,match='integer_indices'):run(222,{**d,'integer_indices':[]})
+
+def test_row_223_dynamic_programming_rejects_unreachable_stage():
+ o=run(223,data(223))['result'];assert o['algorithm']=='finite_horizon_Bellman_recurrence' and o['optimal_terminal_state']=='z' and o['reachable_state_counts']==[1,2,1]
+ bad=data(223);bad['stages'][1]['transitions']={}
+ with pytest.raises(QuantError,match='no reachable states'):run(223,bad)
