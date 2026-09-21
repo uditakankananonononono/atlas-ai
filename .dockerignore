@@ -1,0 +1,7 @@
+.git
+.env*
+atlas.db
+__pycache__
+.pytest_cache
+frontend/node_modules
+tests
