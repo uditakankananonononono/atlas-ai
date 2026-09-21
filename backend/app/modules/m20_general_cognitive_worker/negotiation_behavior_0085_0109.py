@@ -514,36 +514,81 @@ DEEP_85_100 = {
 }
 
 
-def _legacy_101_109(method: str, data: dict) -> dict:
-    limits = [BASE_LIMIT]
-    if method == 'authority_positioning':
-        claim = data.get('claim'); evidence = data.get('evidence'); verified = bool(evidence)
-        out = {'claim': claim, 'evidence': evidence, 'verified': verified, 'deployment_allowed': verified, 'fabrication_blocked': not verified}
-        limits += ['Claims must be current, attributable, and genuinely relevant.']
-    elif method == 'consistency_commitment':
-        prior = data.get('prior_commitment'); current = data.get('current_choice'); freely = bool(data.get('freely_chosen'))
-        out = {'prior_commitment': prior, 'current_choice': current, 'consistent': prior == current, 'may_reference': freely, 'revision_explicitly_allowed': True}
-        limits += ['People may revise commitments without pressure.']
-    elif method in {'liking_enhancement', 'unity_building'}:
-        common = data.get('genuine_commonalities')
-        if not isinstance(common, list):
-            raise ValueError('genuine_commonalities required')
-        out = {'genuine_commonalities': common, 'count': len(common), 'fabricated_affinity_blocked': True, 'usable': bool(common)}
-    elif method in {'pre_suasion', 'priming_effects'}:
-        context = data.get('context'); disclosed = bool(data.get('disclosed'))
-        out = {'context': context, 'disclosed': disclosed, 'covert_influence_blocked': not disclosed, 'allowed': disclosed and bool(context)}
-        limits += ['Only transparent context-setting passes; covert priming is rejected.']
-    elif method in {'nudge_design', 'choice_architecture', 'libertarian_paternalism'}:
-        options = data.get('options'); default = data.get('default')
-        if not isinstance(options, list) or default not in options:
-            raise ValueError('options and valid default required')
-        easy = bool(data.get('easy_opt_out')); transparent = bool(data.get('transparent')); neutral = bool(data.get('alternatives_visible'))
-        out = {'options': options, 'default': default, 'easy_opt_out': easy, 'transparent': transparent, 'alternatives_visible': neutral, 'autonomy_preserved': easy and transparent and neutral, 'deployment_allowed': easy and transparent and neutral}
-        limits += ['Defaults must not hide costs, obstruct exit, or remove alternatives.']
-    else:
-        raise AssertionError(method)
-    out['method_limits'] = limits
-    return out
+def _authority_positioning(d: dict) -> dict:
+    claim = d.get('claim')
+    if not isinstance(claim, str) or not claim.strip(): raise ValueError('claim required')
+    records = d.get('evidence_records')
+    if records is None:
+        records = ([{'source': str(d['evidence']), 'reliability': .7, 'relevance': .7, 'age_days': 0}] if d.get('evidence') else [])
+    if not isinstance(records, list): raise ValueError('evidence_records must be a list')
+    scored=[]
+    for e in records:
+        r=_unit(_f(e.get('reliability'),'reliability'),'reliability'); v=_unit(_f(e.get('relevance'),'relevance'),'relevance'); age=max(0.,_f(e.get('age_days',0),'age_days'))
+        score=r*v*math.exp(-age/365); scored.append({**e,'weighted_support':round(score,6)})
+    support=1-math.prod(1-x['weighted_support'] for x in scored) if scored else 0.
+    return {'claim':claim,'evidence_assessment':scored,'credibility_score':round(support,6),'credibility_interval':[round(max(0,support-.15),6),round(min(1,support+.15),6)],'deployment_allowed':support>=.5,'fabrication_blocked':support<.5,'method_limits':[BASE_LIMIT,'Claims must be current, attributable, and genuinely relevant.']}
+
+def _consistency_commitment(d: dict) -> dict:
+    prior=d.get('prior_commitment'); current=d.get('current_choice')
+    if prior in (None,'') or current in (None,''): raise ValueError('prior_commitment and current_choice required')
+    freely=bool(d.get('freely_chosen')); scale=max(1.,_f(d.get('commitment_scale',1),'commitment_scale')); requested=max(0.,_f(d.get('requested_step',1),'requested_step'))
+    escalation=requested/scale; pressure=max(0.,escalation-1)*(0 if freely else 1)
+    return {'prior_commitment':prior,'current_choice':current,'consistent':prior==current,'escalation_ratio':round(escalation,6),'pressure_risk_score':round(min(1,pressure),6),'may_reference':freely and escalation<=2,'revision_explicitly_allowed':True,'uncertainty_interval':[round(max(0,pressure-.1),4),round(min(1,pressure+.1),4)],'method_limits':[BASE_LIMIT,'People may revise commitments without pressure.']}
+
+def _liking(d: dict) -> dict:
+    common=set(_strings(d,'genuine_commonalities',0)); claimed=set(d.get('claimed_commonalities',common))
+    false=sorted(claimed-common); precision=len(common&claimed)/len(claimed) if claimed else 1.; coverage=len(common&claimed)/len(common) if common else 0.
+    return {'genuine_commonalities':sorted(common),'unsupported_claims':false,'authenticity_precision':round(precision,6),'rapport_coverage':round(coverage,6),'rapport_score':round(math.sqrt(precision*coverage),6),'usable':bool(common) and not false,'fabricated_affinity_blocked':bool(false),'uncertainty_interval':[round(max(0,precision-.15),4),round(min(1,precision+.15),4)],'method_limits':[BASE_LIMIT]}
+
+def _unity(d: dict) -> dict:
+    common=set(_strings(d,'genuine_commonalities',0)); goals=set(d.get('shared_goals',common)); conflicts=set(d.get('conflicting_goals',[])); overlap=goals-conflicts
+    alignment=len(overlap)/max(1,len(goals|conflicts)); conflict=len(conflicts)/max(1,len(goals|conflicts))
+    return {'genuine_commonalities':sorted(common),'shared_goals':sorted(goals),'conflicting_goals':sorted(conflicts),'identity_alignment_score':round(alignment,6),'conflict_risk_score':round(conflict,6),'usable':bool(common) and alignment>conflict,'fabricated_affinity_blocked':True,'uncertainty_interval':[round(max(0,alignment-.2),4),round(min(1,alignment+.2),4)],'method_limits':[BASE_LIMIT,'Shared identity may not erase conflicts or individual choice.']}
+
+def _pre_suasion(d: dict) -> dict:
+    context=d.get('context'); disclosed=bool(d.get('disclosed')); weights=d.get('attention_weights',[1.])
+    if not context or not isinstance(weights,list) or not weights: raise ValueError('context and attention_weights required')
+    ws=[max(0.,_f(x,'attention_weights')) for x in weights]; total=sum(ws)
+    if total<=0: raise ValueError('attention_weights must contain positive mass')
+    ps=[x/total for x in ws]; entropy=-sum(x*math.log(x) for x in ps if x)/math.log(len(ps)) if len(ps)>1 else 1.
+    return {'context':context,'disclosed':disclosed,'attention_distribution':[round(x,6) for x in ps],'attention_balance':round(entropy,6),'salience_concentration':round(max(ps),6),'covert_influence_blocked':not disclosed,'allowed':disclosed,'uncertainty_interval':[round(max(0,entropy-.1),4),round(min(1,entropy+.1),4)],'method_limits':[BASE_LIMIT,'Only disclosed context-setting is allowed.']}
+
+def _priming(d: dict) -> dict:
+    context=d.get('context'); disclosed=bool(d.get('disclosed'))
+    if not context: raise ValueError('context required')
+    ec=float(d.get('exposed_successes',0)); en=float(d.get('exposed_total',0)); cc=float(d.get('control_successes',0)); cn=float(d.get('control_total',0))
+    effect=None; ci=None
+    if en or cn:
+        if min(en,cn)<=0 or not (0<=ec<=en and 0<=cc<=cn): raise ValueError('valid exposed/control counts required')
+        effect=ec/en-cc/cn; se=math.sqrt((ec/en)*(1-ec/en)/en+(cc/cn)*(1-cc/cn)/cn); ci=[round(effect-1.96*se,6),round(effect+1.96*se,6)]
+    return {'context':context,'disclosed':disclosed,'absolute_effect':None if effect is None else round(effect,6),'effect_interval_95':ci,'causal_estimate_available':effect is not None,'covert_influence_blocked':not disclosed,'allowed':disclosed and effect is not None,'method_limits':[BASE_LIMIT,'Only randomized or controlled, disclosed priming analysis is supported.']}
+
+def _nudge(d: dict) -> dict:
+    options=d.get('options'); default=d.get('default')
+    if not isinstance(options,list) or default not in options: raise ValueError('options and valid default required')
+    easy=bool(d.get('easy_opt_out')); transparent=bool(d.get('transparent')); visible=bool(d.get('alternatives_visible')); baseline=_unit(_f(d.get('baseline_uptake',.5),'baseline_uptake'),'baseline_uptake'); default_rate=_unit(_f(d.get('default_uptake',baseline),'default_uptake'),'default_uptake'); friction=max(0.,_f(d.get('opt_out_steps',1),'opt_out_steps'))
+    effect=default_rate-baseline; autonomy=max(0.,1-.2*max(0,friction-1))*(1 if transparent and visible else .4)
+    return {'options':options,'default':default,'estimated_uptake_lift':round(effect,6),'autonomy_score':round(autonomy,6),'easy_opt_out':easy,'transparent':transparent,'alternatives_visible':visible,'autonomy_preserved':easy and transparent and visible and friction<=2,'deployment_allowed':easy and transparent and visible and friction<=2,'uncertainty_interval':[round(effect-.1,4),round(effect+.1,4)],'method_limits':[BASE_LIMIT,'Defaults must not hide costs, obstruct exit, or remove alternatives.']}
+
+def _choice_architecture(d: dict) -> dict:
+    options=d.get('options'); default=d.get('default')
+    if not isinstance(options,list) or default not in options: raise ValueError('options and valid default required')
+    attrs=d.get('attribute_matrix',{}); dominated=[]
+    for a in options:
+        for b in options:
+            if a!=b and a in attrs and b in attrs and len(attrs[a])==len(attrs[b]) and all(x<=y for x,y in zip(attrs[a],attrs[b])) and any(x<y for x,y in zip(attrs[a],attrs[b])): dominated.append(a); break
+    burden=len(options)*max(1,max((len(v) for v in attrs.values()),default=1)); easy=bool(d.get('easy_opt_out')); transparent=bool(d.get('transparent')); visible=bool(d.get('alternatives_visible'))
+    return {'options':options,'default':default,'dominated_options':sorted(dominated),'cognitive_burden_units':burden,'recommended_shortlist_size':min(5,len(options)),'autonomy_preserved':easy and transparent and visible,'deployment_allowed':easy and transparent and visible and default not in dominated,'uncertainty_interval':[max(0,burden-1),burden+1],'method_limits':[BASE_LIMIT,'Dominated options and material attributes must be visible.']}
+
+def _libertarian(d: dict) -> dict:
+    options=d.get('options'); default=d.get('default')
+    if not isinstance(options,list) or default not in options: raise ValueError('options and valid default required')
+    utilities=d.get('expected_utilities',{x:0 for x in options}); probs=d.get('population_shares',{x:1/len(options) for x in options})
+    if set(utilities)!=set(options) or set(probs)!=set(options): raise ValueError('utility and share values required for every option')
+    welfare=sum(_f(probs[x],'population_shares')*_f(utilities[x],'expected_utilities') for x in options); best=max(options,key=lambda x:utilities[x]); regret=float(utilities[best])-float(utilities[default]); easy=bool(d.get('easy_opt_out')); transparent=bool(d.get('transparent')); visible=bool(d.get('alternatives_visible'))
+    return {'options':options,'default':default,'expected_population_welfare':round(welfare,6),'default_regret':round(regret,6),'welfare_maximizing_option':best,'autonomy_preserved':easy and transparent and visible,'deployment_allowed':easy and transparent and visible and regret<=0,'uncertainty_interval':[round(welfare-.1*abs(welfare),4),round(welfare+.1*abs(welfare),4)],'method_limits':[BASE_LIMIT,'Guidance must preserve a costless informed exit.']}
+
+DEEP_101_109={'authority_positioning':_authority_positioning,'consistency_commitment':_consistency_commitment,'liking_enhancement':_liking,'unity_building':_unity,'pre_suasion':_pre_suasion,'priming_effects':_priming,'nudge_design':_nudge,'choice_architecture':_choice_architecture,'libertarian_paternalism':_libertarian}
 
 
 def run(method: str, data: dict) -> dict:
@@ -554,7 +599,7 @@ def run(method: str, data: dict) -> dict:
     if method in DEEP_85_100:
         out = DEEP_85_100[method](data)
     else:
-        out = _legacy_101_109(method, data)
+        out = DEEP_101_109[method](data)
     evidence = [k for k, v in data.items() if v not in (None, '', [], {})]
     return {'method': method, 'feature_row': ROWS[method], 'inputs': data, 'output': out,
             'evaluation': {'executable': True, 'method_specific': True,

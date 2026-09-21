@@ -122,3 +122,12 @@ def test_optimizer_shape_and_bound_failures():
  with pytest.raises(QuantError,match='lower < upper'):run(228,d)
  d=data(220);d['constraints']=[{'coefficients':[1],'rhs':0}]
  with pytest.raises(QuantError,match='dimension mismatch'):run(220,d)
+
+def test_row194_fits_gamma_shared_frailty_with_profile_uncertainty():
+ d={'sources':S,'records':[{'time':1,'event':True,'cluster':'hot'},{'time':1,'event':True,'cluster':'hot'},{'time':10,'event':False,'cluster':'cold'},{'time':10,'event':False,'cluster':'cold'}]}
+ o=run(194,d)['result'];assert o['algorithm'].startswith('gamma_poisson') and o['frailty_variance_theta']>0 and o['profile_likelihood_interval_95'][0]<=o['frailty_variance_theta']<=o['profile_likelihood_interval_95'][1]
+ with pytest.raises(QuantError,match='two named clusters'):run(194,{'sources':S,'records':[{'time':1,'event':True,'cluster':'one'}]})
+def test_row199_executes_clark_evans_and_ripley_not_intensity_stub():
+ d={'sources':S,'points':[{'x':1,'y':1},{'x':1.1,'y':1.1},{'x':8,'y':8},{'x':8.1,'y':8.1}],'window':[0,0,10,10],'radii':[.5,2]}
+ o=run(199,d)['result'];assert o['algorithm'].startswith('clark_evans') and len(o['ripley'])==2 and o['clark_evans_r']<1 and o['edge_bias_warning']
+ with pytest.raises(QuantError,match='outside'):run(199,{'sources':S,'points':[{'x':1,'y':1},{'x':11,'y':1}],'window':[0,0,10,10]})

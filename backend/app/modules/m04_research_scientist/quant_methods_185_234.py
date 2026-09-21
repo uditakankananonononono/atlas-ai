@@ -3,7 +3,7 @@ Small transparent implementations are for reproducible research planning and ver
 not substitutes for specialist libraries, diagnostics, or domain decisions.
 """
 from __future__ import annotations
-from math import exp,log,sqrt
+from math import exp,log,sqrt,lgamma,pi
 from random import Random
 from statistics import mean
 from typing import Any,Callable
@@ -59,7 +59,22 @@ def time_series(i,d):
   need(d,'covariate');return {'partial_likelihood_inputs':[{'time':x['time'],'event':x.get('event',False),'x':x[d['covariate']]} for x in recs],'proportional_hazards_test_required':True,'coefficient_fitted':False}
  if i==192:return {'kaplan_meier':curve,'greenwood_variance_required':True}
  if i==193:return {'cause_counts':causes,'cumulative_incidence':{k:v/len(recs) for k,v in causes.items()},'treat_other_causes_as_censoring':False}
- return {'clusters':{str(k):len([x for x in recs if x.get('cluster')==k]) for k in {x.get('cluster') for x in recs}},'shared_frailty_distribution':d.get('frailty_distribution','gamma'),'frailty_fitted':False}
+ # Row 194: intercept-only shared gamma frailty, fitted by marginal likelihood.
+ clusters=sorted({x.get('cluster') for x in recs},key=str)
+ if None in clusters or len(clusters)<2:raise QuantError('at least two named clusters required for shared frailty')
+ stats=[]
+ for c in clusters:
+  rs=[x for x in recs if x.get('cluster')==c]; stats.append({'cluster':str(c),'events':sum(bool(x.get('event')) for x in rs),'exposure':sum(float(x['time']) for x in rs)})
+ if any(x['exposure']<=0 for x in stats):raise QuantError('positive follow-up exposure required')
+ total_e=sum(x['events'] for x in stats); total_t=sum(x['exposure'] for x in stats)
+ if not total_e:raise QuantError('at least one event required to fit frailty')
+ rate=total_e/total_t
+ def ll(theta):
+  a=1/theta
+  return sum(lgamma(x['events']+a)-lgamma(a)+a*log(a)+x['events']*log(rate)-(x['events']+a)*log(a+rate*x['exposure']) for x in stats)
+ grid=[10**(-3+j*4/300) for j in range(301)]; vals=[ll(t) for t in grid]; k=max(range(len(grid)),key=lambda j:vals[j]); theta=grid[k]; cutoff=vals[k]-1.920729
+ inside=[grid[j] for j,v in enumerate(vals) if v>=cutoff]
+ return {'clusters':stats,'shared_frailty_distribution':'gamma_mean_1','baseline_event_rate':rate,'frailty_variance_theta':theta,'frailty_sd':sqrt(theta),'hazard_ratio_per_frailty_sd':exp(sqrt(theta)),'profile_likelihood_interval_95':[min(inside),max(inside)],'log_marginal_likelihood':vals[k],'boundary_hit':k in (0,len(grid)-1),'algorithm':'gamma_poisson_shared_frailty_profile_likelihood'}
 def spatial_network(i,d):
  if i<=199:
   need(d,'points');p=d['points']
@@ -70,7 +85,21 @@ def spatial_network(i,d):
    need(d,'weights');vals=[x['value'] for x in p];m=mean(vals);W=sum(map(sum,d['weights']));num=sum(d['weights'][a][b]*(vals[a]-m)*(vals[b]-m) for a in range(len(vals)) for b in range(len(vals)));den=sum((x-m)**2 for x in vals);return {'morans_i':len(vals)/W*num/den,'permutation_test_required':True}
   if i==198:
    need(d,'target');weights=[1/max(sqrt((x['x']-d['target']['x'])**2+(x['y']-d['target']['y'])**2),1e-9) for x in p];return {'ordinary_kriging_proxy':sum(w*x['value'] for w,x in zip(weights,p))/sum(weights),'variogram_model_required':True,'exact_kriging_claimed':False}
-  area=float(d.get('area',1));return {'intensity':len(p)/area,'nearest_neighbor_distances':[min((sqrt((a['x']-b['x'])**2+(a['y']-b['y'])**2) for b in p if b is not a),default=None) for a in p],'csr_test_required':True}
+  # Row 199: planar point-pattern diagnostics against complete spatial randomness.
+  if len(p)<2:raise QuantError('at least two points required')
+  window=d.get('window'); area=float(d.get('area',0))
+  if window:
+   if len(window)!=4 or window[2]<=window[0] or window[3]<=window[1]:raise QuantError('window must be [xmin,ymin,xmax,ymax]')
+   area=(window[2]-window[0])*(window[3]-window[1])
+   if any(not(window[0]<=x['x']<=window[2] and window[1]<=x['y']<=window[3]) for x in p):raise QuantError('point outside observation window')
+  if area<=0:raise QuantError('positive area or rectangular window required')
+  nn=[min(sqrt((a['x']-b['x'])**2+(a['y']-b['y'])**2) for b in p if b is not a) for a in p]; intensity=len(p)/area; expected=.5/sqrt(intensity); R=mean(nn)/expected
+  radii=d.get('radii') or [sqrt(area)/(4),sqrt(area)/(2)]; kvals=[]
+  for r in radii:
+   r=float(r); pairs=sum(1 for a in p for b in p if a is not b and sqrt((a['x']-b['x'])**2+(a['y']-b['y'])**2)<=r); K=area*pairs/(len(p)*(len(p)-1)); kvals.append({'radius':r,'ripley_k':K,'ripley_l_minus_r':sqrt(K/pi)-r,'csr_k':pi*r*r})
+  # Clark-Evans normal approximation; edge effects are explicitly bounded, not hidden.
+  se=.26136/sqrt(len(p)*intensity); z=(mean(nn)-expected)/se if se else 0
+  return {'intensity':intensity,'nearest_neighbor_distances':nn,'mean_nearest_neighbor':mean(nn),'expected_csr_nearest_neighbor':expected,'clark_evans_r':R,'clark_evans_z':z,'ripley':kvals,'pattern_classification':'clustered' if R<.8 else 'dispersed' if R>1.2 else 'csr-compatible','edge_correction':'none','edge_bias_warning':True,'algorithm':'clark_evans_and_ripley_k_planar_reference'}
  need(d,'nodes','edges');nodes=d['nodes'];edges=[tuple(x) for x in d['edges']];adj={n:set() for n in nodes}
  for a,b in edges:adj[a].add(b);adj[b].add(a)
  if i==200:return {'node_count':len(nodes),'edge_count':len(edges),'density':2*len(edges)/(len(nodes)*(len(nodes)-1)) if len(nodes)>1 else 0,'components':_components(adj)}
