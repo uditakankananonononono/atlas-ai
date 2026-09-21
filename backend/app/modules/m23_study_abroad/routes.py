@@ -97,3 +97,11 @@ def enhanced_parity(tool:Literal['narrative_intelligence','college_track','colle
 # Full study-abroad lifecycle workbench for audit rows 1-62.
 from .lifecycle_routes_01_62 import router as lifecycle_workbench_router
 router.include_router(lifecycle_workbench_router)
+
+class EvidenceMatrixIn(BaseModel):
+ requirements:list[dict[str,Any]]=Field(default_factory=list,max_length=500);claims:list[dict[str,Any]]=Field(default_factory=list,max_length=1000);owner_records:list[dict[str,Any]]=Field(default_factory=list,max_length=2000);official_sources:list[dict[str,Any]]=Field(default_factory=list,max_length=2000)
+@router.post('/application-evidence-matrix')
+def application_evidence_matrix(data:EvidenceMatrixIn):
+ from .evidence_matrix import build_evidence_matrix
+ try:return build_evidence_matrix(data.requirements,data.claims,data.owner_records,data.official_sources)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
