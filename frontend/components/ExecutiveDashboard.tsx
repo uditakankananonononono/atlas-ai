@@ -1,5 +1,7 @@
 "use client";
 import React,{FormEvent,useCallback,useEffect,useMemo,useState} from "react";
+import OperationsChart from "./OperationsChart";
+import {Card,CardContent,CardHeader} from "./ui/card";
 import {Approval,Blocker,DashboardView,Digest,DrilldownResult,KPI,ModuleStatus,Snapshot,WidgetConfig,dashboardApi} from "./executive-dashboard/api";
 type Api=ReturnType<typeof dashboardApi>;
 const severityStyle:Record<string,string>={critical:"border-red-500 text-red-300",warning:"border-amber-500 text-amber-300",info:"border-slate-600 text-slate-300"};
@@ -67,6 +69,7 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
   return <main className="space-y-5 bg-slate-950 p-6 text-white">
     <header className="flex items-center justify-between"><div><p className="text-xs text-cyan-400">MODULE 16</p><h1 className="text-2xl font-semibold">Executive Dashboard</h1></div><div className="flex items-center gap-3 text-sm"><button onClick={()=>setEditView(v=>!v)} className="rounded bg-slate-800 px-3 py-1">{editView?"Done":"Layout"}</button><span className={live?"text-emerald-400":"text-amber-400"}>{live?"Live":"Reconnecting"}</span></div></header>
     {error&&<p className="rounded bg-red-950 p-2 text-sm text-red-300">{error}</p>}
+    {kpis.length>0&&<Card><CardHeader>Live KPI trend</CardHeader><CardContent><OperationsChart data={kpis.slice(0,12).map(k=>({time:k.label,value:k.value}))}/></CardContent></Card>}
     {editView&&view&&<section className="rounded-xl border border-slate-700 bg-slate-900 p-3 text-sm"><h2 className="font-semibold">Layout</h2><ul className="mt-2 space-y-1">{[...view.widgets].sort((a,b)=>a.position-b.position).map(w=><li key={w.id} className="flex items-center gap-2"><button onClick={()=>moveWidget(w.id,-1)} className="rounded bg-slate-800 px-2">Up</button><button onClick={()=>moveWidget(w.id,1)} className="rounded bg-slate-800 px-2">Down</button><label className="flex items-center gap-1"><input type="checkbox" checked={w.visible} onChange={()=>toggleWidget(w.id)}/>{w.kind}{w.kpi_id?`: ${w.kpi_id}`:""}</label></li>)}</ul></section>}
     <form onSubmit={submitCommand} className="rounded-xl border border-slate-700 bg-slate-900 p-4"><label className="text-sm" htmlFor="atlas-command">Ask Atlas or prepare an action</label><div className="mt-2 flex gap-2"><input id="atlas-command" value={command} onChange={e=>setCommand(e.target.value)} className="flex-1 rounded bg-slate-800 p-3" placeholder="Show blockers"/><button className="rounded bg-cyan-500 px-4 text-slate-950">Preview</button></div>{preview&&<div className="mt-3 rounded bg-slate-800 p-3"><p>{preview.intent} · {Math.round(preview.confidence*100)}% confidence</p><p className="text-sm text-slate-300">{preview.read_only?"Read-only":"Requires approval before any action"}</p><button type="button" onClick={runCommand} className="mt-2 rounded border border-cyan-400 px-3 py-1">{preview.read_only?"Run":"Send to approvals"}</button></div>}</form>
     {widgets.map(w=>{const render=sections[w.kind];return render?<div key={w.id}>{render()}</div>:null})}

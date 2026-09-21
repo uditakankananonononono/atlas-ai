@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Namespace
+metadata: {name: atlas}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: atlas-api, namespace: atlas}
+spec:
+  replicas: 3
+  selector: {matchLabels: {app: atlas-api}}
+  template:
+    metadata: {labels: {app: atlas-api}}
+    spec:
+      containers:
+      - name: api
+        image: ghcr.io/OWNER/atlas-ai:latest
+        ports: [{containerPort: 8000}]
+        readinessProbe: {httpGet: {path: /ready, port: 8000}, initialDelaySeconds: 10}
+        livenessProbe: {httpGet: {path: /health, port: 8000}, initialDelaySeconds: 20}
+        envFrom: [{secretRef: {name: atlas-runtime}}]
+        resources: {requests: {cpu: 500m, memory: 1Gi}, limits: {cpu: "2", memory: 4Gi}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: atlas-api, namespace: atlas}
+spec: {selector: {app: atlas-api}, ports: [{port: 8000, targetPort: 8000}]}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: {name: atlas-api, namespace: atlas}
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: atlas-api}
+  minReplicas: 3
+  maxReplicas: 20
+  metrics: [{type: Resource, resource: {name: cpu, target: {type: Utilization, averageUtilization: 65}}}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: default-deny, namespace: atlas}
+spec: {podSelector: {}, policyTypes: [Ingress, Egress]}

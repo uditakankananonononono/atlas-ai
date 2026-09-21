@@ -12,7 +12,7 @@ class ProviderError(RuntimeError): pass
 class ProviderUsage:
     provider:str; model:str; input_tokens:int; output_tokens:int
 
-_BREAKERS={name:CircuitBreaker(3,30) for name in ("openai","anthropic","gemini")}
+_BREAKERS={name:CircuitBreaker(3,30) for name in ("openai","anthropic","gemini","deepseek","ollama")}
 _USAGE:list[ProviderUsage]=[]
 
 def usage_snapshot()->list[ProviderUsage]: return list(_USAGE)
@@ -64,6 +64,18 @@ async def generate(prompt: str, provider: str, model: str | None = None) -> tupl
         data=await _post(provider,f"https://generativelanguage.googleapis.com/v1beta/models/{chosen}:generateContent",params={"key":key},payload={"contents":[{"parts":[{"text":prompt}]}]})
         try:text="".join(x.get("text","") for x in data["candidates"][0]["content"]["parts"])
         except (KeyError,IndexError,TypeError) as exc:raise ProviderError("Gemini response schema rejected") from exc
+    elif provider=="deepseek":
+        key=os.getenv("DEEPSEEK_API_KEY")
+        if not key: raise ProviderError("DEEPSEEK_API_KEY is not configured")
+        chosen=_model(model or os.getenv("ATLAS_DEEPSEEK_MODEL","deepseek-chat"))
+        data=await _post(provider,"https://api.deepseek.com/chat/completions",headers={"Authorization":f"Bearer {key}"},payload={"model":chosen,"messages":[{"role":"user","content":prompt}]})
+        try:text=data["choices"][0]["message"]["content"]
+        except (KeyError,IndexError,TypeError) as exc:raise ProviderError("DeepSeek response schema rejected") from exc
+    elif provider in {"ollama","local"}:
+        provider="ollama";chosen=_model(model or os.getenv("ATLAS_OLLAMA_MODEL","llama3.1:70b"));base=os.getenv("ATLAS_OLLAMA_URL","http://ollama:11434").rstrip("/")
+        data=await _post(provider,f"{base}/api/chat",payload={"model":chosen,"stream":False,"messages":[{"role":"user","content":prompt}]})
+        try:text=data["message"]["content"]
+        except (KeyError,TypeError) as exc:raise ProviderError("Ollama response schema rejected") from exc
     else:raise ProviderError(f"Unsupported provider: {provider}")
     if not isinstance(text,str) or not text.strip():raise ProviderError(f"{provider.title()} returned no text")
     _usage(data,provider,chosen);return chosen,text
