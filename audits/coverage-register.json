@@ -20320,11 +20320,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1560_bend_testing",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1560 'Bend Testing': named analysis analyze_bend_testing() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - three-point bend flexural stress (MPa) from N/mm inputs with section modulus and allowable-stress safety margin. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1560_bend_testing in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_bend_testing: three-point bend flexural stress (MPa) from N/mm inputs with section modulus and allowable-stress safety margin; named test test_row_1560_bend_testing green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1561,
@@ -20333,11 +20333,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1561_non_destructive_testing",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1561 'Non-Destructive Testing': named analysis analyze_non_destructive_testing() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - method-to-defect capability screening distinguishing surface vs volumetric methods with suitability constraints. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1561_non_destructive_testing in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_non_destructive_testing: method-to-defect capability screening distinguishing surface vs volumetric methods with suitability constraints; named test test_row_1561_non_destructive_testing green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1562,
@@ -20346,11 +20346,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1562_ultrasonic_testing",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1562 'Ultrasonic Testing': named analysis analyze_ultrasonic_testing() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - ultrasonic time-of-flight round-trip and echo-derived thickness deviation in mm/us with velocity provenance. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1562_ultrasonic_testing in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_ultrasonic_testing: ultrasonic time-of-flight round-trip and echo-derived thickness deviation in mm/us with velocity provenance; named test test_row_1562_ultrasonic_testing green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1563,
@@ -20359,11 +20359,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1563_radiographic_testing",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1563 'Radiographic Testing': named analysis analyze_radiographic_testing() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - radiographic exposure geometry with geometric unsharpness (mm) and mandatory controlled-area radiation safety boundary. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1563_radiographic_testing in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_radiographic_testing: radiographic exposure geometry with geometric unsharpness (mm) and mandatory controlled-area radiation safety boundary; named test test_row_1563_radiographic_testing green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1564,
@@ -20372,11 +20372,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1564_magnetic_particle_testing",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1564 'Magnetic Particle Testing': named analysis analyze_magnetic_particle_testing() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - ferromagnetic-material gating, magnetization direction and lifting-force margin for magnetic particle inspection. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1564_magnetic_particle_testing in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_magnetic_particle_testing: ferromagnetic-material gating, magnetization direction and lifting-force margin for magnetic particle inspection; named test test_row_1564_magnetic_particle_testing green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1565,
@@ -20385,11 +20385,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1565_dye_penetrant_testing",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1565 'Dye Penetrant Testing': named analysis analyze_dye_penetrant_testing() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - penetrant/developer dwell-time window screening against qualified procedure limits. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1565_dye_penetrant_testing in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_dye_penetrant_testing: penetrant/developer dwell-time window screening against qualified procedure limits; named test test_row_1565_dye_penetrant_testing green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1566,
@@ -20398,11 +20398,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1566_eddy_current_testing",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1566 'Eddy Current Testing': named analysis analyze_eddy_current_testing() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - eddy-current standard depth of penetration (skin depth, mm) from probe frequency, conductivity and permeability. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1566_eddy_current_testing in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_eddy_current_testing: eddy-current standard depth of penetration (skin depth, mm) from probe frequency, conductivity and permeability; named test test_row_1566_eddy_current_testing green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1567,
@@ -20411,11 +20411,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1567_acoustic_emission_testing",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1567 'Acoustic Emission Testing': named analysis analyze_acoustic_emission_testing() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - acoustic-emission sensor-count triangulation feasibility with threshold_db gating. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1567_acoustic_emission_testing in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_acoustic_emission_testing: acoustic-emission sensor-count triangulation feasibility with threshold_db gating; named test test_row_1567_acoustic_emission_testing green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1568,
@@ -20424,11 +20424,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1568_thermography",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1568 'Thermography': named analysis analyze_thermography() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - emissivity-validated thermographic delta-T with reflected-temperature correction requirement. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1568_thermography in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_thermography: emissivity-validated thermographic delta-T with reflected-temperature correction requirement; named test test_row_1568_thermography green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1569,
@@ -20437,11 +20437,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1569_visual_inspection",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1569 'Visual Inspection': named analysis analyze_visual_inspection() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - visual-inspection zone coverage with 500 lux lighting adequacy screening. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1569_visual_inspection in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_visual_inspection: visual-inspection zone coverage with 500 lux lighting adequacy screening; named test test_row_1569_visual_inspection green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1570,
@@ -20450,11 +20450,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1570_electrical_engineering",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1570 'Electrical Engineering': named analysis analyze_electrical_engineering() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - electrical architecture requirements-to-hazard coverage with unmitigated-hazard constraints. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1570_electrical_engineering in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_electrical_engineering: electrical architecture requirements-to-hazard coverage with unmitigated-hazard constraints; named test test_row_1570_electrical_engineering green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1571,
@@ -20463,11 +20463,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1571_circuit_design",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1571 'Circuit Design': named analysis analyze_circuit_design() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - circuit netlist power budget with supply-current margin and ERC requirement. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1571_circuit_design in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_circuit_design: circuit netlist power budget with supply-current margin and ERC requirement; named test test_row_1571_circuit_design green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1572,
@@ -20476,11 +20476,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1572_pcb_design",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1572 'PCB Design': named analysis analyze_pcb_design() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - PCB layer/clearance screening against voltage-dependent required spacing. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1572_pcb_design in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_pcb_design: PCB layer/clearance screening against voltage-dependent required spacing; named test test_row_1572_pcb_design green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1573,
@@ -20489,11 +20489,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1573_signal_processing",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1573 'Signal Processing': named analysis analyze_signal_processing() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - Nyquist sampling ratio with aliasing detection below the Nyquist rate. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1573_signal_processing in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_signal_processing: Nyquist sampling ratio with aliasing detection below the Nyquist rate; named test test_row_1573_signal_processing green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1574,
@@ -20502,11 +20502,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1574_control_systems",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1574 'Control Systems': named analysis analyze_control_systems() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - plant pole screening for right-half-plane instability before closed-loop design. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1574_control_systems in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_control_systems: plant pole screening for right-half-plane instability before closed-loop design; named test test_row_1574_control_systems green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1575,
@@ -20515,11 +20515,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1575_power_electronics",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1575 'Power Electronics': named analysis analyze_power_electronics() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - converter ratio, output current and loss-derived efficiency bounded at 1. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1575_power_electronics in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_power_electronics: converter ratio, output current and loss-derived efficiency bounded at 1; named test test_row_1575_power_electronics green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1576,
@@ -20528,11 +20528,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1576_motor_control",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1576 'Motor Control': named analysis analyze_motor_control() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - motor rated-current margin and speed-derived torque with over-current fail-closed boundary. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1576_motor_control in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_motor_control: motor rated-current margin and speed-derived torque with over-current fail-closed boundary; named test test_row_1576_motor_control green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1577,
@@ -20541,11 +20541,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1577_power_systems",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1577 'Power Systems': named analysis analyze_power_systems() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - generation-load MW balance with 5% imbalance constraint and load-flow requirement. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1577_power_systems in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_power_systems: generation-load MW balance with 5% imbalance constraint and load-flow requirement; named test test_row_1577_power_systems green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1578,
@@ -20554,11 +20554,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1578_renewable_energy",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1578 'Renewable Energy': named analysis analyze_renewable_energy() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - renewable capacity factor with physics fail-closed above 1. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1578_renewable_energy in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_renewable_energy: renewable capacity factor with physics fail-closed above 1; named test test_row_1578_renewable_energy green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1579,
@@ -20567,11 +20567,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1579_solar_power",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1579 'Solar Power': named analysis analyze_solar_power() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - solar irradiance-area-efficiency energy estimate with shading/derate caveats. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1579_solar_power in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_solar_power: solar irradiance-area-efficiency energy estimate with shading/derate caveats; named test test_row_1579_solar_power green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1580,
@@ -20580,11 +20580,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1580_wind_power",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1580 'Wind Power': named analysis analyze_wind_power() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - Betz-limited wind power with power-coefficient physics boundary at 0.593. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1580_wind_power in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_wind_power: Betz-limited wind power with power-coefficient physics boundary at 0.593; named test test_row_1580_wind_power green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1581,
@@ -20593,11 +20593,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1581_hydro_power",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1581 'Hydro Power': named analysis analyze_hydro_power() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - hydro hydraulic power from flow, head and efficiency (W). Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1581_hydro_power in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_hydro_power: hydro hydraulic power from flow, head and efficiency (W); named test test_row_1581_hydro_power green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1582,
@@ -20606,11 +20606,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1582_geothermal",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1582 'Geothermal': named analysis analyze_geothermal() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - geothermal enthalpy-drop thermal power (kW) with reinjection review. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1582_geothermal in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_geothermal: geothermal enthalpy-drop thermal power (kW) with reinjection review; named test test_row_1582_geothermal green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1583,
@@ -20619,11 +20619,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1583_energy_storage",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1583 'Energy Storage': named analysis analyze_energy_storage() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - storage charge/discharge durations and power-to-energy ratio. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1583_energy_storage in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_energy_storage: storage charge/discharge durations and power-to-energy ratio; named test test_row_1583_energy_storage green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1584,
@@ -20632,11 +20632,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1584_battery_technology",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1584 'Battery Technology': named analysis analyze_battery_technology() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - battery usable energy (Wh) gated by depth of discharge with BMS requirement. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1584_battery_technology in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_battery_technology: battery usable energy (Wh) gated by depth of discharge with BMS requirement; named test test_row_1584_battery_technology green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1585,
@@ -20645,11 +20645,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1585_fuel_cells",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1585 'Fuel Cells': named analysis analyze_fuel_cells() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - fuel-cell electrical efficiency with fail-closed boundary above 1. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1585_fuel_cells in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_fuel_cells: fuel-cell electrical efficiency with fail-closed boundary above 1; named test test_row_1585_fuel_cells green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1586,
@@ -20658,11 +20658,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1586_supercapacitors",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1586 'Supercapacitors': named analysis analyze_supercapacitors() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - supercapacitor stored energy (J) with rated-voltage derating margin. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1586_supercapacitors in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_supercapacitors: supercapacitor stored energy (J) with rated-voltage derating margin; named test test_row_1586_supercapacitors green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1587,
@@ -20671,11 +20671,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1587_smart_grid",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1587 'Smart Grid': named analysis analyze_smart_grid() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - smart-grid telemetry/objective screening with no telecontrol issued. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1587_smart_grid in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_smart_grid: smart-grid telemetry/objective screening with no telecontrol issued; named test test_row_1587_smart_grid green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1588,
@@ -20684,11 +20684,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1588_microgrids",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1588 'Microgrids': named analysis analyze_microgrids() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - microgrid islanded supply margin with deficit constraint and black-start requirement. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1588_microgrids in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_microgrids: microgrid islanded supply margin with deficit constraint and black-start requirement; named test test_row_1588_microgrids green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1589,
@@ -20697,11 +20697,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1589_hvdc",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1589 'HVDC': named analysis analyze_hvdc() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - HVDC dc current from MW/kV with converter loss study requirement. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1589_hvdc in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_hvdc: HVDC dc current from MW/kV with converter loss study requirement; named test test_row_1589_hvdc green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1590,
@@ -20710,11 +20710,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1590_facts",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1590 'FACTS': named analysis analyze_facts() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - FACTS reactive-power rating margin with fail-closed over-rating boundary. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1590_facts in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_facts: FACTS reactive-power rating margin with fail-closed over-rating boundary; named test test_row_1590_facts green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1591,
@@ -20723,11 +20723,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1591_power_quality",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1591 'Power Quality': named analysis analyze_power_quality() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - power-quality voltage deviation and THD screening against reference bands. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1591_power_quality in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_power_quality: power-quality voltage deviation and THD screening against reference bands; named test test_row_1591_power_quality green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1592,
@@ -20736,11 +20736,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1592_electromagnetic_compatibility",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1592 'Electromagnetic Compatibility': named analysis analyze_electromagnetic_compatibility() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - EMC emission margin (dB) with 6 dB design-margin constraint; no compliance claim. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1592_electromagnetic_compatibility in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_electromagnetic_compatibility: EMC emission margin (dB) with 6 dB design-margin constraint; no compliance claim; named test test_row_1592_electromagnetic_compatibility green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1593,
@@ -20749,11 +20749,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1593_antenna_design",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1593 'Antenna Design': named analysis analyze_antenna_design() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - antenna gain-vs-beamwidth directivity consistency boundary and wavelength. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1593_antenna_design in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_antenna_design: antenna gain-vs-beamwidth directivity consistency boundary and wavelength; named test test_row_1593_antenna_design green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1594,
@@ -20762,11 +20762,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1594_rf_engineering",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1594 'RF Engineering': named analysis analyze_rf_engineering() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - RF thermal noise floor (dBm) with noise figure and linearity test requirement. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1594_rf_engineering in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_rf_engineering: RF thermal noise floor (dBm) with noise figure and linearity test requirement; named test test_row_1594_rf_engineering green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1595,
@@ -20775,11 +20775,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1595_microwave_engineering",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1595 'Microwave Engineering': named analysis analyze_microwave_engineering() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - microwave S-parameter passivity screening (|S|<=1) with de-embedding requirement. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1595_microwave_engineering in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_microwave_engineering: microwave S-parameter passivity screening (|S|<=1) with de-embedding requirement; named test test_row_1595_microwave_engineering green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1596,
@@ -20788,11 +20788,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1596_radar_systems",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1596 'Radar Systems': named analysis analyze_radar_systems() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - radar bandwidth required for range resolution (Hz) with spectrum authorization boundary. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1596_radar_systems in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_radar_systems: radar bandwidth required for range resolution (Hz) with spectrum authorization boundary; named test test_row_1596_radar_systems green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1597,
@@ -20801,11 +20801,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1597_communications_systems",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1597 'Communications Systems': named analysis analyze_communications_systems() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - channel capacity vs source rate margin (bps). Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1597_communications_systems in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_communications_systems: channel capacity vs source rate margin (bps); named test test_row_1597_communications_systems green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1598,
@@ -20814,11 +20814,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1598_wireless_communications",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1598 'Wireless Communications': named analysis analyze_wireless_communications() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - wireless fractional bandwidth with fail-closed bandwidth-above-carrier boundary. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1598_wireless_communications in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_wireless_communications: wireless fractional bandwidth with fail-closed bandwidth-above-carrier boundary; named test test_row_1598_wireless_communications green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1599,
@@ -20827,11 +20827,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1599_5g_6g",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1599 '5G/6G': named analysis analyze_cellular_5g_6g() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - 5G/6G numerology ratio and MIMO layers with standards-release requirement and no network signaling. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1599_5g_6g in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_cellular_5g_6g: 5G/6G numerology ratio and MIMO layers with standards-release requirement and no network signaling; named test test_row_1599_5g_6g green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1600,
@@ -20840,11 +20840,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1600_optical_communications",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1600 'Optical Communications': named analysis analyze_optical_communications() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - optical fiber attenuation budget (dB) with telecom-window and dispersion checks. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1600_optical_communications in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_optical_communications: optical fiber attenuation budget (dB) with telecom-window and dispersion checks; named test test_row_1600_optical_communications green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1601,
@@ -20853,11 +20853,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1601_satellite_communications",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1601 'Satellite Communications': named analysis analyze_satellite_communications() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - satellite free-space path loss (dB) with rain-fade margin and ITU licensing boundary. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1601_satellite_communications in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_satellite_communications: satellite free-space path loss (dB) with rain-fade margin and ITU licensing boundary; named test test_row_1601_satellite_communications green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1602,
@@ -20866,11 +20866,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1602_deep_space_communications",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1602 'Deep Space Communications': named analysis analyze_deep_space_communications() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - deep-space one-way light time (s) with delay-tolerant-protocol requirement. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1602_deep_space_communications in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_deep_space_communications: deep-space one-way light time (s) with delay-tolerant-protocol requirement; named test test_row_1602_deep_space_communications green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1603,
@@ -20879,11 +20879,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1603_information_theory",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1603 'Information Theory': named analysis analyze_information_theory() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - Shannon entropy (bits/symbol) with probability-simplex validation. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1603_information_theory in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_information_theory: Shannon entropy (bits/symbol) with probability-simplex validation; named test test_row_1603_information_theory green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1604,
@@ -20892,11 +20892,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1604_coding_theory",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1604 'Coding Theory': named analysis analyze_coding_theory() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - coding-theory minimum-distance error-detection capability. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1604_coding_theory in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_coding_theory: coding-theory minimum-distance error-detection capability; named test test_row_1604_coding_theory green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1605,
@@ -20905,11 +20905,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1605_error_correction",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1605 'Error Correction': named analysis analyze_error_correction() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - error-correction capability floor((d-1)/2) with decoder validation requirement. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1605_error_correction in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_error_correction: error-correction capability floor((d-1)/2) with decoder validation requirement; named test test_row_1605_error_correction green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1606,
@@ -20918,11 +20918,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1606_compression",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1606 'Compression': named analysis analyze_compression() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - compression ratio with lossless round-trip constraint on expansion. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1606_compression in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_compression: compression ratio with lossless round-trip constraint on expansion; named test test_row_1606_compression green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1607,
@@ -20931,11 +20931,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1607_encryption",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1607 'Encryption': named analysis analyze_encryption() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - encryption algorithm/mode/key-strength screening with fail-closed deprecated-algorithm, sub-128-bit and ECB boundaries; no key material handled. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1607_encryption in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_encryption: encryption algorithm/mode/key-strength screening with fail-closed deprecated-algorithm, sub-128-bit and ECB boundaries; no key material handled; named test test_row_1607_encryption green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1608,
@@ -20944,11 +20944,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1608_network_security",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1608 'Network Security': named analysis analyze_network_security() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - network zone/trust-boundary control coverage with unguarded-boundary constraints and deny-by-default. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1608_network_security in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_network_security: network zone/trust-boundary control coverage with unguarded-boundary constraints and deny-by-default; named test test_row_1608_network_security green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1609,
@@ -20957,11 +20957,11 @@
       "description": "",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
       "test_path": "tests/modules/test_m12_engineering_1560_1609.py",
-      "test_case": null,
-      "post_semantic_status": "fixed-in-wave",
-      "implementation_details": "Functions: engineering_support_1560_1609. Boundaries: Traceable engineering workbench for owner feature rows 1560-1609.\n\nCalculations operate only on supplied measurements/design assumptions. Outputs retain\nunits, provenance, acceptance criteria, uncertainty, and mandatory qualified review.\nThey never operate equipment, energize circuits, issue inspection certificates, or\nperform offensive security actions.; Engineering decision support only. A qualified engineer must verify inputs, units, standards, safety controls, model limits and the original evidence before use.; review_required; boundary; Preliminary design analysis only. It does not create a construction-ready design, safety certification or control command. Qualified engineers verify topology, ratings, tolerances, protection, stability, layout, code and test evidence before energization.; Practitioner depth: row-specific engineering calculations retain distinctive outputs and mounted route, with acceptance/verification evaluation and calibration, model and operating-environment uncertainty; no certification or physical execution claim.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "test_case": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1609_cybersecurity",
+      "post_semantic_status": "verified",
+      "implementation_details": "Row 1609 'Cybersecurity': named analysis analyze_cybersecurity() in backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py implements a row-specific mechanism - defensive cyber risk register on a 1-5 likelihood/impact scale with residual-status requires_validation and defensive-scope-only boundary. Dispatch is a 50-entry named registry (ANALYSES), not group envelopes; every row returns distinct keyed outputs with units, constraints, safety margins, assumptions, uncertainty and standards provenance. Mounted at POST /api/v1/ai-research-lab/engineering-1560-1609/support (tenant-scoped) and /engineering-1560-1609/semantic-support. Named test test_row_1609_cybersecurity in tests/modules/test_m12_engineering_1560_1609.py plus suite-level unit-mismatch, infeasible/safety-boundary and per-row fail-closed tests. Boundary: decision support only; no physical validation, certification, equipment operation or offensive security action.",
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "analyze_cybersecurity: defensive cyber risk register on a 1-5 likelihood/impact scale with residual-status requires_validation and defensive-scope-only boundary; named test test_row_1609_cybersecurity green; suite-level tests detect unit mismatch and infeasible/safety-boundary inputs for this row; focused and full suites green under Python 3.12."
     },
     {
       "row": 1610,
