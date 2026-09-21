@@ -56,8 +56,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** mounted expiring device pairing plus paired-device result-receipt verification over a tamper-evident hash chain, with revocation enforcement and explicit limits on attesting OS behavior.
 - **Next:** installable paired-PC daemon with OS-keystore identity, native approval prompts and certificate signatures over receipt heads.
 ## M22 - Tools Hub
-- **Landed:** free official discovery sources for GitHub, PyPI and npm replace the shipped empty collector list.
-- **Next:** connect approved discovery proposals to the existing scanner/installer with tenant persistence and rollback receipts.
+- **Landed:** free official GitHub/PyPI/npm discovery plus an integration-receipt endpoint that binds installer operation, artifact/manifest hashes, approval, candidate and rollback backup to the exact proposal.
+- **Next:** tenant-persist proposals/portfolio and invoke the scanner/installer through a durable worker rather than accepting a supplied receipt.
 ## M23 - Study Abroad
 - **Landed:** application evidence matrix links requirements and essay claims to owner records and official program sources, exposes broken references, and returns explicit missing-input items and coverage.
 - **Next:** source-content hashes, official-page freshness checks and reviewer sign-off per matrix revision.
