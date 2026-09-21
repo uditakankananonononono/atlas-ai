@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "source_document_id": "1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY",
+  "fresh_source_read_at": "2026-09-21T12:21:24+05:30",
+  "fresh_plaintext_sha256": "b6a2ecfd0b67be483fa8da5e1ef586505eddf8817bc64570dd0af2086c50ec2c",
+  "semantic_verification_standard": "Exact description semantics, mounted runtime reachability, distinctive invariants, failure behavior and honest caveats. Text-to-ledger coverage or a passing generic row-ID test is insufficient.",
+  "lanes": [
+    {
+      "lane": 1,
+      "row_start": 1,
+      "row_end": 287,
+      "row_count": 287,
+      "first_requirement": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
+      "last_requirement": "UI/UX Design",
+      "categories": [
+        "Claire personalization additions",
+        "Creative & Artistic Capabilities",
+        "Executive Function & Meta-Cognition",
+        "Research & Scientific Discovery"
+      ],
+      "instruction": "Re-read every assigned row requirement and exact description from the fresh Google Doc export. Inspect implementation, mounted route, and named test. A generic dispatcher, label echo, placeholder, nearby method, acceptance-only test, or title keyword match does not pass. Fix every semantic mismatch; add distinctive output invariants, invalid-input/failure-mode tests, and mounted HTTP tests. Update ledger evidence/caveats only after focused and full suite pass."
+    },
+    {
+      "lane": 2,
+      "row_start": 288,
+      "row_end": 574,
+      "row_count": 287,
+      "first_requirement": "Information Architecture",
+      "last_requirement": "Optimization Engine",
+      "categories": [
+        "Business & Entrepreneurship",
+        "Creative & Artistic Capabilities",
+        "Technical & Engineering"
+      ],
+      "instruction": "Re-read every assigned row requirement and exact description from the fresh Google Doc export. Inspect implementation, mounted route, and named test. A generic dispatcher, label echo, placeholder, nearby method, acceptance-only test, or title keyword match does not pass. Fix every semantic mismatch; add distinctive output invariants, invalid-input/failure-mode tests, and mounted HTTP tests. Update ledger evidence/caveats only after focused and full suite pass."
+    },
+    {
+      "lane": 3,
+      "row_start": 575,
+      "row_end": 861,
+      "row_count": 287,
+      "first_requirement": "Simulation Engine",
+      "last_requirement": "Critical Thinking",
+      "categories": [
+        "Learning & Knowledge",
+        "Social & Communication",
+        "Technical & Engineering"
+      ],
+      "instruction": "Re-read every assigned row requirement and exact description from the fresh Google Doc export. Inspect implementation, mounted route, and named test. A generic dispatcher, label echo, placeholder, nearby method, acceptance-only test, or title keyword match does not pass. Fix every semantic mismatch; add distinctive output invariants, invalid-input/failure-mode tests, and mounted HTTP tests. Update ledger evidence/caveats only after focused and full suite pass."
+    },
+    {
+      "lane": 4,
+      "row_start": 862,
+      "row_end": 1148,
+      "row_count": 287,
+      "first_requirement": "Creative Thinking",
+      "last_requirement": "DBT Skill Selection",
+      "categories": [
+        "Data & Analytics",
+        "Future & Emerging Capabilities",
+        "Learning & Knowledge",
+        "Specialized Domain Expertise"
+      ],
+      "instruction": "Re-read every assigned row requirement and exact description from the fresh Google Doc export. Inspect implementation, mounted route, and named test. A generic dispatcher, label echo, placeholder, nearby method, acceptance-only test, or title keyword match does not pass. Fix every semantic mismatch; add distinctive output invariants, invalid-input/failure-mode tests, and mounted HTTP tests. Update ledger evidence/caveats only after focused and full suite pass."
+    },
+    {
+      "lane": 5,
+      "row_start": 1149,
+      "row_end": 1435,
+      "row_count": 287,
+      "first_requirement": "Medication Management",
+      "last_requirement": "Discovery Learning",
+      "categories": [
+        "Specialized Domain Expertise"
+      ],
+      "instruction": "Re-read every assigned row requirement and exact description from the fresh Google Doc export. Inspect implementation, mounted route, and named test. A generic dispatcher, label echo, placeholder, nearby method, acceptance-only test, or title keyword match does not pass. Fix every semantic mismatch; add distinctive output invariants, invalid-input/failure-mode tests, and mounted HTTP tests. Update ledger evidence/caveats only after focused and full suite pass."
+    },
+    {
+      "lane": 6,
+      "row_start": 1436,
+      "row_end": 1722,
+      "row_count": 287,
+      "first_requirement": "Experiential Learning",
+      "last_requirement": "Field Research",
+      "categories": [
+        "Specialized Domain Expertise"
+      ],
+      "instruction": "Re-read every assigned row requirement and exact description from the fresh Google Doc export. Inspect implementation, mounted route, and named test. A generic dispatcher, label echo, placeholder, nearby method, acceptance-only test, or title keyword match does not pass. Fix every semantic mismatch; add distinctive output invariants, invalid-input/failure-mode tests, and mounted HTTP tests. Update ledger evidence/caveats only after focused and full suite pass."
+    },
+    {
+      "lane": 7,
+      "row_start": 1723,
+      "row_end": 2010,
+      "row_count": 288,
+      "first_requirement": "Case Study Design",
+      "last_requirement": "Launch onboarding prompts for application source corpus",
+      "categories": [
+        "Claire personalization additions",
+        "Specialized Domain Expertise"
+      ],
+      "instruction": "Re-read every assigned row requirement and exact description from the fresh Google Doc export. Inspect implementation, mounted route, and named test. A generic dispatcher, label echo, placeholder, nearby method, acceptance-only test, or title keyword match does not pass. Fix every semantic mismatch; add distinctive output invariants, invalid-input/failure-mode tests, and mounted HTTP tests. Update ledger evidence/caveats only after focused and full suite pass."
+    }
+  ]
+}
