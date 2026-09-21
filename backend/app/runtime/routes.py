@@ -30,3 +30,6 @@ router.include_router(technical_architecture_router_a01_a33)
 # Semantic verification report, owner-feature rows 1723-2010.
 from .semantic_wave_routes_1723_2010 import router as semantic_wave_router_1723_2010
 router.include_router(semantic_wave_router_1723_2010)
+
+from .semantic_verification_routes_1149_1435 import router as semantic_verification_router_1149_1435
+router.include_router(semantic_verification_router_1149_1435)

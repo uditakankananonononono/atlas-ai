@@ -19,3 +19,7 @@ def test_1176_geriatric_care_reports_insufficient_information():assert life('ger
 def test_1177_1179_inclusive_health_uses_relevant_anatomy_not_identity_inference(method):assert 'rather than assumptions' in life(method)['boundary']
 def test_knowledge_citations_are_required():
  with pytest.raises(ValueError):clinical_support('genetic_counseling',{'pedigree':[{}],'knowledge':[{}]})
+
+def test_1178_mens_health_keeps_screening_and_symptoms_for_clinician_review():
+ o=clinical_support('mens_health',{'profile':{'age':30},'concerns':['symptom'],'recommendations':[{'name':'blood pressure screening',**SRC}]})
+ assert o['mode']=='mens_health' and o['recommendations_for_shared_review'][0]['topic'] is None and 'clinician' in o['boundary'].lower()
