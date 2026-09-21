@@ -180,3 +180,17 @@ def _max_drawdown(r):
  wealth=peak=1.;m=0.
  for x in r:wealth*=1+x;peak=max(peak,wealth);m=min(m,wealth/peak-1)
  return m
+
+# Quantitative rows retain their named outputs and gain an explicit model-risk
+# report. Completeness is never represented as investment confidence.
+_original_run = run
+from app.core.depth_quality import attach_quality as _attach_quality
+
+def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
+    out=_original_run(method,data,params,seed)
+    required=[k for k in data if k not in {'assumptions','sources','evidence'}]
+    evidence=[x for key in ('sources','evidence') for x in data.get(key,[]) if isinstance(x,dict)]
+    return _attach_quality(out,domain='finance',method=method,inputs=data,
+        required_inputs=required,evidence=evidence,assumptions=data.get('assumptions',[]),
+        limitations=['Model output is scenario analysis, not accounting, tax, valuation, trading, or investment advice.',
+                     'Market data, conventions, calibration, liquidity, costs, policy, and model risk require independent review.'])
