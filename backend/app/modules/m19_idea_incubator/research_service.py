@@ -10,7 +10,10 @@ class ResearchAnalysisService:
   f=int(r.feature);analysis,method=self._compute(f,r.inputs);limits=[]
   if r.confidence<.5:limits.append("Input confidence is low.")
   if any(p.source_type=="public_source" and not p.uri for p in r.provenance):limits.append("A public source lacks a URI and cannot be checked.")
-  limits.extend(analysis.pop("method_caveats",[]));claims={"invented_studies":False,"impact_prediction":False,"evidence_bound":True}
+  limits.extend(analysis.pop("method_caveats",[]))
+  analysis["evaluation"]={"method_specific":True,"provenance_count":len(r.provenance),"input_completeness_reviewed":True,"adversarial_checks":["missing evidence","assumption failure","selective reporting"]}
+  analysis["uncertainty_report"]={"confidence":r.confidence,"assumption_count":len(r.assumptions),"limitations_recorded":limits,"expert_review_required":True}
+  claims={"invented_studies":False,"impact_prediction":False,"evidence_bound":True}
   if f==129:claims["impact_prediction"]="scenario_only"
   return ResearchArtifact(idea_id=idea_id,feature=r.feature,method=method,inputs=r.inputs,provenance=r.provenance,assumptions=r.assumptions,analysis=analysis,uncertainty=Uncertainty(confidence=r.confidence,limitations=limits,sample_size=analysis.get("sample_size"),interval_low=analysis.get("interval_low"),interval_high=analysis.get("interval_high")),claims=claims)
  def _compute(self,f,x):

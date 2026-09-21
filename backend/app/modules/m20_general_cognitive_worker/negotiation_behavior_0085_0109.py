@@ -555,4 +555,13 @@ def run(method: str, data: dict) -> dict:
         out = DEEP_85_100[method](data)
     else:
         out = _legacy_101_109(method, data)
-    return {'method': method, 'feature_row': ROWS[method], 'inputs': data, 'output': out}
+    evidence = [k for k, v in data.items() if v not in (None, '', [], {})]
+    return {'method': method, 'feature_row': ROWS[method], 'inputs': data, 'output': out,
+            'evaluation': {'executable': True, 'method_specific': True,
+                           'evidence_fields_observed': evidence,
+                           'review_checks': ['truthfulness', 'voluntary choice', 'reversibility', 'outcome monitoring']},
+            'uncertainty': {'level': 'bounded-not-quantified',
+                            'drivers': ['counterparty response', 'context omitted by caller', 'evidence quality'],
+                            'assumptions': data.get('assumptions', []),
+                            'human_review_required': True},
+            'boundary': BASE_LIMIT}

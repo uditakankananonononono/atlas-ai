@@ -148,4 +148,7 @@ def run(row:int,data:dict[str,Any]):
  if row not in ROWS:raise QuantError('unsupported row')
  sources=src(data)
  out=time_series(row,data) if row<=194 else spatial_network(row,data) if row<=204 else simulation(row,data) if row<=210 else optimize(row,data)
- return {'row_id':row,'method':ROWS[row],'result':out,'sources':sources,'assumptions':data.get('assumptions',[]),'limitations':data.get('limitations',[]),'status':'reference_analysis_for_specialist_review','side_effects':[],'boundary':'Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.'}
+ return {'row_id':row,'method':ROWS[row],'result':out,'sources':sources,'assumptions':data.get('assumptions',[]),'limitations':data.get('limitations',[]),
+         'evaluation':{'method_specific':True,'review_checks':['assumptions','diagnostics','sensitivity','production-library replication'],'reference_result_only':True},
+         'uncertainty':{'level':'requires specialist estimation','metrics':data.get('uncertainty_metrics',[]),'drivers':['finite sample','model misspecification','numerical approximation'],'expert_review_required':True},
+         'status':'reference_analysis_for_specialist_review','side_effects':[],'boundary':'Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.'}
