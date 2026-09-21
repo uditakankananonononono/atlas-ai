@@ -15,6 +15,11 @@ def _v(d,k,n=1):
 def _same(*x):
  if len({len(y) for y in x})!=1:raise ValueError('aligned arrays required')
 def _base(m,d,p):return {'method':m,'feature_row':ROWS[m],'inputs':{'data':d,'params':p},'assumptions':[],'method_limits':[]}
+def _finalize(o):
+ out=o.get('output',{})
+ o['evaluation']={'algorithm_executed':True,'output_fields':sorted(out),'human_review_required':True}
+ o['uncertainty']={'method_limits':list(o['method_limits']),'assumptions':list(o['assumptions']),'physical_result_observed':False,'fabricated_or_deployed':False,'authorization_verified':False}
+ return o
 def run(method,data,params=None,seed=0):
  if method not in ROWS:raise ValueError(f'unsupported emerging method {method}')
  p=params or {};o=_base(method,data,p);a=o['assumptions'];lim=o['method_limits'];out={};row=ROWS[method]
@@ -68,9 +73,9 @@ def run(method,data,params=None,seed=0):
    initial=_f(data['initial_dimension'],'initial');stimulated=_f(data['stimulated_dimension'],'stimulated')
    if initial==0:raise ValueError('initial_dimension must be nonzero')
    out={'stimulus_response_change':stimulated-initial,'response_fraction':(stimulated-initial)/initial,'cycles':int(data.get('cycles',1))};lim+=['Response proxy does not establish fatigue life, printability or application safety.']
-   o['output']=out;return o
+   o['output']=out;return _finalize(o)
   viability=_v(data,'cell_viability');mechanical=_v(data,'mechanical_integrity');_same(viability,mechanical)
   if any(not 0<=x<=1 for x in viability+mechanical):raise ValueError('scores must be 0..1')
   maturity=_f(data.get('maturity',0),'maturity');out={'mean_cell_viability':sum(viability)/len(viability),'mean_mechanical_integrity':sum(mechanical)/len(mechanical),'maturity':maturity,'preclinical_ready':min(viability)>=_f(p.get('viability_threshold',.8),'threshold') and min(mechanical)>=_f(p.get('integrity_threshold',.7),'threshold'),'clinical_use_authorized':False}
   lim+=['No clinical-use authorization; sterility, vascularization, immune response and long-term function require validated evidence.']
- o['output']=out;return o
+ o['output']=out;return _finalize(o)

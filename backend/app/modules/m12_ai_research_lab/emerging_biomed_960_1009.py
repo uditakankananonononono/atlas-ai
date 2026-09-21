@@ -88,4 +88,6 @@ def run(method,data):
   transmitted=_n(data,"packets_transmitted");received=_n(data,"packets_received");energy=_n(data,"energy_mj");time=_n(data,"hours");out={"packet_delivery_rate":received/transmitted,"energy_per_received_packet":energy/received,"operating_hours":time}
  else:raise AssertionError(method)
  out["method_limits"]=limits
- return {"method":method,"feature_row":ROWS[method],"inputs":data,"output":out}
+ return {"method":method,"feature_row":ROWS[method],"inputs":data,"output":out,
+  "evaluation":{"calculator_executed":True,"metric_fields":sorted(k for k in out if k != "method_limits"),"input_fields":sorted(data),"qualified_review_required":True},
+  "uncertainty":{"method_limits":limits,"clinical_effect_established":False,"regulatory_evidence_established":False,"device_or_treatment_executed":False,"caller_supplied_data_not_independently_verified":True}}
