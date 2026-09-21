@@ -1539,3 +1539,7 @@ class AtomicConcept70To92In(BaseModel):
 def atomic_concepts_70_92_route(body:AtomicConcept70To92In):
     try:return run_atomic_70_92(body.atomic_row_id,body.data)
     except AtomicError as error:raise HTTPException(422,str(error)) from error
+
+# Atomic concept ledger rows 139-160.
+from .atomic_concepts_routes_round9_139_160 import router as atomic_concepts_round9_router
+router.include_router(atomic_concepts_round9_router)
