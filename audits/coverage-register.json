@@ -7280,7 +7280,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: EngineeringError, UnknownDesignKindError, DesignKindSpec, DesignDocument, DesignFinding, DesignValidationReport. Functions: list_design_kinds, spec_for_kind, spec_for_row, generate_design, validate_design, to_quality_result. Boundaries: Engineering design artifacts for Atlas Module 14 (Project Builder).\n\nCovers features-doc rows 510-559 (Technical & Engineering):\ntyped, evidence-bearing design documents. Rows 510-534: requirements,\narchitecture, API, schema, monolith/microservice/event/queue/cache/load/\nscale/fault/DR/backup plans, and security/authn/authz/encryption/key-\nmanagement/audit/compliance/privacy/governance/lineage/quality designs.\nRows 535-559: data engineering (ETL, warehouse, lake, mesh, stream/batch,\nlambda/kappa), ML infrastructure (pipelines, feature store, registry,\nmonitoring, experiments), and applied-AI designs (recommendation, search,\nranking, fraud, anomaly, time-series, NLP, CV, speech, translation,\nsummarization). Rows 560-584: language understanding (QA, extraction,\nNER, relations, sentiment, topics, classification, clustering, semantic\nsearch), knowledge and reasoning (KG, ontology, reasoning, planning,\nscheduling, optimization, simulation), and engine/protocol designs (game,\nphysics, render, audio, network, protocol, compression, error correction,\ncryptographic protocol).\n\nEvery design kind maps to exactly one features-doc row. Generation is\ndeterministic scaffolding derived from project context (the LLM planner can\nrefine content afterward); validation enforces required sections, rejects\nplaceholders, rejects operational-state claims (a design artifact is never\nevidence of deployment), and rejects embedded secrets. Validated documents\nregister through the module's existing fail-closed artifact pipeline with\nprovenance, so they flow through the same DAG, budget, and approval model\nas every other project artifact.; Design artifact. Describes planned work only; it is not evidence of deployment, operation, trained models, or achieved performance.; Invalidation; Evidence Collection; Review Cadence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable engine/protocol workbench with method-specific outputs, evaluation, uncertainty/limits, mounted route and adversarial tests."
     },
     {
       "row": 576,
@@ -7292,7 +7293,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: EngineeringError, UnknownDesignKindError, DesignKindSpec, DesignDocument, DesignFinding, DesignValidationReport. Functions: list_design_kinds, spec_for_kind, spec_for_row, generate_design, validate_design, to_quality_result. Boundaries: Engineering design artifacts for Atlas Module 14 (Project Builder).\n\nCovers features-doc rows 510-559 (Technical & Engineering):\ntyped, evidence-bearing design documents. Rows 510-534: requirements,\narchitecture, API, schema, monolith/microservice/event/queue/cache/load/\nscale/fault/DR/backup plans, and security/authn/authz/encryption/key-\nmanagement/audit/compliance/privacy/governance/lineage/quality designs.\nRows 535-559: data engineering (ETL, warehouse, lake, mesh, stream/batch,\nlambda/kappa), ML infrastructure (pipelines, feature store, registry,\nmonitoring, experiments), and applied-AI designs (recommendation, search,\nranking, fraud, anomaly, time-series, NLP, CV, speech, translation,\nsummarization). Rows 560-584: language understanding (QA, extraction,\nNER, relations, sentiment, topics, classification, clustering, semantic\nsearch), knowledge and reasoning (KG, ontology, reasoning, planning,\nscheduling, optimization, simulation), and engine/protocol designs (game,\nphysics, render, audio, network, protocol, compression, error correction,\ncryptographic protocol).\n\nEvery design kind maps to exactly one features-doc row. Generation is\ndeterministic scaffolding derived from project context (the LLM planner can\nrefine content afterward); validation enforces required sections, rejects\nplaceholders, rejects operational-state claims (a design artifact is never\nevidence of deployment), and rejects embedded secrets. Validated documents\nregister through the module's existing fail-closed artifact pipeline with\nprovenance, so they flow through the same DAG, budget, and approval model\nas every other project artifact.; Design artifact. Describes planned work only; it is not evidence of deployment, operation, trained models, or achieved performance.; Invalidation; Evidence Collection; Review Cadence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable engine/protocol workbench with method-specific outputs, evaluation, uncertainty/limits, mounted route and adversarial tests."
     },
     {
       "row": 577,
@@ -7304,7 +7306,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: EngineeringError, UnknownDesignKindError, DesignKindSpec, DesignDocument, DesignFinding, DesignValidationReport. Functions: list_design_kinds, spec_for_kind, spec_for_row, generate_design, validate_design, to_quality_result. Boundaries: Engineering design artifacts for Atlas Module 14 (Project Builder).\n\nCovers features-doc rows 510-559 (Technical & Engineering):\ntyped, evidence-bearing design documents. Rows 510-534: requirements,\narchitecture, API, schema, monolith/microservice/event/queue/cache/load/\nscale/fault/DR/backup plans, and security/authn/authz/encryption/key-\nmanagement/audit/compliance/privacy/governance/lineage/quality designs.\nRows 535-559: data engineering (ETL, warehouse, lake, mesh, stream/batch,\nlambda/kappa), ML infrastructure (pipelines, feature store, registry,\nmonitoring, experiments), and applied-AI designs (recommendation, search,\nranking, fraud, anomaly, time-series, NLP, CV, speech, translation,\nsummarization). Rows 560-584: language understanding (QA, extraction,\nNER, relations, sentiment, topics, classification, clustering, semantic\nsearch), knowledge and reasoning (KG, ontology, reasoning, planning,\nscheduling, optimization, simulation), and engine/protocol designs (game,\nphysics, render, audio, network, protocol, compression, error correction,\ncryptographic protocol).\n\nEvery design kind maps to exactly one features-doc row. Generation is\ndeterministic scaffolding derived from project context (the LLM planner can\nrefine content afterward); validation enforces required sections, rejects\nplaceholders, rejects operational-state claims (a design artifact is never\nevidence of deployment), and rejects embedded secrets. Validated documents\nregister through the module's existing fail-closed artifact pipeline with\nprovenance, so they flow through the same DAG, budget, and approval model\nas every other project artifact.; Design artifact. Describes planned work only; it is not evidence of deployment, operation, trained models, or achieved performance.; Invalidation; Evidence Collection; Review Cadence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable engine/protocol workbench with method-specific outputs, evaluation, uncertainty/limits, mounted route and adversarial tests."
     },
     {
       "row": 578,
@@ -7316,7 +7319,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: EngineeringError, UnknownDesignKindError, DesignKindSpec, DesignDocument, DesignFinding, DesignValidationReport. Functions: list_design_kinds, spec_for_kind, spec_for_row, generate_design, validate_design, to_quality_result. Boundaries: Engineering design artifacts for Atlas Module 14 (Project Builder).\n\nCovers features-doc rows 510-559 (Technical & Engineering):\ntyped, evidence-bearing design documents. Rows 510-534: requirements,\narchitecture, API, schema, monolith/microservice/event/queue/cache/load/\nscale/fault/DR/backup plans, and security/authn/authz/encryption/key-\nmanagement/audit/compliance/privacy/governance/lineage/quality designs.\nRows 535-559: data engineering (ETL, warehouse, lake, mesh, stream/batch,\nlambda/kappa), ML infrastructure (pipelines, feature store, registry,\nmonitoring, experiments), and applied-AI designs (recommendation, search,\nranking, fraud, anomaly, time-series, NLP, CV, speech, translation,\nsummarization). Rows 560-584: language understanding (QA, extraction,\nNER, relations, sentiment, topics, classification, clustering, semantic\nsearch), knowledge and reasoning (KG, ontology, reasoning, planning,\nscheduling, optimization, simulation), and engine/protocol designs (game,\nphysics, render, audio, network, protocol, compression, error correction,\ncryptographic protocol).\n\nEvery design kind maps to exactly one features-doc row. Generation is\ndeterministic scaffolding derived from project context (the LLM planner can\nrefine content afterward); validation enforces required sections, rejects\nplaceholders, rejects operational-state claims (a design artifact is never\nevidence of deployment), and rejects embedded secrets. Validated documents\nregister through the module's existing fail-closed artifact pipeline with\nprovenance, so they flow through the same DAG, budget, and approval model\nas every other project artifact.; Design artifact. Describes planned work only; it is not evidence of deployment, operation, trained models, or achieved performance.; Invalidation; Evidence Collection; Review Cadence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable engine/protocol workbench with method-specific outputs, evaluation, uncertainty/limits, mounted route and adversarial tests."
     },
     {
       "row": 579,
@@ -7328,7 +7332,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: EngineeringError, UnknownDesignKindError, DesignKindSpec, DesignDocument, DesignFinding, DesignValidationReport. Functions: list_design_kinds, spec_for_kind, spec_for_row, generate_design, validate_design, to_quality_result. Boundaries: Engineering design artifacts for Atlas Module 14 (Project Builder).\n\nCovers features-doc rows 510-559 (Technical & Engineering):\ntyped, evidence-bearing design documents. Rows 510-534: requirements,\narchitecture, API, schema, monolith/microservice/event/queue/cache/load/\nscale/fault/DR/backup plans, and security/authn/authz/encryption/key-\nmanagement/audit/compliance/privacy/governance/lineage/quality designs.\nRows 535-559: data engineering (ETL, warehouse, lake, mesh, stream/batch,\nlambda/kappa), ML infrastructure (pipelines, feature store, registry,\nmonitoring, experiments), and applied-AI designs (recommendation, search,\nranking, fraud, anomaly, time-series, NLP, CV, speech, translation,\nsummarization). Rows 560-584: language understanding (QA, extraction,\nNER, relations, sentiment, topics, classification, clustering, semantic\nsearch), knowledge and reasoning (KG, ontology, reasoning, planning,\nscheduling, optimization, simulation), and engine/protocol designs (game,\nphysics, render, audio, network, protocol, compression, error correction,\ncryptographic protocol).\n\nEvery design kind maps to exactly one features-doc row. Generation is\ndeterministic scaffolding derived from project context (the LLM planner can\nrefine content afterward); validation enforces required sections, rejects\nplaceholders, rejects operational-state claims (a design artifact is never\nevidence of deployment), and rejects embedded secrets. Validated documents\nregister through the module's existing fail-closed artifact pipeline with\nprovenance, so they flow through the same DAG, budget, and approval model\nas every other project artifact.; Design artifact. Describes planned work only; it is not evidence of deployment, operation, trained models, or achieved performance.; Invalidation; Evidence Collection; Review Cadence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable engine/protocol workbench with method-specific outputs, evaluation, uncertainty/limits, mounted route and adversarial tests."
     },
     {
       "row": 580,
@@ -7340,7 +7345,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: EngineeringError, UnknownDesignKindError, DesignKindSpec, DesignDocument, DesignFinding, DesignValidationReport. Functions: list_design_kinds, spec_for_kind, spec_for_row, generate_design, validate_design, to_quality_result. Boundaries: Engineering design artifacts for Atlas Module 14 (Project Builder).\n\nCovers features-doc rows 510-559 (Technical & Engineering):\ntyped, evidence-bearing design documents. Rows 510-534: requirements,\narchitecture, API, schema, monolith/microservice/event/queue/cache/load/\nscale/fault/DR/backup plans, and security/authn/authz/encryption/key-\nmanagement/audit/compliance/privacy/governance/lineage/quality designs.\nRows 535-559: data engineering (ETL, warehouse, lake, mesh, stream/batch,\nlambda/kappa), ML infrastructure (pipelines, feature store, registry,\nmonitoring, experiments), and applied-AI designs (recommendation, search,\nranking, fraud, anomaly, time-series, NLP, CV, speech, translation,\nsummarization). Rows 560-584: language understanding (QA, extraction,\nNER, relations, sentiment, topics, classification, clustering, semantic\nsearch), knowledge and reasoning (KG, ontology, reasoning, planning,\nscheduling, optimization, simulation), and engine/protocol designs (game,\nphysics, render, audio, network, protocol, compression, error correction,\ncryptographic protocol).\n\nEvery design kind maps to exactly one features-doc row. Generation is\ndeterministic scaffolding derived from project context (the LLM planner can\nrefine content afterward); validation enforces required sections, rejects\nplaceholders, rejects operational-state claims (a design artifact is never\nevidence of deployment), and rejects embedded secrets. Validated documents\nregister through the module's existing fail-closed artifact pipeline with\nprovenance, so they flow through the same DAG, budget, and approval model\nas every other project artifact.; Design artifact. Describes planned work only; it is not evidence of deployment, operation, trained models, or achieved performance.; Invalidation; Evidence Collection; Review Cadence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable engine/protocol workbench with method-specific outputs, evaluation, uncertainty/limits, mounted route and adversarial tests."
     },
     {
       "row": 581,
@@ -7352,7 +7358,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: EngineeringError, UnknownDesignKindError, DesignKindSpec, DesignDocument, DesignFinding, DesignValidationReport. Functions: list_design_kinds, spec_for_kind, spec_for_row, generate_design, validate_design, to_quality_result. Boundaries: Engineering design artifacts for Atlas Module 14 (Project Builder).\n\nCovers features-doc rows 510-559 (Technical & Engineering):\ntyped, evidence-bearing design documents. Rows 510-534: requirements,\narchitecture, API, schema, monolith/microservice/event/queue/cache/load/\nscale/fault/DR/backup plans, and security/authn/authz/encryption/key-\nmanagement/audit/compliance/privacy/governance/lineage/quality designs.\nRows 535-559: data engineering (ETL, warehouse, lake, mesh, stream/batch,\nlambda/kappa), ML infrastructure (pipelines, feature store, registry,\nmonitoring, experiments), and applied-AI designs (recommendation, search,\nranking, fraud, anomaly, time-series, NLP, CV, speech, translation,\nsummarization). Rows 560-584: language understanding (QA, extraction,\nNER, relations, sentiment, topics, classification, clustering, semantic\nsearch), knowledge and reasoning (KG, ontology, reasoning, planning,\nscheduling, optimization, simulation), and engine/protocol designs (game,\nphysics, render, audio, network, protocol, compression, error correction,\ncryptographic protocol).\n\nEvery design kind maps to exactly one features-doc row. Generation is\ndeterministic scaffolding derived from project context (the LLM planner can\nrefine content afterward); validation enforces required sections, rejects\nplaceholders, rejects operational-state claims (a design artifact is never\nevidence of deployment), and rejects embedded secrets. Validated documents\nregister through the module's existing fail-closed artifact pipeline with\nprovenance, so they flow through the same DAG, budget, and approval model\nas every other project artifact.; Design artifact. Describes planned work only; it is not evidence of deployment, operation, trained models, or achieved performance.; Invalidation; Evidence Collection; Review Cadence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable engine/protocol workbench with method-specific outputs, evaluation, uncertainty/limits, mounted route and adversarial tests."
     },
     {
       "row": 582,
@@ -7364,7 +7371,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: EngineeringError, UnknownDesignKindError, DesignKindSpec, DesignDocument, DesignFinding, DesignValidationReport. Functions: list_design_kinds, spec_for_kind, spec_for_row, generate_design, validate_design, to_quality_result. Boundaries: Engineering design artifacts for Atlas Module 14 (Project Builder).\n\nCovers features-doc rows 510-559 (Technical & Engineering):\ntyped, evidence-bearing design documents. Rows 510-534: requirements,\narchitecture, API, schema, monolith/microservice/event/queue/cache/load/\nscale/fault/DR/backup plans, and security/authn/authz/encryption/key-\nmanagement/audit/compliance/privacy/governance/lineage/quality designs.\nRows 535-559: data engineering (ETL, warehouse, lake, mesh, stream/batch,\nlambda/kappa), ML infrastructure (pipelines, feature store, registry,\nmonitoring, experiments), and applied-AI designs (recommendation, search,\nranking, fraud, anomaly, time-series, NLP, CV, speech, translation,\nsummarization). Rows 560-584: language understanding (QA, extraction,\nNER, relations, sentiment, topics, classification, clustering, semantic\nsearch), knowledge and reasoning (KG, ontology, reasoning, planning,\nscheduling, optimization, simulation), and engine/protocol designs (game,\nphysics, render, audio, network, protocol, compression, error correction,\ncryptographic protocol).\n\nEvery design kind maps to exactly one features-doc row. Generation is\ndeterministic scaffolding derived from project context (the LLM planner can\nrefine content afterward); validation enforces required sections, rejects\nplaceholders, rejects operational-state claims (a design artifact is never\nevidence of deployment), and rejects embedded secrets. Validated documents\nregister through the module's existing fail-closed artifact pipeline with\nprovenance, so they flow through the same DAG, budget, and approval model\nas every other project artifact.; Design artifact. Describes planned work only; it is not evidence of deployment, operation, trained models, or achieved performance.; Invalidation; Evidence Collection; Review Cadence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable engine/protocol workbench with method-specific outputs, evaluation, uncertainty/limits, mounted route and adversarial tests."
     },
     {
       "row": 583,
@@ -7376,7 +7384,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: EngineeringError, UnknownDesignKindError, DesignKindSpec, DesignDocument, DesignFinding, DesignValidationReport. Functions: list_design_kinds, spec_for_kind, spec_for_row, generate_design, validate_design, to_quality_result. Boundaries: Engineering design artifacts for Atlas Module 14 (Project Builder).\n\nCovers features-doc rows 510-559 (Technical & Engineering):\ntyped, evidence-bearing design documents. Rows 510-534: requirements,\narchitecture, API, schema, monolith/microservice/event/queue/cache/load/\nscale/fault/DR/backup plans, and security/authn/authz/encryption/key-\nmanagement/audit/compliance/privacy/governance/lineage/quality designs.\nRows 535-559: data engineering (ETL, warehouse, lake, mesh, stream/batch,\nlambda/kappa), ML infrastructure (pipelines, feature store, registry,\nmonitoring, experiments), and applied-AI designs (recommendation, search,\nranking, fraud, anomaly, time-series, NLP, CV, speech, translation,\nsummarization). Rows 560-584: language understanding (QA, extraction,\nNER, relations, sentiment, topics, classification, clustering, semantic\nsearch), knowledge and reasoning (KG, ontology, reasoning, planning,\nscheduling, optimization, simulation), and engine/protocol designs (game,\nphysics, render, audio, network, protocol, compression, error correction,\ncryptographic protocol).\n\nEvery design kind maps to exactly one features-doc row. Generation is\ndeterministic scaffolding derived from project context (the LLM planner can\nrefine content afterward); validation enforces required sections, rejects\nplaceholders, rejects operational-state claims (a design artifact is never\nevidence of deployment), and rejects embedded secrets. Validated documents\nregister through the module's existing fail-closed artifact pipeline with\nprovenance, so they flow through the same DAG, budget, and approval model\nas every other project artifact.; Design artifact. Describes planned work only; it is not evidence of deployment, operation, trained models, or achieved performance.; Invalidation; Evidence Collection; Review Cadence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable engine/protocol workbench with method-specific outputs, evaluation, uncertainty/limits, mounted route and adversarial tests."
     },
     {
       "row": 584,
@@ -7388,7 +7397,8 @@
       "test_case": null,
       "post_semantic_status": "fixed-in-wave",
       "implementation_details": "Classes: EngineeringError, UnknownDesignKindError, DesignKindSpec, DesignDocument, DesignFinding, DesignValidationReport. Functions: list_design_kinds, spec_for_kind, spec_for_row, generate_design, validate_design, to_quality_result. Boundaries: Engineering design artifacts for Atlas Module 14 (Project Builder).\n\nCovers features-doc rows 510-559 (Technical & Engineering):\ntyped, evidence-bearing design documents. Rows 510-534: requirements,\narchitecture, API, schema, monolith/microservice/event/queue/cache/load/\nscale/fault/DR/backup plans, and security/authn/authz/encryption/key-\nmanagement/audit/compliance/privacy/governance/lineage/quality designs.\nRows 535-559: data engineering (ETL, warehouse, lake, mesh, stream/batch,\nlambda/kappa), ML infrastructure (pipelines, feature store, registry,\nmonitoring, experiments), and applied-AI designs (recommendation, search,\nranking, fraud, anomaly, time-series, NLP, CV, speech, translation,\nsummarization). Rows 560-584: language understanding (QA, extraction,\nNER, relations, sentiment, topics, classification, clustering, semantic\nsearch), knowledge and reasoning (KG, ontology, reasoning, planning,\nscheduling, optimization, simulation), and engine/protocol designs (game,\nphysics, render, audio, network, protocol, compression, error correction,\ncryptographic protocol).\n\nEvery design kind maps to exactly one features-doc row. Generation is\ndeterministic scaffolding derived from project context (the LLM planner can\nrefine content afterward); validation enforces required sections, rejects\nplaceholders, rejects operational-state claims (a design artifact is never\nevidence of deployment), and rejects embedded secrets. Validated documents\nregister through the module's existing fail-closed artifact pipeline with\nprovenance, so they flow through the same DAG, budget, and approval model\nas every other project artifact.; Design artifact. Describes planned work only; it is not evidence of deployment, operation, trained models, or achieved performance.; Invalidation; Evidence Collection; Review Cadence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable engine/protocol workbench with method-specific outputs, evaluation, uncertainty/limits, mounted route and adversarial tests."
     },
     {
       "row": 585,
@@ -8700,7 +8710,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 686,
@@ -8712,7 +8723,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 687,
@@ -8724,7 +8736,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 688,
@@ -8736,7 +8749,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 689,
@@ -8748,7 +8762,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 690,
@@ -8760,7 +8775,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 691,
@@ -8772,7 +8788,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 692,
@@ -8784,7 +8801,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 693,
@@ -8796,7 +8814,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 694,
@@ -8808,7 +8827,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 695,
@@ -8820,7 +8840,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 696,
@@ -8832,7 +8853,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 697,
@@ -8844,7 +8866,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 698,
@@ -8856,7 +8879,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 699,
@@ -8868,7 +8892,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 700,
@@ -8880,7 +8905,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 701,
@@ -8892,7 +8918,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 702,
@@ -8904,7 +8931,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 703,
@@ -8916,7 +8944,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 704,
@@ -8928,7 +8957,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 705,
@@ -8940,7 +8970,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 706,
@@ -8952,7 +8983,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 707,
@@ -8964,7 +8996,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 708,
@@ -8976,7 +9009,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 709,
@@ -8988,7 +9022,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Functions: software_practice_685_709. Boundaries: code_review; review_checklist; red_evidence; approval; self_approval_forbidden",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable software-practice method with required-input validation, method-specific artifact, evaluation, uncertainty and failure tests."
     },
     {
       "row": 710,
@@ -9000,7 +9035,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 711,
@@ -9012,7 +9048,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 712,
@@ -9024,7 +9061,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 713,
@@ -9036,7 +9074,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 714,
@@ -9048,7 +9087,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 715,
@@ -9060,7 +9100,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 716,
@@ -9072,7 +9113,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 717,
@@ -9084,7 +9126,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 718,
@@ -9096,7 +9139,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 719,
@@ -9108,7 +9152,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 720,
@@ -9120,7 +9165,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 721,
@@ -9132,7 +9178,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 722,
@@ -9144,7 +9191,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 723,
@@ -9156,7 +9204,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 724,
@@ -9168,7 +9217,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 725,
@@ -9180,7 +9230,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 726,
@@ -9192,7 +9243,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 727,
@@ -9204,7 +9256,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 728,
@@ -9216,7 +9269,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 729,
@@ -9228,7 +9282,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 730,
@@ -9240,7 +9295,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 731,
@@ -9252,7 +9308,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 732,
@@ -9264,7 +9321,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 733,
@@ -9276,7 +9334,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 734,
@@ -9288,7 +9347,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 735,
@@ -9300,7 +9360,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 736,
@@ -9312,7 +9373,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 737,
@@ -9324,7 +9386,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 738,
@@ -9336,7 +9399,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 739,
@@ -9348,7 +9412,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 740,
@@ -9360,7 +9425,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 741,
@@ -9372,7 +9438,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 742,
@@ -9384,7 +9451,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 743,
@@ -9396,7 +9464,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 744,
@@ -9408,7 +9477,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 745,
@@ -9420,7 +9490,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 746,
@@ -9432,7 +9503,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 747,
@@ -9444,7 +9516,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 748,
@@ -9456,7 +9529,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 749,
@@ -9468,7 +9542,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 750,
@@ -9480,7 +9555,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 751,
@@ -9492,7 +9568,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 752,
@@ -9504,7 +9581,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 753,
@@ -9516,7 +9594,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 754,
@@ -9528,7 +9607,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 755,
@@ -9540,7 +9620,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 756,
@@ -9552,7 +9633,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 757,
@@ -9564,7 +9646,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 758,
@@ -9576,7 +9659,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 759,
@@ -9588,7 +9672,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 760,
@@ -9600,7 +9685,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 761,
@@ -9612,7 +9698,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 762,
@@ -9624,7 +9711,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 763,
@@ -9636,7 +9724,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 764,
@@ -9648,7 +9737,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 765,
@@ -9660,7 +9750,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 766,
@@ -9672,7 +9763,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 767,
@@ -9684,7 +9776,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 768,
@@ -9696,7 +9789,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 769,
@@ -9708,7 +9802,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 770,
@@ -9720,7 +9815,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 771,
@@ -9732,7 +9828,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 772,
@@ -9744,7 +9841,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 773,
@@ -9756,7 +9854,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 774,
@@ -9768,7 +9867,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 775,
@@ -9780,7 +9880,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 776,
@@ -9792,7 +9893,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 777,
@@ -9804,7 +9906,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 778,
@@ -9816,7 +9919,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 779,
@@ -9828,7 +9932,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 780,
@@ -9840,7 +9945,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 781,
@@ -9852,7 +9958,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 782,
@@ -9864,7 +9971,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 783,
@@ -9876,7 +9984,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 784,
@@ -9888,7 +9997,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 785,
@@ -9900,7 +10010,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 786,
@@ -9912,7 +10023,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 787,
@@ -9924,7 +10036,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 788,
@@ -9936,7 +10049,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 789,
@@ -9948,7 +10062,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 790,
@@ -9960,7 +10075,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 791,
@@ -9972,7 +10088,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 792,
@@ -9984,7 +10101,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 793,
@@ -9996,7 +10114,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 794,
@@ -10008,7 +10127,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 795,
@@ -10020,7 +10140,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 796,
@@ -10032,7 +10153,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 797,
@@ -10044,7 +10166,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 798,
@@ -10056,7 +10179,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 799,
@@ -10068,7 +10192,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 800,
@@ -10080,7 +10205,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 801,
@@ -10092,7 +10218,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 802,
@@ -10104,7 +10231,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 803,
@@ -10116,7 +10244,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 804,
@@ -10128,7 +10257,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 805,
@@ -10140,7 +10270,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 806,
@@ -10152,7 +10283,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 807,
@@ -10164,7 +10296,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 808,
@@ -10176,7 +10309,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 809,
@@ -10188,7 +10322,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
     },
     {
       "row": 810,
@@ -10200,7 +10335,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 811,
@@ -10212,7 +10348,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 812,
@@ -10224,7 +10361,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 813,
@@ -10236,7 +10374,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 814,
@@ -10248,7 +10387,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 815,
@@ -10260,7 +10400,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 816,
@@ -10272,7 +10413,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 817,
@@ -10284,7 +10426,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 818,
@@ -10296,7 +10439,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 819,
@@ -10308,7 +10452,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 820,
@@ -10320,7 +10465,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 821,
@@ -10332,7 +10478,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 822,
@@ -10344,7 +10491,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 823,
@@ -10356,7 +10504,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 824,
@@ -10368,7 +10517,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 825,
@@ -10380,7 +10530,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 826,
@@ -10392,7 +10543,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 827,
@@ -10404,7 +10556,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 828,
@@ -10416,7 +10569,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 829,
@@ -10428,7 +10582,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 830,
@@ -10440,7 +10595,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 831,
@@ -10452,7 +10608,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 832,
@@ -10464,7 +10621,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 833,
@@ -10476,7 +10634,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 834,
@@ -10488,7 +10647,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 835,
@@ -10500,7 +10660,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 836,
@@ -10512,7 +10673,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 837,
@@ -10524,7 +10686,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 838,
@@ -10536,7 +10699,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 839,
@@ -10548,7 +10712,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 840,
@@ -10560,7 +10725,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 841,
@@ -10572,7 +10738,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 842,
@@ -10584,7 +10751,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 843,
@@ -10596,7 +10764,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 844,
@@ -10608,7 +10777,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 845,
@@ -10620,7 +10790,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 846,
@@ -10632,7 +10803,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 847,
@@ -10644,7 +10816,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 848,
@@ -10656,7 +10829,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 849,
@@ -10668,7 +10842,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 850,
@@ -10680,7 +10855,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 851,
@@ -10692,7 +10868,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 852,
@@ -10704,7 +10881,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 853,
@@ -10716,7 +10894,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 854,
@@ -10728,7 +10907,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 855,
@@ -10740,7 +10920,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 856,
@@ -10752,7 +10933,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 857,
@@ -10764,7 +10946,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 858,
@@ -10776,7 +10959,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 859,
@@ -10788,7 +10972,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: LearningReasoningError. Functions: slug, capabilities, req, src, learning, transfer, reasoning, inquiry, execute. Boundaries: evidence; boundary; Decision support only. Preserve premises, evidence, assumptions, uncertainty, alternatives, learner agency, and qualified human review.; fade_on_evidence_not_time; evaluate evidence",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 860,
@@ -10800,7 +10985,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 861,
@@ -10812,7 +10998,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CognitiveLearningError. Functions: slug, execute, capabilities. Boundaries: Reviewable cognitive and learning designs for audit rows 860-909.; evidence; select_for_review; boundary_cases; polyhierarchy_review",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "upgraded-practitioner-depth",
+      "depth_evidence": "Executable learning/reasoning workflow with source provenance, method-specific result, evaluation, calibrated uncertainty and failure tests."
     },
     {
       "row": 862,
