@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1405,
-    "verified-pushed": 602,
+    "missing": 1398,
+    "verified-pushed": 609,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -14974,9 +14974,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Cancer Care Coordination",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4ab4bd9bbd5a7cfbc9ea73cf33c8f26d77c4e52",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1156_1162.py"
+      },
+      "boundary": "Coordination and cited specialist-review support only. Preserve supplied pathology/stage versions, ownership gaps, eligibility criteria, missing facts, blockers, patient goals, preferences, function and urgent symptoms. Oncology, palliative, hospice and pain clinicians retain diagnosis, enrollment, dosing, treatment, code-status and end-of-life decisions."
     },
     {
       "id": 1157,
@@ -14984,9 +14988,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Chemotherapy Planning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4ab4bd9bbd5a7cfbc9ea73cf33c8f26d77c4e52",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1156_1162.py"
+      },
+      "boundary": "Coordination and cited specialist-review support only. Preserve supplied pathology/stage versions, ownership gaps, eligibility criteria, missing facts, blockers, patient goals, preferences, function and urgent symptoms. Oncology, palliative, hospice and pain clinicians retain diagnosis, enrollment, dosing, treatment, code-status and end-of-life decisions."
     },
     {
       "id": 1158,
@@ -14994,9 +15002,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Radiation Therapy Planning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4ab4bd9bbd5a7cfbc9ea73cf33c8f26d77c4e52",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1156_1162.py"
+      },
+      "boundary": "Coordination and cited specialist-review support only. Preserve supplied pathology/stage versions, ownership gaps, eligibility criteria, missing facts, blockers, patient goals, preferences, function and urgent symptoms. Oncology, palliative, hospice and pain clinicians retain diagnosis, enrollment, dosing, treatment, code-status and end-of-life decisions."
     },
     {
       "id": 1159,
@@ -15004,9 +15016,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Immunotherapy Selection",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4ab4bd9bbd5a7cfbc9ea73cf33c8f26d77c4e52",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1156_1162.py"
+      },
+      "boundary": "Coordination and cited specialist-review support only. Preserve supplied pathology/stage versions, ownership gaps, eligibility criteria, missing facts, blockers, patient goals, preferences, function and urgent symptoms. Oncology, palliative, hospice and pain clinicians retain diagnosis, enrollment, dosing, treatment, code-status and end-of-life decisions."
     },
     {
       "id": 1160,
@@ -15014,9 +15030,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Palliative Care Planning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4ab4bd9bbd5a7cfbc9ea73cf33c8f26d77c4e52",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1156_1162.py"
+      },
+      "boundary": "Coordination and cited specialist-review support only. Preserve supplied pathology/stage versions, ownership gaps, eligibility criteria, missing facts, blockers, patient goals, preferences, function and urgent symptoms. Oncology, palliative, hospice and pain clinicians retain diagnosis, enrollment, dosing, treatment, code-status and end-of-life decisions."
     },
     {
       "id": 1161,
@@ -15024,9 +15044,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Hospice Care Coordination",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4ab4bd9bbd5a7cfbc9ea73cf33c8f26d77c4e52",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1156_1162.py"
+      },
+      "boundary": "Coordination and cited specialist-review support only. Preserve supplied pathology/stage versions, ownership gaps, eligibility criteria, missing facts, blockers, patient goals, preferences, function and urgent symptoms. Oncology, palliative, hospice and pain clinicians retain diagnosis, enrollment, dosing, treatment, code-status and end-of-life decisions."
     },
     {
       "id": 1162,
@@ -15034,9 +15058,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Pain Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "c4ab4bd9bbd5a7cfbc9ea73cf33c8f26d77c4e52",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1156_1162.py"
+      },
+      "boundary": "Coordination and cited specialist-review support only. Preserve supplied pathology/stage versions, ownership gaps, eligibility criteria, missing facts, blockers, patient goals, preferences, function and urgent symptoms. Oncology, palliative, hospice and pain clinicians retain diagnosis, enrollment, dosing, treatment, code-status and end-of-life decisions."
     },
     {
       "id": 1163,
