@@ -57,6 +57,8 @@ class MarketingArtifact:
     status: str = "draft"  # draft -> approved by a human outside this engine
     provenance: str = "llm-draft"  # "llm-draft" | "computed"
     model: str | None = None
+    evaluation: dict[str, Any] = field(default_factory=dict)
+    uncertainty: dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -390,6 +392,8 @@ class MarketingEngine:
             sections=sections,
             inputs=inputs,
             model=model,
+            evaluation={"required_sections": list(spec.section_keys), "observed_sections": sorted(sections), "human_review_required": True},
+            uncertainty={"level": "not_quantified", "drivers": ["caller-supplied facts", "model interpretation", "missing market context"], "publication_or_outcome_claimed": False},
         )
         return self._repository.save_artifact(artifact)
 

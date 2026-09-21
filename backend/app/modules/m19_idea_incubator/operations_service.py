@@ -12,7 +12,7 @@ class OperationsAnalysisService:
   if any(p.source_type=="public_source" and not p.uri for p in r.provenance):limits.append("A public source lacks a URI.")
   limits.append("This artifact is a plan or analysis only; no supplier, inventory, production, workflow, automation, or organizational change was executed.")
   plan={"status":"proposed","requires_human_review":True,"next_steps":self._next(f,analysis),"operational_changes_applied":False}
-  return OperationsArtifact(idea_id=idea_id,feature=r.feature,method=method,inputs=r.inputs,provenance=r.provenance,assumptions=r.assumptions,analysis=analysis,uncertainty=Uncertainty(confidence=r.confidence,limitations=limits,sample_size=analysis.get("sample_size")),plan=plan)
+  return OperationsArtifact(idea_id=idea_id,feature=r.feature,method=method,inputs=r.inputs,provenance=r.provenance,assumptions=r.assumptions,analysis=analysis,uncertainty=Uncertainty(confidence=r.confidence,limitations=limits,sample_size=analysis.get("sample_size")),evaluation={"method":method,"computed_outputs":sorted(analysis),"evidence_sources":len(r.provenance),"acceptance_or_control_review_required":True,"pilot_measurement_required":True},plan=plan)
  def _compute(self,f,x):
   if f==451:
    vendors=[Vendor.model_validate(v) for v in x.get("vendors",[])];weights=x.get("weights",{"cost":.3,"quality":.3,"delivery":.2,"risk":.2})
