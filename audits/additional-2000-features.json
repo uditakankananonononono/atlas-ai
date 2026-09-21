@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1412,
-    "verified-pushed": 595,
+    "missing": 1405,
+    "verified-pushed": 602,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -14876,9 +14876,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Medication Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "70768ca984e453164eb15a018be610abda5c51d3",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1149_1155.py"
+      },
+      "boundary": "Cited longitudinal decision support only. Reconcile medication discrepancies across origins; preserve timestamps, missing values, patient goals, targets and contraindications. Licensed clinicians and patients review every action; Atlas never starts, stops, refills or titrates medication, diagnoses exacerbation, or replaces urgent assessment."
     },
     {
       "id": 1150,
@@ -14886,9 +14890,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Chronic Disease Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "70768ca984e453164eb15a018be610abda5c51d3",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1149_1155.py"
+      },
+      "boundary": "Cited longitudinal decision support only. Reconcile medication discrepancies across origins; preserve timestamps, missing values, patient goals, targets and contraindications. Licensed clinicians and patients review every action; Atlas never starts, stops, refills or titrates medication, diagnoses exacerbation, or replaces urgent assessment."
     },
     {
       "id": 1151,
@@ -14896,9 +14904,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Diabetes Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "70768ca984e453164eb15a018be610abda5c51d3",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1149_1155.py"
+      },
+      "boundary": "Cited longitudinal decision support only. Reconcile medication discrepancies across origins; preserve timestamps, missing values, patient goals, targets and contraindications. Licensed clinicians and patients review every action; Atlas never starts, stops, refills or titrates medication, diagnoses exacerbation, or replaces urgent assessment."
     },
     {
       "id": 1152,
@@ -14906,9 +14918,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Hypertension Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "70768ca984e453164eb15a018be610abda5c51d3",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1149_1155.py"
+      },
+      "boundary": "Cited longitudinal decision support only. Reconcile medication discrepancies across origins; preserve timestamps, missing values, patient goals, targets and contraindications. Licensed clinicians and patients review every action; Atlas never starts, stops, refills or titrates medication, diagnoses exacerbation, or replaces urgent assessment."
     },
     {
       "id": 1153,
@@ -14916,9 +14932,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Asthma Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "70768ca984e453164eb15a018be610abda5c51d3",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1149_1155.py"
+      },
+      "boundary": "Cited longitudinal decision support only. Reconcile medication discrepancies across origins; preserve timestamps, missing values, patient goals, targets and contraindications. Licensed clinicians and patients review every action; Atlas never starts, stops, refills or titrates medication, diagnoses exacerbation, or replaces urgent assessment."
     },
     {
       "id": 1154,
@@ -14926,9 +14946,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "COPD Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "70768ca984e453164eb15a018be610abda5c51d3",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1149_1155.py"
+      },
+      "boundary": "Cited longitudinal decision support only. Reconcile medication discrepancies across origins; preserve timestamps, missing values, patient goals, targets and contraindications. Licensed clinicians and patients review every action; Atlas never starts, stops, refills or titrates medication, diagnoses exacerbation, or replaces urgent assessment."
     },
     {
       "id": 1155,
@@ -14936,9 +14960,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Heart Failure Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "70768ca984e453164eb15a018be610abda5c51d3",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1149_1155.py"
+      },
+      "boundary": "Cited longitudinal decision support only. Reconcile medication discrepancies across origins; preserve timestamps, missing values, patient goals, targets and contraindications. Licensed clinicians and patients review every action; Atlas never starts, stops, refills or titrates medication, diagnoses exacerbation, or replaces urgent assessment."
     },
     {
       "id": 1156,
