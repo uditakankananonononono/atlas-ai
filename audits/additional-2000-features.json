@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1458,
-    "verified-pushed": 549,
+    "missing": 1453,
+    "verified-pushed": 554,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -14232,8 +14232,12 @@
       "category": "Data & Analytics",
       "requirement": "Weighted Voting",
       "description": "Weighted ensemble",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "35151d2b8676f930b0ca47c16e1c9ae0469a263e",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1103_1107.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14242,8 +14246,12 @@
       "category": "Data & Analytics",
       "requirement": "Bayesian Model Averaging",
       "description": "Average over models",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "35151d2b8676f930b0ca47c16e1c9ae0469a263e",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1103_1107.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14252,8 +14260,12 @@
       "category": "Data & Analytics",
       "requirement": "Bayesian Model Selection",
       "description": "Select best model",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "35151d2b8676f930b0ca47c16e1c9ae0469a263e",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1103_1107.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14262,8 +14274,12 @@
       "category": "Data & Analytics",
       "requirement": "Information Criteria",
       "description": "AIC, BIC, etc.",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "35151d2b8676f930b0ca47c16e1c9ae0469a263e",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1103_1107.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14272,8 +14288,12 @@
       "category": "Data & Analytics",
       "requirement": "Cross-Validation",
       "description": "Estimate generalization",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "35151d2b8676f930b0ca47c16e1c9ae0469a263e",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1103_1107.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
