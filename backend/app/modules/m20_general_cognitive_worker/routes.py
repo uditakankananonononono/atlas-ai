@@ -1472,3 +1472,7 @@ class LegalSupportRequest(BaseModel):
 def legal_support_route(request: LegalSupportRequest) -> dict[str, Any]:
     return {"module_id":20,"method":request.method,"result":_legal_support(request.method, request.data),
             "human_review_required":True}
+
+# Specialized-domain education surface, rows 1410-1459.
+from .education_routes import router as education_router
+router.include_router(education_router)
