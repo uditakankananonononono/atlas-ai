@@ -124,3 +124,37 @@ def risk_stratification(data:dict)->dict:
     return {'status':'scored','score':score,'risk_band':band,'factors_used':factors,'model_name':model.get('name'),'model_version':model.get('version'),'source':source,'calibration_context':model.get('calibration_context'),'boundary':'Use only in the population and setting for which the model is validated. Risk score is not a diagnosis or treatment order.','disclaimer':DISCLAIMER}
 
 CLINICAL_EXTRA.update({'pharmacogenomic_recommendations':pharmacogenomics,'clinical_trial_matching':trial_match,'adverse_event_detection':adverse_events,'patient_risk_stratification':risk_stratification})
+
+def validated_score(method:str,data:dict)->dict:
+    outcome=data.get('outcome_name',method);factors=data.get('factors',{});model=data.get('model',{});source=model.get('source',{})
+    if not source.get('source_url') or not isinstance(model.get('coefficients'),dict):raise ValueError('cited model coefficients required')
+    missing=[k for k in model['coefficients'] if k not in factors]
+    if missing:return {'status':'insufficient_data','missing_factors':missing,'outcome':outcome,'source':source,'disclaimer':DISCLAIMER}
+    linear=float(model.get('intercept',0))+sum(float(w)*float(factors[k]) for k,w in model['coefficients'].items());kind=model.get('link','logistic')
+    if kind=='logistic':probability=1/(1+__import__('math').exp(-max(-700,min(700,linear))))
+    elif kind=='identity':probability=None
+    else:raise ValueError('model link must be logistic or identity')
+    thresholds=sorted(model.get('thresholds',[]),key=lambda x:float(x['minimum']));value=probability if probability is not None else linear;band='unclassified'
+    for t in thresholds:
+        if value>=float(t['minimum']):band=t['label']
+    return {'status':'scored','outcome':outcome,'linear_predictor':linear,'probability':probability,'predicted_value':linear if kind=='identity' else None,'risk_band':band,'model_name':model.get('name'),'model_version':model.get('version'),'source':source,'validation_population':model.get('validation_population'),'calibration':model.get('calibration'),'factors_used':factors,'boundary':'Use only in the validated population/setting. This estimate does not determine disposition, treatment, resource access or prognosis by itself.','disclaimer':DISCLAIMER}
+
+def triage_support(data:dict)->dict:
+    observations=data.get('observations',{});rules=data.get('rules',[]);_require_citations(rules,'rules');matched=[]
+    for r in rules:
+        ok=True
+        for field,condition in r.get('when',{}).items():
+            value=observations.get(field)
+            if value is None:ok=False;break
+            if isinstance(condition,dict):
+                if 'lt' in condition and not float(value)<float(condition['lt']):ok=False
+                if 'lte' in condition and not float(value)<=float(condition['lte']):ok=False
+                if 'gt' in condition and not float(value)>float(condition['gt']):ok=False
+                if 'gte' in condition and not float(value)>=float(condition['gte']):ok=False
+            elif value!=condition:ok=False
+        if ok:matched.append({'level':r.get('level'),'reason':r.get('reason'),'recommended_next_step':r.get('recommended_next_step'),'source_url':r['source_url']})
+    priority={'resuscitation':0,'emergent':1,'urgent':2,'less_urgent':3,'non_urgent':4};matched.sort(key=lambda x:priority.get(x['level'],99));return {'highest_priority_match':matched[0] if matched else None,'all_matched_rules':matched,'missing_observations':[x for x in data.get('required_observations',[]) if x not in observations],'boundary':'Rule transparency for trained clinical review. Never delay emergency services or use as autonomous disposition. If severe symptoms or uncertainty exist, escalate according to local emergency policy.','disclaimer':DISCLAIMER}
+
+for _m in ['readmission_prediction','sepsis_early_warning','mortality_prediction','length_of_stay_prediction','icu_resource_allocation']:
+    CLINICAL_EXTRA[_m]=lambda d,m=_m:validated_score(m,d)
+CLINICAL_EXTRA['emergency_triage']=triage_support
