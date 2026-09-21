@@ -25,3 +25,13 @@ class ClinicalSupportIn(BaseModel):
 def clinical_support_route(body:ClinicalSupportIn,tenant:TenantContext=Depends(require_tenant)):
     try:return {'tenant_id':tenant.tenant_id,'method':body.method,'result':clinical_support(body.method,body.data),'requires_clinician_review':True}
     except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .legal_support import LEGAL_METHODS,legal_support
+class LegalSupportIn(BaseModel):
+    method:str
+    data:dict[str,Any]=Field(default_factory=dict)
+@router.post('/legal/support')
+def legal_support_route(body:LegalSupportIn,tenant:TenantContext=Depends(require_tenant)):
+    if body.method not in LEGAL_METHODS: raise HTTPException(422,'unsupported legal support method')
+    try:return {'tenant_id':tenant.tenant_id,'method':body.method,'result':legal_support(body.method,body.data),'requires_counsel_review':True}
+    except ValueError as error:raise HTTPException(422,str(error)) from error
