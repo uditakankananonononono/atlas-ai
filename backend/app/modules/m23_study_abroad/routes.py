@@ -93,3 +93,7 @@ def enhanced_parity(tool:Literal['narrative_intelligence','college_track','colle
   if tool=='essay_suite':return essay_suite(d.get('prompt',''),d.get('evidence',[]),d.get('student_draft'))
   return administrator_visibility(d.get('records',[]),d.get('consent',{}))
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+# Full study-abroad lifecycle workbench for audit rows 1-62.
+from .lifecycle_routes_01_62 import router as lifecycle_workbench_router
+router.include_router(lifecycle_workbench_router)
