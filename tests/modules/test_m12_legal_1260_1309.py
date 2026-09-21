@@ -27,3 +27,14 @@ def test_rejects_missing_jurisdiction_source_and_unknown_method():
  with pytest.raises(ValueError):legal_support('not_real',BASE)
 def test_mounted_route_is_tenant_scoped_and_counsel_gated():
  r=TestClient(app).post('/api/v1/ai-research-lab/legal/support',headers={'x-atlas-tenant':'tenant-7'},json={'method':'legal_education','data':payload('legal_education')});assert r.status_code==200 and r.json()['tenant_id']=='tenant-7' and r.json()['requires_counsel_review']
+
+def test_1303_legal_operations_tracks_matter_budget_and_milestones():
+ o=legal_support('legal_operations',payload('legal_operations'));assert o['matter_summary'][0]['variance']==60 and o['matter_summary'][0]['milestones']==['review']
+def test_1304_law_firm_management_preserves_pending_human_billing_review():
+ o=legal_support('law_firm_management',payload('law_firm_management'));assert o['matter_summary'][0]['billing_review_status']=='pending'
+def test_1306_alternative_fee_arrangements_keeps_budget_variance_reviewable():
+ o=legal_support('alternative_fee_arrangements',payload('alternative_fee_arrangements'));assert o['matter_summary'][0]['budget']==100 and o['matter_summary'][0]['actual']==40
+def test_1307_legal_project_management_tracks_milestones_without_execution():
+ o=legal_support('legal_project_management',payload('legal_project_management'));assert o['matter_summary'][0]['milestones']==['review'] and o['review_required']
+def test_1308_knowledge_management_preserves_matter_knowledge_references():
+ d=payload('knowledge_management');d['matters'][0]['knowledge_refs']=['memo-1'];o=legal_support('knowledge_management',d);assert o['matter_summary'][0]['knowledge_refs']==['memo-1']
