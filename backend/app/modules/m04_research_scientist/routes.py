@@ -84,3 +84,6 @@ def quant_method_185_234(row_id:int,payload:dict):
     from .quant_methods_185_234 import QuantError,run
     try:return run(row_id,payload)
     except QuantError as exc:raise HTTPException(status_code=422,detail=str(exc)) from exc
+
+from .core_spec_round6 import router as core_spec_round6_router
+router.include_router(core_spec_round6_router)
