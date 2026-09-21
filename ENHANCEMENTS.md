@@ -64,8 +64,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** application evidence matrix links requirements and essay claims to owner records and official program sources, exposes broken references, and returns explicit missing-input items and coverage.
 - **Next:** source-content hashes, official-page freshness checks and reviewer sign-off per matrix revision.
 ## M24 - Billing
-- **Landed:** pre-commit commitment preview binds plan, USD currency, quantity, renewal interval, caller-supplied tax, cancellation policy/deadline and exact charge into a content hash; it refuses guessed FX and never executes payment.
-- **Next:** bind the approved preview hash to checkout execution and reconcile Stripe’s final amount before commit.
+- **Landed:** pre-commit commitment preview binds plan, USD currency, quantity, renewal interval, caller-supplied tax, cancellation policy/deadline and exact charge into a content hash; checkout proposals now bind that exact preview hash and expected cents, revalidate them before Stripe session creation, reject tampering, and fail closed on unsupported annual, multi-seat or Atlas-tax shapes.
+- **Next:** reconcile Stripe's returned line items/tax and webhook invoice total against the approved cents before treating checkout as committed.
 ## M25 - Knowledge Copilot & Training
 - **Landed:** common M00-M25 provenance events now have durable tenant-scoped SQLite WAL storage, idempotent replay, conflicting-replay rejection, canonical event hashing, and optional artifact-byte SHA-256 verification.
 - **Next:** verify remote source bytes/freshness, adopt the contract at every producer, and add the device capture adapter.
