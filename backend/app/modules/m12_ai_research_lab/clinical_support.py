@@ -316,3 +316,51 @@ CLINICAL_EXTRA.update({
  'copd_management':lambda d:chronic_care_plan('copd_management',d),
  'heart_failure_management':lambda d:chronic_care_plan('heart_failure_management',d),
 })
+
+def oncology_coordination(data:dict)->dict:
+    plan=data.get('plan',{});team=data.get('team',[]);milestones=data.get('milestones',[]);source=data.get('source',{})
+    if not plan or not team or not source.get('source_url'):raise ValueError('oncology plan, team and source_url required')
+    role_names={x.get('role') for x in team};tasks=[]
+    for m in milestones:
+        owner=m.get('owner_role');tasks.append({**m,'owner_known':owner in role_names,'status':m.get('status','pending'),'dependencies':m.get('dependencies',[])})
+    gaps=[x['name'] for x in tasks if not x['owner_known'] or not x.get('due_at')]
+    return {'diagnosis_and_stage_as_supplied':{'diagnosis':plan.get('diagnosis'),'stage':plan.get('stage'),'pathology_version':plan.get('pathology_version')},'team':team,'coordination_tasks':tasks,'coordination_gaps':gaps,'patient_priorities':data.get('patient_priorities',[]),'source':source,'boundary':'Coordination of a clinician-authored oncology plan only. Atlas does not establish diagnosis/stage, order therapy or replace tumor-board and specialist review.','disclaimer':DISCLAIMER}
+
+def oncology_plan(method:str,data:dict)->dict:
+    regimen=data.get('regimen',{});patient=data.get('patient_facts',{});criteria=data.get('criteria',[]);source=data.get('source',{})
+    if not regimen or not source.get('source_url'):raise ValueError('regimen and source_url required')
+    checks=[]
+    for c in criteria:
+        field=c.get('field');value=patient.get(field);passed=None
+        if value is not None:
+            passed=True
+            if 'minimum' in c:passed=passed and float(value)>=float(c['minimum'])
+            if 'maximum' in c:passed=passed and float(value)<=float(c['maximum'])
+            if 'equals' in c:passed=passed and value==c['equals']
+        checks.append({'field':field,'value':value,'passed':passed,'reason':c.get('reason')})
+    blockers=[x for x in checks if x['passed'] is False];missing=[x['field'] for x in checks if x['passed'] is None]
+    return {'mode':method,'regimen':regimen,'eligibility_checks':checks,'blockers':blockers,'missing_facts':missing,'status':'incomplete' if missing else 'not_eligible_for_reviewed_option' if blockers else 'eligible_for_specialist_review','source':source,'boundary':'Cited eligibility and checklist support only. Oncology specialists must confirm pathology, stage, biomarkers, organ function, interactions, consent and patient goals. Atlas never selects, doses, schedules or administers anticancer treatment.','disclaimer':DISCLAIMER}
+
+def palliative_plan(method:str,data:dict)->dict:
+    symptoms=data.get('symptoms',[]);goals=data.get('goals',[]);preferences=data.get('preferences',{});options=data.get('options',[]);source=data.get('source',{})
+    if not goals or not source.get('source_url'):raise ValueError('patient goals and source_url required')
+    urgent=[s for s in symptoms if s.get('urgent') is True];matched=[]
+    for o in options:
+        if set(o.get('goal_tags',[]))&set(goals) and not set(o.get('conflicts_with',[]))&set(preferences.get('declined',[])):matched.append(o)
+    return {'mode':method,'symptom_summary':symptoms,'urgent_review':urgent,'patient_goals':goals,'preferences':preferences,'candidate_support_for_shared_decision':matched,'unresolved_decisions':data.get('unresolved_decisions',[]),'source':source,'boundary':'Patient-goal documentation and coordination only. A palliative/hospice team assesses symptoms, capacity, eligibility and treatment. Atlas never enrolls, changes code status, withdraws treatment or makes end-of-life decisions.','disclaimer':DISCLAIMER}
+
+def pain_plan(data:dict)->dict:
+    observations=data.get('observations',[]);goals=data.get('goals',[]);options=data.get('options',[]);source=data.get('source',{})
+    if not observations or not goals or not source.get('source_url'):raise ValueError('pain observations, functional goals and source_url required')
+    selected=[o for o in options if not set(o.get('contraindications',[]))&set(data.get('contraindications',[]))]
+    return {'pain_trajectory':sorted(observations,key=lambda x:x.get('observed_at','')),'functional_goals':goals,'candidate_options_for_shared_review':selected,'red_flags':data.get('red_flags',[]),'source':source,'boundary':'Tracking and shared-decision support only. Pain score alone does not determine treatment; clinicians assess cause, function, sedation, substance-use and overdose risk. Atlas never prescribes or changes analgesics.','disclaimer':DISCLAIMER}
+
+CLINICAL_EXTRA.update({
+ 'cancer_care_coordination':oncology_coordination,
+ 'chemotherapy_planning':lambda d:oncology_plan('chemotherapy_planning',d),
+ 'radiation_therapy_planning':lambda d:oncology_plan('radiation_therapy_planning',d),
+ 'immunotherapy_selection':lambda d:oncology_plan('immunotherapy_selection',d),
+ 'palliative_care_planning':lambda d:palliative_plan('palliative_care_planning',d),
+ 'hospice_care_coordination':lambda d:palliative_plan('hospice_care_coordination',d),
+ 'pain_management':pain_plan,
+})
