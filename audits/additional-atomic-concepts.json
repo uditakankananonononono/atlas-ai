@@ -8,8 +8,8 @@
   "delta_over_base_rows": 107,
   "atomic_concept_count": 2117,
   "counts": {
-    "verified-pushed": 91,
-    "missing": 69
+    "verified-pushed": 114,
+    "missing": 46
   },
   "rowization_rule": "Replace each identified packed parent row with its atomic subrows; all other base rows remain one atomic concept. Examples and benefit statements are not counted as separate concepts unless they specify distinct behavior.",
   "rows": [
@@ -1515,10 +1515,10 @@
       "atomic_requirement": "Research-data sharing compliance",
       "source_feature_title": "Open Science Compliance",
       "source_description": "Ensures data and code sharing",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1528,10 +1528,10 @@
       "atomic_requirement": "Research-code sharing compliance",
       "source_feature_title": "Open Science Compliance",
       "source_description": "Ensures data and code sharing",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1541,10 +1541,10 @@
       "atomic_requirement": "Attention-grabbing title candidate generation",
       "source_feature_title": "Title Generation",
       "source_description": "Creates attention-grabbing, accurate titles",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1554,10 +1554,10 @@
       "atomic_requirement": "Title-accuracy validation",
       "source_feature_title": "Title Generation",
       "source_description": "Creates attention-grabbing, accurate titles",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1567,10 +1567,10 @@
       "atomic_requirement": "Value-function learning",
       "source_feature_title": "Actor-Critic Methods",
       "source_description": "Combines value and policy learning",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1580,10 +1580,10 @@
       "atomic_requirement": "Policy learning",
       "source_feature_title": "Actor-Critic Methods",
       "source_description": "Combines value and policy learning",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1593,10 +1593,10 @@
       "atomic_requirement": "Dramatic-tension creation",
       "source_feature_title": "Tension Building",
       "source_description": "Creates and releases dramatic tension",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1606,10 +1606,10 @@
       "atomic_requirement": "Dramatic-tension release",
       "source_feature_title": "Tension Building",
       "source_description": "Creates and releases dramatic tension",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1619,10 +1619,10 @@
       "atomic_requirement": "Trope-conforming expectation analysis",
       "source_feature_title": "Trope Subversion",
       "source_description": "Plays with and against expectations",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1632,10 +1632,10 @@
       "atomic_requirement": "Trope-subverting alternative",
       "source_feature_title": "Trope Subversion",
       "source_description": "Plays with and against expectations",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1645,10 +1645,10 @@
       "atomic_requirement": "Lyric meter constraint",
       "source_feature_title": "Songwriting",
       "source_description": "Writes lyrics with meter and rhyme",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1658,10 +1658,10 @@
       "atomic_requirement": "Lyric rhyme constraint",
       "source_feature_title": "Songwriting",
       "source_description": "Writes lyrics with meter and rhyme",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1671,10 +1671,10 @@
       "atomic_requirement": "Squash principle application",
       "source_feature_title": "Animation Principles",
       "source_description": "Applies squash, stretch, anticipation",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1684,10 +1684,10 @@
       "atomic_requirement": "Stretch principle application",
       "source_feature_title": "Animation Principles",
       "source_description": "Applies squash, stretch, anticipation",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1697,10 +1697,10 @@
       "atomic_requirement": "Anticipation principle application",
       "source_feature_title": "Animation Principles",
       "source_description": "Applies squash, stretch, anticipation",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1710,10 +1710,10 @@
       "atomic_requirement": "Beat programming",
       "source_feature_title": "Rhythm Programming",
       "source_description": "Creates beats and grooves",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1723,10 +1723,10 @@
       "atomic_requirement": "Groove programming",
       "source_feature_title": "Rhythm Programming",
       "source_description": "Creates beats and grooves",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1736,10 +1736,10 @@
       "atomic_requirement": "Visualization aesthetic-quality validation",
       "source_feature_title": "Data Visualization",
       "source_description": "Makes data beautiful and clear",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1749,10 +1749,10 @@
       "atomic_requirement": "Visualization clarity validation",
       "source_feature_title": "Data Visualization",
       "source_description": "Makes data beautiful and clear",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1762,10 +1762,10 @@
       "atomic_requirement": "Anatomical illustration planning",
       "source_feature_title": "Medical Illustration",
       "source_description": "Visualizes anatomy and procedures",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1775,10 +1775,10 @@
       "atomic_requirement": "Procedure illustration planning",
       "source_feature_title": "Medical Illustration",
       "source_description": "Visualizes anatomy and procedures",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1788,10 +1788,10 @@
       "atomic_requirement": "Aircraft design support",
       "source_feature_title": "Aerospace Design",
       "source_description": "Develops aircraft and spacecraft",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1801,10 +1801,10 @@
       "atomic_requirement": "Spacecraft design support",
       "source_feature_title": "Aerospace Design",
       "source_description": "Develops aircraft and spacecraft",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/runtime/atomic_concepts_0116_0138.py",
+      "test_evidence": "tests/test_atomic_concepts_0116_0138.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
