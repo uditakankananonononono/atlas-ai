@@ -105,3 +105,7 @@ async def propose_digest(request: DigestRequestIn, service: Service = Depends(ge
         subject=service.digest_subject(items),
         preview=body[:500],
     )
+
+# Expanded owner-spec opportunity collection and understanding rows 67-131.
+from .expanded_spec_routes_67_131 import router as expanded_spec_router_67_131
+router.include_router(expanded_spec_router_67_131)
