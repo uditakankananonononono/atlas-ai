@@ -9035,8 +9035,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 711,
@@ -9048,8 +9048,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 712,
@@ -9061,8 +9061,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 713,
@@ -9074,8 +9074,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 714,
@@ -9087,8 +9087,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 715,
@@ -9100,8 +9100,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 716,
@@ -9113,8 +9113,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 717,
@@ -9126,8 +9126,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 718,
@@ -9139,8 +9139,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 719,
@@ -9152,8 +9152,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 720,
@@ -9165,8 +9165,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 721,
@@ -9178,8 +9178,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 722,
@@ -9191,8 +9191,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 723,
@@ -9204,8 +9204,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 724,
@@ -9217,8 +9217,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 725,
@@ -9230,8 +9230,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 726,
@@ -9243,8 +9243,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 727,
@@ -9256,8 +9256,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 728,
@@ -9269,8 +9269,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 729,
@@ -9282,8 +9282,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 730,
@@ -9295,8 +9295,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 731,
@@ -9308,8 +9308,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 732,
@@ -9321,8 +9321,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 733,
@@ -9334,8 +9334,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 734,
@@ -9347,8 +9347,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 735,
@@ -9360,8 +9360,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 736,
@@ -9373,8 +9373,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 737,
@@ -9386,8 +9386,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 738,
@@ -9399,8 +9399,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 739,
@@ -9412,8 +9412,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 740,
@@ -9425,8 +9425,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CommunicationCoach. Functions: coach. Boundaries: Claim and evidence; What evidence would change a reasonable reader's mind?; Separate claims, evidence, and uncertainty.; List fair options and your walk-away boundary.; Context and consent",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 741,
@@ -9438,8 +9438,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 742,
@@ -9451,8 +9451,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 743,
@@ -9464,8 +9464,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 744,
@@ -9477,8 +9477,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 745,
@@ -9490,8 +9490,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 746,
@@ -9503,8 +9503,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 747,
@@ -9516,8 +9516,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 748,
@@ -9529,8 +9529,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 749,
@@ -9542,8 +9542,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 750,
@@ -9555,8 +9555,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 751,
@@ -9568,8 +9568,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 752,
@@ -9581,8 +9581,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 753,
@@ -9594,8 +9594,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 754,
@@ -9607,8 +9607,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 755,
@@ -9620,8 +9620,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 756,
@@ -9633,8 +9633,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 757,
@@ -9646,8 +9646,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 758,
@@ -9659,8 +9659,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 759,
@@ -9672,8 +9672,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 760,
@@ -9685,8 +9685,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 761,
@@ -9698,8 +9698,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 762,
@@ -9711,8 +9711,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 763,
@@ -9724,8 +9724,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 764,
@@ -9737,8 +9737,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 765,
@@ -9750,8 +9750,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 766,
@@ -9763,8 +9763,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 767,
@@ -9776,8 +9776,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 768,
@@ -9789,8 +9789,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 769,
@@ -9802,8 +9802,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 770,
@@ -9815,8 +9815,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CollaborationCoach. Functions: coach. Boundaries: Share evidence, surface tradeoffs, and distinguish facts from values.; Which evidence would change your view?; Define the claim, burden of proof, equal turns, and evidence standard.; What is the strongest evidence for and against the claim?; Align truthful claims, relevant evidence, and audience needs without coercion.",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 771,
@@ -9828,8 +9828,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 772,
@@ -9841,8 +9841,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 773,
@@ -9854,8 +9854,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 774,
@@ -9867,8 +9867,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 775,
@@ -9880,8 +9880,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 776,
@@ -9893,8 +9893,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 777,
@@ -9906,8 +9906,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 778,
@@ -9919,8 +9919,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 779,
@@ -9932,8 +9932,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 780,
@@ -9945,8 +9945,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 781,
@@ -9958,8 +9958,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 782,
@@ -9971,8 +9971,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 783,
@@ -9984,8 +9984,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 784,
@@ -9997,8 +9997,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 785,
@@ -10010,8 +10010,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 786,
@@ -10023,8 +10023,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 787,
@@ -10036,8 +10036,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 788,
@@ -10049,8 +10049,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 789,
@@ -10062,8 +10062,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 790,
@@ -10075,8 +10075,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 791,
@@ -10088,8 +10088,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 792,
@@ -10101,8 +10101,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 793,
@@ -10114,8 +10114,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 794,
@@ -10127,8 +10127,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 795,
@@ -10140,8 +10140,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 796,
@@ -10153,8 +10153,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 797,
@@ -10166,8 +10166,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 798,
@@ -10179,8 +10179,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 799,
@@ -10192,8 +10192,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 800,
@@ -10205,8 +10205,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 801,
@@ -10218,8 +10218,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 802,
@@ -10231,8 +10231,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 803,
@@ -10244,8 +10244,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 804,
@@ -10257,8 +10257,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 805,
@@ -10270,8 +10270,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 806,
@@ -10283,8 +10283,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 807,
@@ -10296,8 +10296,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 808,
@@ -10309,8 +10309,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 809,
@@ -10322,8 +10322,8 @@
       "test_case": null,
       "post_semantic_status": "verified",
       "implementation_details": "Classes: TrustWellbeingCoach. Functions: coach. Boundaries: Identify rights, harms, process, evidence, and an accountable appeal path.; List stakeholders, duties, harms, benefits, consent, and reversible alternatives.; What boundary or repair would you need, whether or not you forgive?; Compare alternatives using the same evidence standard.; What evidence would make another view more plausible?",
-      "depth_sweep_status": "upgraded-practitioner-depth",
-      "depth_evidence": "Typed coaching method with row-specific practice, evidence coverage, uncertainty calibration, safety boundaries and all-enum adversarial tests."
+      "depth_sweep_status": "pending-distinctive-fix",
+      "depth_evidence": "Shared calibration/evaluation layer integrated; distinctive row implementation pending F7."
     },
     {
       "row": 810,
