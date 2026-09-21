@@ -229,6 +229,9 @@ class TaskContext(BaseModel):
     updated_at: datetime = Field(default_factory=utcnow)
     wm_partition: str = ""
     standup_notes: list[str] = Field(default_factory=list)
+    last_run_at: datetime | None = None
+    ticks_served: int = 0
+    tenant_id: str = "default"
 
 
 class EmotionalState(BaseModel):

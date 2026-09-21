@@ -162,6 +162,9 @@ class DeliberativeLoop:
         self.max_ticks = max_ticks
         self.meta = MetaReasoner()
         self.traces: list[TraceEntry] = []
+        # Optional hook invoked after planning and before each run, so the
+        # durable runtime can register pre-dispatch expectations.
+        self.before_run: Any = None
 
     def _trace(self, phase: str, detail: str, *, task_id: str | None = None, policy_basis: str = "") -> None:
         self.traces.append(TraceEntry(task_id=task_id, phase=phase, detail=detail, policy_basis=policy_basis))
@@ -196,10 +199,14 @@ class DeliberativeLoop:
         self.wm.put(MemoryChunk(
             type=ChunkType.GOAL, content=context.goal, confidence=1.0, source="executive",
         ), active_goal=context.goal, partition=context.id)
+        if self.before_run is not None:
+            self.before_run(context)
         return self.run(context)
 
     def run(self, context: TaskContext, *, budget: Budget | None = None) -> TaskContext:
         budget = budget or Budget()
+        if self.before_run is not None:
+            self.before_run(context)
         ticks = 0
         context.state = TaskState.RUNNING
         while ticks < self.max_ticks and ticks < budget.seconds:

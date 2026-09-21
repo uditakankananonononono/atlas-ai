@@ -74,3 +74,55 @@ class ContextScheduler:
 
     def __len__(self) -> int:
         return len(self._contexts)
+
+
+class FairContextScheduler(ContextScheduler):
+    """Aging-fair time slicing (rows M20-23, M20-24): deadline/importance
+    still dominate, but a context that has waited too long without a tick
+    accrues an aging bonus until it is served - no starvation under a busy
+    high-priority tier. Each selection records the service so quanta stay
+    measurable.
+    """
+
+    def __init__(self, *, aging_bonus_per_minute: float = 1.0) -> None:
+        super().__init__()
+        self.aging_bonus_per_minute = aging_bonus_per_minute
+
+    def priority(self, context: TaskContext, *, now: datetime | None = None) -> float:
+        base = super().priority(context, now=now)
+        now = now or datetime.now(timezone.utc)
+        waited_from = context.last_run_at or context.created_at
+        waited_minutes = max(0.0, (now - waited_from).total_seconds() / 60.0)
+        return base + self.aging_bonus_per_minute * waited_minutes
+
+    def next_context(self, *, now: datetime | None = None) -> TaskContext | None:
+        now = now or datetime.now(timezone.utc)
+        active = self.active()
+        if not active:
+            return None
+        active.sort(key=lambda c: self.priority(c, now=now), reverse=True)
+        top_priority = self.priority(active[0], now=now)
+        tier = [c for c in active if self.priority(c, now=now) == top_priority]
+        self._cursor = (self._cursor + 1) % len(tier)
+        context = tier[self._cursor]
+        context.last_run_at = now
+        context.ticks_served += 1
+        return context
+
+    def starvation_report(self, *, now: datetime | None = None, threshold_minutes: float = 30.0) -> list[dict[str, object]]:
+        """Typed signal for the dashboard: active contexts starved past the
+        threshold, with their wait and service counts."""
+        now = now or datetime.now(timezone.utc)
+        report: list[dict[str, object]] = []
+        for context in self.active():
+            waited_from = context.last_run_at or context.created_at
+            waited = (now - waited_from).total_seconds() / 60.0
+            if waited >= threshold_minutes:
+                report.append({
+                    "context_id": context.id,
+                    "goal": context.goal,
+                    "waited_minutes": round(waited, 2),
+                    "ticks_served": context.ticks_served,
+                    "importance": context.importance,
+                })
+        return report
