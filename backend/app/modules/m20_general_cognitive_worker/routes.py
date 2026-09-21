@@ -1480,3 +1480,6 @@ router.include_router(education_router)
 # Specialized social-research surface, ledger rows 1710-1759.
 from .social_research_routes_1710_1759 import router as social_research_router_1710_1759
 router.include_router(social_research_router_1710_1759)
+
+from .political_social_routes_1760_1809 import router as political_social_router_1760_1809
+router.include_router(political_social_router_1760_1809)
