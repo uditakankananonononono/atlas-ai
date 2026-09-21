@@ -36,3 +36,42 @@ def test_no_provenance_rejected():
 def test_low_confidence_is_flagged():assert "low" in svc().analyze("i",req(453,{"annual_demand":1,"order_cost":1,"annual_holding_cost_per_unit":1,"lead_time_days":1,"daily_demand":1},.2)).uncertainty.limitations[0]
 def test_mounted_operations_api():
  app=FastAPI();app.include_router(router);c=TestClient(app);payload=req(454,{"history":[1,2,3]}).model_dump(mode="json");r=c.post("/portfolio/ideas/x/operations-analyses",json=payload);assert r.status_code==201 and r.json()["execution_status"]=="not_executed"
+
+def test_row_456_production_scheduling_capacity_gap():
+ a=svc().analyze("i",req(456,ROWS[456]));assert a.analysis["capacity_gap"]==0 and a.analysis["order_load"]=={"o":1.0}
+def test_row_457_quality_control_traceability():
+ a=svc().analyze("i",req(457,ROWS[457]));assert a.analysis["standards_trace"]["c"]==["s"]
+def test_row_459_lean_waste_register():
+ a=svc().analyze("i",req(459,ROWS[459]));assert a.analysis["waste_register"][0]["waste"]=="w"
+def test_row_460_jit_readiness_uses_reliability_floor():
+ a=svc().analyze("i",req(460,ROWS[460]));assert a.analysis["supplier_reliability_floor"]==.9 and a.analysis["jit_ready"] is False
+def test_row_461_tqm_maps_customer_measures():
+ a=svc().analyze("i",req(461,ROWS[461]));assert a.analysis["customer_to_measure"]=={"r":"m"}
+def test_row_462_kaizen_assigns_owner():
+ a=svc().analyze("i",req(462,ROWS[462]));assert a.analysis["backlog"][0]["owner"]=="u"
+def test_row_463_root_cause_remains_hypothesis():
+ a=svc().analyze("i",req(463,ROWS[463]));assert a.analysis["confirmed_root_cause"] is None
+def test_row_464_fishbone_keeps_six_bones():
+ a=svc().analyze("i",req(464,ROWS[464]));assert set(a.analysis["bones"])=={"people","process","equipment","materials","environment","measurement"}
+def test_row_465_five_whys_requires_aligned_evidence():
+ bad={**ROWS[465],"evidence_by_step":["one"]}
+ with pytest.raises(Exception):svc().analyze("i",req(465,bad))
+def test_row_466_pdca_starts_without_execution():
+ a=svc().analyze("i",req(466,ROWS[466]));assert a.analysis["do"]["status"]=="not_started"
+def test_row_467_dmaic_has_phase_gate():
+ a=svc().analyze("i",req(467,ROWS[467]));assert a.analysis["phase_gate"]=="define_review"
+def test_row_469_process_mining_validates_schema_mapping():
+ bad={**ROWS[469],"event_log_fields":["case"]}
+ with pytest.raises(ValueError,match="lacks mapped fields"):svc().analyze("i",req(469,bad))
+def test_row_470_workflow_quantifies_manual_effort():
+ a=svc().analyze("i",req(470,ROWS[470]));assert a.analysis["manual_effort_total"]==1 and a.analysis["workflow_changed"] is False
+def test_row_471_rpa_does_not_deploy_bot():
+ a=svc().analyze("i",req(471,ROWS[471]));assert a.analysis["bot_deployed"] is False
+def test_row_472_reengineering_requires_cutover_approval():
+ a=svc().analyze("i",req(472,ROWS[472]));assert a.analysis["cutover_authorized"] is False
+def test_row_473_change_management_keeps_messages_draft_only():
+ a=svc().analyze("i",req(473,ROWS[473]));assert a.analysis["messages_sent"]==0
+def test_row_474_kotter_emits_eight_distinct_steps():
+ a=svc().analyze("i",req(474,ROWS[474]));assert [s["step"] for s in a.analysis["steps"]]==list(range(1,9))
+def test_row_475_adkar_identifies_bottleneck():
+ a=svc().analyze("i",req(475,ROWS[475]));assert a.analysis["bottleneck"]=="awareness" and a.analysis["average"]==3
