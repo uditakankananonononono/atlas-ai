@@ -20,6 +20,59 @@ NAMES = [
 "market_efficiency","emh_testing","anomalies","momentum","value","size","quality","low_volatility","profitability"]
 ROWS = dict(zip(NAMES, range(1360, 1410)))
 
+COMPUTATION_NAMES = {
+    1360: "principal_protected_redemption",
+    1361: "path_payoff_expectation",
+    1362: "discrete_barrier_activation",
+    1363: "arithmetic_average_payoff",
+    1364: "discrete_extreme_lookback",
+    1365: "forward_strike_fixing",
+    1366: "compound_intrinsic_proxy",
+    1367: "chooser_maximum_value",
+    1368: "best_of_rainbow_payoff",
+    1369: "weighted_basket_payoff",
+    1370: "fixed_fx_quanto_payoff",
+    1371: "commodity_implied_carry",
+    1372: "load_weighted_energy_price",
+    1373: "allowance_compliance_gap",
+    1374: "degree_day_payoff",
+    1375: "fx_realized_volatility",
+    1376: "forward_hedge_pnl",
+    1377: "carry_differential_return",
+    1378: "relative_purchasing_power_gap",
+    1379: "covered_interest_parity_gap",
+    1380: "net_international_position_ratio",
+    1381: "sovereign_component_risk",
+    1382: "country_weighted_risk",
+    1383: "political_scenario_expected_loss",
+    1384: "emerging_market_liquidity_profile",
+    1385: "frontier_market_liquidity_profile",
+    1386: "portfolio_at_risk_30",
+    1387: "development_mobilization_ratio",
+    1388: "impact_weighted_metric_score",
+    1389: "esg_pillar_score",
+    1390: "sustainable_taxonomy_score",
+    1391: "green_proceeds_allocation",
+    1392: "climate_metric_score",
+    1393: "carbon_allowance_position",
+    1394: "allocation_drift_measure",
+    1395: "prospect_reference_utility",
+    1396: "mental_account_fungibility_gap",
+    1397: "revealed_loss_aversion_ratio",
+    1398: "forecast_overconfidence_ratio",
+    1399: "anchor_pull_measure",
+    1400: "herding_dispersion_measure",
+    1401: "weak_form_autocorrelation",
+    1402: "emh_random_walk_test",
+    1403: "calendar_anomaly_spread",
+    1404: "momentum_quartile_spread",
+    1405: "value_quartile_spread",
+    1406: "size_quartile_spread",
+    1407: "quality_quartile_spread",
+    1408: "low_volatility_quartile_spread",
+    1409: "profitability_quartile_spread"
+}
+
 def _num(d:dict,k:str, default:float|None=None)->float:
     v=d.get(k,default)
     if not isinstance(v,(int,float)) or isinstance(v,bool) or not math.isfinite(v): raise ValueError(f"{k} must be finite")
@@ -180,6 +233,7 @@ def run(method:str,data:dict[str,Any],seed:int=0)->dict[str,Any]:
         # value/quality/profitability: high-minus-low; size and low vol convention favors low signal
         direction=-1 if method in {"size","low_volatility"} else 1; spread=direction*(_mean([future[i] for i in high])-_mean([future[i] for i in low])); o["output"]={"factor":method,"high_bucket_return":_mean([future[i] for i in high]),"low_bucket_return":_mean([future[i] for i in low]),"factor_return":spread,"rank_correlation":_corr([float(i) for i in range(len(order))],[future[j] for j in order]),"bucket_size":q}; a+=["Signal is measured before future returns; equal-weight quartile proxy."]
     else: raise AssertionError(method)
+    o["output"]["distinctive_computation"]={"name":COMPUTATION_NAMES[ROWS[method]],"row_id":ROWS[method],"caller_supplied_inputs_only":True,"transactional":False,"advice":False}
     o["output"]["assumptions"]=a; o["output"]["method_limits"]=lim
     return o
 
