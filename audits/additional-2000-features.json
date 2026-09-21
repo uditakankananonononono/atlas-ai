@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1351,
-    "verified-pushed": 656,
+    "missing": 1301,
+    "verified-pushed": 706,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -16230,9 +16230,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Sentencing Guidelines",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1261,
@@ -16240,9 +16244,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Criminal Appeals",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1262,
@@ -16250,9 +16258,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Constitutional Law",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1263,
@@ -16260,9 +16272,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "First Amendment",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1264,
@@ -16270,9 +16286,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Fourth Amendment",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1265,
@@ -16280,9 +16300,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Due Process",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1266,
@@ -16290,9 +16314,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Equal Protection",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1267,
@@ -16300,9 +16328,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Administrative Law",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1268,
@@ -16310,9 +16342,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Regulatory Practice",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1269,
@@ -16320,9 +16356,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Agency Proceedings",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1270,
@@ -16330,9 +16370,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Judicial Review",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1271,
@@ -16340,9 +16384,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "International Law",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1272,
@@ -16350,9 +16398,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Treaties",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1273,
@@ -16360,9 +16412,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Human Rights",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1274,
@@ -16370,9 +16426,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "International Trade",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1275,
@@ -16380,9 +16440,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Arbitration",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1276,
@@ -16390,9 +16454,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Mediation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1277,
@@ -16400,9 +16468,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Dispute Resolution",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1278,
@@ -16410,9 +16482,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Litigation Strategy",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1279,
@@ -16420,9 +16496,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Discovery",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1280,
@@ -16430,9 +16510,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Depositions",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1281,
@@ -16440,9 +16524,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Trial Preparation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1282,
@@ -16450,9 +16538,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Evidence Analysis",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1283,
@@ -16460,9 +16552,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Witness Preparation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1284,
@@ -16470,9 +16566,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Jury Selection",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1285,
@@ -16480,9 +16580,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Appellate Practice",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1286,
@@ -16490,9 +16594,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Writing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1287,
@@ -16500,9 +16608,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Citations",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1288,
@@ -16510,9 +16622,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Brief Writing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1289,
@@ -16520,9 +16636,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Oral Argument",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1290,
@@ -16530,9 +16650,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Ethics",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1291,
@@ -16540,9 +16664,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Professional Responsibility",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1292,
@@ -16550,9 +16678,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Conflicts of Interest",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1293,
@@ -16560,9 +16692,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Attorney-Client Privilege",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1294,
@@ -16570,9 +16706,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Malpractice",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1295,
@@ -16580,9 +16720,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Pro Bono Practice",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1296,
@@ -16590,9 +16734,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Aid",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1297,
@@ -16600,9 +16748,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Access to Justice",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1298,
@@ -16610,9 +16762,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Technology",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1299,
@@ -16620,9 +16776,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "E-Discovery",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1300,
@@ -16630,9 +16790,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Analytics",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1301,
@@ -16640,9 +16804,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Predictive Coding",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1302,
@@ -16650,9 +16818,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Document Review",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1303,
@@ -16660,9 +16832,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Operations",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1304,
@@ -16670,9 +16846,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Law Firm Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1305,
@@ -16680,9 +16860,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Billing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1306,
@@ -16690,9 +16874,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Alternative Fee Arrangements",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1307,
@@ -16700,9 +16888,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Project Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1308,
@@ -16710,9 +16902,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Knowledge Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1309,
@@ -16720,9 +16916,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Education",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+        "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+      },
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
     },
     {
       "id": 1310,
