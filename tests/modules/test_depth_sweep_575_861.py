@@ -95,7 +95,7 @@ def test_learning_rows_have_evaluation_and_uncertainty(row):
 
 
 def test_critical_thinking_row_861_is_method_specific_and_incomplete_when_evidence_missing():
-    payload = {"sources": [{"source_id": "s1", "observed_at": "2026-09-21"}], "inputs": {"claim": "x", "evidence": ["e"]}}
+    payload = {"tenant_id":"depth-sweep","actor_id":"tester","sources": [{"source_id": "s1", "observed_at": "2026-09-21"}], "inputs": {"claim": "x", "evidence": ["e"]}}
     result = cognitive_execute(861, payload)
     assert result["evidence_gaps"] == ["assumptions", "alternatives", "judgment"]
     assert result["evaluation"]["stage_coverage"] == pytest.approx(0.4)

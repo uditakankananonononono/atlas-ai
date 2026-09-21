@@ -1089,5 +1089,5 @@ def run(method,data,params=None,seed=0):
     if not isinstance(p,dict):raise EmergingError('params must be an object')
     rng=random.Random(seed)
     out,a,lim=REGISTRY[method](data,p,rng)
-    return {'method':method,'feature_row':ROWS[method],'inputs':{'data':data,'params':p,'seed':seed},'assumptions':a,'method_limits':lim,'execution_boundary':_BOUNDARY[_FAMILY[method]],'physical_execution':'not_performed','output':out}
+    return {'method':method,'feature_row':ROWS[method],'inputs':{'data':data,'params':p,'seed':seed},'assumptions':a,'method_limits':lim,'execution_boundary':_BOUNDARY[_FAMILY[method]],'physical_execution':'not_performed','evaluation':{'algorithm_executed':True,'independent_verification_required':True},'uncertainty':{'fabricated_or_deployed':False,'method_limits':lim},'output':out}
 def catalog():return [{'method':m,'feature_row':r,'summary':SUMMARIES[m],'family':_FAMILY[m],'required_evidence':INPUTS[m]} for m,r in ROWS.items()]

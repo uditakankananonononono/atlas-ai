@@ -8,7 +8,7 @@ from app.modules.m12_ai_research_lab.clinical_support import clinical_support
 SRC={'source_url':'https://example.test/evidence','observed_at':'2026-09-21'}
 
 def test_cognitive_reports_coverage_and_unresolved_evidence():
- result=execute(862,{'sources':[{'source_id':'s','observed_at':'2026-09-21'}],'inputs':{'problem':'p','constraints':['c'],'ideation_methods':['brainwriting']}})
+ result=execute(862,{'tenant_id':'depth-sweep','actor_id':'tester','sources':[{'source_id':'s','observed_at':'2026-09-21'}],'inputs':{'problem':'p','constraints':['c'],'ideation_methods':['brainwriting']}})
  assert result['evaluation']['stage_coverage']<1
  assert result['uncertainty']['unresolved_stages']==result['evidence_gaps']
  assert result['uncertainty']['confidence_claimed'] is False
@@ -21,10 +21,10 @@ def test_emerging_reports_nonexecution_and_method_limits():
  with pytest.raises(ValueError):emerging('quantum_error_correction',{'physical_error_rate':float('nan'),'threshold':.01,'code_distance':3})
 
 def test_biomed_reports_research_only_uncertainty():
- result=biomed('liquid_biopsy',{'true_positive':8,'false_positive':2,'true_negative':9,'false_negative':1,'limit_of_detection':.01})
- assert result['output']['sensitivity']==pytest.approx(8/9)
- assert result['uncertainty']['clinical_effect_established'] is False
- assert result['evaluation']['qualified_review_required']
+ result=biomed('liquid_biopsy',{'true_positive':8,'false_positive':2,'true_negative':9,'false_negative':1,'limit_of_detection':.01,'units':{'limit_of_detection':'ng/mL'},'evidence':{'source_ids':['study-1'],'quality':'high'},'assumptions':['validation cohort representative'],'uncertainty':{'confidence_level':0.95,'lower':0.1,'upper':0.9}})
+ assert result['analysis']['liquid_biopsy_sensitivity']==pytest.approx(8/9)
+ assert result['human_review_required'] is True
+ assert 'Not diagnosis' in result['decision_boundary']
 
 def test_analytics_reports_assumptions_and_invalid_input():
  result=analyze('confidence_interval',{'values':[1,2,3,4]})
