@@ -2,9 +2,9 @@
   "schema_version": 1,
   "source": "User owner-channel expanded M1-M4, Tools and Claire specification, September 20 2026",
   "counts": {
-    "verified-pushed": 51,
+    "verified-pushed": 116,
     "thin": 0,
-    "missing": 278
+    "missing": 213
   },
   "rows": [
     {
@@ -804,9 +804,13 @@
       "module": "M1",
       "requirement": "Tracked social source: farahgulrahujaa",
       "description": "Collect opportunity signals attributed to the named source farahgulrahujaa through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -816,9 +820,13 @@
       "module": "M1",
       "requirement": "Tracked social source: scholarshipowl",
       "description": "Collect opportunity signals attributed to the named source scholarshipowl through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -828,9 +836,13 @@
       "module": "M1",
       "requirement": "Tracked social source: buildupgloabl",
       "description": "Collect opportunity signals attributed to the named source buildupgloabl through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -840,9 +852,13 @@
       "module": "M1",
       "requirement": "Tracked social source: project.mentor",
       "description": "Collect opportunity signals attributed to the named source project.mentor through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -852,9 +868,13 @@
       "module": "M1",
       "requirement": "Tracked social source: girls.instem",
       "description": "Collect opportunity signals attributed to the named source girls.instem through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -864,9 +884,13 @@
       "module": "M1",
       "requirement": "Tracked social source: xollegepass",
       "description": "Collect opportunity signals attributed to the named source xollegepass through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -876,9 +900,13 @@
       "module": "M1",
       "requirement": "Tracked social source: coolgirlceo",
       "description": "Collect opportunity signals attributed to the named source coolgirlceo through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -888,9 +916,13 @@
       "module": "M1",
       "requirement": "Tracked social source: esslo.org",
       "description": "Collect opportunity signals attributed to the named source esslo.org through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -900,9 +932,13 @@
       "module": "M1",
       "requirement": "Tracked social source: the project horizon",
       "description": "Collect opportunity signals attributed to the named source the project horizon through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -912,9 +948,13 @@
       "module": "M1",
       "requirement": "Tracked social source: projectconnectforum",
       "description": "Collect opportunity signals attributed to the named source projectconnectforum through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -924,9 +964,13 @@
       "module": "M1",
       "requirement": "Tracked social source: girlsinresearch",
       "description": "Collect opportunity signals attributed to the named source girlsinresearch through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -936,9 +980,13 @@
       "module": "M1",
       "requirement": "Tracked social source: gradgpt",
       "description": "Collect opportunity signals attributed to the named source gradgpt through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -948,9 +996,13 @@
       "module": "M1",
       "requirement": "Tracked social source: festivalofhope",
       "description": "Collect opportunity signals attributed to the named source festivalofhope through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -960,9 +1012,13 @@
       "module": "M1",
       "requirement": "Tracked social source: rayofmedicine",
       "description": "Collect opportunity signals attributed to the named source rayofmedicine through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -972,9 +1028,13 @@
       "module": "M1",
       "requirement": "Tracked social source: atomic mind",
       "description": "Collect opportunity signals attributed to the named source atomic mind through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -984,9 +1044,13 @@
       "module": "M1",
       "requirement": "Tracked social source: crimson",
       "description": "Collect opportunity signals attributed to the named source crimson through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -996,9 +1060,13 @@
       "module": "M1",
       "requirement": "Tracked social source: the unidiscovery",
       "description": "Collect opportunity signals attributed to the named source the unidiscovery through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1008,9 +1076,13 @@
       "module": "M1",
       "requirement": "Tracked social source: opportunity orbit",
       "description": "Collect opportunity signals attributed to the named source opportunity orbit through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1020,9 +1092,13 @@
       "module": "M1",
       "requirement": "Tracked social source: appilcation ally",
       "description": "Collect opportunity signals attributed to the named source appilcation ally through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1032,9 +1108,13 @@
       "module": "M1",
       "requirement": "Tracked social source: opportunities4students",
       "description": "Collect opportunity signals attributed to the named source opportunities4students through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1044,9 +1124,13 @@
       "module": "M1",
       "requirement": "Tracked social source: nocodealex",
       "description": "Collect opportunity signals attributed to the named source nocodealex through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1056,9 +1140,13 @@
       "module": "M1",
       "requirement": "Tracked social source: girls4stemorg",
       "description": "Collect opportunity signals attributed to the named source girls4stemorg through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1068,9 +1156,13 @@
       "module": "M1",
       "requirement": "Tracked social source: tea_edu",
       "description": "Collect opportunity signals attributed to the named source tea_edu through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1080,9 +1172,13 @@
       "module": "M1",
       "requirement": "Tracked social source: girls in cs",
       "description": "Collect opportunity signals attributed to the named source girls in cs through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1092,9 +1188,13 @@
       "module": "M1",
       "requirement": "Tracked social source: future female scholars",
       "description": "Collect opportunity signals attributed to the named source future female scholars through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1104,9 +1204,13 @@
       "module": "M1",
       "requirement": "Tracked social source: borderless",
       "description": "Collect opportunity signals attributed to the named source borderless through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1116,9 +1220,13 @@
       "module": "M1",
       "requirement": "Tracked social source: empowerher",
       "description": "Collect opportunity signals attributed to the named source empowerher through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1128,9 +1236,13 @@
       "module": "M1",
       "requirement": "Tracked social source: iseekopportunity",
       "description": "Collect opportunity signals attributed to the named source iseekopportunity through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1140,9 +1252,13 @@
       "module": "M1",
       "requirement": "Tracked social source: meghna bora",
       "description": "Collect opportunity signals attributed to the named source meghna bora through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1152,9 +1268,13 @@
       "module": "M1",
       "requirement": "Tracked social source: 05chrs",
       "description": "Collect opportunity signals attributed to the named source 05chrs through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1164,9 +1284,13 @@
       "module": "M1",
       "requirement": "Tracked social source: opportunities platform",
       "description": "Collect opportunity signals attributed to the named source opportunities platform through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1176,9 +1300,13 @@
       "module": "M1",
       "requirement": "Tracked social source: sierraperosa",
       "description": "Collect opportunity signals attributed to the named source sierraperosa through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1188,9 +1316,13 @@
       "module": "M1",
       "requirement": "Tracked social source: shivansh gupta",
       "description": "Collect opportunity signals attributed to the named source shivansh gupta through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1200,9 +1332,13 @@
       "module": "M1",
       "requirement": "Tracked social source: the elevate prize",
       "description": "Collect opportunity signals attributed to the named source the elevate prize through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1212,9 +1348,13 @@
       "module": "M1",
       "requirement": "Tracked social source: scholarship collective",
       "description": "Collect opportunity signals attributed to the named source scholarship collective through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1224,9 +1364,13 @@
       "module": "M1",
       "requirement": "Tracked social source: second chance",
       "description": "Collect opportunity signals attributed to the named source second chance through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1236,9 +1380,13 @@
       "module": "M1",
       "requirement": "Tracked social source: qatar foundation",
       "description": "Collect opportunity signals attributed to the named source qatar foundation through an official API/export or public page where available.",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1248,9 +1396,13 @@
       "module": "M1",
       "requirement": "User-authorized social account export/import",
       "description": "User-authorized social account export/import",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1260,9 +1412,13 @@
       "module": "M1",
       "requirement": "Scholarships topic monitoring",
       "description": "Scholarships topic monitoring",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1272,9 +1428,13 @@
       "module": "M1",
       "requirement": "Competitions topic monitoring",
       "description": "Competitions topic monitoring",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1284,9 +1444,13 @@
       "module": "M1",
       "requirement": "Computer-science projects topic monitoring",
       "description": "Computer-science projects topic monitoring",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1296,9 +1460,13 @@
       "module": "M1",
       "requirement": "Life-advice topic monitoring",
       "description": "Life-advice topic monitoring",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1308,9 +1476,13 @@
       "module": "M1",
       "requirement": "Business ideas and unmet-problem monitoring",
       "description": "Business ideas and unmet-problem monitoring",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1320,9 +1492,13 @@
       "module": "M1",
       "requirement": "Research/science discoveries monitoring",
       "description": "Research/science discoveries monitoring",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1332,9 +1508,13 @@
       "module": "M1",
       "requirement": "Events/hackathons/challenges monitoring",
       "description": "Events/hackathons/challenges monitoring",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1344,9 +1524,13 @@
       "module": "M1",
       "requirement": "Essay-advice monitoring",
       "description": "Essay-advice monitoring",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1356,9 +1540,13 @@
       "module": "M1",
       "requirement": "Study-abroad content monitoring",
       "description": "Study-abroad content monitoring",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1368,9 +1556,13 @@
       "module": "M1",
       "requirement": "10,000+ keyword registry",
       "description": "10,000+ keyword registry",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1380,9 +1572,13 @@
       "module": "M1",
       "requirement": "500,000 accounts per platform target",
       "description": "500,000 accounts per platform target",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1392,9 +1588,13 @@
       "module": "M1",
       "requirement": "Ivies/T50/global top-school registry",
       "description": "Ivies/T50/global top-school registry",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1404,9 +1604,13 @@
       "module": "M1",
       "requirement": "Official admissions pages",
       "description": "Official admissions pages",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1416,9 +1620,13 @@
       "module": "M1",
       "requirement": "University labs, clubs, events and counsellors",
       "description": "University labs, clubs, events and counsellors",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1428,9 +1636,13 @@
       "module": "M1",
       "requirement": "Sponsored trips and youth-backing opportunities",
       "description": "Sponsored trips and youth-backing opportunities",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1440,9 +1652,13 @@
       "module": "M1",
       "requirement": "Olympiads and high-impact projects",
       "description": "Olympiads and high-impact projects",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1452,9 +1668,13 @@
       "module": "M1",
       "requirement": "Organized searchable opportunity corpus",
       "description": "Organized searchable opportunity corpus",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1464,9 +1684,13 @@
       "module": "M1",
       "requirement": "Hourly Celery Beat collection",
       "description": "Hourly Celery Beat collection",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1476,9 +1700,13 @@
       "module": "M1",
       "requirement": "Playwright dynamic-page collector",
       "description": "Playwright dynamic-page collector",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1488,9 +1716,13 @@
       "module": "M1",
       "requirement": "BeautifulSoup static-page parser",
       "description": "BeautifulSoup static-page parser",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1500,9 +1732,13 @@
       "module": "M1",
       "requirement": "spaCy entity extraction",
       "description": "spaCy entity extraction",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1512,9 +1748,13 @@
       "module": "M1",
       "requirement": "dateparser deadline extraction",
       "description": "dateparser deadline extraction",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1524,9 +1764,13 @@
       "module": "M1",
       "requirement": "Fine-tuned DeBERTa eligibility classification",
       "description": "Fine-tuned DeBERTa eligibility classification",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1536,9 +1780,13 @@
       "module": "M1",
       "requirement": "Opportunity type tagging",
       "description": "Opportunity type tagging",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1548,9 +1796,13 @@
       "module": "M1",
       "requirement": "Video understanding",
       "description": "Video understanding",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1560,9 +1812,13 @@
       "module": "M1",
       "requirement": "Image understanding",
       "description": "Image understanding",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
@@ -1572,9 +1828,13 @@
       "module": "M1",
       "requirement": "Text understanding",
       "description": "Text understanding",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Use official APIs, exports, RSS, licensed feeds, and public pages only; respect terms, robots, quotas, privacy, and account safety. No credential-driven mass scraping, self-bots, evasion, or fake accounts.",
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
+        "test_path": "tests/modules/test_m01_expanded_spec_67_131.py"
+      },
+      "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
       ]
