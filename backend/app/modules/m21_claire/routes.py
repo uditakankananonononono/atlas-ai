@@ -47,3 +47,5 @@ router.include_router(atomic_concepts_router_1_23)
 
 from .atomic_concepts_routes_24_46 import router as atomic_concepts_router_24_46
 router.include_router(atomic_concepts_router_24_46)
+from .atomic_concepts_routes_47_69 import router as atomic_concepts_router_47_69
+router.include_router(atomic_concepts_router_47_69)
