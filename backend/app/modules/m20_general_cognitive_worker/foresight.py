@@ -857,6 +857,8 @@ class LeverageFinder:
     is heuristic: goal-named variables > loop members > parameters."""
 
     def rank(self, model: SystemsModel) -> list[LeveragePoint]:
+        if not model.links:
+            raise ValueError("at least one causal link is required")
         loops = model.loops()
         reinforcing_vars = {v for loop in loops if loop.kind == "reinforcing" for v in loop.variables}
         loop_vars = {v for loop in loops for v in loop.variables}

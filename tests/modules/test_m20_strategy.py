@@ -24,6 +24,10 @@ def test_row60_ergodicity_time_vs_ensemble():
     assert "ruins you" in out["verdict"]
     flat = ErgodicityAnalyzer().analyze(outcomes=[(0.5, 1.3), (0.5, 0.75)])
     assert flat["ensemble_average"] > 1.0 > flat["time_average_growth"]
+    with pytest.raises(ValueError):
+        ErgodicityAnalyzer().analyze(outcomes=[])
+    with pytest.raises(ValueError):
+        ErgodicityAnalyzer().analyze(outcomes=[(1.5, 1.5)])
 
 
 def test_row61_nonlinear_classification_and_extrapolation():
@@ -38,6 +42,12 @@ def test_row61_nonlinear_classification_and_extrapolation():
     value = modeler.extrapolate(model="power_law", slope=out["slope"],
                                 intercept=out["intercept"], x=32.0)
     assert value == pytest.approx(2.0 * 32.0 ** 3, rel=1e-3)
+    with pytest.raises(ValueError):
+        modeler.classify(xs=[1.0, 2.0], ys=[1.0, 8.0])
+    with pytest.raises(ValueError):
+        modeler.classify(xs=[1.0, 2.0, 4.0], ys=[1.0, -8.0, 64.0])
+    with pytest.raises(ValueError):
+        modeler.extrapolate(model="zigzag", slope=1.0, intercept=0.0, x=2.0)
 
 
 def test_row62_tipping_point_early_warning():
@@ -49,6 +59,10 @@ def test_row62_tipping_point_early_warning():
     assert any("variance rising" in s for s in out["signals"])
     stable = detector.analyze(series=[1.0 + 0.01 * ((-1) ** i) for i in range(20)])
     assert not stable["warning"]
+    with pytest.raises(ValueError):
+        TippingPointDetector(window=3)
+    with pytest.raises(ValueError):
+        detector.analyze(series=[1.0, 2.0, 3.0])
 
 
 def test_row63_network_effect_models():
@@ -59,6 +73,10 @@ def test_row63_network_effect_models():
     out = analyzer.analyze(n_users=100, two_sided=True)
     assert "two-sided" in out["network_kind"]
     assert out["assumptions"]
+    with pytest.raises(ValueError):
+        NetworkEffectAnalyzer.value(n_users=-1, model="metcalfe")
+    with pytest.raises(ValueError):
+        NetworkEffectAnalyzer.value(n_users=10, model="viral")
 
 
 def test_row64_flywheel_identification():
@@ -72,6 +90,8 @@ def test_row64_flywheel_identification():
     wheel = out["flywheels"][0]
     assert wheel["touches_growth"] and "flywheel candidate" in wheel["reading"]
     assert "weeks" in wheel["delays"]
+    with pytest.raises(ValueError):
+        FlywheelFinder().find(SystemsModel())  # no causal links supplied
 
 
 def test_row65_moat_assessment():
@@ -84,6 +104,8 @@ def test_row65_moat_assessment():
     unclaimed = next(m for m in out["moats"] if m["moat"] == "switching_costs")
     assert unclaimed["score"] is None
     assert out["caveat"] == DECISION_SUPPORT_CAVEAT
+    with pytest.raises(ValueError):
+        MoatAssessor().assess(ratings={"brand": {"strength": 6.0}})
 
 
 def test_row66_disruption_assessment():
@@ -98,6 +120,11 @@ def test_row66_disruption_assessment():
         entrant_targets_underserved=False, entrant_cheaper=False)
     assert not sustaining["disruption_likely"]
     assert sustaining["unmet_conditions"]
+    with pytest.raises(ValueError):
+        DisruptionAssessor().assess(entrant_improvement_rate=-0.1,
+                                    incumbent_improvement_rate=0.1,
+                                    entrant_targets_underserved=True,
+                                    entrant_cheaper=True)
 
 
 def test_row67_jtbd_framing():
@@ -112,6 +139,8 @@ def test_row67_jtbd_framing():
     assert "social" in parsed[1]["dimensions"]
     assert out["jobs"][2]["job_story"] is None
     assert out["core_job"].startswith("When")
+    with pytest.raises(ValueError):
+        JTBDFramer().frame(product="rideshare", statements=[])
 
 
 def test_row68_value_chain_mapping():
@@ -124,6 +153,10 @@ def test_row68_value_chain_mapping():
     assert out["capture_concentration"] in {"roaster", "cafe"}
     shares = {s["stage"]: s["share_of_value"] for s in out["stages"]}
     assert sum(shares.values()) == pytest.approx(1.0)
+    with pytest.raises(ValueError):
+        ValueChainMapper().map(stages=[])
+    with pytest.raises(ValueError):
+        ValueChainMapper().map(stages=[{"name": "farm", "cost": -1.0, "price": 2.0}])
 
 
 def test_row69_pareto_vital_few():
@@ -134,6 +167,12 @@ def test_row69_pareto_vital_few():
     assert out["pareto_holds"]
     even = ParetoAnalyzer().analyze(items={f"x{i}": 1.0 for i in range(10)})
     assert not even["pareto_holds"]  # needs 8 of 10 items for 80%
+    with pytest.raises(ValueError):
+        ParetoAnalyzer().analyze(items={})
+    with pytest.raises(ValueError):
+        ParetoAnalyzer().analyze(items={"a": -1.0})
+    with pytest.raises(ValueError):
+        ParetoAnalyzer().analyze(items={"a": 1.0}, target_share=0.0)
 
 
 def test_row70_toc_management_loop():
@@ -146,6 +185,10 @@ def test_row70_toc_management_loop():
                                  {"name": "test", "capacity": 100, "demand": 40}])
     assert second["bottleneck"] == "build"
     assert second["migrated_from"] == "test"
+    with pytest.raises(ValueError):
+        toc.observe(stages=[])
+    with pytest.raises(ValueError):
+        toc.observe(stages=[{"name": "build", "capacity": 0, "demand": 40}])
 
 
 def test_row71_queueing_metrics():
@@ -157,6 +200,10 @@ def test_row71_queueing_metrics():
     assert not unstable["stable"]
     multi = q.mmc(arrival_rate=8.0, service_rate=5.0, servers=2)
     assert multi["stable"] and 0.0 < multi["p_wait"] < 1.0
+    with pytest.raises(ValueError):
+        q.mm1(arrival_rate=4.0, service_rate=0.0)
+    with pytest.raises(ValueError):
+        q.mmc(arrival_rate=8.0, service_rate=5.0, servers=0)
 
 
 def test_row72_littles_law_solve_and_levers():
@@ -165,6 +212,10 @@ def test_row72_littles_law_solve_and_levers():
     assert out["levers"] and "halves cycle time" in out["levers"][0]
     other = LittlesLawAdvisor().relate(throughput=3.0, cycle_time=4.0)
     assert other["wip"] == pytest.approx(12.0)
+    with pytest.raises(ValueError):
+        LittlesLawAdvisor().relate(wip=12.0)  # exactly two of the three are required
+    with pytest.raises(ValueError):
+        LittlesLawAdvisor().relate(wip=12.0, throughput=3.0, cycle_time=4.0)
 
 
 def test_row73_critical_path_with_slack():
@@ -179,6 +230,8 @@ def test_row73_critical_path_with_slack():
     by_task = {t["task"]: t for t in out["tasks"]}
     assert by_task["docs"]["slack"] == pytest.approx(7.0)
     assert by_task["docs"]["critical"] is False
+    with pytest.raises(ValueError):
+        CriticalPathAnalyzer().analyze(tasks=[])
 
 
 def test_row74_monte_carlo_project_duration():
@@ -193,6 +246,10 @@ def test_row74_monte_carlo_project_duration():
                {"min": 2.0, "mode": 3.0, "max": 4.0}],
         trials=2000, seed=1)
     assert again["median"] == out["median"]  # seeded reproducibility
+    with pytest.raises(ValueError):
+        MonteCarloProjector().simulate(tasks=[])
+    with pytest.raises(ValueError):
+        MonteCarloProjector().simulate(tasks=[{"min": 5.0, "mode": 2.0, "max": 9.0}])
 
 
 def test_row75_sensitivity_ranks_parameters():
@@ -215,6 +272,8 @@ def test_row76_tornado_bars_ordered():
     assert impacts == sorted(impacts, reverse=True)
     assert "|" in out["bars"][0]["bar"]
     assert out["base_output"] == pytest.approx(800.0)
+    with pytest.raises(ValueError):
+        TornadoBuilder().build(expression="x", params={"x": 1.0}, swing=0.0)
 
 
 def test_row77_decision_tree_rollback():
@@ -247,6 +306,15 @@ def test_row78_real_options_binomial():
     deep_itm_expand = valuer.value(underlying=1000.0, up=1.5, down=0.6,
                                    exercise_cost=10.0, kind="expand", steps=5)
     assert deep_itm_expand["option_value"] == pytest.approx(990.0, rel=1e-6)
+    with pytest.raises(ValueError):
+        valuer.value(underlying=100.0, up=0.9, down=1.1, exercise_cost=10.0)
+    with pytest.raises(ValueError):
+        valuer.value(underlying=100.0, up=1.5, down=0.6, exercise_cost=10.0, steps=0)
+    with pytest.raises(ValueError):
+        valuer.value(underlying=100.0, up=1.5, down=0.6, exercise_cost=10.0, kind="hold")
+    with pytest.raises(ValueError):
+        valuer.value(underlying=100.0, up=1.01, down=0.99, exercise_cost=10.0,
+                     risk_free=3.0)  # arbitrage parameters
 
 
 def test_row79_game_dominance_and_pareto():
@@ -257,6 +325,10 @@ def test_row79_game_dominance_and_pareto():
     assert 0 in out["dominated_rows"] and 0 in out["dominated_cols"]
     assert (0, 0) in [tuple(c) for c in out["pareto_optimal_cells"]]
     assert (1, 1) not in [tuple(c) for c in out["pareto_optimal_cells"]]
+    with pytest.raises(ValueError):
+        GameAnalyzer().analyze(row_payoffs=[[3, 0], [5]], col_payoffs=[[3, 5], [0, 1]])
+    with pytest.raises(ValueError):
+        GameAnalyzer().analyze(row_payoffs=[[3, 0], [5, 1]], col_payoffs=[[3, 5]])
 
 
 def test_row80_nash_pure_and_mixed():
@@ -268,6 +340,8 @@ def test_row80_nash_pure_and_mixed():
     assert mp["pure_equilibria"] == []
     assert mp["mixed_equilibrium"]["row_plays_first_with"] == pytest.approx(0.5)
     assert mp["mixed_equilibrium"]["col_plays_first_with"] == pytest.approx(0.5)
+    with pytest.raises(ValueError):
+        finder.find(row_payoffs=[[1, 2, 3]], col_payoffs=[[1, 2, 3]])
 
 
 def test_row81_vcg_allocation_and_incentives():
@@ -287,6 +361,8 @@ def test_row81_vcg_allocation_and_incentives():
     assert ic["incentive_compatible"]
     truthful = ic["outcomes"][0]["utility_at_true_values"]
     assert truthful == pytest.approx(2.0)  # wins x worth 10, pays 8
+    with pytest.raises(ValueError):
+        designer.vcg(agents={})
 
 
 def test_row82_auction_guidance():
@@ -298,6 +374,10 @@ def test_row82_auction_guidance():
     cv = advisor.recommend(auction_type="first_price", value=100.0, common_value=True)
     assert any("winner's curse" in w for w in cv["warnings"])
     assert fp["caveat"] == DECISION_SUPPORT_CAVEAT
+    with pytest.raises(ValueError):
+        advisor.recommend(auction_type="first_price", value=100.0, n_bidders=1)
+    with pytest.raises(ValueError):
+        advisor.recommend(auction_type="sealed", value=100.0)
 
 
 def test_row83_signaling_regimes():
@@ -308,6 +388,8 @@ def test_row83_signaling_regimes():
     assert "pooling" in pool["regime"] and not pool["separating"]
     none = assessor.assess(benefit=100.0, cost_high_type=200.0, cost_low_type=300.0)
     assert "no signaling" in none["regime"]
+    with pytest.raises(ValueError):
+        assessor.assess(benefit=100.0, cost_high_type=-40.0, cost_low_type=150.0)
 
 
 def test_row84_principal_agent_contract():
@@ -327,3 +409,13 @@ def test_row84_principal_agent_contract():
         target_effort="high")
     assert impossible["recommended_share"] is None
     assert "no tested share" in impossible["reading"]
+    with pytest.raises(ValueError):
+        PrincipalAgentDesigner().design(efforts=[], target_effort="high")
+    with pytest.raises(ValueError):
+        PrincipalAgentDesigner().design(
+            efforts=[{"level": "low", "cost": 0.0, "expected_output": 100.0}],
+            target_effort="high")
+    with pytest.raises(ValueError):
+        PrincipalAgentDesigner().design(
+            efforts=[{"level": "low", "cost": 0.0, "expected_output": 100.0}],
+            target_effort="low", shares=[1.5])

@@ -218,6 +218,8 @@ class FlywheelFinder:
     GROWTH_WORDS = ("user", "growth", "revenue", "customer", "adoption", "traffic")
 
     def find(self, model: SystemsModel) -> dict[str, Any]:
+        if not model.links:
+            raise ValueError("at least one causal link is required")
         loops = model.loops()
         reinforcing = [loop for loop in loops if loop.kind == "reinforcing"]
         candidates = []
