@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1468,
-    "verified-pushed": 539,
+    "missing": 1463,
+    "verified-pushed": 544,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -14092,8 +14092,12 @@
       "category": "Data & Analytics",
       "requirement": "Gradient Boosting",
       "description": "Sequential ensemble",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ba1a6e4f60dd65dff950424a0e21f53abdf26492",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1093_1097.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14102,8 +14106,12 @@
       "category": "Data & Analytics",
       "requirement": "XGBoost",
       "description": "Optimized gradient boosting",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ba1a6e4f60dd65dff950424a0e21f53abdf26492",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1093_1097.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14112,8 +14120,12 @@
       "category": "Data & Analytics",
       "requirement": "LightGBM",
       "description": "Fast gradient boosting",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ba1a6e4f60dd65dff950424a0e21f53abdf26492",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1093_1097.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14122,8 +14134,12 @@
       "category": "Data & Analytics",
       "requirement": "CatBoost",
       "description": "Categorical boosting",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ba1a6e4f60dd65dff950424a0e21f53abdf26492",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1093_1097.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14132,8 +14148,12 @@
       "category": "Data & Analytics",
       "requirement": "AdaBoost",
       "description": "Adaptive boosting",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "ba1a6e4f60dd65dff950424a0e21f53abdf26492",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1093_1097.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
