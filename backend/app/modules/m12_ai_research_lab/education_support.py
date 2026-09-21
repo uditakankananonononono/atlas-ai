@@ -1,6 +1,22 @@
 """Grounded education support for owner feature rows 1460-1509."""
 from math import exp,sqrt
 from statistics import mean
+
+PRIVATE_FIELDS={'learner_name','student_name','email','phone','address','date_of_birth'}
+def protect_learner_data(value):
+ """Reject unnecessary direct identifiers; analytics accept deidentified inputs only."""
+ if isinstance(value,dict):
+  exposed=PRIVATE_FIELDS & set(value)
+  if exposed: raise ValueError('direct learner identifiers are not accepted: '+', '.join(sorted(exposed)))
+  for child in value.values(): protect_learner_data(child)
+ elif isinstance(value,list):
+  for child in value: protect_learner_data(child)
+
+def finite_number(value,label):
+ try: number=float(value)
+ except (TypeError,ValueError): raise ValueError(label+' must be numeric')
+ if number != number or number in (float('inf'),float('-inf')): raise ValueError(label+' must be finite')
+ return number
 FEATURES=dict(enumerate('''Engagement Detection|Dropout Prediction|Performance Prediction|Recommendation Systems|Content Recommendation|Peer Recommendation|Path Recommendation|Automated Essay Scoring|Automated Feedback|Formative Assessment|Summative Assessment|Diagnostic Assessment|Authentic Assessment|Performance Assessment|Portfolio Assessment|Self-Assessment|Peer Assessment|Assessment for Learning|Assessment as Learning|Assessment of Learning|Standards-Based Grading|Competency-Based Education|Mastery Learning|Precision Teaching|Direct Instruction|Explicit Instruction|Systematic Instruction|Scripted Instruction|Programmed Instruction|Computer-Assisted Instruction|Intelligent Tutoring Systems|Dialogue-Based Tutoring|Socratic Tutoring|Metacognitive Tutoring|Motivational Tutoring|Emotional Support|Social-Emotional Learning|Character Education|Citizenship Education|Global Competence|Cultural Competence|Intercultural Education|Multicultural Education|Inclusive Education|Special Education|Gifted Education|Remedial Education|Compensatory Education|Bilingual Education|Language Learning'''.split('|'),1460))
 def need(d,*ks):
  m=[k for k in ks if d.get(k) in (None,[],{})]
@@ -34,7 +50,8 @@ def writing(i,d):
   need(d,'rubric','ratings');rows=[];num=den=0
   for r in d['rubric']:
    if r['id'] not in d['ratings']:raise ValueError('missing rubric rating')
-   s=float(d['ratings'][r['id']]);mx=float(r['max_score']);w=float(r.get('weight',1))
+   s=finite_number(d['ratings'][r['id']],'rubric rating');mx=finite_number(r['max_score'],'rubric max_score');w=finite_number(r.get('weight',1),'rubric weight')
+   if mx<=0 or w<=0:raise ValueError('rubric max_score and weight must be positive')
    if not 0<=s<=mx:raise ValueError('rubric rating out of range')
    rows.append({'criterion_id':r['id'],'score':s,'max_score':mx});num+=s/mx*w;den+=w
   return {'rubric_results':rows,'normalized_score':round(100*num/den,2),'final_grade_awarded':False,'human_moderation_required':True}
@@ -47,9 +64,18 @@ def assessment(i,d):
   if unknown:raise ValueError('unknown objective ids')
   mapped.append({'evidence_id':e['id'],'objective_ids':e.get('objective_ids',[]),'rubric':e.get('rubric',[])})
  k,t,p=A[i];o={'assessment_type':k,'timing':t,'purpose':p,'evidence_map':mapped,'unassessed_objectives':sorted(ids-{x for e in mapped for x in e['objective_ids']}),'score_or_grade_finalized':False}
- if i==1474:o['portfolio_checkpoints']=d.get('checkpoints',[])
- if i in (1475,1478):o['reflection_prompts']=d.get('reflection_prompts',['What evidence supports your judgment?','What will you change?'])
- if i==1476:o['moderation_required']=True
+ gaps=o['unassessed_objectives']
+ if i==1469:o['instructional_adjustments']=[{'objective_id':x,'action':'collect evidence and reteach'} for x in gaps]
+ elif i==1470:o['attainment_summary']={'objectives_with_evidence':len(ids)-len(gaps),'total_objectives':len(ids)}
+ elif i==1471:o['prerequisite_gaps']=[{'objective_id':x,'diagnostic_follow_up':True} for x in gaps]
+ elif i==1472:o['authenticity_review']={'context':d.get('real_world_context'),'audience':d.get('audience'),'constraints':d.get('constraints',[])}
+ elif i==1473:o['performance_observations']=[{'evidence_id':x['evidence_id'],'observable':bool(x['rubric'])} for x in mapped]
+ elif i==1474:o['portfolio_checkpoints']=d.get('checkpoints',[])
+ elif i==1475:o['self_calibration']={'reflection_prompts':d.get('reflection_prompts',['What evidence supports your judgment?']),'teacher_comparison_pending':True}
+ elif i==1476:o['peer_moderation']={'anonymous':bool(d.get('anonymous',True)),'teacher_moderation_required':True}
+ elif i==1477:o['next_teaching_moves']=[{'objective_id':x,'move':'elicit new evidence'} for x in gaps]
+ elif i==1478:o['metacognitive_cycle']={'reflection_prompts':d.get('reflection_prompts',['What evidence supports your judgment?','What will you change?']),'plan_revision_required':True}
+ elif i==1479:o['reporting_summary']={'attained_evidence_count':sum(bool(x['objective_ids']) for x in mapped),'teacher_signoff_required':True}
  return o
 def progress(i,d):
  if i==1480:
@@ -99,9 +125,13 @@ def language(i,d):
  return {'target_language':d['target_language'],'proficiency':d['proficiency'],'objectives':d['objectives'],'spaced_repetition':out,'practice_modes':['comprehensible input','retrieval','interaction','pronunciation feedback','writing feedback'],'proficiency_claimed':False}
 def education_support(i,d):
  if i not in FEATURES:raise ValueError('unsupported education feature')
+ if not isinstance(d,dict):raise ValueError('data must be an object')
+ protect_learner_data(d)
  sources=d.get('sources',[])
  if not sources or any(not x.get('source_id') or not x.get('observed_at') for x in sources):raise ValueError('source_id and observed_at required')
  f=analytics if i<=1462 else recommend if i<=1466 else writing if i<=1468 else assessment if i<=1479 else progress if i<=1483 else instruction if i<=1489 else tutor if i<=1494 else human if i<=1502 else inclusion if i<=1507 else language
  result=f(i,d)
+ result['mechanism_key']=FEATURES[i].lower().replace('-','_').replace(' ','_')
+ result['teacher_review_required']=True
  observed=sorted(k for k,v in result.items() if v not in (None,[],{}))
  return {'feature_id':i,'feature':FEATURES[i],'result':result,'evaluation':{'observed_outputs':observed,'review_checks':['validity for intended use','bias and subgroup performance','accessibility','learner contestability'],'open_questions':list(d.get('open_questions',[]))},'uncertainty':{'level':'not_quantified','drivers':['caller-supplied evidence','model or rubric validity','missing learner context'],'prediction_is_not_fact':i in range(1460,1467)},'sources':sources,'status':'draft_for_learner_and_qualified_educator_review','side_effects':[],'boundary':'Education decision support only. Preserve consent, privacy, accessibility and learner agency; do not infer protected traits, diagnose, award credentials, contact people, enroll, grade, punish, or change records without authorized human review.'}

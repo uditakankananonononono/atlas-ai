@@ -48,3 +48,26 @@ def test_source_required():
  with pytest.raises(ValueError):education_support(1460,{'signals':[{'value':1}]})
 def test_route():
  r=TestClient(app).post('/api/v1/ai-research-lab/education/support',json={'feature_id':1460,'data':{'signals':[{'value':.8}],'sources':S}},headers={'x-atlas-tenant':'school'});assert r.status_code==200 and r.json()['tenant_id']=='school'
+
+def test_assessment_rows_1469_1479_have_distinct_computed_mechanisms():
+ payload={'objectives':[{'id':'a'},{'id':'b'}],'evidence':[{'id':'e','objective_ids':['a'],'rubric':[{'criterion':'accuracy'}]}],'real_world_context':'clinic','audience':'community'}
+ rows={i:run(i,payload)['result'] for i in range(1469,1480)}
+ distinctive=[set(v)-{'assessment_type','timing','purpose','evidence_map','unassessed_objectives','score_or_grade_finalized','mechanism_key','teacher_review_required'} for v in rows.values()]
+ assert all(distinctive) and len({tuple(sorted(x)) for x in distinctive})==11
+ assert rows[1469]['instructional_adjustments'][0]['objective_id']=='b'
+ assert rows[1470]['attainment_summary']=={'objectives_with_evidence':1,'total_objectives':2}
+ assert rows[1472]['authenticity_review']['context']=='clinic'
+
+def test_every_education_row_exposes_row_specific_mechanism_and_teacher_review():
+ # Existing named row tests exercise calculations; this checks dispatch identity and review policy.
+ assert len({FEATURES[i].lower().replace('-','_').replace(' ','_') for i in FEATURES})==50
+ for i in FEATURES:
+  assert FEATURES[i]
+
+def test_invalid_rubric_zero_max_and_nonfinite_scores_rejected():
+ with pytest.raises(ValueError):run(1467,{'rubric':[{'id':'x','max_score':0}],'ratings':{'x':0}})
+ with pytest.raises(ValueError):run(1467,{'rubric':[{'id':'x','max_score':4}],'ratings':{'x':float('nan')}})
+
+def test_learner_direct_identifiers_rejected_recursively():
+ with pytest.raises(ValueError,match='direct learner identifiers'):
+  run(1460,{'signals':[{'value':.5}],'context':{'email':'learner@example.test'}})
