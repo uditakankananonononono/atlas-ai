@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime, timezone
+from datetime import datetime, time, timedelta, timezone
 from typing import Awaitable, Callable
 
 from .schemas import ActionItem
@@ -44,13 +44,52 @@ _DEADLINE_RE = re.compile(
 )
 
 
-def _parse_deadline(text: str) -> datetime | None:
+def _parse_deadline(text: str, *, now: datetime | None = None) -> datetime | None:
+    """Parse common deadline phrases without making the fallback depend on dateparser.
+
+    ``dateparser`` remains the broad parser when installed, but ISO dates, relative
+    days, and weekdays are handled locally so email ingestion stays useful in a
+    minimal deployment rather than silently dropping every deadline.
+    """
+    reference = now or datetime.now(timezone.utc)
+    if reference.tzinfo is None:
+        reference = reference.replace(tzinfo=timezone.utc)
+    value = text.strip()
+
+    iso_match = re.fullmatch(r"(\d{4})-(\d{2})-(\d{2})", value)
+    if iso_match:
+        try:
+            return datetime(*map(int, iso_match.groups()), tzinfo=timezone.utc)
+        except ValueError:
+            return None
+
+    lowered = value.casefold()
+    if lowered == "tomorrow":
+        return datetime.combine(reference.date() + timedelta(days=1), time.min, reference.tzinfo)
+
+    weekdays = {
+        "monday": 0, "tuesday": 1, "wednesday": 2, "thursday": 3,
+        "friday": 4, "saturday": 5, "sunday": 6,
+    }
+    weekday_match = re.fullmatch(r"(?:(next|this)\s+)?([a-z]+)", lowered)
+    if weekday_match and weekday_match.group(2) in weekdays:
+        target = weekdays[weekday_match.group(2)]
+        days = (target - reference.weekday()) % 7
+        if days == 0 or weekday_match.group(1) == "next":
+            days += 7
+        return datetime.combine(reference.date() + timedelta(days=days), time.min, reference.tzinfo)
+
     try:
         import dateparser
     except ImportError:
         return None
     parsed = dateparser.parse(
-        text, settings={"PREFER_DATES_FROM": "future", "RETURN_AS_TIMEZONE_AWARE": True}
+        value,
+        settings={
+            "PREFER_DATES_FROM": "future",
+            "RETURN_AS_TIMEZONE_AWARE": True,
+            "RELATIVE_BASE": reference,
+        },
     )
     if parsed is None:
         return None
