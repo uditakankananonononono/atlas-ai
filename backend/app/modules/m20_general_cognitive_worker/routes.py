@@ -1520,3 +1520,7 @@ router.include_router(software_practice_router_685_709)
 # Technical-spec semantic workbench, source rows 133-165.
 from .technical_spec_routes_0133_0165 import router as technical_spec_router_0133_0165
 router.include_router(technical_spec_router_0133_0165)
+
+# Technical specification rows 199-229: semantic controls and honest attestations.
+from .technical_spec_routes_round8_199_229 import router as technical_spec_round8_router
+router.include_router(technical_spec_round8_router)
