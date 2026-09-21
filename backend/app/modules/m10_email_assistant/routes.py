@@ -121,3 +121,12 @@ def follow_ups_due(
     service: Service = Depends(get_service),
 ) -> list[dict]:
     return service.follow_ups_due(within_hours=within_hours)
+
+from .promises import PromiseTrackerRequest, track_promises
+
+@router.post('/promise-tracker')
+def promise_tracker(body: PromiseTrackerRequest, tenant: TenantContext = Depends(require_tenant)):
+    try:
+        return {'tenant_id': tenant.tenant_id, **track_promises(body)}
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error

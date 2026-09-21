@@ -26,7 +26,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed (science):** tenant-scoped contradiction inbox groups conflicting claim values, exposes source freshness and confidence, ranks review order, records explicit prefer/retain-both decisions, and hashes the deterministic review artifact without claiming source authentication or truth.
 - **Next:** persist append-only decision revisions and verify referenced source bytes against captured hashes.
 ## M10 - Email Assistant
-- **Next:** thread promise tracker that extracts owner commitments and asks before creating follow-ups.
+- **Landed:** evidence-bound thread promise tracker extracts only owner-authored commitments, links each promise to its source message/excerpt, computes due state, and proposes follow-up review without creating tasks, drafts, reminders, or sends.
+- **Next:** persist reviewed promise state across thread updates and reconcile explicit completion messages without auto-closing ambiguous commitments.
 ## M11 - Calendar Intelligence
 - **Next:** schedule-risk view combining travel buffer, preparation work, dependency conflicts and cancellation terms.
 ## M12 - AI Research Lab
