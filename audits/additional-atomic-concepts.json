@@ -8,8 +8,8 @@
   "delta_over_base_rows": 107,
   "atomic_concept_count": 2117,
   "counts": {
-    "verified-pushed": 114,
-    "missing": 46
+    "verified-pushed": 137,
+    "missing": 23
   },
   "rowization_rule": "Replace each identified packed parent row with its atomic subrows; all other base rows remain one atomic concept. Examples and benefit statements are not counted as separate concepts unless they specify distinct behavior.",
   "rows": [
@@ -319,10 +319,10 @@
       "atomic_requirement": "Correction-pair vector retrieval",
       "source_feature_title": "Correction Loop (Reinforcement From You)",
       "source_description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output → your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -332,10 +332,10 @@
       "atomic_requirement": "Retrieved corrections injected as few-shot examples",
       "source_feature_title": "Correction Loop (Reinforcement From You)",
       "source_description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output → your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -345,10 +345,10 @@
       "atomic_requirement": "Repeat-error tracking against prior corrections",
       "source_feature_title": "Correction Loop (Reinforcement From You)",
       "source_description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output → your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -358,10 +358,10 @@
       "atomic_requirement": "Consented collection of 50-200 owner writing samples",
       "source_feature_title": "Voice Fine-Tuning (Style Transfer to You)",
       "source_description": "What it is: You collect 50–200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -371,10 +371,10 @@
       "atomic_requirement": "Voice dataset validation and provenance",
       "source_feature_title": "Voice Fine-Tuning (Style Transfer to You)",
       "source_description": "What it is: You collect 50–200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -384,10 +384,10 @@
       "atomic_requirement": "LoRA fine-tuning job proposal for a local model",
       "source_feature_title": "Voice Fine-Tuning (Style Transfer to You)",
       "source_description": "What it is: You collect 50–200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -397,10 +397,10 @@
       "atomic_requirement": "Ollama-compatible local training target",
       "source_feature_title": "Voice Fine-Tuning (Style Transfer to You)",
       "source_description": "What it is: You collect 50–200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -410,10 +410,10 @@
       "atomic_requirement": "GPU/resource readiness and cost estimate",
       "source_feature_title": "Voice Fine-Tuning (Style Transfer to You)",
       "source_description": "What it is: You collect 50–200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -423,10 +423,10 @@
       "atomic_requirement": "Voice-similarity and factuality evaluation before activation",
       "source_feature_title": "Voice Fine-Tuning (Style Transfer to You)",
       "source_description": "What it is: You collect 50–200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -436,10 +436,10 @@
       "atomic_requirement": "Owner-authored reasoning-note capture",
       "source_feature_title": "Chain-of-Thought Capture",
       "source_description": "What it is: When you solve a hard problem, you record your reasoning step by step — not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -449,10 +449,10 @@
       "atomic_requirement": "Reasoning-note embedding and retrieval",
       "source_feature_title": "Chain-of-Thought Capture",
       "source_description": "What it is: When you solve a hard problem, you record your reasoning step by step — not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -462,10 +462,10 @@
       "atomic_requirement": "Similar-problem retrieval at decision time",
       "source_feature_title": "Chain-of-Thought Capture",
       "source_description": "What it is: When you solve a hard problem, you record your reasoning step by step — not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -475,10 +475,10 @@
       "atomic_requirement": "Owner reasoning-note use as a decision template",
       "source_feature_title": "Chain-of-Thought Capture",
       "source_description": "What it is: When you solve a hard problem, you record your reasoning step by step — not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -488,10 +488,10 @@
       "atomic_requirement": "Explicit rejection of hidden model chain-of-thought capture",
       "source_feature_title": "Chain-of-Thought Capture",
       "source_description": "What it is: When you solve a hard problem, you record your reasoning step by step — not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -501,10 +501,10 @@
       "atomic_requirement": "Three-to-five option generation",
       "source_feature_title": "Preference Ranking",
       "source_description": "What it is: Claire generates 3–5 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -514,10 +514,10 @@
       "atomic_requirement": "Complete owner ranking capture",
       "source_feature_title": "Preference Ranking",
       "source_description": "What it is: Claire generates 3–5 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -527,10 +527,10 @@
       "atomic_requirement": "Pairwise preference-dataset construction",
       "source_feature_title": "Preference Ranking",
       "source_description": "What it is: Claire generates 3–5 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -540,10 +540,10 @@
       "atomic_requirement": "Local preference-model training proposal",
       "source_feature_title": "Preference Ranking",
       "source_description": "What it is: Claire generates 3–5 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -553,10 +553,10 @@
       "atomic_requirement": "Preference-model evaluation before activation",
       "source_feature_title": "Preference Ranking",
       "source_description": "What it is: Claire generates 3–5 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -566,10 +566,10 @@
       "atomic_requirement": "Explicit opt-in telemetry consent",
       "source_feature_title": "Behavioral Telemetry (What You Actually Do)",
       "source_description": "What it is: Silently log your real actions — which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -579,10 +579,10 @@
       "atomic_requirement": "Link-click telemetry",
       "source_feature_title": "Behavioral Telemetry (What You Actually Do)",
       "source_description": "What it is: Silently log your real actions — which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -592,10 +592,10 @@
       "atomic_requirement": "Opportunity-application telemetry",
       "source_feature_title": "Behavioral Telemetry (What You Actually Do)",
       "source_description": "What it is: Silently log your real actions — which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -605,10 +605,10 @@
       "atomic_requirement": "Draft-edit-duration telemetry",
       "source_feature_title": "Behavioral Telemetry (What You Actually Do)",
       "source_description": "What it is: Silently log your real actions — which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_24_46.py",
+      "test_evidence": "tests/modules/test_m21_atomic_concepts_24_46.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
