@@ -71,3 +71,16 @@ class EngineeringSemanticIn(BaseModel):
 def engineering_semantic_route(body:EngineeringSemanticIn,tenant:TenantContext=Depends(require_tenant)):
     try:return {'tenant_id':tenant.tenant_id,**engineering_semantic_1560_1609(body.feature_id,body.data)}
     except (ValueError,TypeError,KeyError,ZeroDivisionError) as exc:raise HTTPException(422,str(exc)) from exc
+
+# Row-addressable clinical execution. This is deliberately separate from the
+# legacy method endpoint so audits and clients can prove which named row ran.
+from .clinical_rows_1110_1209 import ROW_METHODS, execute_clinical_row
+class ClinicalRowIn(BaseModel):
+    data:dict[str,Any]=Field(default_factory=dict)
+@router.get('/clinical/rows')
+def clinical_rows_catalog():
+    return [{'row_id': row_id, 'method': method, 'route': f'/api/v1/ai-research-lab/clinical/{row_id}/execute'} for row_id,method in ROW_METHODS.items()]
+@router.post('/clinical/{row_id}/execute')
+def clinical_row_execute(row_id:int,body:ClinicalRowIn,tenant:TenantContext=Depends(require_tenant)):
+    try:return {'tenant_id':tenant.tenant_id,**execute_clinical_row(row_id,body.data)}
+    except (ValueError,TypeError,KeyError,ZeroDivisionError) as error:raise HTTPException(422,str(error)) from error
