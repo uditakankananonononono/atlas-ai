@@ -1,0 +1,227 @@
+{
+  "module": 25,
+  "name": "Knowledge Copilot & Training",
+  "separate_from_features_count": true,
+  "counts": {
+    "implemented-unverified": 0,
+    "practitioner-verified": 16
+  },
+  "rows": [
+    {
+      "id": "M25-01",
+      "wording": "consent-scoped source registration",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_01_consent_scoped_source_registration_and_missing_consent",
+      "mechanism": "Consent records bind purpose, grantor, evidence, and expiry before registration.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-02",
+      "wording": "local-first ingestion workspace",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_02_local_first_ingestion_workspace_and_mounted_boundary",
+      "mechanism": "Tenant workspace is persisted beneath a resolved mounted root.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-03",
+      "wording": "website ingestion with full provenance (canonical URL/author/time/hash)",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_03_website_ingestion_full_provenance",
+      "mechanism": "Website registration and immutable SHA-256 versions retain canonical provenance.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-04",
+      "wording": "podcast ingestion with full provenance (canonical URL/author/time/hash, episode metadata)",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_04_podcast_ingestion_episode_metadata",
+      "mechanism": "Podcast schema requires episode identity and duration; transcript anchors are time-aligned.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-05",
+      "wording": "book ingestion with full provenance (canonical URL/author/time/hash, page anchors)",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_05_book_ingestion_page_anchors",
+      "mechanism": "Book schema requires ISBN/edition and extraction emits page anchors.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-06",
+      "wording": "forum ingestion with full provenance (canonical URL/author/time/hash, thread structure)",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_06_forum_ingestion_thread_structure",
+      "mechanism": "Forum schema requires thread identity and stores parent-linked post metadata.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-07",
+      "wording": "meeting-audio ingestion with full provenance (canonical URL/author/time/hash, consent records)",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_07_meeting_audio_consent_and_speaker_uncertainty",
+      "mechanism": "Meeting audio is consent-gated; uncertain speakers remain marked unknown.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-08",
+      "wording": "multiformat extraction preserving anchors",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_08_multiformat_extraction_preserves_anchors_and_malformed_file",
+      "mechanism": "Typed extraction handles text, HTML, Markdown, JSON, PDF text, and aligned audio.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-09",
+      "wording": "transcription pipeline (time-aligned, speaker uncertainty, never invent inaudible words)",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_09_transcription_honestly_unavailable_and_unsupported_source",
+      "mechanism": "Transcribers must return timings; inaudible content is truncated to an explicit marker.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-10",
+      "wording": "dedup/versioning",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_10_dedup_and_versioning",
+      "mechanism": "SHA-256 deduplicates unchanged bytes and increments changed versions.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-11",
+      "wording": "provenance graph",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_11_provenance_graph",
+      "mechanism": "Source-to-version hash edges form an exportable provenance graph.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-12",
+      "wording": "semantic chunking/embedding with tenant partitioning",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_12_semantic_chunks_embeddings_tenant_partition_and_dimension_mismatch",
+      "mechanism": "Anchor-preserving chunks carry tenant keys and validated local deterministic vectors.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-13",
+      "wording": "hybrid lexical+vector retrieval",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_13_hybrid_lexical_vector_retrieval",
+      "mechanism": "Retrieval combines token overlap and cosine similarity within one tenant.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-14",
+      "wording": "claim-level citations (unsupported claims withheld)",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_14_claim_level_citations_unsupported_claim_withheld",
+      "mechanism": "Every claim must cite known source-version anchors or is rejected.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-15",
+      "wording": "contradiction/freshness analysis",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_15_contradiction_freshness_analysis_stale_conflict",
+      "mechanism": "Opposing grounded statements are surfaced with version timestamps and review state.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    },
+    {
+      "id": "M25-16",
+      "wording": "export + verified deletion",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot_training/pipeline.py",
+      "named_test": "tests/modules/test_m25_knowledge_ingestion.py::test_m25_16_export_and_verified_deletion",
+      "mechanism": "Export includes sources, versions, anchors, hashes and graph; deletion checks disk and index absence.",
+      "evidence": {
+        "verification": "Python 3.12.13: 17 focused tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "this git-format patch commit"
+      }
+    }
+  ],
+  "verification": {
+    "practitioner_stamp": "python-3.12-focused-green",
+    "python": "3.12.13",
+    "focused_suite": "17 passed",
+    "full_suite": "6910 passed, 83 failed",
+    "full_suite_note": "Full run includes the repository known depth-sweep failures and additional existing/environment-sensitive failures; two legacy catalog-count assertions reject the newly required module 25. No M25 focused failures.",
+    "verified_at": "2026-09-21T15:18:00+05:30"
+  }
+}
