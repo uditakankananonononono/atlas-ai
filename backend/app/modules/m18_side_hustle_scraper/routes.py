@@ -29,23 +29,27 @@ from .schemas import (
 )
 from .service import Service
 from .lane_validation import DocumentValidator
+from .wiring import build_collectors
+from .runner import HustleRunner
 
 router = APIRouter(prefix="/side-hustle-scraper", tags=["side-hustle-scraper"])
 _service = None
+_runner = HustleRunner()
 
 
 def get_service() -> Service:
     global _service
     if _service is None:
         repository = SQLiteDocumentRepository(":memory:")
+        collectors = build_collectors()
         pipeline = CollectionPipeline(
             repository=repository,
             validator=DocumentValidator(),
             ranker=BlueprintRanker(),
             monitor=FreshnessMonitor(repository),
-            collectors={},
+            collectors=collectors,
         )
-        _service = Service(generate=generate, collectors={}, pipeline=pipeline)
+        _service = Service(generate=generate, collectors=collectors, pipeline=pipeline)
     return _service
 
 
@@ -113,3 +117,20 @@ async def freshness(service: Service = Depends(get_service)):
     report = await service.freshness_report()
     return FreshnessReportOut(**{k: report[k] for k in
                                  ("watched", "alive", "dead", "due_now", "by_class", "generated_at")})
+
+
+@router.post("/runs")
+def create_run(payload: dict):
+ try:return _runner.view(_runner.create(title=str(payload.get("title", "")),first_experiment=str(payload.get("first_experiment", "")),max_budget=float(payload.get("max_budget",0)),source_urls=list(payload.get("source_urls",[]))))
+ except (ValueError,TypeError) as e:raise HTTPException(422,str(e))
+
+@router.get("/runs/{run_id}")
+def get_run(run_id:str):
+ try:return _runner.view(_runner.get(run_id))
+ except KeyError:raise HTTPException(404,"run not found")
+
+@router.post("/runs/{run_id}/steps/{step_id}/request-approval")
+def request_step_approval(run_id:str,step_id:str,payload:dict):
+ try:return _runner.view(_runner.get(run_id)) | {"requested_step":_runner.view(_runner.get(run_id))["steps"][[x.id for x in _runner.get(run_id).steps].index(step_id)]} if _runner.request_action(run_id,step_id,str(payload.get("user_id","default"))) else {}
+ except KeyError:raise HTTPException(404,"run or step not found")
+ except ValueError as e:raise HTTPException(422,str(e))

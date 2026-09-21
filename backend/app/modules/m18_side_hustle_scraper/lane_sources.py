@@ -511,3 +511,70 @@ class PublicWebCollector(BaseCollector):
         # Public-web collection is URL-driven (URLs come from discovery elsewhere);
         # there is no legal generic "search the whole web" endpoint here.
         return [], [CollectionError(source=self.platform, url="", reason="url_driven_only_use_fetch_page")]
+
+class PinterestApiCollector(BaseCollector):
+    """Pinterest API v5 pin search. Requires an owner-supplied OAuth access token."""
+    platform = "pinterest"
+    SEARCH = "https://api.pinterest.com/v5/search/pins"
+    def __init__(self, *args: Any, access_token: str, **kwargs: Any):
+        if not access_token.strip(): raise ValueError("PinterestApiCollector requires an official API v5 access token")
+        super().__init__(*args, **kwargs); self._token=access_token.strip()
+    def collect(self, query: str, limit: int) -> tuple[list[RawDocument], list[CollectionError]]:
+        url=f"{self.SEARCH}?query={quote_plus(query)}&page_size={min(limit,100)}"
+        resp,err=self._get(url,headers={"Authorization":f"Bearer {self._token}"})
+        if err:return [],[err]
+        try:items=json.loads(resp.text()).get("items",[])
+        except (ValueError,TypeError) as exc:return [],[CollectionError(source=self.platform,url=url,reason=f"malformed_payload:{exc}")]
+        docs=[]
+        for item in items[:limit]:
+            pid=str(item.get("id","")).strip()
+            if not pid:continue
+            title=str(item.get("title") or item.get("description") or "Pinterest pin")
+            docs.append(RawDocument(id=f"pinterest:{pid}",url=f"https://www.pinterest.com/pin/{pid}/",platform=self.platform,kind=SourceKind.PINTEREST_API,rights=RightsClass.OFFICIAL_API,title=title,text=" ".join(filter(None,[str(item.get("title",'')),str(item.get("description",'')),str(item.get("alt_text",''))])),author=str(item.get("board_owner",{}).get("username",'')) or None,retrieved_at=self.clock(),engagement={"saves":float(item.get("pin_metrics",{}).get("lifetime_metrics",{}).get("SAVE",0) or 0)},http_status=resp.status,meta={"official_api":"pinterest_v5"}))
+        return docs,[]
+
+class XApiCollector(BaseCollector):
+    """X API v2 recent search. X read access is optional and commonly paid."""
+    platform = "x"
+    SEARCH = "https://api.x.com/2/tweets/search/recent"
+    def __init__(self,*args:Any,bearer_token:str,**kwargs:Any):
+        if not bearer_token.strip():raise ValueError("XApiCollector requires an official X API v2 bearer token")
+        super().__init__(*args,**kwargs);self._token=bearer_token.strip()
+    def collect(self,query:str,limit:int)->tuple[list[RawDocument],list[CollectionError]]:
+        url=f"{self.SEARCH}?query={quote_plus(query + ' -is:retweet')}&max_results={max(10,min(limit,100))}&tweet.fields=created_at,public_metrics,author_id"
+        resp,err=self._get(url,headers={"Authorization":f"Bearer {self._token}"})
+        if err:return [],[err]
+        try:items=json.loads(resp.text()).get("data",[])
+        except (ValueError,TypeError) as exc:return [],[CollectionError(source=self.platform,url=url,reason=f"malformed_payload:{exc}")]
+        docs=[]
+        for item in items[:limit]:
+            tid=str(item.get("id","")).strip();text=str(item.get("text","")).strip()
+            if not tid or not text:continue
+            metrics=item.get("public_metrics",{})
+            docs.append(RawDocument(id=f"x:{tid}",url=f"https://x.com/i/web/status/{tid}",platform=self.platform,kind=SourceKind.X_API,rights=RightsClass.OFFICIAL_API,title=text[:160],text=text,author=str(item.get("author_id",'')) or None,published_at=_parse_dt(item.get("created_at")),retrieved_at=self.clock(),engagement={"likes":float(metrics.get("like_count",0)),"reposts":float(metrics.get("retweet_count",0)),"replies":float(metrics.get("reply_count",0))},http_status=resp.status,meta={"official_api":"x_v2"}))
+        return docs,[]
+
+class InstagramGraphCollector(BaseCollector):
+    """Official Instagram oEmbed lookup for user-provided public post/Reel links only."""
+    platform="instagram"
+    OEMBED="https://graph.facebook.com/v22.0/instagram_oembed"
+    URL_RE=re.compile(r"https://(?:www\.)?instagram\.com/(?:p|reel)/[^\s?#]+/?")
+    def __init__(self,*args:Any,access_token:str,**kwargs:Any):
+        if not access_token.strip():raise ValueError("InstagramGraphCollector requires a Meta Graph API access token")
+        super().__init__(*args,**kwargs);self._token=access_token.strip()
+    def collect(self,query:str,limit:int)->tuple[list[RawDocument],list[CollectionError]]:
+        links=[]
+        for link in self.URL_RE.findall(query):
+            if link not in links:links.append(link)
+        if not links:return [],[CollectionError(source=self.platform,url="",reason="user_provided_instagram_link_required")]
+        docs=[];errors=[]
+        for link in links[:limit]:
+            url=f"{self.OEMBED}?url={quote_plus(link)}&access_token={quote_plus(self._token)}"
+            resp,err=self._get(url)
+            if err:errors.append(err);continue
+            try:item=json.loads(resp.text())
+            except (ValueError,TypeError) as exc:errors.append(CollectionError(source=self.platform,url=link,reason=f"malformed_payload:{exc}"));continue
+            media_id=str(item.get("media_id") or sha256_text(link)[:20])
+            text=str(item.get("title") or "Instagram post")
+            docs.append(RawDocument(id=f"instagram:{media_id}",url=link,platform=self.platform,kind=SourceKind.INSTAGRAM_GRAPH_API,rights=RightsClass.OFFICIAL_API,title=text[:160],text=text,author=str(item.get("author_name",'')) or None,retrieved_at=self.clock(),http_status=resp.status,meta={"official_api":"instagram_oembed","user_provided_link":True}))
+        return docs,errors

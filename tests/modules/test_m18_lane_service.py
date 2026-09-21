@@ -122,7 +122,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(collect.status_code, 200)
         body = collect.json()
         self.assertIn("documents_found", body)
-        self.assertEqual(body["platforms"][0]["errors"], ["collector_not_configured:reddit"])
+        self.assertNotIn("collector_not_configured:reddit", body["platforms"][0]["errors"])
 
         rank = client.post("/api/side-hustle-scraper/rank", json={"query": "tutoring"})
         self.assertEqual(rank.status_code, 200)
