@@ -245,3 +245,12 @@ def meeting_load(
     week_start: date = Query(), service: Service = Depends(get_service)
 ) -> MeetingLoadReport:
     return service.meeting_load(week_start)
+
+from .schedule_risk import ScheduleRiskRequest, analyze_schedule_risk
+
+@router.post('/schedule-risk')
+def schedule_risk(body: ScheduleRiskRequest, tenant: TenantContext = Depends(require_tenant)):
+    try:
+        return {'tenant_id': tenant.tenant_id, **analyze_schedule_risk(body)}
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error

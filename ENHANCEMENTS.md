@@ -29,7 +29,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** evidence-bound thread promise tracker extracts only owner-authored commitments, links each promise to its source message/excerpt, computes due state, and proposes follow-up review without creating tasks, drafts, reminders, or sends.
 - **Next:** persist reviewed promise state across thread updates and reconcile explicit completion messages without auto-closing ambiguous commitments.
 ## M11 - Calendar Intelligence
-- **Next:** schedule-risk view combining travel buffer, preparation work, dependency conflicts and cancellation terms.
+- **Landed:** read-only schedule-risk view combines travel and preparation buffer shortfalls, incomplete/unknown dependencies, and sourced cancellation exposure into a deterministic risk artifact without changing events, cancelling bookings, or spending.
+- **Next:** connect verified mapping travel estimates and live vendor cancellation terms while preserving their retrieval time and source snapshots.
 ## M12 - AI Research Lab
 - **Landed:** shipped provider and DAG wiring now constructs without dependency overrides and supports OpenAI, Anthropic, DeepSeek and local Ollama through the shared provider boundary.
 - **Next (science):** durable queued DAG resumes with per-node budget receipts, dataset hashes, seeds and reproducible provider/model manifests.
