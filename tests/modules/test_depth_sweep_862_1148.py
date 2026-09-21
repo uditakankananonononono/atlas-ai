@@ -37,4 +37,4 @@ def test_clinical_dispatcher_never_claims_diagnosis_or_authorization():
  result=clinical_support('health_equity_analysis',{'groups':[{'group_token':'a','values':{'access':.8}},{'group_token':'b','values':{'access':.5}}],'metrics':['access'],'source':SRC})
  assert result['metric_gaps'][0]['absolute_gap']==pytest.approx(.3)
  assert result['evaluation']['qualified_clinician_review_required']
- assert result['uncertainty']['diagnosis_or_treatment_authorized'] is False
+ assert result['uncertainty_report']['diagnosis_or_treatment_authorized'] is False
