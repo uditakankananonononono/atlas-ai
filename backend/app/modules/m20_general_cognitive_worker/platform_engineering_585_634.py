@@ -420,3 +420,122 @@ def platform_engineering_585_634(method:str,data:dict[str,Any])->dict[str,Any]:
     if method in SPECIAL:result=SPECIAL[method](data)
     else:result=SPECIAL2[method](data)
     return {'method':method,'capability':NAMES[method],'guidance':GUIDANCE[method],'result':result,'assumptions':data.get('assumptions',[]),'review':{'human_approval_required_for_deployment':True,'verified_in_live_environment':False},'boundary':'Architecture, analysis or test design only. It does not deploy, change infrastructure, handle production traffic, prove security, or certify safety.'}
+
+# Stateful evidence lifecycle shared by the fifty distinct analyzers above.  The
+# analyzer selected by ``method`` remains the row-specific mechanism; this store
+# adds durable-in-process project semantics without pretending to deploy it.
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+import json
+
+ROW_BY_METHOD = {method: 585 + index for index, method in enumerate(METHODS)}
+
+
+@dataclass(frozen=True)
+class WorkflowIdentity:
+    tenant_id: str
+    actor_id: str
+
+    def __post_init__(self) -> None:
+        if not self.tenant_id.strip() or not self.actor_id.strip():
+            raise ValueError("tenant_id and actor_id are required")
+
+
+@dataclass
+class WorkflowRecord:
+    workflow_id: str
+    identity: WorkflowIdentity
+    method: str
+    row_id: int
+    state: str
+    input_sha256: str
+    artifacts: list[dict[str, Any]] = field(default_factory=list)
+    history: list[dict[str, Any]] = field(default_factory=list)
+    approved_artifact_sha256: str | None = None
+    applied_revision: int | None = None
+
+
+class PlatformWorkflowStore:
+    """Tenant-scoped lifecycle for analysis, approval, apply and rollback.
+
+    Applying records an internal revision only.  It cannot claim infrastructure
+    was changed; callers must connect a separately reviewed deployment adapter.
+    """
+
+    def __init__(self) -> None:
+        self._records: dict[tuple[str, str], WorkflowRecord] = {}
+        self._clock = 0
+
+    @staticmethod
+    def _canonical(value: Any) -> bytes:
+        return json.dumps(value, sort_keys=True, separators=(",", ":"), default=str).encode()
+
+    def _event(self, record: WorkflowRecord, event: str, actor_id: str, **details: Any) -> None:
+        self._clock += 1
+        record.history.append({"sequence": self._clock, "event": event, "actor_id": actor_id, **details})
+
+    def _get(self, identity: WorkflowIdentity, workflow_id: str) -> WorkflowRecord:
+        record = self._records.get((identity.tenant_id, workflow_id))
+        if record is None:
+            raise KeyError("workflow not found for tenant")
+        return record
+
+    def propose(self, identity: WorkflowIdentity, method: str, data: dict[str, Any], *, source_ids: list[str]) -> dict[str, Any]:
+        if not source_ids or any(not str(source).strip() for source in source_ids):
+            raise ValueError("at least one non-empty provenance source_id is required")
+        analysis = platform_engineering_585_634(method, data)
+        row_id = ROW_BY_METHOD[method]
+        input_sha = hashlib.sha256(self._canonical(data)).hexdigest()
+        artifact_body = {"row_id": row_id, "method": method, "input_sha256": input_sha, "analysis": analysis["result"], "source_ids": sorted(set(source_ids))}
+        artifact_sha = hashlib.sha256(self._canonical(artifact_body)).hexdigest()
+        workflow_id = hashlib.sha256(self._canonical({"tenant": identity.tenant_id, "actor": identity.actor_id, "artifact": artifact_sha})).hexdigest()[:24]
+        key = (identity.tenant_id, workflow_id)
+        if key in self._records:
+            return self.view(identity, workflow_id)
+        artifact = {**artifact_body, "artifact_sha256": artifact_sha, "created_by": identity.actor_id, "provenance": {"source_ids": sorted(set(source_ids)), "derived_by": f"row-{row_id}:{method}", "fabricated_external_evidence": False}}
+        record = WorkflowRecord(workflow_id, identity, method, row_id, "awaiting_approval", input_sha, [artifact])
+        self._event(record, "proposed", identity.actor_id, artifact_sha256=artifact_sha)
+        self._records[key] = record
+        return self.view(identity, workflow_id)
+
+    def approve(self, identity: WorkflowIdentity, workflow_id: str, *, artifact_sha256: str, decision: str) -> dict[str, Any]:
+        record = self._get(identity, workflow_id)
+        if identity.actor_id != record.identity.actor_id:
+            raise PermissionError("actor is not the workflow owner")
+        if record.state != "awaiting_approval":
+            raise ValueError(f"cannot approve workflow in state {record.state}")
+        expected = record.artifacts[-1]["artifact_sha256"]
+        if artifact_sha256 != expected:
+            raise ValueError("approval artifact hash does not match current artifact")
+        if decision not in {"approve", "reject"}:
+            raise ValueError("decision must be approve or reject")
+        record.approved_artifact_sha256 = expected if decision == "approve" else None
+        record.state = "approved" if decision == "approve" else "rejected"
+        self._event(record, record.state, identity.actor_id, artifact_sha256=expected)
+        return self.view(identity, workflow_id)
+
+    def apply(self, identity: WorkflowIdentity, workflow_id: str) -> dict[str, Any]:
+        record = self._get(identity, workflow_id)
+        if identity.actor_id != record.identity.actor_id:
+            raise PermissionError("actor is not the workflow owner")
+        current = record.artifacts[-1]["artifact_sha256"]
+        if record.state != "approved" or record.approved_artifact_sha256 != current:
+            raise ValueError("current artifact requires exact approval before apply")
+        record.applied_revision = (record.applied_revision or 0) + 1
+        record.state = "applied_in_atlas_only"
+        self._event(record, "applied_in_atlas_only", identity.actor_id, revision=record.applied_revision, external_effects_executed=False)
+        return self.view(identity, workflow_id)
+
+    def rollback(self, identity: WorkflowIdentity, workflow_id: str, *, reason: str) -> dict[str, Any]:
+        record = self._get(identity, workflow_id)
+        if identity.actor_id != record.identity.actor_id:
+            raise PermissionError("actor is not the workflow owner")
+        if record.state != "applied_in_atlas_only" or not reason.strip():
+            raise ValueError("an applied workflow and non-empty reason are required")
+        record.state = "rolled_back_in_atlas_only"
+        self._event(record, "rolled_back_in_atlas_only", identity.actor_id, reason=reason, external_effects_executed=False)
+        return self.view(identity, workflow_id)
+
+    def view(self, identity: WorkflowIdentity, workflow_id: str) -> dict[str, Any]:
+        record = self._get(identity, workflow_id)
+        return {"workflow_id": record.workflow_id, "tenant_id": record.identity.tenant_id, "owner_actor_id": record.identity.actor_id, "row_id": record.row_id, "method": record.method, "state": record.state, "input_sha256": record.input_sha256, "artifacts": [dict(a) for a in record.artifacts], "history": [dict(e) for e in record.history], "approved_artifact_sha256": record.approved_artifact_sha256, "applied_revision": record.applied_revision, "external_effects_executed": False}
