@@ -79,5 +79,7 @@ def distinctive(fid:int,d:dict[str,Any])->dict[str,Any]:
 def engineering_semantic_1560_1609(feature_id:int,data:dict[str,Any])->dict[str,Any]:
     base=engineering_support_1560_1609(feature_id,data)
     base["distinctive_output"]=distinctive(feature_id,data)
+    base["evaluation"]={"computed_outputs":sorted(base["distinctive_output"]),"acceptance_criteria":data.get("acceptance_criteria",[]),"verification_plan":data.get("verification_plan",[]),"qualified_review_required":True}
+    base["uncertainty"]={"level":"not_quantified","drivers":["caller-supplied physical inputs","model simplifications","calibration and operating environment"],"certification_or_physical_execution_claimed":False}
     base["semantic_verification"]="row-specific-v1"
     return base
