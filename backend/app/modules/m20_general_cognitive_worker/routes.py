@@ -1510,3 +1510,6 @@ router.include_router(platform_engineering_router_585_634)
 # Optimization and original-story workbench, owner-ledger rows 235-280.
 from .optimization_story_routes_235_280 import router as optimization_story_router_235_280
 router.include_router(optimization_story_router_235_280)
+
+from .negotiation_behavior_routes_0085_0109 import router as negotiation_behavior_router_0085_0109
+router.include_router(negotiation_behavior_router_0085_0109)
