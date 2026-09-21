@@ -199,6 +199,7 @@ class CommunicationCoachingResponse(BaseModel):
     authorship_notice: str | None = None
     evaluation: dict[str, Any] = Field(default_factory=dict)
     uncertainty: dict[str, Any] = Field(default_factory=dict)
+    state_machine: dict[str, Any] | None = None
 
 
 class CollaborationSkill(str, Enum):
@@ -258,6 +259,7 @@ class CollaborationCoachingResponse(BaseModel):
     authorship_notice: str | None = None
     evaluation: dict[str, Any] = Field(default_factory=dict)
     uncertainty: dict[str, Any] = Field(default_factory=dict)
+    state_machine: dict[str, Any] | None = None
 
 
 class TrustWellbeingSkill(str, Enum):
@@ -324,4 +326,5 @@ class TrustWellbeingCoachingResponse(BaseModel):
     external_action_proposed: bool = False
     evaluation: dict[str, Any] = Field(default_factory=dict)
     uncertainty: dict[str, Any] = Field(default_factory=dict)
+    state_machine: dict[str, Any] | None = None
     authorship_notice: str | None = None

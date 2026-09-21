@@ -7,7 +7,7 @@ accepts owner identity from a request body or query string.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -27,6 +27,12 @@ class CritiqueRequest(BaseModel):
     draft: str = Field(min_length=1, max_length=50_000)
 
 
+class StateMachineRunRequest(BaseModel):
+    owner_id: UUID
+    method: str = Field(min_length=1, max_length=120)
+    data: dict[str, Any] = Field(default_factory=dict)
+
+
 def build_router(
     service_provider: Callable[[], AdviceEssayService],
     owner_provider: Callable[[], UUID],
@@ -41,6 +47,14 @@ def build_router(
     def coach_collaboration(request: CollaborationCoachingRequest, service: AdviceEssayService = Depends(service_provider), owner_id: UUID = Depends(owner_provider)) -> CollaborationCoachingResponse:
         _require_owner(owner_id, request.owner_id)
         return service.coach_collaboration(request)
+
+    @router.post("/coaching/state-machine")
+    def run_state_machine(request: StateMachineRunRequest, service: AdviceEssayService = Depends(service_provider), owner_id: UUID = Depends(owner_provider)) -> dict:
+        _require_owner(owner_id, request.owner_id)
+        try:
+            return service.run_coaching_state_machine(request.method, request.data)
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
 
     @router.post("/communication/coaching", response_model=CommunicationCoachingResponse)
     def coach_communication(request: CommunicationCoachingRequest, service: AdviceEssayService = Depends(service_provider), owner_id: UUID = Depends(owner_provider)) -> CommunicationCoachingResponse:

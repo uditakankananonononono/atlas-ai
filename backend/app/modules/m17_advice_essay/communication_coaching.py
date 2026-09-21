@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import re
 
+from .coaching_state_machines_710_809 import assess_method
 from .schemas import (
     CoachingObservation,
     CommunicationCoachingRequest,
@@ -72,6 +73,18 @@ class CommunicationCoach:
             CoachingObservation(label="Audience and goal", detail=f"Prepare for {request.audience}: {request.goal}"),
         ]
         feedback = self._critique(request)
+        sm = assess_method(request.skill.value, {
+            "context": request.context, "goal": request.goal, "audience": request.audience,
+            "draft": request.draft or "", "known_facts": request.known_facts,
+            "cultural_context": request.cultural_context, "constraints": request.constraints,
+        })
+        state_machine = {"row_id": sm["row_id"], "status": sm["status"],
+                         "current_state": sm["state_machine"]["current_state"],
+                         "progress": sm["state_machine"]["progress"],
+                         "blockers": sm["state_machine"]["blockers"],
+                         "states": sm["state_machine"]["states"]}
+        if sm["status"] == "blocked":
+            caveats = caveats + ["State machine blocked: " + sm.get("refusal", "boundary gate")]
         authorship_notice = None
         if request.student_authored_work:
             authorship_notice = (
@@ -90,6 +103,7 @@ class CommunicationCoach:
             external_action_proposed=False,
             caveats=caveats,
             authorship_notice=authorship_notice,
+            state_machine=state_machine,
             evaluation={
                 "row_id": ROW_BY_SKILL[request.skill],
                 "evidence_coverage": min(1.0, len(request.known_facts) / 3),
