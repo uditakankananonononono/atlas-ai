@@ -767,7 +767,14 @@ def _growth_view(builder_name: str, module=None):
         if "title" not in params and "title" in kwargs:
             del kwargs["title"]
         try:
-            return builder(evidence=evidence, **kwargs)
+            artifact = builder(evidence=evidence, **kwargs)
+            # Scope every review artifact to the authenticated request context. The
+            # module still performs no external effect; these identifiers prevent
+            # a caller from confusing another tenant's review result with its own.
+            return artifact.model_copy(update={
+                "tenant_id": request.tenant_id,
+                "actor_id": request.actor_id,
+            })
         except GrowthPlanError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         except ValidationError as exc:
