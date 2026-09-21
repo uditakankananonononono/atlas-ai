@@ -44,3 +44,6 @@ def claire_preference_feedback_route(body:ClairePreferenceFeedbackIn,tenant:Tena
 # Strong bounded workflows for owner atomic concepts 1.1-3.1.
 from .atomic_concepts_routes_1_23 import router as atomic_concepts_router_1_23
 router.include_router(atomic_concepts_router_1_23)
+
+from .atomic_concepts_routes_24_46 import router as atomic_concepts_router_24_46
+router.include_router(atomic_concepts_router_24_46)
