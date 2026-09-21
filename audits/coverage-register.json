@@ -4488,11 +4488,11 @@
       "description": "Makes content available to all",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_344_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 344 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 345,
@@ -4501,11 +4501,11 @@
       "description": "Adapts content for cultures",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_345_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 345 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 346,
@@ -4514,11 +4514,11 @@
       "description": "Recreates rather than translates",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_346_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 346 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 347,
@@ -4527,11 +4527,11 @@
       "description": "Respects local norms",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_347_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 347 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 348,
@@ -4540,11 +4540,11 @@
       "description": "Avoids offensive content",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_348_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 348 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 349,
@@ -4553,11 +4553,11 @@
       "description": "Represents diverse perspectives",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_349_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 349 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 350,
@@ -4566,11 +4566,11 @@
       "description": "Creates for all abilities",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_350_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 350 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 351,
@@ -4579,11 +4579,11 @@
       "description": "Involves users in creation",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_351_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 351 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 352,
@@ -4592,11 +4592,11 @@
       "description": "Collaborates with stakeholders",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_352_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 352 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 353,
@@ -4605,11 +4605,11 @@
       "description": "Applies human-centered process",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_353_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 353 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 354,
@@ -4618,11 +4618,11 @@
       "description": "Rapidly prototypes solutions",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_354_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 354 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 355,
@@ -4631,11 +4631,11 @@
       "description": "Explores future possibilities",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_355_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 355 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 356,
@@ -4644,11 +4644,11 @@
       "description": "Challenges assumptions",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_356_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 356 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 357,
@@ -4657,11 +4657,11 @@
       "description": "Creates productive friction",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_357_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 357 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 358,
@@ -4670,11 +4670,11 @@
       "description": "Guides systemic change",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_358_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 358 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 359,
@@ -4683,11 +4683,11 @@
       "description": "Orchestrates experiences",
       "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
       "test_path": "tests/modules/test_m15_design_333_359.py",
-      "test_case": null,
+      "test_case": "test_row_359_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: design_support_333_359. Boundaries: Sensitivity Review; review_required; evidence; boundary; Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting. Advanced depth: method-specific artifact now reports explicit evaluation evidence, uncertainty drivers, review requirements, and honest non-execution limits; adversarial/failure coverage is exercised by the mapped suite and sweep tests.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 359 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 360,
@@ -4696,11 +4696,11 @@
       "description": "Calculates TAM, SAM, SOM",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_360_market_sizing_is_input_bound",
+      "test_case": "test_row_360_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 360 'Market Size Estimation': engine-level mechanism (classes: BusinessAnalysisService) in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 360 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 361,
@@ -4709,11 +4709,11 @@
       "description": "Maps competitor strengths and weaknesses",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[361-",
+      "test_case": "test_row_361_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 361 'Competitive Analysis': row-keyed registry entry QUALITATIVE_METHODS[361] = 'SWOT competitor matrix'; required inputs ['competitors', 'criteria'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 361 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 362,
@@ -4722,11 +4722,11 @@
       "description": "Assesses industry attractiveness",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[362-",
+      "test_case": "test_row_362_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 362 'Porter's Five Forces Analysis': row-keyed registry entry QUALITATIVE_METHODS[362] = 'Five Forces'; required inputs ['supplier_power', 'buyer_power', 'new_entrants', 'substitutes', 'rivalry'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 362 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 363,
@@ -4735,11 +4735,11 @@
       "description": "Creates compelling offers",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[363-",
+      "test_case": "test_row_363_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 363 'Value Proposition Design': row-keyed registry entry QUALITATIVE_METHODS[363] = 'value proposition canvas'; required inputs ['customer_jobs', 'pains', 'gains', 'products_services', 'pain_relievers', 'gain_creators'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 363 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 364,
@@ -4748,11 +4748,11 @@
       "description": "Maps business logic",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[364-",
+      "test_case": "test_row_364_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 364 'Business Model Canvas': row-keyed registry entry QUALITATIVE_METHODS[364] = 'business model canvas'; required inputs ['partners', 'activities', 'resources', 'value_propositions', 'relationships', 'channels', 'segments', 'costs', 'revenues'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 364 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 365,
@@ -4761,11 +4761,11 @@
       "description": "Rapidly validates ideas",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[365-",
+      "test_case": "test_row_365_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 365 'Lean Canvas': row-keyed registry entry QUALITATIVE_METHODS[365] = 'assumption validation board'; required inputs ['assumptions', 'tests'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 365 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 366,
@@ -4774,11 +4774,11 @@
       "description": "Defines target markets",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[366-",
+      "test_case": "test_row_366_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 366 'Customer Segment Identification': row-keyed registry entry QUALITATIVE_METHODS[366] = 'segment attractiveness matrix'; required inputs ['segments', 'criteria'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 366 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 367,
@@ -4787,11 +4787,11 @@
       "description": "Creates representative users",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[367-",
+      "test_case": "test_row_367_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 367 'Persona Development': row-keyed registry entry QUALITATIVE_METHODS[367] = 'evidence-backed persona'; required inputs ['observations', 'behaviors', 'goals', 'pain_points'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 367 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 368,
@@ -4800,11 +4800,11 @@
       "description": "Traces experience touchpoints",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[368-",
+      "test_case": "test_row_368_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 368 'Customer Journey Mapping': row-keyed registry entry QUALITATIVE_METHODS[368] = 'customer journey map'; required inputs ['stages', 'touchpoints', 'customer_actions', 'pain_points'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 368 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 369,
@@ -4813,11 +4813,11 @@
       "description": "Finds unmet needs",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[369-",
+      "test_case": "test_row_369_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 369 'Pain Point Discovery': row-keyed registry entry QUALITATIVE_METHODS[369] = 'jobs-and-pains synthesis'; required inputs ['observations', 'needs'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 369 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 370,
@@ -4826,11 +4826,11 @@
       "description": "Finds desired outcomes",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[370-",
+      "test_case": "test_row_370_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 370 'Gain Point Identification': row-keyed registry entry QUALITATIVE_METHODS[370] = 'outcome statement mapping'; required inputs ['situations', 'outcomes', 'importance', 'satisfaction'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 370 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 371,
@@ -4839,11 +4839,11 @@
       "description": "Understands customer motivation",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[371-",
+      "test_case": "test_row_371_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 371 'Jobs-to-be-Done Analysis': row-keyed registry entry QUALITATIVE_METHODS[371] = 'jobs-to-be-done forces'; required inputs ['push', 'pull', 'anxiety', 'habit'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 371 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 372,
@@ -4852,11 +4852,11 @@
       "description": "Tests core hypotheses",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[372-",
+      "test_case": "test_row_372_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 372 'Minimum Viable Product Design': row-keyed registry entry QUALITATIVE_METHODS[372] = 'hypothesis test card'; required inputs ['hypothesis', 'metric', 'threshold', 'method'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 372 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 373,
@@ -4865,11 +4865,11 @@
       "description": "Creates testable versions",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[373-",
+      "test_case": "test_row_373_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 373 'Prototype Development': row-keyed registry entry QUALITATIVE_METHODS[373] = 'MVP scope card'; required inputs ['core_hypothesis', 'minimum_capabilities', 'excluded_scope', 'success_metric'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 373 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 374,
@@ -4878,11 +4878,11 @@
       "description": "Gathers feedback systematically",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[374-",
+      "test_case": "test_row_374_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 374 'User Testing': row-keyed registry entry QUALITATIVE_METHODS[374] = 'feedback collection plan'; required inputs ['channels', 'questions', 'sampling', 'coding_scheme'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 374 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 375,
@@ -4891,11 +4891,11 @@
       "description": "Measures market validation",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[375-",
+      "test_case": "test_row_375_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 375 'Product-Market Fit Assessment': row-keyed registry entry QUALITATIVE_METHODS[375] = 'market validation scorecard'; required inputs ['signals', 'thresholds', 'observations'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 375 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 376,
@@ -4904,11 +4904,11 @@
       "description": "Knows when to change direction",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[376-",
+      "test_case": "test_row_376_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 376 'Pivot Decision Framework': row-keyed registry entry QUALITATIVE_METHODS[376] = 'pivot/persevere review'; required inputs ['original_hypothesis', 'evidence', 'pivot_options', 'decision_rule'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 376 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 377,
@@ -4917,11 +4917,11 @@
       "description": "Finds unconventional growth tactics",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[377-",
+      "test_case": "test_row_377_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 377 'Growth Hacking': row-keyed registry entry QUALITATIVE_METHODS[377] = 'growth tactic backlog'; required inputs ['tactics', 'constraints', 'expected_mechanisms'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 377 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 378,
@@ -4930,11 +4930,11 @@
       "description": "Measures viral spread",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_metric_rows[378-",
+      "test_case": "test_row_378_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 378 'Viral Coefficient Calculation': engine-level mechanism (classes: BusinessAnalysisService) in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 378 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 379,
@@ -4943,11 +4943,11 @@
       "description": "Calculates acquisition efficiency",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_metric_rows[379-",
+      "test_case": "test_row_379_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 379 'Customer Acquisition Cost': engine-level mechanism (classes: BusinessAnalysisService) in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 379 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 380,
@@ -4956,11 +4956,11 @@
       "description": "Projects total customer value",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_metric_rows[380-",
+      "test_case": "test_row_380_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 380 'Customer Lifetime Value': engine-level mechanism (classes: BusinessAnalysisService) in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 380 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 381,
@@ -4969,11 +4969,11 @@
       "description": "Analyzes per-unit profitability",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_metric_rows[381-",
+      "test_case": "test_row_381_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 381 'Unit Economics': engine-level mechanism (classes: BusinessAnalysisService) in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 381 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 382,
@@ -4982,11 +4982,11 @@
       "description": "Tracks groups over time",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_382_cohorts",
+      "test_case": "test_row_382_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 382 'Cohort Analysis': engine-level mechanism (classes: BusinessAnalysisService) in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 382 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 383,
@@ -4995,11 +4995,11 @@
       "description": "Measures stickiness",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_metric_rows[383-",
+      "test_case": "test_row_383_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 383 'Retention Curve Analysis': engine-level mechanism (classes: BusinessAnalysisService) in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 383 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 384,
@@ -5008,11 +5008,11 @@
       "description": "Identifies at-risk customers",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[384-",
+      "test_case": "test_row_384_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 384 'Churn Prediction': row-keyed registry entry QUALITATIVE_METHODS[384] = 'churn-risk rubric'; required inputs ['customers', 'risk_signals', 'weights'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 384 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 385,
@@ -5021,11 +5021,11 @@
       "description": "Measures customer loyalty",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_metric_rows[385-",
+      "test_case": "test_row_385_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 385 'Net Promoter Score': engine-level mechanism (classes: BusinessAnalysisService) in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 385 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 386,
@@ -5034,11 +5034,11 @@
       "description": "Tracks happiness",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[386-",
+      "test_case": "test_row_386_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 386 'Customer Satisfaction Measurement': row-keyed registry entry QUALITATIVE_METHODS[386] = 'satisfaction scorecard'; required inputs ['responses', 'scale'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 386 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 387,
@@ -5047,11 +5047,11 @@
       "description": "Extracts insights from feedback",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[387-",
+      "test_case": "test_row_387_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 387 'Voice of Customer Analysis': row-keyed registry entry QUALITATIVE_METHODS[387] = 'voice-of-customer theme analysis'; required inputs ['feedback', 'coding_scheme'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 387 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 388,
@@ -5060,11 +5060,11 @@
       "description": "Ranks development items",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_metric_rows[388-",
+      "test_case": "test_row_388_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 388 'Feature Prioritization': engine-level mechanism (classes: BusinessAnalysisService) in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 388 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 389,
@@ -5073,11 +5073,11 @@
       "description": "Sequences product development",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[389-",
+      "test_case": "test_row_389_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 389 'Roadmap Planning': row-keyed registry entry QUALITATIVE_METHODS[389] = 'outcome roadmap'; required inputs ['outcomes', 'initiatives', 'dependencies', 'time_horizons'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 389 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 390,
@@ -5086,11 +5086,11 @@
       "description": "Organizes agile work",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[390-",
+      "test_case": "test_row_390_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 390 'Sprint Planning': row-keyed registry entry QUALITATIVE_METHODS[390] = 'agile operating model'; required inputs ['roles', 'cadence', 'definition_of_done', 'work_item_types'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 390 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 391,
@@ -5099,11 +5099,11 @@
       "description": "Maintains task list",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[391-",
+      "test_case": "test_row_391_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 391 'Backlog Grooming': row-keyed registry entry QUALITATIVE_METHODS[391] = 'ordered backlog'; required inputs ['items'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 391 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 392,
@@ -5112,11 +5112,11 @@
       "description": "Measures team speed",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_metric_rows[392-",
+      "test_case": "test_row_392_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 392 'Velocity Tracking': engine-level mechanism (classes: BusinessAnalysisService) in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 392 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 393,
@@ -5125,11 +5125,11 @@
       "description": "Visualizes progress",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[393-",
+      "test_case": "test_row_393_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 393 'Burndown Chart Creation': row-keyed registry entry QUALITATIVE_METHODS[393] = 'progress/burndown view'; required inputs ['planned', 'completed', 'dates'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 393 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 394,
@@ -5138,11 +5138,11 @@
       "description": "Manages workflow",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[394-",
+      "test_case": "test_row_394_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 394 'Kanban Board Design': row-keyed registry entry QUALITATIVE_METHODS[394] = 'workflow policy'; required inputs ['states', 'wip_limits', 'policies'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 394 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 395,
@@ -5151,11 +5151,11 @@
       "description": "Runs agile meetings",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[395-",
+      "test_case": "test_row_395_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 395 'Scrum Ceremony Facilitation': row-keyed registry entry QUALITATIVE_METHODS[395] = 'agile meeting plan'; required inputs ['meetings', 'participants', 'cadence', 'outcomes'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 395 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 396,
@@ -5164,11 +5164,11 @@
       "description": "Learns from sprints",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[396-",
+      "test_case": "test_row_396_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 396 'Retrospective Analysis': row-keyed registry entry QUALITATIVE_METHODS[396] = 'sprint retrospective'; required inputs ['went_well', 'did_not', 'actions', 'owners'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 396 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 397,
@@ -5177,11 +5177,11 @@
       "description": "Creates controlled experiments",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[397-",
+      "test_case": "test_row_397_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 397 'A/B Testing Design': row-keyed registry entry QUALITATIVE_METHODS[397] = 'controlled experiment protocol'; required inputs ['hypothesis', 'primary_metric', 'randomization_unit', 'control', 'treatment', 'stopping_rule'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 397 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 398,
@@ -5190,11 +5190,11 @@
       "description": "Tests multiple variables",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_qualitative_rows_are_typed_source_bound_artifacts[398-",
+      "test_case": "test_row_398_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 398 'Multivariate Testing': row-keyed registry entry QUALITATIVE_METHODS[398] = 'multivariate experiment protocol'; required inputs ['factors', 'levels', 'primary_metric', 'allocation', 'multiple_testing_method'], served through BusinessAnalysisService.analyze() in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 398 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 399,
@@ -5203,11 +5203,11 @@
       "description": "Determines result validity",
       "implementation_path": "backend/app/modules/m19_idea_incubator/business_service.py",
       "test_path": "tests/modules/test_m19_business_360_399.py",
-      "test_case": "tests/modules/test_m19_business_360_399.py::test_399_significance_reports_uncertainty_and_warning",
+      "test_case": "test_row_399_distinct_instrument",
       "post_semantic_status": "verified",
       "implementation_details": "Row 399 'Statistical Significance': engine-level mechanism (classes: BusinessAnalysisService) in backend/app/modules/m19_idea_incubator/business_service.py. Boundary: Deterministic business analysis without fabricated evidence.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 399 executes a distinct typed design/business instrument with input-derived metrics, source-bound provenance, uncertainty, fabricated_claims=false and no unauthorized effects; Python 3.12 focused suites passed."
     },
     {
       "row": 400,
