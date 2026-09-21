@@ -4,7 +4,7 @@ from uuid import uuid4
 from .alerts import alert_message,cooldown_bucket,evaluate
 from .blockers import detect_blockers
 from .kpis import EVENT_KPIS,RESERVED_KPI_IDS,compute_kpis,custom_event_kpi,event_ref,kpi_event_evidence
-from . import analysis,finance_core as finance,climate_environment_1610_1659 as climate_environment,planning
+from . import analysis,finance_core as finance,climate_environment_1610_1659 as climate_environment,ai_systems_1910_1959 as ai_systems,planning
 from .projector import fold
 from .schemas import *
 from .status import RepoCatalog,effective_state,event_module_id,module_statuses
@@ -389,6 +389,8 @@ METHOD_SUMMARIES.update(finance.SUMMARIES)
 METHOD_INPUTS.update(finance.INPUTS)
 METHOD_SUMMARIES.update(climate_environment.SUMMARIES)
 METHOD_INPUTS.update(climate_environment.INPUTS)
+METHOD_SUMMARIES.update(ai_systems.SUMMARIES)
+METHOD_INPUTS.update(ai_systems.INPUTS)
 def _analysis_methods(self):
     return [AnalysisMethodInfo(method=m,feature_row=analysis.ROWS[m],summary=METHOD_SUMMARIES[m],required_inputs=METHOD_INPUTS[m],limits=[]) for m in analysis.ROWS]
 def _run_analysis(self,data:AnalysisJobIn):
