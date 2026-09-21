@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 751,
-    "verified-pushed": 1256,
+    "missing": 701,
+    "verified-pushed": 1306,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -10880,9 +10880,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Spaced Repetition",
       "description": "Optimizes review timing",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 811,
@@ -10890,9 +10894,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Interleaving",
       "description": "Mixes practice types",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 812,
@@ -10900,9 +10908,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Retrieval Practice",
       "description": "Tests recall",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 813,
@@ -10910,9 +10922,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Elaborative Interrogation",
       "description": "Asks why",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 814,
@@ -10920,9 +10936,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Self-Explanation",
       "description": "Explains to self",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 815,
@@ -10930,9 +10950,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Dual Coding",
       "description": "Combines verbal and visual",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 816,
@@ -10940,9 +10964,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Concrete Examples",
       "description": "Illustrates abstract",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 817,
@@ -10950,9 +10978,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Worked Examples",
       "description": "Shows solutions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 818,
@@ -10960,9 +10992,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Problem Solving",
       "description": "Practices application",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 819,
@@ -10970,9 +11006,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Deliberate Practice",
       "description": "Targets weaknesses",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 820,
@@ -10980,9 +11020,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Chunking",
       "description": "Groups information",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 821,
@@ -10990,9 +11034,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Scaffolding",
       "description": "Builds progressively",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 822,
@@ -11000,9 +11048,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Fading",
       "description": "Removes support gradually",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 823,
@@ -11010,9 +11062,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Metacognition",
       "description": "Thinks about thinking",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 824,
@@ -11020,9 +11076,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Self-Regulated Learning",
       "description": "Manages own learning",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 825,
@@ -11030,9 +11090,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Goal Setting",
       "description": "Defines objectives",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 826,
@@ -11040,9 +11104,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Progress Monitoring",
       "description": "Tracks advancement",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 827,
@@ -11050,9 +11118,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Self-Assessment",
       "description": "Evaluates own work",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 828,
@@ -11060,9 +11132,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Peer Assessment",
       "description": "Evaluates others",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 829,
@@ -11070,9 +11146,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Formative Assessment",
       "description": "Assesses for learning",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 830,
@@ -11080,9 +11160,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Summative Assessment",
       "description": "Assesses learning",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 831,
@@ -11090,9 +11174,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Diagnostic Assessment",
       "description": "Identifies needs",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 832,
@@ -11100,9 +11188,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Prior Knowledge Activation",
       "description": "Connects to existing",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 833,
@@ -11110,9 +11202,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Transfer",
       "description": "Applies to new contexts",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 834,
@@ -11120,9 +11216,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Near Transfer",
       "description": "Applies to similar",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 835,
@@ -11130,9 +11230,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Far Transfer",
       "description": "Applies to different",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 836,
@@ -11140,9 +11244,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Analogical Reasoning",
       "description": "Reasons by analogy",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 837,
@@ -11150,9 +11258,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Case-Based Reasoning",
       "description": "Uses precedents",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 838,
@@ -11160,9 +11272,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Rule-Based Reasoning",
       "description": "Applies rules",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 839,
@@ -11170,9 +11286,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Model-Based Reasoning",
       "description": "Uses models",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 840,
@@ -11180,9 +11300,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Qualitative Reasoning",
       "description": "Reasons about qualities",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 841,
@@ -11190,9 +11314,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Quantitative Reasoning",
       "description": "Reasons about quantities",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 842,
@@ -11200,9 +11328,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Spatial Reasoning",
       "description": "Reasons about space",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 843,
@@ -11210,9 +11342,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Temporal Reasoning",
       "description": "Reasons about time",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 844,
@@ -11220,9 +11356,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Causal Reasoning",
       "description": "Reasons about causes",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 845,
@@ -11230,9 +11370,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Counterfactual Reasoning",
       "description": "Reasons about alternatives",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 846,
@@ -11240,9 +11384,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Probabilistic Reasoning",
       "description": "Reasons under uncertainty",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 847,
@@ -11250,9 +11398,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Fuzzy Logic",
       "description": "Handles vagueness",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 848,
@@ -11260,9 +11412,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Default Reasoning",
       "description": "Assumes unless contradicted",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 849,
@@ -11270,9 +11426,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Non-Monotonic Reasoning",
       "description": "Revises conclusions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 850,
@@ -11280,9 +11440,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Abductive Reasoning",
       "description": "Infers best explanation",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 851,
@@ -11290,9 +11454,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Inductive Reasoning",
       "description": "Generalizes from specifics",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 852,
@@ -11300,9 +11468,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Deductive Reasoning",
       "description": "Derives from general",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 853,
@@ -11310,9 +11482,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Transductive Reasoning",
       "description": "Reasons from specific to specific",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 854,
@@ -11320,9 +11496,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Dialectical Reasoning",
       "description": "Resolves contradictions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 855,
@@ -11330,9 +11510,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Integrative Thinking",
       "description": "Holds tensions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 856,
@@ -11340,9 +11524,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Systems Thinking",
       "description": "Sees wholes",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 857,
@@ -11350,9 +11538,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Design Thinking",
       "description": "Creates solutions",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 858,
@@ -11360,9 +11552,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Computational Thinking",
       "description": "Thinks algorithmically",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 859,
@@ -11370,9 +11566,13 @@
       "category": "Learning & Knowledge",
       "requirement": "Scientific Thinking",
       "description": "Tests hypotheses",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+      },
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
     {
       "id": 860,
