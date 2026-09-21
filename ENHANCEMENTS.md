@@ -9,7 +9,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 ## M02 - Competition Manager
 - **Next:** evidence completeness score that links each answer claim to a profile-corpus source or `[NEEDS INPUT]`.
 ## M03 - Grant Writer
-- **Next:** funder-rule linter for page, budget, attachment and evaluation-criterion compliance before export.
+- **Landed:** deterministic science-grant preflight parses explicit word limits, budget caps, required attachments, evaluation criteria and unresolved `[NEEDS INPUT]` placeholders without inventing rules.
+- **Next (science):** agency-specific schema packs sourced from versioned official calls, with deadline and amendment tracking.
 ## M04 - Research Scientist
 - **Landed:** downloadable computational reproducibility bundle with analysis code, input/parameter snapshots, SHA-256 input and manifest identity, dependencies, seed, source URLs and an explicit `execution_performed: false` boundary.
 - **Next:** approved sandbox execution that adds output hashes, logs and environment lock to the same manifest.

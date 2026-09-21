@@ -1,6 +1,7 @@
 """FastAPI routes local to the grant-writer module."""
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel,Field
 from app.auth.context import TenantContext, require_tenant
 
 from .schemas import (
@@ -75,3 +76,11 @@ def expanded_owner_run_180_210(row_id:int,payload:dict):
 
 from .core_spec_round6 import router as core_spec_round6_router
 router.include_router(core_spec_round6_router)
+
+class ComplianceLintIn(BaseModel):
+ proposal:str=Field(min_length=20);guidelines:str=Field(min_length=20);budget_total:float|None=Field(default=None,ge=0);attachments:list[str]=Field(default_factory=list)
+@router.post('/compliance/lint')
+def compliance_lint(body:ComplianceLintIn):
+ from .compliance import lint_proposal
+ try:return lint_proposal(**body.model_dump())
+ except ValueError as e:raise HTTPException(422,str(e))
