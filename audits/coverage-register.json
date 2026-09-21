@@ -26351,10 +26351,11 @@
       "description": "At launch/onboarding, proactively ask the user to connect or select writings, essays, and activity descriptions; index them as the source of truth for grounded application drafting.",
       "implementation_path": "backend/app/modules/m02_competition_manager/onboarding.py",
       "test_path": "tests/modules/test_m02_onboarding.py",
-      "test_case": null,
+      "test_case": "tests/modules/test_m02_onboarding.py::test_launch_proactively_asks_for_writings_essays_and_activities_then_stops_after_completion",
       "post_semantic_status": "verified",
       "implementation_details": "Classes: CorpusOnboardingRow, OnboardingService. Functions: launch_step, complete, skip. ",
-      "depth_sweep_status": "pending"
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 2010 proactively exposes a tenant-scoped mounted onboarding launch step requesting writings, essays and activity descriptions; completion requires real indexed source IDs, optional skip honestly blocks application drafting, and focused tests cover completion, isolation, skip and invalid/empty sources."
     }
   ]
 }
