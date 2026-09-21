@@ -247,6 +247,8 @@ class GrowthPlanRequest(BaseModel):
 
     title: str | None = None
     goal: str = "growth"
+    tenant_id: str = Field(default="local", min_length=1, max_length=120)
+    actor_id: str = Field(default="caller", min_length=1, max_length=120)
     inputs: dict[str, Any] = Field(default_factory=dict)
     evidence: list[EvidenceInput] = Field(default_factory=list)
     contact_ids: list[str] = Field(default_factory=list)

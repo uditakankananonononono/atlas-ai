@@ -459,3 +459,71 @@ def test_corporate_endpoints_mounted_and_evidence_checked():
     )
     assert cap.status_code == 422
     assert no_evidence.status_code in (200, 422)
+
+
+def test_corporate_artifacts_carry_scope_provenance_and_no_execution_claim():
+    artifact = analyze_stakeholders(
+        initiative="Launch",
+        stakeholders=[Stakeholder(name="CEO", interest="quality", influence="high")],
+        evidence=EV,
+    )
+    assert artifact.tenant_id == "local" and artifact.actor_id == "caller"
+    assert artifact.provenance == {"ev1": "board pack 2026-09", "sh1": "caller-supplied stakeholder map"}
+    assert artifact.execution_claimed is False
+
+
+def test_row_476_discriminating_influence_perturbation_changes_quadrant():
+    low = analyze_stakeholders(
+        initiative="Launch",
+        stakeholders=[Stakeholder(name="Reviewer", interest="quality", influence="low", stance="oppose")],
+        evidence=EV,
+    )
+    high = analyze_stakeholders(
+        initiative="Launch",
+        stakeholders=[Stakeholder(name="Reviewer", interest="quality", influence="high", stance="oppose")],
+        evidence=EV,
+    )
+    assert "monitor" in low.sections[0].body
+    assert "manage closely" in high.sections[0].body
+    assert low.sections[0].body != high.sections[0].body
+
+
+def test_row_501_discriminating_growth_perturbation_changes_projection():
+    flat = build_financial_model(starting_revenue=100, monthly_growth_pct=0, monthly_costs=50, months=2, evidence=EV)
+    growing = build_financial_model(starting_revenue=100, monthly_growth_pct=10, monthly_costs=50, months=2, evidence=EV)
+    assert "M2: rev 100.0" in flat.sections[0].body
+    assert "M2: rev 110.0" in growing.sections[0].body
+    assert flat.sections[0].body != growing.sections[0].body
+
+
+def test_corporate_family_rejects_invalid_domain():
+    with pytest.raises(GrowthPlanError, match="two most uncertain drivers"):
+        plan_scenarios(
+            subject="Launch",
+            drivers=[
+                StrategicDriver(name="demand", states=["high", "low"]),
+                StrategicDriver(name="cost", states=["high", "low"]),
+                StrategicDriver(name="regulation", states=["strict", "loose"]),
+            ],
+            evidence=EV,
+        )
+
+
+def test_corporate_http_scope_is_echoed_without_execution_claim():
+    container = m05_routes.Container.__new__(m05_routes.Container)
+    container.contacts = InMemoryContactRepository()
+    app = FastAPI(); app.include_router(m05_routes.router, prefix="/api/v1")
+    app.dependency_overrides[m05_routes.get_container] = lambda: container
+    response = TestClient(app).post(
+        "/api/v1/outreach-manager/corporate/stakeholder-analysis",
+        json={
+            "tenant_id": "tenant-a", "actor_id": "analyst-7",
+            "inputs": {"initiative": "Launch", "stakeholders": [{"name": "CEO", "interest": "quality", "influence": "high"}]},
+            "evidence": [{"key": "source-1", "source": "board minutes", "fact": "launch approved for planning"}],
+        },
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert (body["tenant_id"], body["actor_id"]) == ("tenant-a", "analyst-7")
+    assert body["provenance"]["source-1"] == "board minutes"
+    assert body["execution_claimed"] is False

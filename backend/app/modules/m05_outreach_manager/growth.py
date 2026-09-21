@@ -54,6 +54,10 @@ class ArtifactSection(BaseModel):
 class BusinessArtifact(BaseModel):
     """A deterministic, reviewable planning artifact bound to one ledger row."""
 
+    tenant_id: str = Field(default="local", min_length=1, max_length=120)
+    actor_id: str = Field(default="caller", min_length=1, max_length=120)
+    provenance: dict[str, str] = Field(default_factory=dict)
+    execution_claimed: bool = False
     kind: str
     feature_row: int
     title: str
@@ -217,6 +221,8 @@ def _artifact(
         *(scope_checks or []),
     ]
     return BusinessArtifact(
+        provenance={item.key: item.source for item in evidence},
+        execution_claimed=False,
         kind=kind,
         feature_row=row,
         title=title,
