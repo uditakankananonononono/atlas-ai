@@ -4,7 +4,7 @@ from uuid import uuid4
 from .alerts import alert_message,cooldown_bucket,evaluate
 from .blockers import detect_blockers
 from .kpis import EVENT_KPIS,RESERVED_KPI_IDS,compute_kpis,custom_event_kpi,event_ref,kpi_event_evidence
-from . import analysis,finance,planning
+from . import analysis,finance_core as finance,planning
 from .projector import fold
 from .schemas import *
 from .status import RepoCatalog,effective_state,event_module_id,module_statuses
