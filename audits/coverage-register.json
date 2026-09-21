@@ -20,7 +20,7 @@
       "row": 2,
       "category": "Claire personalization additions",
       "requirement": "Decision Journaling + Retrieval (Most Powerful, Easiest)",
-      "description": "What it is: Every time you make a decision \u2014 \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" \u2014 you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
+      "description": "What it is: Every time you make a decision — \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" — you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
       "implementation_path": "backend/app/modules/m21_claire/personalization.py",
       "test_path": "tests/modules/test_m21_personalization.py",
       "test_case": null,
@@ -33,7 +33,7 @@
       "row": 3,
       "category": "Claire personalization additions",
       "requirement": "Correction Loop (Reinforcement From You)",
-      "description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output \u2192 your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
+      "description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output → your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
       "implementation_path": "backend/app/modules/m21_claire/personalization.py",
       "test_path": "tests/modules/test_m21_personalization.py",
       "test_case": "tests/modules/test_m21_personalization.py::test_decisions_corrections_and_owner_reasoning_retrieve_by_vector_and_tenant",
@@ -46,7 +46,7 @@
       "row": 4,
       "category": "Claire personalization additions",
       "requirement": "Voice Fine-Tuning (Style Transfer to You)",
-      "description": "What it is: You collect 50\u2013200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
+      "description": "What it is: You collect 50–200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
       "implementation_path": "backend/app/modules/m21_claire/owner_workflow_279_329.py",
       "test_path": "tests/modules/test_m21_claire_owner_279_329.py",
       "test_case": null,
@@ -59,7 +59,7 @@
       "row": 5,
       "category": "Claire personalization additions",
       "requirement": "Chain-of-Thought Capture",
-      "description": "What it is: When you solve a hard problem, you record your reasoning step by step \u2014 not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
+      "description": "What it is: When you solve a hard problem, you record your reasoning step by step — not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
       "implementation_path": "backend/app/modules/m21_claire/personalization.py",
       "test_path": "tests/modules/test_m21_personalization.py",
       "test_case": null,
@@ -72,7 +72,7 @@
       "row": 6,
       "category": "Claire personalization additions",
       "requirement": "Preference Ranking",
-      "description": "What it is: Claire generates 3\u20135 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
+      "description": "What it is: Claire generates 3–5 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
       "implementation_path": "backend/app/modules/m21_claire/owner_workflow_279_329.py",
       "test_path": "tests/modules/test_m21_claire_owner_279_329.py",
       "test_case": null,
@@ -85,7 +85,7 @@
       "row": 7,
       "category": "Claire personalization additions",
       "requirement": "Behavioral Telemetry (What You Actually Do)",
-      "description": "What it is: Silently log your real actions \u2014 which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
+      "description": "What it is: Silently log your real actions — which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
       "implementation_path": "backend/app/modules/m21_claire/personalization.py",
       "test_path": "tests/modules/test_m21_personalization.py",
       "test_case": "tests/modules/test_m21_personalization.py::test_behavioral_telemetry_is_owner_opt_in_and_scope_limited",
@@ -12596,11 +12596,11 @@
       "description": "Healing through regeneration",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_960_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 960 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 961,
@@ -12609,11 +12609,11 @@
       "description": "Using stem cells",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_961_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 961 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 962,
@@ -12622,11 +12622,11 @@
       "description": "Fixing genetic diseases",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_962_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 962 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 963,
@@ -12635,11 +12635,11 @@
       "description": "Gene editing",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_963_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 963 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 964,
@@ -12648,11 +12648,11 @@
       "description": "Precise DNA changes",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_964_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 964 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 965,
@@ -12661,11 +12661,11 @@
       "description": "Versatile gene editing",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_965_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 965 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 966,
@@ -12674,11 +12674,11 @@
       "description": "Modifying gene expression",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_966_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 966 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 967,
@@ -12687,11 +12687,11 @@
       "description": "Designing organisms",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_967_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 967 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 968,
@@ -12700,11 +12700,11 @@
       "description": "Optimizing metabolism",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_968_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 968 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 969,
@@ -12713,11 +12713,11 @@
       "description": "Designing proteins",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_969_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 969 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 970,
@@ -12726,11 +12726,11 @@
       "description": "Evolving molecules",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_970_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 970 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 971,
@@ -12739,11 +12739,11 @@
       "description": "Creating catalysts",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_971_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 971 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 972,
@@ -12752,11 +12752,11 @@
       "description": "Creating immune proteins",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_972_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 972 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 973,
@@ -12765,11 +12765,11 @@
       "description": "Creating immunity",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_973_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 973 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 974,
@@ -12778,11 +12778,11 @@
       "description": "Finding medicines",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_974_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 974 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 975,
@@ -12791,11 +12791,11 @@
       "description": "New uses for old drugs",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_975_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 975 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 976,
@@ -12804,11 +12804,11 @@
       "description": "Tailored treatments",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_976_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 976 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 977,
@@ -12817,11 +12817,11 @@
       "description": "Genes and drugs",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_977_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 977 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 978,
@@ -12830,11 +12830,11 @@
       "description": "Modifying bacteria",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_978_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 978 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 979,
@@ -12843,11 +12843,11 @@
       "description": "Beneficial bacteria",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_979_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 979 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 980,
@@ -12856,11 +12856,11 @@
       "description": "Using viruses",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_980_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 980 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 981,
@@ -12869,11 +12869,11 @@
       "description": "Harnessing immune system",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_981_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 981 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 982,
@@ -12882,11 +12882,11 @@
       "description": "Engineered T cells",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_982_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 982 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 983,
@@ -12895,11 +12895,11 @@
       "description": "Unlocking immune response",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_983_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 983 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 984,
@@ -12908,11 +12908,11 @@
       "description": "Messenger RNA medicines",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_984_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 984 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 985,
@@ -12921,11 +12921,11 @@
       "description": "Medical nanotechnology",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_985_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 985 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 986,
@@ -12934,11 +12934,11 @@
       "description": "Precise medicine",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_986_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 986 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 987,
@@ -12947,11 +12947,11 @@
       "description": "Therapy and diagnostics",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_987_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 987 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 988,
@@ -12960,11 +12960,11 @@
       "description": "Blood-based diagnosis",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_988_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 988 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 989,
@@ -12973,11 +12973,11 @@
       "description": "Continuous monitoring",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_989_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 989 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 990,
@@ -12986,11 +12986,11 @@
       "description": "Internal monitoring",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_990_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 990 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 991,
@@ -12999,11 +12999,11 @@
       "description": "Direct neural connection",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_991_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 991 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 992,
@@ -13012,11 +13012,11 @@
       "description": "Replacement neural function",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_992_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 992 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 993,
@@ -13025,11 +13025,11 @@
       "description": "Hearing restoration",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_993_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 993 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 994,
@@ -13038,11 +13038,11 @@
       "description": "Vision restoration",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_994_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 994 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 995,
@@ -13051,11 +13051,11 @@
       "description": "Neural modulation",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_995_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 995 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 996,
@@ -13064,11 +13064,11 @@
       "description": "Light-controlled neurons",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_996_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 996 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 997,
@@ -13077,11 +13077,11 @@
       "description": "Chemical-controlled neurons",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_997_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 997 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 998,
@@ -13090,11 +13090,11 @@
       "description": "Brain self-regulation",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_998_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 998 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 999,
@@ -13103,11 +13103,11 @@
       "description": "Understanding neural circuits",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_999_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 999 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 1000,
@@ -13116,11 +13116,11 @@
       "description": "Mapping connections",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_1000_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1000 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 1001,
@@ -13129,11 +13129,11 @@
       "description": "Reading thoughts",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_1001_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1001 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 1002,
@@ -13142,11 +13142,11 @@
       "description": "Writing to brain",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_1002_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1002 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 1003,
@@ -13155,11 +13155,11 @@
       "description": "Enhancing memory",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_1003_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1003 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 1004,
@@ -13168,11 +13168,11 @@
       "description": "Improving cognition",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_1004_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1004 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 1005,
@@ -13181,11 +13181,11 @@
       "description": "Cognitive enhancers",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_1005_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1005 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 1006,
@@ -13194,11 +13194,11 @@
       "description": "Electrical brain stimulation",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_1006_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1006 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 1007,
@@ -13207,11 +13207,11 @@
       "description": "Magnetic brain stimulation",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_1007_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1007 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 1008,
@@ -13220,11 +13220,11 @@
       "description": "Non-invasive brain treatment",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_1008_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1008 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 1009,
@@ -13233,11 +13233,11 @@
       "description": "Tiny neural sensors",
       "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
       "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py",
-      "test_case": null,
+      "test_case": "test_row_1009_distinct_mechanism",
       "post_semantic_status": "verified",
       "implementation_details": "Functions: run. Boundaries: Research-use-only calculation from caller-supplied data; not medical advice, diagnosis, treatment selection, dosing, device control, or regulatory evidence.; unsupported emerging-biomed method; Protocol is recorded for study provenance only and must not be used to operate a device.",
-      "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared evaluation/uncertainty layer integrated; distinctive F9/F2/F3 implementation pending."
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Row 1009 executes a keyed biomedical engine with distinct schema/output vocabulary, evidence quality, uncertainty, tenant/actor isolation and human-review boundary; focused row and failure suite passed."
     },
     {
       "row": 1010,
