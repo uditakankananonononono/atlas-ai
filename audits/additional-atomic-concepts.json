@@ -152,8 +152,8 @@
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
       "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
-      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
+      "implementation_path": "backend/app/modules/m22_tools_hub/native_capabilities.py",
+      "test_evidence": "tests/modules/test_m22_native_capabilities.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -165,8 +165,8 @@
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
       "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
-      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
+      "implementation_path": "backend/app/modules/m22_tools_hub/native_capabilities.py",
+      "test_evidence": "tests/modules/test_m22_native_capabilities.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -178,8 +178,8 @@
       "source_description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
       "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_1_23.py",
-      "test_evidence": "tests/modules/test_m21_atomic_concepts_1_23.py",
+      "implementation_path": "backend/app/modules/m22_tools_hub/native_capabilities.py",
+      "test_evidence": "tests/modules/test_m22_native_capabilities.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {

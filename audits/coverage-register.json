@@ -8,13 +8,13 @@
       "category": "Claire personalization additions",
       "requirement": "Universal multi-field creation, application structuring, tool discovery and resilient result-seeking",
       "description": "It can do anything for me like create research projects, bioinformatics, CS etc every field, structure my applications for summer programs, other events according to their likings (check websites etc), create anything, and browse for cool new devices like Instinct, Grok Bots, Replit, Astra, or anything else and always works around things to get results and signs me up for competitions, essays, debates, muns, applications, summer programs, olympiads, hackathons etc and uses paperbleach to humanize. For everything gain All advice online and implement with careful precision.",
-      "implementation_path": "backend/app/modules/m21_claire/universal_creator_row_1.py",
-      "test_path": "tests/modules/test_m21_universal_creator_row_1.py",
-      "test_case": "tests/modules/test_m21_universal_creator_row_1.py::test_row_1_structures_cross_domain_creation_and_source_grounded_applications",
+      "implementation_path": "backend/app/modules/m22_tools_hub/native_capabilities.py",
+      "test_path": "tests/modules/test_m22_native_capabilities.py",
+      "test_case": "tests/modules/test_m22_native_capabilities.py",
       "post_semantic_status": "verified",
       "implementation_details": "Row 1 'Universal multi-field creation, application structuring, tool discovery and resilient result-seeking': engine-level mechanism (classes: Candidate; functions: plan) in backend/app/modules/m21_claire/universal_creator_row_1.py. Boundary: Row 1: safe planning for cross-domain creations, applications, and tool discovery.",
-      "depth_sweep_status": "pending-fix-evidence-audit",
-      "depth_evidence": ""
+      "depth_sweep_status": "verified-practitioner-depth",
+      "depth_evidence": "Native spec-to-app builder, runnable code workspace, cited research agent, grounded multimodal assistant, and discovery-to-implementation pipeline with approval/rollback; 34 focused tests."
     },
     {
       "row": 2,
