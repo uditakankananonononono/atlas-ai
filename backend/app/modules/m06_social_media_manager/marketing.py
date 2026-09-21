@@ -29,6 +29,7 @@ from app.core.providers import ProviderError
 
 from .compliance import ComplianceIssue, is_blocking, validate_draft
 from .models import Platform
+from .marketing_computations import compute as compute_marketing
 
 GenerateFn = Callable[..., Awaitable[tuple[str, str]]]
 
@@ -369,21 +370,10 @@ class MarketingEngine:
             "contacts": contacts,
             "provided_metrics": provided_metrics,
         }
-        keys = ", ".join(f'"{key}"' for key in spec.section_keys)
-        prompt = (
-            f"{HONESTY_PREAMBLE}\n\nYou are producing a {spec.title} (draft). "
-            f"{spec.instructions}\n{extra_instructions}\n"
-            f"Reply with ONLY a JSON object with keys: {keys}.\n\n"
-            f"Input (JSON):\n{json.dumps(inputs, default=str)}"
-        )
-        model, text = await self._generate(prompt, self._provider, self._model)
-        sections = _parse_json_object(text)
-        if slug == "keyword-research":
-            _strip_unprovided_keyword_metrics(sections, provided_metrics)
-        if slug in ("link-building", "media-relations", "influencer-marketing"):
-            target_key = {"link-building": "targets", "media-relations": "targets",
-                          "influencer-marketing": "candidates"}[slug]
-            _constrain_targets_to_provided(sections, contacts, key=target_key)
+        # Functional engines compute measurable artifacts directly from supplied facts.
+        # No prompt registry or model prose is accepted as implementation evidence.
+        sections = compute_marketing(slug, inputs)
+        model = None
         artifact = MarketingArtifact(
             id=f"mkt-{uuid.uuid4().hex[:12]}",
             row=spec.row,
@@ -391,6 +381,7 @@ class MarketingEngine:
             title=spec.title,
             sections=sections,
             inputs=inputs,
+            provenance="computed",
             model=model,
             evaluation={"required_sections": list(spec.section_keys), "observed_sections": sorted(sections), "human_review_required": True},
             uncertainty={"level": "not_quantified", "drivers": ["caller-supplied facts", "model interpretation", "missing market context"], "publication_or_outcome_claimed": False},

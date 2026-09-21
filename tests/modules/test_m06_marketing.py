@@ -214,25 +214,19 @@ def test_link_building_targets_limited_to_provided_prospects():
 
 # -- failure paths --------------------------------------------------------------
 
-def test_malformed_llm_reply_is_502():
+def test_functional_engine_does_not_depend_on_llm_reply():
     async def generate(prompt, provider, model=None):
-        return "m", "no json here at all"
-
+        raise AssertionError("functional marketing engines must not call a model")
     client, _ = make_client(generate)
     response = post(client, "/marketing/segmentation", GENERIC_INPUT)
-    assert response.status_code == 502
+    assert response.status_code == 200
+    assert response.json()["provenance"] == "computed"
 
 
-def test_provider_failure_is_503():
-    from app.core.providers import ProviderError
-
-    async def generate(prompt, provider, model=None):
-        raise ProviderError("no key configured")
-
-    client, _ = make_client(generate)
-    response = post(client, "/marketing/segmentation", GENERIC_INPUT)
-    assert response.status_code == 503
-
+def test_invalid_numeric_fact_is_422():
+    client, _ = make_client()
+    response = post(client, "/marketing/segmentation", dict(GENERIC_INPUT, facts={"segment_metrics":[{"customers":"many"}]}))
+    assert response.status_code == 422
 
 def test_artifact_listing_filters_by_kind():
     client, _ = make_client()

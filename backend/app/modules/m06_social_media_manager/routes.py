@@ -268,6 +268,8 @@ async def _run_artifact(slug: str, request: ArtifactIn, service: Service) -> dic
         return _artifact_out(artifact)
     except ArtifactParseError as error:
         raise HTTPException(status_code=502, detail=str(error)) from error
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
     except ProviderError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
 
