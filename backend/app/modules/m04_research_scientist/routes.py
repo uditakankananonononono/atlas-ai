@@ -62,3 +62,15 @@ def surveillance_clusters(threshold:float=.72,tenant:TenantContext=Depends(requi
 def surveillance_gaps(tenant:TenantContext=Depends(require_tenant)):
     from .surveillance import SurveillancePipeline,SurveillanceRepository
     return [GapEvidenceOut(**x.__dict__) for x in SurveillancePipeline(SurveillanceRepository(tenant.tenant_id),None).gaps()]
+
+# Environmental domain calculators, ledger rows 1660-1709.
+@router.get("/environmental-1660-1709/methods")
+def environmental_methods_1660_1709():
+    from .environmental_1660_1709 import ROWS
+    return [{"method":m,"feature_row":r} for m,r in ROWS.items()]
+
+@router.post("/environmental-1660-1709/analyze")
+def environmental_analyze_1660_1709(payload:dict):
+    from .environmental_1660_1709 import run
+    try:return run(payload.get("method",""),payload.get("data",{}))
+    except ValueError as exc:raise HTTPException(status_code=422,detail=str(exc)) from exc
