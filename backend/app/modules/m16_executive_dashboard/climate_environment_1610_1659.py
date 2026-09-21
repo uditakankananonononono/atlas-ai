@@ -151,4 +151,7 @@ def run(method,data,params=None,seed=0):
  elif method=='phytoremediation':
   c0=_positive(data['initial_soil_concentration'],'initial',True);k=_positive(data['plant_uptake_rate'],'uptake',True);biomass=_positive(data['biomass_factor'],'biomass',True);time=_positive(data['time'],'time',True);ct=c0*math.exp(-k*biomass*time);out={'final_soil_concentration':ct,'removed_concentration':c0-ct,'removal_fraction':1-ct/c0 if c0 else None};a+=['First-order uptake with constant viable biomass and no contaminant rebound.']
  else:raise AssertionError(method)
- o['output']=out;return o
+ o['output']=out
+ o['evaluation']={'computed_outputs':sorted(out),'scenario_or_standard':p.get('scenario') or p.get('standard'),'validation_data_supplied':bool(data.get('validation_data')),'review_required':True}
+ o['uncertainty']={'level':'not_quantified','drivers':['input-data quality','scenario choice','model structure and excluded feedbacks'],'physical_or_policy_outcome_claimed':False}
+ return o

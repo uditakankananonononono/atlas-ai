@@ -109,4 +109,6 @@ def run(method,data):
  elif method=="triple_bottom_line":
   people=_n(data,"people_score");planet=_n(data,"planet_score");profit=_n(data,"profit_score");weights=data.get("weights",[1,1,1]);out={"people":people,"planet":planet,"profit":profit,"weighted_score":sum(x*float(w) for x,w in zip([people,planet,profit],weights))/sum(map(float,weights)),"weakest_dimension":["people","planet","profit"][[people,planet,profit].index(min(people,planet,profit))]}
  out["assumptions"]=assumptions;out["method_limits"]=limits
- return {"method":method,"feature_row":ROWS[method],"inputs":data,"output":out}
+ evaluation={"computed_outputs":sorted(k for k in out if k not in {"assumptions","method_limits"}),"baseline_or_standard":data.get("baseline") or data.get("standard"),"affected_groups_considered":bool(data.get("affected_groups")),"qualified_review_required":True}
+ uncertainty={"level":"not_quantified","drivers":["caller-supplied measurements","spatial and temporal variability","system boundary and counterfactual choices"],"certification_or_causal_claim":False}
+ return {"method":method,"feature_row":ROWS[method],"inputs":data,"output":out,"evaluation":evaluation,"uncertainty":uncertainty}
