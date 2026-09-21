@@ -44,3 +44,12 @@ class EducationSupportIn(BaseModel):
 def education_support_route(body:EducationSupportIn,tenant:TenantContext=Depends(require_tenant)):
     try:return {'tenant_id':tenant.tenant_id,**education_support(body.feature_id,body.data)}
     except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .engineering_support_1560_1609 import engineering_support_1560_1609
+class Engineering1560To1609In(BaseModel):
+    feature_id:int=Field(ge=1560,le=1609)
+    data:dict[str,Any]=Field(default_factory=dict)
+@router.post('/engineering-1560-1609/support')
+def engineering_1560_1609_route(body:Engineering1560To1609In,tenant:TenantContext=Depends(require_tenant)):
+    try:return {'tenant_id':tenant.tenant_id,**engineering_support_1560_1609(body.feature_id,body.data)}
+    except ValueError as error:raise HTTPException(422,str(error)) from error
