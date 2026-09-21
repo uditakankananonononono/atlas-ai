@@ -41,3 +41,20 @@ def validate_artifact_event(data:ArtifactEventIn,t:TenantContext=Depends(require
   event={**data.event,'tenant_id':t.tenant_id}
   return ingest_artifact_event(event)
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+import os
+from .artifact_events import ArtifactEventStore
+_artifact_store=ArtifactEventStore(os.getenv('ATLAS_M25_EVENT_DB','/tmp/atlas-m25-artifact-events.sqlite3'))
+class ArtifactEventStoreIn(BaseModel):
+ event:dict;artifact_base64:str|None=None
+@router.post('/artifact-events',status_code=201)
+def store_artifact_event(data:ArtifactEventStoreIn,t:TenantContext=Depends(require_tenant)):
+ try:return _artifact_store.put({**data.event,'tenant_id':t.tenant_id},data.artifact_base64)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
+@router.get('/artifact-events/{event_id}')
+def get_artifact_event(event_id:str,t:TenantContext=Depends(require_tenant)):
+ try:return _artifact_store.get(t.tenant_id,event_id)
+ except KeyError:raise HTTPException(404,'artifact event not found')
+@router.get('/artifact-events')
+def list_artifact_events(limit:int=100,t:TenantContext=Depends(require_tenant)):
+ return _artifact_store.list(t.tenant_id,max(1,min(limit,500)))
