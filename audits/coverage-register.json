@@ -2838,11 +2838,12 @@
       "description": "Balances competing goals",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_row_218_multi_objective_optimization_uses_preferences",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Weighted-Chebyshev multi-objective optimization computes the non-dominated set, ideal point, normalized caller preferences, scalarized scores, and a deterministic selected trade-off.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known preference-weighted trade-off; rejects negative or empty-sum weights.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 219,
@@ -2851,11 +2852,12 @@
       "description": "Finds optimal trade-offs",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_row_219_pareto_frontier_identification_reports_dominance",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Pareto frontier identification performs componentwise minimization dominance and returns both non-dominated candidates and dominated IDs.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known frontier/dominated set; rejects inconsistent objective dimensions.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 220,
@@ -2878,11 +2880,12 @@
       "description": "Handles discrete decisions",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_row_221_integer_programming_enforces_all_integer_dimensions",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Enumerative integer programming enforces integrality across every decision dimension, deduplicates normalized candidates, filters feasibility, and reports diagnostics.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known discrete optimum with all coordinates integral.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 222,
@@ -2891,11 +2894,12 @@
       "description": "Combines continuous and discrete",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_row_222_mixed_integer_programming_preserves_continuous_dimensions",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Enumerative mixed-integer programming enforces only declared integer coordinates while preserving continuous coordinates and checking feasibility.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known mixed discrete/continuous optimum; rejects missing integer indices.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 223,
@@ -2904,11 +2908,12 @@
       "description": "Solves overlapping subproblems",
       "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
       "test_path": "tests/modules/test_m04_quant_methods_185_234.py",
-      "test_case": null,
+      "test_case": "test_row_223_dynamic_programming_rejects_unreachable_stage",
       "post_semantic_status": "verified",
-      "implementation_details": "Classes: QuantError. Functions: need, src, variance, cov, ols, time_series, spatial_network, simulation, objective, optimize, run, norm. Boundaries: Deterministic, provenance-bearing reference methods for rows 185-234.\nSmall transparent implementations are for reproducible research planning and verification,\nnot substitutes for specialist libraries, diagnostics, or domain decisions.; unsupported objective; boundary; reference_analysis_for_specialist_review; Transparent reference computation only. Validate assumptions, diagnostics, uncertainty, convergence, sensitivity and domain consequences with qualified reviewers and production-grade libraries before scientific or operational use.",
+      "implementation_details": "Finite-horizon Bellman dynamic programming propagates minimum costs by stage, tracks reachable-state counts, and returns the optimal terminal state.",
       "depth_sweep_status": "pending-distinctive-fix",
-      "depth_evidence": "Shared review envelope integrated; distinctive row algorithm still pending evidence-audit fix lane."
+      "depth_evidence": "Known Bellman recurrence result; rejects an unreachable stage.",
+      "status": "implemented_and_tested"
     },
     {
       "row": 224,
