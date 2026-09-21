@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1392,
-    "verified-pushed": 615,
+    "missing": 1381,
+    "verified-pushed": 626,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -15156,9 +15156,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Genetic Counseling",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e84f42037f6ea1b08f7293484de2052c7c410754",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1169_1179.py"
+      },
+      "boundary": "Cited educational, checklist and escalation support only. Preserve consent, unresolved variants, patient goals, missing facts, preferences and direct concerns. Never infer identity, diagnosis or reproductive intent; specialists retain testing, treatment, delivery, neonatal and life-stage care decisions, with immediate human response for urgent flags."
     },
     {
       "id": 1170,
@@ -15166,9 +15170,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Fertility Treatment Planning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e84f42037f6ea1b08f7293484de2052c7c410754",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1169_1179.py"
+      },
+      "boundary": "Cited educational, checklist and escalation support only. Preserve consent, unresolved variants, patient goals, missing facts, preferences and direct concerns. Never infer identity, diagnosis or reproductive intent; specialists retain testing, treatment, delivery, neonatal and life-stage care decisions, with immediate human response for urgent flags."
     },
     {
       "id": 1171,
@@ -15176,9 +15184,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Prenatal Care",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e84f42037f6ea1b08f7293484de2052c7c410754",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1169_1179.py"
+      },
+      "boundary": "Cited educational, checklist and escalation support only. Preserve consent, unresolved variants, patient goals, missing facts, preferences and direct concerns. Never infer identity, diagnosis or reproductive intent; specialists retain testing, treatment, delivery, neonatal and life-stage care decisions, with immediate human response for urgent flags."
     },
     {
       "id": 1172,
@@ -15186,9 +15198,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Labor and Delivery Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e84f42037f6ea1b08f7293484de2052c7c410754",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1169_1179.py"
+      },
+      "boundary": "Cited educational, checklist and escalation support only. Preserve consent, unresolved variants, patient goals, missing facts, preferences and direct concerns. Never infer identity, diagnosis or reproductive intent; specialists retain testing, treatment, delivery, neonatal and life-stage care decisions, with immediate human response for urgent flags."
     },
     {
       "id": 1173,
@@ -15196,9 +15212,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Neonatal Care",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e84f42037f6ea1b08f7293484de2052c7c410754",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1169_1179.py"
+      },
+      "boundary": "Cited educational, checklist and escalation support only. Preserve consent, unresolved variants, patient goals, missing facts, preferences and direct concerns. Never infer identity, diagnosis or reproductive intent; specialists retain testing, treatment, delivery, neonatal and life-stage care decisions, with immediate human response for urgent flags."
     },
     {
       "id": 1174,
@@ -15206,9 +15226,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Pediatric Care",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e84f42037f6ea1b08f7293484de2052c7c410754",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1169_1179.py"
+      },
+      "boundary": "Cited educational, checklist and escalation support only. Preserve consent, unresolved variants, patient goals, missing facts, preferences and direct concerns. Never infer identity, diagnosis or reproductive intent; specialists retain testing, treatment, delivery, neonatal and life-stage care decisions, with immediate human response for urgent flags."
     },
     {
       "id": 1175,
@@ -15216,9 +15240,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Adolescent Medicine",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e84f42037f6ea1b08f7293484de2052c7c410754",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1169_1179.py"
+      },
+      "boundary": "Cited educational, checklist and escalation support only. Preserve consent, unresolved variants, patient goals, missing facts, preferences and direct concerns. Never infer identity, diagnosis or reproductive intent; specialists retain testing, treatment, delivery, neonatal and life-stage care decisions, with immediate human response for urgent flags."
     },
     {
       "id": 1176,
@@ -15226,9 +15254,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Geriatric Care",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e84f42037f6ea1b08f7293484de2052c7c410754",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1169_1179.py"
+      },
+      "boundary": "Cited educational, checklist and escalation support only. Preserve consent, unresolved variants, patient goals, missing facts, preferences and direct concerns. Never infer identity, diagnosis or reproductive intent; specialists retain testing, treatment, delivery, neonatal and life-stage care decisions, with immediate human response for urgent flags."
     },
     {
       "id": 1177,
@@ -15236,9 +15268,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Women's Health",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e84f42037f6ea1b08f7293484de2052c7c410754",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1169_1179.py"
+      },
+      "boundary": "Cited educational, checklist and escalation support only. Preserve consent, unresolved variants, patient goals, missing facts, preferences and direct concerns. Never infer identity, diagnosis or reproductive intent; specialists retain testing, treatment, delivery, neonatal and life-stage care decisions, with immediate human response for urgent flags."
     },
     {
       "id": 1178,
@@ -15246,9 +15282,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Men's Health",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e84f42037f6ea1b08f7293484de2052c7c410754",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1169_1179.py"
+      },
+      "boundary": "Cited educational, checklist and escalation support only. Preserve consent, unresolved variants, patient goals, missing facts, preferences and direct concerns. Never infer identity, diagnosis or reproductive intent; specialists retain testing, treatment, delivery, neonatal and life-stage care decisions, with immediate human response for urgent flags."
     },
     {
       "id": 1179,
@@ -15256,9 +15296,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "LGBTQ+ Health",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "e84f42037f6ea1b08f7293484de2052c7c410754",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1169_1179.py"
+      },
+      "boundary": "Cited educational, checklist and escalation support only. Preserve consent, unresolved variants, patient goals, missing facts, preferences and direct concerns. Never infer identity, diagnosis or reproductive intent; specialists retain testing, treatment, delivery, neonatal and life-stage care decisions, with immediate human response for urgent flags."
     },
     {
       "id": 1180,
