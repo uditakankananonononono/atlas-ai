@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1493,
-    "verified-pushed": 514,
+    "missing": 1488,
+    "verified-pushed": 519,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -13742,8 +13742,12 @@
       "category": "Data & Analytics",
       "requirement": "Entropy Balancing",
       "description": "Weight for balance",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "eec8e83eeca73282d0aa752c9f923aca799d266c",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1068_1072.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13752,8 +13756,12 @@
       "category": "Data & Analytics",
       "requirement": "Inverse Probability Weighting",
       "description": "Weight by probability",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "eec8e83eeca73282d0aa752c9f923aca799d266c",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1068_1072.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13762,8 +13770,12 @@
       "category": "Data & Analytics",
       "requirement": "Doubly Robust Estimation",
       "description": "Combine methods",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "eec8e83eeca73282d0aa752c9f923aca799d266c",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1068_1072.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13772,8 +13784,12 @@
       "category": "Data & Analytics",
       "requirement": "Targeted Maximum Likelihood",
       "description": "Efficient estimation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "eec8e83eeca73282d0aa752c9f923aca799d266c",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1068_1072.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -13782,8 +13798,12 @@
       "category": "Data & Analytics",
       "requirement": "Machine Learning Causal Inference",
       "description": "ML for causality",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "eec8e83eeca73282d0aa752c9f923aca799d266c",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1068_1072.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
