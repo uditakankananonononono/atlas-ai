@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1423,
-    "verified-pushed": 584,
+    "missing": 1412,
+    "verified-pushed": 595,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -14722,9 +14722,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Mental Health Assessment",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "711d2888b2341c81e51502dd5bffcf4d11d09599",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1138_1148.py"
+      },
+      "boundary": "Cited, structured support only. Screening scores never become diagnoses; preserve incomplete and invalid responses, patient words, norms and context. Immediate safety flags require local human crisis/emergency response. Licensed clinicians and patients retain diagnosis, treatment, medication and therapy decisions."
     },
     {
       "id": 1139,
@@ -14732,9 +14736,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Depression Screening",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "711d2888b2341c81e51502dd5bffcf4d11d09599",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1138_1148.py"
+      },
+      "boundary": "Cited, structured support only. Screening scores never become diagnoses; preserve incomplete and invalid responses, patient words, norms and context. Immediate safety flags require local human crisis/emergency response. Licensed clinicians and patients retain diagnosis, treatment, medication and therapy decisions."
     },
     {
       "id": 1140,
@@ -14742,9 +14750,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Anxiety Assessment",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "711d2888b2341c81e51502dd5bffcf4d11d09599",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1138_1148.py"
+      },
+      "boundary": "Cited, structured support only. Screening scores never become diagnoses; preserve incomplete and invalid responses, patient words, norms and context. Immediate safety flags require local human crisis/emergency response. Licensed clinicians and patients retain diagnosis, treatment, medication and therapy decisions."
     },
     {
       "id": 1141,
@@ -14752,9 +14764,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "PTSD Evaluation",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "711d2888b2341c81e51502dd5bffcf4d11d09599",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1138_1148.py"
+      },
+      "boundary": "Cited, structured support only. Screening scores never become diagnoses; preserve incomplete and invalid responses, patient words, norms and context. Immediate safety flags require local human crisis/emergency response. Licensed clinicians and patients retain diagnosis, treatment, medication and therapy decisions."
     },
     {
       "id": 1142,
@@ -14762,9 +14778,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Addiction Treatment Planning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "711d2888b2341c81e51502dd5bffcf4d11d09599",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1138_1148.py"
+      },
+      "boundary": "Cited, structured support only. Screening scores never become diagnoses; preserve incomplete and invalid responses, patient words, norms and context. Immediate safety flags require local human crisis/emergency response. Licensed clinicians and patients retain diagnosis, treatment, medication and therapy decisions."
     },
     {
       "id": 1143,
@@ -14772,9 +14792,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Cognitive Assessment",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "711d2888b2341c81e51502dd5bffcf4d11d09599",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1138_1148.py"
+      },
+      "boundary": "Cited, structured support only. Screening scores never become diagnoses; preserve incomplete and invalid responses, patient words, norms and context. Immediate safety flags require local human crisis/emergency response. Licensed clinicians and patients retain diagnosis, treatment, medication and therapy decisions."
     },
     {
       "id": 1144,
@@ -14782,9 +14806,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Dementia Screening",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "711d2888b2341c81e51502dd5bffcf4d11d09599",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1138_1148.py"
+      },
+      "boundary": "Cited, structured support only. Screening scores never become diagnoses; preserve incomplete and invalid responses, patient words, norms and context. Immediate safety flags require local human crisis/emergency response. Licensed clinicians and patients retain diagnosis, treatment, medication and therapy decisions."
     },
     {
       "id": 1145,
@@ -14792,9 +14820,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Neuropsychological Testing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "711d2888b2341c81e51502dd5bffcf4d11d09599",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1138_1148.py"
+      },
+      "boundary": "Cited, structured support only. Screening scores never become diagnoses; preserve incomplete and invalid responses, patient words, norms and context. Immediate safety flags require local human crisis/emergency response. Licensed clinicians and patients retain diagnosis, treatment, medication and therapy decisions."
     },
     {
       "id": 1146,
@@ -14802,9 +14834,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Psychotherapy Planning",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "711d2888b2341c81e51502dd5bffcf4d11d09599",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1138_1148.py"
+      },
+      "boundary": "Cited, structured support only. Screening scores never become diagnoses; preserve incomplete and invalid responses, patient words, norms and context. Immediate safety flags require local human crisis/emergency response. Licensed clinicians and patients retain diagnosis, treatment, medication and therapy decisions."
     },
     {
       "id": 1147,
@@ -14812,9 +14848,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "CBT Protocol Design",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "711d2888b2341c81e51502dd5bffcf4d11d09599",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1138_1148.py"
+      },
+      "boundary": "Cited, structured support only. Screening scores never become diagnoses; preserve incomplete and invalid responses, patient words, norms and context. Immediate safety flags require local human crisis/emergency response. Licensed clinicians and patients retain diagnosis, treatment, medication and therapy decisions."
     },
     {
       "id": 1148,
@@ -14822,9 +14862,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "DBT Skill Selection",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "711d2888b2341c81e51502dd5bffcf4d11d09599",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1138_1148.py"
+      },
+      "boundary": "Cited, structured support only. Screening scores never become diagnoses; preserve incomplete and invalid responses, patient words, norms and context. Immediate safety flags require local human crisis/emergency response. Licensed clinicians and patients retain diagnosis, treatment, medication and therapy decisions."
     },
     {
       "id": 1149,
