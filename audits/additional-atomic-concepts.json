@@ -8,8 +8,8 @@
   "delta_over_base_rows": 107,
   "atomic_concept_count": 2117,
   "counts": {
-    "verified-pushed": 23,
-    "missing": 137
+    "verified-pushed": 46,
+    "missing": 114
   },
   "rowization_rule": "Replace each identified packed parent row with its atomic subrows; all other base rows remain one atomic concept. Examples and benefit statements are not counted as separate concepts unless they specify distinct behavior.",
   "rows": [
@@ -917,10 +917,10 @@
       "atomic_requirement": "Flow-preserving work restructuring",
       "source_feature_title": "Flow State Induction",
       "source_description": "Recognizes optimal challenge-skill balance and structures work to maintain flow",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -930,10 +930,10 @@
       "atomic_requirement": "Bias detection in system reasoning",
       "source_feature_title": "Bias Detection & Mitigation",
       "source_description": "Identifies cognitive biases in own reasoning and user inputs, then corrects",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -943,10 +943,10 @@
       "atomic_requirement": "Bias detection in user-supplied inputs",
       "source_feature_title": "Bias Detection & Mitigation",
       "source_description": "Identifies cognitive biases in own reasoning and user inputs, then corrects",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -956,10 +956,10 @@
       "atomic_requirement": "Bias mitigation/correction recommendation",
       "source_feature_title": "Bias Detection & Mitigation",
       "source_description": "Identifies cognitive biases in own reasoning and user inputs, then corrects",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -969,10 +969,10 @@
       "atomic_requirement": "Fast time-critical intuition candidate",
       "source_feature_title": "Intuition Simulation",
       "source_description": "Generates fast, gut-level responses for time-critical decisions, then validates with slow reasoning",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -982,10 +982,10 @@
       "atomic_requirement": "Slow-reasoning validation of intuition",
       "source_feature_title": "Intuition Simulation",
       "source_description": "Generates fast, gut-level responses for time-critical decisions, then validates with slow reasoning",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -995,10 +995,10 @@
       "atomic_requirement": "Concurrent competing world-model storage",
       "source_feature_title": "Mental Model Versioning",
       "source_description": "Maintains multiple competing world models and updates them based on evidence",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1008,10 +1008,10 @@
       "atomic_requirement": "Evidence-based world-model update",
       "source_feature_title": "Mental Model Versioning",
       "source_description": "Maintains multiple competing world models and updates them based on evidence",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1021,10 +1021,10 @@
       "atomic_requirement": "Sub-goal/terminal-value conflict detection",
       "source_feature_title": "Goal Hierarchy Rewriting",
       "source_description": "Detects when sub-goals conflict with terminal values and restructures",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1034,10 +1034,10 @@
       "atomic_requirement": "Goal-hierarchy restructuring proposal",
       "source_feature_title": "Goal Hierarchy Rewriting",
       "source_description": "Detects when sub-goals conflict with terminal values and restructures",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1047,10 +1047,10 @@
       "atomic_requirement": "Planning-depth adaptation to uncertainty",
       "source_feature_title": "Planning Horizon Flexibility",
       "source_description": "Adjusts planning depth based on uncertainty and time available",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1060,10 +1060,10 @@
       "atomic_requirement": "Planning-depth adaptation to time available",
       "source_feature_title": "Planning Horizon Flexibility",
       "source_description": "Adjusts planning depth based on uncertainty and time available",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1073,10 +1073,10 @@
       "atomic_requirement": "Belief formation-time tracking",
       "source_feature_title": "Epistemic Calendar",
       "source_description": "Tracks when beliefs were formed and reviews them periodically",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1086,10 +1086,10 @@
       "atomic_requirement": "Periodic belief-review scheduling",
       "source_feature_title": "Epistemic Calendar",
       "source_description": "Tracks when beliefs were formed and reviews them periodically",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1099,10 +1099,10 @@
       "atomic_requirement": "Knowledge staleness prediction",
       "source_feature_title": "Knowledge Decay Modeling",
       "source_description": "Predicts which information will become outdated and schedules refreshes",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1112,10 +1112,10 @@
       "atomic_requirement": "Knowledge refresh scheduling",
       "source_feature_title": "Knowledge Decay Modeling",
       "source_description": "Predicts which information will become outdated and schedules refreshes",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1125,10 +1125,10 @@
       "atomic_requirement": "Fleeting-idea capture",
       "source_feature_title": "Insight Capture",
       "source_description": "Records and develops fleeting ideas before they're lost",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1138,10 +1138,10 @@
       "atomic_requirement": "Captured-idea development workflow",
       "source_feature_title": "Insight Capture",
       "source_description": "Records and develops fleeting ideas before they're lost",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1151,10 +1151,10 @@
       "atomic_requirement": "Multiple plausible future generation",
       "source_feature_title": "Scenario Planning",
       "source_description": "Develops multiple plausible futures and strategies for each",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1164,10 +1164,10 @@
       "atomic_requirement": "Strategy generation for each plausible future",
       "source_feature_title": "Scenario Planning",
       "source_description": "Develops multiple plausible futures and strategies for each",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1177,10 +1177,10 @@
       "atomic_requirement": "Project-failure pre-mortem scenario",
       "source_feature_title": "Pre-Mortem Analysis",
       "source_description": "Imagines project failure and works backward to prevent it",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1190,10 +1190,10 @@
       "atomic_requirement": "Backward failure-prevention plan",
       "source_feature_title": "Pre-Mortem Analysis",
       "source_description": "Imagines project failure and works backward to prevent it",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1203,10 +1203,10 @@
       "atomic_requirement": "Feedback-loop recognition",
       "source_feature_title": "Systems Thinking",
       "source_description": "Recognizes feedback loops, delays, and emergent behavior",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_70_92.py",
+      "test_evidence": "tests/modules/test_m20_atomic_concepts_70_92.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
