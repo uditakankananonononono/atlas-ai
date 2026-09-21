@@ -1,0 +1,31 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: atlas-api
+  annotations:
+    run.googleapis.com/description: "Atlas API; replace PROJECT/REGION/IMAGE during CI release"
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "20"
+        run.googleapis.com/cloudsql-instances: "PROJECT:REGION:atlas-postgres"
+        run.googleapis.com/startup-cpu-boost: "true"
+    spec:
+      containerConcurrency: 40
+      timeoutSeconds: 60
+      serviceAccountName: atlas-runtime@PROJECT.iam.gserviceaccount.com
+      containers:
+      - image: REGION-docker.pkg.dev/PROJECT/atlas/api@sha256:REPLACE
+        ports: [{containerPort: 8080}]
+        env:
+        - {name: ATLAS_ENV, value: production}
+        - {name: ATLAS_SECRET_PROVIDER, value: gcp-secret-manager}
+        - {name: ATLAS_DATABASE_URL_SECRET, value: atlas-database-url}
+        - {name: ATLAS_REDIS_URL_SECRET, value: atlas-redis-url}
+        - {name: ATLAS_OIDC_ISSUER, value: "https://securetoken.google.com/PROJECT"}
+        - {name: ATLAS_OIDC_AUDIENCE, value: PROJECT}
+        resources: {limits: {cpu: "2", memory: 2Gi}}
+        startupProbe: {httpGet: {path: /health, port: 8080}, failureThreshold: 12, periodSeconds: 5}
+        livenessProbe: {httpGet: {path: /health, port: 8080}, periodSeconds: 30}

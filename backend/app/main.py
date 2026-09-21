@@ -19,3 +19,14 @@ for module_spec in IMPLEMENTED_SPECS:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+@app.get("/ready")
+def ready() -> dict[str, object]:
+    """The deployment probe is conservative; deep dependency checks run in the configured adapter."""
+    from app.platform.config import ProductionConfig, ConfigError
+    try:
+        config = ProductionConfig.from_env()
+    except ConfigError as exc:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return {"status": "ready", "environment": config.environment}
