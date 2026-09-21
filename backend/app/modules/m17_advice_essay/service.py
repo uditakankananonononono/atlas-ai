@@ -8,6 +8,7 @@ from collections.abc import Iterable, Sequence
 from typing import Protocol
 from uuid import UUID
 
+from .coaching_state_machines_710_809 import run_row
 from .collaboration_coaching import CollaborationCoach
 from .trust_wellbeing_coaching import TrustWellbeingCoach
 from .communication_coaching import CommunicationCoach
@@ -161,6 +162,10 @@ class AdviceEssayService:
 
     def coach_communication(self, request: CommunicationCoachingRequest) -> CommunicationCoachingResponse:
         return self.communication_coach.coach(request)
+
+    def run_coaching_state_machine(self, method: str, data: dict) -> dict:
+        """Execute one rows-710-809 coaching tool with its method-specific state machine."""
+        return run_row(method, data)
 
     def ingest_source(self, source: AdviceSource) -> AdviceSource:
         if source.source_kind not in {SourceKind.USER_SUBMITTED, SourceKind.PUBLIC_API, SourceKind.PUBLIC_WEB}:

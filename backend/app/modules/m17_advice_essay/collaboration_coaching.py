@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 
+from .coaching_state_machines_710_809 import assess_method
 from .schemas import CollaborationCoachingRequest, CollaborationCoachingResponse, CollaborationSkill
 
 
@@ -57,6 +58,18 @@ class CollaborationCoach:
             safeguards.append("Do not use deception, humiliation, false urgency, or targeted exploitation of vulnerabilities.")
         if request.skill in {CollaborationSkill.THEORY_OF_MIND, CollaborationSkill.MENTALIZING, CollaborationSkill.PERSPECTIVE_TAKING, CollaborationSkill.EMPATHY}:
             safeguards.append("Any mental-state model is a tentative hypothesis, never a diagnosis or fact claim.")
+        sm = assess_method(request.skill.value, {
+            "context": request.context, "objective": request.objective,
+            "participants": request.participants, "proposal_or_argument": request.proposal_or_argument or "",
+            "known_facts": request.known_facts, "constraints": request.constraints,
+        })
+        state_machine = {"row_id": sm["row_id"], "status": sm["status"],
+                         "current_state": sm["state_machine"]["current_state"],
+                         "progress": sm["state_machine"]["progress"],
+                         "blockers": sm["state_machine"]["blockers"],
+                         "states": sm["state_machine"]["states"]}
+        if sm["status"] == "blocked":
+            safeguards = safeguards + ["State machine blocked: " + sm.get("refusal", "boundary gate")]
         notice = None
         if request.student_authored_work:
             notice = "Student-authored boundary: use the questions and critique to revise your own work; no submission-ready argument is generated."
@@ -70,6 +83,7 @@ class CollaborationCoach:
             review_required=True,
             external_action_proposed=False,
             authorship_notice=notice,
+            state_machine=state_machine,
             evaluation={"row_id": ROW_BY_SKILL[request.skill], "participant_coverage": len(request.participants), "evidence_coverage": min(1.0, len(request.known_facts) / 3), "proposal_supplied": request.proposal_or_argument is not None, "adversarial_checks": ["minority voice", "coercion", "fabricated consensus", "reversibility"]},
             uncertainty={"level": "high" if not request.known_facts else "medium", "unknowns": ["participant consent", "private incentives", "unheard perspectives"], "calibration": "No consensus or mental state is inferred from silence."},
         )

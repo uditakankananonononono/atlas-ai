@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from .coaching_state_machines_710_809 import assess_method
 from .schemas import TrustWellbeingCoachingRequest, TrustWellbeingCoachingResponse, TrustWellbeingSkill
 
 ROW_BY_SKILL: dict[TrustWellbeingSkill, int] = {skill: row for row, skill in enumerate(TrustWellbeingSkill, start=771)}
@@ -68,6 +69,18 @@ class TrustWellbeingCoach:
             "crisis/health professional now and involve a trusted person where safe. For persistent or worsening sleep, stress, "
             "mood, impulse, exercise, or health concerns, seek a licensed clinician rather than relying on this coaching."
         )
+        sm = assess_method(request.skill.value, {
+            "context": request.context, "goal": request.goal,
+            "preferences": request.preferences, "constraints": request.constraints,
+            "reflection": request.reflection or "",
+        })
+        state_machine = {"row_id": sm["row_id"], "status": sm["status"],
+                         "current_state": sm["state_machine"]["current_state"],
+                         "progress": sm["state_machine"]["progress"],
+                         "blockers": sm["state_machine"]["blockers"],
+                         "states": sm["state_machine"]["states"]}
+        if sm["status"] == "escalate":
+            escalation = sm["escalation_boundary"]
         notice = None
         if request.student_authored_work:
             notice = "Student-authored boundary: use reflection questions to develop your own work; no submission-ready text is generated."
@@ -77,6 +90,7 @@ class TrustWellbeingCoach:
             low_risk_steps=[step, "Choose one small step, review its effect, and stop or change course if it is not helpful."],
             safeguards=safeguards, escalation_boundary=escalation,
             review_required=True, external_action_proposed=False, authorship_notice=notice,
+            state_machine=state_machine,
             evaluation={"row_id": ROW_BY_SKILL[request.skill], "preference_coverage": min(1.0, len(request.preferences) / 3), "constraint_count": len(request.constraints), "reflection_supplied": request.reflection is not None, "safety_checks": ["agency", "non-diagnosis", "accessibility", "escalation"]},
             uncertainty={"level": "high", "unknowns": ["health status", "personal safety", "resource access", "suitability"], "calibration": "Wellbeing guidance is general and must not replace qualified care."},
         )
