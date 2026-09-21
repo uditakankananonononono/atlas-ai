@@ -10,7 +10,7 @@ from __future__ import annotations
 import math,random,statistics
 from collections import Counter
 ROWS={
-"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062,"synthetic_control":1063,"matching_methods":1064,"propensity_score_matching":1065,"coarsened_exact_matching":1066,"genetic_matching":1067,"entropy_balancing":1068,"inverse_probability_weighting":1069,"doubly_robust_estimation":1070,"targeted_maximum_likelihood":1071,"machine_learning_causal_inference":1072,"causal_forests":1073,"double_machine_learning":1074,"orthogonalized_estimation":1075,"cross_fitting":1076,"sample_splitting":1077,"post_selection_inference":1078,"selective_inference":1079,"simultaneous_inference":1080,"false_discovery_rate_control":1081,"family_wise_error_rate":1082}
+"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062,"synthetic_control":1063,"matching_methods":1064,"propensity_score_matching":1065,"coarsened_exact_matching":1066,"genetic_matching":1067,"entropy_balancing":1068,"inverse_probability_weighting":1069,"doubly_robust_estimation":1070,"targeted_maximum_likelihood":1071,"machine_learning_causal_inference":1072,"causal_forests":1073,"double_machine_learning":1074,"orthogonalized_estimation":1075,"cross_fitting":1076,"sample_splitting":1077,"post_selection_inference":1078,"selective_inference":1079,"simultaneous_inference":1080,"false_discovery_rate_control":1081,"family_wise_error_rate":1082,"bonferroni_correction":1083,"holm_bonferroni":1084,"benjamini_hochberg":1085,"storeys_method":1086,"local_fdr":1087}
 def _nums(data,key="values",min_n=1):
     v=data.get(key)
     if not isinstance(v,list) or len(v)<min_n or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in v):raise ValueError(f"{key} must contain at least {min_n} finite numbers")
@@ -681,5 +681,40 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
             order=sorted(range(m),key=lambda i:pvals[i]);adj=[1.0]*m;running=0
             for rank,i in enumerate(order):running=max(running,(m-rank)*pvals[i]);adj[i]=min(1,running)
         rejected=[i for i,v in enumerate(adj) if v<=alpha];o["output"]={"adjusted_p_values":adj,"rejected_indices":rejected,"method":method,"alpha":alpha};a += ["Input p-values are valid; Sidak exact control relies on independence."];limits += ["Controls probability of at least one false rejection; can be conservative with many/dependent tests."]
+    elif method=="bonferroni_correction":
+        pvals=_nums(data,"p_values");alpha=float(p.get("alpha",.05))
+        if any(v<0 or v>1 for v in pvals):raise ValueError("p-values must be in [0,1]")
+        m=len(pvals);adj=[min(1,m*v) for v in pvals];o["output"]={"adjusted_p_values":adj,"rejected_indices":[i for i,v in enumerate(adj) if v<=alpha],"per_test_alpha":alpha/m,"family_alpha":alpha};a += ["Each input is a valid marginal p-value."];limits += ["Strong FWER control under arbitrary dependence but often conservative; does not exploit covariance or test hierarchy."]
+    elif method=="holm_bonferroni":
+        pvals=_nums(data,"p_values");alpha=float(p.get("alpha",.05))
+        if any(v<0 or v>1 for v in pvals):raise ValueError("p-values must be in [0,1]")
+        m=len(pvals);order=sorted(range(m),key=lambda i:pvals[i]);adj=[1.0]*m;running=0.0;steps=[];continue_reject=True
+        for rank,i in enumerate(order):
+            threshold=alpha/(m-rank);running=max(running,(m-rank)*pvals[i]);adj[i]=min(1,running);reject=continue_reject and pvals[i]<=threshold;continue_reject=reject;steps.append({"index":i,"rank":rank+1,"p_value":pvals[i],"threshold":threshold,"reject":reject})
+        o["output"]={"steps":steps,"adjusted_p_values":adj,"rejected_indices":sorted(s["index"] for s in steps if s["reject"]),"family_alpha":alpha};a += ["Valid marginal p-values; step-down closure controls FWER under arbitrary dependence."];limits += ["Does not exploit logical constraints or dependence, and may have low power at scale."]
+    elif method=="benjamini_hochberg":
+        pvals=_nums(data,"p_values");alpha=float(p.get("alpha",.05))
+        if any(v<0 or v>1 for v in pvals):raise ValueError("p-values must be in [0,1]")
+        m=len(pvals);order=sorted(range(m),key=lambda i:pvals[i]);k=0;steps=[]
+        for rank,i in enumerate(order,1):
+            threshold=alpha*rank/m;passed=pvals[i]<=threshold
+            if passed:k=rank
+            steps.append({"index":i,"rank":rank,"p_value":pvals[i],"threshold":threshold,"passes":passed})
+        rejected=sorted(order[:k]);adj=[1.0]*m;running=1.0
+        for rank,i in reversed(list(enumerate(order,1))):running=min(running,pvals[i]*m/rank);adj[i]=min(1,running)
+        o["output"]={"steps":steps,"largest_passing_rank":k,"rejected_indices":rejected,"adjusted_p_values":adj,"alpha":alpha};a += ["Valid p-values and independence or positive regression dependence for nominal FDR control."];limits += ["Not guaranteed under arbitrary dependence; no adaptive null-proportion estimate."]
+    elif method=="storeys_method":
+        pvals=_nums(data,"p_values");alpha=float(p.get("alpha",.05));lam=float(p.get("lambda",.5))
+        if any(v<0 or v>1 for v in pvals) or not 0<=lam<1:raise ValueError("p-values in [0,1] and lambda in [0,1) required")
+        m=len(pvals);pi0=min(1,sum(v>lam for v in pvals)/(m*(1-lam)));order=sorted(range(m),key=lambda i:pvals[i]);q=[1.0]*m;running=1.0
+        for rank,i in reversed(list(enumerate(order,1))):running=min(running,pi0*m*pvals[i]/rank);q[i]=min(1,running)
+        o["output"]={"pi0":pi0,"lambda":lam,"q_values":q,"rejected_indices":[i for i,v in enumerate(q) if v<=alpha],"alpha":alpha};a += ["High p-values estimate the null proportion; p-values are valid and weakly dependent."];limits += ["Single fixed lambda is unstable for small m; no bootstrap/spline tuning and pi0 bias can affect FDR control."]
+    elif method=="local_fdr":
+        z=_nums(data,"z_scores");null_sd=float(p.get("null_sd",1));signal_sd=float(p.get("signal_sd",3));pi0=float(p.get("pi0",.9));threshold=float(p.get("threshold",.2))
+        if null_sd<=0 or signal_sd<=0 or not 0<pi0<1 or not 0<threshold<1:raise ValueError("positive scales and probabilities inside (0,1) required")
+        density=lambda x,sd:math.exp(-.5*(x/sd)**2)/(math.sqrt(2*math.pi)*sd);lfdr=[]
+        for x in z:
+            f0=density(x,null_sd);f1=density(x,signal_sd);lfdr.append(pi0*f0/(pi0*f0+(1-pi0)*f1))
+        o["output"]={"local_fdr":lfdr,"discovery_indices":[i for i,v in enumerate(lfdr) if v<=threshold],"threshold":threshold,"mixture":{"pi0":pi0,"null_sd":null_sd,"signal_sd":signal_sd}};a += ["Two-component centered Gaussian empirical-Bayes mixture with caller-supplied parameters."];limits += ["Does not estimate empirical null/mixture, model asymmetric alternatives, or guarantee tail-area FDR at the local threshold."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
     return o
