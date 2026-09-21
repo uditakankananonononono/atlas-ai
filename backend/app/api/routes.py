@@ -54,3 +54,8 @@ def technical_spec_run_34_66(row:int,payload:dict):
     from app.technical_spec_34_66 import SpecError,execute
     try:return execute(row,payload)
     except SpecError as exc:raise HTTPException(422,detail=str(exc)) from exc
+
+@router.get('/semantic-verification/862-1148')
+def semantic_verification_862_1148():
+    from app.semantic_verification_862_1148 import validate
+    return validate()

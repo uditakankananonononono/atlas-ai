@@ -232,3 +232,20 @@ def finance_analyze(data:FinanceAnalysisIn):
     from .finance import run
     try:return run(data.method,data.data,data.seed)
     except ValueError as e:raise HTTPException(422,str(e))
+
+# Direct, mounted semantic surface for emerging capability rows 910-959.
+class EmergingAnalysisIn(BaseModel):
+    method:str=Field(min_length=1)
+    data:dict=Field(default_factory=dict)
+    params:dict=Field(default_factory=dict)
+    seed:int=0
+@router.get('/emerging-910-959/methods')
+def emerging_methods_910_959():
+    from .emerging_capabilities_0910_0959 import ROWS,SUMMARIES,INPUTS
+    return [{'method':m,'feature_row':r,'summary':SUMMARIES[m],'required_evidence':INPUTS[m]} for m,r in ROWS.items()]
+@router.post('/emerging-910-959/analyze')
+def emerging_analyze_910_959(body:EmergingAnalysisIn):
+    from .emerging_capabilities_0910_0959 import ROWS,run
+    if body.method not in ROWS:raise HTTPException(422,'unsupported emerging method')
+    try:return run(body.method,body.data,body.params,body.seed)
+    except (ValueError,TypeError,KeyError,ZeroDivisionError) as exc:raise HTTPException(422,str(exc)) from exc
