@@ -1,10 +1,10 @@
 {
   "module": 25,
-  "name": "Knowledge Copilot & Training",
+  "name": "Knowledge Copilot",
   "separate_from_features_count": true,
   "counts": {
     "implemented-unverified": 0,
-    "practitioner-verified": 16
+    "practitioner-verified": 25
   },
   "rows": [
     {
@@ -214,6 +214,123 @@
         "practitioner_stamp": "current-head focused green",
         "implementation_commit": "this git-format patch commit"
       }
+    },
+    {
+      "id": "M25-17",
+      "requirement": "Paired-PC owner-visible selected-screen capture with redaction",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot/service.py",
+      "named_test": "test_m25_17_selected_screen_redaction_and_tenant_actor_isolation",
+      "mechanism": "Owner-selected screen allowlist, deterministic configured redaction, tenant/actor ownership checks",
+      "evidence": {
+        "verification": "Python 3.12.13: 11 Lane B focused tests passed; 28 combined M25 tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "recorded by git commit"
+      }
+    },
+    {
+      "id": "M25-18",
+      "requirement": "Pause/stop and owner-selected mic/system audio with consent indicator and bounded buffer",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot/service.py",
+      "named_test": "test_m25_18_pause_stop_consent_indicator_and_bounded_audio_retention",
+      "mechanism": "Typed capture state machine, explicit consent validation, visible audio indicator, timestamp eviction",
+      "evidence": {
+        "verification": "Python 3.12.13: 11 Lane B focused tests passed; 28 combined M25 tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "recorded by git commit"
+      }
+    },
+    {
+      "id": "M25-19",
+      "requirement": "Screen-OCR/audio-transcript/knowledge timeline fusion",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot/service.py",
+      "named_test": "test_m25_19_timeline_fuses_ocr_audio_and_knowledge_with_source_refs",
+      "mechanism": "Typed source events normalized to one source-referenced timeline",
+      "evidence": {
+        "verification": "Python 3.12.13: 11 Lane B focused tests passed; 28 combined M25 tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "recorded by git commit"
+      }
+    },
+    {
+      "id": "M25-20",
+      "requirement": "Meeting copilot with source-cited suggestions/notes, drafts only until approved",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot/service.py",
+      "named_test": "test_m25_20_meeting_copilot_is_source_cited_draft_only; test_m25_20_cluely_parakeet_safe_feature_parity_speaker_split_languages_followups_and_actions",
+      "mechanism": "Draft-only, source-cited live response suggestions, speaker-split transcription, multilingual output, follow-up suggestions, summary and post-meeting action items; no hidden/stealth behavior",
+      "evidence": {
+        "verification": "Python 3.12.13: 11 Lane B focused tests passed; 28 combined M25 tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "recorded by git commit"
+      }
+    },
+    {
+      "id": "M25-21",
+      "requirement": "Study copilot with source-linked hints preserving learner work and live-exam prohibition",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot/service.py",
+      "named_test": "test_m25_21_study_hints_preserve_learner_work_and_refuse_live_exam",
+      "mechanism": "Hint-only response plus declared/observed assessment classifier and hard refusal",
+      "evidence": {
+        "verification": "Python 3.12.13: 11 Lane B focused tests passed; 28 combined M25 tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "recorded by git commit"
+      }
+    },
+    {
+      "id": "M25-22",
+      "requirement": "Research copilot claim/evidence table with citation trace",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot/service.py",
+      "named_test": "test_m25_22_research_claim_evidence_has_complete_citation_trace",
+      "mechanism": "Every claim resolves explicit timeline IDs to quotes and source references",
+      "evidence": {
+        "verification": "Python 3.12.13: 11 Lane B focused tests passed; 28 combined M25 tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "recorded by git commit"
+      }
+    },
+    {
+      "id": "M25-23",
+      "requirement": "Action approval gate for sending/submitting/purchasing/recording-state/external mutations with exact preview",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot/service.py",
+      "named_test": "test_m25_23_all_external_effects_require_exact_preview_approval",
+      "mechanism": "Tenant/actor-bound proposal and one-shot execution after explicit exact-preview approval",
+      "evidence": {
+        "verification": "Python 3.12.13: 11 Lane B focused tests passed; 28 combined M25 tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "recorded by git commit"
+      }
+    },
+    {
+      "id": "M25-24",
+      "requirement": "Persistent visible indicator, immutable local audit, and honest blocked/failed states",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot/service.py",
+      "named_test": "test_m25_24_visible_indicator_and_hash_chained_immutable_local_audit; test_m25_24_honest_site_or_device_failure_is_blocked_not_simulated",
+      "mechanism": "Indicator follows capture lifecycle; append-only hash-chained audit; typed blocked/failed reason without simulated success",
+      "evidence": {
+        "verification": "Python 3.12.13: 11 Lane B focused tests passed; 28 combined M25 tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "recorded by git commit"
+      }
+    },
+    {
+      "id": "M25-25",
+      "requirement": "Live-exam prohibition - detect declared or observed assessment context and refuse real-time answer assistance",
+      "status": "practitioner-verified",
+      "implementation_path": "backend/app/modules/m25_knowledge_copilot/service.py",
+      "named_test": "test_m25_25_live_exam_context_refuses_real_time_answer_assistance",
+      "mechanism": "Declared assessment flag and observed-context markers trigger hard refusal with no answer or citations",
+      "evidence": {
+        "verification": "Python 3.12.13: 11 Lane B focused tests passed; 28 combined M25 tests passed",
+        "practitioner_stamp": "current-head focused green",
+        "implementation_commit": "recorded by git commit"
+      }
     }
   ],
   "verification": {
@@ -223,5 +340,7 @@
     "full_suite": "6910 passed, 83 failed",
     "full_suite_note": "Full run includes the repository known depth-sweep failures and additional existing/environment-sensitive failures; two legacy catalog-count assertions reject the newly required module 25. No M25 focused failures.",
     "verified_at": "2026-09-21T15:18:00+05:30"
-  }
+  },
+  "row_count": 25,
+  "practitioner_stamp": "Python 3.12.13 current-head focused verification: Lane A 17/17; Lane B 11/11; combined M25 28/28"
 }
