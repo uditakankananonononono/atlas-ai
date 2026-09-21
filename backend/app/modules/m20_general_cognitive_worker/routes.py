@@ -1483,3 +1483,7 @@ router.include_router(social_research_router_1710_1759)
 
 from .political_social_routes_1760_1809 import router as political_social_router_1760_1809
 router.include_router(political_social_router_1760_1809)
+
+# Mechanical engineering analysis rows 1510-1559.
+from .engineering_routes_1510_1559 import router as engineering_router_1510_1559
+router.include_router(engineering_router_1510_1559)
