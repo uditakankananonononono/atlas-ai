@@ -22,3 +22,7 @@ def technical_spec_100_132_route(body:TechnicalSpec100To132In):
 
 from .technical_spec_routes_166_198 import router as technical_spec_router_166_198
 router.include_router(technical_spec_router_166_198)
+
+# Executable technical architecture contracts, source-mapped rows A01-A33.
+from .technical_architecture_routes_a01_a33 import router as technical_architecture_router_a01_a33
+router.include_router(technical_architecture_router_a01_a33)
