@@ -1,5 +1,61 @@
+"""Per-row tests for the rows 281-305 creative-discipline specifications.
+
+One mounted-endpoint test per ledger row, plus boundary tests: imitation
+redaction, asset-prompt engine filtering, the never-rendered disclaimer, and
+provider failure handling. All LLM calls are mocked; nothing renders.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+
+import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from app.modules.m06_social_media_manager.creative import CREATIVE_SPECS, RENDER_DISCLAIMER
+from app.modules.m06_social_media_manager.models import AUDIO_ENGINE, IMAGE_ENGINE
+from app.modules.m06_social_media_manager.routes import get_service, router
+from app.modules.m06_social_media_manager.service import MemorySocialRepository, Service
+
+SLUGS = sorted(CREATIVE_SPECS, key=lambda s: CREATIVE_SPECS[s].row)
+CREATIVE_INPUT = {"business": "Acme Robotics", "subject": "Kit-1 launch teaser",
+                  "goals": ["wishlist signups"], "facts": {"audience": "STEM educators"}}
+
+
+def generic_sections(prompt: str) -> dict:
+    keys = re.findall(r'"([a-z_]+)"', prompt.split("ONLY a JSON object with keys:")[-1].split(".")[0])
+    sections: dict = {}
+    for key in keys:
+        if key == "asset_prompts":
+            sections[key] = [
+                {"kind": "image", "engine": IMAGE_ENGINE, "prompt": "robot kit on a desk"},
+                {"kind": "image", "engine": "midjourney", "prompt": "third-party engine"},
+                {"kind": "audio", "engine": AUDIO_ENGINE, "prompt": "soft synth stinger"},
+            ]
+        else:
+            sections[key] = f"draft {key}"
+    return sections
+
+
+def make_client(generate=None):
+    repository = MemorySocialRepository()
+
+    async def default_generate(prompt, provider, model=None):
+        return "fake-model", json.dumps(generic_sections(prompt))
+
+    service = Service(approval_store=None, generate=generate or default_generate,
+                      metrics_client=None, repository=repository)
+    app = FastAPI()
+    app.include_router(router, prefix="/api/v1")
+    app.dependency_overrides[get_service] = lambda: service
+    return TestClient(app), repository
+
+
+
 """Named, row-level evidence tests for the assigned creative/design band."""
-from tests.modules.test_m06_creative import make_client,CREATIVE_INPUT
+
 from datetime import datetime,timezone
 from app.modules.m15_document_generator.creative_production_306_332 import SPECS
 def production_payload(i):
