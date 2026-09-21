@@ -1557,3 +1557,16 @@ router.include_router(durable_runtime_router)
 # Unified tenant-scoped facade over specialized-domain executive cognition rows.
 from .specialized_domain_routes import router as specialized_domain_router
 router.include_router(specialized_domain_router)
+
+# Distinct legal support engines, owner feature rows 1260-1309.
+from .legal_support_1260_1309 import analyze as _analyze_legal_feature
+class Legal1260To1309Request(BaseModel):
+    feature_id: int = Field(ge=1260, le=1309)
+    actor_id: str = Field(min_length=1)
+    tenant_id: str = Field(min_length=1)
+    data: dict[str, Any] = Field(default_factory=dict)
+@router.post('/legal-1260-1309/support')
+def legal_1260_1309_support(request: Legal1260To1309Request) -> dict[str, Any]:
+    try: result=_analyze_legal_feature(request.feature_id,request.data,tenant_id=request.tenant_id,actor_id=request.actor_id)
+    except ValueError as exc: raise HTTPException(status_code=422,detail=str(exc)) from exc
+    return {'module_id':20,'tenant_id':request.tenant_id,'actor_id':request.actor_id,'result':result,'requires_licensed_counsel':True}
