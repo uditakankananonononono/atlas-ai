@@ -43,3 +43,12 @@ def technical_95_99(row_id:int,payload:dict):
  from .technical_95_99 import run
  try:return run(row_id,payload)
  except (ValueError,TypeError,KeyError) as exc:raise HTTPException(422,str(exc)) from exc
+
+from .contradictions import ContradictionInboxRequest, build_contradiction_inbox
+
+@router.post('/contradiction-inbox')
+def contradiction_inbox(body: ContradictionInboxRequest, tenant: TenantContext = Depends(require_tenant)):
+    try:
+        return {'tenant_id': tenant.tenant_id, **build_contradiction_inbox(body)}
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from error
