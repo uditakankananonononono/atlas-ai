@@ -74,3 +74,13 @@ def environmental_analyze_1660_1709(payload:dict):
     from .environmental_1660_1709 import run
     try:return run(payload.get("method",""),payload.get("data",{}))
     except ValueError as exc:raise HTTPException(status_code=422,detail=str(exc)) from exc
+
+@router.get('/quant-methods-185-234')
+def quant_methods_185_234():
+    from .quant_methods_185_234 import ROWS
+    return [{'row_id':i,'method':m} for i,m in ROWS.items()]
+@router.post('/quant-methods-185-234/{row_id}')
+def quant_method_185_234(row_id:int,payload:dict):
+    from .quant_methods_185_234 import QuantError,run
+    try:return run(row_id,payload)
+    except QuantError as exc:raise HTTPException(status_code=422,detail=str(exc)) from exc
