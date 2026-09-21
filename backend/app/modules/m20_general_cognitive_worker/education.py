@@ -308,8 +308,10 @@ def execute(capability:str,payload:dict[str,Any])->dict[str,Any]:
 _original_execute = execute
 from app.core.depth_quality import attach_quality as _attach_quality
 
-def execute(capability:str|int,payload:dict[str,Any])->dict[str,Any]:
+def execute(capability:str|int,payload:dict[str,Any],*,tenant_id:str="local",actor_id:str="local")->dict[str,Any]:
+    if not tenant_id.strip() or not actor_id.strip(): raise EducationError("tenant_id and actor_id are required")
     out=_original_execute(capability,payload)
+    out["scope"]={"tenant_id":tenant_id,"actor_id":actor_id}
     evidence=[x for key in ('sources','evidence','learner_evidence') for x in payload.get(key,[]) if isinstance(x,dict)]
     required=[k for k in payload if k not in {'assumptions','sources','evidence','learner_evidence'}]
     method=str(capability)
