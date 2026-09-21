@@ -9,7 +9,7 @@ def test_health():
 
 def test_lists_all_spec_modules_plus_claire():
     modules = client.get("/api/v1/modules").json()
-    assert [m["id"] for m in modules] == list(range(25))
+    assert [m["id"] for m in modules] == list(range(26))
 
 def test_approval_flow_end_to_end():
     plan = client.post("/api/v1/goals/plan", json={"goal": "Research professors and draft outreach email"}).json()
