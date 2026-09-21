@@ -550,3 +550,55 @@ CLINICAL_EXTRA.update({
  'health_education':lambda d:health_education('health_education',d),
  'behavior_change_support':lambda d:health_education('behavior_change_support',d),
 })
+
+def adherence_support(data:dict)->dict:
+    regimen=data.get('regimen',[]);checkins=data.get('checkins',[]);source=data.get('source',{})
+    if not regimen or not source.get('source_url'):raise ValueError('regimen and source_url required')
+    summary=[]
+    for med in regimen:
+        relevant=[x for x in checkins if x.get('medication')==med.get('name')];taken=sum(1 for x in relevant if x.get('taken') is True);expected=len(relevant);barriers=sorted({b for x in relevant for b in x.get('barriers',[])})
+        summary.append({'medication':med.get('name'),'taken_checkins':taken,'expected_checkins':expected,'observed_fraction':taken/expected if expected else None,'patient_reported_barriers':barriers,'preferences':med.get('preferences',[])})
+    return {'adherence_summary':summary,'support_options':data.get('support_options',[]),'source':source,'boundary':'Nonjudgmental tracking of supplied check-ins only. Missing data is not nonadherence. Patient and clinician choose supports and any regimen changes; Atlas never pressures, penalizes or changes medication.','disclaimer':DISCLAIMER}
+
+def wellbeing_plan(method:str,data:dict)->dict:
+    baseline=data.get('baseline',{});goals=data.get('goals',[]);options=data.get('options',[]);source=data.get('source',{})
+    if not goals or not source.get('source_url'):raise ValueError('goals and source_url required')
+    contraindications=set(data.get('contraindications',[]));selected=[]
+    for o in options:
+        if not set(o.get('contraindications',[]))&contraindications and set(o.get('goal_ids',[]))&{g.get('id') for g in goals}:selected.append(o)
+    return {'mode':method,'baseline':baseline,'goals':goals,'candidate_steps':selected,'monitoring':data.get('monitoring',[]),'patient_preferences':data.get('patient_preferences',[]),'source':source,'approval_status':'draft_for_patient_and_qualified_professional','boundary':'Small-step planning from patient goals and cited guidance. A qualified professional checks safety and clinical needs; Atlas does not prescribe diet, exercise, sleep treatment or stress therapy.','disclaimer':DISCLAIMER}
+
+def substance_support(method:str,data:dict)->dict:
+    assessment=data.get('assessment',{});goals=data.get('goals',[]);services=data.get('services',[]);source=data.get('source',{})
+    if not assessment or not goals or not source.get('source_url'):raise ValueError('assessment, goals and source_url required')
+    urgent=[k for k in ('overdose','dangerous_withdrawal','suicidal_intent','medical_instability') if assessment.get(k) is True]
+    choices=[s for s in services if not set(s.get('exclusions',[]))&set(assessment.get('constraints',[])) and (not s.get('goal_tags') or set(s['goal_tags'])&set(goals))]
+    return {'mode':method,'patient_goals':goals,'readiness':assessment.get('readiness'),'urgent_risks':urgent,'immediate_human_response_required':bool(urgent),'candidate_services_and_supplies':choices,'source':source,'boundary':'Nonjudgmental treatment/harm-reduction navigation only. Overdose, dangerous withdrawal, suicidality or instability requires immediate local human emergency/clinical response. Atlas does not detoxify, prescribe, compel abstinence or contact services.','disclaimer':DISCLAIMER}
+
+def crisis_support(method:str,data:dict)->dict:
+    safety=data.get('safety',{});plan=data.get('safety_plan',{});resources=data.get('resources',[]);source=data.get('source',{})
+    if not safety or not source.get('source_url'):raise ValueError('direct safety assessment and source_url required')
+    imminent=any(safety.get(k) is True for k in ('imminent_intent','active_attempt','immediate_danger','cannot_stay_safe'))
+    missing=[k for k in ('imminent_intent','active_attempt','immediate_danger','cannot_stay_safe') if k not in safety]
+    return {'mode':method,'safety_status':'incomplete' if missing else 'immediate_response' if imminent else 'no_supplied_imminent_flag','missing_safety_fields':missing,'immediate_human_response_required':imminent,'existing_safety_plan':plan,'local_resources':resources,'next_step':'contact local emergency/crisis support now and stay with a trusted human if safe' if imminent else 'qualified human follow-up and collaborative safety planning','source':source,'boundary':'Triage support, never autonomous crisis care. Atlas does not promise confidentiality, monitor a person, contact emergency services, or treat absence of a supplied flag as safety. Immediate danger requires local human emergency/crisis response now.','disclaimer':DISCLAIMER}
+
+def trauma_cultural_care(method:str,data:dict)->dict:
+    preferences=data.get('preferences',{});needs=data.get('needs',[]);options=data.get('options',[]);source=data.get('source',{})
+    if not source.get('source_url'):raise ValueError('source_url required')
+    selected=[o for o in options if not set(o.get('conflicts_with',[]))&set(preferences.get('declined',[]))]
+    return {'mode':method,'patient_stated_preferences':preferences,'needs':needs,'candidate_accommodations':selected,'consent_checkpoints':data.get('consent_checkpoints',[]),'source':source,'boundary':'Use patient-stated needs, identity and preferences without inference or stereotypes. Preserve choice, control, privacy, language access and consent; clinicians and patients decide care and may decline any option.','disclaimer':DISCLAIMER}
+
+CLINICAL_EXTRA.update({
+ 'medication_adherence':adherence_support,
+ 'lifestyle_modification':lambda d:wellbeing_plan('lifestyle_modification',d),
+ 'nutrition_planning':lambda d:wellbeing_plan('nutrition_planning',d),
+ 'exercise_prescription':lambda d:wellbeing_plan('exercise_prescription',d),
+ 'sleep_hygiene':lambda d:wellbeing_plan('sleep_hygiene',d),
+ 'stress_management':lambda d:wellbeing_plan('stress_management',d),
+ 'substance_abuse_treatment':lambda d:substance_support('substance_abuse_treatment',d),
+ 'harm_reduction':lambda d:substance_support('harm_reduction',d),
+ 'crisis_intervention':lambda d:crisis_support('crisis_intervention',d),
+ 'suicide_prevention':lambda d:crisis_support('suicide_prevention',d),
+ 'trauma_informed_care':lambda d:trauma_cultural_care('trauma_informed_care',d),
+ 'culturally_competent_care':lambda d:trauma_cultural_care('culturally_competent_care',d),
+})
