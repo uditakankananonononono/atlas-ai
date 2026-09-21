@@ -90,3 +90,25 @@ def test_semantic_engineering_http_boundary_is_mounted():
  assert response.json()['distinctive_output']['round_trip_time_us']>0
  bad=TestClient(app).post('/api/v1/ai-research-lab/engineering-1560-1609/semantic-support',headers={'x-atlas-tenant':'sem6'},json={'feature_id':1562,'data':family_payload(1562)})
  assert bad.status_code==422
+
+def test_education_1436_to_1509_exposes_evaluation_and_uncertainty():
+ from app.modules.m20_general_cognitive_worker.education import execute
+ from app.modules.m12_ai_research_lab.education_support import education_support
+ e=execute('experiential_learning',{'challenge':'Improve a process','objectives':['Evaluate evidence'],'source':{'title':'source','url':'https://example.test'}})
+ assert e['evaluation']['reviewer'] and e['uncertainty']['not_a_mastery_or_credential_claim']
+ a=education_support(1460,{'signals':[{'value':.5}],'sources':[{'source_id':'s','observed_at':'2026-09-21'}]})
+ assert 'bias and subgroup performance' in a['evaluation']['review_checks'] and a['uncertainty']['prediction_is_not_fact']
+
+def test_all_sweep_families_report_evaluation_uncertainty_and_honest_execution_limits():
+ from app.modules.m20_general_cognitive_worker.engineering_1510_1559 import engineering_support_1510_1559
+ from app.modules.m16_executive_dashboard.climate_environment_1610_1659 import run as climate
+ from app.modules.m04_research_scientist.environmental_1660_1709 import run as environment
+ from app.modules.m20_general_cognitive_worker.social_research_1710_1759 import execute
+ e=engineering_support_1510_1559('stress_analysis',{'sigma_x':100,'sigma_y':0,'tau_xy':0,'yield_strength':250})
+ assert e['evaluation']['qualified_review_required'] and not e['uncertainty']['physical_test_or_solver_execution_claimed']
+ c=climate('ocean_acidification',{'baseline_ph':8.2,'current_ph':8.1})
+ assert c['evaluation']['review_required'] and not c['uncertainty']['physical_or_policy_outcome_claimed']
+ n=environment('biodiversity',{'species_counts':[5,3,2]})
+ assert n['evaluation']['qualified_review_required'] and not n['uncertainty']['certification_or_causal_claim']
+ s=execute('field_research',{'source':{'title':'protocol','url':'https://example.test'},'research_question':'How does practice vary?','sites':['site-a'],'consent_plan':'written consent','access_plan':'partner access','safety_plan':'daily check-in'})
+ assert s['evaluation']['participant_validation_required'] and s['uncertainty']['no_population_or_causal_overclaim']
