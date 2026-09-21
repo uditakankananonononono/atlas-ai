@@ -106,7 +106,11 @@ class OpportunityOut(BaseModel):
     deadline: datetime | None
     opportunity_type: OpportunityType
     match_score: float
-    expected_impact: float
+    impact_heuristic: float = Field(
+        description="Advisory deterministic heuristic, not a win probability."
+    )
+    score_kind: str = Field(default="heuristic", pattern="^heuristic$")
+    advisory_only: bool = True
     tags: list[str]
     first_seen: datetime
     last_seen: datetime

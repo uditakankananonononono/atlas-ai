@@ -195,7 +195,9 @@ class OpportunityRow(Base):
     deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     opportunity_type: Mapped[str] = mapped_column(String(30), index=True)
     match_score: Mapped[float] = mapped_column(Float, default=0.0, index=True)
-    expected_impact: Mapped[float] = mapped_column(Float, default=0.0)
+    # Legacy database column name retained for migration compatibility only.
+    # Public output names the value honestly as ``impact_heuristic``.
+    impact_heuristic: Mapped[float] = mapped_column("expected_impact", Float, default=0.0)
     tags: Mapped[list[str]] = mapped_column(JSON, default=list)
     first_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     last_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
@@ -438,12 +440,12 @@ def match_score(opportunity_text: str, profile: ProfileIn) -> float:
 _PRIZE_RE = re.compile(r"\$\s?[\d,]+|\b\d+[kK]\s?(?:USD|dollars?|prize)", re.IGNORECASE)
 
 
-def expected_impact(opportunity_text: str, opp_type: OpportunityType) -> float:
-    """Heuristic impact score, 0.0 to 1.0.
+def impact_heuristic(opportunity_text: str, opp_type: OpportunityType) -> float:
+    """Advisory deterministic impact heuristic, 0.0 to 1.0.
 
-    Documented placeholder for the spec's logistic-regression model trained
-    on historical applied/won data; that model needs labeled outcome data
-    that does not exist yet (see INTEGRATION.md).
+    This is not a win probability. A learned outcome model remains disabled
+    until consented row-level applications include both awards and declines
+    across multiple cycles (see INTEGRATION.md).
     """
 
     score = 0.5
@@ -613,7 +615,7 @@ class Service:
             row.tags = tags
             profile_text = " ".join([*profile.interests, *profile.skills, *profile.past_successes])
             row.match_score = round(self._embedding_matcher.similarity(text, profile_text), 4) if self._embedding_matcher and profile_text else match_score(text, profile)
-            row.expected_impact = expected_impact(text, opp_type)
+            row.impact_heuristic = impact_heuristic(text, opp_type)
             row.last_seen = now
             session.commit()
             return self._to_out(row), is_new
@@ -668,7 +670,7 @@ class Service:
             deadline = item.deadline.strftime("%Y-%m-%d") if item.deadline else "no deadline found"
             lines.append(
                 f"{index}. {item.title} ({item.opportunity_type.value}, match {item.match_score:.2f}, "
-                f"impact {item.expected_impact:.2f}, deadline {deadline})"
+                f"advisory impact heuristic {item.impact_heuristic:.2f}, deadline {deadline})"
             )
             lines.append(f"   {item.url}")
         return "\n".join(lines)
@@ -732,7 +734,9 @@ class Service:
             deadline=deadline,
             opportunity_type=OpportunityType(row.opportunity_type),
             match_score=row.match_score,
-            expected_impact=row.expected_impact,
+            impact_heuristic=row.impact_heuristic,
+            score_kind="heuristic",
+            advisory_only=True,
             tags=list(row.tags or []),
             first_seen=row.first_seen,
             last_seen=row.last_seen,
