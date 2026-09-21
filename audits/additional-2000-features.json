@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1381,
-    "verified-pushed": 626,
+    "missing": 1374,
+    "verified-pushed": 633,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -15310,9 +15310,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Global Health",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "98e0c525c4cbfa1068635fa12b270a9124f735e6",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1180_1186.py"
+      },
+      "boundary": "Aggregate, cited and privacy-bounded planning support only. Expose assumptions, small-cell risk, missing fields, equity, consent/legal basis, support needs and review routes. Public-health authorities and affected communities validate action; Atlas never identifies contacts, tracks location, notifies people, rations care or issues/enforces restrictions."
     },
     {
       "id": 1181,
@@ -15320,9 +15324,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Public Health Surveillance",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "98e0c525c4cbfa1068635fa12b270a9124f735e6",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1180_1186.py"
+      },
+      "boundary": "Aggregate, cited and privacy-bounded planning support only. Expose assumptions, small-cell risk, missing fields, equity, consent/legal basis, support needs and review routes. Public-health authorities and affected communities validate action; Atlas never identifies contacts, tracks location, notifies people, rations care or issues/enforces restrictions."
     },
     {
       "id": 1182,
@@ -15330,9 +15338,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Epidemic Response",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "98e0c525c4cbfa1068635fa12b270a9124f735e6",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1180_1186.py"
+      },
+      "boundary": "Aggregate, cited and privacy-bounded planning support only. Expose assumptions, small-cell risk, missing fields, equity, consent/legal basis, support needs and review routes. Public-health authorities and affected communities validate action; Atlas never identifies contacts, tracks location, notifies people, rations care or issues/enforces restrictions."
     },
     {
       "id": 1183,
@@ -15340,9 +15352,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Contact Tracing",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "98e0c525c4cbfa1068635fa12b270a9124f735e6",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1180_1186.py"
+      },
+      "boundary": "Aggregate, cited and privacy-bounded planning support only. Expose assumptions, small-cell risk, missing fields, equity, consent/legal basis, support needs and review routes. Public-health authorities and affected communities validate action; Atlas never identifies contacts, tracks location, notifies people, rations care or issues/enforces restrictions."
     },
     {
       "id": 1184,
@@ -15350,9 +15366,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Quarantine Management",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "98e0c525c4cbfa1068635fa12b270a9124f735e6",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1180_1186.py"
+      },
+      "boundary": "Aggregate, cited and privacy-bounded planning support only. Expose assumptions, small-cell risk, missing fields, equity, consent/legal basis, support needs and review routes. Public-health authorities and affected communities validate action; Atlas never identifies contacts, tracks location, notifies people, rations care or issues/enforces restrictions."
     },
     {
       "id": 1185,
@@ -15360,9 +15380,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Health Education",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "98e0c525c4cbfa1068635fa12b270a9124f735e6",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1180_1186.py"
+      },
+      "boundary": "Aggregate, cited and privacy-bounded planning support only. Expose assumptions, small-cell risk, missing fields, equity, consent/legal basis, support needs and review routes. Public-health authorities and affected communities validate action; Atlas never identifies contacts, tracks location, notifies people, rations care or issues/enforces restrictions."
     },
     {
       "id": 1186,
@@ -15370,9 +15394,13 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Behavior Change Support",
       "description": "",
-      "status": "missing",
-      "evidence": null,
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "98e0c525c4cbfa1068635fa12b270a9124f735e6",
+        "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
+        "test_path": "tests/modules/test_m12_clinical_1180_1186.py"
+      },
+      "boundary": "Aggregate, cited and privacy-bounded planning support only. Expose assumptions, small-cell risk, missing fields, equity, consent/legal basis, support needs and review routes. Public-health authorities and affected communities validate action; Atlas never identifies contacts, tracks location, notifies people, rations care or issues/enforces restrictions."
     },
     {
       "id": 1187,
