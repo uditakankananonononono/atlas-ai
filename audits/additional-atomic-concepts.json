@@ -8,8 +8,8 @@
   "delta_over_base_rows": 107,
   "atomic_concept_count": 2117,
   "counts": {
-    "verified-pushed": 0,
-    "missing": 160
+    "verified-pushed": 23,
+    "missing": 137
   },
   "rowization_rule": "Replace each identified packed parent row with its atomic subrows; all other base rows remain one atomic concept. Examples and benefit statements are not counted as separate concepts unless they specify distinct behavior.",
   "rows": [
@@ -1216,10 +1216,10 @@
       "atomic_requirement": "System-delay recognition",
       "source_feature_title": "Systems Thinking",
       "source_description": "Recognizes feedback loops, delays, and emergent behavior",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1229,10 +1229,10 @@
       "atomic_requirement": "Emergent-behavior recognition",
       "source_feature_title": "Systems Thinking",
       "source_description": "Recognizes feedback loops, delays, and emergent behavior",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1242,10 +1242,10 @@
       "atomic_requirement": "Constraint/bottleneck identification",
       "source_feature_title": "Constraint Theory Application",
       "source_description": "Identifies and exploits bottlenecks",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1255,10 +1255,10 @@
       "atomic_requirement": "Constraint exploitation/improvement plan",
       "source_feature_title": "Constraint Theory Application",
       "source_description": "Identifies and exploits bottlenecks",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1268,10 +1268,10 @@
       "atomic_requirement": "Exponential-relationship modeling",
       "source_feature_title": "Non-Linear Thinking",
       "source_description": "Models exponential, logarithmic, and power-law relationships",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1281,10 +1281,10 @@
       "atomic_requirement": "Logarithmic-relationship modeling",
       "source_feature_title": "Non-Linear Thinking",
       "source_description": "Models exponential, logarithmic, and power-law relationships",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1294,10 +1294,10 @@
       "atomic_requirement": "Power-law relationship modeling",
       "source_feature_title": "Non-Linear Thinking",
       "source_description": "Models exponential, logarithmic, and power-law relationships",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1307,10 +1307,10 @@
       "atomic_requirement": "Value-creation-point tracing",
       "source_feature_title": "Value Chain Mapping",
       "source_description": "Traces where value is created and captured",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1320,10 +1320,10 @@
       "atomic_requirement": "Value-capture-point tracing",
       "source_feature_title": "Value Chain Mapping",
       "source_description": "Traces where value is created and captured",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1333,10 +1333,10 @@
       "atomic_requirement": "Work-in-progress measurement",
       "source_feature_title": "Little's Law Application",
       "source_description": "Relates work-in-progress, throughput, and cycle time",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1346,10 +1346,10 @@
       "atomic_requirement": "Throughput measurement",
       "source_feature_title": "Little's Law Application",
       "source_description": "Relates work-in-progress, throughput, and cycle time",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1359,10 +1359,10 @@
       "atomic_requirement": "Cycle-time measurement",
       "source_feature_title": "Little's Law Application",
       "source_description": "Relates work-in-progress, throughput, and cycle time",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1372,10 +1372,10 @@
       "atomic_requirement": "Little’s Law consistency check",
       "source_feature_title": "Little's Law Application",
       "source_description": "Relates work-in-progress, throughput, and cycle time",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1385,10 +1385,10 @@
       "atomic_requirement": "Strategic bidding optimization",
       "source_feature_title": "Auction Theory Application",
       "source_description": "Optimizes bidding and selling strategies",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1398,10 +1398,10 @@
       "atomic_requirement": "Strategic selling optimization",
       "source_feature_title": "Auction Theory Application",
       "source_description": "Optimizes bidding and selling strategies",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1411,10 +1411,10 @@
       "atomic_requirement": "Expertise positioning",
       "source_feature_title": "Authority Positioning",
       "source_description": "Establishes expertise and credibility",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1424,10 +1424,10 @@
       "atomic_requirement": "Credibility evidence plan",
       "source_feature_title": "Authority Positioning",
       "source_description": "Establishes expertise and credibility",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1437,10 +1437,10 @@
       "atomic_requirement": "Rapport-building plan",
       "source_feature_title": "Liking Enhancement",
       "source_description": "Builds rapport and similarity",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1450,10 +1450,10 @@
       "atomic_requirement": "Similarity-grounding without fabrication",
       "source_feature_title": "Liking Enhancement",
       "source_description": "Builds rapport and similarity",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1463,10 +1463,10 @@
       "atomic_requirement": "Shared-identity framing",
       "source_feature_title": "Unity Building",
       "source_description": "Creates shared identity and purpose",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1476,10 +1476,10 @@
       "atomic_requirement": "Shared-purpose framing",
       "source_feature_title": "Unity Building",
       "source_description": "Creates shared identity and purpose",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1489,10 +1489,10 @@
       "atomic_requirement": "Citation influence mapping",
       "source_feature_title": "Citation Network Analysis",
       "source_description": "Maps influence and idea flow through academic literature",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
@@ -1502,10 +1502,10 @@
       "atomic_requirement": "Academic idea-flow mapping",
       "source_feature_title": "Citation Network Analysis",
       "source_description": "Maps influence and idea flow through academic literature",
-      "status": "missing",
+      "status": "verified-pushed",
       "research_required": true,
-      "implementation_path": null,
-      "test_evidence": null,
+      "implementation_path": "backend/app/modules/m20_general_cognitive_worker/atomic_concepts_0093_0115.py",
+      "test_evidence": "tests/modules/test_atomic_concepts_0093_0115.py",
       "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
     },
     {
