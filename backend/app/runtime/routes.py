@@ -33,3 +33,6 @@ router.include_router(semantic_wave_router_1723_2010)
 
 from .semantic_verification_routes_1149_1435 import router as semantic_verification_router_1149_1435
 router.include_router(semantic_verification_router_1149_1435)
+
+from .atomic_concepts_routes_0116_0138 import router as atomic_concepts_router_0116_0138
+router.include_router(atomic_concepts_router_0116_0138)
