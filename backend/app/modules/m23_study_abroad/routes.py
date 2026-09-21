@@ -75,3 +75,21 @@ def parity_tool(tool:Literal['career_track','career_opportunity_match','personal
   if tool=='interview_prep':return interview_prep(d.get('opportunity',{}),d.get('brand',{}),d.get('questions',[]))
   kind={'resume_narrative':'resume','cover_letter_narrative':'cover_letter','linkedin_headline':'linkedin_headline'}[tool];return career_narrative(kind,d.get('opportunity',{}),d.get('brand',{}),d.get('student_facts',[]))
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .parity_tools import narrative_intelligence,college_track,opportunity_match,story_strategy,supplemental_assistant,adapted_brand,entitlement_check,common_app_export,essay_suite,administrator_visibility
+class EnhancedParityIn(BaseModel):data:dict[str,Any]=Field(default_factory=dict)
+@router.post('/enhanced-parity/{tool}')
+def enhanced_parity(tool:Literal['narrative_intelligence','college_track','college_opportunity_match','story_strategy','supplemental_assistant','adapted_brand','entitlement_check','common_app_export','essay_suite','administrator_visibility'],body:EnhancedParityIn):
+ d=body.data
+ try:
+  if tool=='narrative_intelligence':return narrative_intelligence(d.get('evidence',[]),d.get('opportunity',{}))
+  if tool=='college_track':return college_track(d.get('profile',{}))
+  if tool=='college_opportunity_match':return opportunity_match('college',d.get('profile',{}),d.get('opportunities',[]))
+  if tool=='story_strategy':return story_strategy(d.get('prompt',''),d.get('evidence',[]),d.get('opportunity',{}))
+  if tool=='supplemental_assistant':return supplemental_assistant(d.get('prompts',[]),d.get('evidence',[]),d.get('opportunity',{}))
+  if tool=='adapted_brand':return adapted_brand(d.get('brand',{}),d.get('opportunity',{}))
+  if tool=='entitlement_check':return entitlement_check(d.get('plan',''),int(d.get('existing_projects',0)))
+  if tool=='common_app_export':return common_app_export(d.get('profile',{}),d.get('activities',[]),d.get('essays',[]))
+  if tool=='essay_suite':return essay_suite(d.get('prompt',''),d.get('evidence',[]),d.get('student_draft'))
+  return administrator_visibility(d.get('records',[]),d.get('consent',{}))
+ except ValueError as error:raise HTTPException(422,str(error)) from error
