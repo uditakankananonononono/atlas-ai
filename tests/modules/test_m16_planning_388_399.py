@@ -5,7 +5,7 @@ from app.modules.m16_executive_dashboard import planning
 from app.modules.m16_executive_dashboard.planning import WipLimitExceeded
 from app.modules.m16_executive_dashboard.schemas import *
 from app.modules.m16_executive_dashboard.service import Service
-NOW=datetime(2026,9,20,12,0,tzinfo=timezone.utc)
+NOW=datetime.now(timezone.utc).replace(hour=12,minute=0,second=0,microsecond=0)
 class FakePlanningRepo:
     def __init__(self):self.items={};self.sprints={};self.ceremonies=[];self.retros=[];self.experiments={};self.roadmaps={}
     # dashboard protocol (unused here but Service touches them on some paths)
