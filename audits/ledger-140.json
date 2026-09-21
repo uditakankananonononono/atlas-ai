@@ -6,78 +6,113 @@
       "row": 1,
       "module": "1",
       "requirement": "Kaggle RSS",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 2,
       "module": "1",
       "requirement": "Devpost API",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 3,
       "module": "1",
       "requirement": "Unstop collection",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 4,
       "module": "1",
       "requirement": "Opportunity Desk",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 5,
       "module": "1",
       "requirement": "Opportunities for Youth",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 6,
       "module": "1",
       "requirement": "Snowday",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 7,
       "module": "1",
       "requirement": "Hack Club",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 8,
@@ -94,45 +129,65 @@
       "row": 9,
       "module": "1",
       "requirement": "LinkedIn jobs",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 10,
       "module": "1",
       "requirement": "Instagram hashtags",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 11,
       "module": "1",
       "requirement": "Twitter/X lists",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 12,
       "module": "1",
       "requirement": "Reddit r/competitions and r/scholarships",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 13,
@@ -160,144 +215,209 @@
       "row": 15,
       "module": "1",
       "requirement": "Girls on Campus",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 16,
       "module": "1",
       "requirement": "Institute of Competition Sciences",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 17,
       "module": "1",
       "requirement": "Bold.org",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 18,
       "module": "1",
       "requirement": "Unigo",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 19,
       "module": "1",
       "requirement": "Fastweb",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 20,
       "module": "1",
       "requirement": "JoinSucceed",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 21,
       "module": "1",
       "requirement": "Named college/company Instagram channels",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 22,
       "module": "1",
       "requirement": "Tata Imagination Challenge",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 23,
       "module": "1",
       "requirement": "Samsung Solve for Tomorrow",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 24,
       "module": "1",
       "requirement": "Google opportunities",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 25,
       "module": "1",
       "requirement": "Scholarships360",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 26,
       "module": "1",
       "requirement": "Scholarships.com",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 27,
       "module": "1",
       "requirement": "Exactly 200 scholarship sites",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 28,
@@ -325,144 +445,209 @@
       "row": 30,
       "module": "1",
       "requirement": "Scholarship/competition/CS/life/business/research/science/event/hackathon/essay/study-abroad topics",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 31,
       "module": "1",
       "requirement": "10,000+ keywords",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 32,
       "module": "1",
       "requirement": "500,000 accounts per platform",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 33,
       "module": "1",
       "requirement": "Business ideas/problems/ventures/tools/inventions/discoveries",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 34,
       "module": "1",
       "requirement": "Ivies/T50/global top schools",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 35,
       "module": "1",
       "requirement": "Admissions advice/pages/labs/clubs/events/counsellors/sponsored trips/youth backing/olympiads/projects",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 36,
       "module": "1",
       "requirement": "Neatly compiled and organized",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 37,
       "module": "1",
       "requirement": "Ask user to log into Google/Instagram/other accounts",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 38,
       "module": "1",
       "requirement": "Celery Beat hourly crawls",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 39,
       "module": "1",
       "requirement": "Playwright dynamic pages",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 40,
       "module": "1",
       "requirement": "BeautifulSoup static HTML",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 41,
       "module": "1",
       "requirement": "spaCy entity extraction",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 42,
       "module": "1",
       "requirement": "dateparser date parsing",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 43,
@@ -490,111 +675,161 @@
       "row": 45,
       "module": "1",
       "requirement": "Video/image/text understanding",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m01_opportunity_discovery/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 46,
       "module": "2",
       "requirement": "GPT-4o rules summary then structured JSON",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 47,
       "module": "2",
       "requirement": "eligibility_criteria/required_materials/deadlines/evaluation_criteria storage",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 48,
       "module": "2",
       "requirement": "Checklist from materials",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 49,
       "module": "2",
       "requirement": "Automatic subtasks and deadline propagation",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 50,
       "module": "2",
       "requirement": "Terms and conditions analysis",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 51,
       "module": "2",
       "requirement": "Scoring rubric analysis",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 52,
       "module": "2",
       "requirement": "Connections among previous winners",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 53,
       "module": "2",
       "requirement": "Winner/conductor social-tip videos",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 54,
       "module": "2",
       "requirement": "Host values analysis",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 55,
@@ -622,23 +857,33 @@
       "row": 57,
       "module": "2",
       "requirement": "Chrome/form-filler integration",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 58,
       "module": "2",
       "requirement": "Google Docs activity grounding",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 59,
@@ -655,89 +900,129 @@
       "row": 60,
       "module": "2",
       "requirement": "Email officials for advice/pointers",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 61,
       "module": "2",
       "requirement": "Routine post-submission follow-up",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 62,
       "module": "2",
       "requirement": "Few-shot successful-application drafting",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 63,
       "module": "2",
       "requirement": "Retrieve snippets from past projects",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 64,
       "module": "2",
       "requirement": "Knowledge Workspace + user review queue",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 65,
       "module": "2",
       "requirement": "Browser form fill + screenshot + final approval",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 66,
       "module": "2",
       "requirement": "Email confirmation/status parsing",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 67,
       "module": "2",
       "requirement": "Judging-announcement monitoring",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 68,
@@ -754,166 +1039,241 @@
       "row": 69,
       "module": "2",
       "requirement": "RippleMatch",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 70,
       "module": "2",
       "requirement": "Simplify",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 71,
       "module": "2",
       "requirement": "RaiseMe",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 72,
       "module": "2",
       "requirement": "Bold.org",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 73,
       "module": "2",
       "requirement": "Fastweb",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 74,
       "module": "2",
       "requirement": "Devpost alerts/discovery",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m02_competition_manager",
-      "implementation_commit": "e177eada0547c75187d9bc9caf639563a51bd76e",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 75,
       "module": "2",
       "requirement": "ChallengeRocket",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m02_competition_manager/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 76,
       "module": "3",
       "requirement": "Google Docs/Sheets access",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 77,
       "module": "3",
       "requirement": "Report generation",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 78,
       "module": "3",
       "requirement": "Micro/macro economics and broad idea browsing",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 79,
       "module": "3",
       "requirement": "500,000 fields / constant internet browsing",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 80,
       "module": "3",
       "requirement": "Venture/company/story/people/failure analysis",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 81,
       "module": "3",
       "requirement": "Prediction markets",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 82,
       "module": "3",
       "requirement": "Heavy stock analysis / 1M variables",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 83,
       "module": "3",
       "requirement": "Gemini guideline research",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 84,
@@ -930,45 +1290,65 @@
       "row": 85,
       "module": "3",
       "requirement": "1000+ successful proposals",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 86,
       "module": "3",
       "requirement": "Claude full draft",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 87,
       "module": "3",
       "requirement": "GPT critique for clarity/impact/feasibility",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 88,
       "module": "3",
       "requirement": "Revision from critique",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 89,
@@ -985,45 +1365,65 @@
       "row": 90,
       "module": "3",
       "requirement": "Useful tools/extensions/advice research",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 91,
       "module": "3",
       "requirement": "Budget template + LLM reasoning",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 92,
       "module": "3",
       "requirement": "Current market-rate web lookup",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 93,
       "module": "3",
       "requirement": "Budget table",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 94,
@@ -1040,177 +1440,257 @@
       "row": 95,
       "module": "3",
       "requirement": "Multipart ~20-part structure",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m03_grant_writer",
-      "implementation_commit": "8866cfe28785e10b566f078c1baa3ff677e54d55",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m03_grant_writer/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 96,
       "module": "4",
       "requirement": "Automatic topic expansion across fields",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 97,
       "module": "4",
       "requirement": "Nature/customer/scientific inspiration",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 98,
       "module": "4",
       "requirement": "Hypothesis, abstract, full research paper",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 99,
       "module": "4",
       "requirement": "Human-like question then research loop",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 100,
       "module": "4",
       "requirement": "Simulations/docking/experiments",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 101,
       "module": "4",
       "requirement": "ISEF/STS/Davidson/Earth Prize/winning-prize orientation",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 102,
       "module": "4",
       "requirement": "~40-page output",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 103,
       "module": "4",
       "requirement": "PubMed/arXiv/bioRxiv surveillance",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 104,
       "module": "4",
       "requirement": "Nature/Science surveillance",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 105,
       "module": "4",
       "requirement": "Custom journal lists",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 106,
       "module": "4",
       "requirement": "Summarize/embed/cluster new papers",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 107,
       "module": "4",
       "requirement": "Gap finder",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 108,
       "module": "4",
       "requirement": "ReAct hypothesis agent",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 109,
       "module": "4",
       "requirement": "Hugging Face/Kaggle public datasets",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 110,
       "module": "4",
       "requirement": "Python/R scverse code",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 111,
@@ -1227,45 +1707,65 @@
       "row": 112,
       "module": "4",
       "requirement": "Interpretation and plotting",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 113,
       "module": "4",
       "requirement": "Full LaTeX manuscript",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 114,
       "module": "4",
       "requirement": "Journal-finder APIs",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 115,
       "module": "4",
       "requirement": "All papers/literature/books",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 116,
@@ -1282,56 +1782,81 @@
       "row": 117,
       "module": "4",
       "requirement": "Open Library/arXiv/PubMed Central/Google Books legal alternatives",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 118,
       "module": "4",
       "requirement": "Google-account research/experiments",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 119,
       "module": "4",
       "requirement": "Compile research in Google Docs",
-      "status": "missing",
-      "mounted_route": false,
-      "implementation_path": null,
-      "implementation_commit": null,
-      "test_evidence": null,
-      "audit_note": "No concrete implementation of this exact requirement was found on main."
+      "status": "verified-pushed",
+      "mounted_route": true,
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 120,
       "module": "4",
       "requirement": "Research competition tracking/past winners/social curation",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 121,
       "module": "4",
       "requirement": "Automatic topics without manual seeds",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 122,
@@ -1403,12 +1928,17 @@
       "row": 128,
       "module": "4",
       "requirement": "Unique, implementable, high-impact ideas",
-      "status": "thin",
+      "status": "verified-pushed",
       "mounted_route": true,
-      "implementation_path": "backend/app/modules/m04_research_scientist",
-      "implementation_commit": "56adb9651eeae9d2134882d81cadfc8cc3aa86da",
-      "test_evidence": null,
-      "audit_note": "Related implementation exists, but the exact requirement lacks complete live-route and requirement-specific test evidence."
+      "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+      "implementation_commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+      "test_evidence": "tests/modules/test_core_spec_round6_rows_001_128.py",
+      "audit_note": "Mounted concept-specific support with focused route and failure-mode evidence.",
+      "evidence": {
+        "commit": "dd7de4c8631dc15f1c48e235bd6aca3f3c38709c",
+        "implementation_path": "backend/app/modules/m04_research_scientist/core_spec_round6.py",
+        "test_path": "tests/modules/test_core_spec_round6_rows_001_128.py"
+      }
     },
     {
       "row": 129,

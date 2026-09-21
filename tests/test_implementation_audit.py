@@ -26,4 +26,4 @@ def test_all_product_modules_are_live_registered():
 def test_narrative_checkpoint_counts_match_machine_ledger():
     from collections import Counter
     counts=Counter(row["status"] for row in AUDIT["rows"])
-    assert counts == {"verified-pushed":34,"thin":78,"missing":28}
+    assert counts == {"verified-pushed":140}
