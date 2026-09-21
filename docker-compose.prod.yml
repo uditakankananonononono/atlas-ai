@@ -58,4 +58,12 @@ services:
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?set REDIS_PASSWORD}
     volumes: ["atlas-redis:/data"]
     healthcheck: {test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"], interval: 10s, timeout: 5s, retries: 10}
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.111.0
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes: ["./deploy/otel/collector.yaml:/etc/otelcol/config.yaml:ro"]
+  grafana:
+    image: grafana/grafana:11.3.0
+    ports: ["3001:3000"]
+    volumes: ["./deploy/grafana/dashboard.json:/var/lib/grafana/dashboards/atlas.json:ro"]
 volumes: {atlas-postgres: {}, atlas-redis: {}}

@@ -1,0 +1,7 @@
+receivers: {otlp: {protocols: {grpc: {}, http: {}}}}
+processors: {batch: {}}
+exporters: {googlecloud: {}, prometheus: {endpoint: "0.0.0.0:8889"}}
+service:
+  pipelines:
+    traces: {receivers: [otlp], processors: [batch], exporters: [googlecloud]}
+    metrics: {receivers: [otlp], processors: [batch], exporters: [googlecloud, prometheus]}
