@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "missing": 1453,
-    "verified-pushed": 554,
+    "missing": 1451,
+    "verified-pushed": 556,
     "thin": 3
   },
   "delta_from_schema_version_1": {
@@ -14302,8 +14302,12 @@
       "category": "Data & Analytics",
       "requirement": "Leave-One-Out",
       "description": "Extreme cross-validation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45490f87561931ac73bef9201de98c6bbf5f4d74",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1108_1109.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
@@ -14312,8 +14316,12 @@
       "category": "Data & Analytics",
       "requirement": "K-Fold Cross-Validation",
       "description": "Standard cross-validation",
-      "status": "missing",
-      "evidence": null,
+      "status": "verified-pushed",
+      "evidence": {
+        "commit": "45490f87561931ac73bef9201de98c6bbf5f4d74",
+        "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
+        "test_path": "tests/modules/test_m16_analysis_1108_1109.py"
+      },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
