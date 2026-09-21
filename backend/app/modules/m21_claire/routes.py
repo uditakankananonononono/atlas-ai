@@ -21,3 +21,22 @@ def environment_change(goal_id:str,req:EnvironmentChangeIn,s:Service=Depends(get
  if goal_id not in s.goals:raise HTTPException(404,"goal not found")
  try:return s.request_environment_change(goal_id,req.operation,req.preview)
  except ValueError as e:raise HTTPException(422,str(e))
+
+from typing import Any
+from pydantic import BaseModel,Field
+from app.auth.context import TenantContext,require_tenant
+from .owner_workflow_279_329 import claire_owner_workflow_279_329,preference_feedback_4_6_9
+class ClaireOwnerWorkflowIn(BaseModel):
+    row_id:int=Field(ge=279,le=329)
+    data:dict[str,Any]=Field(default_factory=dict)
+class ClairePreferenceFeedbackIn(BaseModel):
+    feature_id:int
+    data:dict[str,Any]=Field(default_factory=dict)
+@router.post('/owner-workflow-279-329')
+def claire_owner_workflow_route(body:ClaireOwnerWorkflowIn,tenant:TenantContext=Depends(require_tenant)):
+    try:return {'tenant_id':tenant.tenant_id,**claire_owner_workflow_279_329(body.row_id,body.data)}
+    except ValueError as error:raise HTTPException(422,str(error)) from error
+@router.post('/preference-feedback-4-6-9')
+def claire_preference_feedback_route(body:ClairePreferenceFeedbackIn,tenant:TenantContext=Depends(require_tenant)):
+    try:return {'tenant_id':tenant.tenant_id,**preference_feedback_4_6_9(body.feature_id,body.data)}
+    except ValueError as error:raise HTTPException(422,str(error)) from error
