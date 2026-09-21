@@ -663,7 +663,7 @@
       "test_case": "tests/modules/test_m20_foresight.py::test_row51_leverage_ranking_prefers_reinforcing_loops",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: leverage ranking by out-degree, reinforcing-loop membership and delay, with goal/structure/parameter level classification; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 51 named test test_row51_leverage_ranking_prefers_reinforcing_loops asserts dedicated numerical outcomes plus rejection of a linkless systems model; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -676,7 +676,7 @@
       "test_case": "tests/modules/test_m20_foresight.py::test_row52_constraint_analysis_finds_bottleneck",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: bottleneck identification by minimum stage capacity with five focusing steps and throughput math; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 52 named test test_row52_constraint_analysis_finds_bottleneck asserts dedicated numerical outcomes plus rejection of empty stages and non-positive capacity; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -689,7 +689,7 @@
       "test_case": "tests/modules/test_m20_foresight.py::test_row53_antifragility_classification",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: per-component stress-response classification (fragile/robust/antifragile) with redesign moves; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 53 named test test_row53_antifragility_classification asserts dedicated numerical outcomes plus rejection of an empty component list; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -702,7 +702,7 @@
       "test_case": "tests/modules/test_m20_foresight.py::test_row54_optionality_scoring",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: optionality scoring from kept/closed option counts plus reversibility premium, with staging recommendations; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 54 named test test_row54_optionality_scoring asserts dedicated numerical outcomes plus rejection of a decision with no options kept or closed; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -715,7 +715,7 @@
       "test_case": "tests/modules/test_m20_foresight.py::test_row55_reversibility_doors",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: one-way vs two-way door classification over undo cost/time and blast radius, one-way doors flagged for approval review; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 55 named test test_row55_reversibility_doors asserts dedicated numerical outcomes plus rejection of out-of-range undo cost and negative undo days; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -728,7 +728,7 @@
       "test_case": "tests/modules/test_m20_foresight.py::test_row56_asymmetry_flags_and_rejects_unbounded",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: upside/downside ratio screening that flags unbounded downside instead of endorsing it; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 56 named test test_row56_asymmetry_flags_and_rejects_unbounded asserts dedicated numerical outcomes plus rejection of empty options and out-of-range probabilities; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -741,7 +741,7 @@
       "test_case": "tests/modules/test_m20_foresight.py::test_row57_expected_value_ranked_with_sensitivity",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: probability-weighted EV per option with +/-10pp best-outcome sensitivity; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 57 named test test_row57_expected_value_ranked_with_sensitivity asserts dedicated numerical outcomes plus rejection of empty options and outcome probabilities exceeding unit mass; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -754,7 +754,7 @@
       "test_case": "tests/modules/test_m20_foresight.py::test_row58_risk_of_ruin_verdicts",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: closed-form gambler's ruin or seeded Monte Carlo ruin probability with verdict thresholds; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 58 named test test_row58_risk_of_ruin_verdicts asserts dedicated numerical outcomes plus rejection of bet size above capital and out-of-range win probability; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -767,7 +767,7 @@
       "test_case": "tests/modules/test_m20_foresight.py::test_row59_kelly_sizing",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: full-Kelly fraction with fractional sizing, cap and log-growth rate; no-edge positions size to zero; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 59 named test test_row59_kelly_sizing asserts dedicated numerical outcomes plus rejection of out-of-range win probability and a zero Kelly fraction; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -780,7 +780,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row60_ergodicity_time_vs_ensemble",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: ensemble vs time-average (geometric) growth comparison over outcome distributions; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 60 named test test_row60_ergodicity_time_vs_ensemble asserts dedicated numerical outcomes plus rejection of empty outcomes and invalid probabilities; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -793,7 +793,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row61_nonlinear_classification_and_extrapolation",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: four-form nonlinear fit (linear/exponential/power/log) with r-squared selection and extrapolation; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 61 named test test_row61_nonlinear_classification_and_extrapolation asserts dedicated numerical outcomes plus rejection of fewer than three samples, non-positive samples and an unknown model; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -806,7 +806,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row62_tipping_point_early_warning",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: rolling variance and lag-1 autocorrelation early-warning signals before a threshold crossing; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 62 named test test_row62_tipping_point_early_warning asserts dedicated numerical outcomes plus rejection of a window below 4 and a series shorter than two windows; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -819,7 +819,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row63_network_effect_models",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: Sarnoff/Metcalfe/Reed network value models with two-sided market handling; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 63 named test test_row63_network_effect_models asserts dedicated numerical outcomes plus rejection of negative user counts and an unknown value model; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -832,7 +832,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row64_flywheel_identification",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: reinforcing-loop detection through growth variables with loop-length slowdown notes; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 64 named test test_row64_flywheel_identification asserts dedicated numerical outcomes plus rejection of a linkless systems model; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -845,7 +845,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row65_moat_assessment",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: moat scoring by strength times durability with unclaimed moats reported as unscored; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 65 named test test_row65_moat_assessment asserts dedicated numerical outcomes plus rejection of strength ratings above the 0-5 scale; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -858,7 +858,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row66_disruption_assessment",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: disruption condition checklist (low-end/new-market) from improvement-rate trajectories; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 66 named test test_row66_disruption_assessment asserts dedicated numerical outcomes plus rejection of negative improvement rates; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -871,7 +871,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row67_jtbd_framing",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: jobs-to-be-done statement parsing with functional/emotional/social dimension tagging; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 67 named test test_row67_jtbd_framing asserts dedicated numerical outcomes plus rejection of an empty statement list; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -884,7 +884,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row68_value_chain_mapping",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: value-chain margin-share mapping with capture concentration; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 68 named test test_row68_value_chain_mapping asserts dedicated numerical outcomes plus rejection of empty stages and negative cost/price; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -897,7 +897,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row69_pareto_vital_few",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: Pareto vital-few selection against a target value share with a pareto_holds check; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 69 named test test_row69_pareto_vital_few asserts dedicated numerical outcomes plus rejection of empty items, negative values and a zero target share; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -910,7 +910,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row70_toc_management_loop",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: Theory-of-Constraints management loop with release pacing, WIP cap and bottleneck migration tracking; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 70 named test test_row70_toc_management_loop asserts dedicated numerical outcomes plus rejection of empty stages and zero capacity; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -923,7 +923,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row71_queueing_metrics",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: M/M/1 and M/M/c queueing metrics with stability checks; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 71 named test test_row71_queueing_metrics asserts dedicated numerical outcomes plus rejection of zero service rate and zero servers; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -936,7 +936,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row72_littles_law_solve_and_levers",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: Little's Law solve from any two of WIP/throughput/cycle-time with WIP-reduction levers; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 72 named test test_row72_littles_law_solve_and_levers asserts dedicated numerical outcomes plus rejection of fewer or more than exactly two of the three quantities; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -949,7 +949,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row73_critical_path_with_slack",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: critical path longest-chain analysis with per-task slack; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 73 named test test_row73_critical_path_with_slack asserts dedicated numerical outcomes plus rejection of an empty task list; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -962,7 +962,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row74_monte_carlo_project_duration",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: seeded triangular Monte Carlo project duration with percentiles and an AST-safe expression evaluator; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 74 named test test_row74_monte_carlo_project_duration asserts dedicated numerical outcomes plus rejection of empty tasks and min>mode ranges (and unsafe expressions); no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -975,7 +975,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row75_sensitivity_ranks_parameters",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: one-at-a-time parameter swing ranking with influence ordering; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 75 named test test_row75_sensitivity_ranks_parameters asserts dedicated numerical outcomes plus rejection of an unsafe expression and out-of-range swing; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -988,7 +988,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row76_tornado_bars_ordered",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: tornado bars ordered by impact with ASCII rendering from the swing data; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 76 named test test_row76_tornado_bars_ordered asserts dedicated numerical outcomes plus rejection of a zero swing parameter; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1001,7 +1001,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row77_decision_tree_rollback",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: decision-tree rollback over chance/decision nodes with probability-mass validation; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 77 named test test_row77_decision_tree_rollback asserts dedicated numerical outcomes plus rejection of chance-node probabilities not summing to 1; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1014,7 +1014,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row78_real_options_binomial",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: multiplicative binomial real-options pricing for expand/abandon with arbitrage rejection; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 78 named test test_row78_real_options_binomial asserts dedicated numerical outcomes plus rejection of inverted up/down, zero steps, unknown kind and arbitrage parameters; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1027,7 +1027,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row79_game_dominance_and_pareto",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: dominance and Pareto-cell analysis over payoff matrices; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 79 named test test_row79_game_dominance_and_pareto asserts dedicated numerical outcomes plus rejection of ragged and shape-mismatched payoff matrices; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1040,7 +1040,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row80_nash_pure_and_mixed",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: pure and mixed 2x2 Nash equilibrium computation; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 80 named test test_row80_nash_pure_and_mixed asserts dedicated numerical outcomes plus rejection of a non-2x2 game; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1053,7 +1053,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row81_vcg_allocation_and_incentives",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: VCG allocation with externality payments and deviation-based incentive check; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 81 named test test_row81_vcg_allocation_and_incentives asserts dedicated numerical outcomes plus rejection of an empty agent set; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1066,7 +1066,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row82_auction_guidance",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: auction-format bidding guidance (first/second price, winner's-curse warnings); returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 82 named test test_row82_auction_guidance asserts dedicated numerical outcomes plus rejection of fewer than two bidders and an unknown auction type; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1079,7 +1079,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row83_signaling_regimes",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: signaling regime classification (separating/pooling/no-signaling) from type-dependent costs; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 83 named test test_row83_signaling_regimes asserts dedicated numerical outcomes plus rejection of negative cost/benefit inputs; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1092,7 +1092,7 @@
       "test_case": "tests/modules/test_m20_strategy.py::test_row84_principal_agent_contract",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: linear-share principal-agent contract grid with incentive-compatibility and participation checks; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 84 named test test_row84_principal_agent_contract asserts dedicated numerical outcomes plus rejection of empty efforts, an unknown target effort and shares outside [0, 1]; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1105,7 +1105,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row85_asymmetry_index_severity_and_unknown_material",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: withheld-material-fact index with severity and required disclosures; withholding blocks exploitation; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 85 named test test_row85_asymmetry_index_severity_and_unknown_material asserts dedicated numerical outcomes plus rejection of non-list proposer knowledge input; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1118,7 +1118,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row86_adverse_selection_z_score_and_small_sample_uncertainty",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: offered-vs-population risk z-score with standard error and small-sample uncertainty; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 86 named test test_row86_adverse_selection_z_score_and_small_sample_uncertainty asserts dedicated numerical outcomes plus rejection of a single offered risk score; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1131,7 +1131,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row87_moral_hazard_exposure_scoring_and_controls",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: per-action moral-hazard exposure scoring with monitoring coverage and recommended controls; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 87 named test test_row87_moral_hazard_exposure_scoring_and_controls asserts dedicated numerical outcomes plus rejection of misaligned action/observability arrays; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1144,7 +1144,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row88_screening_separation_spread_and_pooling_pairs",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: net-utility separation test across types with pooling-risk pair detection; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 88 named test test_row88_screening_separation_spread_and_pooling_pairs asserts dedicated numerical outcomes plus rejection of misaligned type/cost/benefit arrays; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1157,7 +1157,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row89_commitment_device_strength_and_deadline_validation",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: commitment-device strength scoring with adherence estimate and ISO deadline validation; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 89 named test test_row89_commitment_device_strength_and_deadline_validation asserts dedicated numerical outcomes plus rejection of a non-ISO deadline and empty check-ins; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1170,7 +1170,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row90_threat_credibility_components",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: lawful/proportionate/authorized credibility gate; no threat is generated and unauthorized ones are blocked; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 90 named test test_row90_threat_credibility_components asserts dedicated numerical outcomes plus rejection of an unauthorized consequence (blocked, with reasons); no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1183,7 +1183,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row91_bargaining_power_weighted_score_and_interval",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: weighted bargaining-power score with driver attribution and uncertainty interval; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 91 named test test_row91_bargaining_power_weighted_score_and_interval asserts dedicated numerical outcomes plus rejection of out-of-range factor inputs; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1196,7 +1196,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row92_batna_sensitivity_and_fragility",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: BATNA net-value ranking with runner-up swing and fragility classification; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 92 named test test_row92_batna_sensitivity_and_fragility asserts dedicated numerical outcomes plus rejection of misaligned alternative/value/cost arrays; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1209,7 +1209,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row93_zopa_surplus_splits_and_no_deal_zone",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: ZOPA existence, width and surplus-split options with a no-deal-zone note; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 93 named test test_row93_zopa_surplus_splits_and_no_deal_zone asserts dedicated numerical outcomes plus rejection of a non-finite reservation price; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1222,7 +1222,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row94_integrative_logrolling_gain_and_distributive_detection",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: integrative logrolling allocation by party weights with distributive detection; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 94 named test test_row94_integrative_logrolling_gain_and_distributive_detection asserts dedicated numerical outcomes plus rejection of negative party weights; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1235,7 +1235,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row95_anchoring_rejects_objective_outside_evidence",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: evidence-range anchoring that rejects objectives outside the evidence band; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 95 named test test_row95_anchoring_rejects_objective_outside_evidence asserts dedicated numerical outcomes plus rejection of an inverted evidence range; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1248,7 +1248,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row96_framing_numeric_equivalence_gate",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: gain/loss frame numeric-equivalence gate; one-sided framing is not deployable; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 96 named test test_row96_framing_numeric_equivalence_gate asserts dedicated numerical outcomes plus rejection of missing frames or facts; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1261,7 +1261,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row97_loss_aversion_reports_reference_lambda_and_asymmetry",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: loss-aversion reference lambda with frame asymmetry ratio under the same balanced-frame gate; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 97 named test test_row97_loss_aversion_reports_reference_lambda_and_asymmetry asserts dedicated numerical outcomes plus rejection of missing frames or facts; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1274,7 +1274,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row98_social_proof_wilson_interval_and_sample_floor",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: social-proof Wilson interval with n>=30 statistical floor and evidence requirement; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 98 named test test_row98_social_proof_wilson_interval_and_sample_floor asserts dedicated numerical outcomes plus rejection of a missing claim and a zero sample size; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1287,7 +1287,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row99_scarcity_arithmetic_verification",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: scarcity arithmetic verification against unit counts; fabricated scarcity is blocked; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 99 named test test_row99_scarcity_arithmetic_verification asserts dedicated numerical outcomes plus rejection of sold units exceeding total units; no label-only dispatch or shared boolean transparency gate."
     },
     {
@@ -1300,7 +1300,7 @@
       "test_case": "tests/modules/test_m20_negotiation_behavior_0085_0109.py::test_row100_reciprocity_obligation_risk_blocks_strings",
       "post_semantic_status": "verified",
       "implementation_details": "Distinct executed algorithm: reciprocity obligation-risk scoring that blocks strings-attached giving; returns numerical decision outputs with declared assumptions/uncertainty; rejects malformed/adversarial inputs; mounted through the existing module API route.",
-      "depth_sweep_status": "verified-distinctive",
+      "depth_sweep_status": "verified-practitioner-depth",
       "depth_evidence": "Row 100 named test test_row100_reciprocity_obligation_risk_blocks_strings asserts dedicated numerical outcomes plus rejection of strings-attached benefit (blocked with obligation-risk score); no label-only dispatch or shared boolean transparency gate."
     },
     {
