@@ -47,3 +47,41 @@ def design_support_333_359(fid:int,data:dict[str,Any])->dict[str,Any]:
  if fid in ACCESS:return _access(fid,data)
  if fid in PROCESS:return _process(fid,data)
  raise ValueError('feature_id must be 333-359')
+
+def _distinctive(fid:int,d:dict[str,Any],o:dict[str,Any])->dict[str,Any]:
+ """Attach the method-specific decision instrument for each design discipline."""
+ if fid==333:
+  disp=float(d.get('displacement_kg',0));vol=float(d.get('hull_volume_m3',0));o['marine_stability']={'displacement_kg':disp,'buoyancy_margin_kg':vol*1000-disp,'positive_margin':vol*1000>disp}
+ elif fid==334:
+  ages=d.get('age_range',[0,0]);parts=d.get('parts',[]);o['toy_safety']={'age_range':ages,'small_part_count':sum(float(x.get('diameter_mm',99))<31.7 for x in parts),'play_cycle_count':len(d.get('play_cycles',[]))}
+ elif fid==335:o['game_system']={'core_loop_minutes':d.get('core_loop_minutes'),'verbs':d.get('player_verbs',[]),'loop_to_goal_links':d.get('loop_to_goal_links',[])}
+ elif fid==336:o['level_flow']={'critical_path':d.get('critical_path',[]),'optional_nodes':d.get('optional_nodes',[]),'checkpoint_gap_max':max(d.get('checkpoint_gaps_minutes',[0]))}
+ elif fid==337:o['puzzle_model']={'givens':d.get('givens',[]),'inference_steps':d.get('inference_steps',[]),'solution_count':d.get('solution_count'),'unique_solution':d.get('solution_count')==1}
+ elif fid==338:o['mechanic_model']={'inputs':d.get('inputs',[]),'state_changes':d.get('state_changes',[]),'feedback_latency_ms':d.get('feedback_latency_ms'),'counterplay':d.get('counterplay',[])}
+ elif fid==339:o['economy_model']={'source_total':sum(float(x.get('amount',0)) for x in d.get('economy',{}).get('sources',[])),'sink_total':sum(float(x.get('amount',0)) for x in d.get('economy',{}).get('sinks',[])),'inflation_controls':d.get('inflation_controls',[])}
+ elif fid==340:o['narrative_graph']={'beats':d.get('beats',[]),'choice_consequences':d.get('choice_consequences',[]),'unresolved_threads':d.get('unresolved_threads',[])}
+ elif fid==341:o['quest_graph']={'prerequisites':d.get('prerequisites',{}),'rewards':d.get('rewards',{}),'failure_recovery':d.get('failure_recovery',[])}
+ elif fid==342:o['difficulty_curve']={'target':d.get('target_success_rates',[]),'observed':[x.get('completion_rate') for x in d.get('playtests',[])],'adaptive_bounds':d.get('adaptive_bounds')}
+ elif fid==343:o['experience_journey']={'moments':d.get('moments',[]),'emotion_samples':d.get('emotion_samples',[]),'friction_points':d.get('friction_points',[])}
+ elif fid==344:o['accessibility_audit']={'modalities':d.get('modalities',[]),'wcag_checks':d.get('wcag_checks',[]),'assistive_tech_tests':d.get('assistive_tech_tests',[])}
+ elif fid==345:o['localization_qa']={'locale_count':len(d.get('locales',[])),'expansion_budget_percent':d.get('expansion_budget_percent'),'pseudo_localization':bool(d.get('pseudo_localization'))}
+ elif fid==346:o['transcreation_matrix']={'source_intent':d.get('source_intent'),'locale_variants':d.get('locale_variants',[]),'back_translation_checks':d.get('back_translation_checks',[])}
+ elif fid==347:o['cultural_adaptation']={'context_inventory':d.get('cultural_contexts',[]),'community_reviewers':d.get('community_reviewers',[]),'adaptation_decisions':d.get('adaptation_decisions',[])}
+ elif fid==348:o['sensitivity_register']={'findings':d.get('sensitivity_findings',[]),'represented_reviewer_count':len(d.get('represented_reviewers',[])),'unresolved_count':sum(x.get('status')!='resolved' for x in d.get('sensitivity_findings',[]))}
+ elif fid==349:o['inclusion_matrix']={'excluded_scenarios':d.get('excluded_scenarios',[]),'need_coverage_ratio':sum(x['status']!='gap' for x in o['coverage'])/len(o['coverage']) if o['coverage'] else None}
+ elif fid==350:o['universal_principles']={'equitable_use':d.get('equitable_use',[]),'tolerance_for_error':d.get('tolerance_for_error',[]),'low_effort':d.get('low_effort',[])}
+ elif fid==351:o['participation_plan']={'power_map':d.get('power_map',[]),'decision_rights':d.get('decision_rights',[]),'compensation':d.get('consent_and_compensation',{})}
+ elif fid==352:o['codesign_trace']={'participant_ideas':d.get('participant_ideas',[]),'adopted':d.get('adopted_ideas',[]),'rejection_reasons':d.get('rejection_reasons',{})}
+ elif fid==353:o['design_thinking_cycle']={'empathy_evidence':d.get('evidence',[]),'problem_statement':d.get('problem_statement'),'prototype_plan':d.get('prototype_plan',[]),'test_learning':d.get('test_learning',[])}
+ elif fid==354:o['sprint_board']={'days':d.get('sprint_days',[]),'decider':d.get('decider'),'prototype_scope':d.get('prototype_plan',[]),'test_participants':d.get('test_participants',[])}
+ elif fid==355:o['speculative_scenarios']={'signals':d.get('signals',[]),'axes':d.get('uncertainty_axes',[]),'scenarios':d.get('future_scenarios',[]),'not_forecast':True}
+ elif fid==356:o['critical_provocation']={'assumption_challenged':d.get('assumption_challenged'),'artifact':d.get('provocation'),'discussion_questions':d.get('discussion_questions',[])}
+ elif fid==357:o['adversarial_review']={'abuse_cases':d.get('critique_or_abuse_cases',[]),'threat_actors':d.get('threat_actors',[]),'mitigations':d.get('mitigations',[]),'authorization_required':True}
+ elif fid==358:o['transition_portfolio']={'horizons':d.get('horizons',[]),'pathways':d.get('transition_pathways',[]),'lock_in_risks':d.get('lock_in_risks',[]),'leading_indicators':d.get('leading_indicators',[])}
+ elif fid==359:
+  bp=d.get('service_blueprint',[]);o['service_blueprint_analysis']={'steps':bp,'handoff_count':sum(bool(x.get('handoff')) for x in bp),'frontstage_backstage_gaps':[x.get('id') for x in bp if not x.get('frontstage') or not x.get('backstage')]}
+ o['method_engine']=FEATURES[fid].lower().replace(' ','_');return o
+
+_original_design_support=design_support_333_359
+def design_support_333_359(fid:int,data:dict[str,Any])->dict[str,Any]:
+ return _distinctive(fid,data,_original_design_support(fid,data))
