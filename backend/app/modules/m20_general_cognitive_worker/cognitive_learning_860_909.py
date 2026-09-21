@@ -1,6 +1,7 @@
 """Reviewable cognitive and learning designs for audit rows 860-909."""
 from __future__ import annotations
 import re
+from math import log
 from typing import Any
 ROWS=dict(enumerate('''Historical Thinking|Critical Thinking|Creative Thinking|Lateral Thinking|Divergent Thinking|Convergent Thinking|Associative Thinking|Reframing|Perspective Shifting|Paradigm Shifting|Concept Formation|Concept Mapping|Mind Mapping|Knowledge Organization|Taxonomy Creation|Ontology Development|Semantic Networks|Schema Development|Mental Model Construction|Model Updating|Belief Revision|Theory Change|Conceptual Change|Learning by Teaching|Learning by Doing|Learning by Observing|Learning by Imitating|Learning by Trial and Error|Learning by Insight|Learning by Association|Classical Conditioning|Operant Conditioning|Observational Learning|Social Learning|Vicarious Learning|Experiential Learning|Reflective Practice|Action Learning|Project-Based Learning|Problem-Based Learning|Inquiry-Based Learning|Discovery Learning|Guided Discovery|Direct Instruction|Explicit Instruction|Implicit Learning|Incidental Learning|Intentional Learning|Formal Learning|Informal Learning'''.split('|'),860))
 class CognitiveLearningError(ValueError):pass
@@ -17,6 +18,73 @@ def _source(p):
  src=_need(p,'sources')
  if any(not s.get('source_id') or not s.get('observed_at') for s in src):raise CognitiveLearningError('each source requires source_id and observed_at')
  return src
+def _tenant(payload:dict[str,Any])->str:
+ tenant=str(payload.get('tenant_id','default')).strip()
+ if not tenant: raise CognitiveLearningError('tenant_id must not be empty')
+ # References may be supplied by repositories/controllers. Never silently mix them.
+ for ref in payload.get('resource_refs',[]):
+  if str(ref.get('tenant_id','')).strip()!=tenant:
+   raise CognitiveLearningError('cross-tenant resource reference rejected')
+ return tenant
+
+def _quality(sources,artifacts):
+ supplied=sum(a['status']=='supplied' for a in artifacts); total=len(artifacts)
+ dated=sum(bool(s.get('observed_at')) for s in sources)
+ diversity=len({s.get('kind','unknown') for s in sources})
+ coverage=supplied/total if total else 0.0
+ confidence=min(.99, .15+.55*coverage+.15*min(1,dated/max(1,len(sources)))+.15*min(1,diversity/2))
+ return {'workflow_coverage':round(coverage,3),'source_count':len(sources),'source_type_diversity':diversity,
+         'confidence':round(confidence,3),'uncertainty':round(1-confidence,3),
+         'evaluation_status':'reviewable' if coverage==1 and sources else 'insufficient_evidence'}
+
+def _algorithm(row:int,inputs:dict[str,Any])->dict[str,Any]:
+ """Compute capability-specific artifacts; never substitute a label for analysis."""
+ if row==861:
+  evidence=inputs.get('evidence',[]); evidence=evidence if isinstance(evidence,list) else []; alternatives=inputs.get('alternatives',[]); alternatives=alternatives if isinstance(alternatives,list) else [alternatives]
+  scored=[]
+  for item in evidence:
+   relevance=float(item.get('relevance',0)); reliability=float(item.get('reliability',0)); independence=float(item.get('independence',1))
+   if any(not 0<=x<=1 for x in (relevance,reliability,independence)): raise CognitiveLearningError('evidence scores must be in [0,1]')
+   scored.append({'id':item.get('id'),'weight':round(relevance*reliability*independence,4),'direction':item.get('direction','unknown')})
+  return {'evidence_weights':scored,'total_support':round(sum(x['weight'] for x in scored if x['direction']=='support'),4),
+          'total_counterevidence':round(sum(x['weight'] for x in scored if x['direction']=='against'),4),
+          'alternatives_considered':len(alternatives),'judgment_is_provisional':True}
+ if row==864:
+  ideas=inputs.get('originality',[]) or inputs.get('ideas',[]); categories={str(x.get('category','uncategorized')) for x in ideas if isinstance(x,dict)}
+  return {'fluency':len(ideas),'flexibility':len(categories),'duplicate_rate':round(1-len({str(x) for x in ideas})/max(1,len(ideas)),3),'selection_deferred':True}
+ if row==865:
+  candidates=inputs.get('compare',[]) or inputs.get('candidates',[]); candidates=candidates if isinstance(candidates,list) else []; criteria=inputs.get('criteria',[]); criteria=criteria if isinstance(criteria,list) else []; ranked=[]
+  weights={str(c['name']):float(c.get('weight',1)) for c in criteria if isinstance(c,dict) and c.get('name')}
+  for c in candidates:
+   ratings=c.get('ratings',{}); denom=sum(abs(v) for v in weights.values()) or 1
+   ranked.append({'id':c.get('id'),'score':round(sum(weights[k]*float(ratings.get(k,0)) for k in weights)/denom,4),'missing_criteria':[k for k in weights if k not in ratings]})
+  return {'ranking':sorted(ranked,key=lambda x:x['score'],reverse=True),'weights':weights,'sensitivity_review_required':True}
+ if row in (871,875,876):
+  edges=inputs.get('typed_links',inputs.get('relations',inputs.get('typed_edges',[]))); nodes=inputs.get('concepts',inputs.get('classes',inputs.get('nodes',[])))
+  names={str(n.get('id',n)) if isinstance(n,dict) else str(n) for n in nodes}; invalid=[]
+  for e in edges:
+   if str(e.get('source')) not in names or str(e.get('target')) not in names: invalid.append(e)
+  return {'node_count':len(names),'edge_count':len(edges),'dangling_edges':invalid,'graph_valid':not invalid}
+ if row==879:
+  errors=inputs.get('prediction_error',[]); vals=[abs(float(x.get('observed',0))-float(x.get('predicted',0))) for x in errors if isinstance(x,dict)]
+  return {'mean_absolute_prediction_error':round(sum(vals)/len(vals),4) if vals else None,'observations_compared':len(vals),'revision_required':bool(vals and sum(vals)/len(vals)>float(inputs.get('revision_threshold',0)))}
+ if row==880:
+  revised=[]
+  for b in inputs.get('revised_confidence',[]):
+   prior=float(b.get('prior',.5)); likelihood=float(b.get('likelihood',.5)); alt=float(b.get('alternative_likelihood',.5)); den=prior*likelihood+(1-prior)*alt
+   revised.append({'belief':b.get('belief'),'prior':prior,'posterior':round(prior*likelihood/den,6) if den else None,'update_blocked':not bool(den)})
+  return {'bayesian_updates':revised,'conflicts_preserved':inputs.get('conflicts',[])}
+ if row==887:
+  attempts=inputs.get('attempts',[]); attempts=attempts if isinstance(attempts,list) else []; grouped={}
+  for a in attempts: grouped.setdefault(str(a.get('strategy','unknown')),[]).append(float(a.get('score',0)))
+  means={k:sum(v)/len(v) for k,v in grouped.items()}; best=max(means,key=means.get) if means else None
+  return {'strategy_means':means,'best_observed_strategy':best,'next_experiment':inputs.get('next_experiment'),'causal_claim_allowed':False}
+ if row in range(898,905):
+  return {'objective_alignment':bool(inputs.get('objective') or inputs.get('driving_question') or inputs.get('question') or inputs.get('target')),
+          'feedback_loop_present':bool(inputs.get('critique_revision') or inputs.get('debrief') or inputs.get('verification') or inputs.get('feedback') or inputs.get('check')),
+          'independent_performance_check':inputs.get('independent_practice') or inputs.get('transfer') or None}
+ return {'method_specific_fields':sum(v not in (None,[],{}) for v in inputs.values()),'claims_require_evidence':True}
+
 def _typed_map(row,p,stages):
  supplied=p['inputs'];artifacts=[]
  for stage in stages:
@@ -25,7 +93,7 @@ def _typed_map(row,p,stages):
  return artifacts
 def execute(row:int,payload:dict[str,Any])->dict[str,Any]:
  if row not in ROWS:raise CognitiveLearningError('unsupported capability')
- sources=_source(payload);inputs=_need(payload,'inputs')
+ tenant=_tenant(payload);sources=_source(payload);inputs=_need(payload,'inputs')
  if not isinstance(inputs,dict):raise CognitiveLearningError('inputs must be an object')
  stages=STAGES[row];artifacts=_typed_map(row,payload,stages)
  # Domain-specific validity rules that prevent nearby concepts collapsing together.
@@ -39,6 +107,6 @@ def execute(row:int,payload:dict[str,Any])->dict[str,Any]:
  if row in (890,891):
   if not payload.get('ethical_review',False):raise CognitiveLearningError('conditioning design requires ethical_review=true')
  if row==908 and inputs.get('credential_boundary') is True:raise CognitiveLearningError('credential_boundary must describe limits, not claim a credential')
- gaps=[x['stage'] for x in artifacts if x['status']=='evidence_gap']
- return {'row_id':row,'capability':ROWS[row],'key':KEYS[row],'family':FAMILY[row],'workflow':artifacts,'complete':not gaps,'evidence_gaps':gaps,'sources':sources,'learner_agency':{'opt_out':payload.get('opt_out',True),'goals':payload.get('learner_goals',[]),'access_needs':payload.get('access_needs',[])},'assessment':{'criteria':payload.get('criteria',[]),'results':payload.get('results',[]),'grade_or_credential_awarded':False},'status':'draft_for_learner_and_educator_review','actions_taken':[],'evaluation':{'stage_coverage':(len(stages)-len(gaps))/len(stages),'supplied_stage_count':len(stages)-len(gaps),'total_stage_count':len(stages),'source_count':len(sources),'failure_tests':['missing source provenance','missing required inputs','unsafe conditioning','invalid confidence']},'uncertainty':{'level':'high' if gaps else 'medium','evidence_gaps':gaps,'unresolved_stages':gaps,'confidence_claimed':False,'hidden_mental_state_inferred':False,'unknowns':payload.get('unknowns',[]),'calibration':'Completion records supplied workflow fields, not learning effectiveness or factual correctness.'},'boundary':'Learning support only. Do not manipulate, condition without informed ethical oversight, diagnose, infer hidden mental states, plagiarize learner work, award grades or credentials, enroll, contact others, or change education records. Preserve accessibility, learner agency, privacy, uncertainty and human review.'}
+ gaps=[x['stage'] for x in artifacts if x['status']=='evidence_gap']; evaluation=_quality(sources,artifacts); computed=_algorithm(row,inputs)
+ return {'tenant_id':tenant,'row_id':row,'capability':ROWS[row],'key':KEYS[row],'family':FAMILY[row],'workflow':artifacts,'computed':computed,'evaluation':evaluation,'complete':not gaps,'evidence_gaps':gaps,'sources':sources,'learner_agency':{'opt_out':payload.get('opt_out',True),'goals':payload.get('learner_goals',[]),'access_needs':payload.get('access_needs',[])},'assessment':{'criteria':payload.get('criteria',[]),'results':payload.get('results',[]),'grade_or_credential_awarded':False},'status':'draft_for_learner_and_educator_review','actions_taken':[],'boundary':'Learning support only. Do not manipulate, condition without informed ethical oversight, diagnose, infer hidden mental states, plagiarize learner work, award grades or credentials, enroll, contact others, or change education records. Preserve accessibility, learner agency, privacy, uncertainty and human review.'}
 def capabilities():return [{'row_id':i,'key':KEYS[i],'name':ROWS[i],'family':FAMILY[i],'stages':STAGES[i]} for i in ROWS]

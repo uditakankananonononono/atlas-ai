@@ -146,6 +146,11 @@ def legal_support(method: str, data: dict[str, Any]) -> dict[str, Any]:
     if method not in PROFILES:
         raise ValueError(f"unsupported legal method: {method}")
     p=PROFILES[method]
+    tenant_id=str(data.get("tenant_id","default")).strip()
+    if not tenant_id: raise ValueError("tenant_id must not be empty")
+    for ref in data.get("resource_refs",[]):
+        if str(ref.get("tenant_id","")).strip()!=tenant_id:
+            raise ValueError("cross-tenant resource reference rejected")
     authorities=[_authority(a,i) for i,a in enumerate(data.get("authorities", []),1)]
     authority_ids={a["id"] for a in authorities}
     issues=[_issue(x,authority_ids) for x in data.get("issues", [])]
@@ -153,7 +158,7 @@ def legal_support(method: str, data: dict[str, Any]) -> dict[str, Any]:
     facts=[str(x) for x in data.get("facts", []) if str(x).strip()]
     unknowns=[str(x) for x in data.get("unknowns", []) if str(x).strip()]
     result: dict[str, Any]={
-        "method":method,"domain":p["domain"],"artifact":p["artifact"],
+        "tenant_id":tenant_id,"method":method,"domain":p["domain"],"artifact":p["artifact"],
         "matter_name":data.get("matter_name"),"jurisdiction":data.get("jurisdiction"),
         "as_of":data.get("as_of") or date.today().isoformat(),"client_role":data.get("client_role"),
         "facts":facts,"unknowns":unknowns,"workflow":p["workflow"],
@@ -190,6 +195,11 @@ def legal_support(method: str, data: dict[str, Any]) -> dict[str, Any]:
     if any(not a["verified"] for a in authorities): blockers.append("one or more authorities lack provenance fields")
     if unknowns: blockers.append("material facts remain unknown")
     blockers.extend(str(x) for x in data.get("blockers",[]))
+    proposition_count=len(issues)
+    supported=sum(x["confidence"]=="supported" for x in issues)
+    result["evaluation"]={"authority_verification_rate":round(sum(a["verified"] for a in authorities)/max(1,len(authorities)),3),
+                          "issue_support_rate":round(supported/max(1,proposition_count),3),
+                          "unknown_fact_count":len(unknowns),"uncertainty_status":"material_gaps" if unknowns or any(not a["verified"] for a in authorities) else "bounded"}
     result["review"]={"status":"blocked" if blockers else "ready_for_attorney_review",
                       "blockers":list(dict.fromkeys(blockers)),
                       "can_file_or_send":False,"can_sign_or_pay":False,
