@@ -10,7 +10,7 @@ from __future__ import annotations
 import math,random,statistics
 from collections import Counter
 ROWS={
-"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062,"synthetic_control":1063,"matching_methods":1064,"propensity_score_matching":1065,"coarsened_exact_matching":1066,"genetic_matching":1067,"entropy_balancing":1068,"inverse_probability_weighting":1069,"doubly_robust_estimation":1070,"targeted_maximum_likelihood":1071,"machine_learning_causal_inference":1072,"causal_forests":1073,"double_machine_learning":1074,"orthogonalized_estimation":1075,"cross_fitting":1076,"sample_splitting":1077,"post_selection_inference":1078,"selective_inference":1079,"simultaneous_inference":1080,"false_discovery_rate_control":1081,"family_wise_error_rate":1082,"bonferroni_correction":1083,"holm_bonferroni":1084,"benjamini_hochberg":1085,"storeys_method":1086,"local_fdr":1087}
+"predictive":1010,"prescriptive":1011,"descriptive":1012,"diagnostic":1013,"eda":1014,"confirmatory":1015,"inference":1016,"hypothesis_test":1017,"confidence_interval":1018,"bootstrap":1019,"permutation_test":1020,"nonparametric":1021,"robust":1022,"outlier_detection":1023,"imputation":1024,"multiple_imputation":1025,"mle":1026,"em":1027,"mcmc":1028,"variational":1029,"gibbs":1030,"metropolis_hastings":1031,"hmc":1032,"smc":1033,"particle_filter":1034,"kalman_filter":1035,"extended_kalman_filter":1036,"unscented_kalman_filter":1037,"hidden_markov_model":1038,"conditional_random_field":1039,"graphical_model":1040,"bayesian_network":1041,"markov_random_field":1042,"factor_graph":1043,"belief_propagation":1044,"variational_message_passing":1045,"expectation_propagation":1046,"laplace_approximation":1047,"importance_sampling":1048,"rejection_sampling":1049,"slice_sampling":1050,"nested_sampling":1051,"approximate_bayesian_computation":1052,"synthetic_likelihood":1053,"indirect_inference":1054,"method_of_moments":1055,"generalized_method_of_moments":1056,"instrumental_variables":1057,"two_stage_least_squares":1058,"limited_information_maximum_likelihood":1059,"control_functions":1060,"regression_discontinuity":1061,"difference_in_differences":1062,"synthetic_control":1063,"matching_methods":1064,"propensity_score_matching":1065,"coarsened_exact_matching":1066,"genetic_matching":1067,"entropy_balancing":1068,"inverse_probability_weighting":1069,"doubly_robust_estimation":1070,"targeted_maximum_likelihood":1071,"machine_learning_causal_inference":1072,"causal_forests":1073,"double_machine_learning":1074,"orthogonalized_estimation":1075,"cross_fitting":1076,"sample_splitting":1077,"post_selection_inference":1078,"selective_inference":1079,"simultaneous_inference":1080,"false_discovery_rate_control":1081,"family_wise_error_rate":1082,"bonferroni_correction":1083,"holm_bonferroni":1084,"benjamini_hochberg":1085,"storeys_method":1086,"local_fdr":1087,"permutation_based_fdr":1088,"knockoffs":1089,"stability_selection":1090,"bootstrap_aggregation":1091,"random_forests":1092}
 def _nums(data,key="values",min_n=1):
     v=data.get(key)
     if not isinstance(v,list) or len(v)<min_n or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in v):raise ValueError(f"{key} must contain at least {min_n} finite numbers")
@@ -716,5 +716,53 @@ def run(method:str,data:dict,params:dict|None=None,seed:int=0)->dict:
         for x in z:
             f0=density(x,null_sd);f1=density(x,signal_sd);lfdr.append(pi0*f0/(pi0*f0+(1-pi0)*f1))
         o["output"]={"local_fdr":lfdr,"discovery_indices":[i for i,v in enumerate(lfdr) if v<=threshold],"threshold":threshold,"mixture":{"pi0":pi0,"null_sd":null_sd,"signal_sd":signal_sd}};a += ["Two-component centered Gaussian empirical-Bayes mixture with caller-supplied parameters."];limits += ["Does not estimate empirical null/mixture, model asymmetric alternatives, or guarantee tail-area FDR at the local threshold."]
+    elif method=="permutation_based_fdr":
+        observed=[abs(x) for x in _nums(data,"observed_statistics")];nulls=data.get("permuted_statistics");alpha=float(p.get("alpha",.1))
+        if not isinstance(nulls,list) or not nulls or any(not isinstance(row,list) or len(row)!=len(observed) for row in nulls):raise ValueError("aligned permutation statistic vectors required")
+        thresholds=sorted(set(observed),reverse=True);chosen=None;curve=[]
+        for t in thresholds:
+            discoveries=sum(v>=t for v in observed);false=sum(sum(abs(float(v))>=t for v in row) for row in nulls)/len(nulls);fdr=min(1,false/max(1,discoveries));curve.append({"threshold":t,"discoveries":discoveries,"expected_false":false,"estimated_fdr":fdr})
+            if discoveries and fdr<=alpha:chosen=t
+        rejected=[i for i,v in enumerate(observed) if chosen is not None and v>=chosen];o["output"]={"threshold":chosen,"rejected_indices":rejected,"estimated_fdr":next((q["estimated_fdr"] for q in curve if q["threshold"]==chosen),None),"curve":curve,"permutations":len(nulls)};a += ["Permutation scheme preserves the joint null distribution and statistics are exchangeable under the null."];limits += ["Finite permutation resolution and subset-pivotality/exchangeability assumptions; threshold scan is a reference estimator."]
+    elif method=="knockoffs":
+        original=_nums(data,"original_importance");knockoff=_nums(data,"knockoff_importance");q=float(p.get("fdr",.1));offset=int(p.get("offset",1))
+        if len(original)!=len(knockoff) or not 0<q<1 or offset not in {0,1}:raise ValueError("aligned importances, fdr in (0,1), offset 0/1 required")
+        w=[a-b for a,b in zip(original,knockoff)];candidates=sorted(set(abs(v) for v in w if v!=0));threshold=None;diagnostics=[]
+        for t in candidates:
+            pos=sum(v>=t for v in w);neg=sum(v<=-t for v in w);ratio=(offset+neg)/max(1,pos);diagnostics.append({"threshold":t,"positive":pos,"negative":neg,"ratio":ratio})
+            if ratio<=q:threshold=t;break
+        selected=[i for i,v in enumerate(w) if threshold is not None and v>=threshold];o["output"]={"w_statistics":w,"threshold":threshold,"selected_indices":selected,"diagnostics":diagnostics,"knockoff_plus":offset==1};a += ["Valid exchangeable model-X/fixed-X knockoff construction supplied upstream and antisymmetric importance statistic."];limits += ["Does not generate/validate knockoffs; FDR guarantee fails if exchangeability is violated."]
+    elif method=="stability_selection":
+        selections=data.get("selections");threshold=float(p.get("selection_probability",.8));feature_count=int(data.get("feature_count",0))
+        if not isinstance(selections,list) or not selections or feature_count<=0 or not .5<threshold<=1:raise ValueError("selections, feature_count and probability in (.5,1] required")
+        counts=[0]*feature_count
+        for run in selections:
+            if not isinstance(run,list) or any(not isinstance(i,int) or i<0 or i>=feature_count for i in run):raise ValueError("invalid selected index")
+            for i in set(run):counts[i]+=1
+        probs=[c/len(selections) for c in counts];avg_selected=_mean([len(set(run)) for run in selections]);bound=(avg_selected**2)/(feature_count*(2*threshold-1));o["output"]={"selection_probabilities":probs,"stable_indices":[i for i,v in enumerate(probs) if v>=threshold],"threshold":threshold,"average_selected":avg_selected,"expected_false_positive_bound":bound};a += ["Exchangeable noise variables and complementary/random subsampling with a stable base selector."];limits += ["Classical bound is conservative and assumptions strong; caller supplies selection runs."]
+    elif method=="bootstrap_aggregation":
+        values=_nums(data);draws=max(100,min(int(p.get("draws",1000)),20000));stat=p.get("statistic","mean")
+        if stat not in {"mean","median"}:raise ValueError("statistic must be mean or median")
+        estimates=[]
+        for _ in range(draws):
+            sample=[rng.choice(values) for _ in values];estimates.append(_mean(sample) if stat=="mean" else statistics.median(sample))
+        o["output"]={"bagged_estimate":_mean(estimates),"base_estimate":_mean(values) if stat=="mean" else statistics.median(values),"bootstrap_variance":_var(estimates,0),"draws":draws,"statistic":stat};a += ["Observations are iid/exchangeable and empirical distribution represents the population."];limits += ["Bags scalar estimators, not predictive models; no out-of-bag performance or dependence-aware resampling."]
+    elif method=="random_forests":
+        features=data.get("features");targets=_nums(data,"targets");trees=max(5,min(int(p.get("trees",50)),500));max_features=max(1,int(p.get("max_features",1)))
+        if not isinstance(features,list) or not features or len(features)!=len(targets) or any(not isinstance(r,list) or len(r)!=len(features[0]) for r in features):raise ValueError("aligned rectangular features and targets required")
+        dim=len(features[0]);forest=[];oob_votes=[[] for _ in targets]
+        for _ in range(trees):
+            sample=[rng.randrange(len(targets)) for _ in targets];oob=set(range(len(targets)))-set(sample);candidate=rng.sample(range(dim),min(max_features,dim));best=None
+            for j in candidate:
+                vals=sorted(set(float(features[i][j]) for i in sample));cuts=[(a+b)/2 for a,b in zip(vals[:-1],vals[1:])]
+                for cut in cuts:
+                    left=[targets[i] for i in sample if float(features[i][j])<=cut];right=[targets[i] for i in sample if float(features[i][j])>cut]
+                    if not left or not right:continue
+                    loss=sum((y-_mean(left))**2 for y in left)+sum((y-_mean(right))**2 for y in right)
+                    if best is None or loss<best[0]:best=(loss,j,cut,_mean(left),_mean(right))
+            if best is None:best=(0,0,float(features[sample[0]][0]),_mean([targets[i] for i in sample]),_mean([targets[i] for i in sample]))
+            _,j,cut,lm,rm=best;forest.append({"feature":j,"threshold":cut,"left":lm,"right":rm})
+            for i in oob:oob_votes[i].append(lm if float(features[i][j])<=cut else rm)
+        oob_pred=[_mean(v) if v else None for v in oob_votes];valid=[(p0,y) for p0,y in zip(oob_pred,targets) if p0 is not None];mse=_mean([(a-b)**2 for a,b in valid]) if valid else None;o["output"]={"trees":forest,"tree_count":trees,"oob_predictions":oob_pred,"oob_mse":mse,"oob_coverage":len(valid)/len(targets)};a += ["Rows are iid; bootstrap trees and random feature subsampling reduce correlated errors."];limits += ["Decision stumps only, not full trees; regression only; no missing values, tuning, importance or calibration."]
     o["output"]["method_limits"]=limits;o["output"]["assumptions"]=a
     return o
