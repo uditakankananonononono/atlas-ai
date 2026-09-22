@@ -153,3 +153,8 @@ def get_promise_repository(tenant:TenantContext=Depends(require_tenant)):
 def persist_promise_state_reconciliation(body:PersistPromiseReconciliationRequest,tenant:TenantContext=Depends(require_tenant),repository=Depends(get_promise_repository)):
     try:return {'tenant_id':tenant.tenant_id,**persist_reconciliation(body,repository)}
     except ValueError as error:raise HTTPException(status_code=409,detail=str(error)) from error
+from .authenticated_reconciliation import VerifyReconciliationEvidence,verify_reconciliation_evidence
+@router.post('/promise-state-reconciliation/evidence/verify')
+def authenticated_reconciliation_evidence(body:VerifyReconciliationEvidence,tenant:TenantContext=Depends(require_tenant)):
+ try:return {'tenant_id':tenant.tenant_id,**verify_reconciliation_evidence(body)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error
