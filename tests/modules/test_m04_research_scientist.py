@@ -99,3 +99,14 @@ def test_route_persists_analysis_approval():
  app=FastAPI();app.include_router(router)
  response=TestClient(app).post("/research-scientist/analyses/proposals",headers={"x-atlas-tenant":"research-tenant","x-atlas-actor":"u"},json={"objective":"Run an approved differential analysis","language":"python","code":"print(1)","network_access":False})
  assert response.status_code==200 and response.json()["status"]=="pending" and response.json()["approval_id"]
+
+
+def test_provider_backed_hypothesis_requires_authentication_in_production(monkeypatch):
+    monkeypatch.setenv("ATLAS_ENV", "production")
+    app = FastAPI(); app.include_router(router)
+    response = TestClient(app).post("/research-scientist/hypotheses", json={
+        "research_question": "Can treatment X improve outcome Y in this model?",
+        "papers": [paper("p1", "Treatment X", "Treatment X is associated with outcome Y in a pilot cohort.")],
+    })
+    assert response.status_code == 401
+    assert response.json()["detail"] == "OIDC bearer token required"

@@ -28,7 +28,10 @@ def cluster_literature(request: SurveillanceRequest) -> SurveillanceResponse:
 
 
 @router.post("/hypotheses", response_model=HypothesisResponse)
-async def draft_hypothesis(request: HypothesisRequest) -> HypothesisResponse:
+async def draft_hypothesis(
+    request: HypothesisRequest,
+    tenant: TenantContext = Depends(require_tenant),
+) -> HypothesisResponse:
     """Draft a grounded hypothesis using the configured shared BYOK provider."""
     try:
         return await Service().generate_hypothesis(request)
