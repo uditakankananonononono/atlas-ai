@@ -79,3 +79,14 @@ Deterministic logic that replaces a requested primary capability is not called c
 - Machine-readable 140-row audit: [`audits/ledger-140.json`](audits/ledger-140.json)
 - Architecture and deployment: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
 - Billing boundary: [`docs/BILLING.md`](docs/BILLING.md)
+
+## Commercial launch acceptance boundary
+
+Atlas can be packaged and tested without paid services, but the following are not claimed complete until the named live acceptance evidence exists:
+
+- **Billing:** a reviewed production Stripe account, tax/pricing configuration, and a test purchase/refund/cancellation receipt. Until then Stripe remains test-mode only.
+- **Paired computer:** signed installers tested on each supported OS, OS-keystore identity, native permission prompts, kill switch, update/uninstall path, and signed action receipts from real machines.
+- **External providers:** owner-provided credentials, quota confirmation, and one reversible acceptance run for every enabled send, publish, submit, or deploy adapter.
+- **Operations:** production TLS/domain, backup and restore drill, monitoring alerts, incident owner, retention policy, and load evidence for the chosen capacity.
+
+Missing acceptance evidence is shown as configuration-gated or not live-verified. It must not be described as executed, available, or production-ready.
