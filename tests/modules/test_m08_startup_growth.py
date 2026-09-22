@@ -6,7 +6,7 @@ class Repo:
  def get(s,i):return s.x.get(i)
 class Approvals:
  def __init__(s):s.items=[]
- def put(s,x):s.items.append(x);return x
+ def put(s,x,*,user_id=None):s.items.append((x,user_id));return x
 def test_growth_builds_are_real_archives_and_gated():
  r=Repo();a=Approvals();svc=Service(r,a)
  site=svc.landing_page(LandingPageIn(project_id='p',product_name='Atlas',hero='Ship safely',features=['Approvals']))
@@ -19,3 +19,4 @@ def test_publish_approval_preserves_tenant_boundary():
  r=Repo();a=Approvals();svc=Service(r,a)
  site=svc.landing_page(LandingPageIn(project_id='p',product_name='Atlas',hero='Ship safely',features=['Approvals']))
  assert svc.propose(site.id,'deploy_startup_site').payload['tenant_id']=='tenant-test'
+ assert a.items[-1][1]=='tenant-test'

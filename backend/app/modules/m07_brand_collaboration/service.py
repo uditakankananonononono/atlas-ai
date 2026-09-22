@@ -58,5 +58,5 @@ class Service:
         if not row: raise NotFoundError(artifact_id)
         action={"performance_report":"send_brand_report","invoice":"send_invoice"}.get(row.kind,"send_brand_collateral")
         payload={"tenant_id":self.tenant_id,"artifact_id":artifact_id,"brand_id":row.brand_id,"recipient":recipient,"sha256":row.sha256,"content_type":row.content_type}
-        approval=ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type=action,payload=payload); self.approvals.put(approval)
+        approval=ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type=action,payload=payload); self.approvals.put(approval,user_id=self.tenant_id)
         return ApprovalProposal(approval_id=approval.id,action_type=action,payload=payload)
