@@ -44,7 +44,7 @@ class FakeSink:
     def __init__(self):
         self.items = []
 
-    def put(self, item):
+    def put(self, item, *, user_id=None):
         self.items.append(item)
         return item
 
