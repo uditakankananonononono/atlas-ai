@@ -114,3 +114,10 @@ from .asymmetric_resume_verification import AsymmetricResumeVerificationRequest,
 def asymmetric_provider_receipts(body:AsymmetricResumeVerificationRequest,tenant:TenantContext=Depends(require_tenant)):
  try:return {'tenant_id':tenant.tenant_id,**verify_asymmetric_resume(body)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
+from .checkpoint_persistence import checkpoint_and_enqueue
+from .checkpoint_queue import CheckpointQueue
+def get_checkpoint_queue(tenant:TenantContext=Depends(require_tenant)):return CheckpointQueue(tenant.tenant_id)
+@router.post('/reproducible-run/checkpoint/enqueue')
+def enqueue_reproducible_checkpoint(body:ReproducibleRunRequest,tenant:TenantContext=Depends(require_tenant),queue=Depends(get_checkpoint_queue)):
+ try:return {'tenant_id':tenant.tenant_id,**checkpoint_and_enqueue(body,queue)}
+ except ValueError as error:raise HTTPException(409,str(error)) from error

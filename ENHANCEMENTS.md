@@ -44,6 +44,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** resume preflight verifies supplied dataset bytes against pinned hashes and validates provider receipts with caller-configured trusted HMAC keys before declaring the supplied evidence resumable.
 - **Landed:** provider-issued Ed25519 receipt verification validates canonical node receipts against configured public keys without exposing shared signing secrets.
 - **Next:** persist checkpoints transactionally in the worker queue and govern public-key provisioning and rotation.
+- **Landed:** validated checkpoints enqueue transactionally under tenant and run; idempotent repeats reuse the queued head and conflicting heads fail closed.
+- **Next:** replace shared-key receipt validation with provider-issued asymmetric signatures and add worker dequeue/lease semantics.
 ## M13 - Browser Agent
 - **Landed:** pre-submit readback diff compares fields, destination, exact price/currency and irreversible controls against the approved snapshot, requiring new approval for any change and never submitting itself.
 - **Landed:** immediate pre-submit capture reads destination and fields directly from the browser adapter and binds them to DOM and screenshot byte hashes before any separate submit decision.
