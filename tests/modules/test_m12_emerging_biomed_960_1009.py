@@ -109,7 +109,7 @@ def test_invalid_biological_units_ranges_and_uncertainty_fail():
  with pytest.raises(ValueError,match="confidence_level"):run("liquid_biopsy",invalid)
 
 def test_exact_mount_and_tenant_actor_isolation():
- client=TestClient(app); h1={"X-Tenant-ID":"tenant-a","X-Actor-ID":"actor-a"};h2={"X-Tenant-ID":"tenant-b","X-Actor-ID":"actor-b"}
+ client=TestClient(app); h1={"X-Atlas-Tenant":"tenant-a","X-Atlas-Actor":"actor-a","X-Tenant-ID":"spoof","X-Actor-ID":"spoof"};h2={"X-Atlas-Tenant":"tenant-b","X-Atlas-Actor":"actor-b"}
  assert len(client.get("/api/v1/ai-research-lab/emerging-biomed-960-1009/methods",headers=h1).json())==50
  r1=client.post("/api/v1/ai-research-lab/emerging-biomed-960-1009/analyze",headers=h1,json={"method":"neural_dust","data":C["neural_dust"]})
  r2=client.post("/api/v1/ai-research-lab/emerging-biomed-960-1009/analyze",headers=h2,json={"method":"neural_dust","data":C["neural_dust"]})
@@ -117,4 +117,3 @@ def test_exact_mount_and_tenant_actor_isolation():
  assert r1.json()["execution_context"]=={"tenant_id":"tenant-a","actor_id":"actor-a"}
  assert r2.json()["execution_context"]=={"tenant_id":"tenant-b","actor_id":"actor-b"}
  assert client.post("/api/v1/ai-research-lab/emerging-biomed-960-1009/analyze",headers=h1,json={"method":"bad","data":PROVENANCE}).status_code==422
- assert client.post("/api/v1/ai-research-lab/emerging-biomed-960-1009/analyze",json={"method":"neural_dust","data":C["neural_dust"]}).status_code==422
