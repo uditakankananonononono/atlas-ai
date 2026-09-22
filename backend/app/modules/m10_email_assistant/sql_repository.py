@@ -99,6 +99,18 @@ class EmailEventRow(Base):
     details: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
 
 
+class PromiseSnapshotRow(Base):
+    __tablename__ = "m10_promise_snapshots"
+    __table_args__ = (UniqueConstraint("tenant_id", "thread_id"),)
+    pk: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    tenant_id: Mapped[str] = mapped_column(String(120), index=True)
+    thread_id: Mapped[str] = mapped_column(String(300), index=True)
+    snapshot_sha256: Mapped[str] = mapped_column(String(64))
+    previous_snapshot_sha256: Mapped[str] = mapped_column(String(64))
+    snapshot: Mapped[dict[str, Any]] = mapped_column(JSON)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
 class SqlEmailRepository:
     def __init__(self, tenant_id: str, session_factory: sessionmaker = SessionLocal) -> None:
         self.tenant_id = tenant_id
@@ -254,6 +266,41 @@ class SqlEmailRepository:
             return list(db.scalars(select(EmailDraftRow).where(
                 EmailDraftRow.tenant_id == self.tenant_id
             ).order_by(EmailDraftRow.created_at.desc()).limit(limit)))
+
+    # -- promise reconciliation snapshots ----------------------------------
+    def persist_promise_snapshot(self, *, thread_id: str, previous_snapshot_sha256: str,
+                                 snapshot_sha256: str, snapshot: dict) -> PromiseSnapshotRow:
+        """Atomic tenant/thread compare-and-swap; stale writers fail closed."""
+        with self.sessions.begin() as db:
+            row = db.scalar(select(PromiseSnapshotRow).where(
+                PromiseSnapshotRow.tenant_id == self.tenant_id,
+                PromiseSnapshotRow.thread_id == thread_id))
+            if row is None:
+                row = PromiseSnapshotRow(
+                    tenant_id=self.tenant_id, thread_id=thread_id,
+                    snapshot_sha256=snapshot_sha256,
+                    previous_snapshot_sha256=previous_snapshot_sha256,
+                    snapshot=snapshot, updated_at=_utcnow())
+                db.add(row)
+            else:
+                if row.snapshot_sha256 != previous_snapshot_sha256:
+                    raise ValueError("stale promise snapshot: compare-and-swap failed")
+                row.previous_snapshot_sha256 = previous_snapshot_sha256
+                row.snapshot_sha256 = snapshot_sha256
+                row.snapshot = snapshot
+                row.updated_at = _utcnow()
+            self._log(db, "promise_snapshot", thread_id, "snapshot_persisted", {
+                "previous_snapshot_sha256": previous_snapshot_sha256,
+                "snapshot_sha256": snapshot_sha256,
+            })
+            db.flush()
+            return row
+
+    def get_promise_snapshot(self, thread_id: str) -> PromiseSnapshotRow | None:
+        with self.sessions() as db:
+            return db.scalar(select(PromiseSnapshotRow).where(
+                PromiseSnapshotRow.tenant_id == self.tenant_id,
+                PromiseSnapshotRow.thread_id == thread_id))
 
     # -- audit ------------------------------------------------------------
     def _log(self, db, entity: str, entity_id: str, event: str, details: dict) -> None:

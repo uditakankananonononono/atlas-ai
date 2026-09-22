@@ -143,3 +143,13 @@ def promise_state_reconciliation(
         return {'tenant_id': tenant.tenant_id, **reconcile_promise_state(body)}
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
+
+from .promise_persistence import PersistPromiseReconciliationRequest,persist_reconciliation
+
+def get_promise_repository(tenant:TenantContext=Depends(require_tenant)):
+    return SqlEmailRepository(tenant.tenant_id)
+
+@router.post('/promise-state-reconciliation/persist')
+def persist_promise_state_reconciliation(body:PersistPromiseReconciliationRequest,tenant:TenantContext=Depends(require_tenant),repository=Depends(get_promise_repository)):
+    try:return {'tenant_id':tenant.tenant_id,**persist_reconciliation(body,repository)}
+    except ValueError as error:raise HTTPException(status_code=409,detail=str(error)) from error
