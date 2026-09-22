@@ -254,3 +254,16 @@ def schedule_risk(body: ScheduleRiskRequest, tenant: TenantContext = Depends(req
         return {'tenant_id': tenant.tenant_id, **analyze_schedule_risk(body)}
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
+
+from .live_risk_evidence import LiveRiskEvidenceRequest, verify_live_risk_evidence
+
+
+@router.post('/schedule-risk/live-evidence/verify')
+def live_schedule_risk_evidence(
+    body: LiveRiskEvidenceRequest,
+    tenant: TenantContext = Depends(require_tenant),
+):
+    try:
+        return {'tenant_id': tenant.tenant_id, **verify_live_risk_evidence(body)}
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error

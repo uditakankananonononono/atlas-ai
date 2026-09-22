@@ -32,7 +32,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** persist reconciliation snapshots transactionally and authenticate reviewer identities and source-message bytes.
 ## M11 - Calendar Intelligence
 - **Landed:** read-only schedule-risk view combines travel and preparation buffer shortfalls, incomplete/unknown dependencies, and sourced cancellation exposure into a deterministic risk artifact without changing events, cancelling bookings, or spending.
-- **Next:** connect verified mapping travel estimates and live vendor cancellation terms while preserving their retrieval time and source snapshots.
+- **Landed:** live risk-evidence verifier binds mapping travel estimates and vendor cancellation terms to fresh retrieval timestamps, provider/source metadata, normalized-record hashes, and captured snapshot hashes, failing closed on stale, future, or mismatched evidence.
+- **Next:** add provider-authenticated retrieval adapters and signed immutable snapshot storage.
 ## M12 - AI Research Lab
 - **Landed:** shipped provider and DAG wiring now constructs without dependency overrides and supports OpenAI, Anthropic, DeepSeek and local Ollama through the shared provider boundary.
 - **Landed (science):** canonical reproducible-run checkpoints pin workflow/code identity, dataset hashes, per-node provider/model/seed, budget and spend receipts, output hashes and explicit resume state without claiming execution or byte verification.
