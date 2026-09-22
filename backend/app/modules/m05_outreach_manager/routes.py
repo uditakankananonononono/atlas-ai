@@ -55,7 +55,6 @@ from .schemas import (
     Contact,
     ContactChange,
     ContactCreate,
-    DecisionRecordRequest,
     DraftEmail,
     EnrichEmailRequest,
     FailureRecordRequest,
@@ -476,20 +475,6 @@ def submit_message(message_id: str, container: Container = Depends(get_container
         raise HTTPException(status_code=404, detail="message not found") from exc
     except ContactNotFoundError as exc:
         raise HTTPException(status_code=404, detail="contact not found") from exc
-    except CampaignStateError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-
-
-@router.post("/messages/{message_id}/decision", response_model=OutreachMessage)
-def record_decision(
-    message_id: str,
-    request: DecisionRecordRequest,
-    container: Container = Depends(get_container),
-) -> OutreachMessage:
-    try:
-        return container.campaigns.record_decision(message_id, request.approved, actor=request.actor)
-    except MessageNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="message not found") from exc
     except CampaignStateError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
 

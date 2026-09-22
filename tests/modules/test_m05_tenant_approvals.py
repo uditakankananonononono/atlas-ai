@@ -4,7 +4,7 @@ from app.modules.m05_outreach_manager.campaigns import CampaignService, InMemory
 from app.modules.m05_outreach_manager.schemas import ContactCreate
 class A:
  def __init__(s):s.items=[]
- def put(s,x):s.items.append(x);return x
+ def put(s,x,*,user_id=None):s.items.append(x);return x
 
 def test_original_send_proposal_carries_tenant():
  a=A();contacts=InMemoryContactRepository();svc=Service(contacts,a,None,tenant_id='t1');c=svc.create_contact(ContactCreate(project_id='p',name='Ada',email='ada@example.org'));d=type('D',(),{'contact_id':c.id,'subject':'Hi','body':'Body','id':'d1'})();assert svc.propose_send(d).payload['tenant_id']=='t1'

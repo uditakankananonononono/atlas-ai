@@ -38,7 +38,7 @@ class ApprovalSpy:
     def __init__(self) -> None:
         self.items: list[ApprovalRequest] = []
 
-    def put(self, item: ApprovalRequest) -> ApprovalRequest:
+    def put(self, item: ApprovalRequest, *, user_id=None) -> ApprovalRequest:
         self.items.append(item)
         return item
 
@@ -124,10 +124,11 @@ def test_full_pipeline_over_http():
     assert submitted.json()["status"] == "pending_approval"
     assert spy.items[0].payload["recipient"] == "rao@example.edu"
 
-    decided = client.post(
+    # Public callers cannot self-attest approval; only the bound M00 callback may mirror it.
+    assert client.post(
         f"/api/v1/outreach-manager/messages/{message['id']}/decision", json={"approved": True}
-    )
-    assert decided.json()["status"] == "approved"
+    ).status_code == 404
+    container.campaigns.record_decision(message["id"], True, actor="m00-callback")
 
     sent = client.post(f"/api/v1/outreach-manager/messages/{message['id']}/send")
     assert sent.status_code == 200
