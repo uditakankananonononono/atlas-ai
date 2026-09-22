@@ -96,3 +96,9 @@ def clinical_rows_catalog():
 def clinical_row_execute(row_id:int,body:ClinicalRowIn,tenant:TenantContext=Depends(require_tenant)):
     try:return {'tenant_id':tenant.tenant_id,**execute_clinical_row(row_id,body.data)}
     except (ValueError,TypeError,KeyError,ZeroDivisionError) as error:raise HTTPException(422,str(error)) from error
+
+from .reproducible_run import ReproducibleRunRequest,checkpoint
+@router.post('/reproducible-run/checkpoint')
+def reproducible_run_checkpoint(body:ReproducibleRunRequest,tenant:TenantContext=Depends(require_tenant)):
+ try:return {'tenant_id':tenant.tenant_id,**checkpoint(body)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error
