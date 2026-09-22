@@ -55,3 +55,9 @@ from .provider_receipt import VerifyProviderPublication,verify_provider_publicat
 def verify_provider_receipt(body:VerifyProviderPublication,tenant_id:str=Depends(tenant)):
  try:return {'tenant_id':tenant_id,**verify_provider_publication(body)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .asymmetric_provider_receipt import VerifyAsymmetricProviderPublication,verify_asymmetric_provider_publication
+@router.post('/publication-receipts/provider/ed25519/verify')
+def verify_ed25519_provider_receipt(body:VerifyAsymmetricProviderPublication,tenant_id:str=Depends(tenant)):
+ try:return {'tenant_id':tenant_id,**verify_asymmetric_provider_publication(body)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error

@@ -55,7 +55,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** version preflight endpoint checks empty content, duplicate citations/figures, missing citation URLs, empty PPTX and likely slide overflow before export approval.
 - **Landed:** private-publication receipt verification requires consumed approval, private access, HTTPS download URL and exact approved-vs-published SHA-256 match.
 - **Landed:** provider-publication receipt verification binds a consumed approval and approved render hash to a private HTTPS object receipt authenticated with a configured provider HMAC key.
-- **Next:** execute the renderer and private upload in the approved worker and replace shared-key receipt validation with provider-issued asymmetric signatures.
+- **Landed:** Ed25519 provider-publication receipts replace shared signing secrets while retaining consumed-approval, private-access, and approved-render hash checks.
+- **Next:** execute the renderer and private upload in the approved worker and govern provider-key provisioning and rotation.
 ## M16 - Executive Dashboard
 - **Landed (science):** gap-to-proof dashboard reports exact requirement and per-module gaps while keeping code artifacts, test evidence and live acceptance separate.
 - **Landed:** proof-event verification authenticates producer events with configured HMAC keys and requires deployment receipts to carry version and environment bindings.
