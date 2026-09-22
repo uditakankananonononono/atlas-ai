@@ -180,3 +180,9 @@ def proof_status(body:ProofStatusIn):
  from .acceptance_trace import build_proof_status
  try:return build_proof_status(body.requirements)
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .live_receipt_verification import VerifyLiveReceipts,verify_live_receipts
+@router.post('/proof-status/live-receipts/verify')
+def verify_proof_live_receipts(body:VerifyLiveReceipts):
+ try:return verify_live_receipts(body)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
