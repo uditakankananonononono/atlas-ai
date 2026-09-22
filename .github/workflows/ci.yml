@@ -73,6 +73,10 @@ jobs:
           assert len(secrets.token_hex(8)) == 16
           assert app is not None
           PY
+      - name: Apply production database migrations
+        run: python -m alembic upgrade head
+      - name: Verify migration head
+        run: python -m alembic current --check-heads
       - name: Run the complete backend test suite
         run: python -m pytest -q
 

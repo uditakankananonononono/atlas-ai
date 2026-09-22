@@ -2936,7 +2936,7 @@
       "source_excerpt": "6. Deployment & Scaling The entire system is containerised using Docker Compose for local development and Kubernetes for production. A minimal local deployment runs all services on a single machine with 32 GB RAM, using Ollama for local models. The cloud\u2011native version scales Celery workers horizontally and uses managed services for databases.",
       "status": "configured-unaccepted",
       "implementation_path": "deploy/local/docker-compose.yml",
-      "test_evidence": "tests/test_missing_production_capabilities.py::test_x11_compose_acceptance_remains_unrun_without_container_runtime",
+      "test_evidence": "tests/test_missing_production_capabilities.py::test_x11_compose_acceptance_remains_unrun_without_runtime_attestation",
       "kind": "functional",
       "evidence_kind": "configuration-and-honest-acceptance-gap",
       "production_acceptance": "not_run"

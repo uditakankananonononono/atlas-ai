@@ -1311,7 +1311,7 @@
         },
         {
           "row": "X11",
-          "evidence": "tests/test_missing_production_capabilities.py::test_x11_compose_acceptance_remains_unrun_without_container_runtime",
+          "evidence": "tests/test_missing_production_capabilities.py::test_x11_compose_acceptance_remains_unrun_without_runtime_attestation",
           "resolved": true,
           "reason": null
         },
