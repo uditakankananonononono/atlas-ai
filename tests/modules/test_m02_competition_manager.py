@@ -116,3 +116,10 @@ class WorkflowTests(unittest.TestCase):
             self.manager.stage_browser_action(self.ws.id, "fill_form", "http://unsafe.test", {})
 
 if __name__ == "__main__": unittest.main()
+
+
+def test_core_spec_cannot_self_attest_external_approval():
+    from app.modules.m02_competition_manager.core_spec_round6 import CapabilityRequest, execute
+    result = execute(65, CapabilityRequest(objective="Submit an application", inputs={"approved": True}))
+    assert result.status == "approval_required"
+    assert result.artifact["effect_executed"] is False

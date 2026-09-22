@@ -149,3 +149,4 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** authenticated first-run checklist stores only local completion state and explicitly performs no sends, publishing, submissions or spending.
 - **Landed:** reproducible M00-M25 repository-evidence generator keeps offline-test discovery separate from live and production acceptance.
 - **Landed:** operator runbook covers startup, backup/restore drills, upgrades, rollback boundaries, incident stops and credential rotation without claiming unobserved scale or uptime.
+- **Landed (M02, approval provenance):** form-fill and integrated-answer review proposals now persist M00 approvals under the authenticated competition tenant, and core-spec external-action rows cannot turn caller-supplied booleans into owner approval or execution claims.
