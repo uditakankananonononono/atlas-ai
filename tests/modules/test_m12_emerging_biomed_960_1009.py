@@ -117,3 +117,105 @@ def test_exact_mount_and_tenant_actor_isolation():
  assert r1.json()["execution_context"]=={"tenant_id":"tenant-a","actor_id":"actor-a"}
  assert r2.json()["execution_context"]=={"tenant_id":"tenant-b","actor_id":"actor-b"}
  assert client.post("/api/v1/ai-research-lab/emerging-biomed-960-1009/analyze",headers=h1,json={"method":"bad","data":PROVENANCE}).status_code==422
+
+def _analysis(method): return run(method,C[method])['analysis']
+def test_row_960_distinctive_biomedical_calculation():
+ a=_analysis('regenerative_medicine');assert a=={'tissue_repair_index':.4,'cell_viability':.8}
+def test_row_961_distinctive_biomedical_calculation():
+ a=_analysis('stem_cell_therapy');assert a=={'clonogenic_fraction':.2,'lineage_marker_fraction':.7}
+def test_row_962_distinctive_biomedical_calculation():
+ a=_analysis('gene_therapy');assert a['transgene_positive_fraction']==.8 and a['vector_integration_reads_rate']==.02
+def test_row_963_distinctive_biomedical_calculation():
+ a=_analysis('crispr_applications');assert a['crispr_edit_fraction']==.8 and a['off_target_reads_rate']==.02
+def test_row_964_distinctive_biomedical_calculation():
+ a=_analysis('base_editing');assert a['intended_base_conversion_fraction']==.8 and a['bystander_reads_rate']==.02
+def test_row_965_distinctive_biomedical_calculation():
+ a=_analysis('prime_editing');assert a['prime_edit_fraction']==.8 and a['indel_reads_rate']==.02
+def test_row_966_distinctive_biomedical_calculation():
+ a=_analysis('epigenome_editing');assert a['target_mark_fraction']==.8 and a['non_target_mark_reads_rate']==.02
+def test_row_967_distinctive_biomedical_calculation():
+ a=_analysis('synthetic_biology');assert a['ranking_metric']=='circuit_characterisation_score' and a['ranked_candidates'][0]['id']=='candidate-a'
+def test_row_968_distinctive_biomedical_calculation():
+ a=_analysis('metabolic_engineering');assert a['molar_yield']==.8 and a['fraction_theoretical']==.8
+def test_row_969_distinctive_biomedical_calculation():
+ a=_analysis('protein_engineering');assert a['ranking_metric']=='protein_assay_score'
+def test_row_970_distinctive_biomedical_calculation():
+ a=_analysis('directed_evolution');assert a['ranking_metric']=='variant_selection_score'
+def test_row_971_distinctive_biomedical_calculation():
+ a=_analysis('enzyme_design');assert a['ranking_metric']=='enzyme_evidence_score'
+def test_row_972_distinctive_biomedical_calculation():
+ a=_analysis('antibody_design');assert a['ranking_metric']=='antibody_evidence_score'
+def test_row_973_distinctive_biomedical_calculation():
+ a=_analysis('vaccine_design');assert a['ranking_metric']=='vaccine_evidence_score'
+def test_row_974_distinctive_biomedical_calculation():
+ a=_analysis('drug_discovery');assert a['ranking_metric']=='discovery_evidence_score'
+def test_row_975_distinctive_biomedical_calculation():
+ a=_analysis('drug_repurposing');assert a['ranking_metric']=='repurposing_evidence_score'
+def test_row_976_distinctive_biomedical_calculation():
+ a=_analysis('personalized_medicine');assert a['ranking_metric']=='patient_fit_evidence_score'
+def test_row_977_distinctive_biomedical_calculation():
+ a=_analysis('pharmacogenomics');assert a['ranking_metric']=='gene_drug_evidence_score'
+def test_row_978_distinctive_biomedical_calculation():
+ a=_analysis('microbiome_engineering');assert a['taxa']==2 and a['shannon_change']==pytest.approx(0.192744757)
+def test_row_979_distinctive_biomedical_calculation():
+ a=_analysis('probiotic_design');assert a['ranking_metric']=='probiotic_evidence_score'
+def test_row_980_distinctive_biomedical_calculation():
+ a=_analysis('phage_therapy');assert a['log10_bacterial_reduction']==3 and a['input_moi']==10
+def test_row_981_distinctive_biomedical_calculation():
+ a=_analysis('immunotherapy');assert a['immune_response_rate_difference']==pytest.approx(.4)
+def test_row_982_distinctive_biomedical_calculation():
+ a=_analysis('car_t_therapy');assert a['response_rate_difference']==pytest.approx(.4) and a['car_t_expansion_fold']==10
+def test_row_983_distinctive_biomedical_calculation():
+ a=_analysis('checkpoint_inhibitors');assert a['checkpoint_response_rate_difference']==pytest.approx(.4)
+def test_row_984_distinctive_biomedical_calculation():
+ a=_analysis('mrna_therapeutics');assert a['ranking_metric']=='mrna_evidence_score'
+def test_row_985_distinctive_biomedical_calculation():
+ a=_analysis('nanomedicine');assert a['ranking_metric']=='nanomedicine_evidence_score'
+def test_row_986_distinctive_biomedical_calculation():
+ a=_analysis('targeted_drug_delivery');assert a['ranking_metric']=='delivery_evidence_score'
+def test_row_987_distinctive_biomedical_calculation():
+ a=_analysis('theranostics');assert a['ranking_metric']=='theranostic_evidence_score'
+def test_row_988_distinctive_biomedical_calculation():
+ a=_analysis('liquid_biopsy');assert a['liquid_biopsy_sensitivity']==pytest.approx(9/11) and a['specificity']==pytest.approx(8/9)
+def test_row_989_distinctive_biomedical_calculation():
+ a=_analysis('wearable_sensors');assert a['wearable_signal_rmse']==pytest.approx((.25/3)**.5) and a['samples']==3
+def test_row_990_distinctive_biomedical_calculation():
+ a=_analysis('implantable_devices');assert a['implant_signal_rmse']==pytest.approx((.25/3)**.5)
+def test_row_991_distinctive_biomedical_calculation():
+ a=_analysis('brain_computer_interfaces');assert a['bci_command_sensitivity']==pytest.approx(9/11)
+def test_row_992_distinctive_biomedical_calculation():
+ a=_analysis('neural_prosthetics');assert a['prosthetic_function_sensitivity']==pytest.approx(9/11)
+def test_row_993_distinctive_biomedical_calculation():
+ a=_analysis('cochlear_implants');assert a['mean_hearing_score_change']==pytest.approx(5/3)
+def test_row_994_distinctive_biomedical_calculation():
+ a=_analysis('retinal_implants');assert a['mean_vision_score_change']==pytest.approx(5/3)
+def test_row_995_distinctive_biomedical_calculation():
+ a=_analysis('deep_brain_stimulation');assert a['dbs_response_rate_difference']==pytest.approx(.4)
+def test_row_996_distinctive_biomedical_calculation():
+ a=_analysis('optogenetics');assert a['light_associated_response_difference']==pytest.approx(.4)
+def test_row_997_distinctive_biomedical_calculation():
+ a=_analysis('chemogenetics');assert a['ligand_associated_response_difference']==pytest.approx(.4)
+def test_row_998_distinctive_biomedical_calculation():
+ a=_analysis('neurofeedback');assert a['mean_self_regulation_change']==pytest.approx(5/3)
+def test_row_999_distinctive_biomedical_calculation():
+ a=_analysis('brain_mapping');assert a['peak_activation_region']=='b' and len(a['regional_z_scores'])==3
+def test_row_1000_distinctive_biomedical_calculation():
+ a=_analysis('connectomics');assert a['connection_density']==pytest.approx(2/3) and a['node_degree']=={'a':1,'b':2,'c':1}
+def test_row_1001_distinctive_biomedical_calculation():
+ a=_analysis('neural_decoding');assert a['neural_label_decoding_sensitivity']==pytest.approx(9/11)
+def test_row_1002_distinctive_biomedical_calculation():
+ a=_analysis('neural_encoding');assert a['encoding_gain']==2 and a['fit_correlation']==pytest.approx(1)
+def test_row_1003_distinctive_biomedical_calculation():
+ a=_analysis('memory_prosthetics');assert a['mean_memory_task_change']==pytest.approx(5/3)
+def test_row_1004_distinctive_biomedical_calculation():
+ a=_analysis('cognitive_enhancement');assert a['ranking_metric']=='cognitive_evidence_score'
+def test_row_1005_distinctive_biomedical_calculation():
+ a=_analysis('nootropics');assert a['ranking_metric']=='nootropic_evidence_score'
+def test_row_1006_distinctive_biomedical_calculation():
+ a=_analysis('neurostimulation');assert a['neurostimulation_response_difference']==pytest.approx(.4)
+def test_row_1007_distinctive_biomedical_calculation():
+ a=_analysis('transcranial_magnetic_stimulation');assert a['tms_response_rate_difference']==pytest.approx(.4)
+def test_row_1008_distinctive_biomedical_calculation():
+ a=_analysis('focused_ultrasound');assert a['focused_ultrasound_response_difference']==pytest.approx(.4)
+def test_row_1009_distinctive_biomedical_calculation():
+ a=_analysis('neural_dust');assert a['packet_delivery_rate']==.9 and a['energy_per_received_packet_mj']==.1
