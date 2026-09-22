@@ -43,7 +43,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** authenticate live receipts and bind them to deployed version, environment and acceptance-run inputs.
 ## M15 - Document Generator
 - **Landed:** version preflight endpoint checks empty content, duplicate citations/figures, missing citation URLs, empty PPTX and likely slide overflow before export approval.
-- **Next:** approval consumption that renders and publishes a private downloadable File with a verified hash.
+- **Landed:** private-publication receipt verification requires consumed approval, private access, HTTPS download URL and exact approved-vs-published SHA-256 match.
+- **Next:** execute the renderer and private object-store upload in the approved worker, then authenticate the provider receipt rather than accepting supplied receipt fields.
 ## M16 - Executive Dashboard
 - **Next (science):** gap-to-proof dashboard separating code-complete, test-complete and live-acceptance-complete requirements.
 ## M17 - Narrative Architect
