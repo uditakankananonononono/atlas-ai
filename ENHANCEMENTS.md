@@ -78,6 +78,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** consume approvals atomically for replay protection and replace shared-key receipts with provider-issued asymmetric signatures.
 - **Landed:** authenticated private-publication receipts persist tenant-scoped and append-only; approval IDs and provider object keys cannot replace prior evidence.
 - **Next:** execute the renderer and private upload in the approved worker and replace shared-key receipts with provider-issued asymmetric signatures.
+- **Landed:** tenant-scoped publication-provider public-key registry pins Ed25519 key IDs to fingerprints, rejects rebinding, and records retirement.
+- **Next:** execute the renderer/private upload in the approved worker and use registered asymmetric keys for receipts.
 ## M16 - Executive Dashboard
 - **Landed (science):** gap-to-proof dashboard reports exact requirement and per-module gaps while keeping code artifacts, test evidence and live acceptance separate.
 - **Landed:** proof-event verification authenticates producer events with configured HMAC keys and requires deployment receipts to carry version and environment bindings.
