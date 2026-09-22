@@ -18,3 +18,10 @@ No self-bots, unofficial social wrappers, rotating residential proxies, stealth/
 ## Approval and BYOK boundaries
 
 Rule extraction and field drafting call `app.core.providers.generate`, so provider credentials stay in the shared BYOK layer. Creating a form-fill proposal writes a pending shared approval request. The returned action explicitly says that execution did not occur. The eventual browser stage and the final submit must remain separate approval-controlled effects.
+
+## Humanized-answer review tenant boundary
+
+The review-package route now requires authenticated tenant context and binds
+that tenant to the approval payload. `ApplicationAnswerPipeline` fails closed
+on an empty tenant ID, so exact-answer review packages cannot detach from the
+owner before browser staging and separate final-submit approval.
