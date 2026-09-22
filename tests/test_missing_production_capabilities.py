@@ -1,5 +1,4 @@
 import json
-import shutil
 from pathlib import Path
 import yaml
 
@@ -32,10 +31,10 @@ def test_x05_grafana_dashboard_has_real_queries_but_hosted_dashboard_is_unattest
     assert len(doc['panels'])>=3 and all(p['targets'][0]['expr'] for p in doc['panels'])
     assert not Path('audits/production/grafana-dashboard-attestation.json').exists()
 
-def test_x11_compose_acceptance_remains_unrun_without_container_runtime():
+def test_x11_compose_acceptance_remains_unrun_without_runtime_attestation():
     compose=yaml.safe_load(Path('deploy/local/docker-compose.yml').read_text())
     assert {'migrate','api','worker','postgres','redis'} <= set(compose['services'])
-    assert shutil.which('docker') is None and shutil.which('podman') is None
+    assert not Path('audits/production/compose-acceptance.json').exists()
 
 def test_x12_kubernetes_acceptance_remains_unrun_without_cluster():
     docs=list(yaml.safe_load_all(Path('deploy/k8s/atlas.yaml').read_text()))
