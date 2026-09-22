@@ -4,8 +4,8 @@
     {
       "ledger": "audits/technical-spec-line-by-line.json",
       "total": 229,
-      "resolvable_nodes": 227,
-      "unresolved": 2,
+      "resolvable_nodes": 229,
+      "unresolved": 0,
       "results": [
         {
           "row": "A01",
@@ -57,9 +57,9 @@
         },
         {
           "row": "A09",
-          "evidence": "tests/test_technical_architecture_a01_a33.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_architecture_open_rows_a09_a13.py::test_a09_postgres16_supabase_compatible_configuration_with_live_acceptance_unrun",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "A10",
@@ -81,9 +81,9 @@
         },
         {
           "row": "A13",
-          "evidence": "tests/test_technical_architecture_a01_a33.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_architecture_open_rows_a09_a13.py::test_a13_rabbitmq_topic_contract_is_optional_facade_not_configured_backend",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "A14",

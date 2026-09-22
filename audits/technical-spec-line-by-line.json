@@ -135,10 +135,12 @@
       "source_line_start": 7,
       "source_line_end": 7,
       "source_excerpt": "Database: PostgreSQL 16 (via Supabase for managed hosting), with pgvector extension for dense embeddings; ChromaDB as a dedicated vector store for long\u2011term memory and semantic search.",
-      "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "status": "configured-unaccepted",
+      "implementation_path": "deploy/local/docker-compose.yml; backend/app/runtime/technical_architecture_a01_a33.py",
+      "test_evidence": "tests/test_technical_architecture_open_rows_a09_a13.py::test_a09_postgres16_supabase_compatible_configuration_with_live_acceptance_unrun",
+      "kind": "functional",
+      "evidence_kind": "exact-configuration-and-live-acceptance-gap",
+      "production_acceptance": "not_run"
     },
     {
       "row": 10,
@@ -190,10 +192,12 @@
       "source_line_start": 8,
       "source_line_end": 8,
       "source_excerpt": "Message Queue / Event Bus: Redis Streams for real\u2011time events between services; RabbitMQ optional for complex routing.",
-      "status": "verified-pushed",
+      "status": "facade-unconfigured",
       "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_architecture_open_rows_a09_a13.py::test_a13_rabbitmq_topic_contract_is_optional_facade_not_configured_backend",
+      "kind": "functional",
+      "evidence_kind": "exact-facade-and-missing-backend-gap",
+      "production_acceptance": "not_run"
     },
     {
       "row": 14,
