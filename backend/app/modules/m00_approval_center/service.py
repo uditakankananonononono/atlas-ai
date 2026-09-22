@@ -143,7 +143,12 @@ class Service:
         clock: Callable[[], datetime] | None = None,
     ) -> None:
         if session_factory is None:
-            Base.metadata.create_all(engine)
+            # Production schema lifecycle belongs to Alembic. Auto-creation is
+            # opt-in for isolated development/tests so importing the app cannot
+            # mutate a database while ``alembic upgrade`` is running.
+            import os
+            if os.getenv("ATLAS_AUTO_CREATE_SCHEMA") == "1":
+                Base.metadata.create_all(engine)
             session_factory = SessionLocal
         self._sessions = session_factory
         self._broadcaster = broadcaster or ApprovalBroadcaster()
