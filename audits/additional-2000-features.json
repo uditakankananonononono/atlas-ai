@@ -14487,7 +14487,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_960_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14501,7 +14502,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_961_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14515,7 +14517,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_962_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14529,7 +14532,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_963_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14543,7 +14547,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_964_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14557,7 +14562,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_965_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14571,7 +14577,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_966_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14585,7 +14592,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_967_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14599,7 +14607,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_968_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14613,7 +14622,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_969_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14627,7 +14637,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_970_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14641,7 +14652,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_971_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14655,7 +14667,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_972_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14669,7 +14682,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_973_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14683,7 +14697,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_974_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14697,7 +14712,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_975_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14711,7 +14727,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_976_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14725,7 +14742,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_977_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14739,7 +14757,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_978_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14753,7 +14772,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_979_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14767,7 +14787,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_980_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14781,7 +14802,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_981_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14795,7 +14817,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_982_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14809,7 +14832,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_983_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14823,7 +14847,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_984_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14837,7 +14862,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_985_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14851,7 +14877,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_986_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14865,7 +14892,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_987_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14879,7 +14907,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_988_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14893,7 +14922,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_989_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14907,7 +14937,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_990_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14921,7 +14952,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_991_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14935,7 +14967,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_992_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14949,7 +14982,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_993_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14963,7 +14997,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_994_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14977,7 +15012,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_995_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14991,7 +15027,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_996_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15005,7 +15042,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_997_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15019,7 +15057,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_998_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15033,7 +15072,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_999_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15047,7 +15087,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_1000_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15061,7 +15102,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_1001_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15075,7 +15117,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_1002_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15089,7 +15132,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_1003_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15103,7 +15147,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_1004_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15117,7 +15162,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_1005_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15131,7 +15177,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_1006_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15145,7 +15192,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_1007_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15159,7 +15207,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_1008_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -15173,7 +15222,8 @@
       "evidence": {
         "commit": "8d5f62fe9c0700b75f59a2ab8a58245a4d001e4c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/emerging_biomed_960_1009.py",
-        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py"
+        "test_path": "tests/modules/test_m12_emerging_biomed_960_1009.py::test_row_1009_distinctive_biomedical_calculation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
