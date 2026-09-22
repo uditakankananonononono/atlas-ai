@@ -17,3 +17,7 @@ class RevisionStore:
    try:db.flush()
    except IntegrityError as exc:raise ValueError('revision target version already persisted') from exc
    return row
+
+ def get(self,essay_id:str,to_version:str):
+  with self.sessions() as db:
+   return db.scalar(select(RevisionAcceptanceRow).where(RevisionAcceptanceRow.tenant_id==self.tenant_id,RevisionAcceptanceRow.essay_id==essay_id,RevisionAcceptanceRow.to_version==to_version))
