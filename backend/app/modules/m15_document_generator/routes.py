@@ -61,3 +61,13 @@ from .asymmetric_provider_receipt import VerifyAsymmetricProviderPublication,ver
 def verify_ed25519_provider_receipt(body:VerifyAsymmetricProviderPublication,tenant_id:str=Depends(tenant)):
  try:return {'tenant_id':tenant_id,**verify_asymmetric_provider_publication(body)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
+from .approved_worker import ApprovedPublicationJob,execute_approved_publication
+class UnconfiguredPublicationWorker:
+ def render(self,*args):raise ValueError('renderer adapter is not configured')
+ def upload_private(self,*args):raise ValueError('private upload adapter is not configured')
+def get_publication_worker():return UnconfiguredPublicationWorker()
+@router.post('/publication-worker/execute')
+def execute_publication_worker(body:ApprovedPublicationJob,tenant_id:str=Depends(tenant),worker=Depends(get_publication_worker)):
+ from app.core.approvals import approvals
+ try:return {'tenant_id':tenant_id,**execute_approved_publication(body,tenant_id,approvals,worker,worker)}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
