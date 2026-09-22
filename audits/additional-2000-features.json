@@ -20534,7 +20534,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1360_structured_products_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20548,7 +20549,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1361_exotic_options_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20562,7 +20564,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1362_barrier_options_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20576,7 +20579,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1363_asian_options_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20590,7 +20594,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1364_lookback_options_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20604,7 +20609,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1365_forward_starting_options_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20618,7 +20624,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1366_compound_options_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20632,7 +20639,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1367_chooser_options_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20646,7 +20654,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1368_rainbow_options_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20660,7 +20669,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1369_basket_options_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20674,7 +20684,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1370_quanto_options_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20688,7 +20699,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1371_commodity_trading_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20702,7 +20714,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1372_energy_markets_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20716,7 +20729,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1373_carbon_trading_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20730,7 +20744,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1374_weather_derivatives_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20744,7 +20759,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1375_fx_trading_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20758,7 +20774,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1376_currency_hedging_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20772,7 +20789,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1377_carry_trade_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20786,7 +20804,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1378_purchasing_power_parity_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20800,7 +20819,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1379_interest_rate_parity_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20814,7 +20834,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1380_international_finance_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20828,7 +20849,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1381_sovereign_risk_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20842,7 +20864,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1382_country_risk_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20856,7 +20879,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1383_political_risk_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20870,7 +20894,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1384_emerging_markets_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20884,8 +20909,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_row_1385_frontier_liquidity_changes_with_relevant_input",
-        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1385_frontier_markets_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20899,7 +20924,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1386_microfinance_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20913,7 +20939,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1387_development_finance_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20927,7 +20954,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1388_impact_investing_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20941,7 +20969,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1389_esg_investing_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20955,7 +20984,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1390_sustainable_finance_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20969,7 +20999,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1391_green_bonds_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20983,7 +21014,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1392_climate_finance_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20997,7 +21029,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1393_carbon_markets_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21011,7 +21044,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1394_behavioral_finance_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21025,8 +21059,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_row_1395_prospect_reference_changes_subjective_value",
-        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1395_prospect_theory_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21040,7 +21074,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1396_mental_accounting_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21054,7 +21089,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1397_loss_aversion_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21068,7 +21104,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1398_overconfidence_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21082,7 +21119,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1399_anchoring_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21096,7 +21134,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1400_herding_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21110,7 +21149,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1401_market_efficiency_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21124,7 +21164,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1402_emh_testing_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21138,7 +21179,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1403_anomalies_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21152,8 +21194,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_row_1404_momentum_signal_changes_factor_output",
-        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1404_momentum_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21167,7 +21209,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1405_value_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21181,7 +21224,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1406_size_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21195,7 +21239,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1407_quality_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21209,7 +21254,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1408_low_volatility_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21223,7 +21269,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_1409_profitability_distinctive_value_moves",
+        "evidence_kind": "exact-distinctive-finance-input-sensitive-computation-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },

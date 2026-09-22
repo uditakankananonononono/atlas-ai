@@ -1386,8 +1386,8 @@
     {
       "ledger": "audits/additional-2000-features.json",
       "total": 2006,
-      "resolvable_nodes": 811,
-      "unresolved": 1195,
+      "resolvable_nodes": 858,
+      "unresolved": 1148,
       "results": [
         {
           "row": 1,
@@ -9521,303 +9521,303 @@
         },
         {
           "row": 1360,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1360_structured_products_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1361,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1361_exotic_options_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1362,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1362_barrier_options_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1363,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1363_asian_options_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1364,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1364_lookback_options_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1365,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1365_forward_starting_options_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1366,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1366_compound_options_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1367,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1367_chooser_options_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1368,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1368_rainbow_options_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1369,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1369_basket_options_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1370,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1370_quanto_options_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1371,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1371_commodity_trading_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1372,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1372_energy_markets_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1373,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1373_carbon_trading_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1374,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1374_weather_derivatives_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1375,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1375_fx_trading_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1376,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1376_currency_hedging_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1377,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1377_carry_trade_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1378,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1378_purchasing_power_parity_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1379,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1379_interest_rate_parity_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1380,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1380_international_finance_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1381,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1381_sovereign_risk_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1382,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1382_country_risk_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1383,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1383_political_risk_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1384,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1384_emerging_markets_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1385,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_row_1385_frontier_liquidity_changes_with_relevant_input",
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1385_frontier_markets_distinctive_value_moves",
           "resolved": true,
           "reason": null
         },
         {
           "row": 1386,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1386_microfinance_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1387,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1387_development_finance_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1388,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1388_impact_investing_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1389,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1389_esg_investing_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1390,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1390_sustainable_finance_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1391,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1391_green_bonds_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1392,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1392_climate_finance_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1393,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1393_carbon_markets_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1394,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1394_behavioral_finance_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1395,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_row_1395_prospect_reference_changes_subjective_value",
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1395_prospect_theory_distinctive_value_moves",
           "resolved": true,
           "reason": null
         },
         {
           "row": 1396,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1396_mental_accounting_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1397,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1397_loss_aversion_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1398,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1398_overconfidence_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1399,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1399_anchoring_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1400,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1400_herding_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1401,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1401_market_efficiency_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1402,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1402_emh_testing_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1403,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1403_anomalies_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1404,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_row_1404_momentum_signal_changes_factor_output",
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1404_momentum_distinctive_value_moves",
           "resolved": true,
           "reason": null
         },
         {
           "row": 1405,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1405_value_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1406,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1406_size_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1407,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1407_quality_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1408,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1408_low_volatility_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1409,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_1409_profitability_distinctive_value_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1410,
