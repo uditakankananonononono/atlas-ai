@@ -1386,8 +1386,8 @@
     {
       "ledger": "audits/additional-2000-features.json",
       "total": 2010,
-      "resolvable_nodes": 49,
-      "unresolved": 1961,
+      "resolvable_nodes": 99,
+      "unresolved": 1911,
       "results": [
         {
           "row": 1,
@@ -6845,303 +6845,303 @@
         },
         {
           "row": 910,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_910_fault_tolerant_resource_estimate",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 911,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_911_grover_iteration_count_and_success",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 912,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_912_surface_code_scaling_and_qubit_layout",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 913,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_913_parameter_shift_vqe_descends_toward_bound",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 914,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_914_trotter_steps_from_spectral_range",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 915,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_915_bb84_key_rate_and_eavesdrop_probe",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 916,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_916_sql_heisenberg_and_coherence_floor",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 917,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_917_repeater_chain_werner_decay_and_distillation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 918,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_918_lif_spike_rate_matches_analytic",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 919,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_919_stdp_all_pair_kernel",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 920,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_920_crossbar_vmm_ideal_vs_noisy_quantized",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 921,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_921_mzi_mesh_loss_and_power",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 922,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_922_dna_strand_library_and_wallace_tm",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 923,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_923_crn_mass_action_conserves_mass",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 924,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_924_toggle_switch_bistability",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 925,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_925_pso_converges_on_sphere",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 926,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_926_aco_finds_short_tour",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 927,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_927_abc_converges_with_scout_record",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 928,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_928_firefly_attraction_converges",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 929,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_929_cuckoo_levy_flights_converge",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 930,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_930_bat_echolocation_converges_with_loudness_decay",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 931,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_931_gwo_alpha_leadership_converges",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 932,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_932_whale_spiral_converges",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 933,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_933_clonal_selection_converges",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 934,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_934_blinker_oscillator_detected",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 935,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_935_gp_evolves_fitting_expression",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 936,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_936_grammatical_evolution_recovers_polynomial",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 937,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_937_gep_karva_decoding_fits_data",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 938,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_938_self_adaptive_es_converges_and_shrinks_sigma",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 939,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_939_neuroevolution_solves_xor",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 940,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_940_learning_progress_drives_region_choice",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 941,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_941_habituation_curve_and_stage",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 942,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_942_morphology_beats_sensor_as_action_predictor",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 943,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_943_soft_actuator_angle_force_and_burst_margin",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 944,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_944_boids_order_parameter_bounded",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 945,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_945_modular_chain_statics",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 946,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_946_reconfiguration_plan_completes_without_hardware",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 947,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_947_self_replication_never_authorized",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 948,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_948_mechanosynthesis_build_time_and_yield",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 949,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_949_voxel_inventory_and_energy",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 950,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_950_srr_resonance_and_negative_mu_band",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 951,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_951_veselago_negative_refraction",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 952,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_952_transformation_optics_cloak_profile",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 953,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_953_helmholtz_resonance_band",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 954,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_954_thermal_cloak_anisotropy_and_efficiency",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 955,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_955_reentrant_honeycomb_is_auxetic",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 956,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_956_bilayer_curvature_and_recovery_ratio",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 957,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_957_extrusion_flow_shear_and_viability_boundary",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 958,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_958_oxygen_diffusion_forces_vascularization",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 959,
-          "evidence": "tests/modules/test_m16_emerging_0910_0959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_emerging_0910_0959.py::test_row_959_logistic_growth_and_nutrient_window",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 960,
