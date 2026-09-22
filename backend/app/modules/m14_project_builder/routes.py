@@ -173,3 +173,10 @@ def acceptance_matrix(body:AcceptanceMatrixIn):
     from .acceptance_trace import build_acceptance_matrix
     try:return build_acceptance_matrix(body.criteria,body.artifacts,body.tests)
     except ValueError as error:raise HTTPException(422,str(error)) from error
+
+class ProofStatusIn(BaseModel):requirements:list[dict[str,Any]]=Field(min_length=1,max_length=2000)
+@router.post('/proof-status')
+def proof_status(body:ProofStatusIn):
+ from .acceptance_trace import build_proof_status
+ try:return build_proof_status(body.requirements)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
