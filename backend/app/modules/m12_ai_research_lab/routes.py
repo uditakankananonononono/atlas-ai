@@ -121,3 +121,15 @@ def get_checkpoint_queue(tenant:TenantContext=Depends(require_tenant)):return Ch
 def enqueue_reproducible_checkpoint(body:ReproducibleRunRequest,tenant:TenantContext=Depends(require_tenant),queue=Depends(get_checkpoint_queue)):
  try:return {'tenant_id':tenant.tenant_id,**checkpoint_and_enqueue(body,queue)}
  except ValueError as error:raise HTTPException(409,str(error)) from error
+from .provider_key_registry import ProviderKeyRegistry,RegisterProviderKey
+def get_provider_key_registry(tenant:TenantContext=Depends(require_tenant)):return ProviderKeyRegistry(tenant.tenant_id)
+@router.post('/reproducible-run/provider-keys')
+def register_provider_key(body:RegisterProviderKey,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_provider_key_registry)):
+ try:
+  row=registry.register(body);return {'tenant_id':tenant.tenant_id,'provider':row.provider,'key_id':row.key_id,'fingerprint_sha256':row.fingerprint_sha256,'active':row.active,'boundary':'Registers public verification-key bytes only; administrative provisioning must establish provider identity and trust.'}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
+@router.post('/reproducible-run/provider-keys/{provider}/{key_id}/retire')
+def retire_provider_key(provider:str,key_id:str,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_provider_key_registry)):
+ try:
+  row=registry.retire(provider,key_id);return {'tenant_id':tenant.tenant_id,'provider':provider,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
+ except ValueError as error:raise HTTPException(404,str(error)) from error
