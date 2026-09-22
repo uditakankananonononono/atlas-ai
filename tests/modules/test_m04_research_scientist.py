@@ -110,3 +110,12 @@ def test_provider_backed_hypothesis_requires_authentication_in_production(monkey
     })
     assert response.status_code == 401
     assert response.json()["detail"] == "OIDC bearer token required"
+
+
+def test_core_spec_account_and_document_effects_cannot_self_attest_approval():
+    from app.modules.m04_research_scientist.core_spec_round6 import CapabilityRequest, execute
+    for row in (118, 119):
+        result = execute(row, CapabilityRequest(objective="Use an owner account", inputs={"approved": True}))
+        assert result.status == "approval_required"
+        assert result.requires_approval is True
+        assert result.artifact["effect_executed"] is False
