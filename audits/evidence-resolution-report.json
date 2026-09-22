@@ -4,8 +4,8 @@
     {
       "ledger": "audits/technical-spec-line-by-line.json",
       "total": 229,
-      "resolvable_nodes": 111,
-      "unresolved": 118,
+      "resolvable_nodes": 144,
+      "unresolved": 85,
       "results": [
         {
           "row": "A01",
@@ -603,201 +603,201 @@
         },
         {
           "row": "M9-06",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_100_m9_06_react_flow_graph_returns_nodes_and_edges",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M9-07",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_101_m9_07_filter_and_double_click_edit_are_preserved",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M9-08",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_102_m9_08_planner_context_consumes_visible_graph_ids",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M10-01",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_103_m10_01_pubsub_ingestion_has_stable_dedupe_key",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M10-02",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_104_m10_02_email_embedding_persists_provenance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M10-03",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_105_m10_03_classifier_is_restricted_to_seven_categories",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M10-04",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_106_m10_04_action_extraction_rejects_nonexact_schema",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M10-05",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_107_m10_05_reply_draft_keeps_thread_graph_context_pending",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M11-01",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_108_m11_01_calendar_watch_update_preserves_channel",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M11-02",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_109_m11_02_scheduler_assigns_task_to_feasible_slot",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M11-03",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_110_m11_03_schedule_accounts_for_travel_and_preparation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M11-04",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_111_m11_04_weekly_proposal_does_not_mutate_calendar",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M11-05",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_112_m11_05_rescheduling_is_approval_gated_when_conflicted",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M12-01",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_113_m12_01_model_policy_selects_eligible_lowest_cost_model",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M12-02",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_114_m12_02_collaboration_dag_rejects_cycle",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M12-03",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_115_m12_03_celery_nodes_preserve_typed_data_contract",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M12-04",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_116_m12_04_low_confidence_uses_provider_signal",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M12-05",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_117_m12_05_retry_is_bounded_and_names_next_strategy",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M13-01",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_118_m13_01_browser_accepts_only_rest_operation_set",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M13-02",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_119_m13_02_persistent_context_requires_legal_permission_and_id",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M13-03",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_120_m13_03_har_capture_has_content_digest",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M13-04",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_121_m13_04_vlm_observations_are_explicit_not_invented",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M13-05",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_122_m13_05_navigation_loop_rejects_steps_over_bound",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M13-06",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_123_m13_06_form_mapping_matches_normalized_labels",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M13-07",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_124_m13_07_submit_pauses_when_approval_scope_mismatches",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M14-01",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_125_m14_01_goal_decomposes_to_stages_without_mutation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M14-02",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_126_m14_02_project_requires_all_five_named_roles",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M14-03",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_127_m14_03_dataset_requires_public_url_and_license",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M14-04",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_128_m14_04_experiment_sandbox_disables_network",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M14-05",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_129_m14_05_project_assembly_detects_readme",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M14-06",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_130_m14_06_feedback_creates_proposed_replan_not_execution",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M14-07",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_131_m14_07_git_version_control_records_proposal_without_mutation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M15-01",
-          "evidence": "tests/test_technical_spec_100_132.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_100_132.py::test_row_132_m15_01_template_library_requires_latex_docx_pptx",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M15-02",
