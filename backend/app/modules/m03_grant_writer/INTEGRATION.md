@@ -14,3 +14,10 @@
 - Budget rates must be supplied with a `source_note` after checking an official vendor API, published rate card, or other permitted source. The calculator marks rates as requiring verification and does not scrape prices.
 - Success analysis operates only on permissioned funded examples and reports language overlap as diagnostic, not predictive. It does not claim that similarity implies funding success.
 - Export is represented as an approval request. No DOCX/PDF generation, publishing, submission, browser form submission, or payment occurs in this module.
+
+## Tenant boundary
+
+All core grant-writer routes resolve `require_tenant` before constructing the
+service. Approval-gated export payloads include the authenticated tenant ID so
+downstream rendering cannot detach the artifact from its owner. Tenant IDs are
+server-derived and cannot be selected in the request body.

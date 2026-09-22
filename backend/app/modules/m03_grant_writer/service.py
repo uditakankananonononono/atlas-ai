@@ -37,9 +37,17 @@ class ApprovalSink(Protocol):
 class Service:
     """Build grounded grant drafts while keeping external effects human-controlled."""
 
-    def __init__(self, approval_sink: ApprovalSink, generate_fn: GenerateFn = byok_generate) -> None:
+    def __init__(
+        self,
+        approval_sink: ApprovalSink,
+        generate_fn: GenerateFn = byok_generate,
+        tenant_id: str = "local",
+    ) -> None:
+        if not tenant_id.strip():
+            raise ValueError("tenant_id is required")
         self._approvals = approval_sink
         self._generate = generate_fn
+        self.tenant_id = tenant_id.strip()
 
     async def generate_proposal(self, request: ProposalRequest) -> ProposalResponse:
         """Run research, draft, critique, and revision stages using the shared BYOK provider."""
@@ -140,7 +148,7 @@ class Service:
             id=str(uuid4()),
             module_id=3,
             action_type="generate_grant_documents",
-            payload=request.model_dump(),
+            payload={**request.model_dump(), "tenant_id": self.tenant_id},
         )
         stored = self._approvals.put(item)
         return ProposedExportResponse(

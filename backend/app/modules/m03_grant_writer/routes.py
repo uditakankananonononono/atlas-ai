@@ -20,11 +20,11 @@ from .service import Service
 router = APIRouter(prefix="/grant-writer", tags=["grant-writer"])
 
 
-def get_service() -> Service:
-    """Construct the service with shared dependencies at request time."""
+def get_service(tenant: TenantContext = Depends(require_tenant)) -> Service:
+    """Construct a tenant-bound service with shared dependencies."""
     from app.core.approvals import approvals
 
-    return Service(approval_sink=approvals)
+    return Service(approval_sink=approvals, tenant_id=tenant.tenant_id)
 
 
 @router.post("/proposals", response_model=ProposalResponse)
