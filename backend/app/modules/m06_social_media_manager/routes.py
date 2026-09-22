@@ -85,13 +85,14 @@ def _env_credentials() -> PlatformCredentials:
 class _ApprovalCenterLookup:
     """Decision lookup over the shared Approval Center facade."""
 
-    def __init__(self) -> None:
+    def __init__(self, tenant_id: str) -> None:
         from app.core.approvals import approvals
 
         self._approvals = approvals
+        self._tenant_id = tenant_id
 
     def status_of(self, approval_id: str) -> str | None:
-        request = self._approvals.get(approval_id)
+        request = self._approvals.get(approval_id, user_id=self._tenant_id)
         if request is None:
             return None
         status = request.status
@@ -109,10 +110,10 @@ def get_repository(tenant: TenantContext = Depends(require_tenant)) -> SqlSocial
     return SqlSocialRepository(tenant.tenant_id)
 
 
-def get_scheduler(repository: SqlSocialRepository = Depends(get_repository)) -> Scheduler:
+def get_scheduler(tenant: TenantContext = Depends(require_tenant), repository: SqlSocialRepository = Depends(get_repository)) -> Scheduler:
     return Scheduler(
         repository=repository,
-        decisions=_ApprovalCenterLookup(),
+        decisions=_ApprovalCenterLookup(tenant.tenant_id),
         adapter_factory=_EnvAdapterFactory(),
     )
 
