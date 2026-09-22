@@ -66,7 +66,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** canonical service now legally wires Reddit by default and optional official YouTube/Pinterest plus allowlisted public pages through shared bounded collectors.
 - **Landed:** owner-material evidence completeness meter links every concept and critique suggestion to hashed owner records, exposes missing references and exact coverage, and never claims truth or disclosure permission.
 - **Landed:** revision-acceptance verification binds accepted suggestions and owner-record hashes to distinct essay versions, requires owner review, and keeps disclosure approval separate for the named audience boundary.
-- **Next:** persist the revision chain and enforce the disclosure gate in publication adapters.
+- **Landed:** tenant-scoped append-only revision persistence requires each accepted revision to extend the stored essay-version head and rejects chain breaks.
+- **Next:** enforce the disclosure gate in publication adapters.
 ## M18 - Side Hustle & Knowledge Scraper
 - **Landed:** default public/official collectors, approval-gated experiments, adapter receipts and outcomes now extend to tenant-scoped durable SQLite WAL run snapshots that survive runner restarts and preserve exact approval/receipt links.
 - **Next:** signed provider receipt verification and shared Postgres storage for horizontally scaled workers.

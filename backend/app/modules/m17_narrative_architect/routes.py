@@ -41,3 +41,11 @@ from .revision_acceptance import RevisionAcceptance,verify_revision_acceptance
 def revision_acceptance(body:RevisionAcceptance,tenant:TenantContext=Depends(require_tenant)):
  try:return {'tenant_id':tenant.tenant_id,**verify_revision_acceptance(body)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .revision_persistence import persist_revision_acceptance
+from .revision_store import RevisionStore
+def get_revision_store(tenant:TenantContext=Depends(require_tenant)):return RevisionStore(tenant.tenant_id)
+@router.post('/evidence-completeness/revision-acceptance/persist')
+def persist_revision(body:RevisionAcceptance,tenant:TenantContext=Depends(require_tenant),store=Depends(get_revision_store)):
+ try:return {'tenant_id':tenant.tenant_id,**persist_revision_acceptance(body,store)}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
