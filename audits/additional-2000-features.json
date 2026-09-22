@@ -34,7 +34,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Decision Journaling + Retrieval (Most Powerful, Easiest)",
-      "description": "What it is: Every time you make a decision — \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" — you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
+      "description": "What it is: Every time you make a decision \u2014 \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" \u2014 you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -48,7 +48,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Correction Loop (Reinforcement From You)",
-      "description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output → your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
+      "description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output \u2192 your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -62,7 +62,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Voice Fine-Tuning (Style Transfer to You)",
-      "description": "What it is: You collect 50–200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
+      "description": "What it is: You collect 50\u2013200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "93c65c5c4e2bbdf91632d10a1433de8e114c87bc",
@@ -76,7 +76,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Chain-of-Thought Capture",
-      "description": "What it is: When you solve a hard problem, you record your reasoning step by step — not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
+      "description": "What it is: When you solve a hard problem, you record your reasoning step by step \u2014 not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -91,7 +91,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Preference Ranking",
-      "description": "What it is: Claire generates 3–5 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
+      "description": "What it is: Claire generates 3\u20135 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "93c65c5c4e2bbdf91632d10a1433de8e114c87bc",
@@ -105,7 +105,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Behavioral Telemetry (What You Actually Do)",
-      "description": "What it is: Silently log your real actions — which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
+      "description": "What it is: Silently log your real actions \u2014 which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -154,7 +154,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -170,7 +170,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -186,7 +186,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -202,7 +202,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -218,7 +218,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -234,7 +234,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -250,7 +250,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -266,7 +266,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -282,7 +282,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -298,7 +298,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -314,7 +314,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -330,7 +330,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -346,7 +346,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -362,7 +362,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -378,7 +378,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -394,7 +394,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -410,7 +410,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -426,7 +426,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -442,7 +442,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -458,7 +458,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -474,7 +474,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -490,7 +490,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -506,7 +506,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -522,7 +522,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -538,7 +538,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -3264,7 +3264,8 @@
       "evidence": {
         "commit": "64f6b5a95a3bc41ccb75d87ecd56631983a563d1",
         "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
-        "test_path": "tests/modules/test_m04_quant_methods_185_234.py"
+        "test_path": "tests/modules/test_m04_quant_methods_185_234.py::test_row_218_multi_objective_optimization_uses_preferences",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -3278,7 +3279,8 @@
       "evidence": {
         "commit": "64f6b5a95a3bc41ccb75d87ecd56631983a563d1",
         "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
-        "test_path": "tests/modules/test_m04_quant_methods_185_234.py"
+        "test_path": "tests/modules/test_m04_quant_methods_185_234.py::test_row_219_pareto_frontier_identification_reports_dominance",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -3306,7 +3308,8 @@
       "evidence": {
         "commit": "64f6b5a95a3bc41ccb75d87ecd56631983a563d1",
         "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
-        "test_path": "tests/modules/test_m04_quant_methods_185_234.py"
+        "test_path": "tests/modules/test_m04_quant_methods_185_234.py::test_row_221_integer_programming_enforces_all_integer_dimensions",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -3320,7 +3323,8 @@
       "evidence": {
         "commit": "64f6b5a95a3bc41ccb75d87ecd56631983a563d1",
         "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
-        "test_path": "tests/modules/test_m04_quant_methods_185_234.py"
+        "test_path": "tests/modules/test_m04_quant_methods_185_234.py::test_row_222_mixed_integer_programming_preserves_continuous_dimensions",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -3334,7 +3338,8 @@
       "evidence": {
         "commit": "64f6b5a95a3bc41ccb75d87ecd56631983a563d1",
         "implementation_path": "backend/app/modules/m04_research_scientist/quant_methods_185_234.py",
-        "test_path": "tests/modules/test_m04_quant_methods_185_234.py"
+        "test_path": "tests/modules/test_m04_quant_methods_185_234.py::test_row_223_dynamic_programming_rejects_unreachable_stage",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -3502,7 +3507,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_235_dual_decomposition_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3516,7 +3522,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_236_admm_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3530,7 +3537,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_237_coordinate_descent_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3544,7 +3552,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_238_proximal_methods_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3558,7 +3567,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_239_frank_wolfe_algorithm_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3572,7 +3582,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_240_cutting_plane_methods_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3586,7 +3597,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_241_branch_and_bound_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3600,7 +3612,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_242_column_generation_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3614,7 +3627,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_243_benders_decomposition_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3628,7 +3642,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_244_lagrangian_relaxation_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3642,7 +3657,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_245_semidefinite_programming_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3656,7 +3672,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_246_second_order_cone_programming_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3670,7 +3687,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_247_geometric_programming_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3684,7 +3702,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_248_fractional_programming_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3698,7 +3717,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_249_bilevel_optimization_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3712,7 +3732,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_250_stochastic_approximation_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3726,7 +3747,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_251_online_learning_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3740,7 +3762,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_252_bandit_algorithms_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3754,7 +3777,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_253_contextual_bandits_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3768,7 +3792,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_254_thompson_sampling_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3782,7 +3807,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_255_upper_confidence_bound_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3796,7 +3822,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_256_expert_advice_aggregation_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3810,7 +3837,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_257_regret_minimization_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3824,7 +3852,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_258_game_theoretic_learning_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3838,7 +3867,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_259_fictitious_play_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3852,7 +3882,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_260_novel_metaphor_generation_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3866,7 +3897,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_261_narrative_arc_construction_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3880,7 +3912,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_262_character_development_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3894,7 +3927,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_263_dialogue_writing_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3908,7 +3942,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_264_worldbuilding_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3922,7 +3957,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_265_plot_twist_design_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3936,7 +3972,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_266_foreshadowing_placement_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3950,7 +3987,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_267_tension_building_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3964,7 +4002,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_268_pacing_control_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3978,7 +4017,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_269_voice_development_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -3992,7 +4032,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_270_genre_blending_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -4006,7 +4047,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_271_trope_subversion_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -4020,7 +4062,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_272_myth_creation_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -4034,7 +4077,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_273_poetry_generation_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -4048,7 +4092,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_274_songwriting_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -4062,7 +4107,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_275_screenplay_formatting_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -4076,7 +4122,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_276_stage_play_construction_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -4090,7 +4137,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_277_comic_script_writing_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -4104,7 +4152,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_278_interactive_fiction_computes_from_inputs",
+        "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
