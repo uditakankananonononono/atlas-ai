@@ -203,9 +203,10 @@
       "source_line_end": 9,
       "source_excerpt": "AI Orchestration: LangChain as an abstraction layer, custom prompt chaining, model routers that dynamically select among OpenAI (GPT\u20114o, GPT\u20114 Turbo), Anthropic Claude 3.5 Sonnet, Google Gemini 1.5 Pro, DeepSeek\u2011V2, and locally hosted models via Ollama (Llama 3.1 70B, DeepSeek\u2011Coder\u2011V2, Mixtral 8x22B).",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app",
+      "test_evidence": "tests/test_technical_architecture_real_workflows.py::test_a14_real_langchain_runnable_sequence_transforms_shared_state",
+      "kind": "functional",
+      "evidence_kind": "real-workflow-and-failure-behavior"
     },
     {
       "row": 15,
@@ -436,9 +437,10 @@
       "source_line_end": 15,
       "source_excerpt": "All modules communicate through a central API Gateway (FastAPI) that enforces authentication, rate limiting, and routes requests to appropriate internal services. Long\u2011running tasks are dispatched to Celery workers; streaming updates are delivered via Server\u2011Sent Events (SSE) to the Next.js frontend.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app",
+      "test_evidence": "tests/test_technical_architecture_real_workflows.py::test_a31_real_celery_task_registry_contains_bound_execution_and_collection_jobs",
+      "kind": "functional",
+      "evidence_kind": "real-workflow-and-failure-behavior"
     },
     {
       "row": 32,
@@ -463,9 +465,10 @@
       "source_line_end": 20,
       "source_excerpt": "Long\u2011Term Memory & Retrieval (LTM) A universal LTM layer stores every piece of generated and ingested content: research notes, emails, drafts, contact profiles, competition details, etc. All text is embedded using text\u2011embedding\u20113\u2011large (or the free BAAI/bge\u2011large\u2011en\u2011v1.5 via Ollama) and indexed in ChromaDB. Metadata is stored in PostgreSQL for hybrid search (semantic + keyword + filters). The memory system also maintains a knowledge graph in Neo4j (optional) that links entities like \u201cProject X\u201d \u2192 \u201cCompetition Y\u201d \u2192 \u201cGrant Proposal Z\u201d.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app",
+      "test_evidence": "tests/test_technical_architecture_real_workflows.py::test_a33_real_ltm_ingestion_is_tenant_scoped_cited_and_retrievable",
+      "kind": "functional",
+      "evidence_kind": "real-workflow-and-failure-behavior"
     },
     {
       "row": 34,
