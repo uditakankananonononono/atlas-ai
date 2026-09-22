@@ -103,6 +103,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** persist the revision chain and authenticate publication receipts.
 - **Landed:** Ed25519 publication-receipt verification authenticates the provider receipt and exact essay, revision and audience binding.
 - **Next:** persist the revision chain and enforce the disclosure gate in publication adapters.
+- **Landed:** tenant-scoped publication-provider public-key registry pins Ed25519 key IDs to fingerprints, rejects rebinding, and records retirement.
+- **Next:** persist the revision chain and enforce the disclosure gate using governed publication keys.
 ## M18 - Side Hustle & Knowledge Scraper
 - **Landed:** default public/official collectors, approval-gated experiments, adapter receipts and outcomes now extend to tenant-scoped durable SQLite WAL run snapshots that survive runner restarts and preserve exact approval/receipt links.
 - **Next:** signed provider receipt verification and shared Postgres storage for horizontally scaled workers.
