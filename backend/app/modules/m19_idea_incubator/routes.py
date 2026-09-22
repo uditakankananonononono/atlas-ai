@@ -85,3 +85,44 @@ from .luxury_venture import VentureBrief,build_luxury_venture
 def luxury_venture_studio(data:VentureBrief):
  try:return build_luxury_venture(data)
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .luxury_venture import PitchPackageRequest,build_pitch_package
+@router.post('/luxury-venture-studio/pitch-package')
+def luxury_venture_pitch_package(data:PitchPackageRequest):
+ try:return build_pitch_package(data)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
+
+class LuxuryPortfolioIn(BaseModel):
+ brief:VentureBrief
+ owner_id:str=Field(min_length=1,max_length=200)
+@router.post('/luxury-venture-studio/portfolio',response_model=Idea,status_code=201)
+def persist_luxury_venture(data:LuxuryPortfolioIn,service:LedgerService=Depends(get_ledger)):
+ studio=build_luxury_venture(data.brief);winner=next(x for x in studio['concepts'] if x['concept_id']==studio['recommended_concept_id'])
+ return service.create_idea(IdeaCreate(title=winner['name'],problem=data.brief.customer_job,proposed_solution=winner['promise'],tags=['luxury-venture',data.brief.sector],metadata={'brand_or_segment':data.brief.brand_or_segment,'evidence_refs':winner['evidence_refs'],'scorecard':winner['scores'],'review_status':'pending'}))
+
+from .luxury_venture import OutreachPreview,validate_outreach_preview
+class LuxuryOutreachRequest(BaseModel):
+ package:PitchPackageRequest
+ outreach:OutreachPreview
+@router.post('/luxury-venture-studio/outreach-preview',response_model=ApprovalRequest,status_code=201)
+def luxury_outreach_preview(data:LuxuryOutreachRequest,t:TenantContext=Depends(require_tenant)):
+
+ try:
+  package=build_pitch_package(data.package);preview=validate_outreach_preview(data.outreach,package)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
+ item=ApprovalRequest(id=str(__import__('uuid').uuid4()),module_id=19,action_type='luxury_venture_outreach',payload={**preview,'tenant_id':t.tenant_id})
+ return approvals.put(item,user_id=t.tenant_id)
+
+from .luxury_venture import VentureOutcome,summarize_outcome
+class LuxuryOutcomeRequest(BaseModel):
+ outcome:VentureOutcome
+ evidence_kind:EvidenceKind=EvidenceKind.EXPERIMENT
+@router.post('/luxury-venture-studio/portfolio/{idea_id}/experiments/{experiment_id}/outcome')
+def luxury_venture_outcome(idea_id:str,experiment_id:str,data:LuxuryOutcomeRequest,service:LedgerService=Depends(get_ledger)):
+ try:
+  summary=summarize_outcome(data.outcome)
+  updated=service.update_experiment(idea_id,experiment_id,ExperimentUpdate(status=ExperimentStatus(data.outcome.status),observed_value=data.outcome.observed_value,learnings=data.outcome.learnings))
+  polarity=EvidencePolarity.SUPPORTS if data.outcome.status=='succeeded' else EvidencePolarity.CONTRADICTS if data.outcome.status=='failed' else EvidencePolarity.NEUTRAL
+  evidence=service.add_evidence(idea_id,EvidenceCreate(kind=data.evidence_kind,claim=data.outcome.learnings,source=', '.join(data.outcome.source_refs),polarity=polarity,strength=.9,confidence=.8,observed_at=updated.updated_at,metadata={'experiment_id':experiment_id,'target_met':summary['target_met']}))
+  return {'experiment':updated,'evidence':evidence,'learning_summary':summary,'idea_stage_changed':False}
+ except (LookupError,ConflictError,ValidationError,ValueError) as error:raise _error(error) from error
