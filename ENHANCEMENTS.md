@@ -44,7 +44,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 ## M13 - Browser Agent
 - **Landed:** pre-submit readback diff compares fields, destination, exact price/currency and irreversible controls against the approved snapshot, requiring new approval for any change and never submitting itself.
 - **Landed:** immediate pre-submit capture reads destination and fields directly from the browser adapter and binds them to DOM and screenshot byte hashes before any separate submit decision.
-- **Next:** persist capture bytes immutably and bind a single-use approval and submit attempt to the capture hash.
+- **Landed:** verified DOM and screenshot bytes persist immutably under tenant and capture hash; duplicate hashes cannot replace stored evidence.
+- **Next:** bind a single-use approval and submit attempt to the persisted capture hash.
 ## M14 - Project Builder
 - **Landed (science):** acceptance matrix links criteria to hashed artifacts and named test results; proof-status keeps code-complete, test-complete and live-acceptance-complete separate with exact blockers and never promotes weaker evidence.
 - **Landed:** live-receipt verification authenticates supplied receipts with configured HMAC keys and binds each to the exact deployed version, environment, and acceptance-run input hash.

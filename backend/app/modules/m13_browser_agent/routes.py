@@ -79,3 +79,9 @@ from .pre_submit_capture import PreSubmitCaptureRequest,capture_pre_submit
 async def pre_submit_capture(body:PreSubmitCaptureRequest,tenant:TenantContext=Depends(require_tenant),service=Depends(get_service)):
  try:return {'tenant_id':tenant.tenant_id,**await capture_pre_submit(service.sessions,tenant.tenant_id,body)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .capture_persistence import PersistCaptureRequest,persist_capture
+@router.post('/submit/pre-submit-capture/persist')
+async def persist_pre_submit_capture(body:PersistCaptureRequest,tenant:TenantContext=Depends(require_tenant),service=Depends(get_service)):
+ try:return {'tenant_id':tenant.tenant_id,**await persist_capture(body,tenant.tenant_id,service.store)}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
