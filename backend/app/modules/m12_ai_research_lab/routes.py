@@ -108,3 +108,9 @@ from .resume_verification import ResumeVerificationRequest,verify_resume
 def reproducible_run_resume_verify(body:ResumeVerificationRequest,tenant:TenantContext=Depends(require_tenant)):
  try:return {'tenant_id':tenant.tenant_id,**verify_resume(body)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .asymmetric_resume_verification import AsymmetricResumeVerificationRequest,verify_asymmetric_resume
+@router.post('/reproducible-run/resume/provider-receipts/verify')
+def asymmetric_provider_receipts(body:AsymmetricResumeVerificationRequest,tenant:TenantContext=Depends(require_tenant)):
+ try:return {'tenant_id':tenant.tenant_id,**verify_asymmetric_resume(body)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error
