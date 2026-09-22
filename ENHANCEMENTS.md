@@ -33,7 +33,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** connect verified mapping travel estimates and live vendor cancellation terms while preserving their retrieval time and source snapshots.
 ## M12 - AI Research Lab
 - **Landed:** shipped provider and DAG wiring now constructs without dependency overrides and supports OpenAI, Anthropic, DeepSeek and local Ollama through the shared provider boundary.
-- **Next (science):** durable queued DAG resumes with per-node budget receipts, dataset hashes, seeds and reproducible provider/model manifests.
+- **Landed (science):** canonical reproducible-run checkpoints pin workflow/code identity, dataset hashes, per-node provider/model/seed, budget and spend receipts, output hashes and explicit resume state without claiming execution or byte verification.
+- **Next:** persist checkpoints transactionally in the worker queue and verify dataset bytes plus signed provider receipts before resume.
 ## M13 - Browser Agent
 - **Next:** readback diff before submit, showing changed fields, destination, price and irreversible controls against the approved snapshot.
 ## M14 - Project Builder
@@ -78,4 +79,4 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed (M07/M08, approval tenant handoff):** brand collateral sends and startup publish/deploy/share proposals now require tenant-scoped repositories and bind the repository tenant ID into every approval payload, preserving ownership at the handoff to external execution.
 - **Landed (M05, send tenant handoff):** initial outreach and durable campaign-message approvals now bind the authenticated container tenant into every send/follow-up payload; both services fail closed on an empty tenant so external delivery cannot detach from its owner.
 - **Landed (M06, approval tenant handoff):** schedule and A/B publish approvals now pass through one tenant-bound approval boundary that injects the authenticated repository tenant into every payload and fails closed when tenant identity is empty.
-- **Landed (M00, policy tenant isolation):** approval policies now use tenant+policy composite identity; admin upsert/list and effect evaluation are tenant-scoped, so one tenant’s allow/deny/review rule cannot change another tenant’s external-action gate. Unknown tenants still fail closed to human review.
+- **Landed (M00, policy tenant isolation):** approval policies now use tenant+policy composite identity; admin upsert/list and effect evaluation are tenant-scoped, so one tenant's allow/deny/review rule cannot change another tenant's external-action gate. Unknown tenants still fail closed to human review.
