@@ -235,13 +235,17 @@
       "package_paths": [
         "backend/app/modules/m10_email_assistant"
       ],
-      "code_file_count": 18,
+      "code_file_count": 23,
       "offline_test_files": [
+        "tests/modules/test_m10_authenticated_reconciliation.py",
         "tests/modules/test_m10_email_assistant.py",
         "tests/modules/test_m10_lane_email_assistant.py",
         "tests/modules/test_m10_lane_policy_composer.py",
+        "tests/modules/test_m10_promise_persistence.py",
         "tests/modules/test_m10_promise_reconciliation.py",
-        "tests/modules/test_m10_promise_tracker.py"
+        "tests/modules/test_m10_promise_tracker.py",
+        "tests/modules/test_m10_reviewer_key_registry.py",
+        "tests/modules/test_m10_source_message_persistence.py"
       ],
       "repository_evidence": "present",
       "live_acceptance": "not_run",
@@ -252,14 +256,18 @@
       "package_paths": [
         "backend/app/modules/m11_calendar_intelligence"
       ],
-      "code_file_count": 14,
+      "code_file_count": 19,
       "offline_test_files": [
+        "tests/modules/test_m11_asymmetric_risk_evidence.py",
         "tests/modules/test_m11_calendar_intelligence.py",
         "tests/modules/test_m11_conflicts.py",
         "tests/modules/test_m11_google_pagination.py",
         "tests/modules/test_m11_ics_timezones.py",
         "tests/modules/test_m11_live_risk_evidence.py",
         "tests/modules/test_m11_proposals.py",
+        "tests/modules/test_m11_provider_key_registry.py",
+        "tests/modules/test_m11_risk_retrieval_adapter.py",
+        "tests/modules/test_m11_risk_snapshot_persistence.py",
         "tests/modules/test_m11_schedule_risk.py",
         "tests/modules/test_m11_sync_validation.py"
       ],
@@ -272,10 +280,12 @@
       "package_paths": [
         "backend/app/modules/m12_ai_research_lab"
       ],
-      "code_file_count": 31,
+      "code_file_count": 35,
       "offline_test_files": [
         "tests/modules/test_depth_sweep_101_287.py",
         "tests/modules/test_depth_sweep_862_1148.py",
+        "tests/modules/test_m12_asymmetric_resume_verification.py",
+        "tests/modules/test_m12_checkpoint_queue.py",
         "tests/modules/test_m12_clinical_1110_1114.py",
         "tests/modules/test_m12_clinical_1115_1120.py",
         "tests/modules/test_m12_clinical_1121_1124.py",
@@ -303,6 +313,7 @@
         "tests/modules/test_m12_lane_store.py",
         "tests/modules/test_m12_lane_workflows.py",
         "tests/modules/test_m12_legal_1260_1309.py",
+        "tests/modules/test_m12_provider_key_registry.py",
         "tests/modules/test_m12_reproducible_run.py",
         "tests/modules/test_m12_research_methods_135_184.py",
         "tests/modules/test_m12_resume_verification.py",
@@ -320,10 +331,11 @@
       "package_paths": [
         "backend/app/modules/m13_browser_agent"
       ],
-      "code_file_count": 14,
+      "code_file_count": 15,
       "offline_test_files": [
         "tests/modules/test_m02_m13_application_workflow.py",
         "tests/modules/test_m13_browser_agent.py",
+        "tests/modules/test_m13_capture_persistence.py",
         "tests/modules/test_m13_pre_submit_capture.py",
         "tests/modules/test_m13_readback_diff.py",
         "tests/modules/test_m13_security.py",
@@ -338,16 +350,19 @@
       "package_paths": [
         "backend/app/modules/m14_project_builder"
       ],
-      "code_file_count": 21,
+      "code_file_count": 25,
       "offline_test_files": [
         "tests/modules/test_depth_sweep_288_574.py",
         "tests/modules/test_depth_sweep_575_861.py",
         "tests/modules/test_m14_architecture_635_684.py",
         "tests/modules/test_m14_artifacts.py",
+        "tests/modules/test_m14_asymmetric_live_receipts.py",
         "tests/modules/test_m14_budgets.py",
         "tests/modules/test_m14_engineering.py",
         "tests/modules/test_m14_engineering_methods_510_574.py",
         "tests/modules/test_m14_exports.py",
+        "tests/modules/test_m14_issuer_key_registry.py",
+        "tests/modules/test_m14_live_receipt_persistence.py",
         "tests/modules/test_m14_live_receipt_verification.py",
         "tests/modules/test_m14_milestones.py",
         "tests/modules/test_m14_proof_status.py",
@@ -370,15 +385,19 @@
       "package_paths": [
         "backend/app/modules/m15_document_generator"
       ],
-      "code_file_count": 18,
+      "code_file_count": 23,
       "offline_test_files": [
         "tests/modules/test_b3_f10_practitioner_depth.py",
         "tests/modules/test_depth_sweep_288_574.py",
+        "tests/modules/test_m15_approved_worker.py",
+        "tests/modules/test_m15_asymmetric_provider_receipt.py",
         "tests/modules/test_m15_creative_306_332.py",
         "tests/modules/test_m15_design_333_359.py",
         "tests/modules/test_m15_lane_builder.py",
+        "tests/modules/test_m15_provider_key_registry.py",
         "tests/modules/test_m15_provider_receipt.py",
         "tests/modules/test_m15_publication_receipt.py",
+        "tests/modules/test_m15_publication_receipt_persistence.py",
         "tests/modules/test_rows_288_343_evidence.py",
         "tests/modules/test_semantic_wave_0288_0574.py",
         "tests/modules/test_thin_module_enhancements.py",
@@ -393,7 +412,7 @@
       "package_paths": [
         "backend/app/modules/m16_executive_dashboard"
       ],
-      "code_file_count": 21,
+      "code_file_count": 26,
       "offline_test_files": [
         "tests/modules/test_depth_sweep_862_1148.py",
         "tests/modules/test_discriminating_1310_1459.py",
@@ -415,6 +434,7 @@
         "tests/modules/test_m16_analysis_1098_1102.py",
         "tests/modules/test_m16_analysis_1103_1107.py",
         "tests/modules/test_m16_analysis_1108_1109.py",
+        "tests/modules/test_m16_asymmetric_proof_events.py",
         "tests/modules/test_m16_authenticated_proof_events.py",
         "tests/modules/test_m16_climate_environment_1610_1659.py",
         "tests/modules/test_m16_dashboard_analytics.py",
@@ -423,6 +443,9 @@
         "tests/modules/test_m16_finance_1310_1359.py",
         "tests/modules/test_m16_finance_1360_1409.py",
         "tests/modules/test_m16_planning_388_399.py",
+        "tests/modules/test_m16_producer_key_registry.py",
+        "tests/modules/test_m16_producer_subscription.py",
+        "tests/modules/test_m16_proof_event_persistence.py",
         "tests/modules/test_m16_proof_gaps.py",
         "tests/modules/test_semantic_wave_1723_2010.py",
         "tests/modules/test_semantic_wave_block6_1436_1722.py",
@@ -439,7 +462,7 @@
         "backend/app/modules/m17_advice_essay",
         "backend/app/modules/m17_narrative_architect"
       ],
-      "code_file_count": 18,
+      "code_file_count": 23,
       "offline_test_files": [
         "tests/integration/test_m17_m20_cross_module_proofs.py",
         "tests/modules/test_depth_sweep_575_861.py",
@@ -450,7 +473,11 @@
         "tests/modules/test_m17_evidence_meter.py",
         "tests/modules/test_m17_narrative_architect.py",
         "tests/modules/test_m17_narrative_architect_depth.py",
+        "tests/modules/test_m17_publication_gate.py",
+        "tests/modules/test_m17_publication_key_registry.py",
+        "tests/modules/test_m17_publication_receipt_auth.py",
         "tests/modules/test_m17_revision_acceptance.py",
+        "tests/modules/test_m17_revision_persistence.py",
         "tests/modules/test_m17_routes.py",
         "tests/modules/test_m17_rows_710_740.py",
         "tests/modules/test_m17_rows_741_770.py",
@@ -480,6 +507,7 @@
         "tests/modules/test_m18_lane_sources.py",
         "tests/modules/test_m18_lane_validation.py",
         "tests/modules/test_m18_official_collectors_runner.py",
+        "tests/modules/test_m18_production_refresh.py",
         "tests/modules/test_m18_receipts_outcomes.py",
         "tests/modules/test_m18_side_hustle_scraper.py",
         "tests/modules/test_thin_module_wiring_wave.py"
@@ -673,5 +701,5 @@
       "production_acceptance": "not_run"
     }
   ],
-  "evidence_sha256": "0f836a6b8aa9e92f23f562bf9264ba60c5788b8f20761511077de8f450bee5b0"
+  "evidence_sha256": "69927318911517886c8d044ac21e5d8d04fb1cc975686145346728fb75bc847b"
 }
