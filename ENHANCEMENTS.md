@@ -54,7 +54,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** execute the renderer and private upload in the approved worker and replace shared-key receipt validation with provider-issued asymmetric signatures.
 ## M16 - Executive Dashboard
 - **Landed (science):** gap-to-proof dashboard reports exact requirement and per-module gaps while keeping code artifacts, test evidence and live acceptance separate.
-- **Next:** ingest authenticated producer events and deployment receipts instead of caller-supplied proof identifiers.
+- **Landed:** proof-event verification authenticates producer events with configured HMAC keys and requires deployment receipts to carry version and environment bindings.
+- **Next:** subscribe to producer event streams, persist events immutably, and adopt asymmetric producer signatures.
 ## M17 - Narrative Architect
 - **Landed:** canonical service now legally wires Reddit by default and optional official YouTube/Pinterest plus allowlisted public pages through shared bounded collectors.
 - **Landed:** owner-material evidence completeness meter links every concept and critique suggestion to hashed owner records, exposes missing references and exact coverage, and never claims truth or disclosure permission.
