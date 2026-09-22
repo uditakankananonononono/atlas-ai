@@ -72,7 +72,7 @@ class NullEmbedder:
 
 
 class ApprovalSink(Protocol):
-    def put(self, item: ApprovalRequest) -> ApprovalRequest: ...
+    def put(self, item: ApprovalRequest, *, user_id: str | None = None) -> ApprovalRequest: ...
 
 
 GraphContextFn = Callable[[str], list[str]]  # module 9 seam: entity -> related facts
@@ -108,6 +108,9 @@ class Service:
         llm_model: str | None = None,
     ) -> None:
         self.repository = repository
+        self.tenant_id = str(getattr(repository, "tenant_id", "")).strip()
+        if not self.tenant_id:
+            raise ValueError("tenant-scoped repository is required")
         self.approval_sink = approval_sink
         self.gmail = gmail
         self.http = http
@@ -292,6 +295,7 @@ class Service:
             module_id=10,
             action_type="send_email_reply",
             payload={
+                "tenant_id": self.tenant_id,
                 "draft_id": draft_id,
                 "message_id": message_id,
                 "gmail_id": raw.gmail_id,
@@ -301,7 +305,7 @@ class Service:
                 "body": body,
             },
         )
-        self.approval_sink.put(approval)
+        self.approval_sink.put(approval, user_id=self.tenant_id)
         self.repository.save_draft(
             draft_id=draft_id, message_id=message_id, approval_id=approval.id,
             to=raw.sender, subject=subject, body=body, model=model,

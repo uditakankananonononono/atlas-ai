@@ -60,8 +60,8 @@ class ApprovalSpy:
     def __init__(self):
         self.items = []
 
-    def put(self, item: ApprovalRequest) -> ApprovalRequest:
-        self.items.append(item)
+    def put(self, item: ApprovalRequest, *, user_id=None) -> ApprovalRequest:
+        self.items.append((item, user_id))
         return item
 
 
@@ -170,7 +170,7 @@ def test_actionable_email_drafts_reply_through_approval_only(tmp_path):
     assert result.drafts_proposed == 1
 
     assert len(approvals.items) == 1
-    item = approvals.items[0]
+    item = approvals.items[0][0]
     assert item.module_id == 10 and item.action_type == "send_email_reply"
     assert item.status.value == "pending"
     assert item.payload["to"] == "someone@example.com"
