@@ -1,0 +1,677 @@
+{
+  "schema_version": 1,
+  "scope": "repository code and offline test discovery only",
+  "limitations": [
+    "Test discovery is not proof that every requirement is implemented.",
+    "No provider account, browser target, payment, production deployment, load target, or recovery drill was exercised.",
+    "Run the named tests and record their exit status separately; this report does not execute them."
+  ],
+  "modules": [
+    {
+      "module_id": 0,
+      "package_paths": [
+        "backend/app/modules/m00_approval_center"
+      ],
+      "code_file_count": 4,
+      "offline_test_files": [
+        "tests/integration/test_m17_m20_cross_module_proofs.py",
+        "tests/modules/test_core_approvals_facade.py",
+        "tests/modules/test_m00_approval_center.py",
+        "tests/modules/test_m01_tenant_isolation.py",
+        "tests/modules/test_m02_m13_application_workflow.py",
+        "tests/modules/test_m18_official_collectors_runner.py",
+        "tests/modules/test_m20_general_cognitive_worker.py",
+        "tests/test_worker_execution.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 1,
+      "package_paths": [
+        "backend/app/modules/m01_opportunity_discovery"
+      ],
+      "code_file_count": 20,
+      "offline_test_files": [
+        "tests/modules/test_core_spec_round6_rows_001_128.py",
+        "tests/modules/test_m01_expanded_spec_1_66.py",
+        "tests/modules/test_m01_expanded_spec_67_131.py",
+        "tests/modules/test_m01_honest_scoring.py",
+        "tests/modules/test_m01_opportunity_discovery.py",
+        "tests/modules/test_m01_outcome_ledger.py",
+        "tests/modules/test_m01_program_priors.py",
+        "tests/modules/test_m01_store.py",
+        "tests/modules/test_m01_tenant_isolation.py",
+        "tests/test_full_fidelity_models.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 2,
+      "package_paths": [
+        "backend/app/modules/m02_competition_manager"
+      ],
+      "code_file_count": 24,
+      "offline_test_files": [
+        "tests/modules/test_core_spec_round6_rows_001_128.py",
+        "tests/modules/test_expanded_owner_m2_132_179_m3_180_210.py",
+        "tests/modules/test_m02_competition_analysis.py",
+        "tests/modules/test_m02_competition_manager.py",
+        "tests/modules/test_m02_humanize_pipeline.py",
+        "tests/modules/test_m02_integrated_application.py",
+        "tests/modules/test_m02_m13_application_workflow.py",
+        "tests/modules/test_m02_onboarding.py",
+        "tests/modules/test_m02_profile_corpus.py",
+        "tests/modules/test_m02_review_tenant_boundary.py",
+        "tests/test_m02_sql_repository.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 3,
+      "package_paths": [
+        "backend/app/modules/m03_grant_writer"
+      ],
+      "code_file_count": 14,
+      "offline_test_files": [
+        "tests/modules/test_core_spec_round6_rows_001_128.py",
+        "tests/modules/test_expanded_owner_m2_132_179_m3_180_210.py",
+        "tests/modules/test_m03_compliance_linter.py",
+        "tests/modules/test_m03_grant_writer.py",
+        "tests/modules/test_m03_lane_grant_writer.py",
+        "tests/modules/test_m03_tenant_boundary.py",
+        "tests/modules/test_m21_claire_core.py",
+        "tests/test_m03_corpus_render.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 4,
+      "package_paths": [
+        "backend/app/modules/m04_research_scientist"
+      ],
+      "code_file_count": 28,
+      "offline_test_files": [
+        "tests/modules/test_core_spec_round6_rows_001_128.py",
+        "tests/modules/test_depth_sweep_101_287.py",
+        "tests/modules/test_environmental_1660_1709_i2.py",
+        "tests/modules/test_expanded_211_278.py",
+        "tests/modules/test_m04_datasets.py",
+        "tests/modules/test_m04_environmental_1660_1709.py",
+        "tests/modules/test_m04_evidence.py",
+        "tests/modules/test_m04_experiments.py",
+        "tests/modules/test_m04_lane_surveillance.py",
+        "tests/modules/test_m04_manuscripts.py",
+        "tests/modules/test_m04_quant_methods_185_234.py",
+        "tests/modules/test_m04_reproducibility_bundle.py",
+        "tests/modules/test_m04_research_scientist.py",
+        "tests/modules/test_m04_service.py",
+        "tests/modules/test_m04_snapshots.py",
+        "tests/modules/test_m04_systematic_review.py",
+        "tests/modules/test_m16_proof_gaps.py",
+        "tests/modules/test_m21_claire_core.py",
+        "tests/modules/test_semantic_wave_block6_1436_1722.py",
+        "tests/test_m04_surveillance.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 5,
+      "package_paths": [
+        "backend/app/modules/m05_outreach_manager"
+      ],
+      "code_file_count": 12,
+      "offline_test_files": [
+        "tests/modules/test_m05_campaign_sql_repository.py",
+        "tests/modules/test_m05_campaigns.py",
+        "tests/modules/test_m05_corporate.py",
+        "tests/modules/test_m05_delivery.py",
+        "tests/modules/test_m05_discovery.py",
+        "tests/modules/test_m05_enrichment.py",
+        "tests/modules/test_m05_growth.py",
+        "tests/modules/test_m05_outreach_manager.py",
+        "tests/modules/test_m05_planning.py",
+        "tests/modules/test_m05_routes.py",
+        "tests/modules/test_m05_tenant_approvals.py",
+        "tests/modules/test_m21_claire_core.py",
+        "tests/test_m05_sql_repository.py",
+        "tests/test_worker_module_tasks.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 6,
+      "package_paths": [
+        "backend/app/modules/m06_social_media_manager"
+      ],
+      "code_file_count": 15,
+      "offline_test_files": [
+        "tests/modules/test_b3_f10_practitioner_depth.py",
+        "tests/modules/test_depth_sweep_288_574.py",
+        "tests/modules/test_m06_adapters.py",
+        "tests/modules/test_m06_analytics.py",
+        "tests/modules/test_m06_compliance.py",
+        "tests/modules/test_m06_creative.py",
+        "tests/modules/test_m06_creative_semantic_281_287.py",
+        "tests/modules/test_m06_marketing.py",
+        "tests/modules/test_m06_revision.py",
+        "tests/modules/test_m06_routes_extended.py",
+        "tests/modules/test_m06_scheduler.py",
+        "tests/modules/test_m06_social_media_manager.py",
+        "tests/modules/test_m06_sql_repository_extended.py",
+        "tests/modules/test_m06_tenant_approvals.py",
+        "tests/modules/test_rows_288_343_evidence.py",
+        "tests/modules/test_technical_67_99.py",
+        "tests/test_m06_sql_repository.py",
+        "tests/test_worker_module_tasks.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 7,
+      "package_paths": [
+        "backend/app/modules/m07_brand_collaboration"
+      ],
+      "code_file_count": 12,
+      "offline_test_files": [
+        "tests/modules/test_m07_brand_collaboration.py",
+        "tests/modules/test_m07_lane_brand_collaboration.py",
+        "tests/modules/test_m07_lane_workflows.py",
+        "tests/modules/test_technical_67_99.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 8,
+      "package_paths": [
+        "backend/app/modules/m08_startup_growth"
+      ],
+      "code_file_count": 10,
+      "offline_test_files": [
+        "tests/modules/test_m08_lane_planning.py",
+        "tests/modules/test_m08_lane_startup_growth.py",
+        "tests/modules/test_m08_startup_growth.py",
+        "tests/modules/test_technical_67_99.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 9,
+      "package_paths": [
+        "backend/app/modules/m09_knowledge_workspace"
+      ],
+      "code_file_count": 13,
+      "offline_test_files": [
+        "tests/modules/test_m09_contradiction_inbox.py",
+        "tests/modules/test_m09_contradiction_revisions.py",
+        "tests/modules/test_m09_humanities_1860_1909.py",
+        "tests/modules/test_m09_knowledge_workspace.py",
+        "tests/modules/test_m09_lane_knowledge_workspace.py",
+        "tests/modules/test_technical_67_99.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 10,
+      "package_paths": [
+        "backend/app/modules/m10_email_assistant"
+      ],
+      "code_file_count": 18,
+      "offline_test_files": [
+        "tests/modules/test_m10_email_assistant.py",
+        "tests/modules/test_m10_lane_email_assistant.py",
+        "tests/modules/test_m10_lane_policy_composer.py",
+        "tests/modules/test_m10_promise_reconciliation.py",
+        "tests/modules/test_m10_promise_tracker.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 11,
+      "package_paths": [
+        "backend/app/modules/m11_calendar_intelligence"
+      ],
+      "code_file_count": 14,
+      "offline_test_files": [
+        "tests/modules/test_m11_calendar_intelligence.py",
+        "tests/modules/test_m11_conflicts.py",
+        "tests/modules/test_m11_google_pagination.py",
+        "tests/modules/test_m11_ics_timezones.py",
+        "tests/modules/test_m11_live_risk_evidence.py",
+        "tests/modules/test_m11_proposals.py",
+        "tests/modules/test_m11_schedule_risk.py",
+        "tests/modules/test_m11_sync_validation.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 12,
+      "package_paths": [
+        "backend/app/modules/m12_ai_research_lab"
+      ],
+      "code_file_count": 31,
+      "offline_test_files": [
+        "tests/modules/test_depth_sweep_101_287.py",
+        "tests/modules/test_depth_sweep_862_1148.py",
+        "tests/modules/test_m12_clinical_1110_1114.py",
+        "tests/modules/test_m12_clinical_1115_1120.py",
+        "tests/modules/test_m12_clinical_1121_1124.py",
+        "tests/modules/test_m12_clinical_1125_1130.py",
+        "tests/modules/test_m12_clinical_1131_1137.py",
+        "tests/modules/test_m12_clinical_1138_1148.py",
+        "tests/modules/test_m12_clinical_1149_1155.py",
+        "tests/modules/test_m12_clinical_1156_1162.py",
+        "tests/modules/test_m12_clinical_1163_1168.py",
+        "tests/modules/test_m12_clinical_1169_1179.py",
+        "tests/modules/test_m12_clinical_1180_1186.py",
+        "tests/modules/test_m12_clinical_1187_1198.py",
+        "tests/modules/test_m12_clinical_1199_1209.py",
+        "tests/modules/test_m12_clinical_rows_1110_1209.py",
+        "tests/modules/test_m12_education_1460_1509.py",
+        "tests/modules/test_m12_education_b5_remaining.py",
+        "tests/modules/test_m12_emerging_biomed_960_1009.py",
+        "tests/modules/test_m12_engineering_1560_1609.py",
+        "tests/modules/test_m12_lane_analytics.py",
+        "tests/modules/test_m12_lane_budgets.py",
+        "tests/modules/test_m12_lane_evaluation.py",
+        "tests/modules/test_m12_lane_routing.py",
+        "tests/modules/test_m12_lane_runs.py",
+        "tests/modules/test_m12_lane_service_http.py",
+        "tests/modules/test_m12_lane_store.py",
+        "tests/modules/test_m12_lane_workflows.py",
+        "tests/modules/test_m12_legal_1260_1309.py",
+        "tests/modules/test_m12_reproducible_run.py",
+        "tests/modules/test_m12_research_methods_135_184.py",
+        "tests/modules/test_m12_resume_verification.py",
+        "tests/modules/test_m12_router.py",
+        "tests/modules/test_m12_shipped_wiring.py",
+        "tests/modules/test_m12_workflow.py",
+        "tests/modules/test_semantic_wave_block6_1436_1722.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 13,
+      "package_paths": [
+        "backend/app/modules/m13_browser_agent"
+      ],
+      "code_file_count": 14,
+      "offline_test_files": [
+        "tests/modules/test_m02_m13_application_workflow.py",
+        "tests/modules/test_m13_browser_agent.py",
+        "tests/modules/test_m13_pre_submit_capture.py",
+        "tests/modules/test_m13_readback_diff.py",
+        "tests/modules/test_m13_security.py",
+        "tests/modules/test_m13_store.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 14,
+      "package_paths": [
+        "backend/app/modules/m14_project_builder"
+      ],
+      "code_file_count": 21,
+      "offline_test_files": [
+        "tests/modules/test_depth_sweep_288_574.py",
+        "tests/modules/test_depth_sweep_575_861.py",
+        "tests/modules/test_m14_architecture_635_684.py",
+        "tests/modules/test_m14_artifacts.py",
+        "tests/modules/test_m14_budgets.py",
+        "tests/modules/test_m14_engineering.py",
+        "tests/modules/test_m14_engineering_methods_510_574.py",
+        "tests/modules/test_m14_exports.py",
+        "tests/modules/test_m14_live_receipt_verification.py",
+        "tests/modules/test_m14_milestones.py",
+        "tests/modules/test_m14_proof_status.py",
+        "tests/modules/test_m14_quality.py",
+        "tests/modules/test_m14_reports.py",
+        "tests/modules/test_m14_runner.py",
+        "tests/modules/test_m14_science_acceptance_matrix.py",
+        "tests/modules/test_m14_scoping.py",
+        "tests/modules/test_m14_wiring.py",
+        "tests/modules/test_semantic_fixes_575_684.py",
+        "tests/modules/test_semantic_wave_0288_0574.py",
+        "tests/test_m14_m15.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 15,
+      "package_paths": [
+        "backend/app/modules/m15_document_generator"
+      ],
+      "code_file_count": 18,
+      "offline_test_files": [
+        "tests/modules/test_b3_f10_practitioner_depth.py",
+        "tests/modules/test_depth_sweep_288_574.py",
+        "tests/modules/test_m15_creative_306_332.py",
+        "tests/modules/test_m15_design_333_359.py",
+        "tests/modules/test_m15_lane_builder.py",
+        "tests/modules/test_m15_provider_receipt.py",
+        "tests/modules/test_m15_publication_receipt.py",
+        "tests/modules/test_rows_288_343_evidence.py",
+        "tests/modules/test_semantic_wave_0288_0574.py",
+        "tests/modules/test_thin_module_enhancements.py",
+        "tests/test_m14_m15.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 16,
+      "package_paths": [
+        "backend/app/modules/m16_executive_dashboard"
+      ],
+      "code_file_count": 21,
+      "offline_test_files": [
+        "tests/modules/test_depth_sweep_862_1148.py",
+        "tests/modules/test_discriminating_1310_1459.py",
+        "tests/modules/test_m16_ai_systems_1910_1959.py",
+        "tests/modules/test_m16_analysis_1010_1034.py",
+        "tests/modules/test_m16_analysis_1035_1038.py",
+        "tests/modules/test_m16_analysis_1039_1043.py",
+        "tests/modules/test_m16_analysis_1044_1047.py",
+        "tests/modules/test_m16_analysis_1048_1052.py",
+        "tests/modules/test_m16_analysis_1053_1057.py",
+        "tests/modules/test_m16_analysis_1058_1062.py",
+        "tests/modules/test_m16_analysis_1063_1067.py",
+        "tests/modules/test_m16_analysis_1068_1072.py",
+        "tests/modules/test_m16_analysis_1073_1077.py",
+        "tests/modules/test_m16_analysis_1078_1082.py",
+        "tests/modules/test_m16_analysis_1083_1087.py",
+        "tests/modules/test_m16_analysis_1088_1092.py",
+        "tests/modules/test_m16_analysis_1093_1097.py",
+        "tests/modules/test_m16_analysis_1098_1102.py",
+        "tests/modules/test_m16_analysis_1103_1107.py",
+        "tests/modules/test_m16_analysis_1108_1109.py",
+        "tests/modules/test_m16_authenticated_proof_events.py",
+        "tests/modules/test_m16_climate_environment_1610_1659.py",
+        "tests/modules/test_m16_dashboard_analytics.py",
+        "tests/modules/test_m16_emerging_0910_0959.py",
+        "tests/modules/test_m16_executive_dashboard.py",
+        "tests/modules/test_m16_finance_1310_1359.py",
+        "tests/modules/test_m16_finance_1360_1409.py",
+        "tests/modules/test_m16_planning_388_399.py",
+        "tests/modules/test_m16_proof_gaps.py",
+        "tests/modules/test_semantic_wave_1723_2010.py",
+        "tests/modules/test_semantic_wave_block6_1436_1722.py",
+        "tests/test_semantic_verification_862_1148.py",
+        "tests/test_worker_module_tasks.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 17,
+      "package_paths": [
+        "backend/app/modules/m17_advice_essay",
+        "backend/app/modules/m17_narrative_architect"
+      ],
+      "code_file_count": 18,
+      "offline_test_files": [
+        "tests/integration/test_m17_m20_cross_module_proofs.py",
+        "tests/modules/test_depth_sweep_575_861.py",
+        "tests/modules/test_m17_adapters.py",
+        "tests/modules/test_m17_advice_essay_service.py",
+        "tests/modules/test_m17_coaching_state_machines_710_809.py",
+        "tests/modules/test_m17_contract.py",
+        "tests/modules/test_m17_evidence_meter.py",
+        "tests/modules/test_m17_narrative_architect.py",
+        "tests/modules/test_m17_narrative_architect_depth.py",
+        "tests/modules/test_m17_revision_acceptance.py",
+        "tests/modules/test_m17_routes.py",
+        "tests/modules/test_m17_rows_710_740.py",
+        "tests/modules/test_m17_rows_741_770.py",
+        "tests/modules/test_m17_rows_771_809.py",
+        "tests/modules/test_m17_sql_repository.py",
+        "tests/modules/test_m17_tenant_isolation.py",
+        "tests/modules/test_thin_module_wiring_wave.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 18,
+      "package_paths": [
+        "backend/app/modules/m18_side_hustle_scraper"
+      ],
+      "code_file_count": 18,
+      "offline_test_files": [
+        "tests/modules/test_m18_durable_runs.py",
+        "tests/modules/test_m18_lane_blueprints.py",
+        "tests/modules/test_m18_lane_freshness.py",
+        "tests/modules/test_m18_lane_pipeline.py",
+        "tests/modules/test_m18_lane_ranking.py",
+        "tests/modules/test_m18_lane_service.py",
+        "tests/modules/test_m18_lane_side_hustle_scraper.py",
+        "tests/modules/test_m18_lane_sources.py",
+        "tests/modules/test_m18_lane_validation.py",
+        "tests/modules/test_m18_official_collectors_runner.py",
+        "tests/modules/test_m18_receipts_outcomes.py",
+        "tests/modules/test_m18_side_hustle_scraper.py",
+        "tests/modules/test_thin_module_wiring_wave.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 19,
+      "package_paths": [
+        "backend/app/modules/m19_idea_incubator"
+      ],
+      "code_file_count": 20,
+      "offline_test_files": [
+        "tests/modules/test_depth_sweep_101_287.py",
+        "tests/modules/test_depth_sweep_288_574.py",
+        "tests/modules/test_m19_assumption_burndown.py",
+        "tests/modules/test_m19_business_360_399.py",
+        "tests/modules/test_m19_idea_incubator.py",
+        "tests/modules/test_m19_lane_idea_incubator.py",
+        "tests/modules/test_m19_lane_router.py",
+        "tests/modules/test_m19_ledger.py",
+        "tests/modules/test_m19_operations_451_475.py",
+        "tests/modules/test_m19_repository.py",
+        "tests/modules/test_m19_research_110_134.py",
+        "tests/modules/test_m19_routes.py",
+        "tests/modules/test_semantic_wave_0288_0574.py",
+        "tests/test_technical_spec_166_198.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 20,
+      "package_paths": [
+        "backend/app/modules/m20_general_cognitive_worker"
+      ],
+      "code_file_count": 66,
+      "offline_test_files": [
+        "tests/integration/test_m17_m20_cross_module_proofs.py",
+        "tests/modules/test_atomic_concepts_0093_0115.py",
+        "tests/modules/test_atomic_concepts_round9_139_160.py",
+        "tests/modules/test_depth_sweep_101_287.py",
+        "tests/modules/test_depth_sweep_575_861.py",
+        "tests/modules/test_depth_sweep_862_1148.py",
+        "tests/modules/test_discriminating_1310_1459.py",
+        "tests/modules/test_m20_atomic_concepts_70_92.py",
+        "tests/modules/test_m20_cognitive_1960_2009.py",
+        "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "tests/modules/test_m20_education_1410_1459.py",
+        "tests/modules/test_m20_engineering_1510_1559.py",
+        "tests/modules/test_m20_execution_truth_ledger.py",
+        "tests/modules/test_m20_executive.py",
+        "tests/modules/test_m20_foresight.py",
+        "tests/modules/test_m20_foresight_routes.py",
+        "tests/modules/test_m20_general_cognitive_worker.py",
+        "tests/modules/test_m20_humanities_1810_1859.py",
+        "tests/modules/test_m20_learning_reasoning_810_859.py",
+        "tests/modules/test_m20_legal_1210_1259.py",
+        "tests/modules/test_m20_legal_1260_1309.py",
+        "tests/modules/test_m20_long_term_memory.py",
+        "tests/modules/test_m20_metacognition.py",
+        "tests/modules/test_m20_metacognition_routes.py",
+        "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "tests/modules/test_m20_optimization_story_235_280.py",
+        "tests/modules/test_m20_planner_scheduler.py",
+        "tests/modules/test_m20_platform_engineering_585_634.py",
+        "tests/modules/test_m20_political_social_1760_1809.py",
+        "tests/modules/test_m20_reasoning.py",
+        "tests/modules/test_m20_reflection.py",
+        "tests/modules/test_m20_routes.py",
+        "tests/modules/test_m20_runtime_depth.py",
+        "tests/modules/test_m20_safety_tools.py",
+        "tests/modules/test_m20_schemas_sensory.py",
+        "tests/modules/test_m20_service.py",
+        "tests/modules/test_m20_social_research_1710_1759.py",
+        "tests/modules/test_m20_software_practice_685_709.py",
+        "tests/modules/test_m20_specialized_domain_1310_1559.py",
+        "tests/modules/test_m20_sql_repository.py",
+        "tests/modules/test_m20_strategy.py",
+        "tests/modules/test_m20_strategy_routes.py",
+        "tests/modules/test_m20_working_memory.py",
+        "tests/modules/test_m21_claire.py",
+        "tests/modules/test_semantic_wave_block6_1436_1722.py",
+        "tests/modules/test_technical_spec_0133_0165.py",
+        "tests/modules/test_technical_spec_round8_199_229.py",
+        "tests/test_technical_spec_166_198.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 21,
+      "package_paths": [
+        "backend/app/modules/m21_claire"
+      ],
+      "code_file_count": 25,
+      "offline_test_files": [
+        "tests/modules/test_m21_atomic_concepts_1_23.py",
+        "tests/modules/test_m21_atomic_concepts_24_46.py",
+        "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "tests/modules/test_m21_claire.py",
+        "tests/modules/test_m21_claire_core.py",
+        "tests/modules/test_m21_claire_owner_279_329.py",
+        "tests/modules/test_m21_claire_resilience.py",
+        "tests/modules/test_m21_device_receipts.py",
+        "tests/modules/test_m21_durable_execution.py",
+        "tests/modules/test_m21_personalization.py",
+        "tests/modules/test_m21_universal_creator_row_1.py",
+        "tests/modules/test_thin_module_enhancements.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 22,
+      "package_paths": [
+        "backend/app/modules/m22_tools_hub"
+      ],
+      "code_file_count": 12,
+      "offline_test_files": [
+        "tests/modules/test_expanded_211_278.py",
+        "tests/modules/test_m21_claire_core.py",
+        "tests/modules/test_m22_integration_receipts.py",
+        "tests/modules/test_m22_native_capabilities.py",
+        "tests/modules/test_m22_secure_installer.py",
+        "tests/modules/test_m22_tools_hub.py",
+        "tests/modules/test_thin_module_wiring_wave.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 23,
+      "package_paths": [
+        "backend/app/modules/m23_study_abroad"
+      ],
+      "code_file_count": 12,
+      "offline_test_files": [
+        "tests/modules/test_m23_advising.py",
+        "tests/modules/test_m23_application_evidence_matrix.py",
+        "tests/modules/test_m23_esai_parity_07_27.py",
+        "tests/modules/test_m23_esai_remaining_parity.py",
+        "tests/modules/test_m23_essay_tools.py",
+        "tests/modules/test_m23_identity_interview.py",
+        "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "tests/modules/test_m23_story.py",
+        "tests/modules/test_m23_study_abroad.py",
+        "tests/test_m23_spec_audit.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 24,
+      "package_paths": [
+        "backend/app/modules/m24_billing"
+      ],
+      "code_file_count": 8,
+      "offline_test_files": [
+        "tests/modules/test_m24_commitment_preview.py",
+        "tests/modules/test_m24_preview_bound_checkout.py",
+        "tests/test_billing.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    },
+    {
+      "module_id": 25,
+      "package_paths": [
+        "backend/app/modules/m25_knowledge_copilot",
+        "backend/app/modules/m25_knowledge_copilot_training"
+      ],
+      "code_file_count": 9,
+      "offline_test_files": [
+        "tests/modules/test_m18_lane_ranking.py",
+        "tests/modules/test_m25_artifact_event_contract.py",
+        "tests/modules/test_m25_artifact_event_store.py",
+        "tests/modules/test_m25_knowledge_copilot.py",
+        "tests/modules/test_m25_knowledge_ingestion.py"
+      ],
+      "repository_evidence": "present",
+      "live_acceptance": "not_run",
+      "production_acceptance": "not_run"
+    }
+  ],
+  "evidence_sha256": "0f836a6b8aa9e92f23f562bf9264ba60c5788b8f20761511077de8f450bee5b0"
+}

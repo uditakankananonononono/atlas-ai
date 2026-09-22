@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 import os
 from app.platform.middleware import ProductionBoundaryMiddleware
 from app.platform.telemetry import configure as configure_telemetry
@@ -29,11 +29,15 @@ def health() -> dict[str, str]:
 
 @app.get("/ready")
 def ready() -> dict[str, object]:
-    """The deployment probe is conservative; deep dependency checks run in the configured adapter."""
+    """Return 200 only when configuration, database, Redis and migrations are ready."""
     from app.platform.config import ProductionConfig, ConfigError
+    from app.platform.health import live_readiness
     try:
         config = ProductionConfig.from_env()
     except ConfigError as exc:
-        from fastapi import HTTPException
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
-    return {"status": "ready", "environment": config.environment}
+        raise HTTPException(status_code=503, detail={"status": "not_ready", "configuration": False}) from exc
+    healthy, checks = live_readiness()
+    body = {"status": "ready" if healthy else "not_ready", "environment": config.environment, "checks": checks}
+    if not healthy:
+        raise HTTPException(status_code=503, detail=body)
+    return body
