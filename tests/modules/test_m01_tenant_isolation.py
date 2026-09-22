@@ -47,3 +47,21 @@ def test_digest_approval_carries_tenant_boundary():
     item = a.list_opportunities()[0]
     a.propose_digest([item], "body", "owner@example.org")
     assert captured[0].payload["tenant_id"] == "tenant-a"
+
+
+def test_default_digest_approval_is_stored_under_service_tenant(monkeypatch):
+    captured = {}
+    class ApprovalService:
+        def submit(self, **values):
+            captured.update(values)
+            return {"id": "approval-1", "module_id": values["module_id"],
+                    "action_type": values["action_type"], "payload": values["payload"],
+                    "status": __import__("app.core.models", fromlist=["ApprovalStatus"]).ApprovalStatus.PENDING}
+    monkeypatch.setattr("app.modules.m00_approval_center.service.default_service",
+                        lambda: ApprovalService())
+    a, _ = services()
+    a.run_scan(profile=ProfileIn())
+    result = a.propose_digest(a.list_opportunities(), "body")
+    assert result.id == "approval-1"
+    assert captured["user_id"] == "tenant-a"
+    assert captured["payload"]["tenant_id"] == "tenant-a"

@@ -61,7 +61,6 @@ class CapabilityRequest(BaseModel):
     objective: str = Field(min_length=3, max_length=4000)
     inputs: dict[str, Any] = Field(default_factory=dict)
     source_urls: list[str] = Field(default_factory=list, max_length=100)
-    approved: bool = False
 
 class CapabilityResult(BaseModel):
     row: int
@@ -84,7 +83,7 @@ def execute(row:int, request:CapabilityRequest) -> CapabilityResult:
         raise ValueError("source_urls must use http or https")
     requires=row in APPROVAL_ROWS
     status="ready"
-    if requires and not request.approved:
+    if requires:
         status="approval_required"
     adapter=("authorized-source-connector" if row in SOURCE_ROWS else
              "bounded-scale-worker" if row in SCALE_ROWS else
@@ -97,7 +96,7 @@ def execute(row:int, request:CapabilityRequest) -> CapabilityResult:
       "id":f"m1-r{row}-{digest[:12]}", "objective":objective,
       "input_count":len(request.inputs), "source_count":len(request.source_urls),
       "bounded": row not in SCALE_ROWS or bool(request.inputs.get("batch_limit")),
-      "effect_executed": bool(request.approved) if requires else False,
+      "effect_executed": False,
     }
     if row in SCALE_ROWS and not request.inputs.get("batch_limit"):
         artifact["warning"]="batch_limit required before production execution"

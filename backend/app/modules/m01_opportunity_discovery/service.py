@@ -500,19 +500,29 @@ class Service:
         self.tenant_id = tenant_id.strip()
         self._session_factory = session_factory or SessionLocal
         self._fetcher = fetcher or default_fetcher
-        self._approval_putter = approval_putter or self._default_approval_putter
+        self._approval_putter = approval_putter or self._put_tenant_approval
         self._notifier = notifier
         self._sources = tuple(sources) if sources is not None else DEFAULT_SOURCES
         self._normalizer = normalizer
         self._embedding_matcher = embedding_matcher
         self._tables_ready = False
 
-    @staticmethod
-    def _default_approval_putter(request: ApprovalRequest) -> ApprovalRequest:
+    def _put_tenant_approval(self, request: ApprovalRequest) -> ApprovalRequest:
+        """Persist a digest approval under the same authenticated tenant as its items."""
         # Imported lazily so tests never touch the shared approval database.
-        from app.core.approvals import approvals
+        from app.modules.m00_approval_center.service import default_service
 
-        return approvals.put(request)
+        view = default_service().submit(
+            module_id=request.module_id,
+            action_type=request.action_type,
+            payload=request.payload,
+            user_id=self.tenant_id,
+        )
+        return ApprovalRequest(
+            id=view["id"], module_id=view["module_id"],
+            action_type=view["action_type"], payload=view["payload"],
+            status=view["status"],
+        )
 
     def _ensure_tables(self) -> None:
         if self._tables_ready:
