@@ -489,8 +489,9 @@
       "source_excerpt": "Long\u2011Term Memory & Retrieval (LTM) A universal LTM layer stores every piece of generated and ingested content: research notes, emails, drafts, contact profiles, competition details, etc. All text is embedded using text\u2011embedding\u20113\u2011large (or the free BAAI/bge\u2011large\u2011en\u2011v1.5 via Ollama) and indexed in ChromaDB. Metadata is stored in PostgreSQL for hybrid search (semantic + keyword + filters). The memory system also maintains a knowledge graph in Neo4j (optional) that links entities like \u201cProject X\u201d \u2192 \u201cCompetition Y\u201d \u2192 \u201cGrant Proposal Z\u201d.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_34_a34_hybrid_retrieval_combines_semantic_keyword_and_metadata",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 35,
@@ -502,8 +503,9 @@
       "source_excerpt": "Long\u2011Term Memory & Retrieval (LTM) A universal LTM layer stores every piece of generated and ingested content: research notes, emails, drafts, contact profiles, competition details, etc. All text is embedded using text\u2011embedding\u20113\u2011large (or the free BAAI/bge\u2011large\u2011en\u2011v1.5 via Ollama) and indexed in ChromaDB. Metadata is stored in PostgreSQL for hybrid search (semantic + keyword + filters). The memory system also maintains a knowledge graph in Neo4j (optional) that links entities like \u201cProject X\u201d \u2192 \u201cCompetition Y\u201d \u2192 \u201cGrant Proposal Z\u201d.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_35_a35_typed_graph_rejects_untyped_edge",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 36,
@@ -515,8 +517,9 @@
       "source_excerpt": "Agentic Task Decomposition (Planner) The AI Planner receives high\u2011level goals and recursively breaks them down into a tree of objectives, milestones, tasks, and subtasks. Each node has estimated effort, dependencies, deadlines, and assigned tools. The planner uses chain\u2011of\u2011thought with self\u2011critique, iteratively refining the plan as new information arrives (via a Celery task that triggers whenever relevant memory is updated). Plans are stored as JSON documents with version history.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_36_a36_recursive_planner_emits_four_node_levels",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 37,
@@ -528,8 +531,9 @@
       "source_excerpt": "Agentic Task Decomposition (Planner) The AI Planner receives high\u2011level goals and recursively breaks them down into a tree of objectives, milestones, tasks, and subtasks. Each node has estimated effort, dependencies, deadlines, and assigned tools. The planner uses chain\u2011of\u2011thought with self\u2011critique, iteratively refining the plan as new information arrives (via a Celery task that triggers whenever relevant memory is updated). Plans are stored as JSON documents with version history.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_37_a37_planner_assigns_effort_deadline_and_tools",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 38,
@@ -541,8 +545,9 @@
       "source_excerpt": "Agentic Task Decomposition (Planner) The AI Planner receives high\u2011level goals and recursively breaks them down into a tree of objectives, milestones, tasks, and subtasks. Each node has estimated effort, dependencies, deadlines, and assigned tools. The planner uses chain\u2011of\u2011thought with self\u2011critique, iteratively refining the plan as new information arrives (via a Celery task that triggers whenever relevant memory is updated). Plans are stored as JSON documents with version history.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_38_a38_memory_update_triggers_refinement",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 39,
@@ -554,8 +559,9 @@
       "source_excerpt": "Agentic Task Decomposition (Planner) The AI Planner receives high\u2011level goals and recursively breaks them down into a tree of objectives, milestones, tasks, and subtasks. Each node has estimated effort, dependencies, deadlines, and assigned tools. The planner uses chain\u2011of\u2011thought with self\u2011critique, iteratively refining the plan as new information arrives (via a Celery task that triggers whenever relevant memory is updated). Plans are stored as JSON documents with version history.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_39_a39_json_plan_versions_increment",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 40,
@@ -567,8 +573,9 @@
       "source_excerpt": "Multi\u2011Model Collaboration (AI Research Lab) Tasks are routed to the most suitable model based on a configurable policy: for creative writing \u2192 Claude 3.5 Sonnet; for code generation \u2192 DeepSeek\u2011Coder\u2011V2; for factual research \u2192 Gemini 1.5 Pro with its large context window; for fast, cheap completions \u2192 GPT\u20114o mini or local Llama models. A meta\u2011agent can also chain models: e.g., Gemini researches, Claude drafts, GPT\u20114 critiques, and a local model finalises formatting. Results are merged using a recursive merging algorithm.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_40_a40_policy_routes_task_or_fails_closed",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 41,
@@ -580,8 +587,9 @@
       "source_excerpt": "Multi\u2011Model Collaboration (AI Research Lab) Tasks are routed to the most suitable model based on a configurable policy: for creative writing \u2192 Claude 3.5 Sonnet; for code generation \u2192 DeepSeek\u2011Coder\u2011V2; for factual research \u2192 Gemini 1.5 Pro with its large context window; for fast, cheap completions \u2192 GPT\u20114o mini or local Llama models. A meta\u2011agent can also chain models: e.g., Gemini researches, Claude drafts, GPT\u20114 critiques, and a local model finalises formatting. Results are merged using a recursive merging algorithm.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_41_a41_chain_requires_exact_research_draft_critique_format_order",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 42,
@@ -593,8 +601,9 @@
       "source_excerpt": "Multi\u2011Model Collaboration (AI Research Lab) Tasks are routed to the most suitable model based on a configurable policy: for creative writing \u2192 Claude 3.5 Sonnet; for code generation \u2192 DeepSeek\u2011Coder\u2011V2; for factual research \u2192 Gemini 1.5 Pro with its large context window; for fast, cheap completions \u2192 GPT\u20114o mini or local Llama models. A meta\u2011agent can also chain models: e.g., Gemini researches, Claude drafts, GPT\u20114 critiques, and a local model finalises formatting. Results are merged using a recursive merging algorithm.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_42_a42_recursive_merge_preserves_nested_values_and_dedupes_lists",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 43,
@@ -606,8 +615,9 @@
       "source_excerpt": "Module 0 \u2013 Human Approval Center Technology: Dedicated FastAPI service + Redis Streams. Data Model: ApprovalRequest table with fields: id, user_id, module, action_type, payload (JSONB), status (enum: pending, approved, denied, expired), created_at, expires_at, approved_by. Flow: When a module wants to perform a gated action, it publishes an approval_request event. The Approval Center persists it, pushes a notification via SSE to the user's dashboard, and blocks the calling worker. On user decision, a callback is invoked. All decisions are logged immutably. Integration: All other modules import a request_approval(payload) SDK function.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_43_m0_01_approval_service_publishes_boundary_event",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 44,
@@ -619,8 +629,9 @@
       "source_excerpt": "Module 0 \u2013 Human Approval Center Technology: Dedicated FastAPI service + Redis Streams. Data Model: ApprovalRequest table with fields: id, user_id, module, action_type, payload (JSONB), status (enum: pending, approved, denied, expired), created_at, expires_at, approved_by. Flow: When a module wants to perform a gated action, it publishes an approval_request event. The Approval Center persists it, pushes a notification via SSE to the user's dashboard, and blocks the calling worker. On user decision, a callback is invoked. All decisions are logged immutably. Integration: All other modules import a request_approval(payload) SDK function.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_44_m0_02_approval_request_persists_required_fields",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 45,
@@ -632,8 +643,9 @@
       "source_excerpt": "Module 0 \u2013 Human Approval Center Technology: Dedicated FastAPI service + Redis Streams. Data Model: ApprovalRequest table with fields: id, user_id, module, action_type, payload (JSONB), status (enum: pending, approved, denied, expired), created_at, expires_at, approved_by. Flow: When a module wants to perform a gated action, it publishes an approval_request event. The Approval Center persists it, pushes a notification via SSE to the user's dashboard, and blocks the calling worker. On user decision, a callback is invoked. All decisions are logged immutably. Integration: All other modules import a request_approval(payload) SDK function.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_45_m0_03_state_machine_rejects_second_decision",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 46,
@@ -645,8 +657,9 @@
       "source_excerpt": "Module 0 \u2013 Human Approval Center Technology: Dedicated FastAPI service + Redis Streams. Data Model: ApprovalRequest table with fields: id, user_id, module, action_type, payload (JSONB), status (enum: pending, approved, denied, expired), created_at, expires_at, approved_by. Flow: When a module wants to perform a gated action, it publishes an approval_request event. The Approval Center persists it, pushes a notification via SSE to the user's dashboard, and blocks the calling worker. On user decision, a callback is invoked. All decisions are logged immutably. Integration: All other modules import a request_approval(payload) SDK function.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_46_m0_04_approval_event_and_request_are_both_persisted",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 47,
@@ -658,8 +671,9 @@
       "source_excerpt": "Module 0 \u2013 Human Approval Center Technology: Dedicated FastAPI service + Redis Streams. Data Model: ApprovalRequest table with fields: id, user_id, module, action_type, payload (JSONB), status (enum: pending, approved, denied, expired), created_at, expires_at, approved_by. Flow: When a module wants to perform a gated action, it publishes an approval_request event. The Approval Center persists it, pushes a notification via SSE to the user's dashboard, and blocks the calling worker. On user decision, a callback is invoked. All decisions are logged immutably. Integration: All other modules import a request_approval(payload) SDK function.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_47_m0_05_pending_request_has_dashboard_sse_event",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 48,
@@ -671,8 +685,9 @@
       "source_excerpt": "Module 0 \u2013 Human Approval Center Technology: Dedicated FastAPI service + Redis Streams. Data Model: ApprovalRequest table with fields: id, user_id, module, action_type, payload (JSONB), status (enum: pending, approved, denied, expired), created_at, expires_at, approved_by. Flow: When a module wants to perform a gated action, it publishes an approval_request event. The Approval Center persists it, pushes a notification via SSE to the user's dashboard, and blocks the calling worker. On user decision, a callback is invoked. All decisions are logged immutably. Integration: All other modules import a request_approval(payload) SDK function.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_48_m0_06_worker_suspends_without_serialized_callback",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 49,
@@ -684,8 +699,9 @@
       "source_excerpt": "Module 0 \u2013 Human Approval Center Technology: Dedicated FastAPI service + Redis Streams. Data Model: ApprovalRequest table with fields: id, user_id, module, action_type, payload (JSONB), status (enum: pending, approved, denied, expired), created_at, expires_at, approved_by. Flow: When a module wants to perform a gated action, it publishes an approval_request event. The Approval Center persists it, pushes a notification via SSE to the user's dashboard, and blocks the calling worker. On user decision, a callback is invoked. All decisions are logged immutably. Integration: All other modules import a request_approval(payload) SDK function.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_49_m0_07_continuation_release_is_single_use",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 50,
@@ -697,8 +713,9 @@
       "source_excerpt": "Module 0 \u2013 Human Approval Center Technology: Dedicated FastAPI service + Redis Streams. Data Model: ApprovalRequest table with fields: id, user_id, module, action_type, payload (JSONB), status (enum: pending, approved, denied, expired), created_at, expires_at, approved_by. Flow: When a module wants to perform a gated action, it publishes an approval_request event. The Approval Center persists it, pushes a notification via SSE to the user's dashboard, and blocks the calling worker. On user decision, a callback is invoked. All decisions are logged immutably. Integration: All other modules import a request_approval(payload) SDK function.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_50_m0_08_decision_audit_is_append_only_sequence",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 51,
@@ -710,8 +727,9 @@
       "source_excerpt": "Module 0 \u2013 Human Approval Center Technology: Dedicated FastAPI service + Redis Streams. Data Model: ApprovalRequest table with fields: id, user_id, module, action_type, payload (JSONB), status (enum: pending, approved, denied, expired), created_at, expires_at, approved_by. Flow: When a module wants to perform a gated action, it publishes an approval_request event. The Approval Center persists it, pushes a notification via SSE to the user's dashboard, and blocks the calling worker. On user decision, a callback is invoked. All decisions are logged immutably. Integration: All other modules import a request_approval(payload) SDK function.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_51_m0_09_effectful_module_uses_shared_approval_sdk",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 52,
@@ -723,8 +741,9 @@
       "source_excerpt": "Module 1 \u2013 Opportunity Discovery Engine Data Sources: Kaggle RSS, Devpost API, Unstop HTML scraping, Opportunity Desk, Opportunities for Youth, Snowday, Hack Club, GitHub Topics, LinkedIn jobs, Instagram hashtags, Twitter/X lists, Reddit (r/competitions, r/scholarships), Discord channels (via self\u2011bots read\u2011only), custom webhooks. Scraping Pipeline: Celery Beat triggers hourly crawls. Playwright browsers fetch dynamic pages; BeautifulSoup parses static HTML. Extracted raw text passes through an NLP pipeline: entity extraction (spaCy), date parsing (dateparser), eligibility classification (fine\u2011tuned DeBERTa classifier), opportunity type tagging. Classification & Scoring: Each opportunity is enriched with a match_score using a cosine similarity between the opportunity embedding and the user's profile embedding (interests, skills, past successes). A logistic regression model trained on historical \u201capplied/won\u201d data provides an expected impact score. All results land in PostgreSQL. Notifications: New high\u2011match opportunities (>0.8) trigger instant SSE alerts; a daily digest email is drafted but sent only after approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_52_m1_01_cosine_match_score_exact",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 53,
@@ -736,8 +755,9 @@
       "source_excerpt": "Module 1 \u2013 Opportunity Discovery Engine Data Sources: Kaggle RSS, Devpost API, Unstop HTML scraping, Opportunity Desk, Opportunities for Youth, Snowday, Hack Club, GitHub Topics, LinkedIn jobs, Instagram hashtags, Twitter/X lists, Reddit (r/competitions, r/scholarships), Discord channels (via self\u2011bots read\u2011only), custom webhooks. Scraping Pipeline: Celery Beat triggers hourly crawls. Playwright browsers fetch dynamic pages; BeautifulSoup parses static HTML. Extracted raw text passes through an NLP pipeline: entity extraction (spaCy), date parsing (dateparser), eligibility classification (fine\u2011tuned DeBERTa classifier), opportunity type tagging. Classification & Scoring: Each opportunity is enriched with a match_score using a cosine similarity between the opportunity embedding and the user's profile embedding (interests, skills, past successes). A logistic regression model trained on historical \u201capplied/won\u201d data provides an expected impact score. All results land in PostgreSQL. Notifications: New high\u2011match opportunities (>0.8) trigger instant SSE alerts; a daily digest email is drafted but sent only after approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_53_m1_02_expected_impact_uses_logistic_score",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 54,
@@ -749,8 +769,9 @@
       "source_excerpt": "Module 1 \u2013 Opportunity Discovery Engine Data Sources: Kaggle RSS, Devpost API, Unstop HTML scraping, Opportunity Desk, Opportunities for Youth, Snowday, Hack Club, GitHub Topics, LinkedIn jobs, Instagram hashtags, Twitter/X lists, Reddit (r/competitions, r/scholarships), Discord channels (via self\u2011bots read\u2011only), custom webhooks. Scraping Pipeline: Celery Beat triggers hourly crawls. Playwright browsers fetch dynamic pages; BeautifulSoup parses static HTML. Extracted raw text passes through an NLP pipeline: entity extraction (spaCy), date parsing (dateparser), eligibility classification (fine\u2011tuned DeBERTa classifier), opportunity type tagging. Classification & Scoring: Each opportunity is enriched with a match_score using a cosine similarity between the opportunity embedding and the user's profile embedding (interests, skills, past successes). A logistic regression model trained on historical \u201capplied/won\u201d data provides an expected impact score. All results land in PostgreSQL. Notifications: New high\u2011match opportunities (>0.8) trigger instant SSE alerts; a daily digest email is drafted but sent only after approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_54_m1_03_rejects_unenriched_opportunity_persistence",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 55,
@@ -762,8 +783,9 @@
       "source_excerpt": "Module 1 \u2013 Opportunity Discovery Engine Data Sources: Kaggle RSS, Devpost API, Unstop HTML scraping, Opportunity Desk, Opportunities for Youth, Snowday, Hack Club, GitHub Topics, LinkedIn jobs, Instagram hashtags, Twitter/X lists, Reddit (r/competitions, r/scholarships), Discord channels (via self\u2011bots read\u2011only), custom webhooks. Scraping Pipeline: Celery Beat triggers hourly crawls. Playwright browsers fetch dynamic pages; BeautifulSoup parses static HTML. Extracted raw text passes through an NLP pipeline: entity extraction (spaCy), date parsing (dateparser), eligibility classification (fine\u2011tuned DeBERTa classifier), opportunity type tagging. Classification & Scoring: Each opportunity is enriched with a match_score using a cosine similarity between the opportunity embedding and the user's profile embedding (interests, skills, past successes). A logistic regression model trained on historical \u201capplied/won\u201d data provides an expected impact score. All results land in PostgreSQL. Notifications: New high\u2011match opportunities (>0.8) trigger instant SSE alerts; a daily digest email is drafted but sent only after approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_55_m1_04_match_alert_threshold_is_strictly_above_point_eight",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 56,
@@ -775,8 +797,9 @@
       "source_excerpt": "Module 1 \u2013 Opportunity Discovery Engine Data Sources: Kaggle RSS, Devpost API, Unstop HTML scraping, Opportunity Desk, Opportunities for Youth, Snowday, Hack Club, GitHub Topics, LinkedIn jobs, Instagram hashtags, Twitter/X lists, Reddit (r/competitions, r/scholarships), Discord channels (via self\u2011bots read\u2011only), custom webhooks. Scraping Pipeline: Celery Beat triggers hourly crawls. Playwright browsers fetch dynamic pages; BeautifulSoup parses static HTML. Extracted raw text passes through an NLP pipeline: entity extraction (spaCy), date parsing (dateparser), eligibility classification (fine\u2011tuned DeBERTa classifier), opportunity type tagging. Classification & Scoring: Each opportunity is enriched with a match_score using a cosine similarity between the opportunity embedding and the user's profile embedding (interests, skills, past successes). A logistic regression model trained on historical \u201capplied/won\u201d data provides an expected impact score. All results land in PostgreSQL. Notifications: New high\u2011match opportunities (>0.8) trigger instant SSE alerts; a daily digest email is drafted but sent only after approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_56_m1_05_daily_digest_is_unsent_approval_draft",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 57,
@@ -788,8 +811,9 @@
       "source_excerpt": "Module 5 \u2013 Outreach Manager CRM & Contact Enrichment: Contacts are stored in PostgreSQL with a full change log. Enrichment uses public APIs (Clearbit, Hunter.io) and web scraping of university/lab pages. Every contact is linked to a project and opportunity. Campaign Engine: Users define a campaign goal (e.g., \u201cFind a summer research supervisor in spatial transcriptomics\u201d). The system then: (1) searches for professors matching keywords, (2) ranks them by publication impact (via Semantic Scholar API), (3) drafts personalised emails using templates that incorporate the professor\u2019s recent work. Drafts are placed in the Approval Center. Once approved, the system sends via SMTP/IMAP (using Nodemailer or Python\u2019s smtplib) and tracks opens/replies by parsing inbox threads. Follow\u2011up Automation: If no reply is detected within a configurable window, a gentle follow\u2011up is drafted and queued for approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_57_m5_01_campaign_intake_starts_in_draft_state",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 58,
@@ -801,8 +825,9 @@
       "source_excerpt": "Module 5 \u2013 Outreach Manager CRM & Contact Enrichment: Contacts are stored in PostgreSQL with a full change log. Enrichment uses public APIs (Clearbit, Hunter.io) and web scraping of university/lab pages. Every contact is linked to a project and opportunity. Campaign Engine: Users define a campaign goal (e.g., \u201cFind a summer research supervisor in spatial transcriptomics\u201d). The system then: (1) searches for professors matching keywords, (2) ranks them by publication impact (via Semantic Scholar API), (3) drafts personalised emails using templates that incorporate the professor\u2019s recent work. Drafts are placed in the Approval Center. Once approved, the system sends via SMTP/IMAP (using Nodemailer or Python\u2019s smtplib) and tracks opens/replies by parsing inbox threads. Follow\u2011up Automation: If no reply is detected within a configurable window, a gentle follow\u2011up is drafted and queued for approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_58_m5_02_professor_discovery_matches_campaign_keywords",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 59,
@@ -814,8 +839,9 @@
       "source_excerpt": "Module 5 \u2013 Outreach Manager CRM & Contact Enrichment: Contacts are stored in PostgreSQL with a full change log. Enrichment uses public APIs (Clearbit, Hunter.io) and web scraping of university/lab pages. Every contact is linked to a project and opportunity. Campaign Engine: Users define a campaign goal (e.g., \u201cFind a summer research supervisor in spatial transcriptomics\u201d). The system then: (1) searches for professors matching keywords, (2) ranks them by publication impact (via Semantic Scholar API), (3) drafts personalised emails using templates that incorporate the professor\u2019s recent work. Drafts are placed in the Approval Center. Once approved, the system sends via SMTP/IMAP (using Nodemailer or Python\u2019s smtplib) and tracks opens/replies by parsing inbox threads. Follow\u2011up Automation: If no reply is detected within a configurable window, a gentle follow\u2011up is drafted and queued for approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_59_m5_03_professor_impact_ranking_uses_publication_metrics",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 60,
@@ -827,8 +853,9 @@
       "source_excerpt": "Module 5 \u2013 Outreach Manager CRM & Contact Enrichment: Contacts are stored in PostgreSQL with a full change log. Enrichment uses public APIs (Clearbit, Hunter.io) and web scraping of university/lab pages. Every contact is linked to a project and opportunity. Campaign Engine: Users define a campaign goal (e.g., \u201cFind a summer research supervisor in spatial transcriptomics\u201d). The system then: (1) searches for professors matching keywords, (2) ranks them by publication impact (via Semantic Scholar API), (3) drafts personalised emails using templates that incorporate the professor\u2019s recent work. Drafts are placed in the Approval Center. Once approved, the system sends via SMTP/IMAP (using Nodemailer or Python\u2019s smtplib) and tracks opens/replies by parsing inbox threads. Follow\u2011up Automation: If no reply is detected within a configurable window, a gentle follow\u2011up is drafted and queued for approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_60_m5_04_personalization_requires_recent_work_citation",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 61,
@@ -840,8 +867,9 @@
       "source_excerpt": "Module 5 \u2013 Outreach Manager CRM & Contact Enrichment: Contacts are stored in PostgreSQL with a full change log. Enrichment uses public APIs (Clearbit, Hunter.io) and web scraping of university/lab pages. Every contact is linked to a project and opportunity. Campaign Engine: Users define a campaign goal (e.g., \u201cFind a summer research supervisor in spatial transcriptomics\u201d). The system then: (1) searches for professors matching keywords, (2) ranks them by publication impact (via Semantic Scholar API), (3) drafts personalised emails using templates that incorporate the professor\u2019s recent work. Drafts are placed in the Approval Center. Once approved, the system sends via SMTP/IMAP (using Nodemailer or Python\u2019s smtplib) and tracks opens/replies by parsing inbox threads. Follow\u2011up Automation: If no reply is detected within a configurable window, a gentle follow\u2011up is drafted and queued for approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_61_m5_05_delivery_requires_exact_approval_recipient_and_message",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 62,
@@ -853,8 +881,9 @@
       "source_excerpt": "Module 5 \u2013 Outreach Manager CRM & Contact Enrichment: Contacts are stored in PostgreSQL with a full change log. Enrichment uses public APIs (Clearbit, Hunter.io) and web scraping of university/lab pages. Every contact is linked to a project and opportunity. Campaign Engine: Users define a campaign goal (e.g., \u201cFind a summer research supervisor in spatial transcriptomics\u201d). The system then: (1) searches for professors matching keywords, (2) ranks them by publication impact (via Semantic Scholar API), (3) drafts personalised emails using templates that incorporate the professor\u2019s recent work. Drafts are placed in the Approval Center. Once approved, the system sends via SMTP/IMAP (using Nodemailer or Python\u2019s smtplib) and tracks opens/replies by parsing inbox threads. Follow\u2011up Automation: If no reply is detected within a configurable window, a gentle follow\u2011up is drafted and queued for approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_62_m5_06_thread_tracking_detects_reply_and_discloses_limits",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 63,
@@ -866,8 +895,9 @@
       "source_excerpt": "Module 5 \u2013 Outreach Manager CRM & Contact Enrichment: Contacts are stored in PostgreSQL with a full change log. Enrichment uses public APIs (Clearbit, Hunter.io) and web scraping of university/lab pages. Every contact is linked to a project and opportunity. Campaign Engine: Users define a campaign goal (e.g., \u201cFind a summer research supervisor in spatial transcriptomics\u201d). The system then: (1) searches for professors matching keywords, (2) ranks them by publication impact (via Semantic Scholar API), (3) drafts personalised emails using templates that incorporate the professor\u2019s recent work. Drafts are placed in the Approval Center. Once approved, the system sends via SMTP/IMAP (using Nodemailer or Python\u2019s smtplib) and tracks opens/replies by parsing inbox threads. Follow\u2011up Automation: If no reply is detected within a configurable window, a gentle follow\u2011up is drafted and queued for approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_63_m5_07_no_reply_window_must_be_positive",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 64,
@@ -879,8 +909,9 @@
       "source_excerpt": "Module 5 \u2013 Outreach Manager CRM & Contact Enrichment: Contacts are stored in PostgreSQL with a full change log. Enrichment uses public APIs (Clearbit, Hunter.io) and web scraping of university/lab pages. Every contact is linked to a project and opportunity. Campaign Engine: Users define a campaign goal (e.g., \u201cFind a summer research supervisor in spatial transcriptomics\u201d). The system then: (1) searches for professors matching keywords, (2) ranks them by publication impact (via Semantic Scholar API), (3) drafts personalised emails using templates that incorporate the professor\u2019s recent work. Drafts are placed in the Approval Center. Once approved, the system sends via SMTP/IMAP (using Nodemailer or Python\u2019s smtplib) and tracks opens/replies by parsing inbox threads. Follow\u2011up Automation: If no reply is detected within a configurable window, a gentle follow\u2011up is drafted and queued for approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_64_m5_08_followup_is_blocked_after_reply_otherwise_queued",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 65,
@@ -892,8 +923,9 @@
       "source_excerpt": "Module 6 \u2013 Social Media Manager Content Generation Pipeline: Receives a content brief (e.g., \u201cShare our ISEF project update\u201d). A strategist agent decides the best format per platform (carousel for Instagram, thread for Twitter, 60s video script for TikTok). Using ComfyUI for image generation (Stable Diffusion XL) and Bark/Tortoise\u2011TTS for audio, assets are produced. All content is scheduled via platform APIs (Meta Graph API, Twitter API v2, LinkedIn API) but held in the approval queue until confirmation. Analytics: Pulls engagement metrics daily and uses an LLM to suggest improvements (e.g., \u201cPost your carousels at 9 AM on Tuesdays based on peak follower activity\u201d). A/B testing of captions can be proposed and executed with approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_65_m6_01_content_brief_requires_goal_audience_and_platforms",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 66,
@@ -905,8 +937,9 @@
       "source_excerpt": "Module 6 \u2013 Social Media Manager Content Generation Pipeline: Receives a content brief (e.g., \u201cShare our ISEF project update\u201d). A strategist agent decides the best format per platform (carousel for Instagram, thread for Twitter, 60s video script for TikTok). Using ComfyUI for image generation (Stable Diffusion XL) and Bark/Tortoise\u2011TTS for audio, assets are produced. All content is scheduled via platform APIs (Meta Graph API, Twitter API v2, LinkedIn API) but held in the approval queue until confirmation. Analytics: Pulls engagement metrics daily and uses an LLM to suggest improvements (e.g., \u201cPost your carousels at 9 AM on Tuesdays based on peak follower activity\u201d). A/B testing of captions can be proposed and executed with approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/technical_spec_34_66.py",
-      "test_evidence": "tests/test_technical_spec_34_66.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_66_m6_02_platform_strategy_maps_formats_without_scheduling",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 67,
