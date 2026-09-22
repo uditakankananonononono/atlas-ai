@@ -155,12 +155,13 @@ def upsert_policy(policy_id: str, body: schemas.PolicyUpsert,
     return service.upsert_policy(policy_id=body.id, name=body.name,
         action_pattern=body.action_pattern, effect=body.effect, actor=admin.actor_id,
         module_id=body.module_id, priority=body.priority, enabled=body.enabled,
-        conditions=body.conditions, review_ttl_seconds=body.review_ttl_seconds)
+        conditions=body.conditions, review_ttl_seconds=body.review_ttl_seconds,
+        tenant_id=admin.tenant_id)
 
 
 @router.get("/policies", response_model=list[schemas.PolicyView])
 def list_policies(enabled_only: bool = False, service: Service = Depends(get_service), admin: TenantContext = Depends(require_admin)) -> list[dict]:
-    return service.list_policies(enabled_only=enabled_only)
+    return service.list_policies(enabled_only=enabled_only, tenant_id=admin.tenant_id)
 
 
 @router.post("/gate", response_model=schemas.GateResult)

@@ -68,6 +68,7 @@ class PolicyUpsert(BaseModel):
 
 
 class PolicyView(PolicyUpsert):
+    tenant_id: str
     created_at: datetime
     updated_at: datetime
 
