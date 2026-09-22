@@ -72,6 +72,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** execute the renderer and private upload in the approved worker and govern provider-key provisioning and rotation.
 - **Landed:** approved publication-worker adapter binds tenant, version, format and content hash to the approved payload before rendering and private upload, then checks the upload receipt against exact rendered bytes.
 - **Next:** consume approvals atomically for replay protection and replace shared-key receipts with provider-issued asymmetric signatures.
+- **Landed:** authenticated private-publication receipts persist tenant-scoped and append-only; approval IDs and provider object keys cannot replace prior evidence.
+- **Next:** execute the renderer and private upload in the approved worker and replace shared-key receipts with provider-issued asymmetric signatures.
 ## M16 - Executive Dashboard
 - **Landed (science):** gap-to-proof dashboard reports exact requirement and per-module gaps while keeping code artifacts, test evidence and live acceptance separate.
 - **Landed:** proof-event verification authenticates producer events with configured HMAC keys and requires deployment receipts to carry version and environment bindings.
