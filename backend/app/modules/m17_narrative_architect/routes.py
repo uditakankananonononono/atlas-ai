@@ -30,3 +30,8 @@ async def concepts(request:ConceptIn,tenant:TenantContext=Depends(require_tenant
 async def critique(request:CritiqueIn,tenant:TenantContext=Depends(require_tenant),service:Service=Depends(get_service)):
  try:return await service.critique(_tenant_copy(request,tenant))
  except (ValueError,RuntimeError,json.JSONDecodeError) as e:raise HTTPException(422,str(e))
+
+from .evidence_meter import EvidenceMeterRequest,meter as evidence_meter
+@router.post('/evidence-completeness')
+def evidence_completeness(body:EvidenceMeterRequest,tenant:TenantContext=Depends(require_tenant)):
+ return {'tenant_id':tenant.tenant_id,**evidence_meter(body)}
