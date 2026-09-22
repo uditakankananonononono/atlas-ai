@@ -267,3 +267,9 @@ def live_schedule_risk_evidence(
         return {'tenant_id': tenant.tenant_id, **verify_live_risk_evidence(body)}
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
+
+from .asymmetric_risk_evidence import VerifySignedRiskEvidence,verify_signed_risk_evidence
+@router.post('/schedule-risk/live-evidence/ed25519/verify')
+def signed_live_risk_evidence(body:VerifySignedRiskEvidence,tenant:TenantContext=Depends(require_tenant)):
+ try:return {'tenant_id':tenant.tenant_id,**verify_signed_risk_evidence(body)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error
