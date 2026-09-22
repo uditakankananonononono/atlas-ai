@@ -4,8 +4,8 @@
     {
       "ledger": "audits/technical-spec-line-by-line.json",
       "total": 229,
-      "resolvable_nodes": 36,
-      "unresolved": 193,
+      "resolvable_nodes": 45,
+      "unresolved": 184,
       "results": [
         {
           "row": "A01",
@@ -1251,33 +1251,33 @@
         },
         {
           "row": "X01",
-          "evidence": null,
-          "resolved": false,
-          "reason": "no test evidence"
+          "evidence": "tests/test_missing_production_capabilities.py::test_x01_mtls_manifest_is_strict_but_has_no_runtime_attestation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X02",
-          "evidence": null,
-          "resolved": false,
-          "reason": "no test evidence"
+          "evidence": "tests/test_missing_production_capabilities.py::test_x02_vault_and_encryption_mechanisms_exist_but_live_vault_is_unattested",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X03",
-          "evidence": null,
-          "resolved": false,
-          "reason": "no test evidence"
+          "evidence": "tests/test_missing_production_capabilities.py::test_x03_otel_pipeline_is_configured_but_cross_service_trace_is_unattested",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X04",
-          "evidence": null,
-          "resolved": false,
-          "reason": "no test evidence"
+          "evidence": "tests/test_missing_production_capabilities.py::test_x04_cloud_logging_format_and_export_are_configured_not_observed",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X05",
-          "evidence": null,
-          "resolved": false,
-          "reason": "no test evidence"
+          "evidence": "tests/test_missing_production_capabilities.py::test_x05_grafana_dashboard_has_real_queries_but_hosted_dashboard_is_unattested",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X06",
@@ -1311,27 +1311,27 @@
         },
         {
           "row": "X11",
-          "evidence": null,
-          "resolved": false,
-          "reason": "no test evidence"
+          "evidence": "tests/test_missing_production_capabilities.py::test_x11_compose_acceptance_remains_unrun_without_container_runtime",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X12",
-          "evidence": null,
-          "resolved": false,
-          "reason": "no test evidence"
+          "evidence": "tests/test_missing_production_capabilities.py::test_x12_kubernetes_acceptance_remains_unrun_without_cluster",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X13",
-          "evidence": null,
-          "resolved": false,
-          "reason": "no test evidence"
+          "evidence": "tests/test_missing_production_capabilities.py::test_x13_ollama_profile_is_bounded_but_32gb_host_acceptance_is_unrun",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X14",
-          "evidence": null,
-          "resolved": false,
-          "reason": "no test evidence"
+          "evidence": "tests/test_missing_production_capabilities.py::test_x14_celery_replica_config_exists_but_scaling_benchmark_is_unrun",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "S01",
