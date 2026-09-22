@@ -29,7 +29,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 ## M10 - Email Assistant
 - **Landed:** evidence-bound thread promise tracker extracts only owner-authored commitments, links each promise to its source message/excerpt, computes due state, and proposes follow-up review without creating tasks, drafts, reminders, or sends.
 - **Landed:** persistent promise-state reconciliation verifies prior snapshot and promise hashes, records reviewer-bound state receipts, completes only a named promise backed by an exact owner-authored completion excerpt, and fails closed on ambiguous updates.
-- **Next:** persist reconciliation snapshots transactionally and authenticate reviewer identities and source-message bytes.
+- **Landed:** tenant/thread-scoped transactional snapshot persistence uses compare-and-swap against the stored reconciliation head so stale writers fail closed without overwrite.
+- **Next:** authenticate reviewer identities and source-message bytes before persistence.
 ## M11 - Calendar Intelligence
 - **Landed:** read-only schedule-risk view combines travel and preparation buffer shortfalls, incomplete/unknown dependencies, and sourced cancellation exposure into a deterministic risk artifact without changing events, cancelling bookings, or spending.
 - **Landed:** live risk-evidence verifier binds mapping travel estimates and vendor cancellation terms to fresh retrieval timestamps, provider/source metadata, normalized-record hashes, and captured snapshot hashes, failing closed on stale, future, or mismatched evidence.
