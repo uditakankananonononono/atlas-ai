@@ -89,3 +89,9 @@ def test_mounted_route_and_validation():
  r=c.post('/api/modules/20/engineering/1510-1559/analyze',json={'method':'stress_analysis','data':{'sigma_x':100,'yield_strength':250}})
  assert r.status_code==200 and r.json()['result']['factor_of_safety']==2.5
  assert c.post('/api/modules/20/engineering/1510-1559/analyze',json={'method':'thermal_analysis','data':{}}).status_code==422
+def test_1545_environmental_plan_not_fake_result():
+ r=E('environmental_testing',{'profiles':[{'level':1}]})['result'];assert r['test_type']=='environmental' and not r['test_executed']
+def test_1548_thermal_cycling_plan_not_fake_result():
+ r=E('thermal_cycling',{'profiles':[{'level':1}]})['result'];assert r['test_type']=='thermal_cycling' and not r['test_executed']
+def test_1549_humidity_plan_not_fake_result():
+ r=E('humidity_testing',{'profiles':[{'level':1}]})['result'];assert r['test_type']=='humidity' and not r['test_executed']
