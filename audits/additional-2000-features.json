@@ -9766,7 +9766,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_635_slo_verdicts",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9780,7 +9781,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_636_burn_classification",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9794,7 +9796,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_637_role_coverage_and_mtta",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9808,7 +9811,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_638_unowned_action_items",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9822,7 +9826,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_639_runbook_alert_coverage",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9836,7 +9841,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_640_rotation_fairness_and_spof",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9850,7 +9856,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_641_capacity_linear_forecast",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9864,7 +9871,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_642_cost_waste_ranking",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9878,7 +9886,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_643_bin_packing_assignment",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9892,7 +9901,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_644_queue_wait_estimates",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9906,7 +9916,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_645_parallel_waves",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9920,7 +9931,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_646_critical_path",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9934,7 +9946,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_647_cron_parse_and_overlap",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9948,7 +9961,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_648_event_sourcing_replay",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9962,7 +9976,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_649_cqrs_separation_and_lag",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9976,7 +9991,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_650_saga_compensation_order",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -9990,7 +10006,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_651_two_phase_blocking",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10004,7 +10021,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_652_idempotency_key_coverage",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10018,7 +10036,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_653_exactly_once_feasibility",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10032,7 +10051,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_654_at_least_once_dedup_requirement",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10046,7 +10066,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_655_dlq_poison_detection",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10060,7 +10081,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_656_retry_budget",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10074,7 +10096,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_657_backoff_sequence_and_cap",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10088,7 +10111,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_658_bulkhead_blast_radius",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10102,7 +10126,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_659_sidecar_offload",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10116,7 +10141,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_660_ambassador_policy_inconsistency",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10130,7 +10156,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_661_adapter_conformance",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10144,7 +10171,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_662_facade_coupling_reduction",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10158,7 +10186,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_663_observer_cycle_and_fanout",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10172,7 +10201,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_664_strategy_dispatch_coverage",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10186,7 +10216,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_665_factory_unknown_product",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10200,7 +10231,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_666_singleton_lazy_race",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10214,7 +10246,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_667_di_resolution_order",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10228,7 +10261,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_668_ioc_direction",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10242,7 +10276,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_669_repository_leakage",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10256,7 +10291,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_670_uow_commit_ordering",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10270,7 +10306,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_671_element_counts",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10284,7 +10321,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_672_shared_kernel_detection",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10298,7 +10336,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_673_glossary_sizes",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10312,7 +10351,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_674_aggregate_invariants",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10326,7 +10366,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_675_entity_identity",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10340,7 +10381,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_676_value_object_rules",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10354,7 +10396,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_677_domain_event_rules",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10368,7 +10411,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_678_acl_translation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10382,7 +10426,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_679_hexagonal_direction",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10396,7 +10441,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_680_clean_architecture_inward_rule",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10410,7 +10456,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_681_onion_dependency_free_core",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10424,7 +10471,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_682_ports_adapters_pairing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10438,7 +10486,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_683_functional_core_purity",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -10452,7 +10501,8 @@
       "evidence": {
         "commit": "1e02efbaa54d21c91da3ec891309529d84c80d18",
         "implementation_path": "backend/app/modules/m14_project_builder/architecture_support_635_684.py",
-        "test_path": "tests/modules/test_m14_architecture_635_684.py"
+        "test_path": "tests/modules/test_m14_architecture_635_684.py::test_684_event_storming_chronology",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-practitioner-node"
       },
       "boundary": "Auditable concept-specific decision support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
