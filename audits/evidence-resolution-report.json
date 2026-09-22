@@ -4,8 +4,8 @@
     {
       "ledger": "audits/technical-spec-line-by-line.json",
       "total": 229,
-      "resolvable_nodes": 177,
-      "unresolved": 52,
+      "resolvable_nodes": 205,
+      "unresolved": 24,
       "results": [
         {
           "row": "A01",
@@ -999,201 +999,201 @@
         },
         {
           "row": "M19-04",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_166_m19_04",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M19-05",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_167_m19_05",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M19-06",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_168_m19_06",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M19-07",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_169_m19_07",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M19-08",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_170_m19_08",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M19-09",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_171_m19_09",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M19-10",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_172_m19_10",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-01",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_173_m20_01",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-02",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_174_m20_02",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-03",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_175_m20_03",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-04",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_176_m20_04",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-05",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_177_m20_05",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-06",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_178_m20_06",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-07",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_179_m20_07",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-08",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_180_m20_08",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-09",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_181_m20_09",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-10",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_182_m20_10",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-11",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_183_m20_11",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-12",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_184_m20_12",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-13",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_185_m20_13",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-14",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_186_m20_14",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-15",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_187_m20_15",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-16",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_188_m20_16",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-17",
-          "evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_189_typed_registry_selects_browser_when_no_free_api_and_emits_audit",
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_189_m20_17",
           "resolved": true,
           "reason": null
         },
         {
           "row": "M20-18",
-          "evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_190_python_sandbox_preserves_api_when_available_and_validates_types",
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_190_m20_18",
           "resolved": true,
           "reason": null
         },
         {
           "row": "M20-19",
-          "evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_191_shell_keeps_permission_boundary_and_actor_isolation",
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_191_m20_19",
           "resolved": true,
           "reason": null
         },
         {
           "row": "M20-20",
-          "evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_192_search_free_first_order_and_final_submit_approval_gate",
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_192_m20_20",
           "resolved": true,
           "reason": null
         },
         {
           "row": "M20-21",
-          "evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_193_workspace_route_fails_honestly_when_site_blocks_automation",
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_193_m20_21",
           "resolved": true,
           "reason": null
         },
         {
           "row": "M20-22",
-          "evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_194_rest_paid_only_falls_back-to-github-build-test-review-deploy-pipeline",
-          "resolved": false,
-          "reason": "pytest node not found"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_194_m20_22",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-23",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_195_m20_23",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-24",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_196_m20_24",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-25",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_197_m20_25",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-26",
-          "evidence": "tests/test_technical_spec_166_198.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_166_198.py::test_row_198_m20_26",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-27",

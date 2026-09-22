@@ -2337,8 +2337,9 @@
       "source_excerpt": "Module 19 \u2013 Autonomous Idea Incubator (Entrepreneurial Dream Builder) Idea Intake: User submits a one\u2011liner or a voice memo (transcribed). The system expands it into a lean canvas using a specialised prompt. Research & Prototyping: The incubator concurrently: Conducts a market landscape search using Gemini (browser agent to search Google/ProductHunt). Generates a wireframe/UI mockup using v0\u2011style prompt and captures screenshot. Writes a full\u2011stack prototype scaffold using a code\u2011generation agent (e.g., OpenHands/SWE\u2011agent style) and deploys to a sandboxed Vercel preview. It then runs and fixes bugs in a loop. Viability Package: The final output includes a PDF report with executive summary, prototype link, market analysis, technical feasibility, and a Go/No\u2011Go recommendation backed by evidence. The incubator can manage a queue of ideas, working on them during idle CPU/API cycles.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_166_m19_04",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 167,
@@ -2350,8 +2351,9 @@
       "source_excerpt": "Module 19 \u2013 Autonomous Idea Incubator (Entrepreneurial Dream Builder) Idea Intake: User submits a one\u2011liner or a voice memo (transcribed). The system expands it into a lean canvas using a specialised prompt. Research & Prototyping: The incubator concurrently: Conducts a market landscape search using Gemini (browser agent to search Google/ProductHunt). Generates a wireframe/UI mockup using v0\u2011style prompt and captures screenshot. Writes a full\u2011stack prototype scaffold using a code\u2011generation agent (e.g., OpenHands/SWE\u2011agent style) and deploys to a sandboxed Vercel preview. It then runs and fixes bugs in a loop. Viability Package: The final output includes a PDF report with executive summary, prototype link, market analysis, technical feasibility, and a Go/No\u2011Go recommendation backed by evidence. The incubator can manage a queue of ideas, working on them during idle CPU/API cycles.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_167_m19_05",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 168,
@@ -2363,8 +2365,9 @@
       "source_excerpt": "Module 19 \u2013 Autonomous Idea Incubator (Entrepreneurial Dream Builder) Idea Intake: User submits a one\u2011liner or a voice memo (transcribed). The system expands it into a lean canvas using a specialised prompt. Research & Prototyping: The incubator concurrently: Conducts a market landscape search using Gemini (browser agent to search Google/ProductHunt). Generates a wireframe/UI mockup using v0\u2011style prompt and captures screenshot. Writes a full\u2011stack prototype scaffold using a code\u2011generation agent (e.g., OpenHands/SWE\u2011agent style) and deploys to a sandboxed Vercel preview. It then runs and fixes bugs in a loop. Viability Package: The final output includes a PDF report with executive summary, prototype link, market analysis, technical feasibility, and a Go/No\u2011Go recommendation backed by evidence. The incubator can manage a queue of ideas, working on them during idle CPU/API cycles.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_168_m19_06",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 169,
@@ -2376,8 +2379,9 @@
       "source_excerpt": "Module 19 \u2013 Autonomous Idea Incubator (Entrepreneurial Dream Builder) Idea Intake: User submits a one\u2011liner or a voice memo (transcribed). The system expands it into a lean canvas using a specialised prompt. Research & Prototyping: The incubator concurrently: Conducts a market landscape search using Gemini (browser agent to search Google/ProductHunt). Generates a wireframe/UI mockup using v0\u2011style prompt and captures screenshot. Writes a full\u2011stack prototype scaffold using a code\u2011generation agent (e.g., OpenHands/SWE\u2011agent style) and deploys to a sandboxed Vercel preview. It then runs and fixes bugs in a loop. Viability Package: The final output includes a PDF report with executive summary, prototype link, market analysis, technical feasibility, and a Go/No\u2011Go recommendation backed by evidence. The incubator can manage a queue of ideas, working on them during idle CPU/API cycles.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_169_m19_07",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 170,
@@ -2389,8 +2393,9 @@
       "source_excerpt": "Module 19 \u2013 Autonomous Idea Incubator (Entrepreneurial Dream Builder) Idea Intake: User submits a one\u2011liner or a voice memo (transcribed). The system expands it into a lean canvas using a specialised prompt. Research & Prototyping: The incubator concurrently: Conducts a market landscape search using Gemini (browser agent to search Google/ProductHunt). Generates a wireframe/UI mockup using v0\u2011style prompt and captures screenshot. Writes a full\u2011stack prototype scaffold using a code\u2011generation agent (e.g., OpenHands/SWE\u2011agent style) and deploys to a sandboxed Vercel preview. It then runs and fixes bugs in a loop. Viability Package: The final output includes a PDF report with executive summary, prototype link, market analysis, technical feasibility, and a Go/No\u2011Go recommendation backed by evidence. The incubator can manage a queue of ideas, working on them during idle CPU/API cycles.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_170_m19_08",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 171,
@@ -2402,8 +2407,9 @@
       "source_excerpt": "Module 19 \u2013 Autonomous Idea Incubator (Entrepreneurial Dream Builder) Idea Intake: User submits a one\u2011liner or a voice memo (transcribed). The system expands it into a lean canvas using a specialised prompt. Research & Prototyping: The incubator concurrently: Conducts a market landscape search using Gemini (browser agent to search Google/ProductHunt). Generates a wireframe/UI mockup using v0\u2011style prompt and captures screenshot. Writes a full\u2011stack prototype scaffold using a code\u2011generation agent (e.g., OpenHands/SWE\u2011agent style) and deploys to a sandboxed Vercel preview. It then runs and fixes bugs in a loop. Viability Package: The final output includes a PDF report with executive summary, prototype link, market analysis, technical feasibility, and a Go/No\u2011Go recommendation backed by evidence. The incubator can manage a queue of ideas, working on them during idle CPU/API cycles.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_171_m19_09",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 172,
@@ -2415,8 +2421,9 @@
       "source_excerpt": "Module 19 \u2013 Autonomous Idea Incubator (Entrepreneurial Dream Builder) Idea Intake: User submits a one\u2011liner or a voice memo (transcribed). The system expands it into a lean canvas using a specialised prompt. Research & Prototyping: The incubator concurrently: Conducts a market landscape search using Gemini (browser agent to search Google/ProductHunt). Generates a wireframe/UI mockup using v0\u2011style prompt and captures screenshot. Writes a full\u2011stack prototype scaffold using a code\u2011generation agent (e.g., OpenHands/SWE\u2011agent style) and deploys to a sandboxed Vercel preview. It then runs and fixes bugs in a loop. Viability Package: The final output includes a PDF report with executive summary, prototype link, market analysis, technical feasibility, and a Go/No\u2011Go recommendation backed by evidence. The incubator can manage a queue of ideas, working on them during idle CPU/API cycles.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_172_m19_10",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 173,
@@ -2428,8 +2435,9 @@
       "source_excerpt": "4.2.1 Sensory Layer Accepts tasks and inputs in natural language, voice, images, CSV files, PDFs, and emails. It normalises everything into an internal representation: a stream of cognitive events (textual descriptions plus metadata). For images, it uses a vision\u2011language model (GPT\u20114o or CogVLM) to produce detailed textual descriptions and extract tabular data. Audio is transcribed via Whisper.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_173_m20_01",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 174,
@@ -2441,8 +2449,9 @@
       "source_excerpt": "4.2.1 Sensory Layer Accepts tasks and inputs in natural language, voice, images, CSV files, PDFs, and emails. It normalises everything into an internal representation: a stream of cognitive events (textual descriptions plus metadata). For images, it uses a vision\u2011language model (GPT\u20114o or CogVLM) to produce detailed textual descriptions and extract tabular data. Audio is transcribed via Whisper.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_174_m20_02",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 175,
@@ -2454,8 +2463,9 @@
       "source_excerpt": "4.2.1 Sensory Layer Accepts tasks and inputs in natural language, voice, images, CSV files, PDFs, and emails. It normalises everything into an internal representation: a stream of cognitive events (textual descriptions plus metadata). For images, it uses a vision\u2011language model (GPT\u20114o or CogVLM) to produce detailed textual descriptions and extract tabular data. Audio is transcribed via Whisper.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_175_m20_03",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 176,
@@ -2467,8 +2477,9 @@
       "source_excerpt": "4.2.2 Working Memory & Attention Buffer Working memory is implemented as a Redis list with a maximum capacity of ~50 \u201cchunks\u201d (inspired by human limits). Each chunk is a JSON object with type (fact, goal, hypothesis, question), content, confidence, and source. An attention controller (a small LLM call) constantly prunes and prioritises chunks, keeping only the most relevant to the current active goal. This mimics human selective attention, preventing context overflow and enabling focus over extended periods.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_176_m20_04",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 177,
@@ -2480,8 +2491,9 @@
       "source_excerpt": "4.2.2 Working Memory & Attention Buffer Working memory is implemented as a Redis list with a maximum capacity of ~50 \u201cchunks\u201d (inspired by human limits). Each chunk is a JSON object with type (fact, goal, hypothesis, question), content, confidence, and source. An attention controller (a small LLM call) constantly prunes and prioritises chunks, keeping only the most relevant to the current active goal. This mimics human selective attention, preventing context overflow and enabling focus over extended periods.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_177_m20_05",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 178,
@@ -2493,8 +2505,9 @@
       "source_excerpt": "4.2.3 Long\u2011Term Memory Episodic Memory: Every task execution is logged as an episode: start state, sequence of actions, outcomes, reflections. These episodes are stored in ChromaDB and can be retrieved by similarity when a similar task arises, allowing analogical transfer (e.g., \u201cI\u2019ve solved a logistics problem like this before\u201d). Semantic Memory: Facts, concepts, documents, and user\u2011specific knowledge are stored in the same vector DB and the Knowledge Workspace graph. The GCW can query this memory proactively when it encounters an unknown term. Procedural Memory (Skills): Reusable sequences of actions that have been compiled into \u201cskills\u201d are stored as Python functions or prompt chains. For example, \u201csend a professional email\u201d is a skill that invokes the Outreach Manager\u2019s email drafter. Over time, the system can automatically identify patterns in successful action sequences and propose new skills (via a skill\u2011learning algorithm).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_178_m20_06",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 179,
@@ -2506,8 +2519,9 @@
       "source_excerpt": "4.2.3 Long\u2011Term Memory Episodic Memory: Every task execution is logged as an episode: start state, sequence of actions, outcomes, reflections. These episodes are stored in ChromaDB and can be retrieved by similarity when a similar task arises, allowing analogical transfer (e.g., \u201cI\u2019ve solved a logistics problem like this before\u201d). Semantic Memory: Facts, concepts, documents, and user\u2011specific knowledge are stored in the same vector DB and the Knowledge Workspace graph. The GCW can query this memory proactively when it encounters an unknown term. Procedural Memory (Skills): Reusable sequences of actions that have been compiled into \u201cskills\u201d are stored as Python functions or prompt chains. For example, \u201csend a professional email\u201d is a skill that invokes the Outreach Manager\u2019s email drafter. Over time, the system can automatically identify patterns in successful action sequences and propose new skills (via a skill\u2011learning algorithm).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_179_m20_07",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 180,
@@ -2519,8 +2533,9 @@
       "source_excerpt": "4.2.3 Long\u2011Term Memory Episodic Memory: Every task execution is logged as an episode: start state, sequence of actions, outcomes, reflections. These episodes are stored in ChromaDB and can be retrieved by similarity when a similar task arises, allowing analogical transfer (e.g., \u201cI\u2019ve solved a logistics problem like this before\u201d). Semantic Memory: Facts, concepts, documents, and user\u2011specific knowledge are stored in the same vector DB and the Knowledge Workspace graph. The GCW can query this memory proactively when it encounters an unknown term. Procedural Memory (Skills): Reusable sequences of actions that have been compiled into \u201cskills\u201d are stored as Python functions or prompt chains. For example, \u201csend a professional email\u201d is a skill that invokes the Outreach Manager\u2019s email drafter. Over time, the system can automatically identify patterns in successful action sequences and propose new skills (via a skill\u2011learning algorithm).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_180_m20_08",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 181,
@@ -2532,8 +2547,9 @@
       "source_excerpt": "4.2.3 Long\u2011Term Memory Episodic Memory: Every task execution is logged as an episode: start state, sequence of actions, outcomes, reflections. These episodes are stored in ChromaDB and can be retrieved by similarity when a similar task arises, allowing analogical transfer (e.g., \u201cI\u2019ve solved a logistics problem like this before\u201d). Semantic Memory: Facts, concepts, documents, and user\u2011specific knowledge are stored in the same vector DB and the Knowledge Workspace graph. The GCW can query this memory proactively when it encounters an unknown term. Procedural Memory (Skills): Reusable sequences of actions that have been compiled into \u201cskills\u201d are stored as Python functions or prompt chains. For example, \u201csend a professional email\u201d is a skill that invokes the Outreach Manager\u2019s email drafter. Over time, the system can automatically identify patterns in successful action sequences and propose new skills (via a skill\u2011learning algorithm).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_181_m20_09",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 182,
@@ -2545,8 +2561,9 @@
       "source_excerpt": "4.2.4 Executive / Deliberative Reasoning The executive is the heart of the GCW. It uses a hierarchical task network (HTN) planner combined with an LLM\u2011based deliberative loop. HTN Planning: When given a high\u2011level goal (\u201cPrepare a comprehensive market entry strategy for product X\u201d), the planner decomposes it using a library of known methods. For truly novel tasks, an LLM generates the decomposition de novo, then stores the decomposition as a new method for future reuse.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_182_m20_10",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 183,
@@ -2558,8 +2575,9 @@
       "source_excerpt": "4.2.4 Executive / Deliberative Reasoning The executive is the heart of the GCW. It uses a hierarchical task network (HTN) planner combined with an LLM\u2011based deliberative loop. HTN Planning: When given a high\u2011level goal (\u201cPrepare a comprehensive market entry strategy for product X\u201d), the planner decomposes it using a library of known methods. For truly novel tasks, an LLM generates the decomposition de novo, then stores the decomposition as a new method for future reuse.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_183_m20_11",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 184,
@@ -2571,8 +2589,9 @@
       "source_excerpt": "Deliberative Loop (Sense\u2011Plan\u2011Act): Observe: Gather all relevant information from working memory and LTM. Orient: The LLM analyses the current state, updates beliefs, identifies gaps in knowledge, and formulates sub\u2011goals. Decide: A meta\u2011reasoner selects the next action. It uses a decision tree where each leaf is an executable skill (e.g., web_search(query), write_code(spec), ask_user_clarification(question)). The choice is based on expected information gain, estimated cost, and probability of progress toward the goal. Act: The action is dispatched. Evaluate: The result is observed, compared with expectations. If a surprise occurs, the system enters a reflection phase, updating its world model and possibly replanning.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_184_m20_12",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 185,
@@ -2584,8 +2603,9 @@
       "source_excerpt": "Deliberative Loop (Sense\u2011Plan\u2011Act): Observe: Gather all relevant information from working memory and LTM. Orient: The LLM analyses the current state, updates beliefs, identifies gaps in knowledge, and formulates sub\u2011goals. Decide: A meta\u2011reasoner selects the next action. It uses a decision tree where each leaf is an executable skill (e.g., web_search(query), write_code(spec), ask_user_clarification(question)). The choice is based on expected information gain, estimated cost, and probability of progress toward the goal. Act: The action is dispatched. Evaluate: The result is observed, compared with expectations. If a surprise occurs, the system enters a reflection phase, updating its world model and possibly replanning.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_185_m20_13",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 186,
@@ -2597,8 +2617,9 @@
       "source_excerpt": "Deliberative Loop (Sense\u2011Plan\u2011Act): Observe: Gather all relevant information from working memory and LTM. Orient: The LLM analyses the current state, updates beliefs, identifies gaps in knowledge, and formulates sub\u2011goals. Decide: A meta\u2011reasoner selects the next action. It uses a decision tree where each leaf is an executable skill (e.g., web_search(query), write_code(spec), ask_user_clarification(question)). The choice is based on expected information gain, estimated cost, and probability of progress toward the goal. Act: The action is dispatched. Evaluate: The result is observed, compared with expectations. If a surprise occurs, the system enters a reflection phase, updating its world model and possibly replanning.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_186_m20_14",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 187,
@@ -2610,8 +2631,9 @@
       "source_excerpt": "This loop can run at a configurable cadence (every few seconds) to simulate continuous thought. When the system is idle, it may run background \u201crumination\u201d on pending problems, exploring alternative solution paths via Monte Carlo tree search in the mental space.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_187_m20_15",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 188,
@@ -2623,8 +2645,9 @@
       "source_excerpt": "This loop can run at a configurable cadence (every few seconds) to simulate continuous thought. When the system is idle, it may run background \u201crumination\u201d on pending problems, exploring alternative solution paths via Monte Carlo tree search in the mental space.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_188_m20_16",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 189,
@@ -2636,10 +2659,11 @@
       "source_excerpt": "4.2.5 Tool Integration The GCW can use any API or software tool via a unified function\u2011calling interface. It has access to: All other Atlas AI modules (browser agent, email, calendar, etc.) A Python interpreter sandbox (for data analysis, custom scripts) Shell access to a Linux environment (with strict permission boundaries) Internet search (Brave API, Google Programmable Search) File system read/write within the user\u2019s workspace Any third\u2011party REST API by reading its documentation and generating requests The system maintains a tool registry with each tool\u2019s description, parameters, and preconditions. When the executive decides to use a tool, it formats a tool call in the OpenAI function\u2011calling format and passes it to the appropriate handler.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/gcw_tool_integration.py",
-      "test_evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_189_typed_registry_selects_browser_when_no_free_api_and_emits_audit",
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_189_m20_17",
       "kind": "functional",
       "implementation_mechanism": "typed registry routes reviewed free APIs first, then browser/paired-PC UI",
-      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior"
+      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 190,
@@ -2651,10 +2675,11 @@
       "source_excerpt": "4.2.5 Tool Integration The GCW can use any API or software tool via a unified function\u2011calling interface. It has access to: All other Atlas AI modules (browser agent, email, calendar, etc.) A Python interpreter sandbox (for data analysis, custom scripts) Shell access to a Linux environment (with strict permission boundaries) Internet search (Brave API, Google Programmable Search) File system read/write within the user\u2019s workspace Any third\u2011party REST API by reading its documentation and generating requests The system maintains a tool registry with each tool\u2019s description, parameters, and preconditions. When the executive decides to use a tool, it formats a tool call in the OpenAI function\u2011calling format and passes it to the appropriate handler.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/gcw_tool_integration.py",
-      "test_evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_190_python_sandbox_preserves_api_when_available_and_validates_types",
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_190_m20_18",
       "kind": "functional",
       "implementation_mechanism": "Python sandbox retains API execution while exposing compliant UI route fallback",
-      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior"
+      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 191,
@@ -2666,10 +2691,11 @@
       "source_excerpt": "4.2.5 Tool Integration The GCW can use any API or software tool via a unified function\u2011calling interface. It has access to: All other Atlas AI modules (browser agent, email, calendar, etc.) A Python interpreter sandbox (for data analysis, custom scripts) Shell access to a Linux environment (with strict permission boundaries) Internet search (Brave API, Google Programmable Search) File system read/write within the user\u2019s workspace Any third\u2011party REST API by reading its documentation and generating requests The system maintains a tool registry with each tool\u2019s description, parameters, and preconditions. When the executive decides to use a tool, it formats a tool call in the OpenAI function\u2011calling format and passes it to the appropriate handler.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/gcw_tool_integration.py",
-      "test_evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_191_shell_keeps_permission_boundary_and_actor_isolation",
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_191_m20_19",
       "kind": "functional",
       "implementation_mechanism": "permission-bounded shell with tenant/actor-isolated route and audit plan",
-      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior"
+      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 192,
@@ -2681,10 +2707,11 @@
       "source_excerpt": "4.2.5 Tool Integration The GCW can use any API or software tool via a unified function\u2011calling interface. It has access to: All other Atlas AI modules (browser agent, email, calendar, etc.) A Python interpreter sandbox (for data analysis, custom scripts) Shell access to a Linux environment (with strict permission boundaries) Internet search (Brave API, Google Programmable Search) File system read/write within the user\u2019s workspace Any third\u2011party REST API by reading its documentation and generating requests The system maintains a tool registry with each tool\u2019s description, parameters, and preconditions. When the executive decides to use a tool, it formats a tool call in the OpenAI function\u2011calling format and passes it to the appropriate handler.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/gcw_tool_integration.py",
-      "test_evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_192_search_free_first_order_and_final_submit_approval_gate",
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_192_m20_20",
       "kind": "functional",
       "implementation_mechanism": "public search free-first API/UI selection with final-submit approval gate",
-      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior"
+      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 193,
@@ -2696,10 +2723,11 @@
       "source_excerpt": "4.2.5 Tool Integration The GCW can use any API or software tool via a unified function\u2011calling interface. It has access to: All other Atlas AI modules (browser agent, email, calendar, etc.) A Python interpreter sandbox (for data analysis, custom scripts) Shell access to a Linux environment (with strict permission boundaries) Internet search (Brave API, Google Programmable Search) File system read/write within the user\u2019s workspace Any third\u2011party REST API by reading its documentation and generating requests The system maintains a tool registry with each tool\u2019s description, parameters, and preconditions. When the executive decides to use a tool, it formats a tool call in the OpenAI function\u2011calling format and passes it to the appropriate handler.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/gcw_tool_integration.py",
-      "test_evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_193_workspace_route_fails_honestly_when_site_blocks_automation",
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_193_m20_21",
       "kind": "functional",
       "implementation_mechanism": "workspace-bounded read/write through browser/paired-PC route with honest blocked-site failure",
-      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior"
+      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 194,
@@ -2711,10 +2739,11 @@
       "source_excerpt": "4.2.5 Tool Integration The GCW can use any API or software tool via a unified function\u2011calling interface. It has access to: All other Atlas AI modules (browser agent, email, calendar, etc.) A Python interpreter sandbox (for data analysis, custom scripts) Shell access to a Linux environment (with strict permission boundaries) Internet search (Brave API, Google Programmable Search) File system read/write within the user\u2019s workspace Any third\u2011party REST API by reading its documentation and generating requests The system maintains a tool registry with each tool\u2019s description, parameters, and preconditions. When the executive decides to use a tool, it formats a tool call in the OpenAI function\u2011calling format and passes it to the appropriate handler.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/gcw_tool_integration.py",
-      "test_evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_194_rest_paid_only_falls_back-to-github-build-test-review-deploy-pipeline",
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_194_m20_22",
       "kind": "functional",
       "implementation_mechanism": "reviewed API or compliant UI, with paid-only GitHub discover/build/test/review/deploy proposal",
-      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior"
+      "evidence": "named row-level test covers typed validation, tenant/actor isolation, audit emission, no fabricated completion evidence, and fail-closed behavior",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 195,
@@ -2726,8 +2755,9 @@
       "source_excerpt": "4.2.6 Multitasking & Concurrency A single GCW instance can manage multiple independent projects simultaneously by maintaining separate task contexts. The executive time\u2011slices between them using a round\u2011robin scheduler with priority based on deadline proximity and user\u2011assigned importance. Each context has its own working memory partition. This allows the agent to work on a grant proposal while simultaneously debugging a startup\u2019s backend, just as a human might switch between tasks.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_195_m20_23",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 196,
@@ -2739,8 +2769,9 @@
       "source_excerpt": "4.2.6 Multitasking & Concurrency A single GCW instance can manage multiple independent projects simultaneously by maintaining separate task contexts. The executive time\u2011slices between them using a round\u2011robin scheduler with priority based on deadline proximity and user\u2011assigned importance. Each context has its own working memory partition. This allows the agent to work on a grant proposal while simultaneously debugging a startup\u2019s backend, just as a human might switch between tasks.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_196_m20_24",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 197,
@@ -2752,8 +2783,9 @@
       "source_excerpt": "4.2.6 Multitasking & Concurrency A single GCW instance can manage multiple independent projects simultaneously by maintaining separate task contexts. The executive time\u2011slices between them using a round\u2011robin scheduler with priority based on deadline proximity and user\u2011assigned importance. Each context has its own working memory partition. This allows the agent to work on a grant proposal while simultaneously debugging a startup\u2019s backend, just as a human might switch between tasks.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_197_m20_25",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 198,
@@ -2765,8 +2797,9 @@
       "source_excerpt": "4.2.7 Problem\u2011Solving & Reasoning Capabilities Structured Reasoning: Before attempting complex problems, the agent enters an explicit \u201cthinking\u201d mode where it generates a scratchpad (a markdown document) with chain\u2011of\u2011thought, alternative hypotheses, and decision matrices. This scratchpad is stored in LTM and can be resumed later. Creative Ideation: Uses a combination of divergent thinking (generating many ideas using high\u2011temperature sampling) and convergent thinking (evaluating ideas against constraints). It can also force unusual associations by retrieving random concepts from LTM and using them as prompts for analogy. For artistic creativity, it can collaborate with Stable Diffusion or music generation models. Self\u2011Critique & Improvement: After completing a task, the agent writes a brief \u201cretrospective\u201d analysing what went well, what didn\u2019t, and why. These retrospectives are embedded and later retrieved when facing similar situations, enabling a form of continual learning.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_166_198.py",
-      "test_evidence": "tests/test_technical_spec_166_198.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_166_198.py::test_row_198_m20_26",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 199,
