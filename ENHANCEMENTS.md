@@ -46,7 +46,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** private-publication receipt verification requires consumed approval, private access, HTTPS download URL and exact approved-vs-published SHA-256 match.
 - **Next:** execute the renderer and private object-store upload in the approved worker, then authenticate the provider receipt rather than accepting supplied receipt fields.
 ## M16 - Executive Dashboard
-- **Next (science):** gap-to-proof dashboard separating code-complete, test-complete and live-acceptance-complete requirements.
+- **Landed (science):** gap-to-proof dashboard reports exact requirement and per-module gaps while keeping code artifacts, test evidence and live acceptance separate.
+- **Next:** ingest authenticated producer events and deployment receipts instead of caller-supplied proof identifiers.
 ## M17 - Narrative Architect
 - **Landed:** canonical service now legally wires Reddit by default and optional official YouTube/Pinterest plus allowlisted public pages through shared bounded collectors.
 - **Next:** owner-material evidence completeness meter for each essay concept and critique suggestion.
