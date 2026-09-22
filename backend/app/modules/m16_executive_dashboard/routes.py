@@ -286,3 +286,15 @@ from .producer_subscription import VerifyProducerDelivery,verify_producer_delive
 def producer_subscription_delivery(body:VerifyProducerDelivery,context:TenantContext=Depends(require_tenant)):
  try:return {'tenant_id':context.tenant_id,**verify_producer_delivery(body)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
+from .producer_key_registry import ProducerKeyRegistry,RegisterProducerKey
+def get_producer_key_registry(context:TenantContext=Depends(require_tenant)):return ProducerKeyRegistry(context.tenant_id)
+@router.post('/proof-gaps/producer-keys')
+def register_producer_key(body:RegisterProducerKey,context:TenantContext=Depends(require_tenant),registry=Depends(get_producer_key_registry)):
+ try:
+  row=registry.register(body);return {'tenant_id':context.tenant_id,'producer':row.producer,'key_id':row.key_id,'fingerprint_sha256':row.fingerprint_sha256,'active':row.active,'boundary':'Registers public verification-key bytes only; administrative provisioning must establish producer identity and trust.'}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
+@router.post('/proof-gaps/producer-keys/{producer}/{key_id}/retire')
+def retire_producer_key(producer:str,key_id:str,context:TenantContext=Depends(require_tenant),registry=Depends(get_producer_key_registry)):
+ try:
+  row=registry.retire(producer,key_id);return {'tenant_id':context.tenant_id,'producer':producer,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
+ except ValueError as error:raise HTTPException(404,str(error)) from error
