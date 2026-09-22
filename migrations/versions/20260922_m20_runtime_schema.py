@@ -8,7 +8,7 @@ from alembic import op
 from app.modules.m20_general_cognitive_worker.sql_repository import Base as GCWBase
 
 revision = "20260922_m20_runtime_schema"
-down_revision = "20260922_m00_policy_tenant_isolation"
+down_revision = "20260922_m00_policy_tenant_iso"
 branch_labels = None
 depends_on = None
 
