@@ -204,7 +204,11 @@ class CampaignService:
         contacts: ContactRepository,
         approval_sink: ApprovalSink,
         clock: Callable[[], datetime] | None = None,
+        tenant_id: str = "local",
     ) -> None:
+        if not tenant_id.strip():
+            raise ValueError("tenant_id is required")
+        self.tenant_id = tenant_id.strip()
         self.campaigns = campaigns
         self.contacts = contacts
         self.approval_sink = approval_sink
@@ -308,6 +312,7 @@ class CampaignService:
             module_id=MODULE_ID,
             action_type=KIND_TO_ACTION_TYPE[message.kind],
             payload={
+                "tenant_id": self.tenant_id,
                 "message_id": message.id,
                 "campaign_id": message.campaign_id,
                 "contact_id": contact.id,
