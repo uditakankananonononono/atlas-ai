@@ -79,3 +79,9 @@ def assumption_burn_down(data:AssumptionBurnDownIn):
  from .assumption_tests import rank_assumption_tests
  try:return rank_assumption_tests(data.assumptions,data.tests,data.budget)
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .luxury_venture import VentureBrief,build_luxury_venture
+@router.post('/luxury-venture-studio')
+def luxury_venture_studio(data:VentureBrief):
+ try:return build_luxury_venture(data)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
