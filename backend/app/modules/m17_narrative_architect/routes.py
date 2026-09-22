@@ -56,3 +56,8 @@ def get_publication_adapter():return UnconfiguredPublicationAdapter()
 def execute_revision_publication(body:PublicationGateRequest,tenant:TenantContext=Depends(require_tenant),adapter=Depends(get_publication_adapter)):
  try:return {'tenant_id':tenant.tenant_id,**publish_through_gate(body,adapter)}
  except ValueError as error:raise HTTPException(409,str(error)) from error
+from .publication_receipt_auth import VerifyPublicationReceipt,verify_publication_receipt
+@router.post('/revision-publication/receipts/verify')
+def verify_revision_publication_receipt(body:VerifyPublicationReceipt,tenant:TenantContext=Depends(require_tenant)):
+ try:return {'tenant_id':tenant.tenant_id,**verify_publication_receipt(body)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error
