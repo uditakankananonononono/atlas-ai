@@ -8,8 +8,9 @@
   "counts": {
     "total": 229,
     "verified-pushed": 220,
+    "configured-unaccepted": 9,
     "thin": 0,
-    "missing": 9,
+    "missing": 0,
     "functional": 221,
     "safety-replacement": 8
   },
@@ -2760,10 +2761,12 @@
       "source_line_start": 191,
       "source_line_end": 192,
       "source_excerpt": "5. Cross\u2011Cutting Systems (Revisited) Security: All inter\u2011service communication uses mTLS. Secrets are stored in Vault and injected at runtime. API keys are encrypted at rest.",
-      "status": "missing",
-      "implementation_path": null,
-      "test_evidence": null,
-      "kind": "functional"
+      "status": "configured-unaccepted",
+      "implementation_path": "deploy/mtls/strict.yaml",
+      "test_evidence": "tests/test_missing_production_capabilities.py::test_x01_mtls_manifest_is_strict_but_has_no_runtime_attestation",
+      "kind": "functional",
+      "evidence_kind": "configuration-and-honest-acceptance-gap",
+      "production_acceptance": "not_run"
     },
     {
       "row": 209,
@@ -2773,10 +2776,12 @@
       "source_line_start": 191,
       "source_line_end": 192,
       "source_excerpt": "5. Cross\u2011Cutting Systems (Revisited) Security: All inter\u2011service communication uses mTLS. Secrets are stored in Vault and injected at runtime. API keys are encrypted at rest.",
-      "status": "missing",
-      "implementation_path": null,
-      "test_evidence": null,
-      "kind": "functional"
+      "status": "partial-unaccepted",
+      "implementation_path": "backend/app/platform/secrets.py; backend/app/platform/encryption.py",
+      "test_evidence": "tests/test_missing_production_capabilities.py::test_x02_vault_and_encryption_mechanisms_exist_but_live_vault_is_unattested",
+      "kind": "functional",
+      "evidence_kind": "configuration-and-honest-acceptance-gap",
+      "production_acceptance": "not_run"
     },
     {
       "row": 210,
@@ -2786,10 +2791,12 @@
       "source_line_start": 193,
       "source_line_end": 193,
       "source_excerpt": "Observability: OpenTelemetry traces across all services, centralised logging to Google Cloud Logging, and metrics displayed in Grafana dashboards. Each AI call is logged with prompt, response, and latency.",
-      "status": "missing",
-      "implementation_path": null,
-      "test_evidence": null,
-      "kind": "functional"
+      "status": "configured-unaccepted",
+      "implementation_path": "backend/app/platform/telemetry.py; deploy/otel/collector.yaml",
+      "test_evidence": "tests/test_missing_production_capabilities.py::test_x03_otel_pipeline_is_configured_but_cross_service_trace_is_unattested",
+      "kind": "functional",
+      "evidence_kind": "configuration-and-honest-acceptance-gap",
+      "production_acceptance": "not_run"
     },
     {
       "row": 211,
@@ -2799,10 +2806,12 @@
       "source_line_start": 193,
       "source_line_end": 193,
       "source_excerpt": "Observability: OpenTelemetry traces across all services, centralised logging to Google Cloud Logging, and metrics displayed in Grafana dashboards. Each AI call is logged with prompt, response, and latency.",
-      "status": "missing",
-      "implementation_path": null,
-      "test_evidence": null,
-      "kind": "functional"
+      "status": "configured-unaccepted",
+      "implementation_path": "backend/app/platform/observability.py; deploy/otel/collector.yaml",
+      "test_evidence": "tests/test_missing_production_capabilities.py::test_x04_cloud_logging_format_and_export_are_configured_not_observed",
+      "kind": "functional",
+      "evidence_kind": "configuration-and-honest-acceptance-gap",
+      "production_acceptance": "not_run"
     },
     {
       "row": 212,
@@ -2812,10 +2821,12 @@
       "source_line_start": 193,
       "source_line_end": 193,
       "source_excerpt": "Observability: OpenTelemetry traces across all services, centralised logging to Google Cloud Logging, and metrics displayed in Grafana dashboards. Each AI call is logged with prompt, response, and latency.",
-      "status": "missing",
-      "implementation_path": null,
-      "test_evidence": null,
-      "kind": "functional"
+      "status": "configured-unaccepted",
+      "implementation_path": "deploy/grafana/dashboard.json",
+      "test_evidence": "tests/test_missing_production_capabilities.py::test_x05_grafana_dashboard_has_real_queries_but_hosted_dashboard_is_unattested",
+      "kind": "functional",
+      "evidence_kind": "configuration-and-honest-acceptance-gap",
+      "production_acceptance": "not_run"
     },
     {
       "row": 213,
@@ -2890,10 +2901,12 @@
       "source_line_start": 196,
       "source_line_end": 197,
       "source_excerpt": "6. Deployment & Scaling The entire system is containerised using Docker Compose for local development and Kubernetes for production. A minimal local deployment runs all services on a single machine with 32 GB RAM, using Ollama for local models. The cloud\u2011native version scales Celery workers horizontally and uses managed services for databases.",
-      "status": "missing",
-      "implementation_path": null,
-      "test_evidence": null,
-      "kind": "functional"
+      "status": "configured-unaccepted",
+      "implementation_path": "deploy/local/docker-compose.yml",
+      "test_evidence": "tests/test_missing_production_capabilities.py::test_x11_compose_acceptance_remains_unrun_without_container_runtime",
+      "kind": "functional",
+      "evidence_kind": "configuration-and-honest-acceptance-gap",
+      "production_acceptance": "not_run"
     },
     {
       "row": 219,
@@ -2903,10 +2916,12 @@
       "source_line_start": 196,
       "source_line_end": 197,
       "source_excerpt": "6. Deployment & Scaling The entire system is containerised using Docker Compose for local development and Kubernetes for production. A minimal local deployment runs all services on a single machine with 32 GB RAM, using Ollama for local models. The cloud\u2011native version scales Celery workers horizontally and uses managed services for databases.",
-      "status": "missing",
-      "implementation_path": null,
-      "test_evidence": null,
-      "kind": "functional"
+      "status": "configured-unaccepted",
+      "implementation_path": "deploy/k8s/atlas.yaml",
+      "test_evidence": "tests/test_missing_production_capabilities.py::test_x12_kubernetes_acceptance_remains_unrun_without_cluster",
+      "kind": "functional",
+      "evidence_kind": "configuration-and-honest-acceptance-gap",
+      "production_acceptance": "not_run"
     },
     {
       "row": 220,
@@ -2916,10 +2931,12 @@
       "source_line_start": 196,
       "source_line_end": 197,
       "source_excerpt": "6. Deployment & Scaling The entire system is containerised using Docker Compose for local development and Kubernetes for production. A minimal local deployment runs all services on a single machine with 32 GB RAM, using Ollama for local models. The cloud\u2011native version scales Celery workers horizontally and uses managed services for databases.",
-      "status": "missing",
-      "implementation_path": null,
-      "test_evidence": null,
-      "kind": "functional"
+      "status": "configured-unaccepted",
+      "implementation_path": "deploy/local/ollama-32gb.env",
+      "test_evidence": "tests/test_missing_production_capabilities.py::test_x13_ollama_profile_is_bounded_but_32gb_host_acceptance_is_unrun",
+      "kind": "functional",
+      "evidence_kind": "configuration-and-honest-acceptance-gap",
+      "production_acceptance": "not_run"
     },
     {
       "row": 221,
@@ -2929,10 +2946,12 @@
       "source_line_start": 196,
       "source_line_end": 197,
       "source_excerpt": "6. Deployment & Scaling The entire system is containerised using Docker Compose for local development and Kubernetes for production. A minimal local deployment runs all services on a single machine with 32 GB RAM, using Ollama for local models. The cloud\u2011native version scales Celery workers horizontally and uses managed services for databases.",
-      "status": "missing",
-      "implementation_path": null,
-      "test_evidence": null,
-      "kind": "functional"
+      "status": "configured-unaccepted",
+      "implementation_path": "docker-compose.prod.yml",
+      "test_evidence": "tests/test_missing_production_capabilities.py::test_x14_celery_replica_config_exists_but_scaling_benchmark_is_unrun",
+      "kind": "functional",
+      "evidence_kind": "configuration-and-honest-acceptance-gap",
+      "production_acceptance": "not_run"
     },
     {
       "row": 222,
