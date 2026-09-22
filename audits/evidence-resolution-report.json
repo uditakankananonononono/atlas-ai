@@ -1386,8 +1386,8 @@
     {
       "ledger": "audits/additional-2000-features.json",
       "total": 2010,
-      "resolvable_nodes": 149,
-      "unresolved": 1861,
+      "resolvable_nodes": 181,
+      "unresolved": 1829,
       "results": [
         {
           "row": 1,
@@ -3551,9 +3551,9 @@
         },
         {
           "row": 361,
-          "evidence": "tests/modules/test_m19_business_360_399.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_business_360_399.py::test_row_361_competitor_matrix_calculates_weighted_scores",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 362,
@@ -3605,9 +3605,9 @@
         },
         {
           "row": 370,
-          "evidence": "tests/modules/test_m19_business_360_399.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_business_360_399.py::test_row_370_outcome_opportunity_uses_importance_and_satisfaction",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 371,
@@ -3635,9 +3635,9 @@
         },
         {
           "row": 375,
-          "evidence": "tests/modules/test_m19_business_360_399.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_business_360_399.py::test_row_375_product_market_fit_does_not_claim_passing_thresholds",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 376,
@@ -3689,9 +3689,9 @@
         },
         {
           "row": 384,
-          "evidence": "tests/modules/test_m19_business_360_399.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_business_360_399.py::test_row_384_churn_prediction_is_explicitly_prediction_only",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 385,
@@ -3773,9 +3773,9 @@
         },
         {
           "row": 398,
-          "evidence": "tests/modules/test_m19_business_360_399.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_business_360_399.py::test_row_398_multivariate_cell_count_is_factorial_not_a_shared_envelope",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 399,
@@ -3947,147 +3947,147 @@
         },
         {
           "row": 427,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_427_lead_scoring_is_transparent",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 428,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_428_sales_funnel_computes_conversion_from_supplied_metrics",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 429,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_429_cro_prioritizes_weakest_step",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 430,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_430_landing_page_audit_is_deterministic",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 431,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_431_sales_script_cites_facts",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 432,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_432_objection_handling_grounds_responses",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 433,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_433_negotiation_computes_concession_ladder",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 434,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_434_deal_structuring_tracks_open_terms",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 435,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_435_pricing_strategy_derives_only_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 436,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_436_price_elasticity_midpoint_math",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 437,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_437_revenue_model",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 438,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_438_subscription_design_computes_equivalents",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 439,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_439_freemium_rejects_overlap",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 440,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_440_usage_based_pricing_computes_bills",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 441,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_441_tiered_pricing_spacing_analysis",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 442,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_442_dynamic_pricing_enforces_bounds",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 443,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_443_bundling_rejects_dishonest_bundles",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 444,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_444_upselling_computes_uplift",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 445,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_445_cross_selling_requires_pairing_facts",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 446,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_446_customer_success_health_bands",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 447,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_447_onboarding_first_value_path",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 448,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_448_support_system_no_unsupervised_autoreplies",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 449,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_449_knowledge_base_rejects_missing_solutions",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 450,
-          "evidence": "tests/modules/test_m05_growth.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_growth.py::test_row_450_community_support_has_escalation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 451,
@@ -4115,9 +4115,9 @@
         },
         {
           "row": 455,
-          "evidence": "tests/modules/test_m19_operations_451_475.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_operations_451_475.py::test_row_455_logistics_cost_model",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 456,
@@ -4133,9 +4133,9 @@
         },
         {
           "row": 458,
-          "evidence": "tests/modules/test_m19_operations_451_475.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_operations_451_475.py::test_row_458_dpmo_calculation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 459,
@@ -4193,9 +4193,9 @@
         },
         {
           "row": 468,
-          "evidence": "tests/modules/test_m19_operations_451_475.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_operations_451_475.py::test_row_468_value_stream_metrics",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 469,
