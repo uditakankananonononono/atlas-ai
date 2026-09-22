@@ -1386,8 +1386,8 @@
     {
       "ledger": "audits/additional-2000-features.json",
       "total": 2006,
-      "resolvable_nodes": 764,
-      "unresolved": 1242,
+      "resolvable_nodes": 811,
+      "unresolved": 1195,
       "results": [
         {
           "row": 1,
@@ -9821,301 +9821,301 @@
         },
         {
           "row": 1410,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1410_curriculum_design_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1411,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1411_learning_objective_writing_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1412,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1412_assessment_design_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1413,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1413_rubric_creation_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1414,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1414_lesson_planning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1415,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1415_unit_planning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1416,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1416_course_design_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1417,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1417_syllabus_creation_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1418,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1418_instructional_design_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1419,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1419_addie_model_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1420,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1420_sam_model_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1421,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1421_backward_design_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1422,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1422_universal_design_for_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1423,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1423_differentiated_instruction_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1424,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1424_personalized_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1425,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_row_1425_adaptive_computation_changes_with_mastery",
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1425_adaptive_learning_distinctive_computation_moves",
           "resolved": true,
           "reason": null
         },
         {
           "row": 1426,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1426_intelligent_tutoring_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1427,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1427_scaffolding_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1428,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1428_zone_of_proximal_development_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1429,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1429_cognitive_apprenticeship_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1430,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1430_situated_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1431,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1431_anchored_instruction_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1432,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1432_problem_based_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1433,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1433_project_based_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1434,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1434_inquiry_based_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1435,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1435_discovery_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1436,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1436_experiential_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1437,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1437_service_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1438,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1438_cooperative_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1439,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1439_collaborative_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1440,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1440_peer_instruction_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1441,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1441_flipped_classroom_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1442,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1442_blended_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1443,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1443_online_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1444,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1444_distance_education_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1445,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1445_moocs_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1446,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1446_microlearning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1447,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1447_mobile_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1448,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1448_game_based_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1449,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1449_gamification_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1450,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1450_simulation_based_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1451,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1451_virtual_reality_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1452,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1452_augmented_reality_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1453,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1453_mixed_reality_learning_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1454,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1454_artificial_intelligence_in_education_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1455,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_row_1455_analytics_computation_changes_with_attempt_evidence",
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1455_learning_analytics_distinctive_computation_moves",
           "resolved": true,
           "reason": null
         },
         {
           "row": 1456,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1456_educational_data_mining_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1457,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1457_student_modeling_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1458,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1458_knowledge_tracing_distinctive_computation_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1459,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_row_1459_affect_computation_ignores_camera_inference",
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_1459_affect_detection_distinctive_computation_moves",
           "resolved": true,
           "reason": null
         },
