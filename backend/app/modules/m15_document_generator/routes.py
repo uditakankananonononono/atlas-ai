@@ -77,3 +77,15 @@ def get_publication_receipt_store(context:TenantContext=Depends(require_tenant))
 def persist_provider_receipt(body:VerifyProviderPublication,tenant_id:str=Depends(tenant),store=Depends(get_publication_receipt_store)):
  try:return {'tenant_id':tenant_id,**verify_and_persist_publication(body,store)}
  except ValueError as error:raise HTTPException(409,str(error)) from error
+from .provider_key_registry import PublicationProviderKeyRegistry,RegisterPublicationProviderKey
+def get_publication_provider_key_registry(context:TenantContext=Depends(require_tenant)):return PublicationProviderKeyRegistry(context.tenant_id)
+@router.post('/publication-receipts/provider-keys')
+def register_publication_provider_key(body:RegisterPublicationProviderKey,tenant_id:str=Depends(tenant),registry=Depends(get_publication_provider_key_registry)):
+ try:
+  row=registry.register(body);return {'tenant_id':tenant_id,'provider':row.provider,'key_id':row.key_id,'fingerprint_sha256':row.fingerprint_sha256,'active':row.active,'boundary':'Registers public verification-key bytes only; administrative provisioning must establish provider identity and trust.'}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
+@router.post('/publication-receipts/provider-keys/{provider}/{key_id}/retire')
+def retire_publication_provider_key(provider:str,key_id:str,tenant_id:str=Depends(tenant),registry=Depends(get_publication_provider_key_registry)):
+ try:
+  row=registry.retire(provider,key_id);return {'tenant_id':tenant_id,'provider':provider,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
+ except ValueError as error:raise HTTPException(404,str(error)) from error
