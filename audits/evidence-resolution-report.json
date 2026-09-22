@@ -1385,9 +1385,9 @@
     },
     {
       "ledger": "audits/additional-2000-features.json",
-      "total": 2010,
-      "resolvable_nodes": 718,
-      "unresolved": 1292,
+      "total": 2006,
+      "resolvable_nodes": 764,
+      "unresolved": 1242,
       "results": [
         {
           "row": 1,
@@ -4060,32 +4060,8 @@
           "reason": null
         },
         {
-          "row": 446,
-          "evidence": "tests/modules/test_m05_growth.py::test_row_446_customer_success_health_bands",
-          "resolved": true,
-          "reason": null
-        },
-        {
-          "row": 447,
-          "evidence": "tests/modules/test_m05_growth.py::test_row_447_onboarding_first_value_path",
-          "resolved": true,
-          "reason": null
-        },
-        {
-          "row": 448,
-          "evidence": "tests/modules/test_m05_growth.py::test_row_448_support_system_no_unsupervised_autoreplies",
-          "resolved": true,
-          "reason": null
-        },
-        {
           "row": 449,
           "evidence": "tests/modules/test_m05_growth.py::test_row_449_knowledge_base_rejects_missing_solutions",
-          "resolved": true,
-          "reason": null
-        },
-        {
-          "row": 450,
-          "evidence": "tests/modules/test_m05_growth.py::test_row_450_community_support_has_escalation",
           "resolved": true,
           "reason": null
         },
@@ -10145,303 +10121,303 @@
         },
         {
           "row": 1460,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1460_engagement_weighted_score_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1461,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1461_dropout_logistic_risk_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1462,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1462_performance_linear_prediction_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1463,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1463_recommendation_ranking_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1464,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1464_content_ranking_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1465,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1465_peer_ranking_changes_without_contact",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1466,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1466_learning_path_changes_by_prerequisites",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1467,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1467_essay_rubric_score_changes_without_final_grade",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1468,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1468_feedback_gap_priority_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1469,
-          "evidence": "tests/modules/test_m12_education_1460_1509.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1469_formative_adjustment_changes_with_evidence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1470,
-          "evidence": "tests/modules/test_m12_education_1460_1509.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1470_summative_attainment_counts_evidence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1471,
-          "evidence": "tests/modules/test_m12_education_1460_1509.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1471_diagnostic_prerequisite_gaps_change",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1472,
-          "evidence": "tests/modules/test_m12_education_1460_1509.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1472_authentic_context_is_input_sensitive",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1473,
-          "evidence": "tests/modules/test_m12_education_1460_1509.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1473_performance_observability_uses_rubric",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1474,
-          "evidence": "tests/modules/test_m12_education_1460_1509.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1474_portfolio_checkpoints_are_preserved",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1475,
-          "evidence": "tests/modules/test_m12_education_1460_1509.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1475_self_assessment_prompts_are_preserved",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1476,
-          "evidence": "tests/modules/test_m12_education_1460_1509.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1476_peer_assessment_anonymity_is_explicit",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1477,
-          "evidence": "tests/modules/test_m12_education_1460_1509.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1477_assessment_for_learning_changes_teaching_moves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1478,
-          "evidence": "tests/modules/test_m12_education_1460_1509.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1478_assessment_as_learning_prompts_change",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1479,
-          "evidence": "tests/modules/test_m12_education_1460_1509.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1479_assessment_of_learning_counts_attained_evidence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1480,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1480_standards_status_changes_by_score",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1481,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1481_competency_advancement_changes_by_mastery",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1482,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1482_mastery_reteach_changes_by_score",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1483,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1483_precision_celeration_changes_by_probe",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1484,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1484_direct_instruction_release_uses_checks",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1485,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1485_explicit_instruction_targets_misconception",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1486,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1486_systematic_instruction_progression_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1487,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1487_scripted_instruction_maps_cues",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1488,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1488_programmed_instruction_branches_frames",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1489,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1489_computer_assisted_next_item_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1490,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1490_intelligent_tutor_targets_weak_component",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1491,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1491_dialogue_tutor_counts_prior_turns",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1492,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1492_socratic_tutor_examines_supplied_claim",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1493,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1493_metacognitive_prompts_use_strategy",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1494,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1494_motivational_goal_changes_with_learner_state",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1495,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1495_emotional_support_escalates_immediate_danger",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1496,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1496_social_emotional_competency_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1497,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1497_character_education_virtue_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1498,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1498_citizenship_question_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1499,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1499_global_competence_issue_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1500,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1500_cultural_competence_context_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1501,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1501_intercultural_pair_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1502,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1502_multicultural_missing_group_audit_changes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1503,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1503_inclusive_design_options_change",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1504,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1504_special_education_alignment_changes_without_iep_mutation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1505,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1505_gifted_support_uses_strengths",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1506,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1506_remedial_support_targets_specific_gaps",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1507,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1507_compensatory_support_changes_barrier_not_expectation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1508,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1508_bilingual_support_preserves_home_language",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1509,
-          "evidence": "tests/modules/test_m12_education_b5_remaining.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_education_b5_remaining.py::test_1509_language_spaced_repetition_changes_by_quality",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1510,

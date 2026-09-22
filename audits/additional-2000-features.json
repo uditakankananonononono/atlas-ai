@@ -4,9 +4,10 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 2010,
+    "verified-pushed": 2006,
     "thin": 0,
-    "missing": 0
+    "missing": 0,
+    "removed": 4
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -6880,54 +6881,6 @@
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
     {
-      "id": 446,
-      "category_id": 4,
-      "category": "Business & Entrepreneurship",
-      "requirement": "Customer Success",
-      "description": "Ensures outcomes",
-      "status": "verified-pushed",
-      "evidence": {
-        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
-        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
-        "test_path": "tests/modules/test_m05_growth.py::test_row_446_customer_success_health_bands",
-        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs.",
-        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
-      },
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
-    },
-    {
-      "id": 447,
-      "category_id": 4,
-      "category": "Business & Entrepreneurship",
-      "requirement": "Onboarding Optimization",
-      "description": "Improves first experience",
-      "status": "verified-pushed",
-      "evidence": {
-        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
-        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
-        "test_path": "tests/modules/test_m05_growth.py::test_row_447_onboarding_first_value_path",
-        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs.",
-        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
-      },
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
-    },
-    {
-      "id": 448,
-      "category_id": 4,
-      "category": "Business & Entrepreneurship",
-      "requirement": "Support System Design",
-      "description": "Creates help infrastructure",
-      "status": "verified-pushed",
-      "evidence": {
-        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
-        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
-        "test_path": "tests/modules/test_m05_growth.py::test_row_448_support_system_no_unsupervised_autoreplies",
-        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs.",
-        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
-      },
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
-    },
-    {
       "id": 449,
       "category_id": 4,
       "category": "Business & Entrepreneurship",
@@ -6938,22 +6891,6 @@
         "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
         "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
         "test_path": "tests/modules/test_m05_growth.py::test_row_449_knowledge_base_rejects_missing_solutions",
-        "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs.",
-        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
-      },
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
-    },
-    {
-      "id": 450,
-      "category_id": 4,
-      "category": "Business & Entrepreneurship",
-      "requirement": "Community Support",
-      "description": "Enables peer help",
-      "status": "verified-pushed",
-      "evidence": {
-        "commit": "7f1877a99914912f70ae71a9940fcf03332ddab0",
-        "implementation_path": "backend/app/modules/m05_outreach_manager/growth.py",
-        "test_path": "tests/modules/test_m05_growth.py::test_row_450_community_support_has_escalation",
         "caveats": "HTTP-returned evidence-bound artifacts are not yet persisted to CRM tables. Landing-page audit uses deterministic checks; scoring is rule-based math with no ML claim. No outbound effect occurs.",
         "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
@@ -22003,8 +21940,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1460]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1460_engagement_weighted_score_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1460]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22018,8 +21956,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1461]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1461_dropout_logistic_risk_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1461]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22033,8 +21972,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1462]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1462_performance_linear_prediction_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1462]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22048,8 +21988,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1463]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1463_recommendation_ranking_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1463]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22063,8 +22004,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1464]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1464_content_ranking_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1464]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22078,8 +22020,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1465]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1465_peer_ranking_changes_without_contact",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1465]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22093,8 +22036,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1466]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1466_learning_path_changes_by_prerequisites",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1466]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22108,8 +22052,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1467]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1467_essay_rubric_score_changes_without_final_grade",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1467]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22123,8 +22068,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1468]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1468_feedback_gap_priority_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1468]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22138,7 +22084,8 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_1460_1509.py"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1469_formative_adjustment_changes_with_evidence",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22152,7 +22099,8 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_1460_1509.py"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1470_summative_attainment_counts_evidence",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22166,7 +22114,8 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_1460_1509.py"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1471_diagnostic_prerequisite_gaps_change",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22180,7 +22129,8 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_1460_1509.py"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1472_authentic_context_is_input_sensitive",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22194,7 +22144,8 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_1460_1509.py"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1473_performance_observability_uses_rubric",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22208,7 +22159,8 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_1460_1509.py"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1474_portfolio_checkpoints_are_preserved",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22222,7 +22174,8 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_1460_1509.py"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1475_self_assessment_prompts_are_preserved",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22236,7 +22189,8 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_1460_1509.py"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1476_peer_assessment_anonymity_is_explicit",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22250,7 +22204,8 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_1460_1509.py"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1477_assessment_for_learning_changes_teaching_moves",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22264,7 +22219,8 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_1460_1509.py"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1478_assessment_as_learning_prompts_change",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22278,7 +22234,8 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_1460_1509.py"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1479_assessment_of_learning_counts_attained_evidence",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22292,8 +22249,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1480]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1480_standards_status_changes_by_score",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1480]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22307,8 +22265,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1481]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1481_competency_advancement_changes_by_mastery",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1481]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22322,8 +22281,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1482]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1482_mastery_reteach_changes_by_score",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1482]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22337,8 +22297,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1483]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1483_precision_celeration_changes_by_probe",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1483]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22352,8 +22313,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1484]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1484_direct_instruction_release_uses_checks",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1484]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22367,8 +22329,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1485]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1485_explicit_instruction_targets_misconception",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1485]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22382,8 +22345,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1486]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1486_systematic_instruction_progression_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1486]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22397,8 +22361,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1487]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1487_scripted_instruction_maps_cues",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1487]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22412,8 +22377,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1488]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1488_programmed_instruction_branches_frames",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1488]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22427,8 +22393,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1489]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1489_computer_assisted_next_item_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1489]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22442,8 +22409,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1490]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1490_intelligent_tutor_targets_weak_component",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1490]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22457,8 +22425,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1491]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1491_dialogue_tutor_counts_prior_turns",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1491]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22472,8 +22441,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1492]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1492_socratic_tutor_examines_supplied_claim",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1492]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22487,8 +22457,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1493]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1493_metacognitive_prompts_use_strategy",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1493]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22502,8 +22473,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1494]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1494_motivational_goal_changes_with_learner_state",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1494]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22517,8 +22489,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1495]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1495_emotional_support_escalates_immediate_danger",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1495]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22532,8 +22505,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1496]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1496_social_emotional_competency_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1496]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22547,8 +22521,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1497]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1497_character_education_virtue_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1497]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22562,8 +22537,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1498]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1498_citizenship_question_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1498]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22577,8 +22553,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1499]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1499_global_competence_issue_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1499]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22592,8 +22569,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1500]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1500_cultural_competence_context_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1500]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22607,8 +22585,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1501]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1501_intercultural_pair_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1501]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22622,8 +22601,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1502]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1502_multicultural_missing_group_audit_changes",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1502]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22637,8 +22617,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1503]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1503_inclusive_design_options_change",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1503]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22652,8 +22633,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1504]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1504_special_education_alignment_changes_without_iep_mutation",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1504]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22667,8 +22649,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1505]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1505_gifted_support_uses_strengths",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1505]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22682,8 +22665,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1506]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1506_remedial_support_targets_specific_gaps",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1506]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22697,8 +22681,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1507]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1507_compensatory_support_changes_barrier_not_expectation",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1507]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22712,8 +22697,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1508]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1508_bilingual_support_preserves_home_language",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1508]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -22727,8 +22713,9 @@
       "evidence": {
         "commit": "0ad50e810e9c7804efb25b571ad16b79d951ca9c",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/education_support.py",
-        "test_path": "tests/modules/test_m12_education_b5_remaining.py",
-        "test_case": "test_assigned_row_changes_with_relevant_input[row-1509]"
+        "test_path": "tests/modules/test_m12_education_b5_remaining.py::test_1509_language_spaced_repetition_changes_by_quality",
+        "test_case": "test_assigned_row_changes_with_relevant_input[row-1509]",
+        "evidence_kind": "exact-distinctive-education-transformation-and-safety-node"
       },
       "boundary": "Learner-centered education support with explicit evidence, uncertainty, accessibility and human review. Never infer hidden traits, fabricate mastery, replace educators or autonomously change placement, credentials or academic decisions."
     },
@@ -29918,5 +29905,38 @@
     "removed": 0,
     "changed": 0,
     "unchanged": 2009
+  },
+  "removed_rows": [
+    {
+      "id": 446,
+      "requirement": "Customer Success",
+      "status": "removed",
+      "removal_note": "Removed from expanded target by owner instruction on 2026-09-22; customer-services/accounts-type feature. Not resolved and not pending."
+    },
+    {
+      "id": 447,
+      "requirement": "Onboarding Optimization",
+      "status": "removed",
+      "removal_note": "Removed from expanded target by owner instruction on 2026-09-22; customer-services/accounts-type feature. Not resolved and not pending."
+    },
+    {
+      "id": 448,
+      "requirement": "Support System Design",
+      "status": "removed",
+      "removal_note": "Removed from expanded target by owner instruction on 2026-09-22; customer-services/accounts-type feature. Not resolved and not pending."
+    },
+    {
+      "id": 450,
+      "requirement": "Community Support",
+      "status": "removed",
+      "removal_note": "Removed from expanded target by owner instruction on 2026-09-22; customer-services/accounts-type feature. Not resolved and not pending."
+    }
+  ],
+  "delta_from_schema_version_4": {
+    "added": 0,
+    "removed": 4,
+    "changed": 0,
+    "unchanged": 2006,
+    "reason": "Owner instruction removed customer-services/accounts-type rows 446, 447, 448, and 450 from the expanded target."
   }
 }
