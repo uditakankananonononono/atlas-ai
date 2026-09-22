@@ -4,8 +4,8 @@
     {
       "ledger": "audits/technical-spec-line-by-line.json",
       "total": 229,
-      "resolvable_nodes": 45,
-      "unresolved": 184,
+      "resolvable_nodes": 78,
+      "unresolved": 151,
       "results": [
         {
           "row": "A01",
@@ -207,201 +207,201 @@
         },
         {
           "row": "A34",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_34_a34_hybrid_retrieval_combines_semantic_keyword_and_metadata",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "A35",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_35_a35_typed_graph_rejects_untyped_edge",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "A36",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_36_a36_recursive_planner_emits_four_node_levels",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "A37",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_37_a37_planner_assigns_effort_deadline_and_tools",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "A38",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_38_a38_memory_update_triggers_refinement",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "A39",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_39_a39_json_plan_versions_increment",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "A40",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_40_a40_policy_routes_task_or_fails_closed",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "A41",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_41_a41_chain_requires_exact_research_draft_critique_format_order",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "A42",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_42_a42_recursive_merge_preserves_nested_values_and_dedupes_lists",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M0-01",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_43_m0_01_approval_service_publishes_boundary_event",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M0-02",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_44_m0_02_approval_request_persists_required_fields",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M0-03",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_45_m0_03_state_machine_rejects_second_decision",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M0-04",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_46_m0_04_approval_event_and_request_are_both_persisted",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M0-05",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_47_m0_05_pending_request_has_dashboard_sse_event",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M0-06",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_48_m0_06_worker_suspends_without_serialized_callback",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M0-07",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_49_m0_07_continuation_release_is_single_use",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M0-08",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_50_m0_08_decision_audit_is_append_only_sequence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M0-09",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_51_m0_09_effectful_module_uses_shared_approval_sdk",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M1-01",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_52_m1_01_cosine_match_score_exact",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M1-02",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_53_m1_02_expected_impact_uses_logistic_score",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M1-03",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_54_m1_03_rejects_unenriched_opportunity_persistence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M1-04",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_55_m1_04_match_alert_threshold_is_strictly_above_point_eight",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M1-05",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_56_m1_05_daily_digest_is_unsent_approval_draft",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M5-01",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_57_m5_01_campaign_intake_starts_in_draft_state",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M5-02",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_58_m5_02_professor_discovery_matches_campaign_keywords",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M5-03",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_59_m5_03_professor_impact_ranking_uses_publication_metrics",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M5-04",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_60_m5_04_personalization_requires_recent_work_citation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M5-05",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_61_m5_05_delivery_requires_exact_approval_recipient_and_message",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M5-06",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_62_m5_06_thread_tracking_detects_reply_and_discloses_limits",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M5-07",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_63_m5_07_no_reply_window_must_be_positive",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M5-08",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_64_m5_08_followup_is_blocked_after_reply_otherwise_queued",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M6-01",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_65_m6_01_content_brief_requires_goal_audience_and_platforms",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M6-02",
-          "evidence": "tests/test_technical_spec_34_66.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/test_technical_spec_exact_nodes_34_66.py::test_row_66_m6_02_platform_strategy_maps_formats_without_scheduling",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M6-03",
