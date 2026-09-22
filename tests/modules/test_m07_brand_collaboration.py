@@ -11,7 +11,7 @@ class Repo:
  def events(s,i):return [x for x in s.e if x.brand_id==i]
 class Approvals:
  def __init__(s):s.items=[]
- def put(s,x):s.items.append(x);return x
+ def put(s,x,*,user_id=None):s.items.append((x,user_id));return x
 def test_full_brand_flow_is_gated():
  r=Repo();a=Approvals();svc=Service(r,a);b=svc.discover(BrandDiscoveryIn(name='Acme',mission='girls science access',public_url='https://acme.test'), 'science access for girls')
  assert b.alignment_score>0
@@ -24,3 +24,4 @@ def test_send_approval_preserves_tenant_boundary():
  r=Repo();a=Approvals();svc=Service(r,a);b=svc.discover(BrandDiscoveryIn(name='Acme',mission='science',public_url='https://acme.test'),'science')
  art=svc.media_kit(MediaKitIn(brand_id=b.id,creator_name='Ada',creator_mission='science',metrics={}))
  assert svc.propose_send(art.id,'brand@example.test').payload['tenant_id']=='tenant-test'
+ assert a.items[-1][1]=='tenant-test'
