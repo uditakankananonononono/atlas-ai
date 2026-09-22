@@ -40,6 +40,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** add provider-authenticated retrieval adapters and immutable source-byte storage.
 - **Landed:** tenant-scoped source snapshot bytes persist immutably by verified content hash, with idempotent exact repeats and fail-closed metadata conflicts.
 - **Next:** add provider-authenticated retrieval adapters and asymmetric provider signatures.
+- **Landed:** provider retrieval adapter fails closed unless configured, fetches HTTPS source bytes through the injected authenticated boundary, and verifies the expected content hash.
+- **Next:** persist retrieved bytes immutably and add asymmetric provider signatures.
 ## M12 - AI Research Lab
 - **Landed:** shipped provider and DAG wiring now constructs without dependency overrides and supports OpenAI, Anthropic, DeepSeek and local Ollama through the shared provider boundary.
 - **Landed (science):** canonical reproducible-run checkpoints pin workflow/code identity, dataset hashes, per-node provider/model/seed, budget and spend receipts, output hashes and explicit resume state without claiming execution or byte verification.
