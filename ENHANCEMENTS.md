@@ -50,6 +50,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** persist checkpoints transactionally in the worker queue and govern public-key provisioning and rotation.
 - **Landed:** validated checkpoints enqueue transactionally under tenant and run; idempotent repeats reuse the queued head and conflicting heads fail closed.
 - **Next:** replace shared-key receipt validation with provider-issued asymmetric signatures and add worker dequeue/lease semantics.
+- **Landed:** tenant-scoped provider public-key registry pins Ed25519 key IDs to fingerprints, rejects rebinding, and records explicit retirement.
+- **Next:** persist checkpoints transactionally in the worker queue and use registered asymmetric keys for provider receipts.
 ## M13 - Browser Agent
 - **Landed:** pre-submit readback diff compares fields, destination, exact price/currency and irreversible controls against the approved snapshot, requiring new approval for any change and never submitting itself.
 - **Landed:** immediate pre-submit capture reads destination and fields directly from the browser adapter and binds them to DOM and screenshot byte hashes before any separate submit decision.
