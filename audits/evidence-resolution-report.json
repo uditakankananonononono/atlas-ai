@@ -4,8 +4,8 @@
     {
       "ledger": "audits/technical-spec-line-by-line.json",
       "total": 229,
-      "resolvable_nodes": 205,
-      "unresolved": 24,
+      "resolvable_nodes": 227,
+      "unresolved": 2,
       "results": [
         {
           "row": "A01",
@@ -1197,57 +1197,57 @@
         },
         {
           "row": "M20-27",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_199_m20_27_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-28",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_200_m20_28_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-29",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_201_m20_29_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-30",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_202_m20_30_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-31",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_203_m20_31_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-32",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_204_m20_32_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-33",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_205_m20_33_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-34",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_206_m20_34_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M20-35",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_207_m20_35_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X01",
@@ -1281,33 +1281,33 @@
         },
         {
           "row": "X06",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_213_x06_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X07",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_214_x07_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X08",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_215_x08_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X09",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_216_x09_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X10",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_217_x10_semantic_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "X11",
@@ -1335,51 +1335,51 @@
         },
         {
           "row": "S01",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_222_s01_rejects_and_replaces_prohibited_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "S02",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_223_s02_rejects_and_replaces_prohibited_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "S03",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_224_s03_rejects_and_replaces_prohibited_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "S04",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_225_s04_rejects_and_replaces_prohibited_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "S05",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_226_s05_rejects_and_replaces_prohibited_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "S06",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_227_s06_rejects_and_replaces_prohibited_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "S07",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_228_s07_rejects_and_replaces_prohibited_behavior",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "S08",
-          "evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_229_s08_rejects_and_replaces_prohibited_behavior",
+          "resolved": true,
+          "reason": null
         }
       ]
     },
