@@ -130,3 +130,16 @@ def promise_tracker(body: PromiseTrackerRequest, tenant: TenantContext = Depends
         return {'tenant_id': tenant.tenant_id, **track_promises(body)}
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
+
+from .promise_reconciliation import PromiseReconciliationRequest, reconcile_promise_state
+
+
+@router.post('/promise-state-reconciliation/verify')
+def promise_state_reconciliation(
+    body: PromiseReconciliationRequest,
+    tenant: TenantContext = Depends(require_tenant),
+):
+    try:
+        return {'tenant_id': tenant.tenant_id, **reconcile_promise_state(body)}
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
