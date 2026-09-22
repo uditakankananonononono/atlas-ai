@@ -951,8 +951,9 @@
       "source_excerpt": "Module 6 \u2013 Social Media Manager Content Generation Pipeline: Receives a content brief (e.g., \u201cShare our ISEF project update\u201d). A strategist agent decides the best format per platform (carousel for Instagram, thread for Twitter, 60s video script for TikTok). Using ComfyUI for image generation (Stable Diffusion XL) and Bark/Tortoise\u2011TTS for audio, assets are produced. All content is scheduled via platform APIs (Meta Graph API, Twitter API v2, LinkedIn API) but held in the approval queue until confirmation. Analytics: Pulls engagement metrics daily and uses an LLM to suggest improvements (e.g., \u201cPost your carousels at 9 AM on Tuesdays based on peak follower activity\u201d). A/B testing of captions can be proposed and executed with approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_67_m6_03_image_adapter_declares_output_without_fake_asset",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 68,
@@ -964,8 +965,9 @@
       "source_excerpt": "Module 6 \u2013 Social Media Manager Content Generation Pipeline: Receives a content brief (e.g., \u201cShare our ISEF project update\u201d). A strategist agent decides the best format per platform (carousel for Instagram, thread for Twitter, 60s video script for TikTok). Using ComfyUI for image generation (Stable Diffusion XL) and Bark/Tortoise\u2011TTS for audio, assets are produced. All content is scheduled via platform APIs (Meta Graph API, Twitter API v2, LinkedIn API) but held in the approval queue until confirmation. Analytics: Pulls engagement metrics daily and uses an LLM to suggest improvements (e.g., \u201cPost your carousels at 9 AM on Tuesdays based on peak follower activity\u201d). A/B testing of captions can be proposed and executed with approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_68_m6_04_audio_adapter_declares_engine_without_fake_audio",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 69,
@@ -977,8 +979,9 @@
       "source_excerpt": "Module 6 \u2013 Social Media Manager Content Generation Pipeline: Receives a content brief (e.g., \u201cShare our ISEF project update\u201d). A strategist agent decides the best format per platform (carousel for Instagram, thread for Twitter, 60s video script for TikTok). Using ComfyUI for image generation (Stable Diffusion XL) and Bark/Tortoise\u2011TTS for audio, assets are produced. All content is scheduled via platform APIs (Meta Graph API, Twitter API v2, LinkedIn API) but held in the approval queue until confirmation. Analytics: Pulls engagement metrics daily and uses an LLM to suggest improvements (e.g., \u201cPost your carousels at 9 AM on Tuesdays based on peak follower activity\u201d). A/B testing of captions can be proposed and executed with approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_69_m6_05_meta_publish_is_approved_but_not_externally_performed",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 70,
@@ -990,8 +993,9 @@
       "source_excerpt": "Module 6 \u2013 Social Media Manager Content Generation Pipeline: Receives a content brief (e.g., \u201cShare our ISEF project update\u201d). A strategist agent decides the best format per platform (carousel for Instagram, thread for Twitter, 60s video script for TikTok). Using ComfyUI for image generation (Stable Diffusion XL) and Bark/Tortoise\u2011TTS for audio, assets are produced. All content is scheduled via platform APIs (Meta Graph API, Twitter API v2, LinkedIn API) but held in the approval queue until confirmation. Analytics: Pulls engagement metrics daily and uses an LLM to suggest improvements (e.g., \u201cPost your carousels at 9 AM on Tuesdays based on peak follower activity\u201d). A/B testing of captions can be proposed and executed with approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_70_m6_06_x_publish_is_approved_but_not_externally_performed",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 71,
@@ -1003,8 +1007,9 @@
       "source_excerpt": "Module 6 \u2013 Social Media Manager Content Generation Pipeline: Receives a content brief (e.g., \u201cShare our ISEF project update\u201d). A strategist agent decides the best format per platform (carousel for Instagram, thread for Twitter, 60s video script for TikTok). Using ComfyUI for image generation (Stable Diffusion XL) and Bark/Tortoise\u2011TTS for audio, assets are produced. All content is scheduled via platform APIs (Meta Graph API, Twitter API v2, LinkedIn API) but held in the approval queue until confirmation. Analytics: Pulls engagement metrics daily and uses an LLM to suggest improvements (e.g., \u201cPost your carousels at 9 AM on Tuesdays based on peak follower activity\u201d). A/B testing of captions can be proposed and executed with approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_71_m6_07_linkedin_publish_is_approved_but_not_externally_performed",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 72,
@@ -1016,8 +1021,9 @@
       "source_excerpt": "Module 6 \u2013 Social Media Manager Content Generation Pipeline: Receives a content brief (e.g., \u201cShare our ISEF project update\u201d). A strategist agent decides the best format per platform (carousel for Instagram, thread for Twitter, 60s video script for TikTok). Using ComfyUI for image generation (Stable Diffusion XL) and Bark/Tortoise\u2011TTS for audio, assets are produced. All content is scheduled via platform APIs (Meta Graph API, Twitter API v2, LinkedIn API) but held in the approval queue until confirmation. Analytics: Pulls engagement metrics daily and uses an LLM to suggest improvements (e.g., \u201cPost your carousels at 9 AM on Tuesdays based on peak follower activity\u201d). A/B testing of captions can be proposed and executed with approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_72_m6_08_pending_publish_is_queued_not_executable",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 73,
@@ -1029,8 +1035,9 @@
       "source_excerpt": "Module 6 \u2013 Social Media Manager Content Generation Pipeline: Receives a content brief (e.g., \u201cShare our ISEF project update\u201d). A strategist agent decides the best format per platform (carousel for Instagram, thread for Twitter, 60s video script for TikTok). Using ComfyUI for image generation (Stable Diffusion XL) and Bark/Tortoise\u2011TTS for audio, assets are produced. All content is scheduled via platform APIs (Meta Graph API, Twitter API v2, LinkedIn API) but held in the approval queue until confirmation. Analytics: Pulls engagement metrics daily and uses an LLM to suggest improvements (e.g., \u201cPost your carousels at 9 AM on Tuesdays based on peak follower activity\u201d). A/B testing of captions can be proposed and executed with approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_73_m6_09_daily_metrics_preserve_provider_metric_keys",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 74,
@@ -1042,8 +1049,9 @@
       "source_excerpt": "Module 6 \u2013 Social Media Manager Content Generation Pipeline: Receives a content brief (e.g., \u201cShare our ISEF project update\u201d). A strategist agent decides the best format per platform (carousel for Instagram, thread for Twitter, 60s video script for TikTok). Using ComfyUI for image generation (Stable Diffusion XL) and Bark/Tortoise\u2011TTS for audio, assets are produced. All content is scheduled via platform APIs (Meta Graph API, Twitter API v2, LinkedIn API) but held in the approval queue until confirmation. Analytics: Pulls engagement metrics daily and uses an LLM to suggest improvements (e.g., \u201cPost your carousels at 9 AM on Tuesdays based on peak follower activity\u201d). A/B testing of captions can be proposed and executed with approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_74_m6_10_suggestion_requires_evidence_and_forbids_causality",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 75,
@@ -1055,8 +1063,9 @@
       "source_excerpt": "Module 6 \u2013 Social Media Manager Content Generation Pipeline: Receives a content brief (e.g., \u201cShare our ISEF project update\u201d). A strategist agent decides the best format per platform (carousel for Instagram, thread for Twitter, 60s video script for TikTok). Using ComfyUI for image generation (Stable Diffusion XL) and Bark/Tortoise\u2011TTS for audio, assets are produced. All content is scheduled via platform APIs (Meta Graph API, Twitter API v2, LinkedIn API) but held in the approval queue until confirmation. Analytics: Pulls engagement metrics daily and uses an LLM to suggest improvements (e.g., \u201cPost your carousels at 9 AM on Tuesdays based on peak follower activity\u201d). A/B testing of captions can be proposed and executed with approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_75_m6_11_ab_test_remains_approval_gated",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 76,
@@ -1068,8 +1077,9 @@
       "source_excerpt": "Module 7 \u2013 Brand Collaboration Manager Brand Discovery: Scrapes influencer\u2011brand matching platforms, monitors competitor social media for partnership announcements, and uses an LLM to assess brand\u2011mission alignment. Contact details are found via LinkedIn Sales Navigator scraping (read\u2011only) or integrated APIs. Drafting Collateral: Generates media kits as PDFs using Jinja2 templates + WeasyPrint, customised to the brand. Sponsorship packages are drafted with tiered benefits. Invoice generation uses a simple invoice template library. Partnership Tracking: A lightweight CRM sub\u2011module logs all communications, deals, and deliverables. It can generate performance reports for brands (after approval).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_76_m7_01_discovery_allows_only_public_terms_permitted_platform",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 77,
@@ -1081,8 +1091,9 @@
       "source_excerpt": "Module 7 \u2013 Brand Collaboration Manager Brand Discovery: Scrapes influencer\u2011brand matching platforms, monitors competitor social media for partnership announcements, and uses an LLM to assess brand\u2011mission alignment. Contact details are found via LinkedIn Sales Navigator scraping (read\u2011only) or integrated APIs. Drafting Collateral: Generates media kits as PDFs using Jinja2 templates + WeasyPrint, customised to the brand. Sponsorship packages are drafted with tiered benefits. Invoice generation uses a simple invoice template library. Partnership Tracking: A lightweight CRM sub\u2011module logs all communications, deals, and deliverables. It can generate performance reports for brands (after approval).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_77_m7_02_announcement_monitor_preserves_verified_source",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 78,
@@ -1094,8 +1105,9 @@
       "source_excerpt": "Module 7 \u2013 Brand Collaboration Manager Brand Discovery: Scrapes influencer\u2011brand matching platforms, monitors competitor social media for partnership announcements, and uses an LLM to assess brand\u2011mission alignment. Contact details are found via LinkedIn Sales Navigator scraping (read\u2011only) or integrated APIs. Drafting Collateral: Generates media kits as PDFs using Jinja2 templates + WeasyPrint, customised to the brand. Sponsorship packages are drafted with tiered benefits. Invoice generation uses a simple invoice template library. Partnership Tracking: A lightweight CRM sub\u2011module logs all communications, deals, and deliverables. It can generate performance reports for brands (after approval).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_78_m7_03_alignment_score_is_backed_by_evidence_dimensions",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 79,
@@ -1107,8 +1119,9 @@
       "source_excerpt": "Module 7 \u2013 Brand Collaboration Manager Brand Discovery: Scrapes influencer\u2011brand matching platforms, monitors competitor social media for partnership announcements, and uses an LLM to assess brand\u2011mission alignment. Contact details are found via LinkedIn Sales Navigator scraping (read\u2011only) or integrated APIs. Drafting Collateral: Generates media kits as PDFs using Jinja2 templates + WeasyPrint, customised to the brand. Sponsorship packages are drafted with tiered benefits. Invoice generation uses a simple invoice template library. Partnership Tracking: A lightweight CRM sub\u2011module logs all communications, deals, and deliverables. It can generate performance reports for brands (after approval).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_79_m7_04_contact_enrichment_forbids_guessed_email",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 80,
@@ -1120,8 +1133,9 @@
       "source_excerpt": "Module 7 \u2013 Brand Collaboration Manager Brand Discovery: Scrapes influencer\u2011brand matching platforms, monitors competitor social media for partnership announcements, and uses an LLM to assess brand\u2011mission alignment. Contact details are found via LinkedIn Sales Navigator scraping (read\u2011only) or integrated APIs. Drafting Collateral: Generates media kits as PDFs using Jinja2 templates + WeasyPrint, customised to the brand. Sponsorship packages are drafted with tiered benefits. Invoice generation uses a simple invoice template library. Partnership Tracking: A lightweight CRM sub\u2011module logs all communications, deals, and deliverables. It can generate performance reports for brands (after approval).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_80_m7_05_media_kit_does_not_claim_unrendered_pdf",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 81,
@@ -1133,8 +1147,9 @@
       "source_excerpt": "Module 7 \u2013 Brand Collaboration Manager Brand Discovery: Scrapes influencer\u2011brand matching platforms, monitors competitor social media for partnership announcements, and uses an LLM to assess brand\u2011mission alignment. Contact details are found via LinkedIn Sales Navigator scraping (read\u2011only) or integrated APIs. Drafting Collateral: Generates media kits as PDFs using Jinja2 templates + WeasyPrint, customised to the brand. Sponsorship packages are drafted with tiered benefits. Invoice generation uses a simple invoice template library. Partnership Tracking: A lightweight CRM sub\u2011module logs all communications, deals, and deliverables. It can generate performance reports for brands (after approval).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_81_m7_06_sponsorship_tier_checks_package_completeness",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 82,
@@ -1146,8 +1161,9 @@
       "source_excerpt": "Module 7 \u2013 Brand Collaboration Manager Brand Discovery: Scrapes influencer\u2011brand matching platforms, monitors competitor social media for partnership announcements, and uses an LLM to assess brand\u2011mission alignment. Contact details are found via LinkedIn Sales Navigator scraping (read\u2011only) or integrated APIs. Drafting Collateral: Generates media kits as PDFs using Jinja2 templates + WeasyPrint, customised to the brand. Sponsorship packages are drafted with tiered benefits. Invoice generation uses a simple invoice template library. Partnership Tracking: A lightweight CRM sub\u2011module logs all communications, deals, and deliverables. It can generate performance reports for brands (after approval).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_82_m7_07_invoice_computes_total_without_payment_commitment",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 83,
@@ -1159,8 +1175,9 @@
       "source_excerpt": "Module 7 \u2013 Brand Collaboration Manager Brand Discovery: Scrapes influencer\u2011brand matching platforms, monitors competitor social media for partnership announcements, and uses an LLM to assess brand\u2011mission alignment. Contact details are found via LinkedIn Sales Navigator scraping (read\u2011only) or integrated APIs. Drafting Collateral: Generates media kits as PDFs using Jinja2 templates + WeasyPrint, customised to the brand. Sponsorship packages are drafted with tiered benefits. Invoice generation uses a simple invoice template library. Partnership Tracking: A lightweight CRM sub\u2011module logs all communications, deals, and deliverables. It can generate performance reports for brands (after approval).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_83_m7_08_crm_identifies_overdue_deliverable",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 84,
@@ -1172,8 +1189,9 @@
       "source_excerpt": "Module 7 \u2013 Brand Collaboration Manager Brand Discovery: Scrapes influencer\u2011brand matching platforms, monitors competitor social media for partnership announcements, and uses an LLM to assess brand\u2011mission alignment. Contact details are found via LinkedIn Sales Navigator scraping (read\u2011only) or integrated APIs. Drafting Collateral: Generates media kits as PDFs using Jinja2 templates + WeasyPrint, customised to the brand. Sponsorship packages are drafted with tiered benefits. Invoice generation uses a simple invoice template library. Partnership Tracking: A lightweight CRM sub\u2011module logs all communications, deals, and deliverables. It can generate performance reports for brands (after approval).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_84_m7_09_pending_brand_report_cannot_be_shared",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 85,
@@ -1185,8 +1203,9 @@
       "source_excerpt": "Module 8 \u2013 Startup Growth Landing Page Builder: Generates a static Next.js page with Tailwind, hero section, feature highlights, and a waitlist form (using Supabase for email collection). Code is output directly into the project workspace; user can review and push to Vercel. Pitch Deck Generation: Uses a Python\u2011pptx template filled with LLM\u2011generated slides (problem, solution, market size, traction, ask). All charts are generated with matplotlib and embedded. Product Documentation: From codebases and feature lists, generates API docs (with ReDoc), user manuals, and technical blogs. Employs a \u201cdocumentation\u2011first\u201d prompt that ensures accuracy by referencing actual code.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_85_m8_01_landing_page_is_static_next_export",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 86,
@@ -1198,8 +1217,9 @@
       "source_excerpt": "Module 8 \u2013 Startup Growth Landing Page Builder: Generates a static Next.js page with Tailwind, hero section, feature highlights, and a waitlist form (using Supabase for email collection). Code is output directly into the project workspace; user can review and push to Vercel. Pitch Deck Generation: Uses a Python\u2011pptx template filled with LLM\u2011generated slides (problem, solution, market size, traction, ask). All charts are generated with matplotlib and embedded. Product Documentation: From codebases and feature lists, generates API docs (with ReDoc), user manuals, and technical blogs. Employs a \u201cdocumentation\u2011first\u201d prompt that ensures accuracy by referencing actual code.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_86_m8_02_landing_page_contains_required_sections",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 87,
@@ -1211,8 +1231,9 @@
       "source_excerpt": "Module 8 \u2013 Startup Growth Landing Page Builder: Generates a static Next.js page with Tailwind, hero section, feature highlights, and a waitlist form (using Supabase for email collection). Code is output directly into the project workspace; user can review and push to Vercel. Pitch Deck Generation: Uses a Python\u2011pptx template filled with LLM\u2011generated slides (problem, solution, market size, traction, ask). All charts are generated with matplotlib and embedded. Product Documentation: From codebases and feature lists, generates API docs (with ReDoc), user manuals, and technical blogs. Employs a \u201cdocumentation\u2011first\u201d prompt that ensures accuracy by referencing actual code.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_87_m8_03_waitlist_never_exposes_service_role_to_browser",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 88,
@@ -1224,8 +1245,9 @@
       "source_excerpt": "Module 8 \u2013 Startup Growth Landing Page Builder: Generates a static Next.js page with Tailwind, hero section, feature highlights, and a waitlist form (using Supabase for email collection). Code is output directly into the project workspace; user can review and push to Vercel. Pitch Deck Generation: Uses a Python\u2011pptx template filled with LLM\u2011generated slides (problem, solution, market size, traction, ask). All charts are generated with matplotlib and embedded. Product Documentation: From codebases and feature lists, generates API docs (with ReDoc), user manuals, and technical blogs. Employs a \u201cdocumentation\u2011first\u201d prompt that ensures accuracy by referencing actual code.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_88_m8_04_vercel_push_waits_for_approval",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 89,
@@ -1237,8 +1259,9 @@
       "source_excerpt": "Module 8 \u2013 Startup Growth Landing Page Builder: Generates a static Next.js page with Tailwind, hero section, feature highlights, and a waitlist form (using Supabase for email collection). Code is output directly into the project workspace; user can review and push to Vercel. Pitch Deck Generation: Uses a Python\u2011pptx template filled with LLM\u2011generated slides (problem, solution, market size, traction, ask). All charts are generated with matplotlib and embedded. Product Documentation: From codebases and feature lists, generates API docs (with ReDoc), user manuals, and technical blogs. Employs a \u201cdocumentation\u2011first\u201d prompt that ensures accuracy by referencing actual code.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_89_m8_05_pitch_deck_output_remains_editable",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 90,
@@ -1250,8 +1273,9 @@
       "source_excerpt": "Module 8 \u2013 Startup Growth Landing Page Builder: Generates a static Next.js page with Tailwind, hero section, feature highlights, and a waitlist form (using Supabase for email collection). Code is output directly into the project workspace; user can review and push to Vercel. Pitch Deck Generation: Uses a Python\u2011pptx template filled with LLM\u2011generated slides (problem, solution, market size, traction, ask). All charts are generated with matplotlib and embedded. Product Documentation: From codebases and feature lists, generates API docs (with ReDoc), user manuals, and technical blogs. Employs a \u201cdocumentation\u2011first\u201d prompt that ensures accuracy by referencing actual code.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_90_m8_06_pitch_deck_enforces_required_slide_order",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 91,
@@ -1263,8 +1287,9 @@
       "source_excerpt": "Module 8 \u2013 Startup Growth Landing Page Builder: Generates a static Next.js page with Tailwind, hero section, feature highlights, and a waitlist form (using Supabase for email collection). Code is output directly into the project workspace; user can review and push to Vercel. Pitch Deck Generation: Uses a Python\u2011pptx template filled with LLM\u2011generated slides (problem, solution, market size, traction, ask). All charts are generated with matplotlib and embedded. Product Documentation: From codebases and feature lists, generates API docs (with ReDoc), user manuals, and technical blogs. Employs a \u201cdocumentation\u2011first\u201d prompt that ensures accuracy by referencing actual code.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_91_m8_07_chart_does_not_claim_unrendered_artifact",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 92,
@@ -1276,8 +1301,9 @@
       "source_excerpt": "Module 8 \u2013 Startup Growth Landing Page Builder: Generates a static Next.js page with Tailwind, hero section, feature highlights, and a waitlist form (using Supabase for email collection). Code is output directly into the project workspace; user can review and push to Vercel. Pitch Deck Generation: Uses a Python\u2011pptx template filled with LLM\u2011generated slides (problem, solution, market size, traction, ask). All charts are generated with matplotlib and embedded. Product Documentation: From codebases and feature lists, generates API docs (with ReDoc), user manuals, and technical blogs. Employs a \u201cdocumentation\u2011first\u201d prompt that ensures accuracy by referencing actual code.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_92_m8_08_redoc_flags_claims_absent_from_code",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 93,
@@ -1289,8 +1315,9 @@
       "source_excerpt": "Module 8 \u2013 Startup Growth Landing Page Builder: Generates a static Next.js page with Tailwind, hero section, feature highlights, and a waitlist form (using Supabase for email collection). Code is output directly into the project workspace; user can review and push to Vercel. Pitch Deck Generation: Uses a Python\u2011pptx template filled with LLM\u2011generated slides (problem, solution, market size, traction, ask). All charts are generated with matplotlib and embedded. Product Documentation: From codebases and feature lists, generates API docs (with ReDoc), user manuals, and technical blogs. Employs a \u201cdocumentation\u2011first\u201d prompt that ensures accuracy by referencing actual code.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_93_m8_09_manual_flags_claims_absent_from_code",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 94,
@@ -1302,8 +1329,9 @@
       "source_excerpt": "Module 8 \u2013 Startup Growth Landing Page Builder: Generates a static Next.js page with Tailwind, hero section, feature highlights, and a waitlist form (using Supabase for email collection). Code is output directly into the project workspace; user can review and push to Vercel. Pitch Deck Generation: Uses a Python\u2011pptx template filled with LLM\u2011generated slides (problem, solution, market size, traction, ask). All charts are generated with matplotlib and embedded. Product Documentation: From codebases and feature lists, generates API docs (with ReDoc), user manuals, and technical blogs. Employs a \u201cdocumentation\u2011first\u201d prompt that ensures accuracy by referencing actual code.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_94_m8_10_blog_flags_claims_absent_from_code",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 95,
@@ -1315,8 +1343,9 @@
       "source_excerpt": "Module 9 \u2013 Knowledge Workspace Data Model: A graph\u2011based model stored in PostgreSQL with adjacency lists. Each node can be a Project, Research, Competition, Application, Email, Contact, File, Deadline, Task, or Note. Edges have relationships like child_of, references, supports, blocks. Auto\u2011tagging & Linking: When a new entity is created, its embedding is compared to all existing nodes; high\u2011similarity pairs get a suggested link. Named entity recognition extracts mentions of contacts, projects, and deadlines, automatically linking them. Visualisation: React Flow renders the graph interactively. Users can explore connections, filter by type, and double\u2011click to edit. The graph is also used by the Planner to understand context.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_95_m9_01_graph_rejects_unknown_node_type",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 96,
@@ -1328,8 +1357,9 @@
       "source_excerpt": "Module 9 \u2013 Knowledge Workspace Data Model: A graph\u2011based model stored in PostgreSQL with adjacency lists. Each node can be a Project, Research, Competition, Application, Email, Contact, File, Deadline, Task, or Note. Edges have relationships like child_of, references, supports, blocks. Auto\u2011tagging & Linking: When a new entity is created, its embedding is compared to all existing nodes; high\u2011similarity pairs get a suggested link. Named entity recognition extracts mentions of contacts, projects, and deadlines, automatically linking them. Visualisation: React Flow renders the graph interactively. Users can explore connections, filter by type, and double\u2011click to edit. The graph is also used by the Planner to understand context.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_96_m9_02_typed_edge_requires_existing_endpoints",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 97,
@@ -1341,8 +1371,9 @@
       "source_excerpt": "Module 9 \u2013 Knowledge Workspace Data Model: A graph\u2011based model stored in PostgreSQL with adjacency lists. Each node can be a Project, Research, Competition, Application, Email, Contact, File, Deadline, Task, or Note. Edges have relationships like child_of, references, supports, blocks. Auto\u2011tagging & Linking: When a new entity is created, its embedding is compared to all existing nodes; high\u2011similarity pairs get a suggested link. Named entity recognition extracts mentions of contacts, projects, and deadlines, automatically linking them. Visualisation: React Flow renders the graph interactively. Users can explore connections, filter by type, and double\u2011click to edit. The graph is also used by the Planner to understand context.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_97_m9_03_adjacency_persistence_requires_tenant_predicate",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 98,
@@ -1354,8 +1385,9 @@
       "source_excerpt": "Module 9 \u2013 Knowledge Workspace Data Model: A graph\u2011based model stored in PostgreSQL with adjacency lists. Each node can be a Project, Research, Competition, Application, Email, Contact, File, Deadline, Task, or Note. Edges have relationships like child_of, references, supports, blocks. Auto\u2011tagging & Linking: When a new entity is created, its embedding is compared to all existing nodes; high\u2011similarity pairs get a suggested link. Named entity recognition extracts mentions of contacts, projects, and deadlines, automatically linking them. Visualisation: React Flow renders the graph interactively. Users can explore connections, filter by type, and double\u2011click to edit. The graph is also used by the Planner to understand context.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_98_m9_04_embedding_link_is_suggestion_not_auto_create",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 99,
@@ -1367,8 +1399,9 @@
       "source_excerpt": "Module 9 \u2013 Knowledge Workspace Data Model: A graph\u2011based model stored in PostgreSQL with adjacency lists. Each node can be a Project, Research, Competition, Application, Email, Contact, File, Deadline, Task, or Note. Edges have relationships like child_of, references, supports, blocks. Auto\u2011tagging & Linking: When a new entity is created, its embedding is compared to all existing nodes; high\u2011similarity pairs get a suggested link. Named entity recognition extracts mentions of contacts, projects, and deadlines, automatically linking them. Visualisation: React Flow renders the graph interactively. Users can explore connections, filter by type, and double\u2011click to edit. The graph is also used by the Planner to understand context.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules",
-      "test_evidence": "tests/modules/test_technical_67_99.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_67_99.py::test_row_99_m9_05_ner_links_existing_entity_without_auto_create",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 100,

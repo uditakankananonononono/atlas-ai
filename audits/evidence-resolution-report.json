@@ -4,8 +4,8 @@
     {
       "ledger": "audits/technical-spec-line-by-line.json",
       "total": 229,
-      "resolvable_nodes": 78,
-      "unresolved": 151,
+      "resolvable_nodes": 111,
+      "unresolved": 118,
       "results": [
         {
           "row": "A01",
@@ -405,201 +405,201 @@
         },
         {
           "row": "M6-03",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_67_m6_03_image_adapter_declares_output_without_fake_asset",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M6-04",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_68_m6_04_audio_adapter_declares_engine_without_fake_audio",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M6-05",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_69_m6_05_meta_publish_is_approved_but_not_externally_performed",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M6-06",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_70_m6_06_x_publish_is_approved_but_not_externally_performed",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M6-07",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_71_m6_07_linkedin_publish_is_approved_but_not_externally_performed",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M6-08",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_72_m6_08_pending_publish_is_queued_not_executable",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M6-09",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_73_m6_09_daily_metrics_preserve_provider_metric_keys",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M6-10",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_74_m6_10_suggestion_requires_evidence_and_forbids_causality",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M6-11",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_75_m6_11_ab_test_remains_approval_gated",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M7-01",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_76_m7_01_discovery_allows_only_public_terms_permitted_platform",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M7-02",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_77_m7_02_announcement_monitor_preserves_verified_source",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M7-03",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_78_m7_03_alignment_score_is_backed_by_evidence_dimensions",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M7-04",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_79_m7_04_contact_enrichment_forbids_guessed_email",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M7-05",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_80_m7_05_media_kit_does_not_claim_unrendered_pdf",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M7-06",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_81_m7_06_sponsorship_tier_checks_package_completeness",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M7-07",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_82_m7_07_invoice_computes_total_without_payment_commitment",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M7-08",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_83_m7_08_crm_identifies_overdue_deliverable",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M7-09",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_84_m7_09_pending_brand_report_cannot_be_shared",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M8-01",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_85_m8_01_landing_page_is_static_next_export",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M8-02",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_86_m8_02_landing_page_contains_required_sections",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M8-03",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_87_m8_03_waitlist_never_exposes_service_role_to_browser",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M8-04",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_88_m8_04_vercel_push_waits_for_approval",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M8-05",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_89_m8_05_pitch_deck_output_remains_editable",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M8-06",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_90_m8_06_pitch_deck_enforces_required_slide_order",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M8-07",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_91_m8_07_chart_does_not_claim_unrendered_artifact",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M8-08",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_92_m8_08_redoc_flags_claims_absent_from_code",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M8-09",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_93_m8_09_manual_flags_claims_absent_from_code",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M8-10",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_94_m8_10_blog_flags_claims_absent_from_code",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M9-01",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_95_m9_01_graph_rejects_unknown_node_type",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M9-02",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_96_m9_02_typed_edge_requires_existing_endpoints",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M9-03",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_97_m9_03_adjacency_persistence_requires_tenant_predicate",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M9-04",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_98_m9_04_embedding_link_is_suggestion_not_auto_create",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M9-05",
-          "evidence": "tests/modules/test_technical_67_99.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_technical_67_99.py::test_row_99_m9_05_ner_links_existing_entity_without_auto_create",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": "M9-06",

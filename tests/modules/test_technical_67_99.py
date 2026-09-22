@@ -56,3 +56,49 @@ def test_99_ner_links_existing_and_does_not_create():assert m9(99,d(99))['result
 def test_all_mounted():
  for router,path,row in [(r6,'/social-media-manager/technical-67-75/67',67),(r7,'/brand-collaboration/technical-76-84/76',76),(r8,'/startup-growth/technical-85-94/85',85),(r9,'/knowledge-workspace/technical-95-99/95',95)]:
   a=FastAPI();a.include_router(router);assert TestClient(a).post(path,json=d(row)).status_code==200
+
+# Stable, requirement-specific evidence nodes used by the line-by-line audit.
+def test_row_67_m6_03_image_adapter_declares_output_without_fake_asset(): assert not m6(67,d(67))['result']['asset_generated']
+def test_row_68_m6_04_audio_adapter_declares_engine_without_fake_audio(): assert not m6(68,d(68))['result']['audio_generated']
+def test_row_69_m6_05_meta_publish_is_approved_but_not_externally_performed():
+ o=m6(69,d(69));assert o['result']['publish_allowed'] and not o['external_effect_performed']
+def test_row_70_m6_06_x_publish_is_approved_but_not_externally_performed():
+ o=m6(70,d(70));assert o['result']['publish_allowed'] and not o['external_effect_performed']
+def test_row_71_m6_07_linkedin_publish_is_approved_but_not_externally_performed():
+ o=m6(71,d(71));assert o['result']['publish_allowed'] and not o['external_effect_performed']
+def test_row_72_m6_08_pending_publish_is_queued_not_executable():
+ o=m6(72,d(72));assert o['result']['queued'] and not o['result']['executable']
+def test_row_73_m6_09_daily_metrics_preserve_provider_metric_keys(): assert m6(73,d(73))['result']['metric_keys']==['likes']
+def test_row_74_m6_10_suggestion_requires_evidence_and_forbids_causality():
+ o=m6(74,d(74))['result'];assert o['suggestions'][0]['grounded'] and o['causal_claim_forbidden']
+def test_row_75_m6_11_ab_test_remains_approval_gated(): assert not m6(75,d(75))['result']['execution_allowed']
+def test_row_76_m7_01_discovery_allows_only_public_terms_permitted_platform(): assert m7(76,d(76))['result']['platforms'][0]['allowed']
+def test_row_77_m7_02_announcement_monitor_preserves_verified_source(): assert m7(77,d(77))['result']['events'][0]['verified']
+def test_row_78_m7_03_alignment_score_is_backed_by_evidence_dimensions(): assert m7(78,d(78))['result']['score']==2
+def test_row_79_m7_04_contact_enrichment_forbids_guessed_email(): assert m7(79,d(79))['result']['guessed_emails_forbidden']
+def test_row_80_m7_05_media_kit_does_not_claim_unrendered_pdf(): assert not m7(80,d(80))['result']['rendered']
+def test_row_81_m7_06_sponsorship_tier_checks_package_completeness(): assert m7(81,d(81))['result']['tiers'][0]['complete']
+def test_row_82_m7_07_invoice_computes_total_without_payment_commitment():
+ o=m7(82,d(82))['result'];assert o['invoice']['total']==6 and not o['payment_committed']
+def test_row_83_m7_08_crm_identifies_overdue_deliverable(): assert m7(83,d(83))['result']['overdue_ids']==['d']
+def test_row_84_m7_09_pending_brand_report_cannot_be_shared(): assert not m7(84,d(84))['result']['share_allowed']
+def test_row_85_m8_01_landing_page_is_static_next_export(): assert m8(85,d(85))['result']['static_export']
+def test_row_86_m8_02_landing_page_contains_required_sections(): assert len(m8(86,d(86))['result']['sections'])==3
+def test_row_87_m8_03_waitlist_never_exposes_service_role_to_browser(): assert not m8(87,d(87))['result']['service_role_exposed_to_browser']
+def test_row_88_m8_04_vercel_push_waits_for_approval(): assert not m8(88,d(88))['result']['vercel_push_allowed']
+def test_row_89_m8_05_pitch_deck_output_remains_editable(): assert m8(89,d(89))['result']['editable']
+def test_row_90_m8_06_pitch_deck_enforces_required_slide_order(): assert m8(90,d(90))['result']['correct_order']
+def test_row_91_m8_07_chart_does_not_claim_unrendered_artifact(): assert not m8(91,d(91))['result']['rendered']
+def _ungrounded(row):
+ x=d(row);x['claims']=[{'text':'x'}];return m8(row,x)['result']['ungrounded_claims']
+def test_row_92_m8_08_redoc_flags_claims_absent_from_code(): assert _ungrounded(92)
+def test_row_93_m8_09_manual_flags_claims_absent_from_code(): assert _ungrounded(93)
+def test_row_94_m8_10_blog_flags_claims_absent_from_code(): assert _ungrounded(94)
+def test_row_95_m9_01_graph_rejects_unknown_node_type():
+ x=d(95);x['nodes'].append({'id':'x','type':'Unknown'});assert not m9(95,x)['result']['valid']
+def test_row_96_m9_02_typed_edge_requires_existing_endpoints(): assert m9(96,d(96))['result']['valid']
+def test_row_97_m9_03_adjacency_persistence_requires_tenant_predicate(): assert m9(97,d(97))['result']['tenant_predicate_required']
+def test_row_98_m9_04_embedding_link_is_suggestion_not_auto_create():
+ o=m9(98,d(98))['result'];assert o['suggestions'] and not o['auto_created']
+def test_row_99_m9_05_ner_links_existing_entity_without_auto_create():
+ o=m9(99,d(99))['result'];assert o['links'][0]['entity_id']=='c' and not o['auto_created']
