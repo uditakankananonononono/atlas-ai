@@ -1,7 +1,7 @@
 """Tenant-isolate approval policies."""
 from alembic import op
 import sqlalchemy as sa
-revision="20260922_m00_policy_tenant_isolation"
+revision="20260922_m00_policy_tenant_iso"
 down_revision="20260922_m01_tenant_isolation"
 branch_labels=None
 depends_on=None
