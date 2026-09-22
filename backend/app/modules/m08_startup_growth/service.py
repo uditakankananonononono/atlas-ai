@@ -9,7 +9,10 @@ from .schemas import *
 MODULE_ID=8
 class NotFoundError(LookupError):pass
 class Service:
-    def __init__(self,repository,approvals):self.repo=repository;self.approvals=approvals
+    def __init__(self,repository,approvals):
+        tenant_id=getattr(repository,"tenant_id","")
+        if not tenant_id.strip():raise ValueError("tenant-scoped repository is required")
+        self.repo=repository;self.approvals=approvals;self.tenant_id=tenant_id.strip()
     def _store(self,project_id,kind,files):
         stream=BytesIO()
         with zipfile.ZipFile(stream,"w",zipfile.ZIP_DEFLATED) as z:
@@ -45,4 +48,4 @@ class Service:
     def propose(self,build_id,action):
         row=self.repo.get(build_id)
         if not row:raise NotFoundError(build_id)
-        payload={"build_id":build_id,"project_id":row.project_id,"kind":row.kind,"sha256":row.sha256,"manifest":row.manifest};a=ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type=action,payload=payload);self.approvals.put(a);return PublishProposal(approval_id=a.id,action_type=action,payload=payload)
+        payload={"tenant_id":self.tenant_id,"build_id":build_id,"project_id":row.project_id,"kind":row.kind,"sha256":row.sha256,"manifest":row.manifest};a=ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type=action,payload=payload);self.approvals.put(a);return PublishProposal(approval_id=a.id,action_type=action,payload=payload)
