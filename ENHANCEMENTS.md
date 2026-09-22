@@ -50,7 +50,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** ingest authenticated producer events and deployment receipts instead of caller-supplied proof identifiers.
 ## M17 - Narrative Architect
 - **Landed:** canonical service now legally wires Reddit by default and optional official YouTube/Pinterest plus allowlisted public pages through shared bounded collectors.
-- **Next:** owner-material evidence completeness meter for each essay concept and critique suggestion.
+- **Landed:** owner-material evidence completeness meter links every concept and critique suggestion to hashed owner records, exposes missing references and exact coverage, and never claims truth or disclosure permission.
+- **Next:** bind accepted suggestions to versioned essay revisions and require owner review before any material crosses an audience boundary.
 ## M18 - Side Hustle & Knowledge Scraper
 - **Landed:** default public/official collectors, approval-gated experiments, adapter receipts and outcomes now extend to tenant-scoped durable SQLite WAL run snapshots that survive runner restarts and preserve exact approval/receipt links.
 - **Next:** signed provider receipt verification and shared Postgres storage for horizontally scaled workers.
