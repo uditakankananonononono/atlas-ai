@@ -35,3 +35,9 @@ from .evidence_meter import EvidenceMeterRequest,meter as evidence_meter
 @router.post('/evidence-completeness')
 def evidence_completeness(body:EvidenceMeterRequest,tenant:TenantContext=Depends(require_tenant)):
  return {'tenant_id':tenant.tenant_id,**evidence_meter(body)}
+
+from .revision_acceptance import RevisionAcceptance,verify_revision_acceptance
+@router.post('/evidence-completeness/revision-acceptance/verify')
+def revision_acceptance(body:RevisionAcceptance,tenant:TenantContext=Depends(require_tenant)):
+ try:return {'tenant_id':tenant.tenant_id,**verify_revision_acceptance(body)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error
