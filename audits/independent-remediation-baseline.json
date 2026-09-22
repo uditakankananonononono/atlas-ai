@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "as_of_commit": "b6a1a27c1b8d71b9b84892bc93f4eb96fabcb86b",
+  "purpose": "Conservative remediation baseline. This file does not upgrade any source-ledger status.",
+  "technical_spec": {"total": 229, "substantiated": 47, "thin_or_unsubstantiated": 173, "missing": 9},
+  "expanded_features": {"total": 2010, "focused_test_locator_resolves": 304, "thin_or_unsubstantiated": 1706, "proven_absent": 0},
+  "second_design": {"substantive_paragraphs": 217, "verified": 0, "unverified": 217},
+  "rules": [
+    "A ledger status, path, product name or shared test file is not behavior evidence.",
+    "A substantiated row needs a resolvable test node that drives requirement-specific behavior and checks a failure path or invariant.",
+    "Live/provider/distributed claims additionally need a reproducible acceptance artifact from that system.",
+    "Counts move only when the row-specific evidence is attached and independently resolvable."
+  ]
+}
