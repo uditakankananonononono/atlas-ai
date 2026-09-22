@@ -45,7 +45,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** persist capture bytes immutably and bind a single-use approval and submit attempt to the capture hash.
 ## M14 - Project Builder
 - **Landed (science):** acceptance matrix links criteria to hashed artifacts and named test results; proof-status keeps code-complete, test-complete and live-acceptance-complete separate with exact blockers and never promotes weaker evidence.
-- **Next:** authenticate live receipts and bind them to deployed version, environment and acceptance-run inputs.
+- **Landed:** live-receipt verification authenticates supplied receipts with configured HMAC keys and binds each to the exact deployed version, environment, and acceptance-run input hash.
+- **Next:** use asymmetric issuer signatures and immutable receipt persistence.
 ## M15 - Document Generator
 - **Landed:** version preflight endpoint checks empty content, duplicate citations/figures, missing citation URLs, empty PPTX and likely slide overflow before export approval.
 - **Landed:** private-publication receipt verification requires consumed approval, private access, HTTPS download URL and exact approved-vs-published SHA-256 match.
