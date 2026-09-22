@@ -49,3 +49,9 @@ from .publication_receipt import PrivatePublicationReceipt,verify_private_public
 @router.post('/publication-receipts/verify')
 def verify_publication_receipt(body:PrivatePublicationReceipt,tenant_id:str=Depends(tenant)):
  return {'tenant_id':tenant_id,**verify_private_publication(body)}
+
+from .provider_receipt import VerifyProviderPublication,verify_provider_publication
+@router.post('/publication-receipts/provider/verify')
+def verify_provider_receipt(body:VerifyProviderPublication,tenant_id:str=Depends(tenant)):
+ try:return {'tenant_id':tenant_id,**verify_provider_publication(body)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error
