@@ -132,8 +132,9 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(fresh.status_code, 200)
         self.assertIn("watched", fresh.json())
 
-        refresh = client.post("/api/side-hustle-scraper/refresh")
-        self.assertEqual(refresh.status_code, 501)
+        refresh = client.post("/api/side-hustle-scraper/refresh",headers={"x-atlas-tenant":"test-tenant"})
+        self.assertEqual(refresh.status_code, 200)
+        self.assertEqual(refresh.json()["sources_checked"], 0)
 
         self.assertEqual(spec.id, 18)
         self.assertEqual(spec.slug, "side-hustle-scraper")
