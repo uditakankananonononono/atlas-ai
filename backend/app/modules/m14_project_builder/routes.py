@@ -192,3 +192,10 @@ from .asymmetric_live_receipts import VerifyAsymmetricLiveReceipts,verify_asymme
 def verify_ed25519_proof_live_receipts(body:VerifyAsymmetricLiveReceipts):
  try:return verify_asymmetric_live_receipts(body)
  except ValueError as error:raise HTTPException(422,str(error)) from error
+from .live_receipt_persistence import verify_and_persist_live_receipts
+from .live_receipt_store import LiveReceiptStore
+def get_live_receipt_store(context:TenantContext=Depends(require_tenant)):return LiveReceiptStore(context.tenant_id)
+@router.post('/proof-status/live-receipts/verify-and-persist')
+def verify_and_persist_proof_live_receipts(body:VerifyLiveReceipts,context:TenantContext=Depends(require_tenant),store=Depends(get_live_receipt_store)):
+ try:return {'tenant_id':context.tenant_id,**verify_and_persist_live_receipts(body,store)}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
