@@ -66,3 +66,62 @@ def test_route_keeps_tenant_and_actor_context_separate():
  b=client.post('/api/v1/ai-research-lab/education/support',json=body,headers={'x-atlas-tenant':'school-b','x-atlas-actor':'teacher-b'}).json()
  assert (a['tenant_id'],a['actor_id'])==('school-a','teacher-a')
  assert (b['tenant_id'],b['actor_id'])==('school-b','teacher-b')
+
+# Exact collectable nodes for expanded-ledger traceability. Each CASES-backed node
+# checks a feature-specific transformed value under two materially different inputs.
+def test_1460_engagement_weighted_score_changes(): changed(1460,*CASES[1460])
+def test_1461_dropout_logistic_risk_changes(): changed(1461,*CASES[1461])
+def test_1462_performance_linear_prediction_changes(): changed(1462,*CASES[1462])
+def test_1463_recommendation_ranking_changes(): changed(1463,*CASES[1463])
+def test_1464_content_ranking_changes(): changed(1464,*CASES[1464])
+def test_1465_peer_ranking_changes_without_contact(): changed(1465,*CASES[1465]);assert run(1465,CASES[1465][0])['result']['contacted'] is False
+def test_1466_learning_path_changes_by_prerequisites(): changed(1466,*CASES[1466])
+def test_1467_essay_rubric_score_changes_without_final_grade(): changed(1467,*CASES[1467]);assert run(1467,CASES[1467][0])['result']['final_grade_awarded'] is False
+def test_1468_feedback_gap_priority_changes(): changed(1468,*CASES[1468])
+
+def assessment_changed(row,key,a,b):
+ base={'objectives':[{'id':'a'},{'id':'b'}],'evidence':[{'id':'e','objective_ids':['a'],'rubric':[{'criterion':'accuracy'}]}]}
+ x=run(row,{**base,**a});y=run(row,{**base,**b})
+ assert x['feature_id']==row and x['result']['score_or_grade_finalized'] is False
+ assert x['result'][key] != y['result'][key]
+def test_1469_formative_adjustment_changes_with_evidence(): assessment_changed(1469,'instructional_adjustments',{}, {'evidence':[{'id':'e','objective_ids':['a','b']}]})
+def test_1470_summative_attainment_counts_evidence(): assessment_changed(1470,'attainment_summary',{}, {'evidence':[{'id':'e','objective_ids':['a','b']}]})
+def test_1471_diagnostic_prerequisite_gaps_change(): assessment_changed(1471,'prerequisite_gaps',{}, {'evidence':[{'id':'e','objective_ids':['a','b']}]})
+def test_1472_authentic_context_is_input_sensitive(): assessment_changed(1472,'authenticity_review',{'real_world_context':'clinic'},{'real_world_context':'field'})
+def test_1473_performance_observability_uses_rubric(): assessment_changed(1473,'performance_observations',{}, {'evidence':[{'id':'e','objective_ids':['a']}]})
+def test_1474_portfolio_checkpoints_are_preserved(): assessment_changed(1474,'portfolio_checkpoints',{'checkpoints':['draft']},{'checkpoints':['draft','final']})
+def test_1475_self_assessment_prompts_are_preserved(): assessment_changed(1475,'self_calibration',{'reflection_prompts':['why']},{'reflection_prompts':['how']})
+def test_1476_peer_assessment_anonymity_is_explicit(): assessment_changed(1476,'peer_moderation',{'anonymous':True},{'anonymous':False})
+def test_1477_assessment_for_learning_changes_teaching_moves(): assessment_changed(1477,'next_teaching_moves',{}, {'evidence':[{'id':'e','objective_ids':['a','b']}]})
+def test_1478_assessment_as_learning_prompts_change(): assessment_changed(1478,'metacognitive_cycle',{'reflection_prompts':['plan']},{'reflection_prompts':['review']})
+def test_1479_assessment_of_learning_counts_attained_evidence(): assessment_changed(1479,'reporting_summary',{}, {'evidence':[{'id':'e','objective_ids':[]}]})
+def test_1480_standards_status_changes_by_score(): changed(1480,*CASES[1480])
+def test_1481_competency_advancement_changes_by_mastery(): changed(1481,*CASES[1481])
+def test_1482_mastery_reteach_changes_by_score(): changed(1482,*CASES[1482])
+def test_1483_precision_celeration_changes_by_probe(): changed(1483,*CASES[1483])
+def test_1484_direct_instruction_release_uses_checks(): changed(1484,*CASES[1484])
+def test_1485_explicit_instruction_targets_misconception(): changed(1485,*CASES[1485])
+def test_1486_systematic_instruction_progression_changes(): changed(1486,*CASES[1486])
+def test_1487_scripted_instruction_maps_cues(): changed(1487,*CASES[1487])
+def test_1488_programmed_instruction_branches_frames(): changed(1488,*CASES[1488])
+def test_1489_computer_assisted_next_item_changes(): changed(1489,*CASES[1489])
+def test_1490_intelligent_tutor_targets_weak_component(): changed(1490,*CASES[1490])
+def test_1491_dialogue_tutor_counts_prior_turns(): changed(1491,*CASES[1491])
+def test_1492_socratic_tutor_examines_supplied_claim(): changed(1492,*CASES[1492])
+def test_1493_metacognitive_prompts_use_strategy(): changed(1493,*CASES[1493])
+def test_1494_motivational_goal_changes_with_learner_state(): changed(1494,*CASES[1494])
+def test_1495_emotional_support_escalates_immediate_danger(): changed(1495,*CASES[1495])
+def test_1496_social_emotional_competency_changes(): changed(1496,*CASES[1496])
+def test_1497_character_education_virtue_changes(): changed(1497,*CASES[1497])
+def test_1498_citizenship_question_changes(): changed(1498,*CASES[1498])
+def test_1499_global_competence_issue_changes(): changed(1499,*CASES[1499])
+def test_1500_cultural_competence_context_changes(): changed(1500,*CASES[1500])
+def test_1501_intercultural_pair_changes(): changed(1501,*CASES[1501])
+def test_1502_multicultural_missing_group_audit_changes(): changed(1502,*CASES[1502])
+def test_1503_inclusive_design_options_change(): changed(1503,*CASES[1503])
+def test_1504_special_education_alignment_changes_without_iep_mutation(): changed(1504,*CASES[1504]);assert run(1504,CASES[1504][0])['result']['eligibility_or_iep_changed'] is False
+def test_1505_gifted_support_uses_strengths(): changed(1505,*CASES[1505])
+def test_1506_remedial_support_targets_specific_gaps(): changed(1506,*CASES[1506])
+def test_1507_compensatory_support_changes_barrier_not_expectation(): changed(1507,*CASES[1507]);assert run(1507,CASES[1507][0])['result']['same_learning_expectation'] is True
+def test_1508_bilingual_support_preserves_home_language(): changed(1508,*CASES[1508])
+def test_1509_language_spaced_repetition_changes_by_quality(): changed(1509,*CASES[1509])
