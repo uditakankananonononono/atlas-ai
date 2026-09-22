@@ -1386,8 +1386,8 @@
     {
       "ledger": "audits/additional-2000-features.json",
       "total": 2010,
-      "resolvable_nodes": 468,
-      "unresolved": 1542,
+      "resolvable_nodes": 518,
+      "unresolved": 1492,
       "results": [
         {
           "row": 1,
@@ -5195,303 +5195,303 @@
         },
         {
           "row": 635,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_635_slo_verdicts",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 636,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_636_burn_classification",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 637,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_637_role_coverage_and_mtta",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 638,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_638_unowned_action_items",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 639,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_639_runbook_alert_coverage",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 640,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_640_rotation_fairness_and_spof",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 641,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_641_capacity_linear_forecast",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 642,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_642_cost_waste_ranking",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 643,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_643_bin_packing_assignment",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 644,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_644_queue_wait_estimates",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 645,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_645_parallel_waves",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 646,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_646_critical_path",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 647,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_647_cron_parse_and_overlap",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 648,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_648_event_sourcing_replay",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 649,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_649_cqrs_separation_and_lag",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 650,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_650_saga_compensation_order",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 651,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_651_two_phase_blocking",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 652,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_652_idempotency_key_coverage",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 653,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_653_exactly_once_feasibility",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 654,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_654_at_least_once_dedup_requirement",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 655,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_655_dlq_poison_detection",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 656,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_656_retry_budget",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 657,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_657_backoff_sequence_and_cap",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 658,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_658_bulkhead_blast_radius",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 659,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_659_sidecar_offload",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 660,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_660_ambassador_policy_inconsistency",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 661,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_661_adapter_conformance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 662,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_662_facade_coupling_reduction",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 663,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_663_observer_cycle_and_fanout",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 664,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_664_strategy_dispatch_coverage",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 665,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_665_factory_unknown_product",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 666,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_666_singleton_lazy_race",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 667,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_667_di_resolution_order",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 668,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_668_ioc_direction",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 669,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_669_repository_leakage",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 670,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_670_uow_commit_ordering",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 671,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_671_element_counts",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 672,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_672_shared_kernel_detection",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 673,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_673_glossary_sizes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 674,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_674_aggregate_invariants",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 675,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_675_entity_identity",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 676,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_676_value_object_rules",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 677,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_677_domain_event_rules",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 678,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_678_acl_translation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 679,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_679_hexagonal_direction",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 680,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_680_clean_architecture_inward_rule",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 681,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_681_onion_dependency_free_core",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 682,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_682_ports_adapters_pairing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 683,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_683_functional_core_purity",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 684,
-          "evidence": "tests/modules/test_m14_architecture_635_684.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m14_architecture_635_684.py::test_684_event_storming_chronology",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 685,
