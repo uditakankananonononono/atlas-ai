@@ -310,15 +310,6 @@ class ClaimRow(Base):
     resolved = sa.Column(sa.Boolean, nullable=False, default=False, index=True)
 
 
-class _TenantScoped:
-    """Mixin: tenant-filtered helpers for the new durable rows."""
-
-    tenant_id: str
-
-    def _session(self):  # pragma: no cover - overridden by GCWRepository
-        raise NotImplementedError
-
-
 def _repository_extension(cls):
     from .metacognition import Claim
     from .schemas import HTNMethod, KnowledgeEdge, MemoryChunk, Retrospective

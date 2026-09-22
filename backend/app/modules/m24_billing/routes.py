@@ -5,9 +5,12 @@ from app.core.approvals import approvals
 from .schemas import *
 from .service import Service,PLANS
 from .repository import Repository
-from .stripe_client import StripeClient
+from .stripe_client import StripeClient, UnconfiguredStripeClient
 router=APIRouter(prefix="/billing",tags=["billing"])
-def get_service():return Service(approvals,Repository(),StripeClient(os.getenv("STRIPE_SECRET_KEY","sk_test_unconfigured")))
+def get_service():
+ key=os.getenv("STRIPE_SECRET_KEY")
+ stripe=StripeClient(key) if key else UnconfiguredStripeClient()
+ return Service(approvals,Repository(),stripe)
 @router.get("/plans",response_model=list[Plan])
 def plans(s:Service=Depends(get_service)):return s.plans()
 @router.post("/checkout-proposals",response_model=ApprovalProposal,status_code=201)

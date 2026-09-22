@@ -1,9 +1,10 @@
 """HTTP surface for Module 18.
 
 Original endpoints (POST /blueprints, POST /feasibility) unchanged. Pipeline
-endpoints added: /collect, /rank, /refresh, /freshness. get_service wires a
-development pipeline; the integrator replaces repository/collectors/monitor
-with the shared Postgres adapter, real collector config and tenant resolution.
+endpoints added: /collect, /rank, /refresh, /freshness. ``get_service`` wires
+the legal-source collectors, validation, ranking and production refresh path.
+The default document repository is process-local SQLite; deployments that need
+cross-process retention inject their shared repository through the dependency.
 """
 from fastapi import APIRouter, Depends, HTTPException
 
