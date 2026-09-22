@@ -35,6 +35,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** persist reconciliation snapshots transactionally and govern reviewer-key identity, provisioning, and rotation.
 - **Landed:** tenant-scoped reviewer public-key registry pins Ed25519 key IDs to fingerprints, rejects rebinding, and records explicit retirement.
 - **Next:** persist reconciliation snapshots transactionally and verify source-message bytes using governed reviewer identities.
+- **Landed:** verified source-message bytes persist tenant-scoped and immutable by message ID, with exact-repeat idempotency and fail-closed replacement conflicts.
+- **Next:** persist reconciliation snapshots transactionally and authenticate reviewer identities against governed keys.
 ## M11 - Calendar Intelligence
 - **Landed:** read-only schedule-risk view combines travel and preparation buffer shortfalls, incomplete/unknown dependencies, and sourced cancellation exposure into a deterministic risk artifact without changing events, cancelling bookings, or spending.
 - **Landed:** live risk-evidence verifier binds mapping travel estimates and vendor cancellation terms to fresh retrieval timestamps, provider/source metadata, normalized-record hashes, and captured snapshot hashes, failing closed on stale, future, or mismatched evidence.

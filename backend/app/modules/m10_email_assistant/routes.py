@@ -170,3 +170,10 @@ def retire_reviewer_key(reviewer_id:str,key_id:str,tenant:TenantContext=Depends(
  try:
   row=registry.retire(reviewer_id,key_id);return {'tenant_id':tenant.tenant_id,'reviewer_id':reviewer_id,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
  except ValueError as error:raise HTTPException(404,str(error)) from error
+from .source_message_persistence import PersistSourceMessage,persist_source_message
+from .source_message_store import SourceMessageStore
+def get_source_message_store(tenant:TenantContext=Depends(require_tenant)):return SourceMessageStore(tenant.tenant_id)
+@router.post('/promise-state-reconciliation/source-messages/persist')
+def persist_promise_source_message(body:PersistSourceMessage,tenant:TenantContext=Depends(require_tenant),store=Depends(get_source_message_store)):
+ try:return {'tenant_id':tenant.tenant_id,**persist_source_message(body,store)}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
