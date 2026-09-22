@@ -44,3 +44,8 @@ def creative_plan_306_332(row_id:int,payload:dict):
     from .creative_production_306_332 import CreativeError,plan
     try:return plan(row_id,payload)
     except CreativeError as exc:raise HTTPException(status_code=422,detail=str(exc)) from exc
+
+from .publication_receipt import PrivatePublicationReceipt,verify_private_publication
+@router.post('/publication-receipts/verify')
+def verify_publication_receipt(body:PrivatePublicationReceipt,tenant_id:str=Depends(tenant)):
+ return {'tenant_id':tenant_id,**verify_private_publication(body)}
