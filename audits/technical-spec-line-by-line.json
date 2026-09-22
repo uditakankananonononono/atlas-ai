@@ -176,9 +176,10 @@
       "source_line_end": 8,
       "source_excerpt": "Message Queue / Event Bus: Redis Streams for real\u2011time events between services; RabbitMQ optional for complex routing.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/platform/integrations.py",
+      "test_evidence": "tests/test_technical_architecture_real_adapters.py::test_a12_real_redis_stream_adapter_serializes_and_resumes_after_cursor",
+      "kind": "functional",
+      "evidence_kind": "adapter-schema-and-failure-behavior"
     },
     {
       "row": 13,
@@ -215,9 +216,10 @@
       "source_line_end": 9,
       "source_excerpt": "AI Orchestration: LangChain as an abstraction layer, custom prompt chaining, model routers that dynamically select among OpenAI (GPT\u20114o, GPT\u20114 Turbo), Anthropic Claude 3.5 Sonnet, Google Gemini 1.5 Pro, DeepSeek\u2011V2, and locally hosted models via Ollama (Llama 3.1 70B, DeepSeek\u2011Coder\u2011V2, Mixtral 8x22B).",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/core/providers.py",
+      "test_evidence": "tests/test_technical_architecture_real_adapters.py::test_a15_provider_adapters_send_real_provider_schema",
+      "kind": "functional",
+      "evidence_kind": "adapter-schema-and-failure-behavior"
     },
     {
       "row": 16,
@@ -228,9 +230,10 @@
       "source_line_end": 10,
       "source_excerpt": "Browser Automation: Playwright with stealth patches, managed via Browserless or a custom headless Chrome farm; fallback to Selenium for legacy sites.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "frontend",
+      "test_evidence": "tests/test_technical_architecture_real_adapters.py::test_a16_playwright_dependency_and_real_browser_e2e_config",
+      "kind": "functional",
+      "evidence_kind": "adapter-schema-and-failure-behavior"
     },
     {
       "row": 17,
@@ -241,9 +244,10 @@
       "source_line_end": 10,
       "source_excerpt": "Browser Automation: Playwright with stealth patches, managed via Browserless or a custom headless Chrome farm; fallback to Selenium for legacy sites.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "frontend",
+      "test_evidence": "tests/test_technical_architecture_real_adapters.py::test_a17_selenium_is_installed_as_fallback_not_default_browser_path",
+      "kind": "functional",
+      "evidence_kind": "adapter-schema-and-failure-behavior"
     },
     {
       "row": 18,
