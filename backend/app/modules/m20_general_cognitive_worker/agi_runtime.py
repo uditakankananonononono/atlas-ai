@@ -210,8 +210,9 @@ class SynthesizedTool:
 class ToolSynthesisLab:
     """Admits generated pure functions only after static and executable tests."""
 
-    def __init__(self, registry: ToolRegistry) -> None:
-        self.registry, self.proposals = registry, {}
+    def __init__(self, registry: ToolRegistry, approval_gate: ApprovalGate) -> None:
+        self.registry, self.approvals, self.proposals = registry, approval_gate, {}
+        self.admission_approvals: dict[str, str] = {}
 
     def propose(self, tool: SynthesizedTool) -> SynthesizedTool:
         tree = ast.parse(tool.source)
@@ -246,10 +247,23 @@ class ToolSynthesisLab:
         tool.status = "tested" if not failures and tool.cases else "rejected"
         return tool.test_report
 
-    def admit(self, name: str, *, approved: bool) -> SynthesizedTool:
+    def request_admission(self, name: str) -> str:
         tool = self.proposals[name]
-        if not approved or tool.status != "tested":
-            raise PermissionError("tested tool and explicit admission approval are required")
+        if tool.status != "tested":
+            raise PermissionError("tool must pass admission tests before review")
+        request = ApprovalGateRequest(action_type="admit_synthesized_tool", risk=Risk.EXTERNAL,
+                                      summary=f"Admit synthesized tool {name}",
+                                      payload={"name": name, "source_hash": tool.source_hash,
+                                               "test_report": tool.test_report})
+        approval_id = self.approvals.request(request)
+        self.admission_approvals[name] = approval_id
+        return approval_id
+
+    def admit(self, name: str, *, approval_id: str) -> SynthesizedTool:
+        tool = self.proposals[name]
+        if (tool.status != "tested" or self.admission_approvals.get(name) != approval_id or
+                self.approvals.decision(approval_id) != ApprovalGateDecision.APPROVED):
+            raise PermissionError("tested tool and exact admission approval are required")
         env = {"__builtins__": {x: getattr(__builtins__, x) if not isinstance(__builtins__, dict)
                                 else __builtins__[x] for x in _ALLOWED_CALLS}}
         exec(compile(ast.parse(tool.source), f"<synthesized:{name}>", "exec"), env)
@@ -277,9 +291,11 @@ class ImmutableBaseline:
 class SelfImprovementLab:
     """Evaluates candidates against immutable baselines before approval/apply."""
 
-    def __init__(self) -> None:
+    def __init__(self, approval_gate: ApprovalGate) -> None:
+        self.approvals = approval_gate
         self.history: dict[str, list[ImmutableBaseline]] = {}
         self.candidates: dict[str, dict[str, Any]] = {}
+        self.change_approvals: dict[str, str] = {}
 
     def establish(self, name: str, content: str, evaluator: Callable[[str], float]) -> ImmutableBaseline:
         if name in self.history:
@@ -299,20 +315,50 @@ class SelfImprovementLab:
         self.candidates[report["id"]] = report
         return report
 
-    def apply(self, candidate_id: str, *, approved: bool) -> ImmutableBaseline:
+    def request_apply(self, candidate_id: str) -> str:
+        report = self.candidates[candidate_id]
+        if not report["passed"]:
+            raise PermissionError("candidate did not pass its benchmark gate")
+        request = ApprovalGateRequest(action_type="apply_self_improvement", risk=Risk.EXTERNAL,
+                                      summary=f"Apply measured improvement to {report['name']}",
+                                      payload={k: report[k] for k in ("id", "name", "candidate_hash",
+                                                                       "baseline_hash", "baseline_score",
+                                                                       "candidate_score", "gain")})
+        approval_id = self.approvals.request(request)
+        self.change_approvals[candidate_id] = approval_id
+        return approval_id
+
+    def apply(self, candidate_id: str, *, approval_id: str) -> ImmutableBaseline:
         report = self.candidates[candidate_id]
         current = self.history[report["name"]][-1]
-        if not approved or not report["passed"] or current.content_hash != report["baseline_hash"]:
+        if (self.change_approvals.get(candidate_id) != approval_id or
+                self.approvals.decision(approval_id) != ApprovalGateDecision.APPROVED or
+                not report["passed"] or current.content_hash != report["baseline_hash"]):
             raise PermissionError("approved, passing candidate against current baseline required")
         version = self._version(report["name"], report["candidate"], report["candidate_score"],
                                 current.content_hash, current.version+1)
         self.history[report["name"]].append(version)
         return version
 
-    def rollback(self, name: str, version: int, *, approved: bool) -> ImmutableBaseline:
-        if not approved:
-            raise PermissionError("rollback approval required")
+    def request_rollback(self, name: str, version: int) -> str:
         target = next(v for v in self.history[name] if v.version == version)
+        current = self.history[name][-1]
+        request = ApprovalGateRequest(action_type="rollback_self_improvement", risk=Risk.EXTERNAL,
+                                      summary=f"Rollback {name} to content from version {version}",
+                                      payload={"name": name, "target_version": version,
+                                               "target_hash": target.content_hash,
+                                               "current_hash": current.content_hash})
+        approval_id = self.approvals.request(request)
+        self.change_approvals[f"rollback:{name}:{version}:{current.content_hash}"] = approval_id
+        return approval_id
+
+    def rollback(self, name: str, version: int, *, approval_id: str) -> ImmutableBaseline:
+        target = next(v for v in self.history[name] if v.version == version)
+        current = self.history[name][-1]
+        key = f"rollback:{name}:{version}:{current.content_hash}"
+        if (self.change_approvals.get(key) != approval_id or
+                self.approvals.decision(approval_id) != ApprovalGateDecision.APPROVED):
+            raise PermissionError("exact rollback approval required")
         current = self.history[name][-1]
         restored = self._version(name, target.content, target.benchmark_score,
                                  current.content_hash, current.version+1)

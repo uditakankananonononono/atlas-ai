@@ -38,27 +38,34 @@ def test_autonomous_goal_is_proposed_but_cannot_self_authorize(tmp_path):
 
 @pytest.mark.asyncio
 async def test_tool_synthesis_requires_safe_ast_passing_tests_and_admission():
-    registry=ToolRegistry(); lab=ToolSynthesisLab(registry)
+    registry=ToolRegistry(); gate=InMemoryApprovalGate(); lab=ToolSynthesisLab(registry,gate)
     with pytest.raises(ValueError,match='forbidden syntax'):
         lab.propose(SynthesizedTool('bad','import os\ndef run(arguments): return {}','bad',{},[]))
     tool=lab.propose(SynthesizedTool('total','def run(arguments):\n return {"total": sum(arguments["values"])}',
         'Sum numeric values',{'type':'object'},[{'input':{'values':[2,3]},'expected':{'total':5}}]))
     assert lab.test('total') == {'total':1,'passed':1,'failures':[]}
-    with pytest.raises(PermissionError): lab.admit('total',approved=False)
-    assert lab.admit('total',approved=True).source_hash == tool.source_hash
+    approval=lab.request_admission('total')
+    with pytest.raises(PermissionError): lab.admit('total',approval_id=approval)
+    gate.decide(approval,ApprovalGateDecision.APPROVED)
+    assert lab.admit('total',approval_id=approval).source_hash == tool.source_hash
     assert (await registry.get('total').handler({'values':[4,5]})) == {'total':9}
 
 
 def test_self_improvement_has_immutable_baseline_stale_guard_and_rollback():
-    lab=SelfImprovementLab(); score=lambda text: text.count('required')
+    gate=InMemoryApprovalGate(); lab=SelfImprovementLab(gate); score=lambda text: text.count('required')
     v1=lab.establish('planner','required',score)
     report=lab.evaluate('planner','required required',score,min_gain=1)
-    with pytest.raises(PermissionError): lab.apply(report['id'],approved=False)
-    v2=lab.apply(report['id'],approved=True)
+    approval=lab.request_apply(report['id'])
+    with pytest.raises(PermissionError): lab.apply(report['id'],approval_id=approval)
+    gate.decide(approval,ApprovalGateDecision.APPROVED)
+    v2=lab.apply(report['id'],approval_id=approval)
     assert (v1.version,v2.version,v2.parent_hash)==(1,2,v1.content_hash)
     stale=lab.evaluate('planner','required required required',score,min_gain=1)
     newer=lab.evaluate('planner','required required required required',score,min_gain=1)
-    lab.apply(newer['id'],approved=True)
-    with pytest.raises(PermissionError): lab.apply(stale['id'],approved=True)
-    restored=lab.rollback('planner',1,approved=True)
+    newer_approval=lab.request_apply(newer['id']); gate.decide(newer_approval,ApprovalGateDecision.APPROVED)
+    lab.apply(newer['id'],approval_id=newer_approval)
+    stale_approval=lab.request_apply(stale['id']); gate.decide(stale_approval,ApprovalGateDecision.APPROVED)
+    with pytest.raises(PermissionError): lab.apply(stale['id'],approval_id=stale_approval)
+    rollback_approval=lab.request_rollback('planner',1); gate.decide(rollback_approval,ApprovalGateDecision.APPROVED)
+    restored=lab.rollback('planner',1,approval_id=rollback_approval)
     assert restored.content == v1.content and restored.version == 4
