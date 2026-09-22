@@ -91,14 +91,14 @@ class Container:
         from .sql_repository import SqlCampaignRepository, SqlContactRepository
 
         contacts = SqlContactRepository(tenant_id)
-        self.outreach = Service(contacts, approvals, SemanticScholarClient(client))
+        self.outreach = Service(contacts, approvals, SemanticScholarClient(client), tenant_id=tenant_id)
         self.enrichment = EnrichmentService(
             contacts,
             HunterIoClient(client, os.getenv("HUNTER_API_KEY")),
             ClearbitClient(client, os.getenv("CLEARBIT_API_KEY")),
         )
         self.discovery = LabDiscoveryService(LabRegistry.load(), LabPageCollector(client))
-        self.campaigns = CampaignService(SqlCampaignRepository(tenant_id), contacts, approvals)
+        self.campaigns = CampaignService(SqlCampaignRepository(tenant_id), contacts, approvals, tenant_id=tenant_id)
         self.contacts = contacts
         sender = _smtp_from_env()
         self.delivery = (

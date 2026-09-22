@@ -128,7 +128,11 @@ class Service:
         approval_sink: ApprovalSink,
         scholar: SemanticScholarClient,
         llm_generate: GenerateFn = generate,
+        tenant_id: str = "local",
     ) -> None:
+        if not tenant_id.strip():
+            raise ValueError("tenant_id is required")
+        self.tenant_id = tenant_id.strip()
         self.repository = repository
         self.approval_sink = approval_sink
         self.scholar = scholar
@@ -191,6 +195,7 @@ class Service:
         if not contact.email:
             raise ValueError("contact has no verified email address")
         payload = {
+            "tenant_id": self.tenant_id,
             "contact_id": contact.id,
             "recipient": str(contact.email),
             "subject": draft.subject,
@@ -233,6 +238,7 @@ class Service:
         if not contact.email:
             raise ValueError("contact has no verified email address")
         payload = {
+            "tenant_id": self.tenant_id,
             "contact_id": contact.id,
             "recipient": str(contact.email),
             "subject": draft.subject,
