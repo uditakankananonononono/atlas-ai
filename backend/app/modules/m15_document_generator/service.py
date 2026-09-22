@@ -64,7 +64,7 @@ class Service:
         if len(figure_ids)!=len(set(figure_ids)):issues.append("figure IDs must be unique")
         return {"version_id":version.id,"ready":not issues,"issues":issues,"warnings":warnings,"content_hash":version.content_hash,"citation_count":len(version.citations),"figure_count":len(version.figures)}
     def propose_export(self,version:DocumentVersion)->ExportProposal:
-        stored=self._approvals.put(ApprovalRequest(id=str(uuid4()),module_id=15,action_type="render_document",payload={"tenant_id":version.tenant_id,"document_id":version.document_id,"version_id":version.id,"format":version.format,"template_id":version.template_id,"content_hash":version.content_hash}))
+        stored=self._approvals.put(ApprovalRequest(id=str(uuid4()),module_id=15,action_type="render_document",payload={"tenant_id":version.tenant_id,"document_id":version.document_id,"version_id":version.id,"format":version.format,"template_id":version.template_id,"content_hash":version.content_hash}),user_id=version.tenant_id)
         version.status="awaiting_approval";return ExportProposal(approval_id=stored.id,version_id=version.id,status=stored.status.value)
     @staticmethod
     def render_latex(template:Path,content:dict)->bytes:

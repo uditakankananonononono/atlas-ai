@@ -5,7 +5,7 @@ from app.modules.m14_project_builder.service import Service as Projects
 from app.modules.m15_document_generator.schemas import CreateVersionRequest
 from app.modules.m15_document_generator.service import Service as Documents
 class Approvals:
- def put(self,item):item.status=ApprovalStatus.PENDING;return item
+ def put(self,item,*,user_id=None):self.user_id=user_id;item.status=ApprovalStatus.PENDING;return item
 async def fake_generate(prompt,provider,model):
  return "model",json.dumps({"tasks":[{"id":"research","title":"Research","objective":"Find evidence","agent_kind":"literature","acceptance_criteria":["3 sources"]},{"id":"write","title":"Write","objective":"Create output","agent_kind":"writer","dependencies":["research"],"acceptance_criteria":["complete"]}],"risks":["source quality"]})
 def test_project_plan_and_approval():
