@@ -20,7 +20,7 @@ class ApprovalSpy:
     def __init__(self) -> None:
         self.items: list[ApprovalRequest] = []
 
-    def put(self, item: ApprovalRequest) -> ApprovalRequest:
+    def put(self, item: ApprovalRequest, *, user_id=None) -> ApprovalRequest:
         self.items.append(item)
         return item
 
@@ -222,7 +222,7 @@ class CallbackApprovalSpy(ApprovalSpy):
         super().__init__()
         self.callbacks = {}
 
-    def put(self, item):
+    def put(self, item, *, user_id=None):
         stored = item.model_copy(update={"id": "module-zero-id"})
         self.items.append(stored)
         return stored

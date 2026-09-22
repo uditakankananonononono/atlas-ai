@@ -323,7 +323,7 @@ class CampaignService:
         )
         if "pending_approval" not in _ALLOWED_TRANSITIONS[message.status]:
             raise CampaignStateError(f"cannot move message from {message.status} to pending_approval")
-        approval = self.approval_sink.put(approval)
+        approval = self.approval_sink.put(approval, user_id=self.tenant_id)
         register_callback = getattr(self.approval_sink, "register_callback", None)
         if register_callback is not None:
             def mirror_decision(view: dict[str, Any]) -> None:

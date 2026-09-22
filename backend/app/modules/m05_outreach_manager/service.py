@@ -205,7 +205,7 @@ class Service:
         approval = ApprovalRequest(
             id=str(uuid4()), module_id=5, action_type="send_outreach_email", payload=payload
         )
-        self.approval_sink.put(approval)
+        self.approval_sink.put(approval, user_id=self.tenant_id)
         return ProposedAction(
             approval_id=approval.id,
             action_type="send_outreach_email",
@@ -248,7 +248,7 @@ class Service:
         approval = ApprovalRequest(
             id=str(uuid4()), module_id=5, action_type="send_follow_up", payload=payload
         )
-        self.approval_sink.put(approval)
+        self.approval_sink.put(approval, user_id=self.tenant_id)
         return ProposedAction(
             approval_id=approval.id, action_type="send_follow_up", payload=payload
         )

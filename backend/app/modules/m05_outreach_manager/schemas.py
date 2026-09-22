@@ -161,12 +161,6 @@ class MessageDraftRequest(BaseModel):
     model: str | None = None
 
 
-class DecisionRecordRequest(BaseModel):
-    """Mirror a Module 0 decision onto a message."""
-
-    approved: bool
-    actor: str | None = Field(default=None, max_length=120)
-
 
 class ReplyRecordRequest(BaseModel):
     """Record a reply detected via provider thread metadata."""

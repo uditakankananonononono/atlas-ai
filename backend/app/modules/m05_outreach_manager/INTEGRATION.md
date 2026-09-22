@@ -24,7 +24,7 @@
 
 - `DeliveryService.send_approved` is triple-gated: the message must be in `approved` state, a Module 0 approval for that message must exist and be approved, and the approval payload must bind the exact recipient, subject, body, and message id. Any drift fails closed with no send.
 - `ModuleZeroApprovalGate` works over the facade's current `put/list/decide/audit` surface by scanning `list(module_id=5)`. **Request for the Module 0 lane:** add `approvals.get(approval_id)` to the facade so the gate can do a direct lookup instead of scanning. The gate already isolates this in one method.
-- The route layer exposes `POST /messages/{id}/decision` for local testing and for Module 0's decision callback. **Preferred production wiring:** Module 0's `decide()` should invoke a per-module callback (`CampaignService.record_decision(message_id, approved, actor)`), so approval state can never drift between the two stores. Until that callback exists, the endpoint keeps them consistent manually.
+- Module 0 `decide()` invokes the registered per-message callback (`CampaignService.record_decision(message_id, approved, actor)`). There is no public message-decision route: callers cannot mirror or self-attest an approval.
 - `submit_for_approval` registers the approval with payload `{recipient, subject, body, sending_account, message_id}` so the gate's exact-match check has something to bind against.
 
 ## Follow-up scheduling
