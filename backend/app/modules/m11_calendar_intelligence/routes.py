@@ -49,18 +49,27 @@ router = APIRouter(prefix="/calendar-intelligence", tags=["calendar-intelligence
 class Module0ApprovalGate:
     """Approval-gate adapter over the shared Module 0 service."""
 
+    def __init__(self, tenant_id: str) -> None:
+        self.tenant_id = tenant_id
+
     def put(self, item: ApprovalRequest) -> ApprovalRequest:
-        return approvals.put(item)
+        return approvals.put(item, user_id=self.tenant_id)
 
     def status(self, approval_id: str) -> str:
         try:
-            return default_service().get(approval_id)["status"].value
+            view = default_service().get(approval_id)
+            if view["user_id"] != self.tenant_id:
+                raise KeyError(approval_id)
+            return view["status"].value
         except ApprovalNotFoundError as exc:
             raise KeyError(approval_id) from exc
 
     def payload(self, approval_id: str) -> dict:
         try:
-            return dict(default_service().get(approval_id)["payload"])
+            view = default_service().get(approval_id)
+            if view["user_id"] != self.tenant_id:
+                raise KeyError(approval_id)
+            return dict(view["payload"])
         except ApprovalNotFoundError as exc:
             raise KeyError(approval_id) from exc
 
@@ -73,7 +82,7 @@ async def get_service(tenant: TenantContext = Depends(require_tenant)) -> AsyncI
     async with httpx.AsyncClient(timeout=30) as client:
         yield Service(
             SqlCalendarRepository(tenant.tenant_id),
-            Module0ApprovalGate(),
+            Module0ApprovalGate(tenant.tenant_id),
             cipher=cipher,
             google=HttpxGoogleCalendarClient(client),
             caldav=HttpxCalDAVClient(client, username="", password=""),

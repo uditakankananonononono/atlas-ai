@@ -464,6 +464,7 @@ class Service:
         plan = self._plan(plan_id)
         blocks = self.repository.plan_blocks(plan_id)
         payload = {
+            "tenant_id": self.repository.tenant_id,
             "plan_id": plan_id,
             "week_start": plan.week_start,
             "blocks": [
@@ -572,6 +573,7 @@ class Service:
 
         chosen = alternatives[0]
         payload = {
+            "tenant_id": self.repository.tenant_id,
             "task": {"id": new_task.id, **data.model_dump(mode="json")},
             "alternative": chosen.kind,
             "blocks": [b.model_dump(mode="json") for b in chosen.blocks],

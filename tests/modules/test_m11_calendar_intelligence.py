@@ -369,6 +369,7 @@ def test_plan_propose_apply_is_approval_gated(tmp_path):
     proposal = service.propose_plan(plan.id)
     assert proposal.action_type == "apply_calendar_plan"
     assert gate.items[proposal.approval_id].module_id == 11
+    assert gate.items[proposal.approval_id].payload["tenant_id"] == "tenant-a"
 
     with pytest.raises(ApprovalNotGrantedError):
         service.apply_plan(proposal.approval_id)
