@@ -50,7 +50,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 ## M15 - Document Generator
 - **Landed:** version preflight endpoint checks empty content, duplicate citations/figures, missing citation URLs, empty PPTX and likely slide overflow before export approval.
 - **Landed:** private-publication receipt verification requires consumed approval, private access, HTTPS download URL and exact approved-vs-published SHA-256 match.
-- **Next:** execute the renderer and private object-store upload in the approved worker, then authenticate the provider receipt rather than accepting supplied receipt fields.
+- **Landed:** provider-publication receipt verification binds a consumed approval and approved render hash to a private HTTPS object receipt authenticated with a configured provider HMAC key.
+- **Next:** execute the renderer and private upload in the approved worker and replace shared-key receipt validation with provider-issued asymmetric signatures.
 ## M16 - Executive Dashboard
 - **Landed (science):** gap-to-proof dashboard reports exact requirement and per-module gaps while keeping code artifacts, test evidence and live acceptance separate.
 - **Next:** ingest authenticated producer events and deployment receipts instead of caller-supplied proof identifiers.
