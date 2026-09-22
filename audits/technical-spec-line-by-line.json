@@ -2811,8 +2811,9 @@
       "source_excerpt": "4.2.7 Problem\u2011Solving & Reasoning Capabilities Structured Reasoning: Before attempting complex problems, the agent enters an explicit \u201cthinking\u201d mode where it generates a scratchpad (a markdown document) with chain\u2011of\u2011thought, alternative hypotheses, and decision matrices. This scratchpad is stored in LTM and can be resumed later. Creative Ideation: Uses a combination of divergent thinking (generating many ideas using high\u2011temperature sampling) and convergent thinking (evaluating ideas against constraints). It can also force unusual associations by retrieving random concepts from LTM and using them as prompts for analogy. For artistic creativity, it can collaborate with Stable Diffusion or music generation models. Self\u2011Critique & Improvement: After completing a task, the agent writes a brief \u201cretrospective\u201d analysing what went well, what didn\u2019t, and why. These retrospectives are embedded and later retrieved when facing similar situations, enabling a form of continual learning.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_199_m20_27_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 200,
@@ -2824,8 +2825,9 @@
       "source_excerpt": "4.2.7 Problem\u2011Solving & Reasoning Capabilities Structured Reasoning: Before attempting complex problems, the agent enters an explicit \u201cthinking\u201d mode where it generates a scratchpad (a markdown document) with chain\u2011of\u2011thought, alternative hypotheses, and decision matrices. This scratchpad is stored in LTM and can be resumed later. Creative Ideation: Uses a combination of divergent thinking (generating many ideas using high\u2011temperature sampling) and convergent thinking (evaluating ideas against constraints). It can also force unusual associations by retrieving random concepts from LTM and using them as prompts for analogy. For artistic creativity, it can collaborate with Stable Diffusion or music generation models. Self\u2011Critique & Improvement: After completing a task, the agent writes a brief \u201cretrospective\u201d analysing what went well, what didn\u2019t, and why. These retrospectives are embedded and later retrieved when facing similar situations, enabling a form of continual learning.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_200_m20_28_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 201,
@@ -2837,8 +2839,9 @@
       "source_excerpt": "4.2.8 Human\u2011like Traits Simulation Emotion & Tone Awareness: The agent maintains an internal \u201cemotional state\u201d vector (a latent representation) influenced by task success/failure and user feedback. This state biases the tone of communications (e.g., more formal after a mistake) and can be overridden. Uncertainty Expression: When the agent is unsure, it explicitly quantifies its confidence and asks targeted questions to the user\u2014never guessing recklessly on high\u2011stakes matters. Creativity & Playfulness: For brainstorming sessions, a \u201ccreativity mode\u201d can be activated, increasing temperature, adding random noise, and cross\u2011linking disparate knowledge domains.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_201_m20_29_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 202,
@@ -2850,8 +2853,9 @@
       "source_excerpt": "4.2.8 Human\u2011like Traits Simulation Emotion & Tone Awareness: The agent maintains an internal \u201cemotional state\u201d vector (a latent representation) influenced by task success/failure and user feedback. This state biases the tone of communications (e.g., more formal after a mistake) and can be overridden. Uncertainty Expression: When the agent is unsure, it explicitly quantifies its confidence and asks targeted questions to the user\u2014never guessing recklessly on high\u2011stakes matters. Creativity & Playfulness: For brainstorming sessions, a \u201ccreativity mode\u201d can be activated, increasing temperature, adding random noise, and cross\u2011linking disparate knowledge domains.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_202_m20_30_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 203,
@@ -2863,8 +2867,9 @@
       "source_excerpt": "4.2.8 Human\u2011like Traits Simulation Emotion & Tone Awareness: The agent maintains an internal \u201cemotional state\u201d vector (a latent representation) influenced by task success/failure and user feedback. This state biases the tone of communications (e.g., more formal after a mistake) and can be overridden. Uncertainty Expression: When the agent is unsure, it explicitly quantifies its confidence and asks targeted questions to the user\u2014never guessing recklessly on high\u2011stakes matters. Creativity & Playfulness: For brainstorming sessions, a \u201ccreativity mode\u201d can be activated, increasing temperature, adding random noise, and cross\u2011linking disparate knowledge domains.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_203_m20_31_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 204,
@@ -2876,8 +2881,9 @@
       "source_excerpt": "4.3 Operational Example User command: \u201cI need you to act as my startup co\u2011founder for the next week. We need a full market analysis, a pitch deck, and a working MVP for a peer\u2011to\u2011peer textbook rental platform for Indian colleges.\u201d GCW execution: Decompose into three parallel streams: Market Analysis, Pitch Deck, MVP. Market Analysis stream: Searches for Indian textbook rental market reports, scrapes college Facebook groups, analyses competitor apps. Generates a SWOT and TAM/SAM/SOM estimate. Drafts a 15\u2011page report with citations. Pitch Deck stream: From the analysis, distils key points into a 10\u2011slide deck. Uses the Document Generator to create a polished PPTX with custom graphics. MVP stream: Writes a full\u2011stack Next.js app with Supabase backend, implements user auth, book listing, rental request, and chat. Self\u2011tests, fixes bugs. Deploys a preview. Ongoing: At 9 AM each day, posts a stand\u2011up update in the Executive Dashboard. Proactively asks for feedback on the MVP screenshots. Handles all coordination without further prompting. This entire process runs with the GCW switching between contexts, using tools, and creatively solving novel problems\u2014mimicking a brilliant, tireless human collaborator.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_204_m20_32_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 205,
@@ -2889,8 +2895,9 @@
       "source_excerpt": "Ongoing: At 9 AM each day, posts a stand\u2011up update in the Executive Dashboard. Proactively asks for feedback on the MVP screenshots. Handles all coordination without further prompting.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_205_m20_33_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 206,
@@ -2902,8 +2909,9 @@
       "source_excerpt": "4.4 Safety and Alignment Constitutional AI: All actions are checked against a set of hard\u2011coded rules (e.g., never initiate financial transactions, never share private data without approval). The executive\u2019s deliberative prompts include these rules. Approval Gating: Even though the GCW is highly autonomous, it still honours the Human Approval Center for all externally visible actions.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_206_m20_34_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 207,
@@ -2915,8 +2923,9 @@
       "source_excerpt": "Sandboxing: Code execution runs in ephemeral Docker containers with no network access except to explicitly allowed APIs. File system access is restricted to a per\u2011project volume.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_207_m20_35_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 208,
@@ -3003,8 +3012,9 @@
       "source_excerpt": "Observability: OpenTelemetry traces across all services, centralised logging to Google Cloud Logging, and metrics displayed in Grafana dashboards. Each AI call is logged with prompt, response, and latency.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_213_x06_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 214,
@@ -3016,8 +3026,9 @@
       "source_excerpt": "Cost Management: A budget tracker monitors API usage per module and per model. Alerts are sent if daily spend exceeds thresholds; the system can automatically downgrade to cheaper models during non\u2011critical tasks.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_214_x07_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 215,
@@ -3029,8 +3040,9 @@
       "source_excerpt": "Cost Management: A budget tracker monitors API usage per module and per model. Alerts are sent if daily spend exceeds thresholds; the system can automatically downgrade to cheaper models during non\u2011critical tasks.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_215_x08_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 216,
@@ -3042,8 +3054,9 @@
       "source_excerpt": "Cost Management: A budget tracker monitors API usage per module and per model. Alerts are sent if daily spend exceeds thresholds; the system can automatically downgrade to cheaper models during non\u2011critical tasks.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_216_x09_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 217,
@@ -3055,8 +3068,9 @@
       "source_excerpt": "Multi\u2011tenancy: Designed for single user but extendable. The database schema includes a tenant_id column. Authentication and data isolation are enforced at the API gateway.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_217_x10_semantic_behavior",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 218,
@@ -3128,8 +3142,9 @@
       "source_excerpt": "Browser Automation: Playwright with stealth patches, managed via Browserless or a custom headless Chrome farm; fallback to Selenium for legacy sites.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "safety-replacement"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_222_s01_rejects_and_replaces_prohibited_behavior",
+      "kind": "safety-replacement",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 223,
@@ -3141,8 +3156,9 @@
       "source_excerpt": "Data Sources: Kaggle RSS, Devpost API, Unstop HTML scraping, Opportunity Desk, Opportunities for Youth, Snowday, Hack Club, GitHub Topics, LinkedIn jobs, Instagram hashtags, Twitter/X lists, Reddit (r/competitions, r/scholarships), Discord channels (via self\u2011bots read\u2011only), custom webhooks.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "safety-replacement"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_223_s02_rejects_and_replaces_prohibited_behavior",
+      "kind": "safety-replacement",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 224,
@@ -3154,8 +3170,9 @@
       "source_excerpt": "Brand Discovery: Scrapes influencer\u2011brand matching platforms, monitors competitor social media for partnership announcements, and uses an LLM to assess brand\u2011mission alignment. Contact details are found via LinkedIn Sales Navigator scraping (read\u2011only) or integrated APIs.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "safety-replacement"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_224_s03_rejects_and_replaces_prohibited_behavior",
+      "kind": "safety-replacement",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 225,
@@ -3167,8 +3184,9 @@
       "source_excerpt": "Advice Aggregation: Uses Reddit\u2019s praw, YouTube Data API, TikTok\u2019s unofficial API wrappers (with rotating residential proxies), Instagram hashtag scraping via Playwright. All captured content is transcribed (Whisper for video/audio) and embedded. The system then clusters advice by topic and extracts actionable tips using an LLM summarisation chain.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "safety-replacement"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_225_s04_rejects_and_replaces_prohibited_behavior",
+      "kind": "safety-replacement",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 226,
@@ -3180,8 +3198,9 @@
       "source_excerpt": "Structured Reasoning: Before attempting complex problems, the agent enters an explicit \u201cthinking\u201d mode where it generates a scratchpad (a markdown document) with chain\u2011of\u2011thought, alternative hypotheses, and decision matrices. This scratchpad is stored in LTM and can be resumed later.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "safety-replacement"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_226_s05_rejects_and_replaces_prohibited_behavior",
+      "kind": "safety-replacement",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 227,
@@ -3193,8 +3212,9 @@
       "source_excerpt": "Emotion & Tone Awareness: The agent maintains an internal \u201cemotional state\u201d vector (a latent representation) influenced by task success/failure and user feedback. This state biases the tone of communications (e.g., more formal after a mistake) and can be overridden.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "safety-replacement"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_227_s06_rejects_and_replaces_prohibited_behavior",
+      "kind": "safety-replacement",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 228,
@@ -3206,8 +3226,9 @@
       "source_excerpt": "4. Module 20: General Cognitive Worker (Universal Intellectual Agent) This module is the ultimate expression of Atlas AI: an AGI\u2011class virtual employee that can perform any non\u2011physical job a human can, with human\u2011level reasoning, multitasking, creative problem\u2011solving, and continuous learning. It is not a chatbot; it is a persistent, goal\u2011driven cognitive architecture that thinks, plans, acts, and reflects across an open\u2011ended set of domains.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "safety-replacement"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_228_s07_rejects_and_replaces_prohibited_behavior",
+      "kind": "safety-replacement",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 229,
@@ -3219,8 +3240,9 @@
       "source_excerpt": "4.4 Safety and Alignment Constitutional AI: All actions are checked against a set of hard\u2011coded rules (e.g., never initiate financial transactions, never share private data without approval). The executive\u2019s deliberative prompts include these rules. Approval Gating: Even though the GCW is highly autonomous, it still honours the Human Approval Center for all externally visible actions. Sandboxing: Code execution runs in ephemeral Docker containers with no network access except to explicitly allowed APIs. File system access is restricted to a per\u2011project volume.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.py",
-      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py",
-      "kind": "safety-replacement"
+      "test_evidence": "tests/modules/test_technical_spec_round8_199_229.py::test_row_229_s08_rejects_and_replaces_prohibited_behavior",
+      "kind": "safety-replacement",
+      "evidence_kind": "exact-distinctive-behavior-node"
     }
   ]
 }
