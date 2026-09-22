@@ -9,14 +9,15 @@ from app.modules.m03_grant_writer.schemas import ExportRequest
 
 class ApprovalSpy:
     def __init__(self): self.items = []
-    def put(self, item): self.items.append(item); return item
+    def put(self, item, *, user_id=None): self.items.append((item, user_id)); return item
 
 
 def test_export_approval_is_bound_to_service_tenant():
     spy = ApprovalSpy()
     service = Service(spy, tenant_id="tenant-a")
     service.propose_export(ExportRequest(title="Proposal", proposal="A sufficiently long proposal body for review."))
-    assert spy.items[0].payload["tenant_id"] == "tenant-a"
+    assert spy.items[0][0].payload["tenant_id"] == "tenant-a"
+    assert spy.items[0][1] == "tenant-a"
 
 
 def test_empty_tenant_fails_closed():
