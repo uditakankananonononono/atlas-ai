@@ -262,3 +262,9 @@ from .proof_gaps import ProofGapRequest,dashboard as proof_gap_dashboard
 def proof_gaps(body:ProofGapRequest):
  try:return proof_gap_dashboard(body)
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .authenticated_proof_events import VerifyProofEvents,verify_proof_events
+@router.post('/proof-gaps/events/verify')
+def authenticated_proof_events(body:VerifyProofEvents):
+ try:return verify_proof_events(body)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
