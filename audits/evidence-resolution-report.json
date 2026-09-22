@@ -1137,37 +1137,37 @@
         },
         {
           "row": "M20-17",
-          "evidence": "tests/test_technical_spec_166_198.py::test_row_189_m20_17",
+          "evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_189_typed_registry_selects_browser_when_no_free_api_and_emits_audit",
           "resolved": true,
           "reason": null
         },
         {
           "row": "M20-18",
-          "evidence": "tests/test_technical_spec_166_198.py::test_row_190_m20_18",
+          "evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_190_python_sandbox_preserves_api_when_available_and_validates_types",
           "resolved": true,
           "reason": null
         },
         {
           "row": "M20-19",
-          "evidence": "tests/test_technical_spec_166_198.py::test_row_191_m20_19",
+          "evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_191_shell_keeps_permission_boundary_and_actor_isolation",
           "resolved": true,
           "reason": null
         },
         {
           "row": "M20-20",
-          "evidence": "tests/test_technical_spec_166_198.py::test_row_192_m20_20",
+          "evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_192_search_free_first_order_and_final_submit_approval_gate",
           "resolved": true,
           "reason": null
         },
         {
           "row": "M20-21",
-          "evidence": "tests/test_technical_spec_166_198.py::test_row_193_m20_21",
+          "evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_193_workspace_route_fails_honestly_when_site_blocks_automation",
           "resolved": true,
           "reason": null
         },
         {
           "row": "M20-22",
-          "evidence": "tests/test_technical_spec_166_198.py::test_row_194_m20_22",
+          "evidence": "tests/test_gcw_tool_integration_189_194.py::test_row_194_rest_paid_only_falls_back_to_github_build_test_deploy_pipeline",
           "resolved": true,
           "reason": null
         },
