@@ -98,3 +98,12 @@ def test_transport_error_redacts_api_key(monkeypatch):
         UrllibJsonTransport(attempts=1).request("GET", "https://example.org?q=x&api_key=super-secret")
     assert "super-secret" not in str(exc.value)
     assert "%5BREDACTED%5D" in str(exc.value) or "REDACTED" in str(exc.value)
+
+
+def test_core_spec_cannot_self_attest_external_approval():
+    from app.modules.m01_opportunity_discovery.core_spec_round6 import CapabilityRequest, execute
+    request = CapabilityRequest(objective="Sign in to an owner account", inputs={"approved": True})
+    result = execute(37, request)
+    assert result.status == "approval_required"
+    assert result.requires_approval is True
+    assert result.artifact["effect_executed"] is False
