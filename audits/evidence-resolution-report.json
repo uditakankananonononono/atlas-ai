@@ -1386,8 +1386,8 @@
     {
       "ledger": "audits/additional-2000-features.json",
       "total": 2010,
-      "resolvable_nodes": 215,
-      "unresolved": 1795,
+      "resolvable_nodes": 315,
+      "unresolved": 1695,
       "results": [
         {
           "row": 1,
@@ -10745,303 +10745,303 @@
         },
         {
           "row": 1560,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1560_bend_testing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1561,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1561_non_destructive_testing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1562,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1562_ultrasonic_testing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1563,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1563_radiographic_testing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1564,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1564_magnetic_particle_testing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1565,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1565_dye_penetrant_testing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1566,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1566_eddy_current_testing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1567,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1567_acoustic_emission_testing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1568,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1568_thermography",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1569,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1569_visual_inspection",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1570,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1570_electrical_engineering",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1571,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1571_circuit_design",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1572,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1572_pcb_design",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1573,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1573_signal_processing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1574,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1574_control_systems",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1575,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1575_power_electronics",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1576,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1576_motor_control",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1577,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1577_power_systems",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1578,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1578_renewable_energy",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1579,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1579_solar_power",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1580,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1580_wind_power",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1581,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1581_hydro_power",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1582,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1582_geothermal",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1583,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1583_energy_storage",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1584,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1584_battery_technology",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1585,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1585_fuel_cells",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1586,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1586_supercapacitors",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1587,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1587_smart_grid",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1588,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1588_microgrids",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1589,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1589_hvdc",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1590,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1590_facts",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1591,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1591_power_quality",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1592,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1592_electromagnetic_compatibility",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1593,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1593_antenna_design",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1594,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1594_rf_engineering",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1595,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1595_microwave_engineering",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1596,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1596_radar_systems",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1597,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1597_communications_systems",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1598,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1598_wireless_communications",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1599,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1599_5g_6g",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1600,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1600_optical_communications",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1601,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1601_satellite_communications",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1602,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1602_deep_space_communications",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1603,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1603_information_theory",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1604,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1604_coding_theory",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1605,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1605_error_correction",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1606,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1606_compression",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1607,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1607_encryption",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1608,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1608_network_security",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1609,
-          "evidence": "tests/modules/test_m12_engineering_1560_1609.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1609_cybersecurity",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1610,
@@ -12845,303 +12845,303 @@
         },
         {
           "row": 1910,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1910_large_language_models",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1911,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1911_multimodal_ai",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1912,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1912_vision_language_models",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1913,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1913_text_to_image_generation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1914,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1914_text_to_video_generation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1915,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1915_text_to_3d_generation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1916,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1916_text_to_audio_generation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1917,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1917_music_generation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1918,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1918_voice_cloning",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1919,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1919_deepfakes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1920,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1920_ai_art",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1921,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1921_ai_writing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1922,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1922_ai_coding",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1923,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1923_ai_agents",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1924,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1924_autonomous_agents",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1925,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1925_multi_agent_systems",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1926,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1926_agent_communication",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1927,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1927_agent_coordination",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1928,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1928_agent_negotiation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1929,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1929_agent_learning",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1930,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1930_reinforcement_learning_from_human_feedback",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1931,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1931_constitutional_ai",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1932,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1932_ai_alignment",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1933,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1933_ai_safety",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1934,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1934_ai_ethics",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1935,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1935_explainable_ai",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1936,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1936_interpretable_ai",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1937,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1937_fair_ai",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1938,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1938_responsible_ai",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1939,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1939_trustworthy_ai",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1940,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1940_ai_governance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1941,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1941_ai_regulation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1942,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1942_ai_policy",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1943,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1943_ai_standards",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1944,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1944_ai_auditing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1945,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1945_ai_certification",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1946,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1946_ai_testing",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1947,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1947_ai_verification",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1948,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1948_ai_validation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1949,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1949_ai_assurance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1950,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1950_foundation_models",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1951,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1951_pre_trained_models",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1952,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1952_fine_tuning",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1953,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1953_transfer_learning",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1954,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1954_few_shot_learning",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1955,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1955_zero_shot_learning",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1956,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1956_in_context_learning",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1957,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1957_prompt_engineering",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1958,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1958_chain_of_thought",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1959,
-          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1959_tree_of_thought",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1960,

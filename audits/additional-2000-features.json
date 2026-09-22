@@ -23092,7 +23092,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1560_bend_testing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23106,7 +23107,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1561_non_destructive_testing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23120,7 +23122,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1562_ultrasonic_testing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23134,7 +23137,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1563_radiographic_testing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23148,7 +23152,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1564_magnetic_particle_testing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23162,7 +23167,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1565_dye_penetrant_testing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23176,7 +23182,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1566_eddy_current_testing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23190,7 +23197,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1567_acoustic_emission_testing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23204,7 +23212,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1568_thermography",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23218,7 +23227,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1569_visual_inspection",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23232,7 +23242,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1570_electrical_engineering",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23246,7 +23257,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1571_circuit_design",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23260,7 +23272,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1572_pcb_design",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23274,7 +23287,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1573_signal_processing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23288,7 +23302,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1574_control_systems",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23302,7 +23317,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1575_power_electronics",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23316,7 +23332,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1576_motor_control",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23330,7 +23347,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1577_power_systems",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23344,7 +23362,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1578_renewable_energy",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23358,7 +23377,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1579_solar_power",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23372,7 +23392,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1580_wind_power",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23386,7 +23407,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1581_hydro_power",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23400,7 +23422,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1582_geothermal",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23414,7 +23437,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1583_energy_storage",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23428,7 +23452,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1584_battery_technology",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23442,7 +23467,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1585_fuel_cells",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23456,7 +23482,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1586_supercapacitors",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23470,7 +23497,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1587_smart_grid",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23484,7 +23512,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1588_microgrids",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23498,7 +23527,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1589_hvdc",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23512,7 +23542,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1590_facts",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23526,7 +23557,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1591_power_quality",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23540,7 +23572,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1592_electromagnetic_compatibility",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23554,7 +23587,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1593_antenna_design",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23568,7 +23602,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1594_rf_engineering",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23582,7 +23617,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1595_microwave_engineering",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23596,7 +23632,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1596_radar_systems",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23610,7 +23647,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1597_communications_systems",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23624,7 +23662,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1598_wireless_communications",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23638,7 +23677,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1599_5g_6g",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23652,7 +23692,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1600_optical_communications",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23666,7 +23707,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1601_satellite_communications",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23680,7 +23722,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1602_deep_space_communications",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23694,7 +23737,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1603_information_theory",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23708,7 +23752,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1604_coding_theory",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23722,7 +23767,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1605_error_correction",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23736,7 +23782,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1606_compression",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23750,7 +23797,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1607_encryption",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23764,7 +23812,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1608_network_security",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -23778,7 +23827,8 @@
       "evidence": {
         "commit": "eb375db7056d6adc8f0568a22523e5599a7f05a1",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/engineering_support_1560_1609.py",
-        "test_path": "tests/modules/test_m12_engineering_1560_1609.py"
+        "test_path": "tests/modules/test_m12_engineering_1560_1609.py::test_row_1609_cybersecurity",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable engineering analysis on caller-supplied inputs with units, assumptions, validation and explicit limits. Qualified engineers retain design, safety-factor, cybersecurity, compliance, manufacturing and deployment decisions; Atlas does not control equipment or certify a design."
     },
@@ -27992,7 +28042,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1910_large_language_models",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28006,7 +28057,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1911_multimodal_ai",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28020,7 +28072,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1912_vision_language_models",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28034,7 +28087,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1913_text_to_image_generation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28048,7 +28102,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1914_text_to_video_generation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28062,7 +28117,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1915_text_to_3d_generation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28076,7 +28132,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1916_text_to_audio_generation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28090,7 +28147,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1917_music_generation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28104,7 +28162,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1918_voice_cloning",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28118,7 +28177,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1919_deepfakes",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28132,7 +28192,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1920_ai_art",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28146,7 +28207,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1921_ai_writing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28160,7 +28222,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1922_ai_coding",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28174,7 +28237,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1923_ai_agents",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28188,7 +28252,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1924_autonomous_agents",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28202,7 +28267,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1925_multi_agent_systems",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28216,7 +28282,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1926_agent_communication",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28230,7 +28297,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1927_agent_coordination",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28244,7 +28312,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1928_agent_negotiation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28258,7 +28327,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1929_agent_learning",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28272,7 +28342,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1930_reinforcement_learning_from_human_feedback",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28286,7 +28357,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1931_constitutional_ai",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28300,7 +28372,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1932_ai_alignment",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28314,7 +28387,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1933_ai_safety",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28328,7 +28402,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1934_ai_ethics",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28342,7 +28417,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1935_explainable_ai",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28356,7 +28432,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1936_interpretable_ai",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28370,7 +28447,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1937_fair_ai",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28384,7 +28462,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1938_responsible_ai",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28398,7 +28477,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1939_trustworthy_ai",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28412,7 +28492,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1940_ai_governance",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28426,7 +28507,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1941_ai_regulation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28440,7 +28522,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1942_ai_policy",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28454,7 +28537,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1943_ai_standards",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28468,7 +28552,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1944_ai_auditing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28482,7 +28567,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1945_ai_certification",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28496,7 +28582,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1946_ai_testing",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28510,7 +28597,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1947_ai_verification",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28524,7 +28612,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1948_ai_validation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28538,7 +28627,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1949_ai_assurance",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28552,7 +28642,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1950_foundation_models",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28566,7 +28657,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1951_pre_trained_models",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28580,7 +28672,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1952_fine_tuning",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28594,7 +28687,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1953_transfer_learning",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28608,7 +28702,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1954_few_shot_learning",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28622,7 +28717,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1955_zero_shot_learning",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28636,7 +28732,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1956_in_context_learning",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28650,7 +28747,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1957_prompt_engineering",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28664,7 +28762,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1958_chain_of_thought",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
@@ -28678,7 +28777,8 @@
       "evidence": {
         "commit": "1c58fb558ebea46041bb25e202b23b699666f014",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/ai_systems_1910_1959.py",
-        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py"
+        "test_path": "tests/modules/test_m16_ai_systems_1910_1959.py::test_row_1959_tree_of_thought",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-numerical-and-boundary-node"
       },
       "boundary": "Auditable AI-system evaluation with explicit assumptions, evidence, uncertainty, budgets, failure modes and reproducible metrics. No hidden capability claims, autonomous deployment, unsafe tool action or unverified completion assertion."
     },
