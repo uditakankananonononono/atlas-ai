@@ -21,6 +21,7 @@ def test_checked_in_report_preserves_unresolved_rows_instead_of_upgrading_them()
     report=json.loads(Path('audits/evidence-resolution-report.json').read_text())
     by_name={Path(r['ledger']).name:r for r in report['reports']}
     assert by_name['technical-spec-line-by-line.json']['total']==229
-    assert by_name['technical-spec-line-by-line.json']['unresolved']>0
-    assert by_name['additional-2000-features.json']['total']==2010
+    assert by_name['technical-spec-line-by-line.json']['resolvable_nodes']==229
+    assert by_name['technical-spec-line-by-line.json']['unresolved']==0
+    assert by_name['additional-2000-features.json']['total']==2006
     assert by_name['additional-2000-features.json']['unresolved']>0
