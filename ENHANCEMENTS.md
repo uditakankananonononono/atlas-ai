@@ -60,7 +60,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 ## M16 - Executive Dashboard
 - **Landed (science):** gap-to-proof dashboard reports exact requirement and per-module gaps while keeping code artifacts, test evidence and live acceptance separate.
 - **Landed:** proof-event verification authenticates producer events with configured HMAC keys and requires deployment receipts to carry version and environment bindings.
-- **Next:** subscribe to producer event streams, persist events immutably, and adopt asymmetric producer signatures.
+- **Landed:** Ed25519 proof-event verification authenticates canonical producer events with configured public keys and preserves deployment receipt bindings.
+- **Next:** subscribe to producer event streams, persist events immutably, and govern producer-key provisioning and rotation.
 ## M17 - Narrative Architect
 - **Landed:** canonical service now legally wires Reddit by default and optional official YouTube/Pinterest plus allowlisted public pages through shared bounded collectors.
 - **Landed:** owner-material evidence completeness meter links every concept and critique suggestion to hashed owner records, exposes missing references and exact coverage, and never claims truth or disclosure permission.
