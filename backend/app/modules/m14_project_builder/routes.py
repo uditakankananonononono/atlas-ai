@@ -199,3 +199,15 @@ def get_live_receipt_store(context:TenantContext=Depends(require_tenant)):return
 def verify_and_persist_proof_live_receipts(body:VerifyLiveReceipts,context:TenantContext=Depends(require_tenant),store=Depends(get_live_receipt_store)):
  try:return {'tenant_id':context.tenant_id,**verify_and_persist_live_receipts(body,store)}
  except ValueError as error:raise HTTPException(409,str(error)) from error
+from .issuer_key_registry import IssuerKeyRegistry,RegisterIssuerKey
+def get_issuer_key_registry(context:TenantContext=Depends(require_tenant)):return IssuerKeyRegistry(context.tenant_id)
+@router.post('/proof-status/issuer-keys')
+def register_proof_issuer_key(body:RegisterIssuerKey,context:TenantContext=Depends(require_tenant),registry=Depends(get_issuer_key_registry)):
+ try:
+  row=registry.register(body);return {'tenant_id':context.tenant_id,'issuer':row.issuer,'key_id':row.key_id,'fingerprint_sha256':row.fingerprint_sha256,'active':row.active,'boundary':'Registers only public verification-key bytes under tenant and issuer. It does not prove issuer identity or authorize trust without administrative provisioning.'}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
+@router.post('/proof-status/issuer-keys/{issuer}/{key_id}/retire')
+def retire_proof_issuer_key(issuer:str,key_id:str,context:TenantContext=Depends(require_tenant),registry=Depends(get_issuer_key_registry)):
+ try:
+  row=registry.retire(issuer,key_id);return {'tenant_id':context.tenant_id,'issuer':issuer,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
+ except ValueError as error:raise HTTPException(404,str(error)) from error
