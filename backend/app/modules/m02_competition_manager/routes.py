@@ -99,10 +99,10 @@ def update_status(competition_id: str, request: StatusUpdate, service: Service =
 
 
 @router.post("/competitions/{competition_id}/answers/review-package")
-async def prepare_humanized_answers(competition_id:str,request:ApplicationAnswersIn):
+async def prepare_humanized_answers(competition_id:str,request:ApplicationAnswersIn,tenant:TenantContext=Depends(require_tenant)):
     from .application_pipeline import ApplicationAnswerPipeline
     from .humanize import NaturalVoiceService
-    return await ApplicationAnswerPipeline(NaturalVoiceService(generate),approvals).prepare_review(competition_id,request.answers,request.provider)
+    return await ApplicationAnswerPipeline(NaturalVoiceService(generate),approvals,tenant.tenant_id).prepare_review(competition_id,request.answers,request.provider)
 
 
 @router.post("/competitions/{competition_id}/integrated-application")
