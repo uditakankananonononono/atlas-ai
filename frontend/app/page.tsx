@@ -6,8 +6,8 @@ import ExecutiveDashboard from "../components/ExecutiveDashboard";
 import KnowledgeWorkspace from "../components/KnowledgeWorkspace";
 import PlanningBoard from "../components/PlanningBoard";
 import AnalysisPanel from "../components/AnalysisPanel";
-import ModuleWorkbench from "../components/ModuleWorkbench";
 import OnboardingChecklist from "../components/onboarding/OnboardingChecklist";
+import ModuleWorkbench from "../components/ModuleWorkbench";
 type Module={id:number;name:string;status:string};
 type View="dashboard"|"planning"|"analysis"|"knowledge"|"workbench"|"modules";
 export default function Home(){
@@ -20,9 +20,8 @@ export default function Home(){
  const client=supabase;
  if(!client)return <main className="min-h-screen bg-slate-950 p-8 text-white"><h1 className="text-3xl">Atlas AI</h1><p className="mt-4 text-red-300">Authentication is not configured.</p></main>;
  if(!session)return <main className="flex min-h-screen items-center justify-center bg-slate-950 text-white"><section className="rounded-xl border border-slate-700 bg-slate-900 p-8 text-center"><h1 className="text-3xl font-semibold">Atlas AI</h1><p className="mt-3 text-slate-300">Sign in to open your private workspace.</p><button className="mt-5 rounded bg-cyan-500 px-4 py-2 text-slate-950" onClick={()=>client.auth.signInWithOAuth({provider:"github",options:{redirectTo:window.location.origin}})}>Continue with GitHub</button></section></main>;
- return <main className="min-h-screen bg-slate-950 p-6 text-white"><header className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-cyan-400">ATLAS AI</p><h1 className="text-3xl font-semibold">Human-controlled operations</h1></div><nav className="flex flex-wrap gap-2">{(["dashboard","planning","analysis","knowledge","workbench","modules"] as View[]).map(x=><button key={x} aria-pressed={view===x} onClick={()=>setView(x)} className={`rounded border px-3 py-2 capitalize ${view===x?"border-cyan-400 bg-slate-800":"border-slate-700"}`}>{x}</button>)}</nav><button onClick={()=>client.auth.signOut()} className="rounded border border-slate-700 px-3 py-2">Sign out</button></header><section className="mt-8">
  if(!onboarded)return <main className="min-h-screen bg-slate-950 p-6 text-white"><div className="mx-auto mt-12 max-w-2xl"><OnboardingChecklist onFinish={()=>setOnboarded(true)}/></div></main>;
- return <main className="min-h-screen bg-slate-950 p-6 text-white"><header className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-cyan-400">ATLAS AI</p><h1 className="text-3xl font-semibold">Human-controlled operations</h1></div><nav className="flex flex-wrap gap-2">{(["dashboard","planning","analysis","knowledge","modules"] as View[]).map(x=><button key={x} aria-pressed={view===x} onClick={()=>setView(x)} className={`rounded border px-3 py-2 capitalize ${view===x?"border-cyan-400 bg-slate-800":"border-slate-700"}`}>{x}</button>)}</nav><button onClick={()=>client.auth.signOut()} className="rounded border border-slate-700 px-3 py-2">Sign out</button></header><section className="mt-8">
+ return <main className="min-h-screen bg-slate-950 p-6 text-white"><header className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-cyan-400">ATLAS AI</p><h1 className="text-3xl font-semibold">Human-controlled operations</h1></div><nav className="flex flex-wrap gap-2">{(["dashboard","planning","analysis","knowledge","workbench","modules"] as View[]).map(x=><button key={x} aria-pressed={view===x} onClick={()=>setView(x)} className={`rounded border px-3 py-2 capitalize ${view===x?"border-cyan-400 bg-slate-800":"border-slate-700"}`}>{x}</button>)}</nav><button onClick={()=>client.auth.signOut()} className="rounded border border-slate-700 px-3 py-2">Sign out</button></header><section className="mt-8">
  {view==="dashboard"&&<ExecutiveDashboard/>}
  {view==="planning"&&<PlanningBoard/>}
  {view==="analysis"&&<AnalysisPanel/>}
