@@ -1386,8 +1386,8 @@
     {
       "ledger": "audits/additional-2000-features.json",
       "total": 2010,
-      "resolvable_nodes": 0,
-      "unresolved": 2010,
+      "resolvable_nodes": 49,
+      "unresolved": 1961,
       "results": [
         {
           "row": 1,
@@ -2693,15 +2693,15 @@
         },
         {
           "row": 218,
-          "evidence": "tests/modules/test_m04_quant_methods_185_234.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m04_quant_methods_185_234.py::test_row_218_multi_objective_optimization_uses_preferences",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 219,
-          "evidence": "tests/modules/test_m04_quant_methods_185_234.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m04_quant_methods_185_234.py::test_row_219_pareto_frontier_identification_reports_dominance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 220,
@@ -2711,21 +2711,21 @@
         },
         {
           "row": 221,
-          "evidence": "tests/modules/test_m04_quant_methods_185_234.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m04_quant_methods_185_234.py::test_row_221_integer_programming_enforces_all_integer_dimensions",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 222,
-          "evidence": "tests/modules/test_m04_quant_methods_185_234.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m04_quant_methods_185_234.py::test_row_222_mixed_integer_programming_preserves_continuous_dimensions",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 223,
-          "evidence": "tests/modules/test_m04_quant_methods_185_234.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m04_quant_methods_185_234.py::test_row_223_dynamic_programming_rejects_unreachable_stage",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 224,
@@ -2795,267 +2795,267 @@
         },
         {
           "row": 235,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_235_dual_decomposition_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 236,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_236_admm_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 237,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_237_coordinate_descent_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 238,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_238_proximal_methods_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 239,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_239_frank_wolfe_algorithm_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 240,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_240_cutting_plane_methods_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 241,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_241_branch_and_bound_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 242,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_242_column_generation_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 243,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_243_benders_decomposition_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 244,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_244_lagrangian_relaxation_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 245,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_245_semidefinite_programming_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 246,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_246_second_order_cone_programming_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 247,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_247_geometric_programming_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 248,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_248_fractional_programming_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 249,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_249_bilevel_optimization_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 250,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_250_stochastic_approximation_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 251,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_251_online_learning_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 252,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_252_bandit_algorithms_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 253,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_253_contextual_bandits_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 254,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_254_thompson_sampling_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 255,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_255_upper_confidence_bound_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 256,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_256_expert_advice_aggregation_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 257,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_257_regret_minimization_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 258,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_258_game_theoretic_learning_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 259,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_259_fictitious_play_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 260,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_260_novel_metaphor_generation_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 261,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_261_narrative_arc_construction_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 262,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_262_character_development_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 263,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_263_dialogue_writing_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 264,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_264_worldbuilding_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 265,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_265_plot_twist_design_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 266,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_266_foreshadowing_placement_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 267,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_267_tension_building_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 268,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_268_pacing_control_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 269,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_269_voice_development_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 270,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_270_genre_blending_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 271,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_271_trope_subversion_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 272,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_272_myth_creation_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 273,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_273_poetry_generation_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 274,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_274_songwriting_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 275,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_275_screenplay_formatting_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 276,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_276_stage_play_construction_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 277,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_277_comic_script_writing_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 278,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_278_interactive_fiction_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 279,
