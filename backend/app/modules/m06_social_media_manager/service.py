@@ -243,7 +243,12 @@ class Service:
         model: str | None = None,
         repository: SocialRepository | None = None,
         scheduler: Scheduler | None = None,
+        tenant_id: str = "local",
     ) -> None:
+        repository_tenant = getattr(repository, "tenant_id", tenant_id)
+        if not str(repository_tenant).strip():
+            raise ValueError("tenant_id is required")
+        self.tenant_id = str(repository_tenant).strip()
         self._approvals = approval_store
         self._generate = generate
         self._metrics = metrics_client
@@ -469,6 +474,7 @@ class Service:
         return request
 
     def _file_approval(self, *, action_type: str, payload: dict[str, Any]) -> ApprovalRequest:
+        payload = {"tenant_id": self.tenant_id, **payload}
         request = ApprovalRequest(id=str(uuid.uuid4()), module_id=MODULE_ID, action_type=action_type, payload=payload)
         return self._approvals.put(request)
 

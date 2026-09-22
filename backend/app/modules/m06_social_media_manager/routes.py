@@ -136,6 +136,7 @@ def get_service(
         generate=generate,
         repository=repository,
         scheduler=scheduler,
+        tenant_id=tenant.tenant_id,
         metrics_client=OfficialSocialMetricsClient(
             meta_access_token=credentials.meta_access_token,
             meta_ig_user_id=credentials.meta_ig_user_id,
