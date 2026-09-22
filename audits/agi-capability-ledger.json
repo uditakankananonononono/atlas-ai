@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "claim_policy": "Report measured mechanisms, never infer general intelligence from component completion.",
+  "capabilities": [
+    {"id":"AGI-01","capability":"Persistent evidence-backed world model","status":"implemented-measured","mechanism":"Tenant-scoped SQLite evidence; competing hypotheses; reliability-weighted confidence; hash-chained snapshots","test":"test_world_model_preserves_conflicts_tenant_scope_and_hash_chain"},
+    {"id":"AGI-02","capability":"Self-directed goal generation","status":"implemented-bounded","mechanism":"Mission-conditioned uncertainty goals; exact-effect approval required before activation","test":"test_autonomous_goal_is_proposed_but_cannot_self_authorize"},
+    {"id":"AGI-03","capability":"Tool creation","status":"implemented-bounded","mechanism":"Pure-function AST allowlist; executable admission cases; explicit admission; typed registry dispatch","test":"test_tool_synthesis_requires_safe_ast_passing_tests_and_admission"},
+    {"id":"AGI-04","capability":"Recursive self-improvement","status":"implemented-bounded","mechanism":"Immutable benchmark baseline chain; minimum-gain evaluation; stale-baseline guard; approval; rollback","test":"test_self_improvement_has_immutable_baseline_stale_guard_and_rollback"},
+    {"id":"AGI-05","capability":"Cross-domain transfer","status":"partial-existing","mechanism":"M20 MetaLearner abstracts successful action roles across episodes; broader transfer benchmark pending"},
+    {"id":"AGI-06","capability":"Planning and replanning","status":"partial-existing","mechanism":"HTN planner, deliberative loop, MCTS rumination, scheduler and execution-truth ledger"},
+    {"id":"AGI-07","capability":"Unbounded autonomous authority","status":"not-implemented-intentionally","gap":"Goal activation, external effects, tool admission and self-modification remain authority-gated"},
+    {"id":"AGI-08","capability":"Human-level general intelligence","status":"unproven-open-research","gap":"No valid benchmark or evidence establishes human-level generality, consciousness or open-ended competence"}
+  ]
+}
