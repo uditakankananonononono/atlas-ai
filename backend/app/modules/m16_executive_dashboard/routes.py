@@ -268,3 +268,9 @@ from .authenticated_proof_events import VerifyProofEvents,verify_proof_events
 def authenticated_proof_events(body:VerifyProofEvents):
  try:return verify_proof_events(body)
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .asymmetric_proof_events import VerifyAsymmetricProofEvents,verify_asymmetric_proof_events
+@router.post('/proof-gaps/events/ed25519/verify')
+def asymmetric_proof_events(body:VerifyAsymmetricProofEvents):
+ try:return verify_asymmetric_proof_events(body)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
