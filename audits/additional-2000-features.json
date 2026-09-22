@@ -13737,7 +13737,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_910_fault_tolerant_resource_estimate",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13751,7 +13752,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_911_grover_iteration_count_and_success",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13765,7 +13767,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_912_surface_code_scaling_and_qubit_layout",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13779,7 +13782,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_913_parameter_shift_vqe_descends_toward_bound",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13793,7 +13797,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_914_trotter_steps_from_spectral_range",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13807,7 +13812,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_915_bb84_key_rate_and_eavesdrop_probe",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13821,7 +13827,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_916_sql_heisenberg_and_coherence_floor",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13835,7 +13842,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_917_repeater_chain_werner_decay_and_distillation",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13849,7 +13857,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_918_lif_spike_rate_matches_analytic",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13863,7 +13872,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_919_stdp_all_pair_kernel",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13877,7 +13887,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_920_crossbar_vmm_ideal_vs_noisy_quantized",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13891,7 +13902,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_921_mzi_mesh_loss_and_power",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13905,7 +13917,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_922_dna_strand_library_and_wallace_tm",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13919,7 +13932,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_923_crn_mass_action_conserves_mass",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13933,7 +13947,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_924_toggle_switch_bistability",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13947,7 +13962,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_925_pso_converges_on_sphere",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13961,7 +13977,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_926_aco_finds_short_tour",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13975,7 +13992,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_927_abc_converges_with_scout_record",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -13989,7 +14007,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_928_firefly_attraction_converges",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14003,7 +14022,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_929_cuckoo_levy_flights_converge",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14017,7 +14037,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_930_bat_echolocation_converges_with_loudness_decay",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14031,7 +14052,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_931_gwo_alpha_leadership_converges",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14045,7 +14067,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_932_whale_spiral_converges",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14059,7 +14082,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_933_clonal_selection_converges",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14073,7 +14097,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_934_blinker_oscillator_detected",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14087,7 +14112,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_935_gp_evolves_fitting_expression",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14101,7 +14127,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_936_grammatical_evolution_recovers_polynomial",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14115,7 +14142,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_937_gep_karva_decoding_fits_data",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14129,7 +14157,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_938_self_adaptive_es_converges_and_shrinks_sigma",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14143,7 +14172,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_939_neuroevolution_solves_xor",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14157,7 +14187,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_940_learning_progress_drives_region_choice",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14171,7 +14202,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_941_habituation_curve_and_stage",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14185,7 +14217,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_942_morphology_beats_sensor_as_action_predictor",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14199,7 +14232,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_943_soft_actuator_angle_force_and_burst_margin",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14213,7 +14247,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_944_boids_order_parameter_bounded",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14227,7 +14262,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_945_modular_chain_statics",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14241,7 +14277,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_946_reconfiguration_plan_completes_without_hardware",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14255,7 +14292,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_947_self_replication_never_authorized",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14269,7 +14307,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_948_mechanosynthesis_build_time_and_yield",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14283,7 +14322,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_949_voxel_inventory_and_energy",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14297,7 +14337,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_950_srr_resonance_and_negative_mu_band",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14311,7 +14352,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_951_veselago_negative_refraction",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14325,7 +14367,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_952_transformation_optics_cloak_profile",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14339,7 +14382,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_953_helmholtz_resonance_band",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14353,7 +14397,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_954_thermal_cloak_anisotropy_and_efficiency",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14367,7 +14412,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_955_reentrant_honeycomb_is_auxetic",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14381,7 +14427,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_956_bilayer_curvature_and_recovery_ratio",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14395,7 +14442,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_957_extrusion_flow_shear_and_viability_boundary",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14409,7 +14457,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_958_oxygen_diffusion_forces_vascularization",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
@@ -14423,7 +14472,8 @@
       "evidence": {
         "commit": "835d63c7dd348bf6ae1346a78e0169450654f30e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/emerging_capabilities_0910_0959.py",
-        "test_path": "tests/modules/test_m16_emerging_0910_0959.py"
+        "test_path": "tests/modules/test_m16_emerging_0910_0959.py::test_row_959_logistic_growth_and_nutrient_window",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, autonomous consequential action, hidden capability claim or unverified completion assertion."
     },
