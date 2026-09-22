@@ -41,7 +41,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** persist checkpoints transactionally in the worker queue and replace shared-key receipt validation with provider-issued asymmetric signatures.
 ## M13 - Browser Agent
 - **Landed:** pre-submit readback diff compares fields, destination, exact price/currency and irreversible controls against the approved snapshot, requiring new approval for any change and never submitting itself.
-- **Next:** capture the current snapshot directly from the browser adapter with screenshot and DOM evidence hashes immediately before submit.
+- **Landed:** immediate pre-submit capture reads destination and fields directly from the browser adapter and binds them to DOM and screenshot byte hashes before any separate submit decision.
+- **Next:** persist capture bytes immutably and bind a single-use approval and submit attempt to the capture hash.
 ## M14 - Project Builder
 - **Landed (science):** acceptance matrix links criteria to hashed artifacts and named test results; proof-status keeps code-complete, test-complete and live-acceptance-complete separate with exact blockers and never promotes weaker evidence.
 - **Next:** authenticate live receipts and bind them to deployed version, environment and acceptance-run inputs.
