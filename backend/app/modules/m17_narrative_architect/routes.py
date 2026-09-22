@@ -54,8 +54,11 @@ class UnconfiguredPublicationAdapter:
  def publish(self,*args):raise ValueError('publication adapter is not configured')
 def get_publication_adapter():return UnconfiguredPublicationAdapter()
 @router.post('/revision-publication/execute')
-def execute_revision_publication(body:PublicationGateRequest,tenant:TenantContext=Depends(require_tenant),adapter=Depends(get_publication_adapter)):
- try:return {'tenant_id':tenant.tenant_id,**publish_through_gate(body,adapter)}
+def execute_revision_publication(body:PublicationGateRequest,tenant:TenantContext=Depends(require_tenant),adapter=Depends(get_publication_adapter),store=Depends(get_revision_store)):
+ try:
+  row=store.get(body.essay_id,body.to_version)
+  if row is None:raise ValueError('persisted revision acceptance is required before publication')
+  return {'tenant_id':tenant.tenant_id,**publish_through_gate(body,adapter,row.payload)}
  except ValueError as error:raise HTTPException(409,str(error)) from error
 from .publication_receipt_auth import VerifyPublicationReceipt,verify_publication_receipt
 @router.post('/revision-publication/receipts/verify')
