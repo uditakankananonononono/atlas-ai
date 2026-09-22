@@ -49,3 +49,21 @@ def test_provider_rejects_unsafe_model_identifier(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY","x")
     response=client.post("/api/v1/ai/generate",json={"prompt":"hello","model":"bad/model"})
     assert response.status_code==503 and response.json()["detail"]=="invalid model identifier"
+
+
+def test_legacy_approval_routes_are_tenant_isolated():
+    tenant_a = {"x-atlas-tenant": "legacy-tenant-a", "x-atlas-actor": "reviewer-a"}
+    tenant_b = {"x-atlas-tenant": "legacy-tenant-b", "x-atlas-actor": "reviewer-b"}
+    plan = client.post("/api/v1/goals/plan", headers=tenant_a,
+        json={"goal": "Draft an outreach email"}).json()
+    approval_id = plan["approval_requests"][0]["id"]
+    assert any(item["id"] == approval_id for item in
+               client.get("/api/v1/approvals", headers=tenant_a).json())
+    assert all(item["id"] != approval_id for item in
+               client.get("/api/v1/approvals", headers=tenant_b).json())
+    assert client.get(f"/api/v1/approvals/{approval_id}/audit", headers=tenant_b).status_code == 404
+    assert client.post(f"/api/v1/approvals/{approval_id}/decision", headers=tenant_b,
+        json={"decision": "approved"}).status_code == 404
+    decided = client.post(f"/api/v1/approvals/{approval_id}/decision", headers=tenant_a,
+        json={"decision": "approved"})
+    assert decided.status_code == 200 and decided.json()["status"] == "approved"

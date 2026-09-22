@@ -13,24 +13,24 @@ def list_modules() -> list[dict[str, object]]:
     return [module.__dict__ for module in MODULES]
 
 @router.post("/goals/plan", response_model=GoalPlan)
-def create_plan(request: GoalRequest) -> GoalPlan:
-    return plan_goal(request.goal)
+def create_plan(request: GoalRequest, tenant: TenantContext = Depends(require_tenant)) -> GoalPlan:
+    return plan_goal(request.goal, user_id=tenant.tenant_id)
 
 @router.get("/approvals", response_model=list[ApprovalRequest])
-def list_approvals() -> list[ApprovalRequest]:
-    return approvals.list()
+def list_approvals(tenant: TenantContext = Depends(require_tenant)) -> list[ApprovalRequest]:
+    return approvals.list(user_id=tenant.tenant_id)
 
 @router.get("/approvals/{approval_id}/audit")
-def approval_audit(approval_id: str) -> list[dict[str, str]]:
-    events = approvals.audit(approval_id)
+def approval_audit(approval_id: str, tenant: TenantContext = Depends(require_tenant)) -> list[dict[str, str]]:
+    events = approvals.audit(approval_id, user_id=tenant.tenant_id)
     if not events:
         raise HTTPException(status_code=404, detail="approval not found")
     return events
 
 @router.post("/approvals/{approval_id}/decision", response_model=ApprovalRequest)
-def decide_approval(approval_id: str, decision: ApprovalDecision) -> ApprovalRequest:
+def decide_approval(approval_id: str, decision: ApprovalDecision, tenant: TenantContext = Depends(require_tenant)) -> ApprovalRequest:
     try:
-        updated = approvals.decide(approval_id, decision.decision)
+        updated = approvals.decide(approval_id, decision.decision, user_id=tenant.tenant_id, decided_by=tenant.actor_id)
     except ValueError as error:
         raise HTTPException(status_code=409, detail=str(error)) from error
     if updated is None:
