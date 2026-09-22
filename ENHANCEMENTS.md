@@ -39,7 +39,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** shipped provider and DAG wiring now constructs without dependency overrides and supports OpenAI, Anthropic, DeepSeek and local Ollama through the shared provider boundary.
 - **Landed (science):** canonical reproducible-run checkpoints pin workflow/code identity, dataset hashes, per-node provider/model/seed, budget and spend receipts, output hashes and explicit resume state without claiming execution or byte verification.
 - **Landed:** resume preflight verifies supplied dataset bytes against pinned hashes and validates provider receipts with caller-configured trusted HMAC keys before declaring the supplied evidence resumable.
-- **Next:** persist checkpoints transactionally in the worker queue and replace shared-key receipt validation with provider-issued asymmetric signatures.
+- **Landed:** provider-issued Ed25519 receipt verification validates canonical node receipts against configured public keys without exposing shared signing secrets.
+- **Next:** persist checkpoints transactionally in the worker queue and govern public-key provisioning and rotation.
 ## M13 - Browser Agent
 - **Landed:** pre-submit readback diff compares fields, destination, exact price/currency and irreversible controls against the approved snapshot, requiring new approval for any change and never submitting itself.
 - **Landed:** immediate pre-submit capture reads destination and fields directly from the browser adapter and binds them to DOM and screenshot byte hashes before any separate submit decision.
