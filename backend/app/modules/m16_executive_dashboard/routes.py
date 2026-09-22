@@ -256,3 +256,9 @@ def emerging_analyze_910_959(body:EmergingAnalysisIn):
 # Direct semantic evidence surface for owner-feature rows 1910-1959.
 from .semantic_ai_routes_1910_1959 import router as semantic_ai_router_1910_1959
 router.include_router(semantic_ai_router_1910_1959)
+
+from .proof_gaps import ProofGapRequest,dashboard as proof_gap_dashboard
+@router.post('/proof-gaps')
+def proof_gaps(body:ProofGapRequest):
+ try:return proof_gap_dashboard(body)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
