@@ -8,6 +8,7 @@ service - these endpoints only expose control and inspection.
 from __future__ import annotations
 
 from datetime import datetime
+import os
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
@@ -1550,8 +1551,10 @@ from .runtime import GCWRuntime
 from .runtime_routes import router as durable_runtime_router, bind_runtime
 from .sql_repository import GCWRepository
 _durable_runtime_repo = GCWRepository(atlas_engine, tenant_id="local")
-_durable_runtime_repo.create_schema()
-bind_runtime(GCWRuntime(_durable_runtime_repo))
+# Alembic owns production schema lifecycle; local auto-create is explicit.
+if os.getenv("ATLAS_AUTO_CREATE_SCHEMA") == "1":
+    _durable_runtime_repo.create_schema()
+bind_runtime(GCWRuntime(_durable_runtime_repo, _hydrate=False))
 router.include_router(durable_runtime_router)
 
 # Unified tenant-scoped facade over specialized-domain executive cognition rows.

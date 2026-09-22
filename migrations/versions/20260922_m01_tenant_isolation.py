@@ -19,7 +19,8 @@ def upgrade() -> None:
         sa.Column("tenant_id", sa.String(length=120), nullable=False, server_default="local"),
     )
     op.create_index("ix_m01_opportunities_tenant_id", "m01_opportunities", ["tenant_id"], unique=False)
-    op.alter_column("m01_opportunities", "tenant_id", server_default=None)
+    if op.get_bind().dialect.name != "sqlite":
+        op.alter_column("m01_opportunities", "tenant_id", server_default=None)
 
 
 def downgrade() -> None:
