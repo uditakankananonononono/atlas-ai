@@ -54,6 +54,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** live-receipt verification authenticates supplied receipts with configured HMAC keys and binds each to the exact deployed version, environment, and acceptance-run input hash.
 - **Landed:** Ed25519 live-receipt verification authenticates canonical receipts with configured issuer public keys while preserving exact deployment, environment, and acceptance-input bindings.
 - **Next:** persist receipts immutably and govern issuer-key provisioning and rotation.
+- **Landed:** verified live receipts persist tenant-scoped and append-only; duplicate receipt IDs cannot replace stored proof.
+- **Next:** use asymmetric issuer signatures and govern issuer-key provisioning and rotation.
 ## M15 - Document Generator
 - **Landed:** version preflight endpoint checks empty content, duplicate citations/figures, missing citation URLs, empty PPTX and likely slide overflow before export approval.
 - **Landed:** private-publication receipt verification requires consumed approval, private access, HTTPS download URL and exact approved-vs-published SHA-256 match.
