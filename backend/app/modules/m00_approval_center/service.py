@@ -409,6 +409,7 @@ from sqlalchemy import Boolean, Integer, UniqueConstraint
 
 class ApprovalPolicyRow(Base):
     __tablename__ = "m00_approval_policies"
+    tenant_id: Mapped[str] = mapped_column(String(120), primary_key=True)
     id: Mapped[str] = mapped_column(String(120), primary_key=True)
     name: Mapped[str] = mapped_column(String(200))
     module_id: Mapped[int | None] = mapped_column(nullable=True, index=True)
@@ -467,7 +468,7 @@ def _condition_matches(conditions: dict[str, Any], context: dict[str, Any]) -> b
 
 
 def _policy_view(row: ApprovalPolicyRow) -> dict[str, Any]:
-    return {"id": row.id, "name": row.name, "module_id": row.module_id,
+    return {"id": row.id, "tenant_id": row.tenant_id, "name": row.name, "module_id": row.module_id,
             "action_pattern": row.action_pattern, "effect": row.effect,
             "priority": row.priority, "enabled": row.enabled,
             "conditions": row.conditions, "review_ttl_seconds": row.review_ttl_seconds,
@@ -480,17 +481,19 @@ def _install_extensions() -> None:
                       effect: str, actor: str, module_id: int | None = None,
                       priority: int = 0, enabled: bool = True,
                       conditions: dict[str, Any] | None = None,
-                      review_ttl_seconds: int = 3600) -> dict[str, Any]:
+                      review_ttl_seconds: int = 3600, tenant_id: str = DEFAULT_USER_ID) -> dict[str, Any]:
         if effect not in {"allow", "deny", "review"}:
             raise ValueError("effect must be allow, deny, or review")
         if review_ttl_seconds <= 0:
             raise ValueError("review_ttl_seconds must be positive")
+        if not tenant_id.strip():
+            raise ValueError("tenant_id is required")
         now = self._clock()
         with self._sessions.begin() as db:
-            row = db.get(ApprovalPolicyRow, policy_id)
+            row = db.get(ApprovalPolicyRow, (tenant_id, policy_id))
             event = "policy_updated" if row else "policy_created"
             if row is None:
-                row = ApprovalPolicyRow(id=policy_id, created_at=now)
+                row = ApprovalPolicyRow(tenant_id=tenant_id, id=policy_id, created_at=now)
                 db.add(row)
             row.name, row.module_id, row.action_pattern = name, module_id, action_pattern
             row.effect, row.priority, row.enabled = effect, priority, enabled
@@ -500,16 +503,20 @@ def _install_extensions() -> None:
             db.flush()
             return _policy_view(row)
 
-    def list_policies(self: Service, *, enabled_only: bool = False) -> list[dict[str, Any]]:
+    def list_policies(self: Service, *, enabled_only: bool = False,
+                      tenant_id: str = DEFAULT_USER_ID) -> list[dict[str, Any]]:
+        if not tenant_id.strip():
+            raise ValueError("tenant_id is required")
         with self._sessions() as db:
-            stmt = select(ApprovalPolicyRow).order_by(ApprovalPolicyRow.priority.desc(), ApprovalPolicyRow.id)
+            stmt = select(ApprovalPolicyRow).where(ApprovalPolicyRow.tenant_id == tenant_id).order_by(ApprovalPolicyRow.priority.desc(), ApprovalPolicyRow.id)
             if enabled_only:
                 stmt = stmt.where(ApprovalPolicyRow.enabled.is_(True))
             return [_policy_view(row) for row in db.scalars(stmt)]
 
     def evaluate_policy(self: Service, *, module_id: int, action_type: str,
-                        context: dict[str, Any] | None = None) -> tuple[str, dict[str, Any] | None]:
-        matches = [p for p in self.list_policies(enabled_only=True)
+                        context: dict[str, Any] | None = None,
+                        tenant_id: str = DEFAULT_USER_ID) -> tuple[str, dict[str, Any] | None]:
+        matches = [p for p in self.list_policies(enabled_only=True, tenant_id=tenant_id)
                    if (p["module_id"] is None or p["module_id"] == module_id)
                    and fnmatch.fnmatchcase(action_type, p["action_pattern"])
                    and _condition_matches(p["conditions"], context or {})]
@@ -524,7 +531,7 @@ def _install_extensions() -> None:
     def gate(self: Service, *, module_id: int, action_type: str, payload: dict[str, Any],
              user_id: str = DEFAULT_USER_ID, context: dict[str, Any] | None = None,
              idempotency_key: str | None = None) -> dict[str, Any]:
-        effect, policy = self.evaluate_policy(module_id=module_id, action_type=action_type, context=context)
+        effect, policy = self.evaluate_policy(module_id=module_id, action_type=action_type, context=context, tenant_id=user_id)
         if effect == "allow":
             return {"decision": "allow", "allowed": True, "reason": "allowed by policy",
                     "policy_id": policy["id"], "approval": None}

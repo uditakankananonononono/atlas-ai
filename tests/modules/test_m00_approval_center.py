@@ -240,7 +240,7 @@ def test_unapproved_effect_is_blocked(service):
 
 
 def test_policy_and_gate_routes(client):
-    client.app.dependency_overrides[require_admin] = lambda: TenantContext("system", "admin-1", frozenset({"atlas-admin"}))
+    client.app.dependency_overrides[require_admin] = lambda: TenantContext("local", "admin-1", frozenset({"atlas-admin"}))
     policy = {"id": "allow-safe", "name": "safe", "module_id": 5,
               "action_pattern": "read_*", "effect": "allow", "priority": 1,
               "conditions": {}, "review_ttl_seconds": 60}
@@ -275,3 +275,14 @@ def test_admin_worker_routes_reject_ordinary_user(client):
 def test_expire_accepts_internal_worker(client):
     client.app.dependency_overrides[require_worker] = lambda: TenantContext("system", "worker-1", frozenset({"atlas-worker"}))
     assert client.post("/approval-center/expire").status_code == 200
+
+
+def test_policies_are_tenant_isolated(service):
+    service.upsert_policy(policy_id="send", name="A allows", module_id=5,
+        action_pattern="send_*", effect="allow", actor="admin-a", tenant_id="tenant-a")
+    service.upsert_policy(policy_id="send", name="B denies", module_id=5,
+        action_pattern="send_*", effect="deny", actor="admin-b", tenant_id="tenant-b")
+    assert service.evaluate_policy(module_id=5, action_type="send_email", tenant_id="tenant-a")[0] == "allow"
+    assert service.evaluate_policy(module_id=5, action_type="send_email", tenant_id="tenant-b")[0] == "deny"
+    assert service.evaluate_policy(module_id=5, action_type="send_email", tenant_id="tenant-c")[0] == "review"
+    assert [p["tenant_id"] for p in service.list_policies(tenant_id="tenant-a")] == ["tenant-a"]
