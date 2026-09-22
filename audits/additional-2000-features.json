@@ -1702,9 +1702,10 @@
       "evidence": {
         "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
         "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
-        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py::test_row_110_scope_caveat",
         "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[110-",
-        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -1718,9 +1719,10 @@
       "evidence": {
         "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
         "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
-        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py::test_row_111_citation_is_not_influence_claim",
         "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[111-",
-        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -1734,9 +1736,10 @@
       "evidence": {
         "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
         "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
-        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py::test_row_112_gap_caveat",
         "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[112-",
-        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -1782,9 +1785,10 @@
       "evidence": {
         "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
         "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
-        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py::test_row_115_power_with_method_caveat",
         "test_case": "tests/modules/test_m19_research_110_134.py::test_row_115_power_with_method_caveat",
-        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -1862,9 +1866,10 @@
       "evidence": {
         "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
         "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
-        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py::test_row_120_meta_analysis",
         "test_case": "tests/modules/test_m19_research_110_134.py::test_row_120_meta_analysis",
-        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -1878,9 +1883,10 @@
       "evidence": {
         "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
         "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
-        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py::test_row_121_effect_sizes",
         "test_case": "tests/modules/test_m19_research_110_134.py::test_row_121_effect_sizes",
-        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -2006,9 +2012,10 @@
       "evidence": {
         "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
         "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
-        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py::test_row_129_no_impact_prediction",
         "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[129-",
-        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -2054,9 +2061,10 @@
       "evidence": {
         "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
         "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
-        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py::test_row_132_figure_spec_only",
         "test_case": "tests/modules/test_m19_research_110_134.py::test_row_named_research_artifacts[132-",
-        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -2086,9 +2094,10 @@
       "evidence": {
         "commit": "97b3d3a4a2545e8c57289bce3b60df3d14fb3ff0",
         "implementation_path": "backend/app/modules/m19_idea_incubator/research_service.py",
-        "test_path": "tests/modules/test_m19_research_110_134.py",
+        "test_path": "tests/modules/test_m19_research_110_134.py::test_row_134_bayesian_update",
         "test_case": "tests/modules/test_m19_research_110_134.py::test_row_134_bayesian_update",
-        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only."
+        "caveats": "Supplied-corpus only; normal-approximation power; fixed-effect meta-analysis only; no citation prediction; artifacts are not persisted. invented_studies=false; impact row is scenario-only.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -4167,7 +4176,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_279_game_narrative_design_computes_from_inputs",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -4181,7 +4191,8 @@
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
-        "test_path": "tests/modules/test_m20_optimization_story_235_280.py"
+        "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_280_visual_storyboarding_computes_from_inputs",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
     },
@@ -5281,7 +5292,8 @@
       "evidence": {
         "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
         "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-        "test_path": "tests/modules/test_m15_design_333_359.py"
+        "test_path": "tests/modules/test_m15_design_333_359.py::test_row_355_speculative_design_does_not_claim_forecast",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
@@ -5309,7 +5321,8 @@
       "evidence": {
         "commit": "c4c1f451d7e1a71a7d8a85467157a6957ab03c98",
         "implementation_path": "backend/app/modules/m15_document_generator/design_support_333_359.py",
-        "test_path": "tests/modules/test_m15_design_333_359.py"
+        "test_path": "tests/modules/test_m15_design_333_359.py::test_row_357_adversarial_design_requires_authorization",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable human-directed design support with explicit requirements, accessibility, evidence, provenance and review. No deceptive design, copyrighted-asset fabrication, hidden persuasion, autonomous publication or unverified completion claim."
     },
@@ -10803,9 +10816,10 @@
       "evidence": {
         "commit": "a60ae5e156a516d17a053b5db95a44422059e6bf",
         "implementation_path": "backend/app/modules/m17_advice_essay/communication_coaching.py",
-        "test_path": "tests/modules/test_m17_rows_710_740.py",
+        "test_path": "tests/modules/test_m17_rows_710_740.py::test_row_710_persuasion_rejects_manipulative_frame_in_guidance",
         "boundary_path": "backend/app/modules/m17_advice_essay/ROWS_710_740.md",
-        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored."
+        "caveats": "Deterministic coaching and critique, not message generation or sending. No deck rendering/media analysis and no inferred cultural or emotional state. Student-authored work stays student-authored.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -19751,7 +19765,8 @@
       "evidence": {
         "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
-        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py::test_row_1315_npv_changes_with_discount_rate",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20129,7 +20144,8 @@
       "evidence": {
         "commit": "13a379656101849e969610ef5a8e9d8d75478a46",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance_core.py",
-        "test_path": "tests/modules/test_m16_finance_1310_1359.py"
+        "test_path": "tests/modules/test_m16_finance_1310_1359.py::test_row_1342_seeded_monte_carlo_changes_with_volatility",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20731,7 +20747,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_row_1385_frontier_liquidity_changes_with_relevant_input",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20871,7 +20888,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_row_1395_prospect_reference_changes_subjective_value",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -20997,7 +21015,8 @@
       "evidence": {
         "commit": "0cc9974565e50b4ca7e441ba20ab6005b5b98ee6",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/finance.py",
-        "test_path": "tests/modules/test_m16_finance_1360_1409.py"
+        "test_path": "tests/modules/test_m16_finance_1360_1409.py::test_row_1404_momentum_signal_changes_factor_output",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Auditable calculations on caller-supplied inputs only. Expose assumptions, limits and validation; no market-data fabrication, trade, investment recommendation or autonomous financial action."
     },
@@ -21291,7 +21310,8 @@
       "evidence": {
         "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
-        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+        "test_path": "tests/modules/test_m20_education_1410_1459.py::test_row_1425_adaptive_computation_changes_with_mastery",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
@@ -21711,7 +21731,8 @@
       "evidence": {
         "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
-        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+        "test_path": "tests/modules/test_m20_education_1410_1459.py::test_row_1455_analytics_computation_changes_with_attempt_evidence",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
@@ -21767,7 +21788,8 @@
       "evidence": {
         "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
-        "test_path": "tests/modules/test_m20_education_1410_1459.py"
+        "test_path": "tests/modules/test_m20_education_1410_1459.py::test_row_1459_affect_computation_ignores_camera_inference",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
     },
@@ -23970,7 +23992,8 @@
       "evidence": {
         "commit": "6c43a0d240cd5fc02e6be745b67f80ff075be125",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/climate_environment_1610_1659.py",
-        "test_path": "tests/modules/test_m16_climate_environment_1610_1659.py"
+        "test_path": "tests/modules/test_m16_climate_environment_1610_1659.py::test_row_1610_climate_modeling_records_units_provenance_and_uncertainty",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Source-grounded climate and environmental analysis with uncertainty, scenarios, units and validation context. Domain experts and authorities own field verification, policy, remediation, release and safety decisions."
     },
@@ -24138,7 +24161,8 @@
       "evidence": {
         "commit": "6c43a0d240cd5fc02e6be745b67f80ff075be125",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/climate_environment_1610_1659.py",
-        "test_path": "tests/modules/test_m16_climate_environment_1610_1659.py"
+        "test_path": "tests/modules/test_m16_climate_environment_1610_1659.py::test_row_1622_geoengineering_is_advisory_and_requires_review",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Source-grounded climate and environmental analysis with uncertainty, scenarios, units and validation context. Domain experts and authorities own field verification, policy, remediation, release and safety decisions."
     },
@@ -24474,7 +24498,8 @@
       "evidence": {
         "commit": "6c43a0d240cd5fc02e6be745b67f80ff075be125",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/climate_environment_1610_1659.py",
-        "test_path": "tests/modules/test_m16_climate_environment_1610_1659.py"
+        "test_path": "tests/modules/test_m16_climate_environment_1610_1659.py::test_row_1646_water_quality_preserves_caller_standard_without_claiming_compliance",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Source-grounded climate and environmental analysis with uncertainty, scenarios, units and validation context. Domain experts and authorities own field verification, policy, remediation, release and safety decisions."
     },
