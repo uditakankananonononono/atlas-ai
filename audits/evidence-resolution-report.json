@@ -1386,8 +1386,8 @@
     {
       "ledger": "audits/additional-2000-features.json",
       "total": 2010,
-      "resolvable_nodes": 568,
-      "unresolved": 1442,
+      "resolvable_nodes": 618,
+      "unresolved": 1392,
       "results": [
         {
           "row": 1,
@@ -6245,303 +6245,303 @@
         },
         {
           "row": 810,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_810_spaced_repetition_computes_due_and_lapse",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 811,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_811_interleaving_mixes_skills",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 812,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_812_retrieval_is_closed_book_feedback_retry",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 813,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_813_elaborative_why_and_conditions",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 814,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_814_self_explanation_checks_steps",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 815,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_815_dual_coding_requires_mapping_not_decoration",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 816,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_816_examples_mark_boundary_cases",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 817,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_817_worked_example_requires_rationales_and_completion",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 818,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_818_problem_solving_represents_then_verifies",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 819,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_819_deliberate_targets_subskill_feedback_rest",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 820,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_820_chunking_preserves_principle",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 821,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_821_scaffolding_support_fades_on_evidence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 822,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_822_fading_support_fades_on_evidence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 823,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_823_metacognition_calibrates",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 824,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_824_self_regulated_cycle",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 825,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_825_goal_setting_is_measurable_and_has_if_then",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 826,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_826_progress_monitoring_computes_change",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 827,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_827_self_assessment_requires_evidence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 828,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_828_peer_assessment_requires_evidence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 829,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_829_formative_assessment_purpose",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 830,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_830_summative_assessment_purpose",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 831,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_831_diagnostic_assessment_purpose",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 832,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_832_prior_knowledge_not_graded",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 833,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_833_transfer_requires_independent_target_performance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 834,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_834_near_transfer_requires_independent_target_performance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 835,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_835_far_transfer_requires_independent_target_performance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 836,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_836_analogy_rejects_surface_similarity",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 837,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_837_case_reasoning_retrieve_reuse_revise_retain",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 838,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_838_rules_have_forward_trace",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 839,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_839_model_has_entities_relations_constraints_predictions_validation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 840,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_840_qualitative_preserves_ambiguous_successors",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 841,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_841_quantitative_computes_mean_range_units",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 842,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_842_spatial_requires_frame_and_scale",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 843,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_843_temporal_orders_events",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 844,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_844_causal_has_dag_roles_and_identification",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 845,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_845_counterfactual_exposes_held_constant",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 846,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_846_probability_bayes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 847,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_847_fuzzy_operators",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 848,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_848_default_reasoning_is_revisable",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 849,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_849_nonmonotonic_reasoning_is_revisable",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 850,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_850_abduction_not_proof",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 851,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_851_induction_records_scope_exceptions_strength",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 852,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_852_deduction_separates_validity_truth",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 853,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_853_transduction_scope_one_target",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 854,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_854_dialectic_keeps_unresolved_conflict",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 855,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_855_integration_keeps_tradeoffs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 856,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_856_systems_has_stocks_flows_feedback_delays",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 857,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_857_design_thinking_tests_with_participants",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 858,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_858_computational_has_decomposition_algorithm_tests_complexity",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 859,
-          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_learning_reasoning_810_859.py::test_859_science_is_falsifiable_and_replicable",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 860,

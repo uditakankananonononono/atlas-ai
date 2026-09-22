@@ -12517,7 +12517,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_810_spaced_repetition_computes_due_and_lapse",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12531,7 +12532,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_811_interleaving_mixes_skills",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12545,7 +12547,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_812_retrieval_is_closed_book_feedback_retry",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12559,7 +12562,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_813_elaborative_why_and_conditions",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12573,7 +12577,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_814_self_explanation_checks_steps",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12587,7 +12592,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_815_dual_coding_requires_mapping_not_decoration",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12601,7 +12607,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_816_examples_mark_boundary_cases",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12615,7 +12622,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_817_worked_example_requires_rationales_and_completion",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12629,7 +12637,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_818_problem_solving_represents_then_verifies",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12643,7 +12652,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_819_deliberate_targets_subskill_feedback_rest",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12657,7 +12667,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_820_chunking_preserves_principle",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12671,7 +12682,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_821_scaffolding_support_fades_on_evidence",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12685,7 +12697,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_822_fading_support_fades_on_evidence",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12699,7 +12712,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_823_metacognition_calibrates",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12713,7 +12727,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_824_self_regulated_cycle",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12727,7 +12742,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_825_goal_setting_is_measurable_and_has_if_then",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12741,7 +12757,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_826_progress_monitoring_computes_change",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12755,7 +12772,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_827_self_assessment_requires_evidence",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12769,7 +12787,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_828_peer_assessment_requires_evidence",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12783,7 +12802,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_829_formative_assessment_purpose",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12797,7 +12817,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_830_summative_assessment_purpose",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12811,7 +12832,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_831_diagnostic_assessment_purpose",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12825,7 +12847,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_832_prior_knowledge_not_graded",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12839,7 +12862,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_833_transfer_requires_independent_target_performance",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12853,7 +12877,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_834_near_transfer_requires_independent_target_performance",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12867,7 +12892,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_835_far_transfer_requires_independent_target_performance",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12881,7 +12907,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_836_analogy_rejects_surface_similarity",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12895,7 +12922,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_837_case_reasoning_retrieve_reuse_revise_retain",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12909,7 +12937,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_838_rules_have_forward_trace",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12923,7 +12952,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_839_model_has_entities_relations_constraints_predictions_validation",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12937,7 +12967,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_840_qualitative_preserves_ambiguous_successors",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12951,7 +12982,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_841_quantitative_computes_mean_range_units",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12965,7 +12997,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_842_spatial_requires_frame_and_scale",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12979,7 +13012,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_843_temporal_orders_events",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -12993,7 +13027,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_844_causal_has_dag_roles_and_identification",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13007,7 +13042,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_845_counterfactual_exposes_held_constant",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13021,7 +13057,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_846_probability_bayes",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13035,7 +13072,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_847_fuzzy_operators",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13049,7 +13087,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_848_default_reasoning_is_revisable",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13063,7 +13102,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_849_nonmonotonic_reasoning_is_revisable",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13077,7 +13117,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_850_abduction_not_proof",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13091,7 +13132,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_851_induction_records_scope_exceptions_strength",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13105,7 +13147,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_852_deduction_separates_validity_truth",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13119,7 +13162,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_853_transduction_scope_one_target",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13133,7 +13177,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_854_dialectic_keeps_unresolved_conflict",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13147,7 +13192,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_855_integration_keeps_tradeoffs",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13161,7 +13207,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_856_systems_has_stocks_flows_feedback_delays",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13175,7 +13222,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_857_design_thinking_tests_with_participants",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13189,7 +13237,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_858_computational_has_decomposition_algorithm_tests_complexity",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },
@@ -13203,7 +13252,8 @@
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
-        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py"
+        "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_859_science_is_falsifiable_and_replicable",
+        "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
       "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
     },

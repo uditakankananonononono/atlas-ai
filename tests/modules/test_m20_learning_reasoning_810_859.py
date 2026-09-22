@@ -75,3 +75,15 @@ def test_evaluation_and_tenant_are_explicit():
 def test_learning_reasoning_rejects_cross_tenant_reference():
  with pytest.raises(LearningReasoningError,match='cross-tenant'):
   execute('retrieval_practice',{'tenant_id':'a','resource_refs':[{'tenant_id':'b'}],'objective':'x','source':SRC})
+def test_821_scaffolding_support_fades_on_evidence(): assert L('scaffolding')['support_levels'][-1]['support']==0 and L('scaffolding')['fade_on_evidence_not_time']
+def test_822_fading_support_fades_on_evidence(): assert L('fading')['support_levels'][-1]['support']==0 and L('fading')['fade_on_evidence_not_time']
+def test_827_self_assessment_requires_evidence(): assert L('self_assessment',criteria=['reasoning'],ratings={'reasoning':3})['assessment'][0]['missing_evidence']
+def test_828_peer_assessment_requires_evidence(): assert L('peer_assessment',criteria=['reasoning'],ratings={'reasoning':3})['assessment'][0]['missing_evidence']
+def test_829_formative_assessment_purpose(): assert L('formative_assessment',items=[{'objective_id':'o'}])['assessment_design']['purpose']=='feedback during learning'
+def test_830_summative_assessment_purpose(): assert L('summative_assessment',items=[{'objective_id':'o'}])['assessment_design']['purpose']=='judgment after instruction'
+def test_831_diagnostic_assessment_purpose(): assert L('diagnostic_assessment',items=[{'objective_id':'o'}])['assessment_design']['purpose']=='prerequisite and misconception diagnosis'
+def test_833_transfer_requires_independent_target_performance(): assert T('transfer')['transfer_type']=='unspecified' and T('transfer')['requires_independent_target_performance']
+def test_834_near_transfer_requires_independent_target_performance(): assert T('near_transfer')['transfer_type']=='near' and T('near_transfer')['requires_independent_target_performance']
+def test_835_far_transfer_requires_independent_target_performance(): assert T('far_transfer')['transfer_type']=='far' and T('far_transfer')['requires_independent_target_performance']
+def test_848_default_reasoning_is_revisable(): assert R('default_reasoning')['defaults']['beliefs_revisable']
+def test_849_nonmonotonic_reasoning_is_revisable(): assert R('non_monotonic_reasoning')['defaults']['beliefs_revisable']
