@@ -1413,8 +1413,9 @@
       "source_excerpt": "Module 9 \u2013 Knowledge Workspace Data Model: A graph\u2011based model stored in PostgreSQL with adjacency lists. Each node can be a Project, Research, Competition, Application, Email, Contact, File, Deadline, Task, or Note. Edges have relationships like child_of, references, supports, blocks. Auto\u2011tagging & Linking: When a new entity is created, its embedding is compared to all existing nodes; high\u2011similarity pairs get a suggested link. Named entity recognition extracts mentions of contacts, projects, and deadlines, automatically linking them. Visualisation: React Flow renders the graph interactively. Users can explore connections, filter by type, and double\u2011click to edit. The graph is also used by the Planner to understand context.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_100_m9_06_react_flow_graph_returns_nodes_and_edges",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 101,
@@ -1426,8 +1427,9 @@
       "source_excerpt": "Module 9 \u2013 Knowledge Workspace Data Model: A graph\u2011based model stored in PostgreSQL with adjacency lists. Each node can be a Project, Research, Competition, Application, Email, Contact, File, Deadline, Task, or Note. Edges have relationships like child_of, references, supports, blocks. Auto\u2011tagging & Linking: When a new entity is created, its embedding is compared to all existing nodes; high\u2011similarity pairs get a suggested link. Named entity recognition extracts mentions of contacts, projects, and deadlines, automatically linking them. Visualisation: React Flow renders the graph interactively. Users can explore connections, filter by type, and double\u2011click to edit. The graph is also used by the Planner to understand context.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_101_m9_07_filter_and_double_click_edit_are_preserved",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 102,
@@ -1439,8 +1441,9 @@
       "source_excerpt": "Module 9 \u2013 Knowledge Workspace Data Model: A graph\u2011based model stored in PostgreSQL with adjacency lists. Each node can be a Project, Research, Competition, Application, Email, Contact, File, Deadline, Task, or Note. Edges have relationships like child_of, references, supports, blocks. Auto\u2011tagging & Linking: When a new entity is created, its embedding is compared to all existing nodes; high\u2011similarity pairs get a suggested link. Named entity recognition extracts mentions of contacts, projects, and deadlines, automatically linking them. Visualisation: React Flow renders the graph interactively. Users can explore connections, filter by type, and double\u2011click to edit. The graph is also used by the Planner to understand context.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_102_m9_08_planner_context_consumes_visible_graph_ids",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 103,
@@ -1452,8 +1455,9 @@
       "source_excerpt": "Module 10 \u2013 Email Assistant Gmail Integration: Uses OAuth 2.0 to access Gmail API with push notifications (Google Cloud Pub/Sub). Incoming emails are ingested, embedded, and stored in the LTM. Categorisation: A fine\u2011tuned BERT model classifies emails into: opportunity, professor reply, collaboration, newsletter, personal, spam, action\u2011required. Action items are extracted using an LLM with output schema [{action, deadline, related_entity}]. Drafting Replies: For actionable emails, the assistant drafts a response using a context window that includes recent related emails and knowledge graph data. Drafts are placed in the Approval Center.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_103_m10_01_pubsub_ingestion_has_stable_dedupe_key",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 104,
@@ -1465,8 +1469,9 @@
       "source_excerpt": "Module 10 \u2013 Email Assistant Gmail Integration: Uses OAuth 2.0 to access Gmail API with push notifications (Google Cloud Pub/Sub). Incoming emails are ingested, embedded, and stored in the LTM. Categorisation: A fine\u2011tuned BERT model classifies emails into: opportunity, professor reply, collaboration, newsletter, personal, spam, action\u2011required. Action items are extracted using an LLM with output schema [{action, deadline, related_entity}]. Drafting Replies: For actionable emails, the assistant drafts a response using a context window that includes recent related emails and knowledge graph data. Drafts are placed in the Approval Center.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_104_m10_02_email_embedding_persists_provenance",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 105,
@@ -1478,8 +1483,9 @@
       "source_excerpt": "Module 10 \u2013 Email Assistant Gmail Integration: Uses OAuth 2.0 to access Gmail API with push notifications (Google Cloud Pub/Sub). Incoming emails are ingested, embedded, and stored in the LTM. Categorisation: A fine\u2011tuned BERT model classifies emails into: opportunity, professor reply, collaboration, newsletter, personal, spam, action\u2011required. Action items are extracted using an LLM with output schema [{action, deadline, related_entity}]. Drafting Replies: For actionable emails, the assistant drafts a response using a context window that includes recent related emails and knowledge graph data. Drafts are placed in the Approval Center.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_105_m10_03_classifier_is_restricted_to_seven_categories",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 106,
@@ -1491,8 +1497,9 @@
       "source_excerpt": "Module 10 \u2013 Email Assistant Gmail Integration: Uses OAuth 2.0 to access Gmail API with push notifications (Google Cloud Pub/Sub). Incoming emails are ingested, embedded, and stored in the LTM. Categorisation: A fine\u2011tuned BERT model classifies emails into: opportunity, professor reply, collaboration, newsletter, personal, spam, action\u2011required. Action items are extracted using an LLM with output schema [{action, deadline, related_entity}]. Drafting Replies: For actionable emails, the assistant drafts a response using a context window that includes recent related emails and knowledge graph data. Drafts are placed in the Approval Center.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_106_m10_04_action_extraction_rejects_nonexact_schema",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 107,
@@ -1504,8 +1511,9 @@
       "source_excerpt": "Module 10 \u2013 Email Assistant Gmail Integration: Uses OAuth 2.0 to access Gmail API with push notifications (Google Cloud Pub/Sub). Incoming emails are ingested, embedded, and stored in the LTM. Categorisation: A fine\u2011tuned BERT model classifies emails into: opportunity, professor reply, collaboration, newsletter, personal, spam, action\u2011required. Action items are extracted using an LLM with output schema [{action, deadline, related_entity}]. Drafting Replies: For actionable emails, the assistant drafts a response using a context window that includes recent related emails and knowledge graph data. Drafts are placed in the Approval Center.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_107_m10_05_reply_draft_keeps_thread_graph_context_pending",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 108,
@@ -1517,8 +1525,9 @@
       "source_excerpt": "Module 11 \u2013 Calendar Intelligence Sync: Google Calendar API with watch channels for real\u2011time updates. External calendars (Outlook, Apple) via CalDAV. Smart Scheduling: A constraint\u2011satisfaction solver (optapy) considers task deadlines, energy levels (user\u2011configured), travel time, and preparatory work blocks. It suggests an optimised weekly schedule. Conflict Resolution: When a new deadline conflicts, the planner presents alternatives and can propose to reschedule other tasks after approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_108_m11_01_calendar_watch_update_preserves_channel",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 109,
@@ -1530,8 +1539,9 @@
       "source_excerpt": "Module 11 \u2013 Calendar Intelligence Sync: Google Calendar API with watch channels for real\u2011time updates. External calendars (Outlook, Apple) via CalDAV. Smart Scheduling: A constraint\u2011satisfaction solver (optapy) considers task deadlines, energy levels (user\u2011configured), travel time, and preparatory work blocks. It suggests an optimised weekly schedule. Conflict Resolution: When a new deadline conflicts, the planner presents alternatives and can propose to reschedule other tasks after approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_109_m11_02_scheduler_assigns_task_to_feasible_slot",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 110,
@@ -1543,8 +1553,9 @@
       "source_excerpt": "Module 11 \u2013 Calendar Intelligence Sync: Google Calendar API with watch channels for real\u2011time updates. External calendars (Outlook, Apple) via CalDAV. Smart Scheduling: A constraint\u2011satisfaction solver (optapy) considers task deadlines, energy levels (user\u2011configured), travel time, and preparatory work blocks. It suggests an optimised weekly schedule. Conflict Resolution: When a new deadline conflicts, the planner presents alternatives and can propose to reschedule other tasks after approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_110_m11_03_schedule_accounts_for_travel_and_preparation",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 111,
@@ -1556,8 +1567,9 @@
       "source_excerpt": "Module 11 \u2013 Calendar Intelligence Sync: Google Calendar API with watch channels for real\u2011time updates. External calendars (Outlook, Apple) via CalDAV. Smart Scheduling: A constraint\u2011satisfaction solver (optapy) considers task deadlines, energy levels (user\u2011configured), travel time, and preparatory work blocks. It suggests an optimised weekly schedule. Conflict Resolution: When a new deadline conflicts, the planner presents alternatives and can propose to reschedule other tasks after approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_111_m11_04_weekly_proposal_does_not_mutate_calendar",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 112,
@@ -1569,8 +1581,9 @@
       "source_excerpt": "Module 11 \u2013 Calendar Intelligence Sync: Google Calendar API with watch channels for real\u2011time updates. External calendars (Outlook, Apple) via CalDAV. Smart Scheduling: A constraint\u2011satisfaction solver (optapy) considers task deadlines, energy levels (user\u2011configured), travel time, and preparatory work blocks. It suggests an optimised weekly schedule. Conflict Resolution: When a new deadline conflicts, the planner presents alternatives and can propose to reschedule other tasks after approval.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_112_m11_05_rescheduling_is_approval_gated_when_conflicted",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 113,
@@ -1582,8 +1595,9 @@
       "source_excerpt": "Module 12 \u2013 AI Research Lab Model Router: A decision tree / lightweight ML model selects the optimal model based on task type, required output length, cost budget, and latency tolerance. The router is pluggable. Collaboration Workflows: Definable as YAML DAGs. Example: research -> draft -> critique -> revise. Each node is a Celery task calling a specific model. The DAG engine ensures correct data passing. Fallback & Retry: If a model returns a low\u2011confidence result (based on log\u2011prob checks), the task is retried with a different model or a self\u2011critique loop.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_113_m12_01_model_policy_selects_eligible_lowest_cost_model",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 114,
@@ -1595,8 +1609,9 @@
       "source_excerpt": "Module 12 \u2013 AI Research Lab Model Router: A decision tree / lightweight ML model selects the optimal model based on task type, required output length, cost budget, and latency tolerance. The router is pluggable. Collaboration Workflows: Definable as YAML DAGs. Example: research -> draft -> critique -> revise. Each node is a Celery task calling a specific model. The DAG engine ensures correct data passing. Fallback & Retry: If a model returns a low\u2011confidence result (based on log\u2011prob checks), the task is retried with a different model or a self\u2011critique loop.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_114_m12_02_collaboration_dag_rejects_cycle",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 115,
@@ -1608,8 +1623,9 @@
       "source_excerpt": "Module 12 \u2013 AI Research Lab Model Router: A decision tree / lightweight ML model selects the optimal model based on task type, required output length, cost budget, and latency tolerance. The router is pluggable. Collaboration Workflows: Definable as YAML DAGs. Example: research -> draft -> critique -> revise. Each node is a Celery task calling a specific model. The DAG engine ensures correct data passing. Fallback & Retry: If a model returns a low\u2011confidence result (based on log\u2011prob checks), the task is retried with a different model or a self\u2011critique loop.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_115_m12_03_celery_nodes_preserve_typed_data_contract",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 116,
@@ -1621,8 +1637,9 @@
       "source_excerpt": "Module 12 \u2013 AI Research Lab Model Router: A decision tree / lightweight ML model selects the optimal model based on task type, required output length, cost budget, and latency tolerance. The router is pluggable. Collaboration Workflows: Definable as YAML DAGs. Example: research -> draft -> critique -> revise. Each node is a Celery task calling a specific model. The DAG engine ensures correct data passing. Fallback & Retry: If a model returns a low\u2011confidence result (based on log\u2011prob checks), the task is retried with a different model or a self\u2011critique loop.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_116_m12_04_low_confidence_uses_provider_signal",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 117,
@@ -1634,8 +1651,9 @@
       "source_excerpt": "Module 12 \u2013 AI Research Lab Model Router: A decision tree / lightweight ML model selects the optimal model based on task type, required output length, cost budget, and latency tolerance. The router is pluggable. Collaboration Workflows: Definable as YAML DAGs. Example: research -> draft -> critique -> revise. Each node is a Celery task calling a specific model. The DAG engine ensures correct data passing. Fallback & Retry: If a model returns a low\u2011confidence result (based on log\u2011prob checks), the task is retried with a different model or a self\u2011critique loop.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_117_m12_05_retry_is_bounded_and_names_next_strategy",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 118,
@@ -1647,8 +1665,9 @@
       "source_excerpt": "Module 13 \u2013 Browser Agent Architecture: A Playwright\u2011based service that exposes a REST API (/navigate, /fill, /screenshot, /extract). It maintains persistent browser contexts to keep sessions (when legally permissible). All actions are logged as HAR files for audit. Autonomous Navigation: Given a high\u2011level instruction (\u201cFind the submission button for the Google Science Fair\u201d), the agent uses a VLM (GPT\u20114o with vision) to interpret screenshots and decide next clicks. It loops until goal condition or max steps. Form Filling: Uses a mapping from module\u2011provided data to form fields via heuristic matching of labels. Before clicking any submit button, it pauses and requests approval via the Approval Center.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_118_m13_01_browser_accepts_only_rest_operation_set",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 119,
@@ -1660,8 +1679,9 @@
       "source_excerpt": "Module 13 \u2013 Browser Agent Architecture: A Playwright\u2011based service that exposes a REST API (/navigate, /fill, /screenshot, /extract). It maintains persistent browser contexts to keep sessions (when legally permissible). All actions are logged as HAR files for audit. Autonomous Navigation: Given a high\u2011level instruction (\u201cFind the submission button for the Google Science Fair\u201d), the agent uses a VLM (GPT\u20114o with vision) to interpret screenshots and decide next clicks. It loops until goal condition or max steps. Form Filling: Uses a mapping from module\u2011provided data to form fields via heuristic matching of labels. Before clicking any submit button, it pauses and requests approval via the Approval Center.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_119_m13_02_persistent_context_requires_legal_permission_and_id",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 120,
@@ -1673,8 +1693,9 @@
       "source_excerpt": "Module 13 \u2013 Browser Agent Architecture: A Playwright\u2011based service that exposes a REST API (/navigate, /fill, /screenshot, /extract). It maintains persistent browser contexts to keep sessions (when legally permissible). All actions are logged as HAR files for audit. Autonomous Navigation: Given a high\u2011level instruction (\u201cFind the submission button for the Google Science Fair\u201d), the agent uses a VLM (GPT\u20114o with vision) to interpret screenshots and decide next clicks. It loops until goal condition or max steps. Form Filling: Uses a mapping from module\u2011provided data to form fields via heuristic matching of labels. Before clicking any submit button, it pauses and requests approval via the Approval Center.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_120_m13_03_har_capture_has_content_digest",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 121,
@@ -1686,8 +1707,9 @@
       "source_excerpt": "Module 13 \u2013 Browser Agent Architecture: A Playwright\u2011based service that exposes a REST API (/navigate, /fill, /screenshot, /extract). It maintains persistent browser contexts to keep sessions (when legally permissible). All actions are logged as HAR files for audit. Autonomous Navigation: Given a high\u2011level instruction (\u201cFind the submission button for the Google Science Fair\u201d), the agent uses a VLM (GPT\u20114o with vision) to interpret screenshots and decide next clicks. It loops until goal condition or max steps. Form Filling: Uses a mapping from module\u2011provided data to form fields via heuristic matching of labels. Before clicking any submit button, it pauses and requests approval via the Approval Center.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_121_m13_04_vlm_observations_are_explicit_not_invented",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 122,
@@ -1699,8 +1721,9 @@
       "source_excerpt": "Module 13 \u2013 Browser Agent Architecture: A Playwright\u2011based service that exposes a REST API (/navigate, /fill, /screenshot, /extract). It maintains persistent browser contexts to keep sessions (when legally permissible). All actions are logged as HAR files for audit. Autonomous Navigation: Given a high\u2011level instruction (\u201cFind the submission button for the Google Science Fair\u201d), the agent uses a VLM (GPT\u20114o with vision) to interpret screenshots and decide next clicks. It loops until goal condition or max steps. Form Filling: Uses a mapping from module\u2011provided data to form fields via heuristic matching of labels. Before clicking any submit button, it pauses and requests approval via the Approval Center.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_122_m13_05_navigation_loop_rejects_steps_over_bound",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 123,
@@ -1712,8 +1735,9 @@
       "source_excerpt": "Module 13 \u2013 Browser Agent Architecture: A Playwright\u2011based service that exposes a REST API (/navigate, /fill, /screenshot, /extract). It maintains persistent browser contexts to keep sessions (when legally permissible). All actions are logged as HAR files for audit. Autonomous Navigation: Given a high\u2011level instruction (\u201cFind the submission button for the Google Science Fair\u201d), the agent uses a VLM (GPT\u20114o with vision) to interpret screenshots and decide next clicks. It loops until goal condition or max steps. Form Filling: Uses a mapping from module\u2011provided data to form fields via heuristic matching of labels. Before clicking any submit button, it pauses and requests approval via the Approval Center.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_123_m13_06_form_mapping_matches_normalized_labels",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 124,
@@ -1725,8 +1749,9 @@
       "source_excerpt": "Module 13 \u2013 Browser Agent Architecture: A Playwright\u2011based service that exposes a REST API (/navigate, /fill, /screenshot, /extract). It maintains persistent browser contexts to keep sessions (when legally permissible). All actions are logged as HAR files for audit. Autonomous Navigation: Given a high\u2011level instruction (\u201cFind the submission button for the Google Science Fair\u201d), the agent uses a VLM (GPT\u20114o with vision) to interpret screenshots and decide next clicks. It loops until goal condition or max steps. Form Filling: Uses a mapping from module\u2011provided data to form fields via heuristic matching of labels. Before clicking any submit button, it pauses and requests approval via the Approval Center.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_124_m13_07_submit_pauses_when_approval_scope_mismatches",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 125,
@@ -1738,8 +1763,9 @@
       "source_excerpt": "Module 14 \u2013 Project Builder Workflow: Upon receiving a goal (\u201cBuild an ISEF project\u201d), the Planner decomposes it, then spawns sub\u2011agents: literature reviewer (Module 4), data miner (scrapes datasets or uses Hugging Face), coder (generates experiments), analyst (runs code in Docker), and writer (drafts paper/poster). Outputs are assembled into a project directory with README. Iterative Refinement: The user can provide feedback at each stage; the system replans. The entire project is version\u2011controlled using Git (GitPython).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_125_m14_01_goal_decomposes_to_stages_without_mutation",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 126,
@@ -1751,8 +1777,9 @@
       "source_excerpt": "Module 14 \u2013 Project Builder Workflow: Upon receiving a goal (\u201cBuild an ISEF project\u201d), the Planner decomposes it, then spawns sub\u2011agents: literature reviewer (Module 4), data miner (scrapes datasets or uses Hugging Face), coder (generates experiments), analyst (runs code in Docker), and writer (drafts paper/poster). Outputs are assembled into a project directory with README. Iterative Refinement: The user can provide feedback at each stage; the system replans. The entire project is version\u2011controlled using Git (GitPython).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_126_m14_02_project_requires_all_five_named_roles",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 127,
@@ -1764,8 +1791,9 @@
       "source_excerpt": "Module 14 \u2013 Project Builder Workflow: Upon receiving a goal (\u201cBuild an ISEF project\u201d), the Planner decomposes it, then spawns sub\u2011agents: literature reviewer (Module 4), data miner (scrapes datasets or uses Hugging Face), coder (generates experiments), analyst (runs code in Docker), and writer (drafts paper/poster). Outputs are assembled into a project directory with README. Iterative Refinement: The user can provide feedback at each stage; the system replans. The entire project is version\u2011controlled using Git (GitPython).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_127_m14_03_dataset_requires_public_url_and_license",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 128,
@@ -1777,8 +1805,9 @@
       "source_excerpt": "Module 14 \u2013 Project Builder Workflow: Upon receiving a goal (\u201cBuild an ISEF project\u201d), the Planner decomposes it, then spawns sub\u2011agents: literature reviewer (Module 4), data miner (scrapes datasets or uses Hugging Face), coder (generates experiments), analyst (runs code in Docker), and writer (drafts paper/poster). Outputs are assembled into a project directory with README. Iterative Refinement: The user can provide feedback at each stage; the system replans. The entire project is version\u2011controlled using Git (GitPython).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_128_m14_04_experiment_sandbox_disables_network",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 129,
@@ -1790,8 +1819,9 @@
       "source_excerpt": "Module 14 \u2013 Project Builder Workflow: Upon receiving a goal (\u201cBuild an ISEF project\u201d), the Planner decomposes it, then spawns sub\u2011agents: literature reviewer (Module 4), data miner (scrapes datasets or uses Hugging Face), coder (generates experiments), analyst (runs code in Docker), and writer (drafts paper/poster). Outputs are assembled into a project directory with README. Iterative Refinement: The user can provide feedback at each stage; the system replans. The entire project is version\u2011controlled using Git (GitPython).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_129_m14_05_project_assembly_detects_readme",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 130,
@@ -1803,8 +1833,9 @@
       "source_excerpt": "Module 14 \u2013 Project Builder Workflow: Upon receiving a goal (\u201cBuild an ISEF project\u201d), the Planner decomposes it, then spawns sub\u2011agents: literature reviewer (Module 4), data miner (scrapes datasets or uses Hugging Face), coder (generates experiments), analyst (runs code in Docker), and writer (drafts paper/poster). Outputs are assembled into a project directory with README. Iterative Refinement: The user can provide feedback at each stage; the system replans. The entire project is version\u2011controlled using Git (GitPython).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_130_m14_06_feedback_creates_proposed_replan_not_execution",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 131,
@@ -1816,8 +1847,9 @@
       "source_excerpt": "Module 14 \u2013 Project Builder Workflow: Upon receiving a goal (\u201cBuild an ISEF project\u201d), the Planner decomposes it, then spawns sub\u2011agents: literature reviewer (Module 4), data miner (scrapes datasets or uses Hugging Face), coder (generates experiments), analyst (runs code in Docker), and writer (drafts paper/poster). Outputs are assembled into a project directory with README. Iterative Refinement: The user can provide feedback at each stage; the system replans. The entire project is version\u2011controlled using Git (GitPython).",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_131_m14_07_git_version_control_records_proposal_without_mutation",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 132,
@@ -1829,8 +1861,9 @@
       "source_excerpt": "Module 15 \u2013 Document Generator Templates: Maintains a library of LaTeX, DOCX, and PPTX templates for each document type. The system fills them using Jinja2 and an LLM that outputs structured content (sections, bullet lists, figure captions). Figure Generation: Data visualisations are created using Plotly or matplotlib and embedded. Scientific figures can be generated from raw data by an LLM that writes the plotting code. Version History: Each modification is stored as a new row in a document_versions table with a diff against the previous version.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/runtime/technical_spec_100_132.py",
-      "test_evidence": "tests/test_technical_spec_100_132.py",
-      "kind": "functional"
+      "test_evidence": "tests/test_technical_spec_100_132.py::test_row_132_m15_01_template_library_requires_latex_docx_pptx",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 133,
