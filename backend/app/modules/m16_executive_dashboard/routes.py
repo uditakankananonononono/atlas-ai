@@ -281,3 +281,8 @@ def get_proof_event_store(context:TenantContext=Depends(require_tenant)):return 
 def persist_authenticated_proof_events(body:VerifyProofEvents,context:TenantContext=Depends(require_tenant),store=Depends(get_proof_event_store)):
  try:return {'tenant_id':context.tenant_id,**verify_and_persist_proof_events(body,store)}
  except ValueError as error:raise HTTPException(409,str(error)) from error
+from .producer_subscription import VerifyProducerDelivery,verify_producer_delivery
+@router.post('/proof-gaps/events/subscription-delivery/verify')
+def producer_subscription_delivery(body:VerifyProducerDelivery,context:TenantContext=Depends(require_tenant)):
+ try:return {'tenant_id':context.tenant_id,**verify_producer_delivery(body)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error
