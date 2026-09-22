@@ -62,6 +62,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** persist receipts immutably and govern issuer-key provisioning and rotation.
 - **Landed:** verified live receipts persist tenant-scoped and append-only; duplicate receipt IDs cannot replace stored proof.
 - **Next:** use asymmetric issuer signatures and govern issuer-key provisioning and rotation.
+- **Landed:** tenant-scoped issuer public-key registry pins Ed25519 key IDs to fingerprints, rejects rebinding, and records explicit retirement.
+- **Next:** use registered asymmetric issuer signatures for receipt verification and persist receipts immutably.
 ## M15 - Document Generator
 - **Landed:** version preflight endpoint checks empty content, duplicate citations/figures, missing citation URLs, empty PPTX and likely slide overflow before export approval.
 - **Landed:** private-publication receipt verification requires consumed approval, private access, HTTPS download URL and exact approved-vs-published SHA-256 match.
