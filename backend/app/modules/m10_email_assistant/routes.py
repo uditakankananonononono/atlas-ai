@@ -158,3 +158,15 @@ from .authenticated_reconciliation import VerifyReconciliationEvidence,verify_re
 def authenticated_reconciliation_evidence(body:VerifyReconciliationEvidence,tenant:TenantContext=Depends(require_tenant)):
  try:return {'tenant_id':tenant.tenant_id,**verify_reconciliation_evidence(body)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
+from .reviewer_key_registry import ReviewerKeyRegistry,RegisterReviewerKey
+def get_reviewer_key_registry(tenant:TenantContext=Depends(require_tenant)):return ReviewerKeyRegistry(tenant.tenant_id)
+@router.post('/promise-state-reconciliation/reviewer-keys')
+def register_reviewer_key(body:RegisterReviewerKey,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_reviewer_key_registry)):
+ try:
+  row=registry.register(body);return {'tenant_id':tenant.tenant_id,'reviewer_id':row.reviewer_id,'key_id':row.key_id,'fingerprint_sha256':row.fingerprint_sha256,'active':row.active,'boundary':'Registers public verification-key bytes only; administrative provisioning must establish reviewer identity and trust.'}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
+@router.post('/promise-state-reconciliation/reviewer-keys/{reviewer_id}/{key_id}/retire')
+def retire_reviewer_key(reviewer_id:str,key_id:str,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_reviewer_key_registry)):
+ try:
+  row=registry.retire(reviewer_id,key_id);return {'tenant_id':tenant.tenant_id,'reviewer_id':reviewer_id,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
+ except ValueError as error:raise HTTPException(404,str(error)) from error

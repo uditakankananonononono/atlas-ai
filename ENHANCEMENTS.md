@@ -33,6 +33,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** authenticate reviewer identities and source-message bytes before persistence.
 - **Landed:** reconciliation evidence verification hashes supplied source-message bytes and validates reviewer decision attestations with configured Ed25519 public keys.
 - **Next:** persist reconciliation snapshots transactionally and govern reviewer-key identity, provisioning, and rotation.
+- **Landed:** tenant-scoped reviewer public-key registry pins Ed25519 key IDs to fingerprints, rejects rebinding, and records explicit retirement.
+- **Next:** persist reconciliation snapshots transactionally and verify source-message bytes using governed reviewer identities.
 ## M11 - Calendar Intelligence
 - **Landed:** read-only schedule-risk view combines travel and preparation buffer shortfalls, incomplete/unknown dependencies, and sourced cancellation exposure into a deterministic risk artifact without changing events, cancelling bookings, or spending.
 - **Landed:** live risk-evidence verifier binds mapping travel estimates and vendor cancellation terms to fresh retrieval timestamps, provider/source metadata, normalized-record hashes, and captured snapshot hashes, failing closed on stale, future, or mismatched evidence.
