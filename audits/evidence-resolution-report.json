@@ -1386,8 +1386,8 @@
     {
       "ledger": "audits/additional-2000-features.json",
       "total": 2010,
-      "resolvable_nodes": 668,
-      "unresolved": 1342,
+      "resolvable_nodes": 718,
+      "unresolved": 1292,
       "results": [
         {
           "row": 1,
@@ -10445,303 +10445,303 @@
         },
         {
           "row": 1510,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1510_mechanical_design_traceability",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1511,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1511_cad_reference_order",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1512,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1512_fea_mesh_convergence_without_claiming_solver_run",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1513,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1513_cfd_mass_balance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1514,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1514_thermal_network",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1515,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1515_stress_von_mises_and_factor_of_safety",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1516,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1516_fatigue_miner_damage",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1517,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1517_fracture_mechanics",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1518,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1518_materials_missing_criterion_blocks_score",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1519,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1519_properties_require_condition_unit_and_source",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1520,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1520_failure_analysis_does_not_invent_root_cause",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1521,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1521_series_reliability",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1522,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1522_maintainability_mttr",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1523,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1523_safety_rpn_and_acceptance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1524,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1524_human_factors_flags_safety_critical",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1525,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1525_ergonomics_keeps_instrument_context",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1526,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1526_industrial_design_not_release_ready",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1527,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1527_dfm_process_constraints",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1528,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1528_dfa_theoretical_minimum",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1529,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1529_sustainability_sums_lifecycle_impacts",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1530,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1530_dfss_open_ctq",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1531,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1531_tolerance_wc_and_rss",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1532,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1532_gdt_invalid_frame",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1533,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1533_metrology_uncertainty",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1534,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1534_quality_control_yield",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1535,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1535_quality_assurance_traceability",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1536,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1536_spc_uses_three_sigma_baseline",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1537,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1537_capability_cp_cpk",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1538,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1538_msa_variance_decomposition",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1539,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1539_full_factorial_doe",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1540,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1540_taguchi_larger_is_better",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1541,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1541_response_surface_terms",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1542,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1542_robust_design_worst_case",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1543,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1543_zero_failure_reliability_bound",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1544,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1544_arrhenius_acceleration",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1545,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1545_environmental_plan_not_fake_result",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1546,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1546_vibration_grms",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1547,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1547_shock_delta_velocity",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1548,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1548_thermal_cycling_plan_not_fake_result",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1549,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1549_humidity_plan_not_fake_result",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1550,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1550_corrosion_rate",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1551,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1551_wear_rate",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1552,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1552_fatigue_test_basquin_fit",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1553,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1553_creep_interval_rates",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1554,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1554_impact_absorbed_energy",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1555,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1555_hardness_no_unsafe_conversion",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1556,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1556_tensile_properties",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1557,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1557_compression",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1558,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1558_shear_double_plane",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1559,
-          "evidence": "tests/modules/test_m20_engineering_1510_1559.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_engineering_1510_1559.py::test_1559_torsion",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1560,
