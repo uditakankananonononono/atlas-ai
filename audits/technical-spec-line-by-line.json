@@ -107,9 +107,10 @@
       "source_line_end": 6,
       "source_excerpt": "Backend: Python 3.12, FastAPI, Celery with Redis as broker and result backend, Pydantic v2 for validation.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app",
+      "test_evidence": "tests/test_technical_architecture_real_backend.py::test_a07_running_python_fastapi_and_pydantic_match_backend_contract",
+      "kind": "functional",
+      "evidence_kind": "installed-runtime-and-adapter-behavior"
     },
     {
       "row": 8,
@@ -120,9 +121,10 @@
       "source_line_end": 6,
       "source_excerpt": "Backend: Python 3.12, FastAPI, Celery with Redis as broker and result backend, Pydantic v2 for validation.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app",
+      "test_evidence": "tests/test_technical_architecture_real_backend.py::test_a08_real_celery_uses_redis_for_broker_results_and_json_only",
+      "kind": "functional",
+      "evidence_kind": "installed-runtime-and-adapter-behavior"
     },
     {
       "row": 9,
@@ -146,9 +148,10 @@
       "source_line_end": 7,
       "source_excerpt": "Database: PostgreSQL 16 (via Supabase for managed hosting), with pgvector extension for dense embeddings; ChromaDB as a dedicated vector store for long\u2011term memory and semantic search.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app",
+      "test_evidence": "tests/test_technical_architecture_real_backend.py::test_a10_memory_embedding_is_real_pgvector_1024_column",
+      "kind": "functional",
+      "evidence_kind": "installed-runtime-and-adapter-behavior"
     },
     {
       "row": 11,
@@ -159,9 +162,10 @@
       "source_line_end": 7,
       "source_excerpt": "Database: PostgreSQL 16 (via Supabase for managed hosting), with pgvector extension for dense embeddings; ChromaDB as a dedicated vector store for long\u2011term memory and semantic search.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app",
+      "test_evidence": "tests/test_technical_architecture_real_backend.py::test_a11_real_chromadb_client_upserts_and_tenant_collections_are_isolated",
+      "kind": "functional",
+      "evidence_kind": "installed-runtime-and-adapter-behavior"
     },
     {
       "row": 12,
