@@ -371,9 +371,11 @@
       "source_line_end": 14,
       "source_excerpt": "Cloud / Deployment: Google Cloud Run for stateless services, GKE for long\u2011running agents, Cloud Storage for assets, Cloud SQL for managed Postgres.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "deploy",
+      "test_evidence": "tests/test_technical_architecture_deployment_artifacts.py::test_a26_cloud_run_manifest_is_stateless_pinned_autoscaled_and_probed",
+      "kind": "functional",
+      "evidence_kind": "deployment-manifest-or-adapter-behavior",
+      "production_acceptance": "not_run"
     },
     {
       "row": 27,
@@ -384,9 +386,11 @@
       "source_line_end": 14,
       "source_excerpt": "Cloud / Deployment: Google Cloud Run for stateless services, GKE for long\u2011running agents, Cloud Storage for assets, Cloud SQL for managed Postgres.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "deploy",
+      "test_evidence": "tests/test_technical_architecture_deployment_artifacts.py::test_a27_gke_manifest_has_real_workloads_health_resources_and_no_secrets",
+      "kind": "functional",
+      "evidence_kind": "deployment-manifest-or-adapter-behavior",
+      "production_acceptance": "not_run"
     },
     {
       "row": 28,
@@ -397,9 +401,11 @@
       "source_line_end": 14,
       "source_excerpt": "Cloud / Deployment: Google Cloud Run for stateless services, GKE for long\u2011running agents, Cloud Storage for assets, Cloud SQL for managed Postgres.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "deploy",
+      "test_evidence": "tests/test_technical_architecture_deployment_artifacts.py::test_a28_cloud_storage_adapter_uploads_bytes_content_type_and_generation",
+      "kind": "functional",
+      "evidence_kind": "deployment-manifest-or-adapter-behavior",
+      "production_acceptance": "not_run"
     },
     {
       "row": 29,
@@ -410,9 +416,11 @@
       "source_line_end": 14,
       "source_excerpt": "Cloud / Deployment: Google Cloud Run for stateless services, GKE for long\u2011running agents, Cloud Storage for assets, Cloud SQL for managed Postgres.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "deploy",
+      "test_evidence": "tests/test_technical_architecture_deployment_artifacts.py::test_a29_cloud_sql_target_is_bound_by_instance_annotation_and_secret_database_url",
+      "kind": "functional",
+      "evidence_kind": "deployment-manifest-or-adapter-behavior",
+      "production_acceptance": "not_run"
     },
     {
       "row": 30,
