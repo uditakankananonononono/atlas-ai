@@ -1,23 +1,57 @@
+name: atlas-local
+x-runtime: &runtime
+  build: {context: ../..}
+  restart: unless-stopped
+  environment: &runtime-env
+    ATLAS_ENV: production
+    ATLAS_DATABASE_URL: postgresql+psycopg://atlas:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/atlas
+    ATLAS_REDIS_URL: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0
+    ATLAS_SECRET_PROVIDER: platform-environment
+    ATLAS_TRUST_PLATFORM_SECRETS: "1"
+    ATLAS_TOKEN_KEY: ${ATLAS_TOKEN_KEY:?set ATLAS_TOKEN_KEY}
+    ATLAS_API_KEY_ENCRYPTION_KEY: ${ATLAS_API_KEY_ENCRYPTION_KEY:?set ATLAS_API_KEY_ENCRYPTION_KEY}
+    ATLAS_OIDC_ISSUER: ${ATLAS_OIDC_ISSUER:?set ATLAS_OIDC_ISSUER}
+    ATLAS_OIDC_AUDIENCE: ${ATLAS_OIDC_AUDIENCE:?set ATLAS_OIDC_AUDIENCE}
+    ATLAS_OIDC_TENANT_CLAIM: ${ATLAS_OIDC_TENANT_CLAIM:-atlas_tenant}
+  depends_on:
+    postgres: {condition: service_healthy}
+    redis: {condition: service_healthy}
 services:
-  atlas:
-    build: ../..
-    user: "10001:10001"
-    ports: ["8000:8000"]
-    environment:
-      DATABASE_URL: postgresql://atlas:atlas@postgres:5432/atlas
-      REDIS_URL: redis://redis:6379/0
-      SECRET_PROVIDER: env
+  migrate:
+    <<: *runtime
+    restart: "no"
+    command: ["python", "scripts/migrate.py"]
+  api:
+    <<: *runtime
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+    ports: ["8000:8080"]
     depends_on:
+      migrate: {condition: service_completed_successfully}
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/ready', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+  worker:
+    <<: *runtime
+    command: ["celery", "-A", "app.workers.celery_app:celery_app", "worker", "--loglevel=INFO"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
   postgres:
-    image: postgres:16-alpine
-    environment: {POSTGRES_USER: atlas, POSTGRES_PASSWORD: atlas, POSTGRES_DB: atlas}
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment: {POSTGRES_USER: atlas, POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}", POSTGRES_DB: atlas}
     volumes: ["atlas-postgres:/var/lib/postgresql/data"]
-    healthcheck: {test: ["CMD-SHELL", "pg_isready -U atlas"], interval: 5s, timeout: 3s, retries: 20}
+    healthcheck: {test: ["CMD-SHELL", "pg_isready -U atlas -d atlas"], interval: 5s, timeout: 3s, retries: 20}
   redis:
     image: redis:7-alpine
-    command: ["redis-server", "--appendonly", "yes"]
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:?set REDIS_PASSWORD}"]
     volumes: ["atlas-redis:/data"]
-    healthcheck: {test: ["CMD", "redis-cli", "ping"], interval: 5s, timeout: 3s, retries: 20}
+    healthcheck: {test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep PONG"], interval: 5s, timeout: 3s, retries: 20}
+    environment: {REDIS_PASSWORD: "${REDIS_PASSWORD:?set REDIS_PASSWORD}"}
 volumes: {atlas-postgres: {}, atlas-redis: {}}

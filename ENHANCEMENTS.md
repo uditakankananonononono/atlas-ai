@@ -143,3 +143,9 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed (M04, provider authentication):** the BYOK-backed hypothesis endpoint now requires authenticated tenant context before any model call, preventing unauthenticated production callers from consuming configured provider capacity or cost; local literature clustering remains a read-only computation.
 - **Landed (M00, legacy approval tenant isolation):** the mounted compatibility planner and `/api/v1/approvals` list, audit, and decision routes now bind every request to authenticated tenant identity; cross-tenant records are omitted or returned as not found, and the authenticated actor is recorded for decisions.
 - **Landed (M01, approval provenance):** digest proposals now store their M00 approval under the authenticated opportunity tenant, while core-spec approval-required capabilities can no longer treat caller-supplied booleans as owner approval or claim an external effect executed.
+
+## Commercial readiness lane
+- **Landed:** clean owner-PC install with secret-default rejection, a one-shot Alembic migration gate, isolated PostgreSQL/Redis volumes, and API readiness that checks live database, Redis and exact migration heads.
+- **Landed:** authenticated first-run checklist stores only local completion state and explicitly performs no sends, publishing, submissions or spending.
+- **Landed:** reproducible M00-M25 repository-evidence generator keeps offline-test discovery separate from live and production acceptance.
+- **Landed:** operator runbook covers startup, backup/restore drills, upgrades, rollback boundaries, incident stops and credential rotation without claiming unobserved scale or uptime.
