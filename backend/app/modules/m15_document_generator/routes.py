@@ -70,6 +70,7 @@ def get_publication_worker():return UnconfiguredPublicationWorker()
 def execute_publication_worker(body:ApprovedPublicationJob,tenant_id:str=Depends(tenant),worker=Depends(get_publication_worker)):
  from app.core.approvals import approvals
  try:return {'tenant_id':tenant_id,**execute_approved_publication(body,tenant_id,approvals,worker,worker)}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
 from .publication_receipt_persistence import verify_and_persist_publication
 from .publication_receipt_store import PublicationReceiptStore
 def get_publication_receipt_store(context:TenantContext=Depends(require_tenant)):return PublicationReceiptStore(context.tenant_id)
