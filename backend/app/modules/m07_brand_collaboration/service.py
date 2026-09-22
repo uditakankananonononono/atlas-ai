@@ -10,7 +10,10 @@ from .schemas import *
 MODULE_ID=7
 class NotFoundError(LookupError): pass
 class Service:
-    def __init__(self, repository, approvals): self.repo=repository; self.approvals=approvals
+    def __init__(self, repository, approvals):
+        tenant_id=getattr(repository,"tenant_id","")
+        if not tenant_id.strip():raise ValueError("tenant-scoped repository is required")
+        self.repo=repository; self.approvals=approvals; self.tenant_id=tenant_id.strip()
     def discover(self,data:BrandDiscoveryIn,creator_mission:str)->BrandCandidate:
         creator=set(creator_mission.lower().split()); brand=set(data.mission.lower().split()); shared=sorted(creator&brand-{"and","the","for","with"})
         score=round(min(1.0,.25+len(shared)/max(8,len(creator))),3); reasons=[f"shared mission term: {x}" for x in shared[:5]] or ["manual alignment review required"]
@@ -54,6 +57,6 @@ class Service:
         row=self.repo.artifact(artifact_id)
         if not row: raise NotFoundError(artifact_id)
         action={"performance_report":"send_brand_report","invoice":"send_invoice"}.get(row.kind,"send_brand_collateral")
-        payload={"artifact_id":artifact_id,"brand_id":row.brand_id,"recipient":recipient,"sha256":row.sha256,"content_type":row.content_type}
+        payload={"tenant_id":self.tenant_id,"artifact_id":artifact_id,"brand_id":row.brand_id,"recipient":recipient,"sha256":row.sha256,"content_type":row.content_type}
         approval=ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type=action,payload=payload); self.approvals.put(approval)
         return ApprovalProposal(approval_id=approval.id,action_type=action,payload=payload)
