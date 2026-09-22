@@ -300,9 +300,10 @@
       "source_line_end": 12,
       "source_excerpt": "Authentication & Security: OAuth 2.0 / OpenID Connect (Google, GitHub), JWT sessions, encrypted credential vault using HashiCorp Vault, audit logs stored in an append\u2011only PostgreSQL table.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app",
+      "test_evidence": "tests/test_technical_architecture_real_control_plane.py::test_a21_oidc_verifier_rejects_malformed_unsigned_and_missing_subject_tokens",
+      "kind": "functional",
+      "evidence_kind": "real-control-plane-behavior"
     },
     {
       "row": 22,
@@ -341,9 +342,10 @@
       "source_line_end": 12,
       "source_excerpt": "Authentication & Security: OAuth 2.0 / OpenID Connect (Google, GitHub), JWT sessions, encrypted credential vault using HashiCorp Vault, audit logs stored in an append\u2011only PostgreSQL table.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app",
+      "test_evidence": "tests/test_technical_architecture_real_control_plane.py::test_a24_real_knowledge_audit_is_hash_chained_and_tamper_evident",
+      "kind": "functional",
+      "evidence_kind": "real-control-plane-behavior"
     },
     {
       "row": 25,
@@ -354,9 +356,10 @@
       "source_line_end": 13,
       "source_excerpt": "Scheduling: Celery Beat for periodic tasks; APScheduler for in\u2011process lightweight scheduling.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app",
+      "test_evidence": "tests/test_technical_architecture_real_control_plane.py::test_a25_real_apscheduler_executes_registered_date_job",
+      "kind": "functional",
+      "evidence_kind": "real-control-plane-behavior"
     },
     {
       "row": 26,
@@ -419,9 +422,10 @@
       "source_line_end": 15,
       "source_excerpt": "All modules communicate through a central API Gateway (FastAPI) that enforces authentication, rate limiting, and routes requests to appropriate internal services. Long\u2011running tasks are dispatched to Celery workers; streaming updates are delivered via Server\u2011Sent Events (SSE) to the Next.js frontend.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app",
+      "test_evidence": "tests/test_technical_architecture_real_control_plane.py::test_a30_real_gateway_rate_limits_and_returns_trace_header",
+      "kind": "functional",
+      "evidence_kind": "real-control-plane-behavior"
     },
     {
       "row": 31,
@@ -445,9 +449,10 @@
       "source_line_end": 15,
       "source_excerpt": "All modules communicate through a central API Gateway (FastAPI) that enforces authentication, rate limiting, and routes requests to appropriate internal services. Long\u2011running tasks are dispatched to Celery workers; streaming updates are delivered via Server\u2011Sent Events (SSE) to the Next.js frontend.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app",
+      "test_evidence": "tests/test_technical_architecture_real_control_plane.py::test_a32_real_approval_sse_route_has_streaming_media_and_proxy_headers",
+      "kind": "functional",
+      "evidence_kind": "real-control-plane-behavior"
     },
     {
       "row": 33,
