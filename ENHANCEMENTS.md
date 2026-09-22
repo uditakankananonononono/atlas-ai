@@ -67,6 +67,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** proof-event verification authenticates producer events with configured HMAC keys and requires deployment receipts to carry version and environment bindings.
 - **Landed:** Ed25519 proof-event verification authenticates canonical producer events with configured public keys and preserves deployment receipt bindings.
 - **Next:** subscribe to producer event streams, persist events immutably, and govern producer-key provisioning and rotation.
+- **Landed:** authenticated producer events persist tenant-scoped and append-only; duplicate event IDs cannot replace stored proof.
+- **Next:** subscribe to producer event streams and adopt asymmetric producer signatures with governed key rotation.
 ## M17 - Narrative Architect
 - **Landed:** canonical service now legally wires Reddit by default and optional official YouTube/Pinterest plus allowlisted public pages through shared bounded collectors.
 - **Landed:** owner-material evidence completeness meter links every concept and critique suggestion to hashed owner records, exposes missing references and exact coverage, and never claims truth or disclosure permission.

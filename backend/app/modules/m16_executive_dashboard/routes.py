@@ -274,3 +274,10 @@ from .asymmetric_proof_events import VerifyAsymmetricProofEvents,verify_asymmetr
 def asymmetric_proof_events(body:VerifyAsymmetricProofEvents):
  try:return verify_asymmetric_proof_events(body)
  except ValueError as error:raise HTTPException(422,str(error)) from error
+from .proof_event_persistence import verify_and_persist_proof_events
+from .proof_event_store import ProofEventStore
+def get_proof_event_store(context:TenantContext=Depends(require_tenant)):return ProofEventStore(context.tenant_id)
+@router.post('/proof-gaps/events/verify-and-persist')
+def persist_authenticated_proof_events(body:VerifyProofEvents,context:TenantContext=Depends(require_tenant),store=Depends(get_proof_event_store)):
+ try:return {'tenant_id':context.tenant_id,**verify_and_persist_proof_events(body,store)}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
