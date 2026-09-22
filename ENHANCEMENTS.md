@@ -39,7 +39,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** pre-submit readback diff compares fields, destination, exact price/currency and irreversible controls against the approved snapshot, requiring new approval for any change and never submitting itself.
 - **Next:** capture the current snapshot directly from the browser adapter with screenshot and DOM evidence hashes immediately before submit.
 ## M14 - Project Builder
-- **Next (science):** acceptance-criterion coverage map linking each criterion to artifact, test, result and unresolved blocker.
+- **Landed (science):** acceptance matrix links criteria to hashed artifacts and named test results; proof-status keeps code-complete, test-complete and live-acceptance-complete separate with exact blockers and never promotes weaker evidence.
+- **Next:** authenticate live receipts and bind them to deployed version, environment and acceptance-run inputs.
 ## M15 - Document Generator
 - **Landed:** version preflight endpoint checks empty content, duplicate citations/figures, missing citation URLs, empty PPTX and likely slide overflow before export approval.
 - **Next:** approval consumption that renders and publishes a private downloadable File with a verified hash.
