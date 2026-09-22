@@ -48,4 +48,11 @@ def get_revision_store(tenant:TenantContext=Depends(require_tenant)):return Revi
 @router.post('/evidence-completeness/revision-acceptance/persist')
 def persist_revision(body:RevisionAcceptance,tenant:TenantContext=Depends(require_tenant),store=Depends(get_revision_store)):
  try:return {'tenant_id':tenant.tenant_id,**persist_revision_acceptance(body,store)}
+from .publication_gate import PublicationGateRequest,publish_through_gate
+class UnconfiguredPublicationAdapter:
+ def publish(self,*args):raise ValueError('publication adapter is not configured')
+def get_publication_adapter():return UnconfiguredPublicationAdapter()
+@router.post('/revision-publication/execute')
+def execute_revision_publication(body:PublicationGateRequest,tenant:TenantContext=Depends(require_tenant),adapter=Depends(get_publication_adapter)):
+ try:return {'tenant_id':tenant.tenant_id,**publish_through_gate(body,adapter)}
  except ValueError as error:raise HTTPException(409,str(error)) from error
