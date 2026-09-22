@@ -273,3 +273,10 @@ from .asymmetric_risk_evidence import VerifySignedRiskEvidence,verify_signed_ris
 def signed_live_risk_evidence(body:VerifySignedRiskEvidence,tenant:TenantContext=Depends(require_tenant)):
  try:return {'tenant_id':tenant.tenant_id,**verify_signed_risk_evidence(body)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
+from .risk_snapshot_persistence import PersistRiskSnapshot,persist_risk_snapshot
+from .risk_snapshot_store import RiskSnapshotStore
+def get_risk_snapshot_store(tenant:TenantContext=Depends(require_tenant)):return RiskSnapshotStore(tenant.tenant_id)
+@router.post('/schedule-risk/live-evidence/snapshots/persist')
+def persist_live_risk_snapshot(body:PersistRiskSnapshot,tenant:TenantContext=Depends(require_tenant),store=Depends(get_risk_snapshot_store)):
+ try:return {'tenant_id':tenant.tenant_id,**persist_risk_snapshot(body,store)}
+ except ValueError as error:raise HTTPException(409,str(error)) from error

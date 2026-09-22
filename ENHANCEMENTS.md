@@ -38,6 +38,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** live risk-evidence verifier binds mapping travel estimates and vendor cancellation terms to fresh retrieval timestamps, provider/source metadata, normalized-record hashes, and captured snapshot hashes, failing closed on stale, future, or mismatched evidence.
 - **Landed:** Ed25519 risk-evidence verification authenticates canonical travel and cancellation snapshot metadata plus content hashes with configured provider public keys.
 - **Next:** add provider-authenticated retrieval adapters and immutable source-byte storage.
+- **Landed:** tenant-scoped source snapshot bytes persist immutably by verified content hash, with idempotent exact repeats and fail-closed metadata conflicts.
+- **Next:** add provider-authenticated retrieval adapters and asymmetric provider signatures.
 ## M12 - AI Research Lab
 - **Landed:** shipped provider and DAG wiring now constructs without dependency overrides and supports OpenAI, Anthropic, DeepSeek and local Ollama through the shared provider boundary.
 - **Landed (science):** canonical reproducible-run checkpoints pin workflow/code identity, dataset hashes, per-node provider/model/seed, budget and spend receipts, output hashes and explicit resume state without claiming execution or byte verification.
