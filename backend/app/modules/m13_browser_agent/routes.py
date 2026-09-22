@@ -73,3 +73,9 @@ from .readback import ReadbackDiffRequest,diff_readback
 @router.post('/submit/readback-diff')
 def submit_readback_diff(body:ReadbackDiffRequest,tenant:TenantContext=Depends(require_tenant)):
  return {'tenant_id':tenant.tenant_id,**diff_readback(body)}
+
+from .pre_submit_capture import PreSubmitCaptureRequest,capture_pre_submit
+@router.post('/submit/pre-submit-capture')
+async def pre_submit_capture(body:PreSubmitCaptureRequest,tenant:TenantContext=Depends(require_tenant),service=Depends(get_service)):
+ try:return {'tenant_id':tenant.tenant_id,**await capture_pre_submit(service.sessions,tenant.tenant_id,body)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error
