@@ -1578,3 +1578,8 @@ def execution_truth(body:ExecutionTruthIn):
  from .execution_truth import execution_truth_ledger
  try:return execution_truth_ledger(body.items)
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+# Measured autonomy runtime: durable world model, bounded goal generation and
+# cross-domain evaluation. The outer module mount applies tenant auth.
+from .agi_routes import router as agi_runtime_router
+router.include_router(agi_runtime_router)
