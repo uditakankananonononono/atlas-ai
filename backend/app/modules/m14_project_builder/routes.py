@@ -186,3 +186,9 @@ from .live_receipt_verification import VerifyLiveReceipts,verify_live_receipts
 def verify_proof_live_receipts(body:VerifyLiveReceipts):
  try:return verify_live_receipts(body)
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .asymmetric_live_receipts import VerifyAsymmetricLiveReceipts,verify_asymmetric_live_receipts
+@router.post('/proof-status/live-receipts/ed25519/verify')
+def verify_ed25519_proof_live_receipts(body:VerifyAsymmetricLiveReceipts):
+ try:return verify_asymmetric_live_receipts(body)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
