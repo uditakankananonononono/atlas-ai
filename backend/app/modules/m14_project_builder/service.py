@@ -69,7 +69,7 @@ class Service:
         return PlanResponse(project=project)
     def propose_execution(self,project:ProjectView)->ExecutionProposal:
         if project.status!="planned" or not project.plan:raise ValueError("project must be planned first")
-        stored=self._approvals.put(ApprovalRequest(id=str(uuid4()),module_id=14,action_type="execute_project_plan",payload={"project_id":project.id,"tenant_id":project.tenant_id,"budget":project.budget.model_dump(),"task_count":len(project.plan.tasks)}))
+        stored=self._approvals.put(ApprovalRequest(id=str(uuid4()),module_id=14,action_type="execute_project_plan",payload={"project_id":project.id,"tenant_id":project.tenant_id,"budget":project.budget.model_dump(),"task_count":len(project.plan.tasks)}),user_id=project.tenant_id)
         project.status="awaiting_approval";old=project.revision;project.revision+=1
         if self._repository:self._repository.save(project,expected_revision=old)
         return ExecutionProposal(approval_id=stored.id,project_id=project.id,status=stored.status.value)

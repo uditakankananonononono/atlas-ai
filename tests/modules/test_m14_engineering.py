@@ -28,7 +28,7 @@ NOW = datetime(2026, 9, 21, 12, 0, tzinfo=UTC)
 
 
 class FakeSink:
-    def put(self, item):
+    def put(self, item, *, user_id=None):
         return item
 
 
