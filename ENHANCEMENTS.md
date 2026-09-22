@@ -24,7 +24,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** free-first experiment board that records hypothesis, cap, observed conversion and stop decision without auto-spend.
 ## M09 - Knowledge Workspace
 - **Landed (science):** tenant-scoped contradiction inbox groups conflicting claim values, exposes source freshness and confidence, ranks review order, records explicit prefer/retain-both decisions, and hashes the deterministic review artifact without claiming source authentication or truth.
-- **Next:** persist append-only decision revisions and verify referenced source bytes against captured hashes.
+- **Landed:** contradiction decision-revision verifier binds each append-only revision to the prior revision hash and content hashes for every referenced source snapshot.
+- **Next:** persist revisions transactionally and fetch source bytes to verify captured hashes and actor signatures.
 ## M10 - Email Assistant
 - **Landed:** evidence-bound thread promise tracker extracts only owner-authored commitments, links each promise to its source message/excerpt, computes due state, and proposes follow-up review without creating tasks, drafts, reminders, or sends.
 - **Next:** persist reviewed promise state across thread updates and reconcile explicit completion messages without auto-closing ambiguous commitments.

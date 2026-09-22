@@ -52,3 +52,9 @@ def contradiction_inbox(body: ContradictionInboxRequest, tenant: TenantContext =
         return {'tenant_id': tenant.tenant_id, **build_contradiction_inbox(body)}
     except ValueError as error:
         raise HTTPException(422, str(error)) from error
+
+from .contradiction_revisions import RevisionChainRequest,verify_revision_chain
+@router.post('/contradiction-revisions/verify')
+def contradiction_revision_chain(body:RevisionChainRequest,tenant:TenantContext=Depends(require_tenant)):
+ try:return {'tenant_id':tenant.tenant_id,**verify_revision_chain(body)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error
