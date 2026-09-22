@@ -150,3 +150,4 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** reproducible M00-M25 repository-evidence generator keeps offline-test discovery separate from live and production acceptance.
 - **Landed:** operator runbook covers startup, backup/restore drills, upgrades, rollback boundaries, incident stops and credential rotation without claiming unobserved scale or uptime.
 - **Landed (M02, approval provenance):** form-fill and integrated-answer review proposals now persist M00 approvals under the authenticated competition tenant, and core-spec external-action rows cannot turn caller-supplied booleans into owner approval or execution claims.
+- **Landed (M03, export approval ownership):** grant export proposals now persist their M00 approval row under the authenticated grant-writer tenant, matching the tenant already bound into the exact export payload.

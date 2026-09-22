@@ -150,7 +150,7 @@ class Service:
             action_type="generate_grant_documents",
             payload={**request.model_dump(), "tenant_id": self.tenant_id},
         )
-        stored = self._approvals.put(item)
+        stored = self._approvals.put(item, user_id=self.tenant_id)
         return ProposedExportResponse(
             approval_id=stored.id,
             status=stored.status.value,
