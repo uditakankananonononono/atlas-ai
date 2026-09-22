@@ -68,3 +68,8 @@ async def execute_submit(body: SubmitExecuteIn, tenant: TenantContext = Depends(
         raise HTTPException(409, str(error)) from error
     except NavigationBlocked as error:
         raise HTTPException(400, str(error)) from error
+
+from .readback import ReadbackDiffRequest,diff_readback
+@router.post('/submit/readback-diff')
+def submit_readback_diff(body:ReadbackDiffRequest,tenant:TenantContext=Depends(require_tenant)):
+ return {'tenant_id':tenant.tenant_id,**diff_readback(body)}

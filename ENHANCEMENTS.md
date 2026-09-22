@@ -36,7 +36,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed (science):** canonical reproducible-run checkpoints pin workflow/code identity, dataset hashes, per-node provider/model/seed, budget and spend receipts, output hashes and explicit resume state without claiming execution or byte verification.
 - **Next:** persist checkpoints transactionally in the worker queue and verify dataset bytes plus signed provider receipts before resume.
 ## M13 - Browser Agent
-- **Next:** readback diff before submit, showing changed fields, destination, price and irreversible controls against the approved snapshot.
+- **Landed:** pre-submit readback diff compares fields, destination, exact price/currency and irreversible controls against the approved snapshot, requiring new approval for any change and never submitting itself.
+- **Next:** capture the current snapshot directly from the browser adapter with screenshot and DOM evidence hashes immediately before submit.
 ## M14 - Project Builder
 - **Next (science):** acceptance-criterion coverage map linking each criterion to artifact, test, result and unresolved blocker.
 ## M15 - Document Generator
