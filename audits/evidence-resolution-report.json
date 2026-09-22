@@ -1386,8 +1386,8 @@
     {
       "ledger": "audits/additional-2000-features.json",
       "total": 2010,
-      "resolvable_nodes": 443,
-      "unresolved": 1567,
+      "resolvable_nodes": 468,
+      "unresolved": 1542,
       "results": [
         {
           "row": 1,
@@ -2045,21 +2045,21 @@
         },
         {
           "row": 110,
-          "evidence": "tests/modules/test_m19_research_110_134.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_research_110_134.py::test_row_110_scope_caveat",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 111,
-          "evidence": "tests/modules/test_m19_research_110_134.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_research_110_134.py::test_row_111_citation_is_not_influence_claim",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 112,
-          "evidence": "tests/modules/test_m19_research_110_134.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_research_110_134.py::test_row_112_gap_caveat",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 113,
@@ -2075,9 +2075,9 @@
         },
         {
           "row": 115,
-          "evidence": "tests/modules/test_m19_research_110_134.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_research_110_134.py::test_row_115_power_with_method_caveat",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 116,
@@ -2105,15 +2105,15 @@
         },
         {
           "row": 120,
-          "evidence": "tests/modules/test_m19_research_110_134.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_research_110_134.py::test_row_120_meta_analysis",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 121,
-          "evidence": "tests/modules/test_m19_research_110_134.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_research_110_134.py::test_row_121_effect_sizes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 122,
@@ -2159,9 +2159,9 @@
         },
         {
           "row": 129,
-          "evidence": "tests/modules/test_m19_research_110_134.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_research_110_134.py::test_row_129_no_impact_prediction",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 130,
@@ -2177,9 +2177,9 @@
         },
         {
           "row": 132,
-          "evidence": "tests/modules/test_m19_research_110_134.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_research_110_134.py::test_row_132_figure_spec_only",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 133,
@@ -2189,9 +2189,9 @@
         },
         {
           "row": 134,
-          "evidence": "tests/modules/test_m19_research_110_134.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m19_research_110_134.py::test_row_134_bayesian_update",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 135,
@@ -3059,15 +3059,15 @@
         },
         {
           "row": 279,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_279_game_narrative_design_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 280,
-          "evidence": "tests/modules/test_m20_optimization_story_235_280.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_optimization_story_235_280.py::test_row_280_visual_storyboarding_computes_from_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 281,
@@ -3515,9 +3515,9 @@
         },
         {
           "row": 355,
-          "evidence": "tests/modules/test_m15_design_333_359.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m15_design_333_359.py::test_row_355_speculative_design_does_not_claim_forecast",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 356,
@@ -3527,9 +3527,9 @@
         },
         {
           "row": 357,
-          "evidence": "tests/modules/test_m15_design_333_359.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m15_design_333_359.py::test_row_357_adversarial_design_requires_authorization",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 358,
@@ -5645,9 +5645,9 @@
         },
         {
           "row": 710,
-          "evidence": "tests/modules/test_m17_rows_710_740.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m17_rows_710_740.py::test_row_710_persuasion_rejects_manipulative_frame_in_guidance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 711,
@@ -9275,9 +9275,9 @@
         },
         {
           "row": 1315,
-          "evidence": "tests/modules/test_m16_finance_1310_1359.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1310_1359.py::test_row_1315_npv_changes_with_discount_rate",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1316,
@@ -9437,9 +9437,9 @@
         },
         {
           "row": 1342,
-          "evidence": "tests/modules/test_m16_finance_1310_1359.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1310_1359.py::test_row_1342_seeded_monte_carlo_changes_with_volatility",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1343,
@@ -9695,9 +9695,9 @@
         },
         {
           "row": 1385,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_row_1385_frontier_liquidity_changes_with_relevant_input",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1386,
@@ -9755,9 +9755,9 @@
         },
         {
           "row": 1395,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_row_1395_prospect_reference_changes_subjective_value",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1396,
@@ -9809,9 +9809,9 @@
         },
         {
           "row": 1404,
-          "evidence": "tests/modules/test_m16_finance_1360_1409.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_finance_1360_1409.py::test_row_1404_momentum_signal_changes_factor_output",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1405,
@@ -9935,9 +9935,9 @@
         },
         {
           "row": 1425,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_row_1425_adaptive_computation_changes_with_mastery",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1426,
@@ -10115,9 +10115,9 @@
         },
         {
           "row": 1455,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_row_1455_analytics_computation_changes_with_attempt_evidence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1456,
@@ -10139,9 +10139,9 @@
         },
         {
           "row": 1459,
-          "evidence": "tests/modules/test_m20_education_1410_1459.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m20_education_1410_1459.py::test_row_1459_affect_computation_ignores_camera_inference",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1460,
@@ -11045,9 +11045,9 @@
         },
         {
           "row": 1610,
-          "evidence": "tests/modules/test_m16_climate_environment_1610_1659.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_climate_environment_1610_1659.py::test_row_1610_climate_modeling_records_units_provenance_and_uncertainty",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1611,
@@ -11117,9 +11117,9 @@
         },
         {
           "row": 1622,
-          "evidence": "tests/modules/test_m16_climate_environment_1610_1659.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_climate_environment_1610_1659.py::test_row_1622_geoengineering_is_advisory_and_requires_review",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1623,
@@ -11261,9 +11261,9 @@
         },
         {
           "row": 1646,
-          "evidence": "tests/modules/test_m16_climate_environment_1610_1659.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_climate_environment_1610_1659.py::test_row_1646_water_quality_preserves_caller_standard_without_claiming_compliance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1647,
