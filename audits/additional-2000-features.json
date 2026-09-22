@@ -13267,7 +13267,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_860_historical_thinking_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13281,7 +13282,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_861_critical_thinking_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13295,7 +13297,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_862_creative_thinking_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13309,7 +13312,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_863_lateral_thinking_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13323,7 +13327,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_864_divergent_thinking_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13337,7 +13342,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_865_convergent_thinking_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13351,7 +13357,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_866_associative_thinking_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13365,7 +13372,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_867_reframing_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13379,7 +13387,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_868_perspective_shifting_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13393,7 +13402,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_869_paradigm_shifting_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13407,7 +13417,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_870_concept_formation_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13421,7 +13432,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_871_concept_mapping_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13435,7 +13447,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_872_mind_mapping_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13449,7 +13462,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_873_knowledge_organization_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13463,7 +13477,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_874_taxonomy_creation_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13477,7 +13492,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_875_ontology_development_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13491,7 +13507,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_876_semantic_networks_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13505,7 +13522,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_877_schema_development_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13519,7 +13537,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_878_mental_model_construction_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13533,7 +13552,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_879_model_updating_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13547,7 +13567,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_880_belief_revision_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13561,7 +13582,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_881_theory_change_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13575,7 +13597,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_882_conceptual_change_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13589,7 +13612,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_883_learning_by_teaching_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13603,7 +13627,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_884_learning_by_doing_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13617,7 +13642,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_885_learning_by_observing_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13631,7 +13657,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_886_learning_by_imitating_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13645,7 +13672,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_887_learning_by_trial_and_error_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13659,7 +13687,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_888_learning_by_insight_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13673,7 +13702,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_889_learning_by_association_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13687,7 +13717,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_890_classical_conditioning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13701,7 +13732,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_891_operant_conditioning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13715,7 +13747,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_892_observational_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13729,7 +13762,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_893_social_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13743,7 +13777,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_894_vicarious_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13757,7 +13792,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_895_experiential_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13771,7 +13807,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_896_reflective_practice_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13785,7 +13822,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_897_action_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13799,7 +13837,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_898_project_based_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13813,7 +13852,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_899_problem_based_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13827,7 +13867,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_900_inquiry_based_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13841,7 +13882,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_901_discovery_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13855,7 +13897,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_902_guided_discovery_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13869,7 +13912,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_903_direct_instruction_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13883,7 +13927,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_904_explicit_instruction_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13897,7 +13942,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_905_implicit_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13911,7 +13957,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_906_incidental_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13925,7 +13972,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_907_intentional_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13939,7 +13987,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_908_formal_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
@@ -13953,7 +14002,8 @@
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
-        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py"
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_909_informal_learning_transformation",
+        "evidence_kind": "exact-row-distinctive-transformation-node"
       },
       "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
     },
