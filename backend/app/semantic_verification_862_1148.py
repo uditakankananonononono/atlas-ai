@@ -36,7 +36,7 @@ def validate():
  if [x['row'] for x in rows]!=list(range(862,1149)):errors.append('range is not contiguous')
  for x in rows:
   if not (ROOT/x['implementation_path']).is_file():errors.append(f"{x['row']}: missing implementation")
-  test=x['named_test_path']
-  if '{range}' not in test and not (ROOT/test).is_file():errors.append(f"{x['row']}: missing named test")
+  test=x['named_test_path'];test_file=test.split('::',1)[0]
+  if '{range}' not in test_file and not (ROOT/test_file).is_file():errors.append(f"{x['row']}: missing named test")
   if x['status']!='pass':errors.append(f"{x['row']}: ledger evidence path mismatch")
  return {'rows':rows,'errors':errors,'passed':not errors,'counts':{'pass':sum(x['status']=='pass' for x in rows),'fail':sum(x['status']=='fail' for x in rows),'fixed':50}}
