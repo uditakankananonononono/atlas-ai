@@ -1386,8 +1386,8 @@
     {
       "ledger": "audits/additional-2000-features.json",
       "total": 2010,
-      "resolvable_nodes": 181,
-      "unresolved": 1829,
+      "resolvable_nodes": 215,
+      "unresolved": 1795,
       "results": [
         {
           "row": 1,
@@ -4241,207 +4241,207 @@
         },
         {
           "row": 476,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_476_discriminating_influence_perturbation_changes_quadrant",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 477,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_477_discriminating_message_facts_perturbation_changes_matrix",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 478,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_478_discriminating_gap_size_perturbation_changes_intervention",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 479,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_479_discriminating_team_size_perturbation_changes_org_mix",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 480,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_480_discriminating_reports_perturbation_changes_average_and_flags",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 481,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_481_discriminating_product_axis_perturbation_changes_cell_count",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 482,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_482_discriminating_team_type_perturbation_changes_topology_map",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 483,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_483_discriminating_behavior_perturbation_changes_values_body",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 484,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_484_discriminating_behavior_perturbation_changes_decision_test",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 485,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_485_discriminating_purpose_perturbation_changes_statement",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 486,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_486_discriminating_horizon_perturbation_changes_statement",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 487,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_487_discriminating_capability_perturbation_changes_consistency_check",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 488,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_488_discriminating_strength_perturbation_changes_pairings",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 489,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_489_discriminating_impact_perturbation_changes_attention_list",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 490,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_490_discriminating_driver_states_perturbation_changes_grid_size",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 491,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_491_discriminating_horizon_perturbation_changes_balance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 492,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_492_discriminating_target_perturbation_changes_kr_line",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 493,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_493_discriminating_kind_perturbation_changes_balance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 494,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_494_discriminating_measure_perturbation_changes_perspective_body",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 495,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_495_discriminating_cadence_perturbation_changes_review_cycle",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 496,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_496_discriminating_component_value_perturbation_changes_pay_mix",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 497,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_497_discriminating_grant_size_perturbation_changes_ownership",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 498,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_498_discriminating_share_class_perturbation_changes_class_reconciliation",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 499,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_499_discriminating_burn_perturbation_changes_runway_math",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 500,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_500_discriminating_supplied_facts_perturbation_changes_gap_list",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 501,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_501_discriminating_growth_perturbation_changes_projection",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 502,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_502_discriminating_multiple_perturbation_changes_estimate",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 503,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_503_discriminating_document_perturbation_changes_coverage",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 504,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_504_discriminating_position_perturbation_changes_alignment_count",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 505,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_505_discriminating_cadence_perturbation_changes_update_calendar",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 506,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_506_discriminating_cadence_perturbation_changes_board_calendar",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 507,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_507_discriminating_readiness_perturbation_changes_gap_list",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 508,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_508_discriminating_price_perturbation_changes_price_commentary",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 509,
-          "evidence": "tests/modules/test_m05_corporate.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m05_corporate.py::test_row_509_discriminating_status_perturbation_changes_readiness_ratio",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 510,

@@ -7384,8 +7384,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_476_discriminating_influence_perturbation_changes_quadrant",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7399,8 +7400,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_477_discriminating_message_facts_perturbation_changes_matrix",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7414,8 +7416,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_478_discriminating_gap_size_perturbation_changes_intervention",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7429,8 +7432,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_479_discriminating_team_size_perturbation_changes_org_mix",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7444,8 +7448,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_480_discriminating_reports_perturbation_changes_average_and_flags",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7459,8 +7464,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_481_discriminating_product_axis_perturbation_changes_cell_count",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7474,8 +7480,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_482_discriminating_team_type_perturbation_changes_topology_map",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7489,8 +7496,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_483_discriminating_behavior_perturbation_changes_values_body",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7504,8 +7512,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_484_discriminating_behavior_perturbation_changes_decision_test",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7519,8 +7528,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_485_discriminating_purpose_perturbation_changes_statement",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7534,8 +7544,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_486_discriminating_horizon_perturbation_changes_statement",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7549,8 +7560,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_487_discriminating_capability_perturbation_changes_consistency_check",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7564,8 +7576,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_488_discriminating_strength_perturbation_changes_pairings",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7579,8 +7592,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_489_discriminating_impact_perturbation_changes_attention_list",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7594,8 +7608,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_490_discriminating_driver_states_perturbation_changes_grid_size",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7609,8 +7624,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_491_discriminating_horizon_perturbation_changes_balance",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7624,8 +7640,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_492_discriminating_target_perturbation_changes_kr_line",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7639,8 +7656,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_493_discriminating_kind_perturbation_changes_balance",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7654,8 +7672,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_494_discriminating_measure_perturbation_changes_perspective_body",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7669,8 +7688,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_495_discriminating_cadence_perturbation_changes_review_cycle",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7684,8 +7704,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_496_discriminating_component_value_perturbation_changes_pay_mix",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7699,8 +7720,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_497_discriminating_grant_size_perturbation_changes_ownership",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7714,8 +7736,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_498_discriminating_share_class_perturbation_changes_class_reconciliation",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7729,8 +7752,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_499_discriminating_burn_perturbation_changes_runway_math",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7744,8 +7768,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_500_discriminating_supplied_facts_perturbation_changes_gap_list",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7759,8 +7784,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_501_discriminating_growth_perturbation_changes_projection",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7774,8 +7800,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_502_discriminating_multiple_perturbation_changes_estimate",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7789,8 +7816,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_503_discriminating_document_perturbation_changes_coverage",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7804,8 +7832,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_504_discriminating_position_perturbation_changes_alignment_count",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7819,8 +7848,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_505_discriminating_cadence_perturbation_changes_update_calendar",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7834,8 +7864,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_506_discriminating_cadence_perturbation_changes_board_calendar",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7849,8 +7880,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_507_discriminating_readiness_perturbation_changes_gap_list",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7864,8 +7896,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_508_discriminating_price_perturbation_changes_price_commentary",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -7879,8 +7912,9 @@
       "evidence": {
         "commit": "97296db9fd9063aeae01c4f97345dc33fd32851f",
         "implementation_path": "backend/app/modules/m05_outreach_manager/corporate.py",
-        "test_path": "tests/modules/test_m05_corporate.py",
-        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled."
+        "test_path": "tests/modules/test_m05_corporate.py::test_row_509_discriminating_status_perturbation_changes_readiness_ratio",
+        "caveats": "Planning aid only; no legal/financial advice or fundraising contact. Artifacts are not persisted. Financial model is single-scenario, valuation is single-multiple, and OKR grading is not scheduled.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
