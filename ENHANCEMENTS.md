@@ -64,6 +64,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** provider-publication receipt verification binds a consumed approval and approved render hash to a private HTTPS object receipt authenticated with a configured provider HMAC key.
 - **Landed:** Ed25519 provider-publication receipts replace shared signing secrets while retaining consumed-approval, private-access, and approved-render hash checks.
 - **Next:** execute the renderer and private upload in the approved worker and govern provider-key provisioning and rotation.
+- **Landed:** approved publication-worker adapter binds tenant, version, format and content hash to the approved payload before rendering and private upload, then checks the upload receipt against exact rendered bytes.
+- **Next:** consume approvals atomically for replay protection and replace shared-key receipts with provider-issued asymmetric signatures.
 ## M16 - Executive Dashboard
 - **Landed (science):** gap-to-proof dashboard reports exact requirement and per-module gaps while keeping code artifacts, test evidence and live acceptance separate.
 - **Landed:** proof-event verification authenticates producer events with configured HMAC keys and requires deployment receipts to carry version and environment bindings.
