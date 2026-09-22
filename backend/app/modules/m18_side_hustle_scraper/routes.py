@@ -29,7 +29,7 @@ from .schemas import (
 )
 from .service import Service
 from .lane_validation import DocumentValidator
-from .wiring import build_collectors
+from .wiring import build_collectors,build_refetcher
 from .runner import HustleRunner,DurableHustleRunner,DurableRunStore
 from app.auth.context import TenantContext,require_tenant
 import os
@@ -108,17 +108,17 @@ async def rank(request: RankIn, service: Service = Depends(get_service)):
 
 
 @router.post("/refresh", response_model=RefreshOut)
-async def refresh(service: Service = Depends(get_service)):
-    raise HTTPException(
-        501,
-        "refresh requires integrator-wired per-kind refetchers; call Service.refresh "
-        "from the Celery freshness task with the shared HTTP client",
+async def refresh(tenant: TenantContext = Depends(require_tenant), service: Service = Depends(get_service)):
+    report = await service.refresh(build_refetcher(), tenant_id=tenant.tenant_id)
+    return RefreshOut(
+        sources_due=report.sources_due, sources_checked=report.sources_checked,
+        changes_detected=report.changes_detected, dead_sources=list(report.dead_sources),
     )
 
 
 @router.get("/freshness", response_model=FreshnessReportOut)
-async def freshness(service: Service = Depends(get_service)):
-    report = await service.freshness_report()
+async def freshness(tenant: TenantContext = Depends(require_tenant), service: Service = Depends(get_service)):
+    report = await service.freshness_report(tenant_id=tenant.tenant_id)
     return FreshnessReportOut(**{k: report[k] for k in
                                  ("watched", "alive", "dead", "due_now", "by_class", "generated_at")})
 

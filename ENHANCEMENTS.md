@@ -108,7 +108,7 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** tenant-scoped publication-provider public-key registry pins Ed25519 key IDs to fingerprints, rejects rebinding, and records retirement.
 - **Next:** persist the revision chain and enforce the disclosure gate using governed publication keys.
 ## M18 - Side Hustle & Knowledge Scraper
-- **Landed:** default public/official collectors, approval-gated experiments, adapter receipts and outcomes now extend to tenant-scoped durable SQLite WAL run snapshots that survive runner restarts and preserve exact approval/receipt links.
+- **Landed:** public/official collectors, approval-gated durable experiments, receipts/outcomes, and the freshness API now performs bounded production refetches, hashes observed bytes, records cache headers, changes and dead-source failures instead of returning 501.
 - **Next:** signed provider receipt verification and shared Postgres storage for horizontally scaled workers.
 ## M19 - Idea Incubator
 - **Landed:** assumption burn-down ranks tests by expected entropy reduction per cost/time burden and selects a budget-feasible learning portfolio while preserving caller-supplied uncertainty.

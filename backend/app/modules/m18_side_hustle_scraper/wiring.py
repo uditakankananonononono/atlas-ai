@@ -28,3 +28,20 @@ def build_collectors(env:dict[str,str]|None=None):
  if e.get("ATLAS_X_BEARER_TOKEN","").strip():collectors["x"]=XApiCollector(http,bearer_token=e["ATLAS_X_BEARER_TOKEN"],**base)
  if e.get("ATLAS_INSTAGRAM_GRAPH_TOKEN","").strip():collectors["instagram"]=InstagramGraphCollector(http,access_token=e["ATLAS_INSTAGRAM_GRAPH_TOKEN"],**base)
  return collectors
+
+def build_refetcher(env:dict[str,str]|None=None):
+ """Production freshness fetcher for previously accepted legal source URLs."""
+ import hashlib
+ from .lane_models import SourceKind
+ client=UrllibHttpClient();policy=FetchPolicy()
+ allowed={x.value for x in SourceKind}
+ def refetch(url:str,kind:SourceKind):
+  if kind.value not in allowed:return {'error':f'unsupported source kind: {kind.value}'}
+  try:
+   response=client.fetch(url,policy=policy)
+   return {'status':response.status,'not_modified':response.not_modified,'content_hash':None if response.not_modified else hashlib.sha256(response.body).hexdigest(),'etag':response.headers.get('etag'),'last_modified':response.headers.get('last-modified')}
+  except Exception as error:
+   from .lane_http import HttpError
+   if isinstance(error,HttpError):return {'status':error.status,'error':error.reason}
+   return {'error':f'{type(error).__name__}: {error}'}
+ return refetch
