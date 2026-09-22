@@ -16,3 +16,22 @@ class StripeClient:
   async with httpx.AsyncClient(timeout=30,transport=self.transport) as client:
    item=await client.post("https://api.stripe.com/v1/invoiceitems",headers=headers,data={"customer":customer_id,"description":description,"amount":str(amount_cents),"currency":currency});item.raise_for_status()
    invoice=await client.post("https://api.stripe.com/v1/invoices",headers=headers,data={"customer":customer_id,"auto_advance":"false","metadata[atlas_approval_id]":approval_id});invoice.raise_for_status();return invoice.json()
+
+
+class UnconfiguredStripeClient:
+    """Fail closed only when an approved billing mutation needs Stripe.
+
+    Read-only plans, previews, entitlements and usage remain available without
+    provider credentials; no request can be mistaken for external execution.
+    """
+
+    _message = "STRIPE_SECRET_KEY is required for external billing execution"
+
+    async def create_checkout(self, *args, **kwargs):
+        raise RuntimeError(self._message)
+
+    async def cancel_subscription(self, *args, **kwargs):
+        raise RuntimeError(self._message)
+
+    async def create_invoice(self, *args, **kwargs):
+        raise RuntimeError(self._message)
