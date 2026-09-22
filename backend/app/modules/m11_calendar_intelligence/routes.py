@@ -280,3 +280,11 @@ def get_risk_snapshot_store(tenant:TenantContext=Depends(require_tenant)):return
 def persist_live_risk_snapshot(body:PersistRiskSnapshot,tenant:TenantContext=Depends(require_tenant),store=Depends(get_risk_snapshot_store)):
  try:return {'tenant_id':tenant.tenant_id,**persist_risk_snapshot(body,store)}
  except ValueError as error:raise HTTPException(409,str(error)) from error
+from .risk_retrieval_adapter import RetrieveRiskSource,retrieve_risk_source
+class UnconfiguredRiskRetriever:
+ def fetch(self,*args):raise ValueError('risk source retrieval adapter is not configured')
+def get_risk_source_retriever():return UnconfiguredRiskRetriever()
+@router.post('/schedule-risk/live-evidence/retrieve')
+def retrieve_live_risk_source(body:RetrieveRiskSource,tenant:TenantContext=Depends(require_tenant),retriever=Depends(get_risk_source_retriever)):
+ try:return {'tenant_id':tenant.tenant_id,**retrieve_risk_source(body,retriever)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error
