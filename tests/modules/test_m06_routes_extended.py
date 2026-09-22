@@ -31,7 +31,7 @@ class FakeApprovalStore:
     def __init__(self) -> None:
         self.items: list[ApprovalRequest] = []
 
-    def put(self, item: ApprovalRequest) -> ApprovalRequest:
+    def put(self, item: ApprovalRequest, *, user_id=None) -> ApprovalRequest:
         self.items.append(item)
         return item
 

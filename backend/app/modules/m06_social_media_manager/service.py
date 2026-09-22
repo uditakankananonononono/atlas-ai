@@ -476,7 +476,7 @@ class Service:
     def _file_approval(self, *, action_type: str, payload: dict[str, Any]) -> ApprovalRequest:
         payload = {"tenant_id": self.tenant_id, **payload}
         request = ApprovalRequest(id=str(uuid.uuid4()), module_id=MODULE_ID, action_type=action_type, payload=payload)
-        return self._approvals.put(request)
+        return self._approvals.put(request, user_id=self.tenant_id)
 
     @staticmethod
     def _official_api_name(platform: Platform) -> str:
