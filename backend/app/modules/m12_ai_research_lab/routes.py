@@ -102,3 +102,9 @@ from .reproducible_run import ReproducibleRunRequest,checkpoint
 def reproducible_run_checkpoint(body:ReproducibleRunRequest,tenant:TenantContext=Depends(require_tenant)):
  try:return {'tenant_id':tenant.tenant_id,**checkpoint(body)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .resume_verification import ResumeVerificationRequest,verify_resume
+@router.post('/reproducible-run/resume/verify')
+def reproducible_run_resume_verify(body:ResumeVerificationRequest,tenant:TenantContext=Depends(require_tenant)):
+ try:return {'tenant_id':tenant.tenant_id,**verify_resume(body)}
+ except ValueError as error:raise HTTPException(422,str(error)) from error
