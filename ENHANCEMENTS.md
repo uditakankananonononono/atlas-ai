@@ -77,6 +77,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** subscribe to producer event streams, persist events immutably, and govern producer-key provisioning and rotation.
 - **Landed:** authenticated producer events persist tenant-scoped and append-only; duplicate event IDs cannot replace stored proof.
 - **Next:** subscribe to producer event streams and adopt asymmetric producer signatures with governed key rotation.
+- **Landed:** producer subscription-delivery verifier authenticates pushed transport envelopes and preserves delivery identity before nested proof processing.
+- **Next:** provision remote subscriptions, persist events immutably, and adopt asymmetric producer signatures.
 ## M17 - Narrative Architect
 - **Landed:** canonical service now legally wires Reddit by default and optional official YouTube/Pinterest plus allowlisted public pages through shared bounded collectors.
 - **Landed:** owner-material evidence completeness meter links every concept and critique suggestion to hashed owner records, exposes missing references and exact coverage, and never claims truth or disclosure permission.
