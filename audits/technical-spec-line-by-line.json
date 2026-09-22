@@ -258,9 +258,10 @@
       "source_line_end": 11,
       "source_excerpt": "Document Processing: PyMuPDF, python\u2011docx, Tesseract OCR, Unstructured.io for layout\u2011aware parsing.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/platform/document_processing.py",
+      "test_evidence": "tests/test_technical_architecture_real_documents_security.py::test_a18_pymupdf_extracts_real_pdf_text_and_page_provenance",
+      "kind": "functional",
+      "evidence_kind": "real-file-or-security-state-machine-behavior"
     },
     {
       "row": 19,
@@ -271,9 +272,10 @@
       "source_line_end": 11,
       "source_excerpt": "Document Processing: PyMuPDF, python\u2011docx, Tesseract OCR, Unstructured.io for layout\u2011aware parsing.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/platform/document_processing.py",
+      "test_evidence": "tests/test_technical_architecture_real_documents_security.py::test_a19_blank_scanned_pdf_enters_tesseract_path_and_flags_empty_ocr",
+      "kind": "functional",
+      "evidence_kind": "real-file-or-security-state-machine-behavior"
     },
     {
       "row": 20,
@@ -284,9 +286,10 @@
       "source_line_end": 11,
       "source_excerpt": "Document Processing: PyMuPDF, python\u2011docx, Tesseract OCR, Unstructured.io for layout\u2011aware parsing.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/platform/document_processing.py",
+      "test_evidence": "tests/test_technical_architecture_real_documents_security.py::test_a20_unstructured_partitions_real_file_with_metadata",
+      "kind": "functional",
+      "evidence_kind": "real-file-or-security-state-machine-behavior"
     },
     {
       "row": 21,
@@ -310,9 +313,10 @@
       "source_line_end": 12,
       "source_excerpt": "Authentication & Security: OAuth 2.0 / OpenID Connect (Google, GitHub), JWT sessions, encrypted credential vault using HashiCorp Vault, audit logs stored in an append\u2011only PostgreSQL table.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/auth/session.py",
+      "test_evidence": "tests/test_technical_architecture_real_documents_security.py::test_a22_refresh_session_rotates_once_rejects_replay_and_tenant_is_bound",
+      "kind": "functional",
+      "evidence_kind": "real-file-or-security-state-machine-behavior"
     },
     {
       "row": 23,
@@ -323,9 +327,10 @@
       "source_line_end": 12,
       "source_excerpt": "Authentication & Security: OAuth 2.0 / OpenID Connect (Google, GitHub), JWT sessions, encrypted credential vault using HashiCorp Vault, audit logs stored in an append\u2011only PostgreSQL table.",
       "status": "verified-pushed",
-      "implementation_path": "backend/app/runtime/technical_architecture_a01_a33.py",
-      "test_evidence": "tests/test_technical_architecture_a01_a33.py",
-      "kind": "functional"
+      "implementation_path": "backend/app/platform/secrets.py",
+      "test_evidence": "tests/test_technical_architecture_real_documents_security.py::test_a23_vault_provider_requests_literal_key_and_never_returns_path_or_token",
+      "kind": "functional",
+      "evidence_kind": "real-file-or-security-state-machine-behavior"
     },
     {
       "row": 24,
