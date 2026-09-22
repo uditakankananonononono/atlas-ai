@@ -10,7 +10,8 @@ def test_review_approval_carries_tenant():
  approvals=ApprovalStore()
  pipeline=ApplicationAnswerPipeline(NaturalVoiceService(good),approvals,'tenant-a')
  asyncio.run(pipeline.prepare_review('c1',{'impact':'In 2025, I built Atlas for MIT and improved accuracy by 20%.'}))
- assert approvals.list()[0].payload['tenant_id']=='tenant-a'
+ assert approvals.list(user_id='tenant-a')[0].payload['tenant_id']=='tenant-a'
+ assert approvals.list(user_id='tenant-b')==[]
 
 def test_empty_tenant_fails_closed():
  try:ApplicationAnswerPipeline(NaturalVoiceService(good),ApprovalStore(),' ')

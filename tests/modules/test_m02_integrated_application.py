@@ -11,12 +11,13 @@ async def generate(prompt,provider,model):
  if 'Draft an answer' in prompt:return 'draft-model','In 2025, I built Atlas and improved accuracy by 20%. [1]'
  return 'voice-model','In 2025, I built Atlas and improved accuracy by 20%. [1]'
 def test_one_flow_carries_owner_provenance_through_voice_review_and_browser_handoff():
- a=ApprovalStore();f=IntegratedApplicationFlow(Corpus(),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),a)
+ a=ApprovalStore();f=IntegratedApplicationFlow(Corpus(),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),a,'tenant-a')
  out=asyncio.run(f.prepare('comp1','https://official.example/app',[{'field':'impact','question':'What did you build?','requirements':'100 words'}]))
  assert out['stages']==['ai_curated_draft','natural_voice_pass','owner_review','browser_stage','separate_final_submit_approval']
  assert out['source_provenance']['impact'][0]=={'source_type':'google_doc','source_id':'doc1','locator':'docs/doc1'}
  assert out['official_url']=='https://official.example/app' and not out['submission_enabled'] and out['final_submit_requires_separate_approval']
- req=next(x for x in a.list() if x.id==out['approval_id'])
+ req=next(x for x in a.list(user_id='tenant-a') if x.id==out['approval_id'])
+ assert a.list(user_id='tenant-b')==[]
  assert req.payload['exact_answers']==out['exact_answers']
 def test_integrated_flow_refuses_to_generate_from_nothing():
  f=IntegratedApplicationFlow(Empty(),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),ApprovalStore())

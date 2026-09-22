@@ -66,20 +66,23 @@ async def draft_field(competition_id: str, request: DraftRequest, service: Servi
     response_model=ProposedAction,
 )
 def propose_form_fill(
-    competition_id: str, request: FormFillProposalRequest, service: Service = Depends(get_service)
+    competition_id: str, request: FormFillProposalRequest, tenant: TenantContext = Depends(require_tenant),
+    service: Service = Depends(get_service)
 ) -> ProposedAction:
     """Queue browser staging behind the shared approval boundary."""
     try:
         proposal = service.propose_form_fill(competition_id, request)
     except CompetitionNotFoundError as error:
         raise HTTPException(status_code=404, detail="competition not found") from error
+    proposal.payload["tenant_id"] = tenant.tenant_id
     approval = approvals.put(
         ApprovalRequest(
             id=str(uuid4()),
             module_id=2,
             action_type=proposal.action_type,
             payload=proposal.payload,
-        )
+        ),
+        user_id=tenant.tenant_id,
     )
     proposal.payload["approval_id"] = approval.id
     proposal.payload["browser_agent_path"] = "/api/v1/browser-agent/submit/request"
@@ -112,7 +115,7 @@ async def integrated_application(competition_id:str,request:IntegratedApplicatio
     from .grounded_drafting import GroundedApplicationDrafter
     from .humanize import NaturalVoiceService
     from .integrated_application import IntegratedApplicationFlow
-    flow=IntegratedApplicationFlow(ProfileCorpus(tenant.tenant_id,get_embedding_provider(request.embedding_provider)),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),approvals)
+    flow=IntegratedApplicationFlow(ProfileCorpus(tenant.tenant_id,get_embedding_provider(request.embedding_provider)),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),approvals,tenant.tenant_id)
     try:return await flow.prepare(competition_id,request.official_url,[x.model_dump() for x in request.fields],request.provider)
     except ValueError as e:raise HTTPException(422,str(e))
 
