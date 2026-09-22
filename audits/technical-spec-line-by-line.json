@@ -1875,8 +1875,9 @@
       "source_excerpt": "Module 15 \u2013 Document Generator Templates: Maintains a library of LaTeX, DOCX, and PPTX templates for each document type. The system fills them using Jinja2 and an LLM that outputs structured content (sections, bullet lists, figure captions). Figure Generation: Data visualisations are created using Plotly or matplotlib and embedded. Scientific figures can be generated from raw data by an LLM that writes the plotting code. Version History: Each modification is stored as a new row in a document_versions table with a diff against the previous version.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_133_m15_02_structured_content_preserves_sections",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 134,
@@ -1888,8 +1889,9 @@
       "source_excerpt": "Module 15 \u2013 Document Generator Templates: Maintains a library of LaTeX, DOCX, and PPTX templates for each document type. The system fills them using Jinja2 and an LLM that outputs structured content (sections, bullet lists, figure captions). Figure Generation: Data visualisations are created using Plotly or matplotlib and embedded. Scientific figures can be generated from raw data by an LLM that writes the plotting code. Version History: Each modification is stored as a new row in a document_versions table with a diff against the previous version.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_134_m15_03_figure_embedding_requires_supported_engine_artifact",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 135,
@@ -1901,8 +1903,9 @@
       "source_excerpt": "Module 15 \u2013 Document Generator Templates: Maintains a library of LaTeX, DOCX, and PPTX templates for each document type. The system fills them using Jinja2 and an LLM that outputs structured content (sections, bullet lists, figure captions). Figure Generation: Data visualisations are created using Plotly or matplotlib and embedded. Scientific figures can be generated from raw data by an LLM that writes the plotting code. Version History: Each modification is stored as a new row in a document_versions table with a diff against the previous version.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_135_m15_04_plot_sandbox_forbids_network_and_caller_code",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 136,
@@ -1914,8 +1917,9 @@
       "source_excerpt": "Module 15 \u2013 Document Generator Templates: Maintains a library of LaTeX, DOCX, and PPTX templates for each document type. The system fills them using Jinja2 and an LLM that outputs structured content (sections, bullet lists, figure captions). Figure Generation: Data visualisations are created using Plotly or matplotlib and embedded. Scientific figures can be generated from raw data by an LLM that writes the plotting code. Version History: Each modification is stored as a new row in a document_versions table with a diff against the previous version.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_136_m15_05_document_version_hashes_content_and_links_parent",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 137,
@@ -1927,8 +1931,9 @@
       "source_excerpt": "Module 16 \u2013 Executive Dashboard Real\u2011Time Data: WebSockets/SSE feed for live updates on task progress, new opportunities, pending approvals. Main widgets: Priority Timeline (Gantt chart), Approval Queue, AI Agent Status (running/idle), KPI cards (applications submitted, grants won, etc.). Natural Language Command Bar: A top\u2011level input that accepts plain English commands (\u201cApply to every relevant competition this month\u201d) and routes them to the Planner.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_137_m16_01_live_feed_rejects_unknown_event_types",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 138,
@@ -1940,8 +1945,9 @@
       "source_excerpt": "Module 16 \u2013 Executive Dashboard Real\u2011Time Data: WebSockets/SSE feed for live updates on task progress, new opportunities, pending approvals. Main widgets: Priority Timeline (Gantt chart), Approval Queue, AI Agent Status (running/idle), KPI cards (applications submitted, grants won, etc.). Natural Language Command Bar: A top\u2011level input that accepts plain English commands (\u201cApply to every relevant competition this month\u201d) and routes them to the Planner.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_138_m16_02_timeline_sorts_higher_priority_first",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 139,
@@ -1953,8 +1959,9 @@
       "source_excerpt": "Module 16 \u2013 Executive Dashboard Real\u2011Time Data: WebSockets/SSE feed for live updates on task progress, new opportunities, pending approvals. Main widgets: Priority Timeline (Gantt chart), Approval Queue, AI Agent Status (running/idle), KPI cards (applications submitted, grants won, etc.). Natural Language Command Bar: A top\u2011level input that accepts plain English commands (\u201cApply to every relevant competition this month\u201d) and routes them to the Planner.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_139_m16_03_approval_queue_separates_pending_from_decided",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 140,
@@ -1966,8 +1973,9 @@
       "source_excerpt": "Module 16 \u2013 Executive Dashboard Real\u2011Time Data: WebSockets/SSE feed for live updates on task progress, new opportunities, pending approvals. Main widgets: Priority Timeline (Gantt chart), Approval Queue, AI Agent Status (running/idle), KPI cards (applications submitted, grants won, etc.). Natural Language Command Bar: A top\u2011level input that accepts plain English commands (\u201cApply to every relevant competition this month\u201d) and routes them to the Planner.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_140_m16_04_agent_status_counts_running_agents",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 141,
@@ -1979,8 +1987,9 @@
       "source_excerpt": "Module 16 \u2013 Executive Dashboard Real\u2011Time Data: WebSockets/SSE feed for live updates on task progress, new opportunities, pending approvals. Main widgets: Priority Timeline (Gantt chart), Approval Queue, AI Agent Status (running/idle), KPI cards (applications submitted, grants won, etc.). Natural Language Command Bar: A top\u2011level input that accepts plain English commands (\u201cApply to every relevant competition this month\u201d) and routes them to the Planner.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_141_m16_05_kpi_card_requires_evidence_ids",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 142,
@@ -1992,8 +2001,9 @@
       "source_excerpt": "Module 16 \u2013 Executive Dashboard Real\u2011Time Data: WebSockets/SSE feed for live updates on task progress, new opportunities, pending approvals. Main widgets: Priority Timeline (Gantt chart), Approval Queue, AI Agent Status (running/idle), KPI cards (applications submitted, grants won, etc.). Natural Language Command Bar: A top\u2011level input that accepts plain English commands (\u201cApply to every relevant competition this month\u201d) and routes them to the Planner.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_142_m16_06_mutating_command_never_executes_directly",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 143,
@@ -2005,8 +2015,9 @@
       "source_excerpt": "Module 17 \u2013 Social Media Advice Compiler & College Essay Architect Advice Aggregation: Uses Reddit\u2019s praw, YouTube Data API, TikTok\u2019s unofficial API wrappers (with rotating residential proxies), Instagram hashtag scraping via Playwright. All captured content is transcribed (Whisper for video/audio) and embedded. The system then clusters advice by topic and extracts actionable tips using an LLM summarisation chain. Essay Architecture Engine: The user\u2019s background is decomposed into \u201cidentity vectors\u201d (personal traits, pivotal experiences). The engine uses a retrieval\u2011augmented generation (RAG) approach: it queries the advice corpus for essay structures matching the user\u2019s profile. It then generates 5\u201110 unique essay concepts, each with a metaphor, outline, and a draft opening paragraph. A style transfer model ensures consistency with the user\u2019s voice. Editing & Critique: Runs a multi\u2011model critique: Claude checks narrative flow, GPT\u20114 checks grammar and admissions alignment, a local model flagging clich\u00e9s. It outputs a diff with suggestions. The literary technique injector uses a curated library of narrative devices and suggests placements.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_143_m17_01_advice_sources_allow_only_licensed_nonlogin_collection",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 144,
@@ -2018,8 +2029,9 @@
       "source_excerpt": "Module 17 \u2013 Social Media Advice Compiler & College Essay Architect Advice Aggregation: Uses Reddit\u2019s praw, YouTube Data API, TikTok\u2019s unofficial API wrappers (with rotating residential proxies), Instagram hashtag scraping via Playwright. All captured content is transcribed (Whisper for video/audio) and embedded. The system then clusters advice by topic and extracts actionable tips using an LLM summarisation chain. Essay Architecture Engine: The user\u2019s background is decomposed into \u201cidentity vectors\u201d (personal traits, pivotal experiences). The engine uses a retrieval\u2011augmented generation (RAG) approach: it queries the advice corpus for essay structures matching the user\u2019s profile. It then generates 5\u201110 unique essay concepts, each with a metaphor, outline, and a draft opening paragraph. A style transfer model ensures consistency with the user\u2019s voice. Editing & Critique: Runs a multi\u2011model critique: Claude checks narrative flow, GPT\u20114 checks grammar and admissions alignment, a local model flagging clich\u00e9s. It outputs a diff with suggestions. The literary technique injector uses a curated library of narrative devices and suggests placements.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_144_m17_02_transcription_requires_permission_and_uri",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 145,
@@ -2031,8 +2043,9 @@
       "source_excerpt": "Module 17 \u2013 Social Media Advice Compiler & College Essay Architect Advice Aggregation: Uses Reddit\u2019s praw, YouTube Data API, TikTok\u2019s unofficial API wrappers (with rotating residential proxies), Instagram hashtag scraping via Playwright. All captured content is transcribed (Whisper for video/audio) and embedded. The system then clusters advice by topic and extracts actionable tips using an LLM summarisation chain. Essay Architecture Engine: The user\u2019s background is decomposed into \u201cidentity vectors\u201d (personal traits, pivotal experiences). The engine uses a retrieval\u2011augmented generation (RAG) approach: it queries the advice corpus for essay structures matching the user\u2019s profile. It then generates 5\u201110 unique essay concepts, each with a metaphor, outline, and a draft opening paragraph. A style transfer model ensures consistency with the user\u2019s voice. Editing & Critique: Runs a multi\u2011model critique: Claude checks narrative flow, GPT\u20114 checks grammar and admissions alignment, a local model flagging clich\u00e9s. It outputs a diff with suggestions. The literary technique injector uses a curated library of narrative devices and suggests placements.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_145_m17_03_advice_clusters_by_topic",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 146,
@@ -2044,8 +2057,9 @@
       "source_excerpt": "Module 17 \u2013 Social Media Advice Compiler & College Essay Architect Advice Aggregation: Uses Reddit\u2019s praw, YouTube Data API, TikTok\u2019s unofficial API wrappers (with rotating residential proxies), Instagram hashtag scraping via Playwright. All captured content is transcribed (Whisper for video/audio) and embedded. The system then clusters advice by topic and extracts actionable tips using an LLM summarisation chain. Essay Architecture Engine: The user\u2019s background is decomposed into \u201cidentity vectors\u201d (personal traits, pivotal experiences). The engine uses a retrieval\u2011augmented generation (RAG) approach: it queries the advice corpus for essay structures matching the user\u2019s profile. It then generates 5\u201110 unique essay concepts, each with a metaphor, outline, and a draft opening paragraph. A style transfer model ensures consistency with the user\u2019s voice. Editing & Critique: Runs a multi\u2011model critique: Claude checks narrative flow, GPT\u20114 checks grammar and admissions alignment, a local model flagging clich\u00e9s. It outputs a diff with suggestions. The literary technique injector uses a curated library of narrative devices and suggests placements.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_146_m17_04_actionable_tip_requires_citation",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 147,
@@ -2057,8 +2071,9 @@
       "source_excerpt": "Module 17 \u2013 Social Media Advice Compiler & College Essay Architect Advice Aggregation: Uses Reddit\u2019s praw, YouTube Data API, TikTok\u2019s unofficial API wrappers (with rotating residential proxies), Instagram hashtag scraping via Playwright. All captured content is transcribed (Whisper for video/audio) and embedded. The system then clusters advice by topic and extracts actionable tips using an LLM summarisation chain. Essay Architecture Engine: The user\u2019s background is decomposed into \u201cidentity vectors\u201d (personal traits, pivotal experiences). The engine uses a retrieval\u2011augmented generation (RAG) approach: it queries the advice corpus for essay structures matching the user\u2019s profile. It then generates 5\u201110 unique essay concepts, each with a metaphor, outline, and a draft opening paragraph. A style transfer model ensures consistency with the user\u2019s voice. Editing & Critique: Runs a multi\u2011model critique: Claude checks narrative flow, GPT\u20114 checks grammar and admissions alignment, a local model flagging clich\u00e9s. It outputs a diff with suggestions. The literary technique injector uses a curated library of narrative devices and suggests placements.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_147_m17_05_identity_vector_contains_no_inferred_facts",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 148,
@@ -2070,8 +2085,9 @@
       "source_excerpt": "Module 17 \u2013 Social Media Advice Compiler & College Essay Architect Advice Aggregation: Uses Reddit\u2019s praw, YouTube Data API, TikTok\u2019s unofficial API wrappers (with rotating residential proxies), Instagram hashtag scraping via Playwright. All captured content is transcribed (Whisper for video/audio) and embedded. The system then clusters advice by topic and extracts actionable tips using an LLM summarisation chain. Essay Architecture Engine: The user\u2019s background is decomposed into \u201cidentity vectors\u201d (personal traits, pivotal experiences). The engine uses a retrieval\u2011augmented generation (RAG) approach: it queries the advice corpus for essay structures matching the user\u2019s profile. It then generates 5\u201110 unique essay concepts, each with a metaphor, outline, and a draft opening paragraph. A style transfer model ensures consistency with the user\u2019s voice. Editing & Critique: Runs a multi\u2011model critique: Claude checks narrative flow, GPT\u20114 checks grammar and admissions alignment, a local model flagging clich\u00e9s. It outputs a diff with suggestions. The literary technique injector uses a curated library of narrative devices and suggests placements.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_148_m17_06_structure_retrieval_scores_identity_tag_overlap",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 149,
@@ -2083,8 +2099,9 @@
       "source_excerpt": "Module 17 \u2013 Social Media Advice Compiler & College Essay Architect Advice Aggregation: Uses Reddit\u2019s praw, YouTube Data API, TikTok\u2019s unofficial API wrappers (with rotating residential proxies), Instagram hashtag scraping via Playwright. All captured content is transcribed (Whisper for video/audio) and embedded. The system then clusters advice by topic and extracts actionable tips using an LLM summarisation chain. Essay Architecture Engine: The user\u2019s background is decomposed into \u201cidentity vectors\u201d (personal traits, pivotal experiences). The engine uses a retrieval\u2011augmented generation (RAG) approach: it queries the advice corpus for essay structures matching the user\u2019s profile. It then generates 5\u201110 unique essay concepts, each with a metaphor, outline, and a draft opening paragraph. A style transfer model ensures consistency with the user\u2019s voice. Editing & Critique: Runs a multi\u2011model critique: Claude checks narrative flow, GPT\u20114 checks grammar and admissions alignment, a local model flagging clich\u00e9s. It outputs a diff with suggestions. The literary technique injector uses a curated library of narrative devices and suggests placements.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_149_m17_07_essay_concepts_are_coaching_not_final_essays",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 150,
@@ -2096,8 +2113,9 @@
       "source_excerpt": "Module 17 \u2013 Social Media Advice Compiler & College Essay Architect Advice Aggregation: Uses Reddit\u2019s praw, YouTube Data API, TikTok\u2019s unofficial API wrappers (with rotating residential proxies), Instagram hashtag scraping via Playwright. All captured content is transcribed (Whisper for video/audio) and embedded. The system then clusters advice by topic and extracts actionable tips using an LLM summarisation chain. Essay Architecture Engine: The user\u2019s background is decomposed into \u201cidentity vectors\u201d (personal traits, pivotal experiences). The engine uses a retrieval\u2011augmented generation (RAG) approach: it queries the advice corpus for essay structures matching the user\u2019s profile. It then generates 5\u201110 unique essay concepts, each with a metaphor, outline, and a draft opening paragraph. A style transfer model ensures consistency with the user\u2019s voice. Editing & Critique: Runs a multi\u2011model critique: Claude checks narrative flow, GPT\u20114 checks grammar and admissions alignment, a local model flagging clich\u00e9s. It outputs a diff with suggestions. The literary technique injector uses a curated library of narrative devices and suggests placements.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_150_m17_08_voice_consistency_forbids_impersonation_and_final_essay",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 151,
@@ -2109,8 +2127,9 @@
       "source_excerpt": "Module 17 \u2013 Social Media Advice Compiler & College Essay Architect Advice Aggregation: Uses Reddit\u2019s praw, YouTube Data API, TikTok\u2019s unofficial API wrappers (with rotating residential proxies), Instagram hashtag scraping via Playwright. All captured content is transcribed (Whisper for video/audio) and embedded. The system then clusters advice by topic and extracts actionable tips using an LLM summarisation chain. Essay Architecture Engine: The user\u2019s background is decomposed into \u201cidentity vectors\u201d (personal traits, pivotal experiences). The engine uses a retrieval\u2011augmented generation (RAG) approach: it queries the advice corpus for essay structures matching the user\u2019s profile. It then generates 5\u201110 unique essay concepts, each with a metaphor, outline, and a draft opening paragraph. A style transfer model ensures consistency with the user\u2019s voice. Editing & Critique: Runs a multi\u2011model critique: Claude checks narrative flow, GPT\u20114 checks grammar and admissions alignment, a local model flagging clich\u00e9s. It outputs a diff with suggestions. The literary technique injector uses a curated library of narrative devices and suggests placements.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_151_m17_09_critique_requires_three_model_reviews",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 152,
@@ -2122,8 +2141,9 @@
       "source_excerpt": "Module 17 \u2013 Social Media Advice Compiler & College Essay Architect Advice Aggregation: Uses Reddit\u2019s praw, YouTube Data API, TikTok\u2019s unofficial API wrappers (with rotating residential proxies), Instagram hashtag scraping via Playwright. All captured content is transcribed (Whisper for video/audio) and embedded. The system then clusters advice by topic and extracts actionable tips using an LLM summarisation chain. Essay Architecture Engine: The user\u2019s background is decomposed into \u201cidentity vectors\u201d (personal traits, pivotal experiences). The engine uses a retrieval\u2011augmented generation (RAG) approach: it queries the advice corpus for essay structures matching the user\u2019s profile. It then generates 5\u201110 unique essay concepts, each with a metaphor, outline, and a draft opening paragraph. A style transfer model ensures consistency with the user\u2019s voice. Editing & Critique: Runs a multi\u2011model critique: Claude checks narrative flow, GPT\u20114 checks grammar and admissions alignment, a local model flagging clich\u00e9s. It outputs a diff with suggestions. The literary technique injector uses a curated library of narrative devices and suggests placements.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_152_m17_10_suggestion_diff_preserves_original",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 153,
@@ -2135,8 +2155,9 @@
       "source_excerpt": "Module 17 \u2013 Social Media Advice Compiler & College Essay Architect Advice Aggregation: Uses Reddit\u2019s praw, YouTube Data API, TikTok\u2019s unofficial API wrappers (with rotating residential proxies), Instagram hashtag scraping via Playwright. All captured content is transcribed (Whisper for video/audio) and embedded. The system then clusters advice by topic and extracts actionable tips using an LLM summarisation chain. Essay Architecture Engine: The user\u2019s background is decomposed into \u201cidentity vectors\u201d (personal traits, pivotal experiences). The engine uses a retrieval\u2011augmented generation (RAG) approach: it queries the advice corpus for essay structures matching the user\u2019s profile. It then generates 5\u201110 unique essay concepts, each with a metaphor, outline, and a draft opening paragraph. A style transfer model ensures consistency with the user\u2019s voice. Editing & Critique: Runs a multi\u2011model critique: Claude checks narrative flow, GPT\u20114 checks grammar and admissions alignment, a local model flagging clich\u00e9s. It outputs a diff with suggestions. The literary technique injector uses a curated library of narrative devices and suggests placements.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_153_m17_11_literary_device_placements_require_review",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 154,
@@ -2148,8 +2169,9 @@
       "source_excerpt": "Module 18 \u2013 Side Hustle & Knowledge Scraper Scraping Engine: Targets Pinterest (using pinterest-scraper), Instagram Reels (Playwright), YouTube transcripts, TikTok captions. Extracts \u201cblueprints\u201d: sequences of steps, tools mentioned, monetisation strategies. A dedicated classifier filters out scams. Blueprint Repository: Each blueprint is stored as a structured JSON with fields: tools, complexity, time_to_first_dollar, automation_level, source_urls. The LLM generates a step\u2011by\u2011step guide in the user\u2019s context. Feasibility Analysis: Uses a SWOT analysis generation prompt, with a numeric viability score based on market saturation signals (Google Trends data via pytrends) and barrier\u2011to\u2011entry. The output is a full report.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_154_m18_01_blueprints_collect_only_public_nonlogin_sources",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 155,
@@ -2161,8 +2183,9 @@
       "source_excerpt": "Module 18 \u2013 Side Hustle & Knowledge Scraper Scraping Engine: Targets Pinterest (using pinterest-scraper), Instagram Reels (Playwright), YouTube transcripts, TikTok captions. Extracts \u201cblueprints\u201d: sequences of steps, tools mentioned, monetisation strategies. A dedicated classifier filters out scams. Blueprint Repository: Each blueprint is stored as a structured JSON with fields: tools, complexity, time_to_first_dollar, automation_level, source_urls. The LLM generates a step\u2011by\u2011step guide in the user\u2019s context. Feasibility Analysis: Uses a SWOT analysis generation prompt, with a numeric viability score based on market saturation signals (Google Trends data via pytrends) and barrier\u2011to\u2011entry. The output is a full report.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_155_m18_02_blueprint_extraction_identifies_monetization",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 156,
@@ -2174,8 +2197,9 @@
       "source_excerpt": "Module 18 \u2013 Side Hustle & Knowledge Scraper Scraping Engine: Targets Pinterest (using pinterest-scraper), Instagram Reels (Playwright), YouTube transcripts, TikTok captions. Extracts \u201cblueprints\u201d: sequences of steps, tools mentioned, monetisation strategies. A dedicated classifier filters out scams. Blueprint Repository: Each blueprint is stored as a structured JSON with fields: tools, complexity, time_to_first_dollar, automation_level, source_urls. The LLM generates a step\u2011by\u2011step guide in the user\u2019s context. Feasibility Analysis: Uses a SWOT analysis generation prompt, with a numeric viability score based on market saturation signals (Google Trends data via pytrends) and barrier\u2011to\u2011entry. The output is a full report.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_156_m18_03_scam_classifier_blocks_high_risk_claims",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 157,
@@ -2187,8 +2211,9 @@
       "source_excerpt": "Module 18 \u2013 Side Hustle & Knowledge Scraper Scraping Engine: Targets Pinterest (using pinterest-scraper), Instagram Reels (Playwright), YouTube transcripts, TikTok captions. Extracts \u201cblueprints\u201d: sequences of steps, tools mentioned, monetisation strategies. A dedicated classifier filters out scams. Blueprint Repository: Each blueprint is stored as a structured JSON with fields: tools, complexity, time_to_first_dollar, automation_level, source_urls. The LLM generates a step\u2011by\u2011step guide in the user\u2019s context. Feasibility Analysis: Uses a SWOT analysis generation prompt, with a numeric viability score based on market saturation signals (Google Trends data via pytrends) and barrier\u2011to\u2011entry. The output is a full report.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_157_m18_04_blueprint_schema_rejects_missing_required_field",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 158,
@@ -2200,8 +2225,9 @@
       "source_excerpt": "Module 18 \u2013 Side Hustle & Knowledge Scraper Scraping Engine: Targets Pinterest (using pinterest-scraper), Instagram Reels (Playwright), YouTube transcripts, TikTok captions. Extracts \u201cblueprints\u201d: sequences of steps, tools mentioned, monetisation strategies. A dedicated classifier filters out scams. Blueprint Repository: Each blueprint is stored as a structured JSON with fields: tools, complexity, time_to_first_dollar, automation_level, source_urls. The LLM generates a step\u2011by\u2011step guide in the user\u2019s context. Feasibility Analysis: Uses a SWOT analysis generation prompt, with a numeric viability score based on market saturation signals (Google Trends data via pytrends) and barrier\u2011to\u2011entry. The output is a full report.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_158_m18_05_contextual_guide_adapts_to_weekly_hours",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 159,
@@ -2213,8 +2239,9 @@
       "source_excerpt": "Module 18 \u2013 Side Hustle & Knowledge Scraper Scraping Engine: Targets Pinterest (using pinterest-scraper), Instagram Reels (Playwright), YouTube transcripts, TikTok captions. Extracts \u201cblueprints\u201d: sequences of steps, tools mentioned, monetisation strategies. A dedicated classifier filters out scams. Blueprint Repository: Each blueprint is stored as a structured JSON with fields: tools, complexity, time_to_first_dollar, automation_level, source_urls. The LLM generates a step\u2011by\u2011step guide in the user\u2019s context. Feasibility Analysis: Uses a SWOT analysis generation prompt, with a numeric viability score based on market saturation signals (Google Trends data via pytrends) and barrier\u2011to\u2011entry. The output is a full report.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_159_m18_06_swot_requires_all_four_nonempty_sections",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 160,
@@ -2226,8 +2253,9 @@
       "source_excerpt": "Module 18 \u2013 Side Hustle & Knowledge Scraper Scraping Engine: Targets Pinterest (using pinterest-scraper), Instagram Reels (Playwright), YouTube transcripts, TikTok captions. Extracts \u201cblueprints\u201d: sequences of steps, tools mentioned, monetisation strategies. A dedicated classifier filters out scams. Blueprint Repository: Each blueprint is stored as a structured JSON with fields: tools, complexity, time_to_first_dollar, automation_level, source_urls. The LLM generates a step\u2011by\u2011step guide in the user\u2019s context. Feasibility Analysis: Uses a SWOT analysis generation prompt, with a numeric viability score based on market saturation signals (Google Trends data via pytrends) and barrier\u2011to\u2011entry. The output is a full report.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_160_m18_07_trend_analysis_computes_rising_direction",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 161,
@@ -2239,8 +2267,9 @@
       "source_excerpt": "Module 18 \u2013 Side Hustle & Knowledge Scraper Scraping Engine: Targets Pinterest (using pinterest-scraper), Instagram Reels (Playwright), YouTube transcripts, TikTok captions. Extracts \u201cblueprints\u201d: sequences of steps, tools mentioned, monetisation strategies. A dedicated classifier filters out scams. Blueprint Repository: Each blueprint is stored as a structured JSON with fields: tools, complexity, time_to_first_dollar, automation_level, source_urls. The LLM generates a step\u2011by\u2011step guide in the user\u2019s context. Feasibility Analysis: Uses a SWOT analysis generation prompt, with a numeric viability score based on market saturation signals (Google Trends data via pytrends) and barrier\u2011to\u2011entry. The output is a full report.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_161_m18_08_viability_score_bounds_inputs_and_recommends",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 162,
@@ -2252,8 +2281,9 @@
       "source_excerpt": "Module 18 \u2013 Side Hustle & Knowledge Scraper Scraping Engine: Targets Pinterest (using pinterest-scraper), Instagram Reels (Playwright), YouTube transcripts, TikTok captions. Extracts \u201cblueprints\u201d: sequences of steps, tools mentioned, monetisation strategies. A dedicated classifier filters out scams. Blueprint Repository: Each blueprint is stored as a structured JSON with fields: tools, complexity, time_to_first_dollar, automation_level, source_urls. The LLM generates a step\u2011by\u2011step guide in the user\u2019s context. Feasibility Analysis: Uses a SWOT analysis generation prompt, with a numeric viability score based on market saturation signals (Google Trends data via pytrends) and barrier\u2011to\u2011entry. The output is a full report.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_162_m18_09_feasibility_report_requires_all_sections",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 163,
@@ -2265,8 +2295,9 @@
       "source_excerpt": "Module 19 \u2013 Autonomous Idea Incubator (Entrepreneurial Dream Builder) Idea Intake: User submits a one\u2011liner or a voice memo (transcribed). The system expands it into a lean canvas using a specialised prompt. Research & Prototyping: The incubator concurrently: Conducts a market landscape search using Gemini (browser agent to search Google/ProductHunt). Generates a wireframe/UI mockup using v0\u2011style prompt and captures screenshot. Writes a full\u2011stack prototype scaffold using a code\u2011generation agent (e.g., OpenHands/SWE\u2011agent style) and deploys to a sandboxed Vercel preview. It then runs and fixes bugs in a loop. Viability Package: The final output includes a PDF report with executive summary, prototype link, market analysis, technical feasibility, and a Go/No\u2011Go recommendation backed by evidence. The incubator can manage a queue of ideas, working on them during idle CPU/API cycles.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_163_m19_01_idea_intake_requires_exactly_one_modality",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 164,
@@ -2278,8 +2309,9 @@
       "source_excerpt": "Module 19 \u2013 Autonomous Idea Incubator (Entrepreneurial Dream Builder) Idea Intake: User submits a one\u2011liner or a voice memo (transcribed). The system expands it into a lean canvas using a specialised prompt. Research & Prototyping: The incubator concurrently: Conducts a market landscape search using Gemini (browser agent to search Google/ProductHunt). Generates a wireframe/UI mockup using v0\u2011style prompt and captures screenshot. Writes a full\u2011stack prototype scaffold using a code\u2011generation agent (e.g., OpenHands/SWE\u2011agent style) and deploys to a sandboxed Vercel preview. It then runs and fixes bugs in a loop. Viability Package: The final output includes a PDF report with executive summary, prototype link, market analysis, technical feasibility, and a Go/No\u2011Go recommendation backed by evidence. The incubator can manage a queue of ideas, working on them during idle CPU/API cycles.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_164_m19_02_lean_canvas_preserves_problem_customer_solution",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 165,
@@ -2291,8 +2323,9 @@
       "source_excerpt": "Module 19 \u2013 Autonomous Idea Incubator (Entrepreneurial Dream Builder) Idea Intake: User submits a one\u2011liner or a voice memo (transcribed). The system expands it into a lean canvas using a specialised prompt. Research & Prototyping: The incubator concurrently: Conducts a market landscape search using Gemini (browser agent to search Google/ProductHunt). Generates a wireframe/UI mockup using v0\u2011style prompt and captures screenshot. Writes a full\u2011stack prototype scaffold using a code\u2011generation agent (e.g., OpenHands/SWE\u2011agent style) and deploys to a sandboxed Vercel preview. It then runs and fixes bugs in a loop. Viability Package: The final output includes a PDF report with executive summary, prototype link, market analysis, technical feasibility, and a Go/No\u2011Go recommendation backed by evidence. The incubator can manage a queue of ideas, working on them during idle CPU/API cycles.",
       "status": "verified-pushed",
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/technical_spec_0133_0165.py",
-      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py",
-      "kind": "functional"
+      "test_evidence": "tests/modules/test_technical_spec_0133_0165.py::test_row_165_m19_03_market_research_queues_public_sources_without_login_scraping",
+      "kind": "functional",
+      "evidence_kind": "exact-distinctive-behavior-node"
     },
     {
       "row": 166,
