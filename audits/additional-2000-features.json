@@ -15303,9 +15303,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1010_predictive_forecasts_future_outcomes",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15319,9 +15320,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1011_prescriptive_recommends_actions",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15335,9 +15337,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1012_descriptive_summarizes_past_data",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15351,9 +15354,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1013_diagnostic_explains_why_without_causal_overreach",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15367,9 +15371,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1014_eda_discovers_patterns",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15383,9 +15388,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1015_confirmatory_tests_hypotheses",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15399,9 +15405,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1016_inference_draws_conclusions",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15415,9 +15422,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1017_hypothesis_testing_tests_claims",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15431,9 +15439,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1018_confidence_intervals_quantify_uncertainty",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15447,9 +15456,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1019_bootstrap_resamples_for_inference",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15463,9 +15473,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1020_permutation_testing_without_assumptions",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15479,9 +15490,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1021_nonparametric_avoids_distributional_assumptions",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15495,9 +15507,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1022_robust_statistics_resist_outliers",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15511,9 +15524,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1023_outlier_detection_finds_anomalies",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15527,9 +15541,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1024_missing_data_imputation_fills_gaps",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15543,9 +15558,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1025_multiple_imputation_handles_uncertainty",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15559,9 +15575,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1026_mle_finds_best_parameters",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15575,9 +15592,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1027_em_handles_latent_variables",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15591,9 +15609,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1028_mcmc_samples_complex_distributions",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15607,9 +15626,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1029_variational_fast_approximate_inference",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15623,9 +15643,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1030_gibbs_iterative_sampling",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15639,9 +15660,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1031_metropolis_hastings_mcmc_algorithm",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15655,9 +15677,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1032_hmc_efficient_mcmc",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15671,9 +15694,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1033_smc_particle_filtering",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15687,9 +15711,10 @@
       "evidence": {
         "commit": "74cf011edd7fedd122b1ffa13c7a51adbc417186",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1010_1034.py",
+        "test_path": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1034_particle_filters_track_dynamic_systems",
         "frontend_path": "frontend/components/AnalysisPanel.tsx",
-        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band."
+        "caveats": "Bounded educational reference implementations. Normal approximations, no MCMC R-hat/ESS, one-dimensional HMC, and synchronous jobs. Inputs, assumptions and method limits are returned in-band.",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15703,7 +15728,8 @@
       "evidence": {
         "commit": "85cd8a8a621440234f51180ce98b31a4e02f56c8",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1035_1038.py"
+        "test_path": "tests/modules/test_m16_analysis_1035_1038.py::test_row_1035_kalman_filter_reduces_uncertainty_and_tracks_state",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15717,7 +15743,8 @@
       "evidence": {
         "commit": "85cd8a8a621440234f51180ce98b31a4e02f56c8",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1035_1038.py"
+        "test_path": "tests/modules/test_m16_analysis_1035_1038.py::test_row_1036_extended_kalman_filter_uses_local_jacobian",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15731,7 +15758,8 @@
       "evidence": {
         "commit": "85cd8a8a621440234f51180ce98b31a4e02f56c8",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1035_1038.py"
+        "test_path": "tests/modules/test_m16_analysis_1035_1038.py::test_row_1037_ukf_propagates_sigma_points_without_jacobian",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15745,7 +15773,8 @@
       "evidence": {
         "commit": "85cd8a8a621440234f51180ce98b31a4e02f56c8",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1035_1038.py"
+        "test_path": "tests/modules/test_m16_analysis_1035_1038.py::test_row_1038_hmm_forward_probabilities_and_viterbi_path",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15759,7 +15788,8 @@
       "evidence": {
         "commit": "5ae5697e1a9b33a0a5f8efaaa185aeba0e5745e8",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1039_1043.py"
+        "test_path": "tests/modules/test_m16_analysis_1039_1043.py::test_row_1039_linear_chain_crf_global_decoding_and_partition",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15773,7 +15803,8 @@
       "evidence": {
         "commit": "5ae5697e1a9b33a0a5f8efaaa185aeba0e5745e8",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1039_1043.py"
+        "test_path": "tests/modules/test_m16_analysis_1039_1043.py::test_row_1040_graphical_model_detects_cycles_and_components",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15787,7 +15818,8 @@
       "evidence": {
         "commit": "5ae5697e1a9b33a0a5f8efaaa185aeba0e5745e8",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1039_1043.py"
+        "test_path": "tests/modules/test_m16_analysis_1039_1043.py::test_row_1041_bayesian_network_exact_conditioning",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15801,7 +15833,8 @@
       "evidence": {
         "commit": "5ae5697e1a9b33a0a5f8efaaa185aeba0e5745e8",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1039_1043.py"
+        "test_path": "tests/modules/test_m16_analysis_1039_1043.py::test_row_1042_mrf_normalizes_potentials_and_returns_map",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15815,7 +15848,8 @@
       "evidence": {
         "commit": "5ae5697e1a9b33a0a5f8efaaa185aeba0e5745e8",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1039_1043.py"
+        "test_path": "tests/modules/test_m16_analysis_1039_1043.py::test_row_1043_factor_graph_exact_product_inference",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15829,7 +15863,8 @@
       "evidence": {
         "commit": "48f92b2ee763b47b882e099605190e398147e447",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1044_1047.py"
+        "test_path": "tests/modules/test_m16_analysis_1044_1047.py::test_row_1044_sum_product_exact_on_tree",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15843,7 +15878,8 @@
       "evidence": {
         "commit": "48f92b2ee763b47b882e099605190e398147e447",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1044_1047.py"
+        "test_path": "tests/modules/test_m16_analysis_1044_1047.py::test_row_1045_vmp_combines_natural_parameter_messages",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15857,7 +15893,8 @@
       "evidence": {
         "commit": "48f92b2ee763b47b882e099605190e398147e447",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1044_1047.py"
+        "test_path": "tests/modules/test_m16_analysis_1044_1047.py::test_row_1046_ep_matches_truncated_gaussian_moments",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15871,7 +15908,8 @@
       "evidence": {
         "commit": "48f92b2ee763b47b882e099605190e398147e447",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1044_1047.py"
+        "test_path": "tests/modules/test_m16_analysis_1044_1047.py::test_row_1047_laplace_finds_logistic_map_and_positive_curvature",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15885,7 +15923,8 @@
       "evidence": {
         "commit": "c89ac1255029a8aee38748c207d18f7db48c8f32",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1048_1052.py"
+        "test_path": "tests/modules/test_m16_analysis_1048_1052.py::test_row_1048_importance_sampling_tracks_target_and_ess",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15899,7 +15938,8 @@
       "evidence": {
         "commit": "c89ac1255029a8aee38748c207d18f7db48c8f32",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1048_1052.py"
+        "test_path": "tests/modules/test_m16_analysis_1048_1052.py::test_row_1049_rejection_sampling_checks_bound_and_accepts_target",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15913,7 +15953,8 @@
       "evidence": {
         "commit": "c89ac1255029a8aee38748c207d18f7db48c8f32",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1048_1052.py"
+        "test_path": "tests/modules/test_m16_analysis_1048_1052.py::test_row_1050_slice_sampler_targets_distribution_without_normalizer",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15927,7 +15968,8 @@
       "evidence": {
         "commit": "c89ac1255029a8aee38748c207d18f7db48c8f32",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1048_1052.py"
+        "test_path": "tests/modules/test_m16_analysis_1048_1052.py::test_row_1051_nested_sampling_returns_finite_log_evidence",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15941,7 +15983,8 @@
       "evidence": {
         "commit": "c89ac1255029a8aee38748c207d18f7db48c8f32",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1048_1052.py"
+        "test_path": "tests/modules/test_m16_analysis_1048_1052.py::test_row_1052_abc_likelihood_free_posterior_near_observed_summary",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15955,7 +15998,8 @@
       "evidence": {
         "commit": "20e53ecec92250cba221f2cd8c025a2d019d258f",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1053_1057.py"
+        "test_path": "tests/modules/test_m16_analysis_1053_1057.py::test_row_1053_synthetic_likelihood_scores_simulated_summaries",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15969,7 +16013,8 @@
       "evidence": {
         "commit": "20e53ecec92250cba221f2cd8c025a2d019d258f",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1053_1057.py"
+        "test_path": "tests/modules/test_m16_analysis_1053_1057.py::test_row_1054_indirect_inference_selects_matching_binding_statistic",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15983,7 +16028,8 @@
       "evidence": {
         "commit": "20e53ecec92250cba221f2cd8c025a2d019d258f",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1053_1057.py"
+        "test_path": "tests/modules/test_m16_analysis_1053_1057.py::test_row_1055_method_of_moments_matches_population_moments",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -15997,7 +16043,8 @@
       "evidence": {
         "commit": "20e53ecec92250cba221f2cd8c025a2d019d258f",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1053_1057.py"
+        "test_path": "tests/modules/test_m16_analysis_1053_1057.py::test_row_1056_gmm_solves_orthogonality_condition",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16011,7 +16058,8 @@
       "evidence": {
         "commit": "20e53ecec92250cba221f2cd8c025a2d019d258f",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1053_1057.py"
+        "test_path": "tests/modules/test_m16_analysis_1053_1057.py::test_row_1057_iv_recovers_effect_and_exposes_first_stage",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16025,7 +16073,8 @@
       "evidence": {
         "commit": "569c540c787496fccddf2146a8a72d8c1aa106cc",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1058_1062.py"
+        "test_path": "tests/modules/test_m16_analysis_1058_1062.py::test_row_1058_2sls_exposes_both_stages",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16039,7 +16088,8 @@
       "evidence": {
         "commit": "569c540c787496fccddf2146a8a72d8c1aa106cc",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1058_1062.py"
+        "test_path": "tests/modules/test_m16_analysis_1058_1062.py::test_row_1059_liml_k_class_just_identified_matches_2sls",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16053,7 +16103,8 @@
       "evidence": {
         "commit": "569c540c787496fccddf2146a8a72d8c1aa106cc",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1058_1062.py"
+        "test_path": "tests/modules/test_m16_analysis_1058_1062.py::test_row_1060_control_function_recovers_effect_and_residual_term",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16067,7 +16118,8 @@
       "evidence": {
         "commit": "569c540c787496fccddf2146a8a72d8c1aa106cc",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1058_1062.py"
+        "test_path": "tests/modules/test_m16_analysis_1058_1062.py::test_row_1061_rd_estimates_intercept_jump_not_global_difference",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16081,7 +16133,8 @@
       "evidence": {
         "commit": "569c540c787496fccddf2146a8a72d8c1aa106cc",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1058_1062.py"
+        "test_path": "tests/modules/test_m16_analysis_1058_1062.py::test_row_1062_did_removes_shared_time_trend",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16095,7 +16148,8 @@
       "evidence": {
         "commit": "ba27e8a7167f9c6754c2f0a7ca0d8111cd54f76a",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1063_1067.py"
+        "test_path": "tests/modules/test_m16_analysis_1063_1067.py::test_row_1063_synthetic_control_builds_convex_counterfactual",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16109,7 +16163,8 @@
       "evidence": {
         "commit": "ba27e8a7167f9c6754c2f0a7ca0d8111cd54f76a",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1063_1067.py"
+        "test_path": "tests/modules/test_m16_analysis_1063_1067.py::test_row_1064_matching_standardizes_and_pairs_nearest",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16123,7 +16178,8 @@
       "evidence": {
         "commit": "ba27e8a7167f9c6754c2f0a7ca0d8111cd54f76a",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1063_1067.py"
+        "test_path": "tests/modules/test_m16_analysis_1063_1067.py::test_row_1065_psm_matches_on_estimated_score",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16137,7 +16193,8 @@
       "evidence": {
         "commit": "ba27e8a7167f9c6754c2f0a7ca0d8111cd54f76a",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1063_1067.py"
+        "test_path": "tests/modules/test_m16_analysis_1063_1067.py::test_row_1066_cem_uses_only_overlap_strata",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16151,7 +16208,8 @@
       "evidence": {
         "commit": "ba27e8a7167f9c6754c2f0a7ca0d8111cd54f76a",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1063_1067.py"
+        "test_path": "tests/modules/test_m16_analysis_1063_1067.py::test_row_1067_genetic_matching_uses_positive_caller_weights",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16165,7 +16223,8 @@
       "evidence": {
         "commit": "eec8e83eeca73282d0aa752c9f923aca799d266c",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1068_1072.py"
+        "test_path": "tests/modules/test_m16_analysis_1068_1072.py::test_row_1068_entropy_balancing_hits_target_moment",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16179,7 +16238,8 @@
       "evidence": {
         "commit": "eec8e83eeca73282d0aa752c9f923aca799d266c",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1068_1072.py"
+        "test_path": "tests/modules/test_m16_analysis_1068_1072.py::test_row_1069_ipw_recovers_weighted_marginal_difference_and_ess",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16193,7 +16253,8 @@
       "evidence": {
         "commit": "eec8e83eeca73282d0aa752c9f923aca799d266c",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1068_1072.py"
+        "test_path": "tests/modules/test_m16_analysis_1068_1072.py::test_row_1070_aipw_is_doubly_robust_score",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16207,7 +16268,8 @@
       "evidence": {
         "commit": "eec8e83eeca73282d0aa752c9f923aca799d266c",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1068_1072.py"
+        "test_path": "tests/modules/test_m16_analysis_1068_1072.py::test_row_1071_tmle_targets_and_has_near_zero_ic_mean",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16221,7 +16283,8 @@
       "evidence": {
         "commit": "eec8e83eeca73282d0aa752c9f923aca799d266c",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1068_1072.py"
+        "test_path": "tests/modules/test_m16_analysis_1068_1072.py::test_row_1072_cross_fitted_ml_causal_inference_avoids_self_fit",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16235,7 +16298,8 @@
       "evidence": {
         "commit": "1a93714af985e8517b28b276e92fb98c5d191476",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1073_1077.py"
+        "test_path": "tests/modules/test_m16_analysis_1073_1077.py::test_row_1073_causal_tree_finds_effect_heterogeneity",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16249,7 +16313,8 @@
       "evidence": {
         "commit": "1a93714af985e8517b28b276e92fb98c5d191476",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1073_1077.py"
+        "test_path": "tests/modules/test_m16_analysis_1073_1077.py::test_row_1074_dml_cross_fits_nuisance_models",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16263,7 +16328,8 @@
       "evidence": {
         "commit": "1a93714af985e8517b28b276e92fb98c5d191476",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1073_1077.py"
+        "test_path": "tests/modules/test_m16_analysis_1073_1077.py::test_row_1075_orthogonalized_estimation_matches_partial_linear_effect",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16277,7 +16343,8 @@
       "evidence": {
         "commit": "1a93714af985e8517b28b276e92fb98c5d191476",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1073_1077.py"
+        "test_path": "tests/modules/test_m16_analysis_1073_1077.py::test_row_1076_cross_fitting_reports_oof_error_and_no_empty_fold",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16291,7 +16358,8 @@
       "evidence": {
         "commit": "1a93714af985e8517b28b276e92fb98c5d191476",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1073_1077.py"
+        "test_path": "tests/modules/test_m16_analysis_1073_1077.py::test_row_1077_sample_split_is_deterministic_disjoint_and_complete",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16305,7 +16373,8 @@
       "evidence": {
         "commit": "7a2bda6b2e33def862b248e272532b8ca32de7c3",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1078_1082.py"
+        "test_path": "tests/modules/test_m16_analysis_1078_1082.py::test_row_1078_post_selection_intervals_widen_for_multiplicity",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16319,7 +16388,8 @@
       "evidence": {
         "commit": "7a2bda6b2e33def862b248e272532b8ca32de7c3",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1078_1082.py"
+        "test_path": "tests/modules/test_m16_analysis_1078_1082.py::test_row_1079_selective_p_value_conditions_on_threshold",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16333,7 +16403,8 @@
       "evidence": {
         "commit": "7a2bda6b2e33def862b248e272532b8ca32de7c3",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1078_1082.py"
+        "test_path": "tests/modules/test_m16_analysis_1078_1082.py::test_row_1080_simultaneous_intervals_are_family_adjusted",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16347,7 +16418,8 @@
       "evidence": {
         "commit": "7a2bda6b2e33def862b248e272532b8ca32de7c3",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1078_1082.py"
+        "test_path": "tests/modules/test_m16_analysis_1078_1082.py::test_row_1081_bh_fdr_stepup_and_adjusted_pvalues",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16361,7 +16433,8 @@
       "evidence": {
         "commit": "7a2bda6b2e33def862b248e272532b8ca32de7c3",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1078_1082.py"
+        "test_path": "tests/modules/test_m16_analysis_1078_1082.py::test_row_1082_holm_fwer_is_stepdown_monotone",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16375,7 +16448,8 @@
       "evidence": {
         "commit": "327d56fb8066ad4a07d9f6167cd3edea84992c88",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1083_1087.py"
+        "test_path": "tests/modules/test_m16_analysis_1083_1087.py::test_row_1083_bonferroni_reports_per_test_alpha_and_adjusted_p",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16389,7 +16463,8 @@
       "evidence": {
         "commit": "327d56fb8066ad4a07d9f6167cd3edea84992c88",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1083_1087.py"
+        "test_path": "tests/modules/test_m16_analysis_1083_1087.py::test_row_1084_holm_stops_after_first_failed_step",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16403,7 +16478,8 @@
       "evidence": {
         "commit": "327d56fb8066ad4a07d9f6167cd3edea84992c88",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1083_1087.py"
+        "test_path": "tests/modules/test_m16_analysis_1083_1087.py::test_row_1085_bh_uses_largest_passing_rank_stepup",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16417,7 +16493,8 @@
       "evidence": {
         "commit": "327d56fb8066ad4a07d9f6167cd3edea84992c88",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1083_1087.py"
+        "test_path": "tests/modules/test_m16_analysis_1083_1087.py::test_row_1086_storey_estimates_pi0_and_qvalues",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16431,7 +16508,8 @@
       "evidence": {
         "commit": "327d56fb8066ad4a07d9f6167cd3edea84992c88",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1083_1087.py"
+        "test_path": "tests/modules/test_m16_analysis_1083_1087.py::test_row_1087_local_fdr_is_lower_for_extreme_zscores",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16445,7 +16523,8 @@
       "evidence": {
         "commit": "6518ff9ede04f4413900bc1ba9d30e401298502c",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1088_1092.py"
+        "test_path": "tests/modules/test_m16_analysis_1088_1092.py::test_row_1088_permutation_fdr_selects_extreme_signal",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16459,7 +16538,8 @@
       "evidence": {
         "commit": "6518ff9ede04f4413900bc1ba9d30e401298502c",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1088_1092.py"
+        "test_path": "tests/modules/test_m16_analysis_1088_1092.py::test_row_1089_knockoff_filter_uses_sign_flip_statistics",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16473,7 +16553,8 @@
       "evidence": {
         "commit": "6518ff9ede04f4413900bc1ba9d30e401298502c",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1088_1092.py"
+        "test_path": "tests/modules/test_m16_analysis_1088_1092.py::test_row_1090_stability_selection_reports_probabilities_and_bound",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16487,7 +16568,8 @@
       "evidence": {
         "commit": "6518ff9ede04f4413900bc1ba9d30e401298502c",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1088_1092.py"
+        "test_path": "tests/modules/test_m16_analysis_1088_1092.py::test_row_1091_bagging_estimates_variance_and_is_seeded",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16501,7 +16583,8 @@
       "evidence": {
         "commit": "6518ff9ede04f4413900bc1ba9d30e401298502c",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1088_1092.py"
+        "test_path": "tests/modules/test_m16_analysis_1088_1092.py::test_row_1092_random_forest_bootstraps_features_and_oob",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16515,7 +16598,8 @@
       "evidence": {
         "commit": "ba1a6e4f60dd65dff950424a0e21f53abdf26492",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1093_1097.py"
+        "test_path": "tests/modules/test_m16_analysis_1093_1097.py::test_row_1093_gradient_boosting_reduces_residual_error",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16529,7 +16613,8 @@
       "evidence": {
         "commit": "ba1a6e4f60dd65dff950424a0e21f53abdf26492",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1093_1097.py"
+        "test_path": "tests/modules/test_m16_analysis_1093_1097.py::test_row_1094_xgboost_regularizes_leaf_updates",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16543,7 +16628,8 @@
       "evidence": {
         "commit": "ba1a6e4f60dd65dff950424a0e21f53abdf26492",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1093_1097.py"
+        "test_path": "tests/modules/test_m16_analysis_1093_1097.py::test_row_1095_lightgbm_boundary_is_explicit_and_fits",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16557,7 +16643,8 @@
       "evidence": {
         "commit": "ba1a6e4f60dd65dff950424a0e21f53abdf26492",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1093_1097.py"
+        "test_path": "tests/modules/test_m16_analysis_1093_1097.py::test_row_1096_catboost_boundary_is_explicit_and_fits",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16571,7 +16658,8 @@
       "evidence": {
         "commit": "ba1a6e4f60dd65dff950424a0e21f53abdf26492",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1093_1097.py"
+        "test_path": "tests/modules/test_m16_analysis_1093_1097.py::test_row_1097_adaboost_reweights_mistakes_and_classifies",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16585,7 +16673,8 @@
       "evidence": {
         "commit": "d9306caca87235dd035b42f2a31a4d05bd0c84cb",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1098_1102.py"
+        "test_path": "tests/modules/test_m16_analysis_1098_1102.py::test_row_1098_stacking_weights_oof_base_predictions",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16599,7 +16688,8 @@
       "evidence": {
         "commit": "d9306caca87235dd035b42f2a31a4d05bd0c84cb",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1098_1102.py"
+        "test_path": "tests/modules/test_m16_analysis_1098_1102.py::test_row_1099_blending_uses_heldout_partition_only_for_weights",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16613,7 +16703,8 @@
       "evidence": {
         "commit": "d9306caca87235dd035b42f2a31a4d05bd0c84cb",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1098_1102.py"
+        "test_path": "tests/modules/test_m16_analysis_1098_1102.py::test_row_1100_bagging_samples_with_replacement",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16627,7 +16718,8 @@
       "evidence": {
         "commit": "d9306caca87235dd035b42f2a31a4d05bd0c84cb",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1098_1102.py"
+        "test_path": "tests/modules/test_m16_analysis_1098_1102.py::test_row_1101_pasting_samples_without_replacement",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16641,7 +16733,8 @@
       "evidence": {
         "commit": "d9306caca87235dd035b42f2a31a4d05bd0c84cb",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1098_1102.py"
+        "test_path": "tests/modules/test_m16_analysis_1098_1102.py::test_row_1102_voting_supports_hard_and_soft_semantics",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16655,7 +16748,8 @@
       "evidence": {
         "commit": "35151d2b8676f930b0ca47c16e1c9ae0469a263e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1103_1107.py"
+        "test_path": "tests/modules/test_m16_analysis_1103_1107.py::test_row_1103_weighted_voting_normalizes_and_combines_probabilities",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16669,7 +16763,8 @@
       "evidence": {
         "commit": "35151d2b8676f930b0ca47c16e1c9ae0469a263e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1103_1107.py"
+        "test_path": "tests/modules/test_m16_analysis_1103_1107.py::test_row_1104_bma_uses_stable_posterior_model_weights",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16683,7 +16778,8 @@
       "evidence": {
         "commit": "35151d2b8676f930b0ca47c16e1c9ae0469a263e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1103_1107.py"
+        "test_path": "tests/modules/test_m16_analysis_1103_1107.py::test_row_1105_bayesian_model_selection_combines_prior_and_evidence",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16697,7 +16793,8 @@
       "evidence": {
         "commit": "35151d2b8676f930b0ca47c16e1c9ae0469a263e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1103_1107.py"
+        "test_path": "tests/modules/test_m16_analysis_1103_1107.py::test_row_1106_information_criteria_penalize_complexity_differently",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16711,7 +16808,8 @@
       "evidence": {
         "commit": "35151d2b8676f930b0ca47c16e1c9ae0469a263e",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1103_1107.py"
+        "test_path": "tests/modules/test_m16_analysis_1103_1107.py::test_row_1107_cross_validation_weights_fold_sizes",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16725,7 +16823,8 @@
       "evidence": {
         "commit": "45490f87561931ac73bef9201de98c6bbf5f4d74",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1108_1109.py"
+        "test_path": "tests/modules/test_m16_analysis_1108_1109.py::test_row_1108_leave_one_out_requires_n_minus_one_training_and_reports_uncertainty",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16739,7 +16838,8 @@
       "evidence": {
         "commit": "45490f87561931ac73bef9201de98c6bbf5f4d74",
         "implementation_path": "backend/app/modules/m16_executive_dashboard/analysis.py",
-        "test_path": "tests/modules/test_m16_analysis_1108_1109.py"
+        "test_path": "tests/modules/test_m16_analysis_1108_1109.py::test_row_1109_kfold_weights_unequal_fold_sizes_and_validates_k",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -16753,7 +16853,8 @@
       "evidence": {
         "commit": "c4578a1c689625abcb199201320e8091fc441466",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1110_1114.py"
+        "test_path": "tests/modules/test_m12_clinical_1110_1114.py::test_row_1110_clinical_support_composes_cited_bounded_sections",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Clinical decision support only: never diagnose, prescribe, or execute care. Require cited clinician-supplied sources, expose uncertainty/coverage gaps, and require licensed clinician/pharmacist review before any clinical action."
     },
@@ -16767,7 +16868,8 @@
       "evidence": {
         "commit": "c4578a1c689625abcb199201320e8091fc441466",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1110_1114.py"
+        "test_path": "tests/modules/test_m12_clinical_1110_1114.py::test_row_1111_differential_preserves_support_conflicts_and_missing_discriminators",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Clinical decision support only: never diagnose, prescribe, or execute care. Require cited clinician-supplied sources, expose uncertainty/coverage gaps, and require licensed clinician/pharmacist review before any clinical action."
     },
@@ -16781,7 +16883,8 @@
       "evidence": {
         "commit": "c4578a1c689625abcb199201320e8091fc441466",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1110_1114.py"
+        "test_path": "tests/modules/test_m12_clinical_1110_1114.py::test_row_1112_protocol_selection_enforces_requirements_contraindications_and_provenance",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Clinical decision support only: never diagnose, prescribe, or execute care. Require cited clinician-supplied sources, expose uncertainty/coverage gaps, and require licensed clinician/pharmacist review before any clinical action."
     },
@@ -16795,7 +16898,8 @@
       "evidence": {
         "commit": "c4578a1c689625abcb199201320e8091fc441466",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1110_1114.py"
+        "test_path": "tests/modules/test_m12_clinical_1110_1114.py::test_row_1113_interaction_checker_never_claims_no_match_means_safe",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Clinical decision support only: never diagnose, prescribe, or execute care. Require cited clinician-supplied sources, expose uncertainty/coverage gaps, and require licensed clinician/pharmacist review before any clinical action."
     },
@@ -16809,7 +16913,8 @@
       "evidence": {
         "commit": "c4578a1c689625abcb199201320e8091fc441466",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1110_1114.py"
+        "test_path": "tests/modules/test_m12_clinical_1110_1114.py::test_row_1114_dosage_calculation_caps_daily_total_and_lists_verification",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Clinical decision support only: never diagnose, prescribe, or execute care. Require cited clinician-supplied sources, expose uncertainty/coverage gaps, and require licensed clinician/pharmacist review before any clinical action."
     },
@@ -16823,7 +16928,8 @@
       "evidence": {
         "commit": "d3736c307d4246481176cd3228e201fbf5fc955f",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1115_1120.py"
+        "test_path": "tests/modules/test_m12_clinical_1115_1120.py::test_row_1115_image_analysis_organizes_provenanced_findings_not_diagnoses",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Specialist evidence-review support only. Atlas organizes supplied model/clinician findings, signal statistics or curated variant records; it does not inspect source pixels/tracings independently, diagnose disease, or replace radiology/pathology/cardiology/neurology/genetics review."
     },
@@ -16837,7 +16943,8 @@
       "evidence": {
         "commit": "d3736c307d4246481176cd3228e201fbf5fc955f",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1115_1120.py"
+        "test_path": "tests/modules/test_m12_clinical_1115_1120.py::test_row_1116_radiology_report_is_review_queue_with_study_metadata",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Specialist evidence-review support only. Atlas organizes supplied model/clinician findings, signal statistics or curated variant records; it does not inspect source pixels/tracings independently, diagnose disease, or replace radiology/pathology/cardiology/neurology/genetics review."
     },
@@ -16851,7 +16958,8 @@
       "evidence": {
         "commit": "d3736c307d4246481176cd3228e201fbf5fc955f",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1115_1120.py"
+        "test_path": "tests/modules/test_m12_clinical_1115_1120.py::test_row_1117_pathology_analysis_preserves_measurements_and_boundary",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Specialist evidence-review support only. Atlas organizes supplied model/clinician findings, signal statistics or curated variant records; it does not inspect source pixels/tracings independently, diagnose disease, or replace radiology/pathology/cardiology/neurology/genetics review."
     },
@@ -16865,7 +16973,8 @@
       "evidence": {
         "commit": "d3736c307d4246481176cd3228e201fbf5fc955f",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1115_1120.py"
+        "test_path": "tests/modules/test_m12_clinical_1115_1120.py::test_row_1118_ecg_support_reports_signal_qc_not_rhythm_diagnosis",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Specialist evidence-review support only. Atlas organizes supplied model/clinician findings, signal statistics or curated variant records; it does not inspect source pixels/tracings independently, diagnose disease, or replace radiology/pathology/cardiology/neurology/genetics review."
     },
@@ -16879,7 +16988,8 @@
       "evidence": {
         "commit": "d3736c307d4246481176cd3228e201fbf5fc955f",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1115_1120.py"
+        "test_path": "tests/modules/test_m12_clinical_1115_1120.py::test_row_1119_eeg_support_requires_original_trace_specialist_review",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Specialist evidence-review support only. Atlas organizes supplied model/clinician findings, signal statistics or curated variant records; it does not inspect source pixels/tracings independently, diagnose disease, or replace radiology/pathology/cardiology/neurology/genetics review."
     },
@@ -16893,7 +17003,8 @@
       "evidence": {
         "commit": "d3736c307d4246481176cd3228e201fbf5fc955f",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1115_1120.py"
+        "test_path": "tests/modules/test_m12_clinical_1115_1120.py::test_row_1120_genomics_matches_curated_records_and_preserves_unknowns",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Specialist evidence-review support only. Atlas organizes supplied model/clinician findings, signal statistics or curated variant records; it does not inspect source pixels/tracings independently, diagnose disease, or replace radiology/pathology/cardiology/neurology/genetics review."
     },
@@ -16907,7 +17018,8 @@
       "evidence": {
         "commit": "8b6999150cdc69f337520a36cba212560e524cb4",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1121_1124.py"
+        "test_path": "tests/modules/test_m12_clinical_1121_1124.py::test_row_1121_pharmacogenomics_matches_versioned_rules_and_keeps_unknowns",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Cited pre-screening and evidence organization only. Require current curated rules/models, preserve missing/unknown state and provenance, and require pharmacist/clinician/trial-staff review. No diagnosis, prescribing, enrollment, causality claim, reporting decision, or treatment execution."
     },
@@ -16921,7 +17033,8 @@
       "evidence": {
         "commit": "8b6999150cdc69f337520a36cba212560e524cb4",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1121_1124.py"
+        "test_path": "tests/modules/test_m12_clinical_1121_1124.py::test_row_1122_trial_matching_distinguishes_missing_from_excluded",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Cited pre-screening and evidence organization only. Require current curated rules/models, preserve missing/unknown state and provenance, and require pharmacist/clinician/trial-staff review. No diagnosis, prescribing, enrollment, causality claim, reporting decision, or treatment execution."
     },
@@ -16935,7 +17048,8 @@
       "evidence": {
         "commit": "8b6999150cdc69f337520a36cba212560e524cb4",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1121_1124.py"
+        "test_path": "tests/modules/test_m12_clinical_1121_1124.py::test_row_1123_adverse_event_detection_is_review_signal_not_causality",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Cited pre-screening and evidence organization only. Require current curated rules/models, preserve missing/unknown state and provenance, and require pharmacist/clinician/trial-staff review. No diagnosis, prescribing, enrollment, causality claim, reporting decision, or treatment execution."
     },
@@ -16949,7 +17063,8 @@
       "evidence": {
         "commit": "8b6999150cdc69f337520a36cba212560e524cb4",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1121_1124.py"
+        "test_path": "tests/modules/test_m12_clinical_1121_1124.py::test_row_1124_risk_stratification_requires_complete_cited_validated_model",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Cited pre-screening and evidence organization only. Require current curated rules/models, preserve missing/unknown state and provenance, and require pharmacist/clinician/trial-staff review. No diagnosis, prescribing, enrollment, causality claim, reporting decision, or treatment execution."
     },
@@ -16963,7 +17078,8 @@
       "evidence": {
         "commit": "17e06c8521dd37c7cdc3a59566dd977c04e603bf",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1125_1130.py"
+        "test_path": "tests/modules/test_m12_clinical_1125_1130.py::test_row_1125_readmission_prediction_returns_probability_and_validation_context",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Cited validated-model or transparent rule execution only. Refuse missing factors, expose model version/population/calibration and never use output autonomously for diagnosis, prognosis, emergency disposition, treatment, or resource allocation. Licensed clinical review and local emergency policy control."
     },
@@ -16977,7 +17093,8 @@
       "evidence": {
         "commit": "17e06c8521dd37c7cdc3a59566dd977c04e603bf",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1125_1130.py"
+        "test_path": "tests/modules/test_m12_clinical_1125_1130.py::test_row_1126_sepsis_warning_refuses_missing_factors",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Cited validated-model or transparent rule execution only. Refuse missing factors, expose model version/population/calibration and never use output autonomously for diagnosis, prognosis, emergency disposition, treatment, or resource allocation. Licensed clinical review and local emergency policy control."
     },
@@ -16991,7 +17108,8 @@
       "evidence": {
         "commit": "17e06c8521dd37c7cdc3a59566dd977c04e603bf",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1125_1130.py"
+        "test_path": "tests/modules/test_m12_clinical_1125_1130.py::test_row_1127_mortality_prediction_has_nonautonomous_boundary",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Cited validated-model or transparent rule execution only. Refuse missing factors, expose model version/population/calibration and never use output autonomously for diagnosis, prognosis, emergency disposition, treatment, or resource allocation. Licensed clinical review and local emergency policy control."
     },
@@ -17005,7 +17123,8 @@
       "evidence": {
         "commit": "17e06c8521dd37c7cdc3a59566dd977c04e603bf",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1125_1130.py"
+        "test_path": "tests/modules/test_m12_clinical_1125_1130.py::test_row_1128_length_of_stay_supports_identity_link_without_false_probability",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Cited validated-model or transparent rule execution only. Refuse missing factors, expose model version/population/calibration and never use output autonomously for diagnosis, prognosis, emergency disposition, treatment, or resource allocation. Licensed clinical review and local emergency policy control."
     },
@@ -17019,7 +17138,8 @@
       "evidence": {
         "commit": "17e06c8521dd37c7cdc3a59566dd977c04e603bf",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1125_1130.py"
+        "test_path": "tests/modules/test_m12_clinical_1125_1130.py::test_row_1129_icu_allocation_is_score_only_not_resource_decision",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Cited validated-model or transparent rule execution only. Refuse missing factors, expose model version/population/calibration and never use output autonomously for diagnosis, prognosis, emergency disposition, treatment, or resource allocation. Licensed clinical review and local emergency policy control."
     },
@@ -17033,7 +17153,8 @@
       "evidence": {
         "commit": "17e06c8521dd37c7cdc3a59566dd977c04e603bf",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1125_1130.py"
+        "test_path": "tests/modules/test_m12_clinical_1125_1130.py::test_row_1130_triage_returns_highest_transparent_rule_and_missing_inputs",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Cited validated-model or transparent rule execution only. Refuse missing factors, expose model version/population/calibration and never use output autonomously for diagnosis, prognosis, emergency disposition, treatment, or resource allocation. Licensed clinical review and local emergency policy control."
     },
@@ -17047,7 +17168,8 @@
       "evidence": {
         "commit": "a86e90374e20d49ded5f45347b56c40201b37312",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1131_1137.py"
+        "test_path": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1131_surgical_plan_links_goals_and_review_not_execution",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Clinician-authored, cited planning and monitoring support only. Preserve unknowns and contraindications, require patient-specific goals, baseline and escalation criteria, and keep licensed surgical, anesthesia, rehabilitation and therapy professionals in control. Never control equipment, set anesthetic doses, clear procedures or discharge, or replace bedside assessment."
     },
@@ -17061,7 +17183,8 @@
       "evidence": {
         "commit": "a86e90374e20d49ded5f45347b56c40201b37312",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1131_1137.py"
+        "test_path": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1132_anesthesia_monitoring_flags_cited_thresholds_without_control",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Clinician-authored, cited planning and monitoring support only. Preserve unknowns and contraindications, require patient-specific goals, baseline and escalation criteria, and keep licensed surgical, anesthesia, rehabilitation and therapy professionals in control. Never control equipment, set anesthetic doses, clear procedures or discharge, or replace bedside assessment."
     },
@@ -17075,7 +17198,8 @@
       "evidence": {
         "commit": "a86e90374e20d49ded5f45347b56c40201b37312",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1131_1137.py"
+        "test_path": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1133_postop_tracks_milestones_and_escalates",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Clinician-authored, cited planning and monitoring support only. Preserve unknowns and contraindications, require patient-specific goals, baseline and escalation criteria, and keep licensed surgical, anesthesia, rehabilitation and therapy professionals in control. Never control equipment, set anesthetic doses, clear procedures or discharge, or replace bedside assessment."
     },
@@ -17089,7 +17213,8 @@
       "evidence": {
         "commit": "a86e90374e20d49ded5f45347b56c40201b37312",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1131_1137.py"
+        "test_path": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1134_rehab_plan_has_baseline_target_and_cadence",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Clinician-authored, cited planning and monitoring support only. Preserve unknowns and contraindications, require patient-specific goals, baseline and escalation criteria, and keep licensed surgical, anesthesia, rehabilitation and therapy professionals in control. Never control equipment, set anesthetic doses, clear procedures or discharge, or replace bedside assessment."
     },
@@ -17103,7 +17228,8 @@
       "evidence": {
         "commit": "a86e90374e20d49ded5f45347b56c40201b37312",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1131_1137.py"
+        "test_path": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1135_physical_therapy_filters_contraindicated_activity",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Clinician-authored, cited planning and monitoring support only. Preserve unknowns and contraindications, require patient-specific goals, baseline and escalation criteria, and keep licensed surgical, anesthesia, rehabilitation and therapy professionals in control. Never control equipment, set anesthetic doses, clear procedures or discharge, or replace bedside assessment."
     },
@@ -17117,7 +17243,8 @@
       "evidence": {
         "commit": "a86e90374e20d49ded5f45347b56c40201b37312",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1131_1137.py"
+        "test_path": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1136_occupational_therapy_preserves_progress_measure",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Clinician-authored, cited planning and monitoring support only. Preserve unknowns and contraindications, require patient-specific goals, baseline and escalation criteria, and keep licensed surgical, anesthesia, rehabilitation and therapy professionals in control. Never control equipment, set anesthetic doses, clear procedures or discharge, or replace bedside assessment."
     },
@@ -17131,7 +17258,8 @@
       "evidence": {
         "commit": "a86e90374e20d49ded5f45347b56c40201b37312",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/clinical_support.py",
-        "test_path": "tests/modules/test_m12_clinical_1131_1137.py"
+        "test_path": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1137_speech_therapy_requires_licensed_review",
+        "evidence_kind": "exact-requirement-path-matched-distinctive-calculation-and-boundary-node"
       },
       "boundary": "Clinician-authored, cited planning and monitoring support only. Preserve unknowns and contraindications, require patient-specific goals, baseline and escalation criteria, and keep licensed surgical, anesthesia, rehabilitation and therapy professionals in control. Never control equipment, set anesthetic doses, clear procedures or discharge, or replace bedside assessment."
     },

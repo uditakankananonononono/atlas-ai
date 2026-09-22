@@ -1386,8 +1386,8 @@
     {
       "ledger": "audits/additional-2000-features.json",
       "total": 2010,
-      "resolvable_nodes": 315,
-      "unresolved": 1695,
+      "resolvable_nodes": 443,
+      "unresolved": 1567,
       "results": [
         {
           "row": 1,
@@ -7445,771 +7445,771 @@
         },
         {
           "row": 1010,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1010_predictive_forecasts_future_outcomes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1011,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1011_prescriptive_recommends_actions",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1012,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1012_descriptive_summarizes_past_data",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1013,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1013_diagnostic_explains_why_without_causal_overreach",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1014,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1014_eda_discovers_patterns",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1015,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1015_confirmatory_tests_hypotheses",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1016,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1016_inference_draws_conclusions",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1017,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1017_hypothesis_testing_tests_claims",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1018,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1018_confidence_intervals_quantify_uncertainty",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1019,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1019_bootstrap_resamples_for_inference",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1020,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1020_permutation_testing_without_assumptions",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1021,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1021_nonparametric_avoids_distributional_assumptions",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1022,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1022_robust_statistics_resist_outliers",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1023,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1023_outlier_detection_finds_anomalies",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1024,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1024_missing_data_imputation_fills_gaps",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1025,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1025_multiple_imputation_handles_uncertainty",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1026,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1026_mle_finds_best_parameters",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1027,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1027_em_handles_latent_variables",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1028,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1028_mcmc_samples_complex_distributions",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1029,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1029_variational_fast_approximate_inference",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1030,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1030_gibbs_iterative_sampling",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1031,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1031_metropolis_hastings_mcmc_algorithm",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1032,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1032_hmc_efficient_mcmc",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1033,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1033_smc_particle_filtering",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1034,
-          "evidence": "tests/modules/test_m16_analysis_1010_1034.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1010_1034.py::test_row_1034_particle_filters_track_dynamic_systems",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1035,
-          "evidence": "tests/modules/test_m16_analysis_1035_1038.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1035_1038.py::test_row_1035_kalman_filter_reduces_uncertainty_and_tracks_state",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1036,
-          "evidence": "tests/modules/test_m16_analysis_1035_1038.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1035_1038.py::test_row_1036_extended_kalman_filter_uses_local_jacobian",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1037,
-          "evidence": "tests/modules/test_m16_analysis_1035_1038.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1035_1038.py::test_row_1037_ukf_propagates_sigma_points_without_jacobian",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1038,
-          "evidence": "tests/modules/test_m16_analysis_1035_1038.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1035_1038.py::test_row_1038_hmm_forward_probabilities_and_viterbi_path",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1039,
-          "evidence": "tests/modules/test_m16_analysis_1039_1043.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1039_1043.py::test_row_1039_linear_chain_crf_global_decoding_and_partition",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1040,
-          "evidence": "tests/modules/test_m16_analysis_1039_1043.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1039_1043.py::test_row_1040_graphical_model_detects_cycles_and_components",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1041,
-          "evidence": "tests/modules/test_m16_analysis_1039_1043.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1039_1043.py::test_row_1041_bayesian_network_exact_conditioning",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1042,
-          "evidence": "tests/modules/test_m16_analysis_1039_1043.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1039_1043.py::test_row_1042_mrf_normalizes_potentials_and_returns_map",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1043,
-          "evidence": "tests/modules/test_m16_analysis_1039_1043.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1039_1043.py::test_row_1043_factor_graph_exact_product_inference",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1044,
-          "evidence": "tests/modules/test_m16_analysis_1044_1047.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1044_1047.py::test_row_1044_sum_product_exact_on_tree",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1045,
-          "evidence": "tests/modules/test_m16_analysis_1044_1047.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1044_1047.py::test_row_1045_vmp_combines_natural_parameter_messages",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1046,
-          "evidence": "tests/modules/test_m16_analysis_1044_1047.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1044_1047.py::test_row_1046_ep_matches_truncated_gaussian_moments",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1047,
-          "evidence": "tests/modules/test_m16_analysis_1044_1047.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1044_1047.py::test_row_1047_laplace_finds_logistic_map_and_positive_curvature",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1048,
-          "evidence": "tests/modules/test_m16_analysis_1048_1052.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1048_1052.py::test_row_1048_importance_sampling_tracks_target_and_ess",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1049,
-          "evidence": "tests/modules/test_m16_analysis_1048_1052.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1048_1052.py::test_row_1049_rejection_sampling_checks_bound_and_accepts_target",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1050,
-          "evidence": "tests/modules/test_m16_analysis_1048_1052.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1048_1052.py::test_row_1050_slice_sampler_targets_distribution_without_normalizer",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1051,
-          "evidence": "tests/modules/test_m16_analysis_1048_1052.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1048_1052.py::test_row_1051_nested_sampling_returns_finite_log_evidence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1052,
-          "evidence": "tests/modules/test_m16_analysis_1048_1052.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1048_1052.py::test_row_1052_abc_likelihood_free_posterior_near_observed_summary",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1053,
-          "evidence": "tests/modules/test_m16_analysis_1053_1057.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1053_1057.py::test_row_1053_synthetic_likelihood_scores_simulated_summaries",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1054,
-          "evidence": "tests/modules/test_m16_analysis_1053_1057.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1053_1057.py::test_row_1054_indirect_inference_selects_matching_binding_statistic",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1055,
-          "evidence": "tests/modules/test_m16_analysis_1053_1057.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1053_1057.py::test_row_1055_method_of_moments_matches_population_moments",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1056,
-          "evidence": "tests/modules/test_m16_analysis_1053_1057.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1053_1057.py::test_row_1056_gmm_solves_orthogonality_condition",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1057,
-          "evidence": "tests/modules/test_m16_analysis_1053_1057.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1053_1057.py::test_row_1057_iv_recovers_effect_and_exposes_first_stage",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1058,
-          "evidence": "tests/modules/test_m16_analysis_1058_1062.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1058_1062.py::test_row_1058_2sls_exposes_both_stages",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1059,
-          "evidence": "tests/modules/test_m16_analysis_1058_1062.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1058_1062.py::test_row_1059_liml_k_class_just_identified_matches_2sls",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1060,
-          "evidence": "tests/modules/test_m16_analysis_1058_1062.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1058_1062.py::test_row_1060_control_function_recovers_effect_and_residual_term",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1061,
-          "evidence": "tests/modules/test_m16_analysis_1058_1062.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1058_1062.py::test_row_1061_rd_estimates_intercept_jump_not_global_difference",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1062,
-          "evidence": "tests/modules/test_m16_analysis_1058_1062.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1058_1062.py::test_row_1062_did_removes_shared_time_trend",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1063,
-          "evidence": "tests/modules/test_m16_analysis_1063_1067.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1063_1067.py::test_row_1063_synthetic_control_builds_convex_counterfactual",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1064,
-          "evidence": "tests/modules/test_m16_analysis_1063_1067.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1063_1067.py::test_row_1064_matching_standardizes_and_pairs_nearest",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1065,
-          "evidence": "tests/modules/test_m16_analysis_1063_1067.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1063_1067.py::test_row_1065_psm_matches_on_estimated_score",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1066,
-          "evidence": "tests/modules/test_m16_analysis_1063_1067.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1063_1067.py::test_row_1066_cem_uses_only_overlap_strata",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1067,
-          "evidence": "tests/modules/test_m16_analysis_1063_1067.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1063_1067.py::test_row_1067_genetic_matching_uses_positive_caller_weights",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1068,
-          "evidence": "tests/modules/test_m16_analysis_1068_1072.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1068_1072.py::test_row_1068_entropy_balancing_hits_target_moment",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1069,
-          "evidence": "tests/modules/test_m16_analysis_1068_1072.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1068_1072.py::test_row_1069_ipw_recovers_weighted_marginal_difference_and_ess",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1070,
-          "evidence": "tests/modules/test_m16_analysis_1068_1072.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1068_1072.py::test_row_1070_aipw_is_doubly_robust_score",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1071,
-          "evidence": "tests/modules/test_m16_analysis_1068_1072.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1068_1072.py::test_row_1071_tmle_targets_and_has_near_zero_ic_mean",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1072,
-          "evidence": "tests/modules/test_m16_analysis_1068_1072.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1068_1072.py::test_row_1072_cross_fitted_ml_causal_inference_avoids_self_fit",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1073,
-          "evidence": "tests/modules/test_m16_analysis_1073_1077.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1073_1077.py::test_row_1073_causal_tree_finds_effect_heterogeneity",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1074,
-          "evidence": "tests/modules/test_m16_analysis_1073_1077.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1073_1077.py::test_row_1074_dml_cross_fits_nuisance_models",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1075,
-          "evidence": "tests/modules/test_m16_analysis_1073_1077.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1073_1077.py::test_row_1075_orthogonalized_estimation_matches_partial_linear_effect",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1076,
-          "evidence": "tests/modules/test_m16_analysis_1073_1077.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1073_1077.py::test_row_1076_cross_fitting_reports_oof_error_and_no_empty_fold",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1077,
-          "evidence": "tests/modules/test_m16_analysis_1073_1077.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1073_1077.py::test_row_1077_sample_split_is_deterministic_disjoint_and_complete",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1078,
-          "evidence": "tests/modules/test_m16_analysis_1078_1082.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1078_1082.py::test_row_1078_post_selection_intervals_widen_for_multiplicity",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1079,
-          "evidence": "tests/modules/test_m16_analysis_1078_1082.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1078_1082.py::test_row_1079_selective_p_value_conditions_on_threshold",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1080,
-          "evidence": "tests/modules/test_m16_analysis_1078_1082.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1078_1082.py::test_row_1080_simultaneous_intervals_are_family_adjusted",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1081,
-          "evidence": "tests/modules/test_m16_analysis_1078_1082.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1078_1082.py::test_row_1081_bh_fdr_stepup_and_adjusted_pvalues",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1082,
-          "evidence": "tests/modules/test_m16_analysis_1078_1082.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1078_1082.py::test_row_1082_holm_fwer_is_stepdown_monotone",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1083,
-          "evidence": "tests/modules/test_m16_analysis_1083_1087.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1083_1087.py::test_row_1083_bonferroni_reports_per_test_alpha_and_adjusted_p",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1084,
-          "evidence": "tests/modules/test_m16_analysis_1083_1087.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1083_1087.py::test_row_1084_holm_stops_after_first_failed_step",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1085,
-          "evidence": "tests/modules/test_m16_analysis_1083_1087.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1083_1087.py::test_row_1085_bh_uses_largest_passing_rank_stepup",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1086,
-          "evidence": "tests/modules/test_m16_analysis_1083_1087.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1083_1087.py::test_row_1086_storey_estimates_pi0_and_qvalues",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1087,
-          "evidence": "tests/modules/test_m16_analysis_1083_1087.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1083_1087.py::test_row_1087_local_fdr_is_lower_for_extreme_zscores",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1088,
-          "evidence": "tests/modules/test_m16_analysis_1088_1092.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1088_1092.py::test_row_1088_permutation_fdr_selects_extreme_signal",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1089,
-          "evidence": "tests/modules/test_m16_analysis_1088_1092.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1088_1092.py::test_row_1089_knockoff_filter_uses_sign_flip_statistics",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1090,
-          "evidence": "tests/modules/test_m16_analysis_1088_1092.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1088_1092.py::test_row_1090_stability_selection_reports_probabilities_and_bound",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1091,
-          "evidence": "tests/modules/test_m16_analysis_1088_1092.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1088_1092.py::test_row_1091_bagging_estimates_variance_and_is_seeded",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1092,
-          "evidence": "tests/modules/test_m16_analysis_1088_1092.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1088_1092.py::test_row_1092_random_forest_bootstraps_features_and_oob",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1093,
-          "evidence": "tests/modules/test_m16_analysis_1093_1097.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1093_1097.py::test_row_1093_gradient_boosting_reduces_residual_error",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1094,
-          "evidence": "tests/modules/test_m16_analysis_1093_1097.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1093_1097.py::test_row_1094_xgboost_regularizes_leaf_updates",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1095,
-          "evidence": "tests/modules/test_m16_analysis_1093_1097.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1093_1097.py::test_row_1095_lightgbm_boundary_is_explicit_and_fits",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1096,
-          "evidence": "tests/modules/test_m16_analysis_1093_1097.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1093_1097.py::test_row_1096_catboost_boundary_is_explicit_and_fits",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1097,
-          "evidence": "tests/modules/test_m16_analysis_1093_1097.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1093_1097.py::test_row_1097_adaboost_reweights_mistakes_and_classifies",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1098,
-          "evidence": "tests/modules/test_m16_analysis_1098_1102.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1098_1102.py::test_row_1098_stacking_weights_oof_base_predictions",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1099,
-          "evidence": "tests/modules/test_m16_analysis_1098_1102.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1098_1102.py::test_row_1099_blending_uses_heldout_partition_only_for_weights",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1100,
-          "evidence": "tests/modules/test_m16_analysis_1098_1102.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1098_1102.py::test_row_1100_bagging_samples_with_replacement",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1101,
-          "evidence": "tests/modules/test_m16_analysis_1098_1102.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1098_1102.py::test_row_1101_pasting_samples_without_replacement",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1102,
-          "evidence": "tests/modules/test_m16_analysis_1098_1102.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1098_1102.py::test_row_1102_voting_supports_hard_and_soft_semantics",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1103,
-          "evidence": "tests/modules/test_m16_analysis_1103_1107.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1103_1107.py::test_row_1103_weighted_voting_normalizes_and_combines_probabilities",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1104,
-          "evidence": "tests/modules/test_m16_analysis_1103_1107.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1103_1107.py::test_row_1104_bma_uses_stable_posterior_model_weights",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1105,
-          "evidence": "tests/modules/test_m16_analysis_1103_1107.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1103_1107.py::test_row_1105_bayesian_model_selection_combines_prior_and_evidence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1106,
-          "evidence": "tests/modules/test_m16_analysis_1103_1107.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1103_1107.py::test_row_1106_information_criteria_penalize_complexity_differently",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1107,
-          "evidence": "tests/modules/test_m16_analysis_1103_1107.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1103_1107.py::test_row_1107_cross_validation_weights_fold_sizes",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1108,
-          "evidence": "tests/modules/test_m16_analysis_1108_1109.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1108_1109.py::test_row_1108_leave_one_out_requires_n_minus_one_training_and_reports_uncertainty",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1109,
-          "evidence": "tests/modules/test_m16_analysis_1108_1109.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m16_analysis_1108_1109.py::test_row_1109_kfold_weights_unequal_fold_sizes_and_validates_k",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1110,
-          "evidence": "tests/modules/test_m12_clinical_1110_1114.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1110_1114.py::test_row_1110_clinical_support_composes_cited_bounded_sections",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1111,
-          "evidence": "tests/modules/test_m12_clinical_1110_1114.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1110_1114.py::test_row_1111_differential_preserves_support_conflicts_and_missing_discriminators",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1112,
-          "evidence": "tests/modules/test_m12_clinical_1110_1114.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1110_1114.py::test_row_1112_protocol_selection_enforces_requirements_contraindications_and_provenance",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1113,
-          "evidence": "tests/modules/test_m12_clinical_1110_1114.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1110_1114.py::test_row_1113_interaction_checker_never_claims_no_match_means_safe",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1114,
-          "evidence": "tests/modules/test_m12_clinical_1110_1114.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1110_1114.py::test_row_1114_dosage_calculation_caps_daily_total_and_lists_verification",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1115,
-          "evidence": "tests/modules/test_m12_clinical_1115_1120.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1115_1120.py::test_row_1115_image_analysis_organizes_provenanced_findings_not_diagnoses",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1116,
-          "evidence": "tests/modules/test_m12_clinical_1115_1120.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1115_1120.py::test_row_1116_radiology_report_is_review_queue_with_study_metadata",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1117,
-          "evidence": "tests/modules/test_m12_clinical_1115_1120.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1115_1120.py::test_row_1117_pathology_analysis_preserves_measurements_and_boundary",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1118,
-          "evidence": "tests/modules/test_m12_clinical_1115_1120.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1115_1120.py::test_row_1118_ecg_support_reports_signal_qc_not_rhythm_diagnosis",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1119,
-          "evidence": "tests/modules/test_m12_clinical_1115_1120.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1115_1120.py::test_row_1119_eeg_support_requires_original_trace_specialist_review",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1120,
-          "evidence": "tests/modules/test_m12_clinical_1115_1120.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1115_1120.py::test_row_1120_genomics_matches_curated_records_and_preserves_unknowns",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1121,
-          "evidence": "tests/modules/test_m12_clinical_1121_1124.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1121_1124.py::test_row_1121_pharmacogenomics_matches_versioned_rules_and_keeps_unknowns",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1122,
-          "evidence": "tests/modules/test_m12_clinical_1121_1124.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1121_1124.py::test_row_1122_trial_matching_distinguishes_missing_from_excluded",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1123,
-          "evidence": "tests/modules/test_m12_clinical_1121_1124.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1121_1124.py::test_row_1123_adverse_event_detection_is_review_signal_not_causality",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1124,
-          "evidence": "tests/modules/test_m12_clinical_1121_1124.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1121_1124.py::test_row_1124_risk_stratification_requires_complete_cited_validated_model",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1125,
-          "evidence": "tests/modules/test_m12_clinical_1125_1130.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1125_1130.py::test_row_1125_readmission_prediction_returns_probability_and_validation_context",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1126,
-          "evidence": "tests/modules/test_m12_clinical_1125_1130.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1125_1130.py::test_row_1126_sepsis_warning_refuses_missing_factors",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1127,
-          "evidence": "tests/modules/test_m12_clinical_1125_1130.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1125_1130.py::test_row_1127_mortality_prediction_has_nonautonomous_boundary",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1128,
-          "evidence": "tests/modules/test_m12_clinical_1125_1130.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1125_1130.py::test_row_1128_length_of_stay_supports_identity_link_without_false_probability",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1129,
-          "evidence": "tests/modules/test_m12_clinical_1125_1130.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1125_1130.py::test_row_1129_icu_allocation_is_score_only_not_resource_decision",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1130,
-          "evidence": "tests/modules/test_m12_clinical_1125_1130.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1125_1130.py::test_row_1130_triage_returns_highest_transparent_rule_and_missing_inputs",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1131,
-          "evidence": "tests/modules/test_m12_clinical_1131_1137.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1131_surgical_plan_links_goals_and_review_not_execution",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1132,
-          "evidence": "tests/modules/test_m12_clinical_1131_1137.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1132_anesthesia_monitoring_flags_cited_thresholds_without_control",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1133,
-          "evidence": "tests/modules/test_m12_clinical_1131_1137.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1133_postop_tracks_milestones_and_escalates",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1134,
-          "evidence": "tests/modules/test_m12_clinical_1131_1137.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1134_rehab_plan_has_baseline_target_and_cadence",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1135,
-          "evidence": "tests/modules/test_m12_clinical_1131_1137.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1135_physical_therapy_filters_contraindicated_activity",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1136,
-          "evidence": "tests/modules/test_m12_clinical_1131_1137.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1136_occupational_therapy_preserves_progress_measure",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1137,
-          "evidence": "tests/modules/test_m12_clinical_1131_1137.py",
-          "resolved": false,
-          "reason": "shared file only; no pytest node"
+          "evidence": "tests/modules/test_m12_clinical_1131_1137.py::test_row_1137_speech_therapy_requires_licensed_review",
+          "resolved": true,
+          "reason": null
         },
         {
           "row": 1138,
