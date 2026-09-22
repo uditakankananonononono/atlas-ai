@@ -20,8 +20,9 @@ def family(row):
 def rows():return [r for r in json.loads(LEDGER.read_text())['rows'] if 1149<=r['id']<=1435]
 def verify_evidence(r):
  ev=r.get('evidence') or {};impl=ev.get('implementation_path');test=ev.get('test_path');name,keys=family(r['id'])
- missing=[p for p in (impl,test) if not p or not (ROOT/p).is_file()]
- text=(ROOT/test).read_text() if test and (ROOT/test).is_file() else ''
+ test_file=test.split('::',1)[0] if test else test
+ missing=[p for p in (impl,test_file) if not p or not (ROOT/p).is_file()]
+ text=(ROOT/test_file).read_text() if test_file and (ROOT/test_file).is_file() else ''
  impl_text=(ROOT/impl).read_text() if impl and (ROOT/impl).is_file() else ''
  # Exact evidence may use the numeric row or its canonical method identifier.
  method=re.sub(r'[^a-z0-9]+','_',r['requirement'].lower()).strip('_')
