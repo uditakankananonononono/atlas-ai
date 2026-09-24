@@ -15,16 +15,19 @@ from dataclasses import dataclass, field
 from app.core import providers
 from app.core.providers import ProviderError
 
-FREE = "free"            # runs on her own hardware, no account needed
-FREE_TIER = "free_tier"  # hosted, needs a free account/token, capped credits
-PAID = "paid"            # bills per token; never used unless ATLAS_ALLOW_PAID
+# Kinds match the Meemee model-layer taxonomy.
+LOCAL = "local"              # runs on her own PC, no account needed
+SELF_HOSTED = "self_hosted"  # her own GPU box / server she runs (vLLM, SGLang, llama.cpp)
+HOSTED_FREE = "hosted_free"  # hosted, free account/token, capped monthly credits
+HOSTED_PAID = "hosted_paid"  # bills per token; never used unless ATLAS_ALLOW_PAID
+FREE_KINDS = frozenset({LOCAL, SELF_HOSTED, HOSTED_FREE})
 
 
 @dataclass(frozen=True)
 class Route:
     provider: str
     model: str
-    cost: str
+    kind: str
     note: str = ""
 
 
@@ -45,8 +48,9 @@ CATALOG: dict[str, CatalogEntry] = {
         what_it_is="Thinking Machines Lab open-weights multimodal MoE (975B total / 41B active, text+image+audio in, text out), released 2026-07-15.",
         open_weights=True,
         routes=(
-            Route("openai_compat", "inkling", FREE, "Serve unsloth/inkling-GGUF with llama.cpp `llama-server`; even the 1-bit quant needs a very large-memory machine."),
-            Route("huggingface", "thinkingmachines/Inkling", FREE_TIER, "HF Inference Providers router (together, fireworks-ai, baseten, deepinfra live)."),
+            Route("huggingface", "thinkingmachines/Inkling-Small", HOSTED_FREE, "Primary: HF Inference Providers router with a free HF token (baseten, deepinfra live). Free monthly credits are small."),
+            Route("huggingface", "thinkingmachines/Inkling", HOSTED_FREE, "Full Inkling on the same router (together, fireworks-ai, baseten, deepinfra live)."),
+            Route("openai_compat", "inkling", SELF_HOSTED, "Alternate: unsloth/inkling-GGUF via llama.cpp or vLLM/SGLang on hardware she runs; very large memory needed."),
         ),
         sources=("https://huggingface.co/blog/thinkingmachines-inkling", "https://huggingface.co/thinkingmachines/Inkling"),
     ),
@@ -55,8 +59,8 @@ CATALOG: dict[str, CatalogEntry] = {
         what_it_is="Smaller Inkling variant, Apache-2.0, same multimodal family.",
         open_weights=True,
         routes=(
-            Route("openai_compat", "inkling-small", FREE, "Self-host with vLLM/SGLang; BF16 needs ~600 GB VRAM, NVFP4 ~180 GB."),
-            Route("huggingface", "thinkingmachines/Inkling-Small", FREE_TIER, "HF router (baseten, deepinfra live)."),
+            Route("huggingface", "thinkingmachines/Inkling-Small", HOSTED_FREE, "Primary: HF router (baseten, deepinfra live)."),
+            Route("openai_compat", "inkling-small", SELF_HOSTED, "Alternate: vLLM/SGLang; BF16 needs ~600 GB VRAM, NVFP4 ~180 GB."),
         ),
         sources=("https://huggingface.co/thinkingmachines/Inkling-Small",),
     ),
@@ -64,7 +68,7 @@ CATALOG: dict[str, CatalogEntry] = {
         name="Sakana Fugu",
         what_it_is="Sakana AI multi-agent orchestrator delivered as one hosted model (fugu, fugu-ultra). NOT open weights: access is through the paid Sakana API.",
         open_weights=False,
-        routes=(Route("fugu", "fugu", PAID, "Needs FUGU_API_KEY + FUGU_BASE_URL and ATLAS_ALLOW_PAID=true."),),
+        routes=(Route("fugu", "fugu", HOSTED_PAID, "Needs FUGU_API_KEY + FUGU_BASE_URL and ATLAS_ALLOW_PAID=true."),),
         sources=("https://github.com/SakanaAI/Fugu", "https://console.sakana.ai/pricing"),
     ),
     "ultron": CatalogEntry(
@@ -95,11 +99,11 @@ def paid_allowed() -> bool:
 def default_chain() -> list[Route]:
     """Free routes first, in order: Ollama, local OpenAI-compatible server, HF free tier."""
     chain = [
-        Route("ollama", os.getenv("ATLAS_OLLAMA_MODEL", "llama3.1:8b"), FREE),
-        Route("openai_compat", os.getenv("ATLAS_LOCAL_OPENAI_MODEL", "local"), FREE),
+        Route("ollama", os.getenv("ATLAS_OLLAMA_MODEL", "llama3.1:8b"), LOCAL),
+        Route("openai_compat", os.getenv("ATLAS_LOCAL_OPENAI_MODEL", "local"), LOCAL),
     ]
     if os.getenv("HF_TOKEN"):
-        chain.append(Route("huggingface", os.getenv("ATLAS_HF_MODEL", "thinkingmachines/Inkling-Small"), FREE_TIER))
+        chain.append(Route("huggingface", os.getenv("ATLAS_HF_MODEL", "thinkingmachines/Inkling-Small"), HOSTED_FREE))
     return chain
 
 
@@ -108,7 +112,7 @@ async def generate_free_first(prompt: str, model_name: str | None = None) -> tup
     routes = list(resolve(model_name).routes) if model_name else default_chain()
     errors: list[str] = []
     for route in routes:
-        if route.cost == PAID and not paid_allowed():
+        if route.kind == HOSTED_PAID and not paid_allowed():
             errors.append(f"{route.provider}: skipped (paid, ATLAS_ALLOW_PAID not set)")
             continue
         try:
@@ -124,8 +128,50 @@ def catalog_view() -> list[dict]:
         {
             "key": key, "name": e.name, "what_it_is": e.what_it_is, "open_weights": e.open_weights,
             "wired": e.wired, "reason_not_wired": e.reason_not_wired,
-            "routes": [{"provider": r.provider, "model": r.model, "cost": r.cost, "note": r.note} for r in e.routes],
+            "routes": [{"provider": r.provider, "model": r.model, "kind": r.kind, "note": r.note} for r in e.routes],
             "sources": list(e.sources),
         }
         for key, e in CATALOG.items()
     ]
+
+
+def _probe_target(provider: str) -> tuple[str, dict[str, str]] | None:
+    """URL + headers for a zero-token reachability probe; None when not configured."""
+    if provider == "ollama":
+        return os.getenv("ATLAS_OLLAMA_URL", "http://ollama:11434").rstrip("/") + "/api/tags", {}
+    if provider == "openai_compat":
+        key = os.getenv("ATLAS_LOCAL_OPENAI_KEY")
+        return os.getenv("ATLAS_LOCAL_OPENAI_URL", "http://localhost:8080/v1").rstrip("/") + "/models", ({"Authorization": f"Bearer {key}"} if key else {})
+    if provider == "huggingface":
+        key = os.getenv("HF_TOKEN")
+        return ("https://router.huggingface.co/v1/models", {"Authorization": f"Bearer {key}"}) if key else None
+    if provider == "fugu":
+        key, base = os.getenv("FUGU_API_KEY"), os.getenv("FUGU_BASE_URL", "").rstrip("/")
+        if not key or not base:
+            return None
+        return (base if base.endswith("/v1") else base + "/v1") + "/models", {"Authorization": f"Bearer {key}"}
+    return None
+
+
+async def health(timeout: float = 5.0) -> list[dict]:
+    """Zero-token probe of each routable provider (a model-list GET, never a generation)."""
+    import httpx
+
+    out: list[dict] = []
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        for provider, kind in (("ollama", LOCAL), ("openai_compat", LOCAL), ("huggingface", HOSTED_FREE), ("fugu", HOSTED_PAID)):
+            target = _probe_target(provider)
+            row = {"provider": provider, "kind": kind, "configured": target is not None, "reachable": False, "detail": ""}
+            if kind == HOSTED_PAID and not paid_allowed():
+                row["detail"] = "paid provider disabled (ATLAS_ALLOW_PAID not set)"
+            if target is not None:
+                try:
+                    resp = await client.get(target[0], headers=target[1])
+                    row["reachable"] = resp.status_code == 200
+                    row["detail"] = row["detail"] or f"HTTP {resp.status_code}"
+                except httpx.HTTPError as exc:
+                    row["detail"] = row["detail"] or type(exc).__name__
+            elif not row["detail"]:
+                row["detail"] = "not configured"
+            out.append(row)
+    return out

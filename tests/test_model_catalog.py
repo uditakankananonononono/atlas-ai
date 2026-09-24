@@ -81,7 +81,7 @@ def test_fugu_when_paid_explicitly_enabled_appends_v1(calls, monkeypatch):
 def test_catalog_resolves_names_honestly():
     assert mc.resolve("Inkling").open_weights is True
     assert mc.resolve("Sakana Fugu").open_weights is False
-    assert all(r.cost == mc.PAID for r in mc.resolve("fugu").routes)
+    assert all(r.kind == mc.HOSTED_PAID for r in mc.resolve("fugu").routes)
     with pytest.raises(ProviderError, match="not wired"):
         mc.resolve("Ultron")
     with pytest.raises(ProviderError, match="unknown model name"):
@@ -108,9 +108,26 @@ def test_free_first_stops_instead_of_paying(calls, monkeypatch):
 def test_named_inkling_prefers_local_then_free_tier(calls, monkeypatch):
     seen, replies = calls
     monkeypatch.setenv("HF_TOKEN", "hf_test")
-    replies["openai_compat"] = ProviderError("Local server down")
     provider, model, _ = asyncio.run(mc.generate_free_first("hi", "inkling"))
-    assert (provider, model) == ("huggingface", "thinkingmachines/Inkling")
+    assert (provider, model) == ("huggingface", "thinkingmachines/Inkling-Small")
+    assert seen[0]["payload"]["model"] == "thinkingmachines/Inkling-Small"
+
+
+def test_inkling_falls_back_to_self_hosted_when_hf_credits_run_out(calls, monkeypatch):
+    seen, replies = calls
+    monkeypatch.setenv("HF_TOKEN", "hf_test")
+    replies["huggingface"] = ProviderError("Huggingface request failed (402)")
+    provider, model, _ = asyncio.run(mc.generate_free_first("hi", "inkling"))
+    assert (provider, model) == ("openai_compat", "inkling")
+    assert [c["provider"] for c in seen] == ["huggingface", "huggingface", "openai_compat"]
+
+
+def test_hf_credit_exhaustion_message_is_plain(calls, monkeypatch):
+    _, replies = calls
+    monkeypatch.setenv("HF_TOKEN", "hf_test")
+    replies["huggingface"] = ProviderError("Huggingface request failed (402)")
+    with pytest.raises(ProviderError, match="credits exhausted"):
+        asyncio.run(providers.generate("hi", "hf", "thinkingmachines/Inkling-Small"))
 
 
 def test_catalog_view_lists_sources_for_every_entry():
@@ -169,3 +186,39 @@ def test_http_routes_require_tenant_and_stop_before_paid(oidc_auth_headers, monk
     assert ok.status_code == 200 and ok.json()["provider"] == "ollama"
     blocked = client.post("/api/v1/models/generate", headers=headers, json={"prompt": "hi", "model_name": "fugu"})
     assert blocked.status_code == 503 and "paid" in blocked.json()["detail"]
+
+
+def test_health_probe_is_zero_token_and_reports_each_provider(monkeypatch):
+    import json
+    import threading
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    hits: list[tuple[str, str]] = []
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):  # noqa: N802
+            hits.append(("GET", self.path))
+            out = json.dumps({"data": [{"id": "local"}]}).encode()
+            self.send_response(200); self.send_header("Content-Length", str(len(out))); self.end_headers(); self.wfile.write(out)
+
+        def do_POST(self):  # noqa: N802
+            hits.append(("POST", self.path)); self.send_response(500); self.end_headers()
+
+        def log_message(self, *args):
+            pass
+
+    server = HTTPServer(("127.0.0.1", 0), Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        monkeypatch.setenv("ATLAS_LOCAL_OPENAI_URL", f"http://127.0.0.1:{server.server_port}/v1")
+        monkeypatch.setenv("ATLAS_OLLAMA_URL", "http://127.0.0.1:1")
+        for var in ("HF_TOKEN", "FUGU_API_KEY", "FUGU_BASE_URL", "ATLAS_ALLOW_PAID", "ATLAS_LOCAL_OPENAI_KEY"):
+            monkeypatch.delenv(var, raising=False)
+        rows = {r["provider"]: r for r in asyncio.run(mc.health(timeout=2))}
+    finally:
+        server.shutdown()
+    assert hits == [("GET", "/v1/models")]
+    assert rows["openai_compat"]["reachable"] is True
+    assert rows["ollama"]["reachable"] is False and rows["ollama"]["configured"] is True
+    assert rows["huggingface"]["configured"] is False
+    assert "paid provider disabled" in rows["fugu"]["detail"]

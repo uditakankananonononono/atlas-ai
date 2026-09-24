@@ -96,7 +96,11 @@ async def generate(prompt: str, provider: str, model: str | None = None) -> tupl
         provider="huggingface";key=os.getenv("HF_TOKEN")
         if not key: raise ProviderError("HF_TOKEN is not configured")
         chosen=_hf_model(model or os.getenv("ATLAS_HF_MODEL","thinkingmachines/Inkling-Small"))
-        data=await _post(provider,"https://router.huggingface.co/v1/chat/completions",headers={"Authorization":f"Bearer {key}"},payload={"model":chosen,"messages":[{"role":"user","content":prompt}]})
+        try:data=await _post(provider,"https://router.huggingface.co/v1/chat/completions",headers={"Authorization":f"Bearer {key}"},payload={"model":chosen,"messages":[{"role":"user","content":prompt}]})
+        except ProviderError as exc:
+            if "(402)" in str(exc): raise ProviderError("Hugging Face credits exhausted (402); Atlas stopped rather than buying more") from exc
+            if "(401)" in str(exc) or "(403)" in str(exc): raise ProviderError("HF_TOKEN rejected; create a fine-grained token with 'Make calls to Inference Providers' permission") from exc
+            raise
         try:text=data["choices"][0]["message"]["content"]
         except (KeyError,IndexError,TypeError) as exc:raise ProviderError("Hugging Face response schema rejected") from exc
     elif provider in {"fugu","sakana"}:
