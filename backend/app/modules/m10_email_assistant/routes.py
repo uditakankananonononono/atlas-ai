@@ -44,7 +44,15 @@ async def get_service(tenant: TenantContext = Depends(require_tenant)) -> AsyncI
             google_client_id=os.getenv("ATLAS_GOOGLE_CLIENT_ID", ""),
             google_client_secret=os.getenv("ATLAS_GOOGLE_CLIENT_SECRET", ""),
             pubsub_verification_token=os.getenv("ATLAS_PUBSUB_VERIFICATION_TOKEN", ""),
+            review_state_capturer=_capture_review_state,
         )
+
+
+def _capture_review_state(approval_id: str) -> None:
+    from app.modules.m00_approval_center.impact import capture_review_state
+    from app.modules.m00_approval_center.service import default_service
+
+    capture_review_state(default_service(), approval_id)
 
 
 @router.post("/connect", response_model=GmailAccountView, status_code=status.HTTP_201_CREATED)
@@ -154,22 +162,32 @@ def persist_promise_state_reconciliation(body:PersistPromiseReconciliationReques
     try:return {'tenant_id':tenant.tenant_id,**persist_reconciliation(body,repository)}
     except ValueError as error:raise HTTPException(status_code=409,detail=str(error)) from error
 from .authenticated_reconciliation import VerifyReconciliationEvidence,verify_reconciliation_evidence
+from .reviewer_key_registry import KeyGovernanceError,ReviewerKeyRegistry,RegisterReviewerKey,RetireReviewerKey,RotateReviewerKey
+def get_reviewer_key_registry(tenant:TenantContext=Depends(require_tenant)):return ReviewerKeyRegistry(tenant.tenant_id,actor_id=tenant.actor_id,roles=tenant.roles)
 @router.post('/promise-state-reconciliation/evidence/verify')
-def authenticated_reconciliation_evidence(body:VerifyReconciliationEvidence,tenant:TenantContext=Depends(require_tenant)):
- try:return {'tenant_id':tenant.tenant_id,**verify_reconciliation_evidence(body)}
+def authenticated_reconciliation_evidence(body:VerifyReconciliationEvidence,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_reviewer_key_registry)):
+ try:return {'tenant_id':tenant.tenant_id,**verify_reconciliation_evidence(body,registry.active_public_key)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
-from .reviewer_key_registry import ReviewerKeyRegistry,RegisterReviewerKey
-def get_reviewer_key_registry(tenant:TenantContext=Depends(require_tenant)):return ReviewerKeyRegistry(tenant.tenant_id)
+def _key_errors(fn):
+ try:return fn()
+ except KeyGovernanceError as error:raise HTTPException(403,str(error)) from error
+ except LookupError as error:raise HTTPException(404,str(error)) from error
+ except ValueError as error:raise HTTPException(409,str(error)) from error
 @router.post('/promise-state-reconciliation/reviewer-keys')
 def register_reviewer_key(body:RegisterReviewerKey,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_reviewer_key_registry)):
- try:
-  row=registry.register(body);return {'tenant_id':tenant.tenant_id,'reviewer_id':row.reviewer_id,'key_id':row.key_id,'fingerprint_sha256':row.fingerprint_sha256,'active':row.active,'boundary':'Registers public verification-key bytes only; administrative provisioning must establish reviewer identity and trust.'}
- except ValueError as error:raise HTTPException(409,str(error)) from error
+ row=_key_errors(lambda:registry.register(body))
+ return {'tenant_id':tenant.tenant_id,'reviewer_id':row.reviewer_id,'key_id':row.key_id,'fingerprint_sha256':row.fingerprint_sha256,'active':row.active,'enrolled_by':row.enrolled_by,'boundary':'Key enrolled with proof-of-possession by the reviewer or an atlas-admin; only active registry keys verify attestations.'}
+@router.get('/promise-state-reconciliation/reviewer-keys')
+def list_reviewer_keys(reviewer_id:str|None=None,registry=Depends(get_reviewer_key_registry)):return registry.list_keys(reviewer_id)
+@router.get('/promise-state-reconciliation/reviewer-keys/{reviewer_id}/events')
+def reviewer_key_events(reviewer_id:str,registry=Depends(get_reviewer_key_registry)):return registry.events(reviewer_id)
+@router.post('/promise-state-reconciliation/reviewer-keys/{reviewer_id}/rotate')
+def rotate_reviewer_key(reviewer_id:str,body:RotateReviewerKey,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_reviewer_key_registry)):
+ return {'tenant_id':tenant.tenant_id,**_key_errors(lambda:registry.rotate(reviewer_id,body))}
 @router.post('/promise-state-reconciliation/reviewer-keys/{reviewer_id}/{key_id}/retire')
-def retire_reviewer_key(reviewer_id:str,key_id:str,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_reviewer_key_registry)):
- try:
-  row=registry.retire(reviewer_id,key_id);return {'tenant_id':tenant.tenant_id,'reviewer_id':reviewer_id,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
- except ValueError as error:raise HTTPException(404,str(error)) from error
+def retire_reviewer_key(reviewer_id:str,key_id:str,body:RetireReviewerKey|None=None,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_reviewer_key_registry)):
+ row=_key_errors(lambda:registry.retire(reviewer_id,key_id,(body.reason if body else 'retired')))
+ return {'tenant_id':tenant.tenant_id,'reviewer_id':reviewer_id,'key_id':key_id,'active':row.active,'retired_at':row.retired_at,'retire_reason':row.retire_reason}
 from .source_message_persistence import PersistSourceMessage,persist_source_message
 from .source_message_store import SourceMessageStore
 def get_source_message_store(tenant:TenantContext=Depends(require_tenant)):return SourceMessageStore(tenant.tenant_id)

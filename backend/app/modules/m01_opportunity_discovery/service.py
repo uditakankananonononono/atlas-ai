@@ -9,11 +9,14 @@ Phase-1 scope, per the agreed phased build:
   self-bots) are intentionally absent here; INTEGRATION.md records the
   compliant replacement for each.
 - Parsing uses the Python standard library (ElementTree) so the module adds
-  no new dependencies. The spec's spaCy/dateparser/DeBERTa NLP stack and the
-  applied/won logistic-regression impact model are deferred until their
-  contracts and training data exist (see INTEGRATION.md); deterministic
-  keyword tagging, multi-format deadline parsing, cosine token-similarity
-  matching, and a documented impact heuristic stand in.
+  no new dependencies. Normalization and matching run through the live NLP
+  stack in ``nlp_stack.py`` (spaCy NER, cue-anchored dateparser deadlines,
+  free in-process embedding cosine) when the production routes build the
+  service. Token/regex scoring only runs when a dependency is missing or a
+  backend fails, and every row records which engine scored it
+  (``match_engine`` / ``deadline_engine``). The DeBERTa classifier and the
+  applied/won impact model remain unbuilt; ``impact_heuristic`` is labelled
+  as a heuristic.
 - External effects are gated. Scans and reads are free; drafting a digest
   email only ever produces an ApprovalRequest through the shared approval
   store (module 0). This module never sends anything.
@@ -42,6 +45,7 @@ from sqlalchemy.orm import Mapped, Session, mapped_column
 from app.core.database import Base, SessionLocal
 from app.core.models import ApprovalRequest
 
+from .nlp_stack import REGEX_DEADLINE_ENGINE, TOKEN_ENGINE, NlpStack
 from .schemas import OpportunityOut, OpportunityType, ProfileIn, ScanResultOut, SourceKind, SourceOut, SourceScanError
 
 MODULE_ID = 1
@@ -86,6 +90,22 @@ class SpacyDateNormalizer:
             return None
         parsed = found[0][1]
         return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def _match_engine_name(matcher: Any) -> str:
+    if matcher is None:
+        return TOKEN_ENGINE
+    engine = getattr(matcher, "engine", None)
+    if engine:
+        return str(engine)
+    provider = getattr(matcher, "provider", None)
+    return f"embedding:{provider}" if provider else f"embedding:{matcher.__class__.__name__}"
+
+
+def _deadline_engine_name(normalizer: Any) -> str:
+    if normalizer is None:
+        return REGEX_DEADLINE_ENGINE
+    return str(getattr(normalizer, "deadline_engine", None) or f"normalizer:{normalizer.__class__.__name__}")
 
 
 class EmbeddingMatcher(Protocol):
@@ -200,6 +220,11 @@ class OpportunityRow(Base):
     # Public output names the value honestly as ``impact_heuristic``.
     impact_heuristic: Mapped[float] = mapped_column("expected_impact", Float, default=0.0)
     tags: Mapped[list[str]] = mapped_column(JSON, default=list)
+    # Provenance: which engine produced match_score / deadline for this row
+    # (e.g. "embedding:fastembed:BAAI/bge-small-en-v1.5", "dateparser:UTC",
+    # or "token-cosine:fallback(...)"). See nlp_stack.py.
+    match_engine: Mapped[str] = mapped_column(String(300), default="token-cosine")
+    deadline_engine: Mapped[str] = mapped_column(String(300), default="regex-formats")
     first_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     last_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
@@ -494,6 +519,7 @@ class Service:
         normalizer: Normalizer | None = None,
         embedding_matcher: EmbeddingMatcher | None = None,
         tenant_id: str = "local",
+        nlp_stack: "NlpStack | None" = None,
     ) -> None:
         if not tenant_id.strip():
             raise ValueError("tenant_id is required")
@@ -503,9 +529,24 @@ class Service:
         self._approval_putter = approval_putter or self._put_tenant_approval
         self._notifier = notifier
         self._sources = tuple(sources) if sources is not None else DEFAULT_SOURCES
-        self._normalizer = normalizer
-        self._embedding_matcher = embedding_matcher
+        # Explicit normalizer/matcher win; otherwise the live NLP stack (the
+        # production routes pass default_stack()) supplies them.
+        self._nlp_stack = nlp_stack
+        self._normalizer = normalizer if normalizer is not None else (nlp_stack.normalizer if nlp_stack else None)
+        self._embedding_matcher = embedding_matcher if embedding_matcher is not None else (nlp_stack.matcher if nlp_stack else None)
         self._tables_ready = False
+
+    def nlp_status(self) -> dict[str, Any]:
+        """Report which engines this service actually scores with."""
+        if self._nlp_stack is not None and self._normalizer is self._nlp_stack.normalizer and self._embedding_matcher is self._nlp_stack.matcher:
+            return self._nlp_stack.describe()
+        return {
+            "entity_engine": getattr(self._normalizer, "entity_engine", "custom") if self._normalizer else "keyword-tags",
+            "deadline_engine": _deadline_engine_name(self._normalizer),
+            "match_engine": _match_engine_name(self._embedding_matcher),
+            "live": self._normalizer is not None and self._embedding_matcher is not None,
+            "degraded": {},
+        }
 
     def _put_tenant_approval(self, request: ApprovalRequest) -> ApprovalRequest:
         """Persist a digest approval under the same authenticated tenant as its items."""
@@ -603,9 +644,14 @@ class Service:
         text = f"{title} {description}"
         opp_type, tags = tag_type(title, description, source.default_type)
         tags = sorted({*tags, *raw.get("extra_tags", [])})
-        deadline = self._normalizer.deadline(text) if self._normalizer else parse_deadline(text)
+        deadline, deadline_engine = self._deadline(text)
         if self._normalizer:
-            tags = sorted({*tags, *self._normalizer.entities(text)})
+            try:
+                tags = sorted({*tags, *self._normalizer.entities(text)})
+            except Exception:  # NER failure must not drop the opportunity
+                pass
+        profile_text = " ".join([*profile.interests, *profile.skills, *profile.past_successes])
+        score, match_engine = self._match(text, profile_text, profile)
         now = datetime.now(timezone.utc)
         # The storage identity includes the authenticated tenant. This prevents
         # the same canonical URL from colliding across tenants while remaining
@@ -632,12 +678,38 @@ class Service:
             row.deadline = deadline
             row.opportunity_type = opp_type.value
             row.tags = tags
-            profile_text = " ".join([*profile.interests, *profile.skills, *profile.past_successes])
-            row.match_score = round(self._embedding_matcher.similarity(text, profile_text), 4) if self._embedding_matcher and profile_text else match_score(text, profile)
+            row.match_score = score
+            row.match_engine = match_engine[:300]
+            row.deadline_engine = deadline_engine[:300]
             row.impact_heuristic = impact_heuristic(text, opp_type)
             row.last_seen = now
             session.commit()
             return self._to_out(row), is_new
+
+    def _deadline(self, text: str) -> tuple[datetime | None, str]:
+        if self._normalizer is None:
+            return parse_deadline(text), REGEX_DEADLINE_ENGINE
+        try:
+            found = self._normalizer.deadline(text)
+        except Exception as exc:
+            return parse_deadline(text), f"{REGEX_DEADLINE_ENGINE}:fallback(normalizer error: {exc.__class__.__name__})"
+        if found is not None:
+            return found, _deadline_engine_name(self._normalizer)
+        regex = parse_deadline(text)
+        if regex is not None:
+            return regex, f"{REGEX_DEADLINE_ENGINE}:fallback(no cue-anchored date found by {_deadline_engine_name(self._normalizer)})"
+        return None, _deadline_engine_name(self._normalizer)
+
+    def _match(self, text: str, profile_text: str, profile: ProfileIn) -> tuple[float, str]:
+        if self._embedding_matcher is None:
+            return match_score(text, profile), TOKEN_ENGINE
+        if not profile_text.strip():
+            return 0.0, f"{TOKEN_ENGINE}:empty-profile"
+        try:
+            return round(self._embedding_matcher.similarity(text, profile_text), 4), _match_engine_name(self._embedding_matcher)
+        except Exception as exc:
+            reason = str(exc)[:160] or exc.__class__.__name__
+            return match_score(text, profile), f"{TOKEN_ENGINE}:fallback({reason})"
 
     # -- reads -------------------------------------------------------------
 
@@ -766,6 +838,8 @@ class Service:
             score_kind="heuristic",
             advisory_only=True,
             tags=list(row.tags or []),
+            match_engine=row.match_engine or TOKEN_ENGINE,
+            deadline_engine=row.deadline_engine or REGEX_DEADLINE_ENGINE,
             first_seen=row.first_seen,
             last_seen=row.last_seen,
         )

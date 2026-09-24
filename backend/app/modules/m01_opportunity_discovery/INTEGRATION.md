@@ -66,16 +66,26 @@ compliance rules. They are NOT implemented; compliant replacements:
 
 ## 5. Deferred spec features (phase-1 stand-ins)
 
-- **NLP stack** (spaCy entity extraction, dateparser, fine-tuned DeBERTa
-  eligibility classifier): replaced by deterministic keyword type-tagging and
-  multi-format deadline parsing. No new dependencies added. Reintroduce
-  behind the same `tag_type`/`parse_deadline` interfaces when model choices
-  and licenses are agreed.
-- **Embedding match score**: spec wants cosine similarity between opportunity
-  and profile embeddings; `providers.generate` is text-only and there is no
-  embedding provider or pgvector wiring yet. Phase 1 uses token-vector cosine
-  similarity (`cosine_similarity`). Swap the internals of `match_score` when
-  embeddings exist.
+- **NLP stack - live (PB2, 2026-09-24).** `nlp_stack.py` is wired into the
+  production routes (`get_service` passes `default_stack()`):
+  spaCy NER (`ATLAS_SPACY_MODEL`, default `en_core_web_sm`) adds entity tags;
+  dateparser normalizes deadlines only next to a deadline cue ("apply by",
+  "applications close", ...) in `ATLAS_M01_DEADLINE_TIMEZONE` (default UTC),
+  so posting/event dates are not taken as deadlines. The fine-tuned DeBERTa
+  eligibility classifier is still unbuilt (no verified checkpoint/licence).
+- **Embedding match score - live (PB2, 2026-09-24).** Cosine similarity of
+  opportunity vs profile embeddings. `ATLAS_M01_EMBEDDING_PROVIDER`:
+  `fastembed` (default, free, in-process ONNX `BAAI/bge-small-en-v1.5`,
+  weights cached after first download), `ollama` (local server, `bge-m3`),
+  `openai` (BYOK, never default), `token` (explicit opt-out).
+- **Provenance.** Every stored opportunity carries `match_engine` and
+  `deadline_engine`. Token-cosine/regex values appear only when a dependency
+  is missing, the operator opted out, or the backend failed for that item, and
+  the value names the reason (`token-cosine:fallback(...)`).
+  `GET /opportunity-discovery/nlp-status` reports what is loaded and why any
+  part is degraded. Migration `20260924_m01_nlp_provenance` adds the columns.
+- **Not yet done:** pgvector storage of opportunity embeddings (vectors are
+  computed per scan, not persisted).
 - **Expected impact logistic regression**: disabled because no verified open
   dataset contains row-level applicants, comparable decision-time features,
   and both awarded and declined outcomes across Atlas opportunity types. The
