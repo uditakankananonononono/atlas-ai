@@ -65,6 +65,10 @@ class ReviewerKeyRow(Base):
     retired_by: Mapped[str | None] = mapped_column(String(200), nullable=True)
     retire_reason: Mapped[str | None] = mapped_column(String(300), nullable=True)
     replaced_by_key_id: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    # Signatures by a retired key still verify only if a trusted timestamp
+    # proves they existed before this instant (rotation/retirement time, or the
+    # declared compromise time).
+    signatures_valid_before: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class ReviewerKeyEventRow(Base):
@@ -99,6 +103,8 @@ class RotateReviewerKey(BaseModel):
 
 class RetireReviewerKey(BaseModel):
     reason: str = Field(min_length=3, max_length=300)
+    compromised: bool = Field(default=False, description="Key material may be in someone else's hands")
+    compromised_since: datetime | None = Field(default=None, description="Earliest possible compromise; unknown means no earlier signature is trusted")
 
 
 def _canonical(value: dict[str, Any]) -> bytes:
@@ -237,6 +243,7 @@ class ReviewerKeyRegistry:
                 raise ValueError("active key changed during rotation; retry")
             current.active, current.retired_at, current.retired_by = False, now, self.actor_id
             current.retire_reason, current.replaced_by_key_id = f"rotated ({mode})", body.new_key_id
+            current.signatures_valid_before = now
             db.flush()
             db.add(ReviewerKeyRow(tenant_id=self.tenant_id, reviewer_id=reviewer_id, key_id=body.new_key_id, public_key=raw,
                                   fingerprint_sha256=fingerprint, active=True, created_at=now, enrolled_by=self.actor_id))
@@ -249,7 +256,8 @@ class ReviewerKeyRegistry:
         with self.sessions() as db:
             return self._row(db, reviewer_id, key_id) is not None
 
-    def retire(self, reviewer_id: str, key_id: str, reason: str = "retired") -> ReviewerKeyRow:
+    def retire(self, reviewer_id: str, key_id: str, reason: str = "retired", *, compromised: bool = False,
+               compromised_since: datetime | None = None) -> ReviewerKeyRow:
         with self.sessions.begin() as db:
             row = self._row(db, reviewer_id, key_id)
             if not row:
@@ -257,9 +265,26 @@ class ReviewerKeyRegistry:
         self._authorize(reviewer_id, key_id, "retire")
         with self.sessions.begin() as db:
             row = self._row(db, reviewer_id, key_id)
+            now = self._clock()
+            if compromised:
+                since = compromised_since.astimezone(timezone.utc) if compromised_since and compromised_since.tzinfo else (
+                    compromised_since.replace(tzinfo=timezone.utc) if compromised_since else None)
+                created = row.created_at if row.created_at.tzinfo else row.created_at.replace(tzinfo=timezone.utc)
+                cutoff = max(created, min(since, now)) if since else created
+            else:
+                cutoff = now
             if row.active:
-                row.active, row.retired_at, row.retired_by, row.retire_reason = False, self._clock(), self.actor_id, reason
-                self._event(db, reviewer_id, key_id, "retired", {"reason": reason})
+                row.active, row.retired_at, row.retired_by, row.retire_reason = False, now, self.actor_id, reason
+                row.signatures_valid_before = cutoff
+                self._event(db, reviewer_id, key_id, "retired", {"reason": reason, "compromised": compromised,
+                                                                 "signatures_valid_before": cutoff.isoformat()})
+            elif compromised:
+                # Declaring compromise later can only move the cutoff earlier.
+                current = row.signatures_valid_before
+                current = current if current is None or current.tzinfo else current.replace(tzinfo=timezone.utc)
+                if current is None or cutoff < current:
+                    row.signatures_valid_before = cutoff
+                self._event(db, reviewer_id, key_id, "compromise_declared", {"reason": reason, "signatures_valid_before": cutoff.isoformat()})
             db.flush()
             db.expunge(row)
             return row
@@ -271,7 +296,8 @@ class ReviewerKeyRegistry:
                 stmt = stmt.where(ReviewerKeyRow.reviewer_id == reviewer_id)
             return [{"reviewer_id": r.reviewer_id, "key_id": r.key_id, "fingerprint_sha256": r.fingerprint_sha256,
                      "active": r.active, "created_at": r.created_at, "retired_at": r.retired_at, "enrolled_by": r.enrolled_by,
-                     "retire_reason": r.retire_reason, "replaced_by_key_id": r.replaced_by_key_id}
+                     "retire_reason": r.retire_reason, "replaced_by_key_id": r.replaced_by_key_id,
+                     "signatures_valid_before": r.signatures_valid_before}
                     for r in db.scalars(stmt.order_by(ReviewerKeyRow.id))]
 
     def events(self, reviewer_id: str) -> list[dict[str, Any]]:
@@ -279,6 +305,19 @@ class ReviewerKeyRegistry:
             rows = db.scalars(select(ReviewerKeyEventRow).where(ReviewerKeyEventRow.tenant_id == self.tenant_id,
                               ReviewerKeyEventRow.reviewer_id == reviewer_id).order_by(ReviewerKeyEventRow.id))
             return [{"key_id": r.key_id, "event": r.event, "actor": r.actor, "details": r.details, "at": r.at} for r in rows]
+
+    def retired_key_record(self, reviewer_id: str, key_id: str) -> tuple[bytes, datetime]:
+        """Key bytes plus the instant before which its signatures may still be trusted."""
+        with self.sessions() as db:
+            row = self._row(db, reviewer_id, key_id)
+            if row is None:
+                raise LookupError(f"no registered key {key_id!r} for reviewer {reviewer_id!r}")
+            if row.active:
+                raise LookupError("key is active")
+            cutoff = row.signatures_valid_before or row.retired_at
+            if cutoff is None:
+                raise LookupError("retired key has no validity cutoff")
+            return bytes(row.public_key), cutoff if cutoff.tzinfo else cutoff.replace(tzinfo=timezone.utc)
 
     # -- verification lookup ----------------------------------------------------
     def active_public_key(self, reviewer_id: str, key_id: str) -> bytes:

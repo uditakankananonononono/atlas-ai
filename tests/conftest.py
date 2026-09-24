@@ -3,11 +3,16 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import time
 
 import pytest
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
+
+# Tests never reach a public timestamp authority; tests that need timestamps
+# inject a mocked TSA explicitly.
+os.environ.setdefault("ATLAS_M10_TIMESTAMP_SCHEME", "off")
 
 from app.auth import context as auth
 
