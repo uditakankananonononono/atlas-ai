@@ -97,7 +97,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** verified live receipts persist tenant-scoped and append-only; duplicate receipt IDs cannot replace stored proof.
 - **Next:** use asymmetric issuer signatures and govern issuer-key provisioning and rotation.
 - **Landed:** tenant-scoped issuer public-key registry pins Ed25519 key IDs to fingerprints, rejects rebinding, and records explicit retirement.
-- **Next:** use registered asymmetric issuer signatures for receipt verification and persist receipts immutably.
+- **Landed (registered receipts):** `registered_live_receipts.py` + `POST /project-builder/proof-status/live-receipts/registered/verify-and-persist` and `GET .../live-receipts/{id}/reverify`: keys come only from the tenant issuer-key registry (registered, unretired, registered no later than `issued_at`); signatures and version/environment/input bindings use the Ed25519 verifier; all receipts in a request persist in one transaction with signature, key id and fingerprint kept; exact repeats are idempotent and changed content under a stored receipt_id fails closed; reverify re-checks stored signatures so database edits show up (`tests/modules/test_m14_registered_live_receipts.py`).
+- **Next:** have proof-status read persisted registered receipts directly so live-acceptance-complete is derived from stored, re-verifiable proof.
 ## M15 - Document Generator
 - **Landed:** version preflight endpoint checks empty content, duplicate citations/figures, missing citation URLs, empty PPTX and likely slide overflow before export approval.
 - **Landed:** private-publication receipt verification requires consumed approval, private access, HTTPS download URL and exact approved-vs-published SHA-256 match.
