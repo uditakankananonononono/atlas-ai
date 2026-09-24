@@ -179,3 +179,54 @@ def test_module_import_registers_global_probe():
     assert isinstance(found[1], dp.SendReplyProbe)
     dp.register()  # idempotent
     assert sum(1 for p in impact.PROBES._probes if p[0] == "send_email_reply" and p[1] == 10) == 1
+
+
+# -- drafting captures the review snapshot automatically ------------------------
+
+
+def _draft_env(tmp_path, capturer):
+    import asyncio
+    from tests.modules.test_m10_email_assistant import FakeGmailClient, make_service, push_envelope, raw_message
+
+    messages = {"m1": raw_message("m1", "Action required: confirm your participation")}
+    service, repo, approvals, client = make_service(tmp_path, gmail=FakeGmailClient(history={"100": ["m1"]}, messages=messages))
+
+    class DurableIds:
+        items = []
+
+        def put(self, item, *, user_id=None):
+            stored = item.model_copy(update={"id": "m00-durable-id"})
+            self.items.append(stored)
+            return stored
+
+    service.approval_sink = DurableIds()
+    service.review_state_capturer = capturer
+    repo.save_account(account_id="acc1", email_address="me@example.com",
+                      encrypted_refresh_token=service.cipher.encrypt("rt"), history_id="100", watch_expiration=None)
+    asyncio.run(service.handle_push(push_envelope(), "good-token"))
+    asyncio.run(client.aclose())
+    return service, repo
+
+
+def test_draft_links_durable_approval_id_and_captures_review_state(tmp_path):
+    captured = []
+    service, _ = _draft_env(tmp_path, captured.append)
+    draft = service.list_drafts()[0]
+    assert draft.approval_id == "m00-durable-id"  # not the provisional uuid
+    assert captured == ["m00-durable-id"]
+
+
+def test_capture_failure_does_not_block_drafting_and_is_logged(tmp_path):
+    def boom(_):
+        raise dp.ProbeUnavailable("Gmail unreachable: ConnectError")
+
+    service, repo = _draft_env(tmp_path, boom)
+    draft = service.list_drafts()[0]
+    events = [e.event for e in repo.events(draft.id)]
+    assert "review_state_capture_failed" in events
+
+
+def test_routes_wire_the_m00_capturer():
+    from app.modules.m10_email_assistant import routes
+
+    assert callable(routes._capture_review_state)

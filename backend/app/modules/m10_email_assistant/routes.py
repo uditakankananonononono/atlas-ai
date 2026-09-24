@@ -44,7 +44,15 @@ async def get_service(tenant: TenantContext = Depends(require_tenant)) -> AsyncI
             google_client_id=os.getenv("ATLAS_GOOGLE_CLIENT_ID", ""),
             google_client_secret=os.getenv("ATLAS_GOOGLE_CLIENT_SECRET", ""),
             pubsub_verification_token=os.getenv("ATLAS_PUBSUB_VERIFICATION_TOKEN", ""),
+            review_state_capturer=_capture_review_state,
         )
+
+
+def _capture_review_state(approval_id: str) -> None:
+    from app.modules.m00_approval_center.impact import capture_review_state
+    from app.modules.m00_approval_center.service import default_service
+
+    capture_review_state(default_service(), approval_id)
 
 
 @router.post("/connect", response_model=GmailAccountView, status_code=status.HTTP_201_CREATED)
