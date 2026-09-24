@@ -7,6 +7,10 @@ RUN pip wheel --no-cache-dir --wheel-dir /wheels .
 FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH=/app/backend PORT=8080
 RUN addgroup --system atlas && adduser --system --ingroup atlas atlas
+# TeX for Module 15 PDF delivery (pdflatex + geometry/graphicx/hyperref from latex-base, T1 Latin Modern fonts).
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern \
+ && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=builder /wheels /wheels
 RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels

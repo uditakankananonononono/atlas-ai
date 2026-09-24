@@ -12,7 +12,11 @@ export type DrilldownResult={subject:EvidenceRef;detail:Record<string,unknown>;e
 export type Digest={generated_at:string;pending_approvals:number;open_blockers:number;sections:{title:string;lines:string[]}[]};
 export type Snapshot={version:number;last_sequence:number;generated_at:string;data:{metrics?:Record<string,number>;timeline?:Array<Record<string,unknown>>;alerts?:AlertEntry[];freshness?:Record<string,string>}};
 export type AlertEntry={event_id:string;sequence:number;occurred_at:string;severity:string;message:string;module_id:number|null};
-export type WidgetConfig={id:string;kind:"kpi_card"|"module_status"|"blockers"|"timeline"|"approvals"|"alerts"|"digest";kpi_id:string|null;visible:boolean;position:number};
+export type WidgetConfig={id:string;kind:"kpi_card"|"module_status"|"blockers"|"timeline"|"approvals"|"alerts"|"digest"|"rerun_schedules";kpi_id:string|null;visible:boolean;position:number};
+export type RerunProposalRow={schedule_id:string;original_approval_id:string;rerun_approval_id:string;state:string;filed_at:string;age_hours:number;overdue:boolean;verdict:string|null;approval_path:string};
+export type RerunScheduleCard={available:boolean;reason:string|null;as_of:string;schedules_total:number;schedules_active:number;schedules_due_now:number;proposals_total:number;by_state:Record<string,number>;awaiting_approval:number;approved_not_executed:number;overdue_total:number;verdicts:Record<string,number>;overdue:RerunProposalRow[];recent:RerunProposalRow[]};
+export type ApprovalCenterRequest={id:string;module_id:number;action_type:string;payload:Record<string,unknown>;user_id:string;status:"pending"|"approved"|"denied"|"expired"|"consumed"|string;created_at:string;expires_at:string|null;decided_at:string|null;approved_by:string|null};
+export type ApprovalCenterEvent={event:string;actor:string|null;at:string};
 export type DashboardView={widgets:WidgetConfig[];updated_at:string};
 export type CommandPreview={id:string;utterance:string;intent:string;parameters:Record<string,unknown>;plan:Array<Record<string,unknown>>;read_only:boolean;confidence:number;expires_at:string;created_at:string};
 export type BulkDecisionResult={decided:Approval[];skipped:{id:string;reason:string}[]};
@@ -40,6 +44,11 @@ export const dashboardApi=(base:string="/api/v1")=>{
     preview:(utterance:string)=>req<CommandPreview>(base,`${p}/commands/preview`,json({utterance})),
     execute:(previewId:string)=>req<{status:string;result?:unknown;approval_id?:string}>(base,`${p}/commands/${encodeURIComponent(previewId)}/execute`,{method:"POST"}),
     project:()=>req<{projected_events:number;last_sequence:number;recorded_points:number;alerts_fired:number;at:string}>(base,`${p}/project`,{method:"POST"}),
+    rerunSchedules:()=>req<RerunScheduleCard>(base,`${p}/rerun-schedules`),
+    // M00 approval center: re-run proposals wait here, not in the M16 queue. approval_path comes from the card row.
+    approvalRequest:(path:string)=>req<ApprovalCenterRequest>(base,path),
+    approvalAudit:(path:string)=>req<ApprovalCenterEvent[]>(base,`${path}/audit`),
+    decideApprovalRequest:(path:string,decision:"approved"|"denied")=>req<ApprovalCenterRequest>(base,`${path}/decision`,json({decision,decided_by:"executive-dashboard"})),
     getView:()=>req<DashboardView>(base,`${p}/view`),
     saveView:(widgets:WidgetConfig[])=>req<DashboardView>(base,`${p}/view`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({widgets})}),
     liveUrl:`${base}${p}/live`,

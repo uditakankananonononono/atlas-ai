@@ -1,6 +1,9 @@
 \documentclass{article}
-\usepackage[margin=1in]{geometry}\usepackage{graphicx}\usepackage{hyperref}
+\usepackage[T1]{fontenc}\usepackage{lmodern}\usepackage[margin=1in]{geometry}\usepackage{graphicx}\usepackage{hyperref}
 \title{ {{ title }} }\author{ {{ author|default('Atlas AI') }} }
 \begin{document}\maketitle
 {% for section in sections %}\section{ {{ section.title }} } {{ section.body }} {% endfor %}
+{% for figure in figures|default([]) %}\begin{figure}[h]\centering\includegraphics[width=0.8\linewidth]{ {{ figure.file }} }\caption{ {{ figure.caption }} }\end{figure}
+{% endfor %}
+{% if references|default([]) %}\section*{References}\begin{enumerate}{% for ref in references %}\item{} {{ ref }}{% endfor %}\end{enumerate}{% endif %}
 \end{document}
