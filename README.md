@@ -97,7 +97,7 @@ Missing acceptance evidence is shown as configuration-gated or not live-verified
 
 ## Shared model layer (instinct_models)
 
-Atlas uses the model layer shared with Meemee and Sugarcode: https://github.com/uditakankananonononono/shared-models, vendored at `backend/instinct_models` (pin in `backend/instinct_models/VENDORED.md`, currently f8840ff; re-sync with `scripts/sync_shared_models.sh <sha>`).
+Atlas uses the model layer shared with Meemee and Sugarcode: https://github.com/uditakankananonononono/shared-models, vendored at `backend/instinct_models` (pin in `backend/instinct_models/VENDORED.md`, currently bd92296; re-sync with `scripts/sync_shared_models.sh <sha>`).
 
 - `app/core/shared_model_layer.py`: `atlas_config()` / `atlas_router()` / `run()`. Product is always `atlas`. Reads `INSTINCT_*` env, falling back to `ATLAS_*` (`ATLAS_HF_MODEL`, `ATLAS_ORNITH_URL`, `ATLAS_ORNITH_MODEL`, `ATLAS_INKLING_LOCAL_URL`, `ATLAS_NEEDLE_WEIGHTS`, `ATLAS_ALLOW_HOSTED`).
 - `run()` defaults to `private=True`: contract and mail content never reaches the hosted HF route (free tier, metered past it). Set `ATLAS_ALLOW_HOSTED=0` to drop the hosted route entirely.

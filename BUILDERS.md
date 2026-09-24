@@ -38,4 +38,4 @@ One line per active builder lane. Claim a component before building it; release 
 | PB8 (branch `pb8`) | M16 re-run card rows link to their M00 approval-center request (detail, audit, approve/deny) | `frontend/components/executive-dashboard/RerunApprovalPanel.tsx`; additive edits to `RerunScheduleCard.tsx`, `ExecutiveDashboard.tsx`, `executive-dashboard/api.ts`, `m16_executive_dashboard/rerun_card.py` | merged to main 2026-09-24 (pb8 integration) |
 | PB8 (branch `pb8`) | M12 checkpoint worker loop from Celery beat (receipt inbox, due-only claims, complete/fail) | `backend/app/modules/m12_ai_research_lab/checkpoint_loop.py`, `tests/modules/test_m12_checkpoint_loop.py`; additive: optional `queue_row_ids` filter on `CheckpointWorker.claim`, inbox/tick routes appended to m12 `routes.py`, beat entry in `workers/celery_app.py`, task in `workers/tasks.py` | on pb8, awaiting merge (based on main dc7fc7bd) |
 
-- Shared model layer wiring (instinct_models @ f8840ff, Atlas adapter, M07 Needle dataset): atlas-builder-2026-09-24 - landed
+- Shared model layer wiring (instinct_models @ bd92296, Atlas adapter, M07 Needle dataset): atlas-builder-2026-09-24 - landed
