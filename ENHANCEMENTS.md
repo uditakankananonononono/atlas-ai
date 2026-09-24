@@ -13,7 +13,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next (science):** agency-specific schema packs sourced from versioned official calls, with deadline and amendment tracking.
 ## M04 - Research Scientist
 - **Landed:** downloadable computational reproducibility bundle with analysis code, input/parameter snapshots, SHA-256 input and manifest identity, dependencies, seed, source URLs and an explicit `execution_performed: false` boundary.
-- **Next:** approved sandbox execution that adds output hashes, logs and environment lock to the same manifest.
+- **Landed (pb8):** approved sandbox execution with output hashes, capped/hashed logs and an environment lock captured inside the same sandbox (interpreter, platform, libc, every installed package, Docker image id), folded into a schema-2 executed reproducibility bundle (`GET /research-scientist/analyses/{approval_id}/bundle`) whose manifest lists every file hash and verifies offline (`verify_execution_bundle`). Tests: `tests/modules/test_m04_approved_sandbox.py`.
+- **Next:** re-run a bundle in a fresh sandbox and diff output hashes automatically; R lock probe verified on a host with Rscript.
 ## M05 - Outreach Manager
 - **Next:** relationship-aware contact cadence that prevents duplicate or socially excessive outreach across campaigns.
 ## M06 - Social Media Manager

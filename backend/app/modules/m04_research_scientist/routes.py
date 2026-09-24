@@ -188,3 +188,20 @@ def download_analysis_artifact(sha256: str, executor: ApprovedSandboxExecutor = 
     return Response(content=data, media_type="application/octet-stream",
                     headers={"X-Content-SHA256": sha256,
                              "Content-Disposition": f'attachment; filename="{sha256}"'})
+
+
+@router.get("/analyses/{approval_id}/bundle")
+def download_execution_bundle(approval_id: str, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """Executed reproducibility bundle: code, datasets, environment lock, logs and outputs, all hashed."""
+    from .execution_bundle import build_execution_bundle
+    try:
+        receipt = executor.readback(approval_id)
+        payload, manifest = build_execution_bundle(receipt, executor.store, executor.tenant_id)
+    except _SbxNotFound as exc:
+        raise _sandbox_http_error(exc) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return Response(content=payload, media_type="application/zip", headers={
+        "Content-Disposition": f'attachment; filename="atlas-execution-{approval_id}.zip"',
+        "X-Atlas-Bundle-SHA256": manifest["bundle_sha256"],
+        "X-Atlas-Manifest-SHA256": manifest["manifest_sha256"]})
