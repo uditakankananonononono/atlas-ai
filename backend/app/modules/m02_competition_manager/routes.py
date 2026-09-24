@@ -141,14 +141,29 @@ from . import application_routes as _application_workflow_routes  # noqa: F401
 class _EvidenceField(BaseModel):
     draft: str = Field(min_length=1, max_length=20000)
     sources: list[dict] = Field(default_factory=list, max_length=50)
+    source_ids: list[int] = Field(default_factory=list, max_length=50)
+    question: str | None = Field(default=None, max_length=4000)
+    requirements: str = Field(default="", max_length=4000)
+    evidence_limit: int = Field(default=8, ge=1, le=50)
 
 
 class _EvidenceIn(BaseModel):
     fields: dict[str, _EvidenceField] = Field(min_length=1, max_length=40)
+    embedding_provider: str | None = None
 
 
 @router.post("/evidence-completeness")
-def evidence_completeness(body: _EvidenceIn, tenant: TenantContext = Depends(require_tenant)) -> dict:
-    """Score drafted answers: each claim must cite a supporting owner source or say [NEEDS INPUT]."""
-    from .evidence import score_package
-    return score_package({k: v.model_dump() for k, v in body.fields.items()})
+async def evidence_completeness(body: _EvidenceIn, tenant: TenantContext = Depends(require_tenant)) -> dict:
+    """Score drafted answers: each claim must cite a supporting owner source or say [NEEDS INPUT].
+
+    Sources come from the caller, or from this tenant's stored profile corpus by
+    ``source_ids`` (stable) or by re-running the drafter's ``question`` query."""
+    from .evidence import score_from_corpus
+    from .profile_corpus import ProfileCorpus
+    fields = {k: v.model_dump() for k, v in body.fields.items()}
+    needs_embed = any(f["question"] and not f["sources"] and not f["source_ids"] for f in fields.values())
+    embedder = None
+    if needs_embed:
+        from app.core.embeddings import get_embedding_provider
+        embedder = get_embedding_provider(body.embedding_provider)
+    return await score_from_corpus(ProfileCorpus(tenant.tenant_id, embedder), fields)
