@@ -18,7 +18,7 @@ class Service:
         creator=set(creator_mission.lower().split()); brand=set(data.mission.lower().split()); shared=sorted(creator&brand-{"and","the","for","with"})
         score=round(min(1.0,.25+len(shared)/max(8,len(creator))),3); reasons=[f"shared mission term: {x}" for x in shared[:5]] or ["manual alignment review required"]
         out=BrandCandidate(id=str(uuid4()),alignment_score=score,alignment_reasons=reasons,created_at=datetime.now(timezone.utc),**data.model_dump())
-        self.repo.add_brand(**out.model_dump(mode="json")|{"public_url":str(out.public_url)})
+        self.repo.add_brand(**out.model_dump(mode="json")|{"public_url":str(out.public_url),"created_at":out.created_at})
         return out
     def _brand(self,brand_id):
         row=self.repo.brand(brand_id)
