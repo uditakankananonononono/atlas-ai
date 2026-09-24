@@ -163,11 +163,20 @@ def persist_promise_state_reconciliation(body:PersistPromiseReconciliationReques
     except ValueError as error:raise HTTPException(status_code=409,detail=str(error)) from error
 from .authenticated_reconciliation import VerifyReconciliationEvidence,verify_reconciliation_evidence
 from .reviewer_key_registry import KeyGovernanceError,ReviewerKeyRegistry,RegisterReviewerKey,RetireReviewerKey,RotateReviewerKey
+from .attestation_timestamps import AttestationTimestamps
+def get_attestation_timestamps(tenant:TenantContext=Depends(require_tenant)):return AttestationTimestamps(tenant.tenant_id)
 def get_reviewer_key_registry(tenant:TenantContext=Depends(require_tenant)):return ReviewerKeyRegistry(tenant.tenant_id,actor_id=tenant.actor_id,roles=tenant.roles)
 @router.post('/promise-state-reconciliation/evidence/verify')
-def authenticated_reconciliation_evidence(body:VerifyReconciliationEvidence,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_reviewer_key_registry)):
- try:return {'tenant_id':tenant.tenant_id,**verify_reconciliation_evidence(body,registry.active_public_key)}
+def authenticated_reconciliation_evidence(body:VerifyReconciliationEvidence,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_reviewer_key_registry),timestamps=Depends(get_attestation_timestamps)):
+ try:result=verify_reconciliation_evidence(body,registry.active_public_key,retired_lookup=registry.retired_key_record,proven_time=timestamps.proven_time)
  except ValueError as error:raise HTTPException(422,str(error)) from error
+ # Timestamp every attestation that verified under an active key, so it keeps
+ # verifying after that key is retired. A TSA outage never fails verification.
+ stamps=[]
+ for a in sorted(body.attestations,key=lambda x:x.reviewer_id):
+  try:stamps.append({'reviewer_id':a.reviewer_id,**timestamps.stamp(a.model_dump())})
+  except Exception as error:stamps.append({'reviewer_id':a.reviewer_id,'timestamped':False,'reason':f'{type(error).__name__}: {error}'[:300]})
+ return {'tenant_id':tenant.tenant_id,**result,'timestamps':stamps}
 def _key_errors(fn):
  try:return fn()
  except KeyGovernanceError as error:raise HTTPException(403,str(error)) from error
@@ -186,8 +195,8 @@ def rotate_reviewer_key(reviewer_id:str,body:RotateReviewerKey,tenant:TenantCont
  return {'tenant_id':tenant.tenant_id,**_key_errors(lambda:registry.rotate(reviewer_id,body))}
 @router.post('/promise-state-reconciliation/reviewer-keys/{reviewer_id}/{key_id}/retire')
 def retire_reviewer_key(reviewer_id:str,key_id:str,body:RetireReviewerKey|None=None,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_reviewer_key_registry)):
- row=_key_errors(lambda:registry.retire(reviewer_id,key_id,(body.reason if body else 'retired')))
- return {'tenant_id':tenant.tenant_id,'reviewer_id':reviewer_id,'key_id':key_id,'active':row.active,'retired_at':row.retired_at,'retire_reason':row.retire_reason}
+ row=_key_errors(lambda:registry.retire(reviewer_id,key_id,(body.reason if body else 'retired'),compromised=bool(body and body.compromised),compromised_since=(body.compromised_since if body else None)))
+ return {'tenant_id':tenant.tenant_id,'reviewer_id':reviewer_id,'key_id':key_id,'active':row.active,'retired_at':row.retired_at,'retire_reason':row.retire_reason,'signatures_valid_before':row.signatures_valid_before}
 from .source_message_persistence import PersistSourceMessage,persist_source_message
 from .source_message_store import SourceMessageStore
 def get_source_message_store(tenant:TenantContext=Depends(require_tenant)):return SourceMessageStore(tenant.tenant_id)
