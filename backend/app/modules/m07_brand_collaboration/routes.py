@@ -80,3 +80,42 @@ def obligation_payment(obligation_id: str, data: PaymentIn, t: ObligationTracker
 def obligation_waive(obligation_id: str, data: WaiveIn, t: ObligationTracker = Depends(get_tracker)): return _ob(lambda: t.waive(obligation_id, reason=data.reason))
 @router.get("/brands/{brand_id}/obligations")
 def brand_obligations(brand_id: str, t: ObligationTracker = Depends(get_tracker)): return t.brand_tracker(brand_id)
+
+
+# -- contract -> draft obligations (owner confirms each row) -----------------------
+from .contract_extraction import ContractExtractor, DraftNotFound, ExtractionError
+
+
+class ContractIn(_BM):
+    brand_id: str; contract_text: str = _F(min_length=40, max_length=200000)
+class DraftConfirmIn(_BM):
+    edits: dict = _F(default_factory=dict); note: str = _F(default="", max_length=2000)
+class DraftRejectIn(_BM):
+    reason: str = _F(min_length=3, max_length=2000)
+
+
+def get_extractor(tenant: TenantContext = Depends(require_tenant)) -> ContractExtractor:
+    repo = Repository(tenant.tenant_id)
+    tracker = ObligationTracker(tenant.tenant_id, brands=repo.brand, artifacts=repo.artifact, approvals=approvals)
+    return ContractExtractor(tenant.tenant_id, tracker=tracker, brands=repo.brand)
+
+
+def _dx(call):
+    try: return call()
+    except (DraftNotFound, ObligationNotFound) as e: raise HTTPException(404, str(e)) from e
+    except (ExtractionError, ObligationError) as e: raise HTTPException(422, str(e)) from e
+
+
+@router.post("/contracts/extract", status_code=201)
+async def extract_contract(data: ContractIn, x: ContractExtractor = Depends(get_extractor)):
+    try: return await x.extract(brand_id=data.brand_id, contract_text=data.contract_text)
+    except DraftNotFound as e: raise HTTPException(404, str(e)) from e
+    except ExtractionError as e: raise HTTPException(503 if "no local" in str(e) else 422, str(e)) from e
+@router.get("/brands/{brand_id}/obligation-drafts")
+def pending_drafts(brand_id: str, x: ContractExtractor = Depends(get_extractor)): return x.pending(brand_id)
+@router.post("/obligation-drafts/{draft_id}/confirm")
+def confirm_draft(draft_id: str, data: DraftConfirmIn, x: ContractExtractor = Depends(get_extractor)): return _dx(lambda: x.confirm(draft_id, edits=data.edits, note=data.note))
+@router.post("/obligation-drafts/{draft_id}/reject")
+def reject_draft(draft_id: str, data: DraftRejectIn, x: ContractExtractor = Depends(get_extractor)): return _dx(lambda: x.reject(draft_id, reason=data.reason))
+@router.get("/obligations-attention")
+def obligations_attention(t: ObligationTracker = Depends(get_tracker)): return t.attention()
