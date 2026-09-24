@@ -133,3 +133,26 @@ def retire_provider_key(provider:str,key_id:str,tenant:TenantContext=Depends(req
  try:
   row=registry.retire(provider,key_id);return {'tenant_id':tenant.tenant_id,'provider':provider,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
  except ValueError as error:raise HTTPException(404,str(error)) from error
+from pydantic import BaseModel as _WBM,Field as _WF
+from .checkpoint_worker import CheckpointWorker,LeaseError
+from .asymmetric_resume_verification import SignedProviderReceipt
+class ClaimIn(_WBM):worker_id:str=_WF(min_length=1,max_length=200);lease_seconds:int=_WF(default=300,ge=10,le=3600)
+class LeaseIn(_WBM):lease_token:str=_WF(min_length=32,max_length=64);lease_seconds:int=_WF(default=300,ge=10,le=3600)
+class FailIn(_WBM):lease_token:str=_WF(min_length=32,max_length=64);error:str=_WF(min_length=1,max_length=2000)
+class CompleteIn(_WBM):lease_token:str=_WF(min_length=32,max_length=64);resume_from_node_id:str=_WF(min_length=1);provider_receipts:list[SignedProviderReceipt]=_WF(min_length=1,max_length=2000)
+def get_checkpoint_worker(tenant:TenantContext=Depends(require_tenant)):return CheckpointWorker(tenant.tenant_id)
+@router.post('/reproducible-run/worker/claim')
+def claim_checkpoint(body:ClaimIn,tenant:TenantContext=Depends(require_tenant),w=Depends(get_checkpoint_worker)):
+ got=w.claim(body.worker_id,body.lease_seconds);return {'tenant_id':tenant.tenant_id,'claimed':got is not None,'lease':got}
+@router.post('/reproducible-run/worker/heartbeat')
+def heartbeat_checkpoint(body:LeaseIn,w=Depends(get_checkpoint_worker)):
+ try:return w.heartbeat(body.lease_token,body.lease_seconds)
+ except LeaseError as e:raise HTTPException(409,str(e)) from e
+@router.post('/reproducible-run/worker/fail')
+def fail_checkpoint(body:FailIn,w=Depends(get_checkpoint_worker)):
+ try:return w.fail(body.lease_token,body.error)
+ except LeaseError as e:raise HTTPException(409,str(e)) from e
+@router.post('/reproducible-run/worker/complete')
+def complete_checkpoint(body:CompleteIn,w=Depends(get_checkpoint_worker)):
+ try:return w.complete(body.lease_token,body.provider_receipts,body.resume_from_node_id)
+ except LeaseError as e:raise HTTPException(409,str(e)) from e
