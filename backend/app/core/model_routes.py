@@ -27,3 +27,8 @@ async def generate(body: GenerateRequest) -> dict:
     except ProviderError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     return {"provider": provider, "model": model, "text": text}
+
+
+@router.get("/health")
+async def health() -> dict:
+    return {"paid_allowed": model_catalog.paid_allowed(), "providers": await model_catalog.health()}
