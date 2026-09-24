@@ -450,3 +450,158 @@ def test_rerun_http_routes(center, tmp_path):
     assert done.status_code == 201 and done.json()["comparison"]["verdict"] == "reproduced"
     assert client.post(f"/research-scientist/analyses/reruns/{rid}/execute", headers=h).status_code == 409
     assert client.get(f"/research-scientist/analyses/{rid}/bundle", headers=h).status_code == 200
+
+
+# ---------------------------------------------------------------- scheduled re-run proposals
+from datetime import datetime, timedelta, timezone
+
+from app.modules.m04_research_scientist.rerun_schedule import RerunScheduleService, tenants_with_schedules
+
+
+class Clock:
+    def __init__(self):
+        self.now = datetime(2026, 10, 1, 9, 0, tzinfo=timezone.utc)
+    def __call__(self):
+        return self.now
+
+
+def shared_executor(center, tmp_path, tenant):
+    return ApprovedSandboxExecutor(tenant, center=center, backend=BubblewrapBackend(),
+                                   store=ExecutionReceiptStore(tmp_path / "shared"),
+                                   limits=ExecutionLimits(timeout_seconds=20))
+
+
+@needs_bwrap
+def test_schedule_files_proposals_when_due_and_never_executes(center, tmp_path):
+    clock = Clock()
+    ex = shared_executor(center, tmp_path, "tenant-a")
+    original = submit(center, "open('/output/a','w').write('1')")
+    ex.execute(original)
+    svc = RerunScheduleService(ex, clock=clock)
+    schedule = svc.create(scope="analysis", target=original, interval_hours=24, overdue_after_hours=48)
+    assert svc.tick()["filed"] == []  # not due yet
+    clock.now += timedelta(hours=25)
+    result = svc.tick()
+    assert result["executed"] == 0 and len(result["filed"]) == 1
+    rid = result["filed"][0]["rerun_approval_id"]
+    view = center.get(rid)
+    assert view["action_type"] == "rerun_sandboxed_analysis" and view["status"].value == "pending"
+    assert ex.store.latest("tenant-a", rid) is None  # nothing ran
+    # still pending next cycle: skipped, not piled up
+    clock.now += timedelta(hours=24)
+    again = svc.tick()
+    assert again["filed"] == [] and again["skipped"][0]["open_rerun_approval_id"] == rid
+    # overdue once unapproved for more than 48h (filed 24h ago; move past the limit)
+    clock.now += timedelta(hours=25)
+    stats = svc.stats()
+    assert stats["proposals"]["by_state"] == {"pending": 1} and stats["proposals"]["overdue"] == 1
+    assert stats["overdue"][0]["rerun_approval_id"] == rid
+    # approve but don't execute -> still overdue as approved_not_executed; execute -> executed with verdict
+    center.decide(rid, ApprovalStatus.APPROVED, decided_by="udita")
+    assert svc.stats()["overdue"][0]["state"] == "approved_not_executed"
+    RerunService(ex).execute(rid)
+    stats = svc.stats()
+    assert stats["proposals"]["by_state"] == {"executed": 1} and stats["proposals"]["overdue"] == 0
+    assert stats["proposals"]["verdicts"] == {"reproduced": 1}
+    # next cycle files a fresh proposal now that the last one is done
+    clock.now += timedelta(hours=24)
+    assert len(svc.tick()["filed"]) == 1
+    assert schedule["id"] in [s["id"] for s in svc.list()]
+
+
+@needs_bwrap
+def test_downtime_files_one_round_and_pause_stops_filing(center, tmp_path):
+    clock = Clock()
+    ex = shared_executor(center, tmp_path, "tenant-a")
+    original = submit(center, "print(1)")
+    ex.execute(original)
+    svc = RerunScheduleService(ex, clock=clock)
+    s = svc.create(scope="analysis", target=original, interval_hours=24)
+    clock.now += timedelta(days=30)
+    result = svc.tick()
+    assert len(result["filed"]) == 1
+    nxt = datetime.fromisoformat(svc.list()[0]["next_due_at"])
+    assert clock.now < nxt <= clock.now + timedelta(hours=24)
+    svc.set_active(s["id"], False)
+    clock.now += timedelta(days=5)
+    assert svc.tick()["filed"] == [] and svc.stats()["schedules"]["due_now"] == []
+
+
+@needs_bwrap
+def test_project_schedule_covers_tagged_analyses(center, tmp_path):
+    clock = Clock()
+    ex = shared_executor(center, tmp_path, "tenant-a")
+    a, b, c = (submit(center, f"print({i})") for i in range(3))
+    for x in (a, b, c):
+        ex.execute(x)
+    svc = RerunScheduleService(ex, clock=clock)
+    svc.tag(a, "bioplex"); svc.tag(b, "bioplex"); svc.tag(c, "other")
+    svc.create(scope="project", target="bioplex", interval_hours=1, first_due_at=clock.now)
+    filed = svc.tick()["filed"]
+    assert sorted(f["original_approval_id"] for f in filed) == sorted([a, b])
+    with pytest.raises(ExecutionNotFoundError):
+        svc.tag("never-ran", "bioplex")
+    with pytest.raises(ValueError):
+        svc.tag(a, "../etc")
+
+
+@needs_bwrap
+def test_schedules_are_tenant_isolated(center, tmp_path):
+    clock = Clock()
+    ex_a = shared_executor(center, tmp_path, "tenant-a")
+    ex_b = shared_executor(center, tmp_path, "tenant-b")
+    a_orig = submit(center, "print('a')", tenant="tenant-a"); ex_a.execute(a_orig)
+    b_orig = submit(center, "print('b')", tenant="tenant-b"); ex_b.execute(b_orig)
+    svc_a, svc_b = RerunScheduleService(ex_a, clock=clock), RerunScheduleService(ex_b, clock=clock)
+    with pytest.raises(ExecutionNotFoundError):
+        svc_b.create(scope="analysis", target=a_orig, interval_hours=1)  # cannot schedule another tenant's run
+    with pytest.raises(ExecutionNotFoundError):
+        svc_b.tag(a_orig, "p")
+    sa = svc_a.create(scope="analysis", target=a_orig, interval_hours=1, first_due_at=clock.now)
+    svc_b.create(scope="analysis", target=b_orig, interval_hours=1, first_due_at=clock.now)
+    assert [s["id"] for s in svc_a.list()] == [sa["id"]] and len(svc_b.list()) == 1
+    with pytest.raises(ExecutionNotFoundError):
+        svc_b.set_active(sa["id"], False)
+    fa, fb = svc_a.tick()["filed"], svc_b.tick()["filed"]
+    assert [f["original_approval_id"] for f in fa] == [a_orig] and [f["original_approval_id"] for f in fb] == [b_orig]
+    assert center.get(fa[0]["rerun_approval_id"])["user_id"] == "tenant-a"
+    assert center.get(fb[0]["rerun_approval_id"])["user_id"] == "tenant-b"
+    assert svc_a.stats()["proposals"]["total"] == 1 and svc_b.stats()["proposals"]["total"] == 1
+    assert tenants_with_schedules(tmp_path / "shared") == ["tenant-a", "tenant-b"]
+
+
+@needs_bwrap
+def test_schedule_http_routes(center, tmp_path):
+    app = FastAPI(); app.include_router(routes.router)
+    ex = shared_executor(center, tmp_path, "tenant-a")
+    app.dependency_overrides[routes.get_sandbox_executor] = lambda: ex
+    client = TestClient(app); h = {"X-Atlas-Tenant": "tenant-a"}
+    original = submit(center, "print(1)"); ex.execute(original)
+    past = (datetime.now(timezone.utc) - timedelta(minutes=1)).isoformat()
+    created = client.post("/research-scientist/analyses/rerun-schedules", headers=h,
+                          json={"scope": "analysis", "target": original, "interval_hours": 168, "first_due_at": past})
+    assert created.status_code == 201
+    assert client.post("/research-scientist/analyses/rerun-schedules", headers=h,
+                       json={"scope": "analysis", "target": "nope", "interval_hours": 1}).status_code == 404
+    assert client.get("/research-scientist/analyses/rerun-schedules/stats", headers=h).json()["schedules"]["due_now"] == [created.json()["id"]]
+    tick = client.post("/research-scientist/analyses/rerun-schedules/tick", headers=h).json()
+    assert len(tick["filed"]) == 1 and tick["executed"] == 0
+    assert client.post(f"/research-scientist/analyses/rerun-schedules/{created.json()['id']}/pause", headers=h).json()["active"] is False
+    assert client.post(f"/research-scientist/analyses/{original}/projects", headers=h, json={"project": "bioplex"}).status_code == 201
+    stats = client.get("/research-scientist/analyses/rerun-schedules/stats", headers=h).json()
+    assert stats["proposals"]["by_state"] == {"pending": 1}
+
+
+@needs_bwrap
+def test_beat_task_files_for_every_tenant_and_executes_nothing(center, tmp_path, monkeypatch):
+    import app.modules.m00_approval_center.service as m00
+    from app.workers.tasks import propose_due_reruns
+    monkeypatch.setattr(m00, "default_service", lambda: center)
+    monkeypatch.setenv("ATLAS_RUNTIME_DATA_DIR", str(tmp_path / "rt"))
+    root = tmp_path / "rt" / "m04-sandbox"
+    for tenant in ("tenant-a", "tenant-b"):
+        ex = ApprovedSandboxExecutor(tenant, center=center, backend=BubblewrapBackend(), store=ExecutionReceiptStore(root))
+        orig = submit(center, "print(1)", tenant=tenant); ex.execute(orig)
+        RerunScheduleService(ex).create(scope="analysis", target=orig, interval_hours=1,
+                                        first_due_at=datetime.now(timezone.utc) - timedelta(minutes=1))
+    assert propose_due_reruns() == {"tenants": 2, "filed": 2, "skipped_open": 0, "errors": 0, "executed": 0}

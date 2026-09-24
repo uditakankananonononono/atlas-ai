@@ -234,3 +234,72 @@ def execute_analysis_rerun(rerun_approval_id: str, executor: ApprovedSandboxExec
         return RerunService(executor).execute(rerun_approval_id)
     except (_SbxNotFound, _SbxForbidden, _SbxConflict, _SbxBackendUnavailable) as exc:
         raise _sandbox_http_error(exc) from exc
+
+
+# Scheduled re-run proposals: file approvals when due; nothing executes automatically.
+from datetime import datetime as _dt
+from typing import Literal as _Literal
+
+
+class RerunScheduleIn(_BaseModel):
+    scope: _Literal["analysis", "project"]
+    target: str = _Field(min_length=1, max_length=120)
+    interval_hours: int = _Field(ge=1, le=8784)
+    overdue_after_hours: int = _Field(default=72, ge=1, le=8784)
+    first_due_at: _dt | None = None
+    reason: str = _Field(default="", max_length=1000)
+
+
+class ProjectTagIn(_BaseModel):
+    project: str = _Field(min_length=1, max_length=120)
+
+
+def _schedules(executor: ApprovedSandboxExecutor):
+    from .rerun_schedule import RerunScheduleService
+    return RerunScheduleService(executor)
+
+
+@router.post("/analyses/{approval_id}/projects", status_code=201)
+def tag_analysis_project(approval_id: str, body: ProjectTagIn, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    try:
+        return _schedules(executor).tag(approval_id, body.project)
+    except _SbxNotFound as exc:
+        raise _sandbox_http_error(exc) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.post("/analyses/rerun-schedules", status_code=201)
+def create_rerun_schedule(body: RerunScheduleIn, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    try:
+        return _schedules(executor).create(**body.model_dump())
+    except _SbxNotFound as exc:
+        raise _sandbox_http_error(exc) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.get("/analyses/rerun-schedules")
+def list_rerun_schedules(executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    return _schedules(executor).list()
+
+
+@router.post("/analyses/rerun-schedules/{schedule_id}/{action}")
+def toggle_rerun_schedule(schedule_id: str, action: _Literal["pause", "resume"],
+                          executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    try:
+        return _schedules(executor).set_active(schedule_id, action == "resume")
+    except _SbxNotFound as exc:
+        raise _sandbox_http_error(exc) from exc
+
+
+@router.post("/analyses/rerun-schedules/tick")
+def tick_rerun_schedules(executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """File due re-run proposals for the calling tenant. Files approvals only; executes nothing."""
+    return _schedules(executor).tick()
+
+
+@router.get("/analyses/rerun-schedules/stats")
+def rerun_schedule_stats(executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """Dashboard stats: due schedules, proposals by live approval state, overdue/unapproved items, verdicts."""
+    return _schedules(executor).stats()
