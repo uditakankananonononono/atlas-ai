@@ -13,3 +13,4 @@ atlas.db
 frontend/node_modules/
 frontend/.next/
 frontend/tsconfig.tsbuildinfo
+.env.inkling

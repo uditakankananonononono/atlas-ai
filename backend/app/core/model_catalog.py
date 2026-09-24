@@ -56,11 +56,11 @@ CATALOG: dict[str, CatalogEntry] = {
     ),
     "inkling-small": CatalogEntry(
         name="Inkling-Small",
-        what_it_is="Smaller Inkling variant, Apache-2.0, same multimodal family.",
+        what_it_is="Smaller Inkling variant (~266B params), Apache-2.0, same multimodal family.",
         open_weights=True,
         routes=(
             Route("huggingface", "thinkingmachines/Inkling-Small", HOSTED_FREE, "Primary: HF router (baseten, deepinfra live)."),
-            Route("openai_compat", "inkling-small", SELF_HOSTED, "Alternate: vLLM/SGLang; BF16 needs ~600 GB VRAM, NVFP4 ~180 GB."),
+            Route("openai_compat", "inkling-small", SELF_HOSTED, "Self-hosted real Inkling-Small via scripts/inkling/setup.sh: llama.cpp GGUF from ~90 GB RAM+VRAM, vLLM/SGLang NVFP4 from ~198 GB GPU memory."),
         ),
         sources=("https://huggingface.co/thinkingmachines/Inkling-Small",),
     ),

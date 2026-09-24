@@ -13,7 +13,7 @@ Code: `backend/app/core/model_catalog.py`, `backend/app/core/providers.py`, `bac
 
 Sources: https://huggingface.co/blog/thinkingmachines-inkling, https://huggingface.co/thinkingmachines/Inkling-Small, https://github.com/SakanaAI/Fugu, https://console.sakana.ai/pricing, https://huggingface.co/trojan0x/ultron, https://huggingface.co/passing2961/Ultron-11B
 
-Honest note on hardware: Inkling is huge. A normal PC can't hold it, even at 1-bit. On a normal PC, run a model that fits in Ollama (default `llama3.1:8b`, see `ollama-32gb.env`) or a small GGUF through llama.cpp. Use the HF free tier when you want Inkling itself.
+Honest note on hardware: Inkling-Small is ~266B parameters (Hub safetensors total), and full Inkling is 975B. Neither fits a normal PC. See "Run Inkling-Small yourself" below for exact floors. Until the hardware exists, the HF router is the working Inkling.
 
 Kinds match the Meemee model layer: `local`, `self_hosted`, `hosted_free`, `hosted_paid`.
 
@@ -48,7 +48,32 @@ Credit limit, plainly: free HF accounts get about $0.10 of Inference Providers c
 
 Both need a tenant (OIDC in production).
 
-## Run Inkling-class models on your PC
+## Run Inkling-Small yourself (self_hosted)
+
+This is the real Inkling-Small, never a smaller stand-in. One command checks the machine, picks the largest real build that fits, starts an OpenAI-compatible server and writes `.env.inkling` for Atlas:
+
+```bash
+scripts/inkling/setup.sh                 # Linux / macOS / WSL; add --dry-run to only print the plan
+scripts/inkling/setup.sh --engine vllm   # force vLLM on a GPU server
+powershell -ExecutionPolicy Bypass -File scripts\inkling\setup.ps1   # Windows, llama.cpp
+```
+
+Then load `.env.inkling` into Atlas's env and check `GET /api/v1/models/health` (openai_compat reachable). Call it with `model_name="inkling-small"`.
+
+Hardware floor (weights sizes from the Hub; +10% and ~8 GB headroom):
+
+| Machine | What runs | Engine |
+|---|---|---|
+| Under ~90 GB RAM+VRAM combined | Nothing. Setup refuses and says why | - |
+| ~90-100 GB RAM+VRAM | `unsloth/Inkling-Small-GGUF` UD-IQ1_S (74.8 GB), 1-bit, slow on CPU | llama.cpp |
+| ~150 GB | UD-IQ4_XS (127.4 GB) | llama.cpp, GPU offload if present |
+| ~190 GB+ | UD-Q4_K_XL (163 GB) | llama.cpp |
+| >= ~198 GB GPU memory (e.g. 2x H200, 1x B300) | `thinkingmachines/Inkling-Small-NVFP4` | vLLM or SGLang, tensor parallel |
+| >= ~660 GB GPU memory (8x H200) | `thinkingmachines/Inkling-Small` BF16 | vLLM or SGLang |
+
+The vLLM command follows the published recipe (`--trust-remote-code --tokenizer-mode inkling --tool-call-parser inkling --reasoning-parser inkling`). First launch downloads the weights: 75 GB to 530 GB depending on the build. On CPU-heavy setups, llama.cpp's `--cpu-moe` keeps the MoE experts in RAM and the rest on the GPU. Expect a few tokens per second, not chat speed.
+
+## Any other local model
 
 ```bash
 # llama.cpp server (any GGUF that fits your RAM/VRAM)
