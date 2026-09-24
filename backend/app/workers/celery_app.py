@@ -42,6 +42,10 @@ celery_app.conf.update(
             "task": "atlas.m22.drain_install_jobs",
             "schedule": 60.0,
         },
+        "propose-due-m04-reruns": {
+            "task": "atlas.m04.propose_due_reruns",
+            "schedule": 900.0,
+        },
         "draft-due-outreach-followups": {
             "task": "atlas.m05.draft_due_followups",
             "schedule": 3600.0,

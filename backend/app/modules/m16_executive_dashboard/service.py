@@ -219,12 +219,18 @@ class Service:
             except RuntimeError as e:skipped.append({"id":aid,"reason":str(e)})
         return BulkDecisionResult(decided=decided,skipped=skipped)
     # --- tenant dashboard view ---
-    DEFAULT_WIDGETS=({"id":"kpis","kind":WidgetKind.KPI_CARD,"position":0},{"id":"blockers","kind":WidgetKind.BLOCKERS,"position":1},{"id":"modules","kind":WidgetKind.MODULE_STATUS,"position":2},{"id":"timeline","kind":WidgetKind.TIMELINE,"position":3},{"id":"approvals","kind":WidgetKind.APPROVALS,"position":4})
+    DEFAULT_WIDGETS=({"id":"kpis","kind":WidgetKind.KPI_CARD,"position":0},{"id":"blockers","kind":WidgetKind.BLOCKERS,"position":1},{"id":"modules","kind":WidgetKind.MODULE_STATUS,"position":2},{"id":"timeline","kind":WidgetKind.TIMELINE,"position":3},{"id":"approvals","kind":WidgetKind.APPROVALS,"position":4},{"id":"rerun_schedules","kind":WidgetKind.RERUN_SCHEDULES,"position":5})
+    ADDED_WIDGETS=({"id":"rerun_schedules","kind":WidgetKind.RERUN_SCHEDULES},)
     def get_view(self,now=None):
         getter=getattr(self.repository,"get_view",None)
         layout,at=(getter() if getter else (None,None))
         if layout is None:return DashboardView(widgets=[WidgetConfig(**w) for w in self.DEFAULT_WIDGETS],updated_at=now or _utcnow())
-        return DashboardView(widgets=[WidgetConfig(**w) for w in layout["widgets"]],updated_at=at)
+        widgets=[WidgetConfig(**w) for w in layout["widgets"]]
+        # layouts saved before a widget kind existed get it appended (visible, last); hiding it persists
+        ids={w.id for w in widgets};kinds={w.kind for w in widgets}
+        for d in self.ADDED_WIDGETS:
+            if d["kind"] not in kinds and d["id"] not in ids:widgets.append(WidgetConfig(**{**d,"position":len(widgets)}))
+        return DashboardView(widgets=widgets,updated_at=at)
     def save_view(self,data:DashboardViewIn):
         saver=getattr(self.repository,"save_view",None)
         if not saver:raise RuntimeError("repository does not support view preferences")

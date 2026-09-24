@@ -17,3 +17,11 @@ Planning & measurement entities (feature rows 388-399, this batch):
 - Routes: `GET /executive-dashboard/analysis/methods` (25-method catalog), `POST /executive-dashboard/analysis/jobs` (201; 422 unknown method; validation failures stored as failed jobs), `GET /executive-dashboard/analysis/jobs[?method=]`, `GET /executive-dashboard/analysis/jobs/{id}` (404 cross-tenant).
 - Frontend: `frontend/components/AnalysisPanel.tsx` + `frontend/components/executive-dashboard/analysis-api.ts` (method picker, JSON data/params entry, seed, result with assumptions/limits, recent-jobs table).
 - Tests: `tests/modules/test_m16_analysis_1010_1034.py` (row-named 1010-1034 + persistence/catalog/failure/determinism/tenant-isolation; tenant isolation via real SqlDashboardRepository on sqlite).
+
+## Scheduled re-runs card (M04, pb8)
+- `rerun_card.py`: read-only view over M04 `RerunScheduleService.stats()` for the calling tenant (same executor the M04 routes use). Never files, approves, pauses or executes. If M04 is missing or its stats fail, returns `available: false` with a reason and HTTP 200, so the dashboard keeps rendering.
+- Route: `GET /executive-dashboard/rerun-schedules` -> `RerunScheduleCard` (schedules total/active/due now, awaiting approval, approved-not-executed, overdue total + oldest 10 overdue rows, verdict counts, 5 most recent proposals).
+- View: new `WidgetKind.RERUN_SCHEDULES`. It is in the default layout, and tenants whose saved layout predates it get it appended last (visible); hiding it persists.
+- Frontend: `executive-dashboard/RerunScheduleCard.tsx`, fetched separately in `ExecutiveDashboard.tsx` so an M04 failure never sets the dashboard error banner.
+- Tests: `tests/modules/test_m16_rerun_card.py` (real M04 sandbox run, per-tenant isolation, reading is not a tick), `frontend/components/ExecutiveDashboard.test.tsx`.
+- Approval link: every card row carries `approval_path` (`/approval-center/requests/{id}`). Re-run proposals live in the M00 approval center, not the M16 `m16_approvals` queue. Clicking an overdue row opens `RerunApprovalPanel.tsx`, which reads the request and its `/audit` and, while it is pending, posts approved/denied to M00's `/decision`. M00 scopes each request to the tenant and records the authenticated actor. Nothing on the card executes a re-run.

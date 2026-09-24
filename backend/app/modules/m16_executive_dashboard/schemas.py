@@ -32,7 +32,7 @@ class AlertRuleIn(BaseModel):id:str=Field(min_length=2,max_length=80,pattern=r"^
 class AlertRuleOut(AlertRuleIn):created_at:datetime
 class BulkApprovalDecision(BaseModel):approval_ids:list[str]=Field(min_length=1,max_length=100);approve:bool;note:str|None=Field(None,max_length=2000)
 class BulkDecisionResult(BaseModel):decided:list[Approval];skipped:list[dict[str,str]]
-class WidgetKind(str,Enum):KPI_CARD="kpi_card";MODULE_STATUS="module_status";BLOCKERS="blockers";TIMELINE="timeline";APPROVALS="approvals";ALERTS="alerts";DIGEST="digest"
+class WidgetKind(str,Enum):KPI_CARD="kpi_card";MODULE_STATUS="module_status";BLOCKERS="blockers";TIMELINE="timeline";APPROVALS="approvals";ALERTS="alerts";DIGEST="digest";RERUN_SCHEDULES="rerun_schedules"
 class WidgetConfig(BaseModel):id:str=Field(min_length=1,max_length=80);kind:WidgetKind;kpi_id:str|None=None;visible:bool=True;position:int=Field(0,ge=0)
 class DashboardView(BaseModel):widgets:list[WidgetConfig];updated_at:datetime
 class DashboardViewIn(BaseModel):widgets:list[WidgetConfig]=Field(max_length=50)

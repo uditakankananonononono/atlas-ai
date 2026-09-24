@@ -121,3 +121,185 @@ def reproducibility_bundle(body:ReproducibilityBundleIn):
  try:payload,manifest=build_bundle(**body.model_dump())
  except ValueError as e:raise HTTPException(422,str(e))
  return Response(payload,media_type='application/zip',headers={'Content-Disposition':'attachment; filename="atlas-reproducibility-bundle.zip"','X-Atlas-Bundle-SHA256':manifest['bundle_sha256']})
+
+
+# Approved sandbox execution: runs an approved execute_sandboxed_analysis item.
+from fastapi import Response
+from .approved_sandbox import (
+    ApprovedSandboxExecutor,
+)
+from .approved_sandbox import (
+    BackendUnavailableError as _SbxBackendUnavailable,
+    ExecutionConflictError as _SbxConflict,
+    ExecutionForbiddenError as _SbxForbidden,
+    ExecutionNotFoundError as _SbxNotFound,
+)
+
+_sandbox_executors: dict[str, ApprovedSandboxExecutor] = {}
+
+
+def get_sandbox_executor(tenant: TenantContext = Depends(require_tenant)) -> ApprovedSandboxExecutor:
+    if tenant.tenant_id not in _sandbox_executors:
+        _sandbox_executors[tenant.tenant_id] = ApprovedSandboxExecutor(tenant.tenant_id, actor_id=tenant.actor_id)
+    return _sandbox_executors[tenant.tenant_id]
+
+
+def _sandbox_http_error(exc: Exception) -> HTTPException:
+    if isinstance(exc, _SbxNotFound):
+        return HTTPException(status_code=404, detail="not found")
+    if isinstance(exc, _SbxForbidden):
+        return HTTPException(status_code=403, detail=str(exc))
+    if isinstance(exc, _SbxConflict):
+        return HTTPException(status_code=409, detail=str(exc))
+    if isinstance(exc, _SbxBackendUnavailable):
+        return HTTPException(status_code=503, detail=str(exc))
+    return HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/analyses/{approval_id}/execute", status_code=201)
+def execute_approved_analysis(approval_id: str, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """Run the exact approved analysis in the sandbox and return its sealed receipt."""
+    try:
+        return executor.execute(approval_id)
+    except (_SbxNotFound, _SbxForbidden, _SbxConflict, _SbxBackendUnavailable) as exc:
+        raise _sandbox_http_error(exc) from exc
+
+
+@router.get("/analyses/executions")
+def list_analysis_executions(limit: int = 100, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    return executor.list_receipts(limit=min(max(limit, 1), 500))
+
+
+@router.get("/analyses/{approval_id}/execution")
+def read_analysis_execution(approval_id: str, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    try:
+        return executor.readback(approval_id)
+    except _SbxNotFound as exc:
+        raise _sandbox_http_error(exc) from exc
+
+
+@router.get("/analyses/artifacts/{sha256}")
+def download_analysis_artifact(sha256: str, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """Download a log or output file by hash; integrity is re-checked on read."""
+    try:
+        data = executor.artifact(sha256)
+    except _SbxNotFound as exc:
+        raise _sandbox_http_error(exc) from exc
+    return Response(content=data, media_type="application/octet-stream",
+                    headers={"X-Content-SHA256": sha256,
+                             "Content-Disposition": f'attachment; filename="{sha256}"'})
+
+
+@router.get("/analyses/{approval_id}/bundle")
+def download_execution_bundle(approval_id: str, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """Executed reproducibility bundle: code, datasets, environment lock, logs and outputs, all hashed."""
+    from .execution_bundle import build_execution_bundle
+    try:
+        receipt = executor.readback(approval_id)
+        payload, manifest = build_execution_bundle(receipt, executor.store, executor.tenant_id)
+    except _SbxNotFound as exc:
+        raise _sandbox_http_error(exc) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return Response(content=payload, media_type="application/zip", headers={
+        "Content-Disposition": f'attachment; filename="atlas-execution-{approval_id}.zip"',
+        "X-Atlas-Bundle-SHA256": manifest["bundle_sha256"],
+        "X-Atlas-Manifest-SHA256": manifest["manifest_sha256"]})
+
+
+# Approval-gated re-run with output-hash diff against the original receipt.
+from pydantic import BaseModel as _BaseModel, Field as _Field
+
+
+class RerunProposalIn(_BaseModel):
+    reason: str = _Field(default="", max_length=1000)
+
+
+@router.post("/analyses/{approval_id}/reruns", status_code=202)
+def propose_analysis_rerun(approval_id: str, body: RerunProposalIn | None = None,
+                           executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """File an approval to re-run a finished analysis; nothing executes here."""
+    from .rerun import RerunService
+    try:
+        return RerunService(executor).propose(approval_id, (body.reason if body else ""))
+    except (_SbxNotFound, _SbxConflict) as exc:
+        raise _sandbox_http_error(exc) from exc
+
+
+@router.post("/analyses/reruns/{rerun_approval_id}/execute", status_code=201)
+def execute_analysis_rerun(rerun_approval_id: str, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """Re-run the stored approved code on stored datasets and diff hashes against the original."""
+    from .rerun import RerunService
+    try:
+        return RerunService(executor).execute(rerun_approval_id)
+    except (_SbxNotFound, _SbxForbidden, _SbxConflict, _SbxBackendUnavailable) as exc:
+        raise _sandbox_http_error(exc) from exc
+
+
+# Scheduled re-run proposals: file approvals when due; nothing executes automatically.
+from datetime import datetime as _dt
+from typing import Literal as _Literal
+
+
+class RerunScheduleIn(_BaseModel):
+    scope: _Literal["analysis", "project"]
+    target: str = _Field(min_length=1, max_length=120)
+    interval_hours: int = _Field(ge=1, le=8784)
+    overdue_after_hours: int = _Field(default=72, ge=1, le=8784)
+    first_due_at: _dt | None = None
+    reason: str = _Field(default="", max_length=1000)
+
+
+class ProjectTagIn(_BaseModel):
+    project: str = _Field(min_length=1, max_length=120)
+
+
+def _schedules(executor: ApprovedSandboxExecutor):
+    from .rerun_schedule import RerunScheduleService
+    return RerunScheduleService(executor)
+
+
+@router.post("/analyses/{approval_id}/projects", status_code=201)
+def tag_analysis_project(approval_id: str, body: ProjectTagIn, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    try:
+        return _schedules(executor).tag(approval_id, body.project)
+    except _SbxNotFound as exc:
+        raise _sandbox_http_error(exc) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.post("/analyses/rerun-schedules", status_code=201)
+def create_rerun_schedule(body: RerunScheduleIn, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    try:
+        return _schedules(executor).create(**body.model_dump())
+    except _SbxNotFound as exc:
+        raise _sandbox_http_error(exc) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.get("/analyses/rerun-schedules")
+def list_rerun_schedules(executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    return _schedules(executor).list()
+
+
+@router.post("/analyses/rerun-schedules/{schedule_id}/{action}")
+def toggle_rerun_schedule(schedule_id: str, action: _Literal["pause", "resume"],
+                          executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    try:
+        return _schedules(executor).set_active(schedule_id, action == "resume")
+    except _SbxNotFound as exc:
+        raise _sandbox_http_error(exc) from exc
+
+
+@router.post("/analyses/rerun-schedules/tick")
+def tick_rerun_schedules(executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """File due re-run proposals for the calling tenant. Files approvals only; executes nothing."""
+    return _schedules(executor).tick()
+
+
+@router.get("/analyses/rerun-schedules/stats")
+def rerun_schedule_stats(executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """Dashboard stats: due schedules, proposals by live approval state, overdue/unapproved items, verdicts."""
+    return _schedules(executor).stats()

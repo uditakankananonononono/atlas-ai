@@ -130,3 +130,19 @@ def drain_m22_install_jobs() -> dict[str, int]:
             ran += 1
             succeeded += job["state"] == "succeeded"
     return {"tenants": len(tenants), "ran": ran, "succeeded": succeeded}
+
+
+@celery_app.task(name="atlas.m04.propose_due_reruns")
+def propose_due_reruns() -> dict[str, int]:
+    """File due Module 4 re-run approvals per tenant. Files approvals only; never executes an analysis."""
+    import os
+    from pathlib import Path
+    from app.modules.m04_research_scientist.approved_sandbox import ApprovedSandboxExecutor
+    from app.modules.m04_research_scientist.rerun_schedule import RerunScheduleService, tenants_with_schedules
+    root = Path(os.getenv("ATLAS_RUNTIME_DATA_DIR", "/tmp/atlas-runtime")) / "m04-sandbox"
+    tenants = tenants_with_schedules(root)
+    filed = skipped = errors = 0
+    for tenant_id in tenants:
+        result = RerunScheduleService(ApprovedSandboxExecutor(tenant_id, actor_id="scheduler")).tick()
+        filed += len(result["filed"]); skipped += len(result["skipped"]); errors += len(result["errors"])
+    return {"tenants": len(tenants), "filed": filed, "skipped_open": skipped, "errors": errors, "executed": 0}
