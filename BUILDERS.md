@@ -9,5 +9,6 @@ One line per active builder lane. Claim a component before building it; release 
 | atlas-builder-2026-09-24 | M00 approval impact preview (drift check before consume) | backend/app/modules/m00_approval_center/impact.py, routes.py, workers/tasks.py | shipped |
 | atlas-builder-2026-09-24 | M02 evidence completeness score | backend/app/modules/m02_competition_manager/evidence.py, integrated_application.py, routes.py | shipped |
 | atlas-builder-2026-09-24 | M02 evidence sources from stored profile corpus | evidence.py (resolve_sources, score_from_corpus), profile_corpus.py (get_many), routes.py | shipped |
+| atlas-builder-2026-09-24 | M05 relationship-aware contact cadence | backend/app/modules/m05_outreach_manager/cadence.py, campaigns.py, routes.py | shipped |
 | PB2 | M1 Opportunity Discovery live normalization | backend/app/modules/m01_opportunity_discovery/ | claimed |
 | PB5 | M22 Tools Hub durable install pipeline | backend/app/modules/m22_* | claimed |

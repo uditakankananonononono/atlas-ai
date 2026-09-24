@@ -69,6 +69,14 @@ class MessageNotFoundError(LookupError):
     """Raised when a message id does not exist."""
 
 
+class CadenceBlockedError(RuntimeError):
+    """Raised when cross-campaign cadence refuses a message; carries the decision."""
+
+    def __init__(self, decision: dict[str, Any]) -> None:
+        self.decision = decision
+        super().__init__("cadence: " + "; ".join(r["detail"] for r in decision["reasons"]))
+
+
 class CampaignStateError(CampaignError):
     """Raised when a state transition is not allowed."""
 
@@ -307,6 +315,9 @@ class CampaignService:
         contact = self._contact(message.contact_id)
         if not contact.email:
             raise CampaignStateError("contact has no verified email address")
+        cadence = self.cadence(message_id)
+        if not cadence["allowed"]:
+            raise CadenceBlockedError(cadence)
         approval = ApprovalRequest(
             id=str(uuid4()),
             module_id=MODULE_ID,
@@ -319,6 +330,7 @@ class CampaignService:
                 "recipient": str(contact.email),
                 "subject": message.subject,
                 "body": message.body,
+                "cadence": cadence,
             },
         )
         if "pending_approval" not in _ALLOWED_TRANSITIONS[message.status]:
@@ -350,6 +362,15 @@ class CampaignService:
             ),
         )
         return approval
+
+    def cadence(self, message_id: str) -> dict[str, Any]:
+        """Cross-campaign cadence decision for one message (read-only)."""
+        from .cadence import evaluate
+
+        message = self._message(message_id)
+        return evaluate(contact=self._contact(message.contact_id), message=message,
+                        messages=self.campaigns.list_messages(), contacts=self.contacts, now=self._clock(),
+                        campaign_follow_up_days=self.get_campaign(message.campaign_id).follow_up_window_days)
 
     def record_decision(self, message_id: str, approved: bool, actor: str | None = None) -> OutreachMessage:
         """Mirror a Module 0 decision onto the message. Denial is terminal."""
@@ -455,6 +476,8 @@ class CampaignService:
             ]
             if later:
                 continue
+            if not self._follow_up_cadence_ok(message):
+                continue
             due.append(message)
         return due
 
@@ -508,6 +531,16 @@ class CampaignService:
         return self.campaigns.events(message_id)
 
     # --- internals -------------------------------------------------------------
+
+    def _follow_up_cadence_ok(self, message: OutreachMessage) -> bool:
+        """A follow-up is only due if cadence would let it through right now."""
+        from .cadence import evaluate
+
+        probe = message.model_copy(update={"id": f"probe:{message.id}", "status": "draft", "kind": "follow_up"})
+        return evaluate(contact=self._contact(message.contact_id), message=probe,
+                        messages=self.campaigns.list_messages(), contacts=self.contacts,
+                        now=self._clock(),
+                        campaign_follow_up_days=self.get_campaign(message.campaign_id).follow_up_window_days)["allowed"]
 
     def _contact(self, contact_id: str):
         contact = self.contacts.get(contact_id)
