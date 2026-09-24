@@ -144,3 +144,23 @@ def download_delivered_document(token: str, service: ApprovedDeliveryService = D
     return _Response(content=data, media_type=receipt["mime_type"],
                      headers={"Content-Disposition": f'attachment; filename="{receipt["filename"]}"',
                               "X-Content-SHA256": receipt["sha256"], "Cache-Control": "private, no-store"})
+
+
+# Registered-key publication worker: atomic approval consumption, render, private upload,
+# Ed25519 receipt verified against the tenant key registry, append-only receipt storage.
+from .registered_key_worker import RegisteredKeyPublicationWorker as _RegisteredWorker
+
+
+def get_registered_publication_worker(context: TenantContext = Depends(require_tenant)):
+    from app.core.approvals import approvals
+    adapter = UnconfiguredPublicationWorker()
+    return _RegisteredWorker(context.tenant_id, approvals, adapter, adapter)
+
+
+@router.post('/publication-worker/registered/execute')
+def execute_registered_publication_worker(body: ApprovedPublicationJob, tenant_id: str = Depends(tenant),
+                                          worker=Depends(get_registered_publication_worker)):
+    try:
+        return {'tenant_id': tenant_id, **worker.run(body)}
+    except ValueError as error:
+        raise HTTPException(409, str(error)) from error
