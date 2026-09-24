@@ -127,3 +127,57 @@ def score_package(fields: dict[str, dict[str, Any]]) -> dict[str, Any]:
     return {"fields": per, "overall_score": round(sup / need, 4) if need else 0.0,
             "complete": bool(per) and all(r["complete"] for r in per.values()),
             "open_needs_input": sum(r["counts"]["needs_input"] for r in per.values())}
+
+
+async def resolve_sources(corpus: Any, fields: dict[str, dict[str, Any]], *, default_limit: int = 8) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
+    """Fill each field's sources from the stored owner corpus.
+
+    Per field, in priority order:
+    - ``sources``: caller-supplied list, used as-is (origin ``caller``);
+    - ``source_ids``: corpus row ids in marker order ([1] = first id). This is
+      the stable path: the ids the drafter saw, so markers cannot drift as the
+      corpus grows (origin ``corpus_ids``). Ids missing for this tenant are
+      reported and make the field incomplete;
+    - ``question`` (+ ``requirements``, ``evidence_limit``): re-run the same
+      retrieval query the drafter uses (origin ``corpus_query``). Markers only
+      line up if the corpus is unchanged since drafting, so this is flagged.
+    A field with none of these, or whose corpus lookup finds nothing, gets no
+    sources and a blocking note instead of a silent pass.
+    """
+    resolved: dict[str, dict[str, Any]] = {}
+    notes: dict[str, dict[str, Any]] = {}
+    for name, f in fields.items():
+        draft = f["draft"]
+        if f.get("sources"):
+            resolved[name], notes[name] = {"draft": draft, "sources": f["sources"]}, {"origin": "caller"}
+        elif f.get("source_ids"):
+            found, missing = corpus.get_many(f["source_ids"])
+            if missing:
+                # keep marker positions honest: a missing id stays a hole, not a shift
+                by_id = {s["id"]: s for s in found}
+                found = [by_id.get(int(i), {"id": int(i), "text": "", "missing": True}) for i in f["source_ids"]]
+            resolved[name] = {"draft": draft, "sources": found}
+            notes[name] = {"origin": "corpus_ids", "missing_source_ids": missing}
+        elif f.get("question"):
+            query = f"{f['question']} {f.get('requirements', '')}"
+            hits = await corpus.retrieve(query, int(f.get("evidence_limit") or default_limit))
+            resolved[name] = {"draft": draft, "sources": hits}
+            notes[name] = {"origin": "corpus_query", "marker_drift_possible": True}
+        else:
+            resolved[name] = {"draft": draft, "sources": []}
+            notes[name] = {"origin": "none"}
+        if not resolved[name]["sources"] or all(s.get("missing") for s in resolved[name]["sources"]):
+            notes[name]["blocking"] = "no owner-corpus sources found for this field"
+    return resolved, notes
+
+
+async def score_from_corpus(corpus: Any, fields: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    resolved, notes = await resolve_sources(corpus, fields)
+    out = score_package(resolved)
+    for name, note in notes.items():
+        out["fields"][name]["source_resolution"] = note
+    blocking = [n for n, note in notes.items() if note.get("blocking") or note.get("missing_source_ids")]
+    if blocking:
+        out["complete"] = False
+        out["blocking_fields"] = blocking
+    return out

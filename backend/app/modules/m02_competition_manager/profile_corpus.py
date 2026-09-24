@@ -27,3 +27,14 @@ class ProfileCorpus:
   with self.sessions() as db:rows=list(db.scalars(select(ProfileDocumentRow).where(ProfileDocumentRow.tenant_id==self.tenant_id)))
   rows.sort(key=lambda x:cos(q,x.embedding),reverse=True)
   return [{'id':x.id,'source_type':x.source_type,'source_id':x.source_id,'locator':x.locator,'title':x.title,'text':x.text,'provenance':x.provenance,'score':round(cos(q,x.embedding),4)} for x in rows[:limit]]
+ @staticmethod
+ def _out(x,score=None):
+  d={'id':x.id,'source_type':x.source_type,'source_id':x.source_id,'locator':x.locator,'title':x.title,'text':x.text,'provenance':x.provenance}
+  if score is not None:d['score']=score
+  return d
+ def get_many(self,ids):
+  """Load owner sources by corpus row id, in the given order, for this tenant only.
+  Returns (found, missing_ids); another tenant's ids are reported missing, never returned."""
+  ids=[int(i) for i in ids]
+  with self.sessions() as db:rows={x.id:x for x in db.scalars(select(ProfileDocumentRow).where(ProfileDocumentRow.tenant_id==self.tenant_id,ProfileDocumentRow.id.in_(ids)))} if ids else {}
+  return [self._out(rows[i]) for i in ids if i in rows],[i for i in ids if i not in rows]

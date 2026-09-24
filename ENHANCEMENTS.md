@@ -8,7 +8,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** deadline-change monitor with source snapshots and owner-visible eligibility deltas.
 ## M02 - Competition Manager
 - **Landed:** evidence completeness score (`evidence.py`, `POST /competition-manager/evidence-completeness`, and `evidence_completeness` on integrated applications): each drafted claim must cite `[n]` to an owner-profile source whose text shares its specific terms, or carry `[NEEDS INPUT]`; unsupported and uncited claims are listed, and the package is only `complete` when none remain.
-- **Next:** pull cited sources from the stored profile corpus automatically instead of caller-supplied source lists.
+- **Landed:** evidence scoring reads the tenant's stored profile corpus: `source_ids` (the ids the drafter saw, now returned as `evidence_source_ids` on integrated applications) load in marker order so citations cannot drift; `question` re-runs the drafter's retrieval and is flagged `marker_drift_possible`; missing, cross-tenant or empty-corpus sources block `complete` (`tests/modules/test_m02_evidence_corpus.py`).
+- **Next:** semantic entailment check (free local NLI model) on top of the term-overlap support test, so a paraphrase citing the right source with wrong facts is caught.
 ## M03 - Grant Writer
 - **Landed:** deterministic science-grant preflight parses explicit word limits, budget caps, required attachments, evaluation criteria and unresolved `[NEEDS INPUT]` placeholders without inventing rules.
 - **Next (science):** agency-specific schema packs sourced from versioned official calls, with deadline and amendment tracking.
