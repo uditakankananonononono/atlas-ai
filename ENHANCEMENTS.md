@@ -121,7 +121,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** installable paired-PC daemon with OS-keystore identity, native approval prompts and certificate signatures over receipt heads.
 ## M22 - Tools Hub
 - **Landed:** free official GitHub/PyPI/npm discovery plus an integration-receipt endpoint that binds installer operation, artifact/manifest hashes, approval, candidate and rollback backup to the exact proposal.
-- **Next:** tenant-persist proposals/portfolio and invoke the scanner/installer through a durable worker rather than accepting a supplied receipt.
+- **Landed (PB5, 2026-09-24):** durable install pipeline (`pipeline.py`, `/api/v1/tools-hub/pipeline/*`, Celery beat `atlas.m22.drain_install_jobs`, migration `20260924_m22_install_pipeline`). Proposals, jobs and the portfolio are tenant-persisted in SQL. The worker, not the caller, produces the receipt: it re-checks the Module 0 approval (tenant, status, bound subject), re-verifies the stored artifact hash, re-scans, and lets `ToolInstaller` consume a single-use grant tied to that job. Failed jobs are recorded and retry up to 3 times; rollback needs its own Module 0 approval bound to the stored receipt.
+- **Next:** persist discovery candidates and link them to pipeline proposals; fetch artifacts from the official registry URL in the manifest (hash-checked) instead of requiring upload; sandboxed smoke-run of the installed entrypoint.
 ## M23 - Study Abroad
 - **Landed:** application evidence matrix links requirements and essay claims to owner records and official program sources, exposes broken references, and returns explicit missing-input items and coverage.
 - **Next:** source-content hashes, official-page freshness checks and reviewer sign-off per matrix revision.

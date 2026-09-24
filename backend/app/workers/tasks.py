@@ -116,3 +116,16 @@ def draft_due_followups() -> dict[str, int]:
             service.submit_for_approval(followup.id)
             submitted += 1
     return {"tenants": len(tenants), "drafted": drafted, "submitted_for_approval": submitted}
+
+
+@celery_app.task(name="atlas.m22.drain_install_jobs")
+def drain_m22_install_jobs() -> dict[str, int]:
+    """Run approved, queued Tools Hub install/rollback jobs. Each job re-checks its Module 0 approval."""
+    from app.modules.m22_tools_hub.pipeline import InstallPipeline, tenants_with_queued_jobs
+    ran = succeeded = 0
+    tenants = tenants_with_queued_jobs()
+    for tenant_id in tenants:
+        for job in InstallPipeline(tenant_id).drain():
+            ran += 1
+            succeeded += job["state"] == "succeeded"
+    return {"tenants": len(tenants), "ran": ran, "succeeded": succeeded}
