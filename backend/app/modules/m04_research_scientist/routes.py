@@ -205,3 +205,32 @@ def download_execution_bundle(approval_id: str, executor: ApprovedSandboxExecuto
         "Content-Disposition": f'attachment; filename="atlas-execution-{approval_id}.zip"',
         "X-Atlas-Bundle-SHA256": manifest["bundle_sha256"],
         "X-Atlas-Manifest-SHA256": manifest["manifest_sha256"]})
+
+
+# Approval-gated re-run with output-hash diff against the original receipt.
+from pydantic import BaseModel as _BaseModel, Field as _Field
+
+
+class RerunProposalIn(_BaseModel):
+    reason: str = _Field(default="", max_length=1000)
+
+
+@router.post("/analyses/{approval_id}/reruns", status_code=202)
+def propose_analysis_rerun(approval_id: str, body: RerunProposalIn | None = None,
+                           executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """File an approval to re-run a finished analysis; nothing executes here."""
+    from .rerun import RerunService
+    try:
+        return RerunService(executor).propose(approval_id, (body.reason if body else ""))
+    except (_SbxNotFound, _SbxConflict) as exc:
+        raise _sandbox_http_error(exc) from exc
+
+
+@router.post("/analyses/reruns/{rerun_approval_id}/execute", status_code=201)
+def execute_analysis_rerun(rerun_approval_id: str, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """Re-run the stored approved code on stored datasets and diff hashes against the original."""
+    from .rerun import RerunService
+    try:
+        return RerunService(executor).execute(rerun_approval_id)
+    except (_SbxNotFound, _SbxForbidden, _SbxConflict, _SbxBackendUnavailable) as exc:
+        raise _sandbox_http_error(exc) from exc

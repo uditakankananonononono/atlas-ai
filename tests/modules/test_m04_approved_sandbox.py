@@ -346,3 +346,107 @@ def test_bundle_route_and_unfinished_runs(center, tmp_path, monkeypatch):
     res = client.get(f"/research-scientist/analyses/{approval}/bundle", headers=h)
     assert res.status_code == 200 and res.headers["x-atlas-bundle-sha256"] == hashlib.sha256(res.content).hexdigest()
     assert verify_execution_bundle(res.content)["valid"]
+
+
+# ---------------------------------------------------------------- approval-gated re-run + hash diff
+from app.modules.m04_research_scientist.rerun import RerunService, diff_environment, diff_outputs
+
+
+def approve_rerun(center, svc, original_approval, reason="quarterly check"):
+    proposal = svc.propose(original_approval, reason)
+    assert proposal["status"] == "pending" and proposal["action_type"] == "rerun_sandboxed_analysis"
+    center.decide(proposal["approval_id"], ApprovalStatus.APPROVED, decided_by="udita")
+    return proposal["approval_id"]
+
+
+@needs_bwrap
+def test_deterministic_analysis_reproduces_with_stored_datasets(center, tmp_path):
+    calls = {"n": 0}
+    body = b"v\n1\n2\n3\n"
+
+    class OnceFetcher:
+        def fetch(self, url, destination, max_bytes):
+            calls["n"] += 1
+            destination.write_bytes(body)
+            return {"url": url, "final_url": url, "bytes": len(body), "sha256": hashlib.sha256(body).hexdigest(), "content_type": ""}
+
+    ex = executor(center, tmp_path, fetcher=OnceFetcher())
+    code = "rows=open('/input/data/00_v.csv').read().split()[1:]\nopen('/output/sum.txt','w').write(str(sum(map(int,rows))))\nprint('ok')"
+    original = submit(center, code, urls=["https://example.org/v.csv"])
+    ex.execute(original)
+    svc = RerunService(ex)
+    rerun = svc.execute(approve_rerun(center, svc, original))
+    cmp = rerun["comparison"]
+    assert rerun["kind"] == "rerun" and rerun["state"] == "succeeded"
+    assert cmp["verdict"] == "reproduced" and cmp["summary"] == {"identical": 1, "changed": 0, "missing": 0, "new": 0}
+    assert cmp["stdout_identical"] and cmp["environment"]["identical"]
+    assert calls["n"] == 1  # datasets came from the hash-checked store, not a re-download
+    assert verify_manifest(rerun)
+
+
+@needs_bwrap
+def test_nondeterministic_analysis_is_reported_as_diverged(center, tmp_path):
+    ex = executor(center, tmp_path)
+    code = "import os\nopen('/output/stable.txt','w').write('same')\nopen('/output/noise.bin','wb').write(os.urandom(16))"
+    original = submit(center, code)
+    first = ex.execute(original)
+    svc = RerunService(ex)
+    cmp = svc.execute(approve_rerun(center, svc, original))["comparison"]
+    assert cmp["verdict"] == "diverged"
+    by_path = {r["path"]: r["status"] for r in cmp["outputs"]}
+    assert by_path["stable.txt"] == "identical" and by_path["noise.bin"] == "changed"
+    assert set(by_path) == {o["path"] for o in first["outputs"]}
+    assert cmp["summary"] == {"identical": 1, "changed": 1, "missing": 0, "new": 0}
+
+
+@needs_bwrap
+def test_rerun_guards(center, tmp_path):
+    ex = executor(center, tmp_path)
+    svc = RerunService(ex)
+    with pytest.raises(ExecutionNotFoundError):
+        svc.propose("never-ran")
+    original = submit(center, "open('/output/a','w').write('1')")
+    ex.execute(original)
+    pending = svc.propose(original)["approval_id"]
+    with pytest.raises(ExecutionForbiddenError, match="pending"):
+        svc.execute(pending)
+    with pytest.raises(ExecutionForbiddenError, match="not a Module 4 sandboxed"):
+        ex.execute(pending)  # a re-run approval cannot be used as a fresh analysis approval
+    approved = approve_rerun(center, svc, original)
+    svc.execute(approved)
+    with pytest.raises(ExecutionConflictError):
+        svc.execute(approved)
+    foreign = RerunService(executor(center, tmp_path / "b", tenant="tenant-b"))
+    with pytest.raises(ExecutionNotFoundError):
+        foreign.execute(approved)
+
+
+def test_diff_helpers():
+    rows = diff_outputs([{"path": "a", "sha256": "1", "bytes": 1}, {"path": "b", "sha256": "2", "bytes": 1}],
+                        [{"path": "a", "sha256": "1", "bytes": 1}, {"path": "c", "sha256": "3", "bytes": 2}])
+    assert [(r["path"], r["status"]) for r in rows] == [("a", "identical"), ("b", "missing"), ("c", "new")]
+    env = diff_environment({"version": "3.10.1", "packages": {"numpy": "1.26", "old": "1"}, "lock_sha256": "x"},
+                           {"version": "3.10.2", "packages": {"numpy": "2.0", "new": "3"}, "lock_sha256": "y"})
+    assert env["identical"] is False and env["fields"]["version"] == {"original": "3.10.1", "rerun": "3.10.2"}
+    assert env["packages_changed"] == {"numpy": {"original": "1.26", "rerun": "2.0"}}
+    assert env["packages_added"] == {"new": "3"} and env["packages_removed"] == {"old": "1"}
+
+
+@needs_bwrap
+def test_rerun_http_routes(center, tmp_path):
+    app = FastAPI(); app.include_router(routes.router)
+    ex = executor(center, tmp_path)
+    app.dependency_overrides[routes.get_sandbox_executor] = lambda: ex
+    client = TestClient(app); h = {"X-Atlas-Tenant": "tenant-a"}
+    original = submit(center, STATS)
+    assert client.post(f"/research-scientist/analyses/{original}/reruns", headers=h, json={}).status_code == 404
+    ex.execute(original)
+    proposal = client.post(f"/research-scientist/analyses/{original}/reruns", headers=h, json={"reason": "check"})
+    assert proposal.status_code == 202
+    rid = proposal.json()["approval_id"]
+    assert client.post(f"/research-scientist/analyses/reruns/{rid}/execute", headers=h).status_code == 403
+    center.decide(rid, ApprovalStatus.APPROVED, decided_by="udita")
+    done = client.post(f"/research-scientist/analyses/reruns/{rid}/execute", headers=h)
+    assert done.status_code == 201 and done.json()["comparison"]["verdict"] == "reproduced"
+    assert client.post(f"/research-scientist/analyses/reruns/{rid}/execute", headers=h).status_code == 409
+    assert client.get(f"/research-scientist/analyses/{rid}/bundle", headers=h).status_code == 200

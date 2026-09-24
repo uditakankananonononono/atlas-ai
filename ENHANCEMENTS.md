@@ -14,7 +14,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 ## M04 - Research Scientist
 - **Landed:** downloadable computational reproducibility bundle with analysis code, input/parameter snapshots, SHA-256 input and manifest identity, dependencies, seed, source URLs and an explicit `execution_performed: false` boundary.
 - **Landed (pb8):** approved sandbox execution with output hashes, capped/hashed logs and an environment lock captured inside the same sandbox (interpreter, platform, libc, every installed package, Docker image id), folded into a schema-2 executed reproducibility bundle (`GET /research-scientist/analyses/{approval_id}/bundle`) whose manifest lists every file hash and verifies offline (`verify_execution_bundle`). Tests: `tests/modules/test_m04_approved_sandbox.py`.
-- **Next:** re-run a bundle in a fresh sandbox and diff output hashes automatically; R lock probe verified on a host with Rscript.
+- **Landed (pb8):** approval-gated re-run (`rerun_sandboxed_analysis`, bound to the original receipt seal and code hash) that re-executes the stored approved code on hash-checked stored datasets, captures a fresh environment lock, and diffs every output hash (identical/changed/missing/new), stdout/stderr, exit code and environment drift into a `reproduced`/`diverged` verdict. Routes `POST /research-scientist/analyses/{approval_id}/reruns`, `POST /research-scientist/analyses/reruns/{id}/execute`. Tests: `tests/modules/test_m04_approved_sandbox.py`.
+- **Next:** scheduled re-run proposals (e.g. monthly) that still wait for approval; R lock probe verified on a host with Rscript.
 ## M05 - Outreach Manager
 - **Next:** relationship-aware contact cadence that prevents duplicate or socially excessive outreach across campaigns.
 ## M06 - Social Media Manager
