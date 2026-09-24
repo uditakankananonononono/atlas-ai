@@ -304,3 +304,20 @@ def retire_producer_key(producer:str,key_id:str,context:TenantContext=Depends(re
  try:
   row=registry.retire(producer,key_id);return {'tenant_id':context.tenant_id,'producer':producer,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
  except ValueError as error:raise HTTPException(404,str(error)) from error
+from .producer_event_ingest import ProducerEventIngest
+from .asymmetric_proof_events import SignedProofEvent
+class IngestProducerEvents(BaseModel):events:list[SignedProofEvent]=Field(min_length=1,max_length=2000)
+def get_producer_event_ingest(context:TenantContext=Depends(require_tenant)):return ProducerEventIngest(context.tenant_id)
+@router.post('/proof-gaps/events/ingest')
+def ingest_signed_producer_events(body:IngestProducerEvents,context:TenantContext=Depends(require_tenant),ingest=Depends(get_producer_event_ingest)):
+ try:return {'tenant_id':context.tenant_id,**ingest.ingest_batch(body.events)}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
+@router.get('/proof-gaps/events/ingested')
+def list_ingested_producer_events(producer:str|None=None,context:TenantContext=Depends(require_tenant),ingest=Depends(get_producer_event_ingest)):
+ return {'tenant_id':context.tenant_id,'events':ingest.list_events(producer)}
+from .producer_pull_adapter import ProducerPullAdapter
+def get_producer_pull_adapter(context:TenantContext=Depends(require_tenant)):return ProducerPullAdapter(ProducerEventIngest(context.tenant_id))
+@router.post('/proof-gaps/events/pull')
+def pull_producer_events(context:TenantContext=Depends(require_tenant),adapter=Depends(get_producer_pull_adapter)):
+ try:return {'tenant_id':context.tenant_id,**adapter.pull_once()}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
