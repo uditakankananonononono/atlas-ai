@@ -211,3 +211,12 @@ def retire_proof_issuer_key(issuer:str,key_id:str,context:TenantContext=Depends(
  try:
   row=registry.retire(issuer,key_id);return {'tenant_id':context.tenant_id,'issuer':issuer,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
  except ValueError as error:raise HTTPException(404,str(error)) from error
+from .registered_live_receipts import RegisteredReceiptsIn,reverify as _reverify_receipt,verify_and_persist_registered
+@router.post('/proof-status/live-receipts/registered/verify-and-persist')
+def verify_and_persist_registered_receipts(body:RegisteredReceiptsIn,context:TenantContext=Depends(require_tenant),registry=Depends(get_issuer_key_registry),store=Depends(get_live_receipt_store)):
+ try:return {'tenant_id':context.tenant_id,**verify_and_persist_registered(body,registry,store)}
+ except ValueError as error:raise HTTPException(409,str(error)) from error
+@router.get('/proof-status/live-receipts/{receipt_id}/reverify')
+def reverify_registered_receipt(receipt_id:str,context:TenantContext=Depends(require_tenant),registry=Depends(get_issuer_key_registry),store=Depends(get_live_receipt_store)):
+ try:return {'tenant_id':context.tenant_id,**_reverify_receipt(receipt_id,registry,store)}
+ except (LookupError,ValueError) as error:raise HTTPException(404,str(error)) from error
