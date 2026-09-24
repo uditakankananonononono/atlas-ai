@@ -54,7 +54,7 @@ class Service:
     def list(self,tenant_id:str,limit:int=100)->list[ProjectView]:
         if self._repository:return self._repository.list(limit=limit)
         return [p for (t,_),p in self._projects.items() if t==tenant_id][-limit:]
-    async def plan(self,project:ProjectView,provider:str="openai")->PlanResponse:
+    async def plan(self,project:ProjectView,provider:str="shared")->PlanResponse:
         prompt=("Return JSON only with tasks, assumptions, risks, quality_gates. Decompose the goal into a dependency DAG. "
                 "Every task uses exactly one specialist: literature, data, coder, analyst, writer. Include measurable acceptance criteria. "
                 f"Goal: {project.goal}\nBrief: {json.dumps(project.brief,sort_keys=True)}")

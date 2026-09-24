@@ -100,3 +100,24 @@ def test_run_defaults_private_and_never_uses_hosted():
     assert not res.ok and hosted.calls == 0
     local = _Fake("local", LOCAL)
     assert sml.run([{"role": "user", "content": "x"}], router=Router([hosted, local])).result.provider == "local"
+
+
+def test_core_generate_shared_provider_is_private(monkeypatch):
+    import asyncio
+    from app.core import providers
+    hosted, local = _Fake("hosted", HOSTED), _Fake("local", LOCAL)
+    monkeypatch.setattr(sml, "atlas_router", lambda: Router([hosted, local]))
+    assert asyncio.run(providers.generate("hello", "shared")) == ("local:m", "hi")
+    assert hosted.calls == 0
+    monkeypatch.setattr(sml, "atlas_router", lambda: Router([hosted]))
+    with pytest.raises(providers.ProviderError):
+        asyncio.run(providers.generate("hello", "shared"))
+    assert asyncio.run(providers.generate("hello", "shared-public")) == ("hosted:m", "hi")
+
+
+def test_m12_catalog_and_m14_default_use_shared_layer():
+    import inspect
+    from app.modules.m12_ai_research_lab.wiring import CATALOG
+    from app.modules.m14_project_builder.service import Service
+    assert any(m.model_id == "shared:instinct" and m.cents_per_1k_tokens == 0 for m in CATALOG)
+    assert inspect.signature(Service.plan).parameters["provider"].default == "shared"

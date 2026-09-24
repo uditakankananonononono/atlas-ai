@@ -89,7 +89,7 @@ class ArtifactSetValidationView(BaseModel):
 
 # --- Feedback and exports -----------------------------------------------------
 class FeedbackRequest(BaseModel):
-    feedback:str=Field(min_length=3,max_length=10000); provider:str=Field(default="openai",min_length=1)
+    feedback:str=Field(min_length=3,max_length=10000); provider:str=Field(default="shared",min_length=1)
 class FeedbackResponse(BaseModel):
     project:ProjectView; revision_applied:bool; requires_human_review:bool=True
 class ExportView(BaseModel):

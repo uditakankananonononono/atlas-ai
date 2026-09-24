@@ -11,6 +11,7 @@ CATALOG=[
  ModelCapability('anthropic:claude-3-5-haiku-latest',frozenset(TaskType),8192,.10,2500,.84),
  ModelCapability('deepseek:deepseek-chat',frozenset(TaskType),8192,.03,3500,.80),
  ModelCapability('ollama:llama3.2',frozenset(TaskType),4096,0,8000,.70),
+ ModelCapability('shared:instinct',frozenset(TaskType),4096,0,12000,.74),  # shared model layer, private routes only
 ]
 class AtlasProvider:
  async def generate(self,*,model_id,prompt,context):
