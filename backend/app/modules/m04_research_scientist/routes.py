@@ -121,3 +121,70 @@ def reproducibility_bundle(body:ReproducibilityBundleIn):
  try:payload,manifest=build_bundle(**body.model_dump())
  except ValueError as e:raise HTTPException(422,str(e))
  return Response(payload,media_type='application/zip',headers={'Content-Disposition':'attachment; filename="atlas-reproducibility-bundle.zip"','X-Atlas-Bundle-SHA256':manifest['bundle_sha256']})
+
+
+# Approved sandbox execution: runs an approved execute_sandboxed_analysis item.
+from fastapi import Response
+from .approved_sandbox import (
+    ApprovedSandboxExecutor,
+)
+from .approved_sandbox import (
+    BackendUnavailableError as _SbxBackendUnavailable,
+    ExecutionConflictError as _SbxConflict,
+    ExecutionForbiddenError as _SbxForbidden,
+    ExecutionNotFoundError as _SbxNotFound,
+)
+
+_sandbox_executors: dict[str, ApprovedSandboxExecutor] = {}
+
+
+def get_sandbox_executor(tenant: TenantContext = Depends(require_tenant)) -> ApprovedSandboxExecutor:
+    if tenant.tenant_id not in _sandbox_executors:
+        _sandbox_executors[tenant.tenant_id] = ApprovedSandboxExecutor(tenant.tenant_id, actor_id=tenant.actor_id)
+    return _sandbox_executors[tenant.tenant_id]
+
+
+def _sandbox_http_error(exc: Exception) -> HTTPException:
+    if isinstance(exc, _SbxNotFound):
+        return HTTPException(status_code=404, detail="not found")
+    if isinstance(exc, _SbxForbidden):
+        return HTTPException(status_code=403, detail=str(exc))
+    if isinstance(exc, _SbxConflict):
+        return HTTPException(status_code=409, detail=str(exc))
+    if isinstance(exc, _SbxBackendUnavailable):
+        return HTTPException(status_code=503, detail=str(exc))
+    return HTTPException(status_code=422, detail=str(exc))
+
+
+@router.post("/analyses/{approval_id}/execute", status_code=201)
+def execute_approved_analysis(approval_id: str, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """Run the exact approved analysis in the sandbox and return its sealed receipt."""
+    try:
+        return executor.execute(approval_id)
+    except (_SbxNotFound, _SbxForbidden, _SbxConflict, _SbxBackendUnavailable) as exc:
+        raise _sandbox_http_error(exc) from exc
+
+
+@router.get("/analyses/executions")
+def list_analysis_executions(limit: int = 100, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    return executor.list_receipts(limit=min(max(limit, 1), 500))
+
+
+@router.get("/analyses/{approval_id}/execution")
+def read_analysis_execution(approval_id: str, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    try:
+        return executor.readback(approval_id)
+    except _SbxNotFound as exc:
+        raise _sandbox_http_error(exc) from exc
+
+
+@router.get("/analyses/artifacts/{sha256}")
+def download_analysis_artifact(sha256: str, executor: ApprovedSandboxExecutor = Depends(get_sandbox_executor)):
+    """Download a log or output file by hash; integrity is re-checked on read."""
+    try:
+        data = executor.artifact(sha256)
+    except _SbxNotFound as exc:
+        raise _sandbox_http_error(exc) from exc
+    return Response(content=data, media_type="application/octet-stream",
+                    headers={"X-Content-SHA256": sha256,
+                             "Content-Disposition": f'attachment; filename="{sha256}"'})
