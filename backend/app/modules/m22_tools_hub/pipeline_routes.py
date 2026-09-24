@@ -123,3 +123,55 @@ def run_job(job_id: str, p: InstallPipeline = Depends(get_pipeline)):
 @router.get("/portfolio")
 def portfolio(include_history: bool = False, p: InstallPipeline = Depends(get_pipeline)):
     return p.portfolio(include_history)
+
+
+def get_discovery_service():
+    from .routes import get_service
+    return get_service()
+
+
+class DiscoveryQueryIn(BaseModel):
+    query: str = Field(min_length=1, max_length=300)
+
+
+class CandidateProposalIn(BaseModel):
+    version: str | None = Field(default=None, max_length=80)
+    entrypoint: str | None = Field(default=None, max_length=500)
+    permissions: list[str] = Field(default_factory=list)
+
+
+@router.post("/discoveries", status_code=201)
+async def discover_and_persist(body: DiscoveryQueryIn, p: InstallPipeline = Depends(get_pipeline),
+                               service=Depends(get_discovery_service)):
+    """Run the free official-registry collectors and persist ranked candidates for this tenant."""
+    try:
+        return await p.discover(body.query, service)
+    except ERRORS as exc:
+        raise _http(exc) from exc
+    except OSError as exc:
+        raise HTTPException(502, f"discovery source failed: {exc}") from exc
+
+
+@router.get("/candidates")
+def list_candidates(source: str | None = None, limit: int = 100, p: InstallPipeline = Depends(get_pipeline)):
+    return p.list_candidates(source, max(1, min(limit, 500)))
+
+
+@router.get("/candidates/{candidate_id}")
+def get_candidate(candidate_id: str, p: InstallPipeline = Depends(get_pipeline)):
+    try:
+        return p.get_candidate(candidate_id)
+    except ERRORS as exc:
+        raise _http(exc) from exc
+
+
+@router.post("/candidates/{candidate_id}/proposals", status_code=201)
+def propose_from_candidate(candidate_id: str, body: CandidateProposalIn,
+                           tenant: TenantContext = Depends(require_tenant),
+                           p: InstallPipeline = Depends(get_pipeline)):
+    """Fetch the candidate's artifact from PyPI/npm, check the registry digest, scan, and file a Module 0 approval."""
+    try:
+        return p.propose_from_candidate(candidate_id, requested_by=tenant.actor_id, version=body.version,
+                                        entrypoint=body.entrypoint, permissions=body.permissions)
+    except ERRORS as exc:
+        raise _http(exc) from exc
