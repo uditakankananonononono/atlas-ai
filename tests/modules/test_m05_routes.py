@@ -269,3 +269,23 @@ def test_missing_campaign_and_message_are_404():
     client, _, _ = make_client()
     assert client.get("/api/v1/outreach-manager/campaigns/nope").status_code == 404
     assert client.get("/api/v1/outreach-manager/messages/nope").status_code == 404
+
+
+def test_cadence_policy_and_timeline_routes(tmp_path, monkeypatch):
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+    from app.core.database import Base
+    from app.modules.m05_outreach_manager.cadence import CadencePolicyStore
+
+    monkeypatch.setenv("ATLAS_ENV", "development")
+    client, container, _ = make_client()
+    e = create_engine(f"sqlite:///{tmp_path/'p.db'}"); Base.metadata.create_all(e)
+    container.cadence_policy = CadencePolicyStore("local", session_factory=sessionmaker(bind=e))
+    rules = {"cold": {"min_gap_days": 5, "max_per_30_days": 2}, "warm": {"min_gap_days": 3, "max_per_30_days": 4},
+             "close": {"min_gap_days": 1, "max_per_30_days": 8}}
+    assert client.put("/api/v1/outreach-manager/cadence-policy", json={"rules": rules, "reason": ""}).status_code == 422
+    r = client.put("/api/v1/outreach-manager/cadence-policy", json={"rules": rules, "live_thread_days": 14, "reason": "gentler"})
+    assert r.status_code == 200 and r.json()["version"] == 1
+    got = client.get("/api/v1/outreach-manager/cadence-policy").json()
+    assert got["rules"]["cold"]["min_gap_days"] == 5 and len(got["history"]) == 1
+    assert client.get("/api/v1/outreach-manager/contacts/nope/timeline").status_code == 404

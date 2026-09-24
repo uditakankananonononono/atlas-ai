@@ -213,6 +213,7 @@ class CampaignService:
         approval_sink: ApprovalSink,
         clock: Callable[[], datetime] | None = None,
         tenant_id: str = "local",
+        cadence_policy: Callable[[], dict[str, Any]] | None = None,
     ) -> None:
         if not tenant_id.strip():
             raise ValueError("tenant_id is required")
@@ -221,6 +222,7 @@ class CampaignService:
         self.contacts = contacts
         self.approval_sink = approval_sink
         self._clock = clock or _utcnow
+        self._cadence_policy = cadence_policy
 
     # --- campaign lifecycle -------------------------------------------------
 
@@ -365,12 +367,47 @@ class CampaignService:
 
     def cadence(self, message_id: str) -> dict[str, Any]:
         """Cross-campaign cadence decision for one message (read-only)."""
-        from .cadence import evaluate
-
         message = self._message(message_id)
-        return evaluate(contact=self._contact(message.contact_id), message=message,
-                        messages=self.campaigns.list_messages(), contacts=self.contacts, now=self._clock(),
-                        campaign_follow_up_days=self.get_campaign(message.campaign_id).follow_up_window_days)
+        return self._evaluate(message)
+
+    def _evaluate(self, message: OutreachMessage) -> dict[str, Any]:
+        from .cadence import default_policy, evaluate, rules_from
+
+        policy = self._cadence_policy() if self._cadence_policy else default_policy()
+        rules, live_days = rules_from(policy)
+        out = evaluate(contact=self._contact(message.contact_id), message=message,
+                       messages=self.campaigns.list_messages(), contacts=self.contacts, now=self._clock(),
+                       campaign_follow_up_days=self.get_campaign(message.campaign_id).follow_up_window_days,
+                       rules=rules, live_thread_days=live_days)
+        out["policy_version"] = policy["version"]
+        return out
+
+    def contact_timeline(self, contact_id: str) -> dict[str, Any]:
+        """Every message to this person across all campaigns, oldest first (read-only)."""
+        from .cadence import default_policy, person_key, relationship
+
+        contact = self._contact(contact_id)
+        key = person_key(contact)
+        cache: dict[str, Any] = {}
+        rows = []
+        for m in self.campaigns.list_messages():
+            if m.contact_id not in cache:
+                cache[m.contact_id] = self.contacts.get(m.contact_id)
+            other = cache[m.contact_id]
+            if other is None or person_key(other) != key:
+                continue
+            campaign = self.campaigns.get_campaign(m.campaign_id)
+            rows.append({"message_id": m.id, "campaign_id": m.campaign_id,
+                         "campaign": campaign.name if campaign else None, "contact_id": m.contact_id,
+                         "kind": m.kind, "sequence": m.sequence, "status": m.status, "subject": m.subject,
+                         "sent_at": m.sent_at.isoformat() if m.sent_at else None,
+                         "updated_at": m.updated_at.isoformat()})
+        rows.sort(key=lambda r: r["sent_at"] or r["updated_at"])
+        policy = self._cadence_policy() if self._cadence_policy else default_policy()
+        rel = relationship(contact)
+        return {"person": key, "relationship": rel, "rule": policy["rules"][rel],
+                "live_thread_days": policy["live_thread_days"], "policy_version": policy["version"],
+                "contact_records": sorted({r["contact_id"] for r in rows} | {contact.id}), "messages": rows}
 
     def record_decision(self, message_id: str, approved: bool, actor: str | None = None) -> OutreachMessage:
         """Mirror a Module 0 decision onto the message. Denial is terminal."""
@@ -534,13 +571,8 @@ class CampaignService:
 
     def _follow_up_cadence_ok(self, message: OutreachMessage) -> bool:
         """A follow-up is only due if cadence would let it through right now."""
-        from .cadence import evaluate
-
         probe = message.model_copy(update={"id": f"probe:{message.id}", "status": "draft", "kind": "follow_up"})
-        return evaluate(contact=self._contact(message.contact_id), message=probe,
-                        messages=self.campaigns.list_messages(), contacts=self.contacts,
-                        now=self._clock(),
-                        campaign_follow_up_days=self.get_campaign(message.campaign_id).follow_up_window_days)["allowed"]
+        return self._evaluate(probe)["allowed"]
 
     def _contact(self, contact_id: str):
         contact = self.contacts.get(contact_id)
