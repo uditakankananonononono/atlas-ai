@@ -261,6 +261,10 @@ class SqlEmailRepository:
             self._log(db, "email_draft", draft_id, "draft_proposed",
                       {"approval_id": approval_id, "message_id": message_id})
 
+    def log_event(self, entity: str, entity_id: str, event: str, details: dict) -> None:
+        with self.sessions.begin() as db:
+            self._log(db, entity, entity_id, event, details)
+
     def list_drafts(self, limit: int = 100) -> list[EmailDraftRow]:
         with self.sessions() as db:
             return list(db.scalars(select(EmailDraftRow).where(

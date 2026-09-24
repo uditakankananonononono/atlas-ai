@@ -17,6 +17,8 @@ List-Unsubscribe detection, deadline follow-up surfacing, append-only audit.
 
 from __future__ import annotations
 
+import asyncio
+
 import base64
 import json
 from datetime import datetime, timedelta, timezone
@@ -106,6 +108,7 @@ class Service:
         graph_context: GraphContextFn | None = None,
         llm_provider: str = "openai",
         llm_model: str | None = None,
+        review_state_capturer: Callable[[str], Any] | None = None,
     ) -> None:
         self.repository = repository
         self.tenant_id = str(getattr(repository, "tenant_id", "")).strip()
@@ -124,6 +127,9 @@ class Service:
         self.graph_context = graph_context
         self.llm_provider = llm_provider
         self.llm_model = llm_model
+        # Snapshots what the reviewer will see (live thread + draft) into M00 so
+        # consume can refuse the send if anything changes before it goes out.
+        self.review_state_capturer = review_state_capturer
 
     # -- OAuth connect -----------------------------------------------------
     def authorization_url(self, redirect_uri: str, state: str) -> str:
@@ -305,11 +311,21 @@ class Service:
                 "body": body,
             },
         )
-        self.approval_sink.put(approval, user_id=self.tenant_id)
+        # The approval store assigns the durable id; link the draft to that id,
+        # not the provisional one built above.
+        approval = self.approval_sink.put(approval, user_id=self.tenant_id) or approval
         self.repository.save_draft(
             draft_id=draft_id, message_id=message_id, approval_id=approval.id,
             to=raw.sender, subject=subject, body=body, model=model,
         )
+        if self.review_state_capturer is not None:
+            try:
+                await asyncio.to_thread(self.review_state_capturer, approval.id)
+            except Exception as exc:  # the card can re-capture; never block drafting
+                log_event = getattr(self.repository, "log_event", None)
+                if log_event:
+                    log_event("email_draft", draft_id, "review_state_capture_failed",
+                              {"approval_id": approval.id, "error": str(exc)[:200]})
         return EmailDraftView(
             id=draft_id, message_id=message_id, approval_id=approval.id, to=raw.sender,
             subject=subject, body=body, model=model, created_at=datetime.now(timezone.utc),

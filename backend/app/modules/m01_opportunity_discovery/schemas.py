@@ -112,8 +112,20 @@ class OpportunityOut(BaseModel):
     score_kind: str = Field(default="heuristic", pattern="^heuristic$")
     advisory_only: bool = True
     tags: list[str]
+    match_engine: str = Field(default="token-cosine", description="Engine that produced match_score, e.g. embedding:fastembed:BAAI/bge-small-en-v1.5; a token-cosine:fallback(...) value names why the live engine was not used.")
+    deadline_engine: str = Field(default="regex-formats", description="Engine that produced deadline, e.g. dateparser:UTC.")
     first_seen: datetime
     last_seen: datetime
+
+
+class NlpStatusOut(BaseModel):
+    """What Opportunity Discovery is actually scoring with right now."""
+
+    entity_engine: str
+    deadline_engine: str
+    match_engine: str
+    live: bool
+    degraded: dict[str, str]
 
 
 class DigestRequestIn(BaseModel):
