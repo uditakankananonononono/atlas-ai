@@ -105,3 +105,8 @@ class EffectPermit(BaseModel):
     effect_id: str
     allowed: bool
     consumed_at: datetime
+
+
+class ReviewStateCapture(BaseModel):
+    """Optional explicit state; omit to read it through the registered probe."""
+    state: dict[str, Any] | None = None

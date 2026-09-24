@@ -62,3 +62,15 @@ No scraping, self-bot, proxy, or evasion features exist in this module, so no su
 ## Tests
 
 `pytest tests/modules/test_m00_approval_center.py` -> 11 passed. Full repo suite (`pytest`) -> 16 passed. No network access required; tests inject their own SQLite engine and clock.
+
+
+## Impact preview and drift check (2026-09-24)
+
+Register a read-only probe for any gated action whose safety depends on external state:
+
+```python
+from app.modules.m00_approval_center.impact import PROBES
+PROBES.register("send_email", lambda payload: gmail_thread_state(payload["thread_id"]), module_id=10)
+```
+
+Capture the reviewed state when the approval card is shown (`POST /approval-center/requests/{id}/review-state`, optional explicit `{"state": {...}}`). Consumption (`/consume`, `atlas.modules.execute_approved`) re-reads the probe and refuses the permit if anything changed. Approvals without a snapshot behave as before. Table: `m00_approval_review_states` (migration `20260924_m00_review_states`).
