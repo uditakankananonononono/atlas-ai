@@ -45,7 +45,7 @@ All module routers below are mounted by `backend/app/main.py`. "Implemented core
 | 8 | Startup Growth | real Next.js archives, Supabase waitlist route, PPTX deck, code-grounded docs, gated publish, free-first experiment board (paid ideas are proposals only) with Plausible/CSV analytics import | deployment executor and broader templates |
 | 9 | Knowledge Workspace | tenant graph, review suggestions, versioning, planner export, durable signed contradiction-decision chains with source-hash checks | Google Docs/Sheets ingestion and richer visual editing |
 | 10 | Email Assistant | Gmail OAuth/watch/ingestion, seven-class classifier, action extraction, priority/follow-up, gated replies | production OAuth credentials and approved send execution |
-| 11 | Calendar Intelligence | Google/CalDAV sync, solver, travel/prep/focus constraints, conflict proposals | production credentials and live apply verification |
+| 11 | Calendar Intelligence | Google/CalDAV sync, solver, travel/prep/focus constraints, conflict proposals, signed risk-evidence ingest (registered provider keys, authenticated fetch, immutable storage) | production credentials and live apply verification |
 | 12 | AI Research Lab | cost/latency/capability router, bounded retries, confidence, YAML DAG execution, and shipped Atlas-provider wiring | durable distributed node runner and live-provider acceptance |
 | 13 | Browser Agent | sessions, URL safety, form matching, screenshot-bound single-use approvals | deployed Playwright/VLM runtime and artifact storage |
 | 14 | Project Builder | scientific acceptance-to-artifact/test matrix,  tenant project plans, tasks, dependencies and approval gates | richer project executors and integrations |

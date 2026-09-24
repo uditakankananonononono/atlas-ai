@@ -309,3 +309,10 @@ def retire_risk_provider_key(provider:str,key_id:str,tenant:TenantContext=Depend
  try:
   row=registry.retire(provider,key_id);return {'tenant_id':tenant.tenant_id,'provider':provider,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
  except ValueError as error:raise HTTPException(404,str(error)) from error
+from .governed_risk_ingest import HttpsProviderRetriever,IngestRejected,ingest_signed_snapshot
+from .asymmetric_risk_evidence import SignedRiskSnapshot
+def get_provider_retriever():return HttpsProviderRetriever()
+@router.post('/schedule-risk/live-evidence/ingest')
+def ingest_live_risk_snapshot(body:SignedRiskSnapshot,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_risk_provider_key_registry),store=Depends(get_risk_snapshot_store),retriever=Depends(get_provider_retriever)):
+ try:return {'tenant_id':tenant.tenant_id,**ingest_signed_snapshot(body,registry=registry,retriever=retriever,store=store)}
+ except IngestRejected as error:raise HTTPException(422,str(error)) from error
