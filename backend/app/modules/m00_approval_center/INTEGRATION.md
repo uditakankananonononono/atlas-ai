@@ -74,3 +74,5 @@ PROBES.register("send_email", lambda payload: gmail_thread_state(payload["thread
 ```
 
 Capture the reviewed state when the approval card is shown (`POST /approval-center/requests/{id}/review-state`, optional explicit `{"state": {...}}`). Consumption (`/consume`, `atlas.modules.execute_approved`) re-reads the probe and refuses the permit if anything changed. Approvals without a snapshot behave as before. Table: `m00_approval_review_states` (migration `20260924_m00_review_states`).
+
+**Status:** no real module registers a probe yet, so no approval currently gets a drift check. The first real probe (M10 send/outreach state) is still owed by whoever claims M10.
