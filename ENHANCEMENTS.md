@@ -34,7 +34,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** tenant/thread-scoped transactional snapshot persistence uses compare-and-swap against the stored reconciliation head so stale writers fail closed without overwrite.
 - **Next:** authenticate reviewer identities and source-message bytes before persistence.
 - **Landed:** reconciliation evidence verification hashes supplied source-message bytes and validates reviewer decision attestations with configured Ed25519 public keys.
-- **Next:** persist reconciliation snapshots transactionally and govern reviewer-key identity, provisioning, and rotation.
+- **Landed:** reviewer-key governance: keys bound to (tenant, reviewer), enrolled only by that reviewer or an atlas-admin with an Ed25519 proof-of-possession, one active key per reviewer, rotation endorsed by the current key (admin lost-key recovery recorded as such), retirement with reason, retired keys never verify, append-only key event log; attestation verification now resolves keys from the registry only and no longer trusts caller-supplied keys (`tests/modules/test_m10_reviewer_key_registry.py`).
+- **Next:** trusted timestamps on attestations so signatures made before a key's retirement can still verify.
 - **Landed:** tenant-scoped reviewer public-key registry pins Ed25519 key IDs to fingerprints, rejects rebinding, and records explicit retirement.
 - **Next:** persist reconciliation snapshots transactionally and verify source-message bytes using governed reviewer identities.
 - **Landed:** verified source-message bytes persist tenant-scoped and immutable by message ID, with exact-repeat idempotency and fail-closed replacement conflicts.
