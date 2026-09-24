@@ -1,3 +1,6 @@
+import re
+from datetime import datetime
+from fastapi import Response
 from fastapi import APIRouter,Depends,HTTPException,Query,status
 from app.auth.context import TenantContext,require_tenant
 from .repository import SqlGraphRepository
@@ -60,19 +63,45 @@ def contradiction_revision_chain(body:RevisionChainRequest,tenant:TenantContext=
  except ValueError as error:raise HTTPException(422,str(error)) from error
 
 from pydantic import BaseModel as _RBM, Field as _RF
-from .revision_store import RevisionConflict, RevisionRejected, RevisionStore, verify_sources
+from .revision_store import _http_fetch, KeyGovernanceError, RevisionConflict, RevisionRejected, RevisionStore, SourceBlobStore, verify_sources
 from .contradiction_revisions import DecisionRevision
 class RevisionAppendIn(_RBM):
  revision:DecisionRevision;signature_b64:str|None=_RF(default=None,max_length=200)
 class ActorKeyIn(_RBM):
  public_key_b64:str=_RF(min_length=40,max_length=100)
+ proof_signature_b64:str=_RF(min_length=40,max_length=200,description='Ed25519 signature by this key over enrollment_statement(tenant, actor, key_id)')
+ actor_id:str|None=_RF(default=None,max_length=120,description='Admins may enroll for another actor; defaults to the caller')
+class ActorKeyRotateIn(_RBM):
+ new_public_key_b64:str=_RF(min_length=40,max_length=100);proof_signature_b64:str=_RF(min_length=40,max_length=200)
+ endorsement_signature_b64:str|None=_RF(default=None,max_length=200);actor_id:str|None=_RF(default=None,max_length=120)
+ reason:str=_RF(default='rotated',min_length=3,max_length=200)
+class ActorKeyRetireIn(_RBM):
+ reason:str=_RF(min_length=3,max_length=300);actor_id:str|None=_RF(default=None,max_length=120)
+ effective_from:datetime|None=_RF(default=None,description='When the key stopped being trustworthy; earlier than now if it may have leaked')
 class SourceVerifyIn(_RBM):
  revision:DecisionRevision;source_uris:dict[str,str]=_RF(default_factory=dict,max_length=50)
-def get_revision_store(t:TenantContext=Depends(require_tenant)):return RevisionStore(t.tenant_id,t.actor_id)
+def get_revision_store(t:TenantContext=Depends(require_tenant)):return RevisionStore(t.tenant_id,t.actor_id,roles=t.roles)
+def get_source_blobs(t:TenantContext=Depends(require_tenant)):return SourceBlobStore(t.tenant_id)
+def get_source_fetcher():return _http_fetch
+def _gov(fn):
+ try:return fn()
+ except KeyGovernanceError as e:raise HTTPException(403,str(e)) from e
+ except RevisionConflict as e:raise HTTPException(409,str(e)) from e
+ except LookupError as e:raise HTTPException(404,str(e)) from e
+ except RevisionRejected as e:raise HTTPException(422,str(e)) from e
 @router.post('/contradiction-revisions/keys',status_code=201)
 def register_actor_key(body:ActorKeyIn,store:RevisionStore=Depends(get_revision_store)):
- try:return store.register_key(body.public_key_b64)
- except RevisionRejected as e:raise HTTPException(422,str(e)) from e
+ return _gov(lambda:store.register_key(body.public_key_b64,body.proof_signature_b64,body.actor_id))
+@router.post('/contradiction-revisions/keys/rotate')
+def rotate_actor_key(body:ActorKeyRotateIn,store:RevisionStore=Depends(get_revision_store)):
+ return _gov(lambda:store.rotate_key(body.new_public_key_b64,body.proof_signature_b64,body.endorsement_signature_b64,body.actor_id,body.reason))
+@router.post('/contradiction-revisions/keys/{key_id}/retire')
+def retire_actor_key(key_id:str,body:ActorKeyRetireIn,store:RevisionStore=Depends(get_revision_store)):
+ return _gov(lambda:store.retire_key(key_id,body.reason,body.actor_id,body.effective_from))
+@router.get('/contradiction-revisions/keys')
+def list_actor_keys(actor_id:str|None=Query(default=None,max_length=120),store:RevisionStore=Depends(get_revision_store)):return store.list_keys(actor_id)
+@router.get('/contradiction-revisions/keys/events')
+def actor_key_events(actor_id:str=Query(min_length=1,max_length=120),store:RevisionStore=Depends(get_revision_store)):return store.key_events(actor_id)
 @router.post('/contradiction-revisions',status_code=201)
 def append_revision(body:RevisionAppendIn,store:RevisionStore=Depends(get_revision_store)):
  try:return store.append(body.revision,body.signature_b64)
@@ -83,5 +112,12 @@ def revision_chain(claim_key:str=Query(min_length=1,max_length=500),store:Revisi
  try:return store.chain(claim_key)
  except LookupError as e:raise HTTPException(404,str(e)) from e
 @router.post('/contradiction-revisions/verify-sources')
-def verify_revision_sources(body:SourceVerifyIn,tenant:TenantContext=Depends(require_tenant)):
- return {'tenant_id':tenant.tenant_id,**verify_sources(body.revision,body.source_uris)}
+def verify_revision_sources(body:SourceVerifyIn,tenant:TenantContext=Depends(require_tenant),blobs:SourceBlobStore=Depends(get_source_blobs),fetch=Depends(get_source_fetcher)):
+ return {'tenant_id':tenant.tenant_id,**verify_sources(body.revision,body.source_uris,fetch=fetch,blobs=blobs)}
+@router.get('/contradiction-revisions/source-bytes/{sha256}')
+def stored_source_bytes(sha256:str,blobs:SourceBlobStore=Depends(get_source_blobs)):
+ if not re.fullmatch(r'[0-9a-f]{64}',sha256):raise HTTPException(422,'sha256 must be 64 lowercase hex characters')
+ try:got=blobs.get(sha256)
+ except RevisionRejected as e:raise HTTPException(409,str(e)) from e
+ if got is None:raise HTTPException(404,'no stored copy of these bytes for this tenant')
+ return Response(content=got[0],media_type='application/octet-stream',headers={'X-Atlas-Content-SHA256':sha256,'X-Atlas-First-URI':got[1]['first_uri'][:500].encode('ascii','ignore').decode(),'X-Atlas-Stored-At':got[1]['stored_at']})
