@@ -2,9 +2,10 @@
 import React,{FormEvent,useCallback,useEffect,useMemo,useState} from "react";
 import OperationsChart from "./OperationsChart";
 import {Card,CardContent,CardHeader} from "./ui/card";
-import {Approval,Blocker,DashboardView,Digest,DrilldownResult,KPI,ModuleStatus,RerunProposalRow,RerunScheduleCard as RerunCard,Snapshot,WidgetConfig,dashboardApi} from "./executive-dashboard/api";
+import {Approval,ApprovalCenterRequest,Blocker,DashboardView,Digest,DrilldownResult,KPI,ModuleStatus,RerunProposalRow,RerunScheduleCard as RerunCard,Snapshot,WidgetConfig,dashboardApi} from "./executive-dashboard/api";
 import RerunScheduleCard from "./executive-dashboard/RerunScheduleCard";
 import RerunApprovalPanel,{RerunApprovalState} from "./executive-dashboard/RerunApprovalPanel";
+import OutreachApprovalPanel,{OUTREACH_MODULE_ID,OutreachApprovalState} from "./executive-dashboard/OutreachApprovalPanel";
 type Api=ReturnType<typeof dashboardApi>;
 const severityStyle:Record<string,string>={critical:"border-red-500 text-red-300",warning:"border-amber-500 text-amber-300",info:"border-slate-600 text-slate-300"};
 const agentStyle:Record<string,string>={running:"text-emerald-400",idle:"text-slate-400",stalled:"text-amber-400",offline:"text-red-400"};
@@ -43,6 +44,23 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
     catch(e){setRerunApproval(prev=>prev&&{...prev,error:e instanceof Error?e.message:"decision failed"})}
     finally{setRerunBusy(false)}
   }
+  const [outreachRequests,setOutreachRequests]=useState<ApprovalCenterRequest[]>([]);
+  const [outreach,setOutreach]=useState<OutreachApprovalState|null>(null);const [outreachBusy,setOutreachBusy]=useState(false);
+  const loadOutreachRequests=useCallback(()=>api.approvalRequests({status:"pending",module_id:OUTREACH_MODULE_ID}).then(setOutreachRequests,()=>setOutreachRequests([])),[api]);
+  async function openOutreach(request:ApprovalCenterRequest){
+    setOutreach({request,timeline:null,timelineError:null,liveCadence:null,error:null});
+    const p=request.payload as Record<string,unknown>;const contactId=typeof p.contact_id==="string"?p.contact_id:"";const messageId=typeof p.message_id==="string"?p.message_id:"";
+    const [timeline,cadence]=await Promise.allSettled([contactId?api.contactTimeline(contactId):Promise.reject(new Error("request has no contact_id")),messageId?api.messageCadence(messageId):Promise.reject(new Error("no message_id"))]);
+    setOutreach(prev=>prev&&prev.request.id===request.id?{...prev,timeline:timeline.status==="fulfilled"?timeline.value:null,
+      timelineError:timeline.status==="rejected"?(timeline.reason instanceof Error?timeline.reason.message:"history unavailable"):null,
+      liveCadence:cadence.status==="fulfilled"?cadence.value:null}:prev);
+  }
+  async function decideOutreach(decision:"approved"|"denied"){
+    if(!outreach)return;setOutreachBusy(true);
+    try{const updated=await api.decideApprovalRequest(`/approval-center/requests/${encodeURIComponent(outreach.request.id)}`,decision);setOutreach(prev=>prev&&{...prev,request:updated,error:null});loadOutreachRequests()}
+    catch(e){setOutreach(prev=>prev&&{...prev,error:e instanceof Error?e.message:"decision failed"})}
+    finally{setOutreachBusy(false)}
+  }
   const [selected,setSelected]=useState<Set<string>>(new Set());const [skippedNote,setSkippedNote]=useState<string|null>(null);
   const [command,setCommand]=useState("");const [preview,setPreview]=useState<{id:string;intent:string;read_only:boolean;confidence:number}|null>(null);
   const [live,setLive]=useState(false);const [error,setError]=useState<string|null>(null);const [editView,setEditView]=useState(false);
@@ -52,8 +70,9 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
       setView(v);setKpis(k);setModules(m);setBlockers(b);setApprovals(a);setDigest(d);setSnapshot(s);setError(null);
       // fetched separately so an M04 outage never blanks the other cards
       api.rerunSchedules().then(setRerunCard,()=>setRerunCard(null));
+      loadOutreachRequests();
     }catch(e){setError(e instanceof Error?e.message:"dashboard refresh failed")}
-  },[api]);
+  },[api,loadOutreachRequests]);
   useEffect(()=>{refresh();setLive(true);const timer=window.setInterval(refresh,30000);return()=>window.clearInterval(timer)},[refresh]);
   async function submitCommand(e:FormEvent){e.preventDefault();if(!command.trim())return;setPreview(await api.preview(command))}
   async function runCommand(){if(!preview)return;await api.execute(preview.id);setPreview(null);setCommand("");refresh()}
@@ -80,7 +99,8 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
     digest:()=>digest?<section key="digest" className="rounded-xl bg-slate-900 p-4"><h2 className="text-lg font-semibold">Digest</h2>{digest.sections.map(sec=><div key={sec.title} className="mt-3"><h3 className="text-sm font-semibold text-cyan-300">{sec.title}</h3><ul className="mt-1 list-inside list-disc text-sm text-slate-300">{sec.lines.slice(0,8).map((l,i)=><li key={i}>{l}</li>)}</ul></div>)}</section>:null,
     approvals:()=><section key="approvals"><div className="flex items-center justify-between"><h2 className="text-lg font-semibold">Approval queue ({approvals.length})</h2>{selected.size>0&&<div className="flex gap-2 text-sm"><button onClick={()=>decideBulk(true)} className="rounded bg-emerald-500 px-3 py-1 text-slate-950">Approve {selected.size}</button><button onClick={()=>decideBulk(false)} className="rounded bg-slate-700 px-3 py-1">Reject {selected.size}</button></div>}</div>
       {skippedNote&&<p className="mt-1 text-xs text-amber-300">{skippedNote}</p>}
-      <div className="mt-2 space-y-2">{approvals.map(a=><article key={a.id} className="rounded-xl bg-slate-900 p-4"><div className="flex items-start gap-3"><input type="checkbox" checked={selected.has(a.id)} onChange={()=>toggleSelect(a.id)} className="mt-1" aria-label={`select ${a.title}`}/><div className="flex-1"><div className="flex justify-between"><strong>{a.title}</strong><span className="text-xs uppercase text-amber-300">{a.risk}</span></div><p className="mt-1 text-sm text-slate-300">{a.summary}</p><p className="mt-1 text-xs text-slate-500">module {a.module_id}{a.expires_at?` · expires ${new Date(a.expires_at).toLocaleString()}`:""}</p><div className="mt-3 flex gap-2"><button onClick={()=>decideOne(a.id,true)} className="rounded bg-emerald-500 px-3 py-1 text-slate-950">Approve</button><button onClick={()=>decideOne(a.id,false)} className="rounded bg-slate-700 px-3 py-1">Reject</button></div></div></div></article>)}{approvals.length===0&&<p className="text-sm text-slate-500">Queue is clear.</p>}</div></section>,
+      <div className="mt-2 space-y-2">{approvals.map(a=><article key={a.id} className="rounded-xl bg-slate-900 p-4"><div className="flex items-start gap-3"><input type="checkbox" checked={selected.has(a.id)} onChange={()=>toggleSelect(a.id)} className="mt-1" aria-label={`select ${a.title}`}/><div className="flex-1"><div className="flex justify-between"><strong>{a.title}</strong><span className="text-xs uppercase text-amber-300">{a.risk}</span></div><p className="mt-1 text-sm text-slate-300">{a.summary}</p><p className="mt-1 text-xs text-slate-500">module {a.module_id}{a.expires_at?` · expires ${new Date(a.expires_at).toLocaleString()}`:""}</p><div className="mt-3 flex gap-2"><button onClick={()=>decideOne(a.id,true)} className="rounded bg-emerald-500 px-3 py-1 text-slate-950">Approve</button><button onClick={()=>decideOne(a.id,false)} className="rounded bg-slate-700 px-3 py-1">Reject</button></div></div></div></article>)}{approvals.length===0&&<p className="text-sm text-slate-500">Queue is clear.</p>}</div>
+      {outreachRequests.length>0&&<div className="mt-4"><h3 className="text-sm font-semibold">Outreach sends in the approval center ({outreachRequests.length})</h3><ul className="mt-2 space-y-2">{outreachRequests.map(r=>{const p=r.payload as Record<string,unknown>;return <li key={r.id} className="flex items-center justify-between rounded-xl bg-slate-900 p-3 text-sm"><span>{String(p.subject??r.action_type)} <span className="text-slate-400">to {String(p.recipient??"")}</span></span><button onClick={()=>openOutreach(r)} className="rounded border border-cyan-400 px-3 py-1">Review</button></li>})}</ul></div>}</section>,
     timeline:()=>snapshot?.data?.timeline?.length?<section key="timeline"><h2 className="text-lg font-semibold">Timeline</h2><ul className="mt-2 space-y-1 text-sm">{snapshot.data.timeline.map((t,i)=><li key={String(t.id??i)} className="flex justify-between rounded bg-slate-900 p-2"><span>{String(t.title??t.id)}{Boolean(t.critical)&&<span className="ml-2 text-xs text-cyan-400">critical</span>}{Boolean(t.at_risk)&&<span className="ml-2 text-xs text-red-400">at risk</span>}</span><span className="text-xs text-slate-500">{Math.round(Number(t.progress??0)*100)}%</span></li>)}</ul></section>:null,
   };
   const widgets=(view?.widgets??[]).filter(w=>w.visible).sort((a,b)=>a.position-b.position);
@@ -92,6 +112,7 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
     <form onSubmit={submitCommand} className="rounded-xl border border-slate-700 bg-slate-900 p-4"><label className="text-sm" htmlFor="atlas-command">Ask Atlas or prepare an action</label><div className="mt-2 flex gap-2"><input id="atlas-command" value={command} onChange={e=>setCommand(e.target.value)} className="flex-1 rounded bg-slate-800 p-3" placeholder="Show blockers"/><button className="rounded bg-cyan-500 px-4 text-slate-950">Preview</button></div>{preview&&<div className="mt-3 rounded bg-slate-800 p-3"><p>{preview.intent} · {Math.round(preview.confidence*100)}% confidence</p><p className="text-sm text-slate-300">{preview.read_only?"Read-only":"Requires approval before any action"}</p><button type="button" onClick={runCommand} className="mt-2 rounded border border-cyan-400 px-3 py-1">{preview.read_only?"Run":"Send to approvals"}</button></div>}</form>
     {widgets.map(w=>{const render=sections[w.kind];return render?<div key={w.id}>{render()}</div>:null})}
     <DrilldownPanel data={drilldown} onClose={()=>setDrilldown(null)}/>
+    <OutreachApprovalPanel state={outreach} busy={outreachBusy} onDecide={decideOutreach} onClose={()=>setOutreach(null)}/>
     <RerunApprovalPanel state={rerunApproval} busy={rerunBusy} onDecide={decideRerun} onClose={()=>setRerunApproval(null)}/>
   </main>;
 }
