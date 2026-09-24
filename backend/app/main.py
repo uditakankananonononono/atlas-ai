@@ -14,6 +14,7 @@ from app.modules.m02_competition_manager.profile_routes import router as competi
 from app.modules.m25_knowledge_copilot.routes import router as knowledge_copilot_router
 from app.modules.m20_general_cognitive_worker.agi_routes import router as agi_runtime_router
 from app.modules.m20_general_cognitive_worker.product_orchestrator_routes import router as product_orchestrator_router
+from app.core.model_routes import router as model_catalog_router
 
 configure_telemetry()
 app = FastAPI(title="Atlas AI", version="0.1.0")
@@ -28,6 +29,7 @@ app.include_router(competition_profile_router,prefix="/api/v1",dependencies=[Dep
 app.include_router(knowledge_copilot_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(agi_runtime_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(product_orchestrator_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
+app.include_router(model_catalog_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 for module_spec in IMPLEMENTED_SPECS:
     app.include_router(module_spec.router, prefix="/api/v1", dependencies=[Depends(require_tenant)])
 
