@@ -1554,7 +1554,12 @@ _durable_runtime_repo = GCWRepository(atlas_engine, tenant_id="local")
 # Alembic owns production schema lifecycle; local auto-create is explicit.
 if os.getenv("ATLAS_AUTO_CREATE_SCHEMA") == "1":
     _durable_runtime_repo.create_schema()
-bind_runtime(GCWRuntime(_durable_runtime_repo, _hydrate=False))
+from .model_adapters import bound_models
+_gcw_models = bound_models()
+_gcw_runtime = GCWRuntime(_durable_runtime_repo, _hydrate=False, **_gcw_models)
+if "planner_model" in _gcw_models:
+    _gcw_models["planner_model"].bind_registry(_gcw_runtime.tools)
+bind_runtime(_gcw_runtime)
 router.include_router(durable_runtime_router)
 
 # Unified tenant-scoped facade over specialized-domain executive cognition rows.
