@@ -69,7 +69,10 @@ def _pdflatex_works() -> bool:
         return False
     import subprocess
     import os
-    env = {**os.environ, **({"TEXMFHOME": os.environ["ATLAS_TEXMFHOME"]} if os.getenv("ATLAS_TEXMFHOME") else {})}
+    import tempfile
+    # mirror render_pdf's environment: clean HOME, optional ATLAS_TEXMFHOME
+    env = {"PATH": "/usr/bin:/bin", "HOME": tempfile.gettempdir(),
+           **({"TEXMFHOME": os.environ["ATLAS_TEXMFHOME"]} if os.getenv("ATLAS_TEXMFHOME") else {})}
     probe = subprocess.run(["kpsewhich", "geometry.sty", "graphicx.sty", "hyperref.sty", "pdftexcmds.sty"],
                            capture_output=True, text=True, env=env)
     return len(probe.stdout.split()) == 4
