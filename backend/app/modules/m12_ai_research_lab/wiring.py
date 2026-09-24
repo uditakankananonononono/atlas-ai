@@ -1,6 +1,7 @@
 """Shipped Module 12 runtime using Atlas's configured model providers."""
 from __future__ import annotations
-from app.core.providers import generate
+from app.core.model_catalog import paid_allowed
+from app.core.providers import ProviderError, generate
 from .models import ModelCapability,ModelResult,TaskType
 from .router import ModelRouter
 from .service import Service
@@ -13,13 +14,23 @@ CATALOG=[
  ModelCapability('ollama:llama3.2',frozenset(TaskType),4096,0,8000,.70),
  ModelCapability('shared:instinct',frozenset(TaskType),4096,0,12000,.74),  # shared model layer, private routes only
 ]
+PAID_MODEL_IDS=frozenset(m.model_id for m in CATALOG if m.cents_per_1k_tokens>0)
+
+
+def active_catalog()->list[ModelCapability]:
+ """Free-first: paid models are only routable when ATLAS_ALLOW_PAID is explicitly true."""
+ return list(CATALOG) if paid_allowed() else [m for m in CATALOG if m.model_id not in PAID_MODEL_IDS]
+
+
 class AtlasProvider:
  async def generate(self,*,model_id,prompt,context):
+  if model_id in PAID_MODEL_IDS and not paid_allowed():
+   raise ProviderError(f"{model_id} is a paid model; set ATLAS_ALLOW_PAID=true to enable it")
   provider,model=model_id.split(':',1)
   chosen,text=await generate(prompt,provider,model)
   return ModelResult(text=text,model_id=chosen,confidence=.75,metadata={'provider':provider})
 
-def build_service():return Service(ModelRouter(CATALOG),AtlasProvider())
+def build_service():return Service(ModelRouter(active_catalog()),AtlasProvider())
 def build_dag_engine(service):
  async def run(task,config,context):
   from .models import RouteRequest

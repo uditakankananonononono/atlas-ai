@@ -121,3 +121,16 @@ def test_m12_catalog_and_m14_default_use_shared_layer():
     from app.modules.m14_project_builder.service import Service
     assert any(m.model_id == "shared:instinct" and m.cents_per_1k_tokens == 0 for m in CATALOG)
     assert inspect.signature(Service.plan).parameters["provider"].default == "shared"
+
+
+def test_m12_is_free_only_unless_paid_allowed(monkeypatch):
+    import asyncio
+    from app.core.providers import ProviderError
+    from app.modules.m12_ai_research_lab import wiring
+    monkeypatch.delenv("ATLAS_ALLOW_PAID", raising=False)
+    ids = {m.model_id for m in wiring.active_catalog()}
+    assert ids == {"ollama:llama3.2", "shared:instinct"}
+    with pytest.raises(ProviderError, match="paid model"):
+        asyncio.run(wiring.AtlasProvider().generate(model_id="openai:gpt-4o-mini", prompt="x", context={}))
+    monkeypatch.setenv("ATLAS_ALLOW_PAID", "true")
+    assert "openai:gpt-4o-mini" in {m.model_id for m in wiring.active_catalog()}
