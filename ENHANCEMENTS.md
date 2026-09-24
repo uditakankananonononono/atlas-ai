@@ -12,7 +12,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** semantic entailment check (free local NLI model) on top of the term-overlap support test, so a paraphrase citing the right source with wrong facts is caught.
 ## M03 - Grant Writer
 - **Landed:** deterministic science-grant preflight parses explicit word limits, budget caps, required attachments, evaluation criteria and unresolved `[NEEDS INPUT]` placeholders without inventing rules.
-- **Next (science):** agency-specific schema packs sourced from versioned official calls, with deadline and amendment tracking.
+- **Landed (science):** versioned agency schema packs (`schema_packs.py`, `data/schema_packs/<agency>/<program>/<version>.json`, `/grant-writer/schema-packs*`). Every rule carries the verbatim sentence it came from plus source URL and retrieval time; packs without anchors are rejected. `check` reports missing documents, page overruns, missing separate headings, URLs/DOIs where forbidden, too few reference writers and the deadlines for the applicant's field (timezone-exact); `diff` tracks amendments between versions; `verify-source` re-reads the public call and flags any anchor that no longer appears. First pack: NSF GRFP, NSF 26-526 (FY 2027), captured 2026-09-24 and verified against the live page (`tests/modules/test_m03_schema_packs.py`).
+- **Next (science):** more packs (NIH F31, NSF CAREER, DOE CSGF) and a scheduled verify-source run that opens a review item when anchors disappear.
 ## M04 - Research Scientist
 - **Landed:** downloadable computational reproducibility bundle with analysis code, input/parameter snapshots, SHA-256 input and manifest identity, dependencies, seed, source URLs and an explicit `execution_performed: false` boundary.
 - **Next:** approved sandbox execution that adds output hashes, logs and environment lock to the same manifest.
