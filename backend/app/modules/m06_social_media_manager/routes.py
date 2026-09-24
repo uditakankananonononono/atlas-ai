@@ -17,6 +17,7 @@ import os
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.models import ApprovalRequest
+from pydantic import BaseModel, Field
 from app.auth.context import TenantContext, require_tenant
 from app.core.providers import ProviderError
 
@@ -173,6 +174,52 @@ def check_compliance(plan_id: str, sponsored: bool = False, service: Service = D
         return service.check_compliance(plan_id, sponsored=sponsored)
     except PlanNotFoundError as error:
         raise HTTPException(status_code=404, detail="plan not found") from error
+
+
+class _Reference(BaseModel):
+    url: str | None = Field(default=None, max_length=2000)
+    title: str | None = Field(default=None, max_length=500)
+
+
+class _AdaptDraft(BaseModel):
+    platform: str = Field(min_length=1, max_length=40)
+    format: str = Field(default="post", max_length=60)
+    post_copy: str = Field(min_length=1, max_length=40000)
+    media_count: int = Field(default=0, ge=0, le=50)
+    alt_texts: int = Field(default=0, ge=0, le=50)
+
+
+class _AdaptPlanIn(BaseModel):
+    source: str | None = Field(default=None, max_length=40000)
+    references: dict[int, _Reference] = Field(default_factory=dict)
+    sponsored: bool = False
+
+
+class _AdaptIn(_AdaptPlanIn):
+    source: str = Field(min_length=1, max_length=40000)
+    drafts: list[_AdaptDraft] = Field(min_length=1, max_length=10)
+
+
+def _refs(refs: dict[int, _Reference]) -> dict[int, dict[str, str]]:
+    return {k: v.model_dump(exclude_none=True) for k, v in refs.items()}
+
+
+@router.post("/plans/{plan_id}/adaptation-preview")
+def plan_adaptation_preview(plan_id: str, request: _AdaptPlanIn, service: Service = Depends(get_service)) -> dict:
+    """Claim/citation parity and platform limits for a plan's drafts. Read-only."""
+    try:
+        return service.adaptation_preview(plan_id, source=request.source, references=_refs(request.references),
+                                          sponsored=request.sponsored)
+    except PlanNotFoundError as error:
+        raise HTTPException(status_code=404, detail="plan not found") from error
+
+
+@router.post("/adaptation-preview")
+def adaptation_preview(request: _AdaptIn, tenant: TenantContext = Depends(require_tenant)) -> dict:
+    """Same preview for caller-supplied source and drafts. Read-only."""
+    from .adaptation import preview
+    return preview(request.source, [d.model_dump() for d in request.drafts],
+                   references=_refs(request.references), sponsored=request.sponsored)
 
 
 @router.post("/plans/{plan_id}/schedule", response_model=list[ApprovalRequest], status_code=201)

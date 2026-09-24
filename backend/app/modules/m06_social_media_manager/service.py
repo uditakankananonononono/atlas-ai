@@ -392,6 +392,20 @@ class Service:
             )
         return findings
 
+    def adaptation_preview(self, plan_id: str, *, source: str | None = None,
+                           references: dict[int, dict[str, str]] | None = None,
+                           sponsored: bool = False) -> dict[str, Any]:
+        """Compare every platform draft with the source (default: the plan brief)."""
+        from .adaptation import preview
+
+        plan = self.get_plan(plan_id)
+        drafts = [{
+            "platform": d.platform.value, "format": d.format, "post_copy": d.post_copy,
+            "media_count": len([p for p in d.asset_prompts if p.kind == "image"]),
+            "alt_texts": len([p for p in d.asset_prompts if p.kind == "image" and p.prompt.strip()]),
+        } for d in plan.drafts]
+        return preview(source or plan.brief, drafts, references=references, sponsored=sponsored)
+
     def request_schedule(
         self, plan_id: str, publish_at: datetime | None = None, *, sponsored: bool = False
     ) -> list[ApprovalRequest]:
