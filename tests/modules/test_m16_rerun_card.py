@@ -42,6 +42,7 @@ def test_card_shapes_stats_for_the_dashboard():
     assert card.verdicts == {"reproduced": 1, "diverged": 1}
     assert [r.rerun_approval_id for r in card.overdue] == ["r2", "r1"]  # oldest first
     assert len(card.recent) == 5 and card.recent[0].verdict == "reproduced"
+    assert card.overdue[0].approval_path == "/approval-center/requests/r2"
 
 
 def test_card_degrades_instead_of_breaking_the_dashboard():
@@ -101,7 +102,17 @@ def test_route_reads_real_m04_stats_per_tenant_and_files_nothing(center, tmp_pat
     a = client.get("/executive-dashboard/rerun-schedules", headers={"X-Atlas-Tenant": "tenant-a"}).json()
     assert a["available"] and a["schedules_total"] == 1 and a["schedules_due_now"] == 1
     assert a["awaiting_approval"] == 1 and a["overdue_total"] == 1
-    assert a["overdue"][0]["rerun_approval_id"] == filed[0]["rerun_approval_id"]
+    rid = filed[0]["rerun_approval_id"]
+    assert a["overdue"][0]["rerun_approval_id"] == rid
+    # the row's link resolves to the real pending approval in the M00 approval center, for this tenant only
+    from app.modules.m00_approval_center import routes as m00_routes
+    m00 = FastAPI(); m00.include_router(m00_routes.router)
+    m00.dependency_overrides[m00_routes.get_service] = lambda: center
+    m00_client = TestClient(m00)
+    linked = m00_client.get(a["overdue"][0]["approval_path"], headers={"X-Atlas-Tenant": "tenant-a"})
+    assert linked.status_code == 200 and linked.json()["action_type"] == "rerun_sandboxed_analysis"
+    assert linked.json()["status"] == "pending"
+    assert m00_client.get(a["overdue"][0]["approval_path"], headers={"X-Atlas-Tenant": "tenant-b"}).status_code == 404
     # reading the card is not a tick: nothing new filed even though the schedule is due
     assert RerunScheduleService(ex_a).stats()["proposals"]["total"] == 1
     assert len(center.list(user_id="tenant-a")) == before
