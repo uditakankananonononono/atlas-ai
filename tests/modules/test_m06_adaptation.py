@@ -83,3 +83,55 @@ def test_plan_preview_uses_stored_drafts_and_brief():
     out = svc.adaptation_preview("p1", references=REFS)
     assert out["parity"]["c1"] == {"linkedin": "kept_cited", "twitter": "dropped"}
     assert _p(out, "twitter")["unsupported_figures"] == ["50%"]
+
+
+def _gate_service(drafts):
+    from datetime import datetime, timezone
+
+    from app.modules.m06_social_media_manager.models import ContentPlan, PlatformDraft
+    from app.modules.m06_social_media_manager.service import MemorySocialRepository, Service
+
+    class Store:
+        def __init__(self):
+            self.items = []
+
+        def put(self, item, **kw):
+            self.items.append(item)
+            return item
+
+    async def gen(*a, **k):
+        return ""
+
+    repo, store = MemorySocialRepository(), Store()
+    svc = Service(approval_store=store, generate=gen, repository=repo)
+    repo.save_plan(ContentPlan(id="p1", brief=SOURCE, created_at=datetime.now(timezone.utc),
+                               drafts=[PlatformDraft(p, f, c) for p, f, c in drafts]))
+    return svc, store
+
+
+def test_schedule_is_refused_when_adaptation_blocks():
+    import pytest
+
+    from app.modules.m06_social_media_manager.models import Platform
+    from app.modules.m06_social_media_manager.service import DraftComplianceError
+
+    svc, store = _gate_service([
+        (Platform.LINKEDIN, "article_post", "Our pilot cut wait times by 38% across 12 sites [1]."),
+        (Platform.TWITTER, "thread", "Pilot cut waits 50%! Volunteers logged 4,200 hours."),
+    ])
+    with pytest.raises(DraftComplianceError) as err:
+        svc.request_schedule("p1", references=REFS)
+    codes = {i.code for i in err.value.issues}
+    assert codes == {"unsupported_figure", "citation_dropped"}
+    assert all(i.message.startswith("twitter:") for i in err.value.issues)
+    assert store.items == [] and svc.get_plan("p1").status == "draft"
+
+
+def test_clean_adaptation_schedules_and_parity_rides_in_approval():
+    from app.modules.m06_social_media_manager.models import Platform
+
+    svc, store = _gate_service([
+        (Platform.LINKEDIN, "article_post", "Our pilot cut wait times by 38% across 12 sites [1]."),
+    ])
+    reqs = svc.request_schedule("p1", references=REFS)
+    assert len(reqs) == 1 and reqs[0].payload["adaptation_parity"] == {"c1": "kept_cited", "c2": "dropped"}

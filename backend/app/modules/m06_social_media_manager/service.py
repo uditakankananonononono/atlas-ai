@@ -81,6 +81,9 @@ class MetricsClient(Protocol):
     async def fetch_engagement(self, platform: Platform, since_days: int) -> dict[str, Any]: ...
 
 
+ADAPTATION_BLOCKING_CODES = frozenset({"citation_dropped", "unsupported_figure"})
+
+
 class DraftComplianceError(ValueError):
     """Drafts failed blocking compliance checks; carries every finding."""
 
@@ -407,7 +410,8 @@ class Service:
         return preview(source or plan.brief, drafts, references=references, sponsored=sponsored)
 
     def request_schedule(
-        self, plan_id: str, publish_at: datetime | None = None, *, sponsored: bool = False
+        self, plan_id: str, publish_at: datetime | None = None, *, sponsored: bool = False,
+        source: str | None = None, references: dict[int, dict[str, str]] | None = None,
     ) -> list[ApprovalRequest]:
         """Compliance-check, persist schedule entries, and file approvals.
 
@@ -419,6 +423,13 @@ class Service:
         plan = self.get_plan(plan_id)
         findings = self.check_compliance(plan_id, sponsored=sponsored)
         blocking = [issue for issue in findings if issue.severity == "error"]
+        # Adaptation gate: a draft that drops a kept claim's source or carries a
+        # figure the source never stated cannot be scheduled (fail closed).
+        adaptation = self.adaptation_preview(plan_id, source=source, references=references, sponsored=sponsored)
+        for entry in adaptation["platforms"]:
+            for issue in entry["issues"]:
+                if issue["severity"] == "error" and issue["code"] in ADAPTATION_BLOCKING_CODES:
+                    blocking.append(ComplianceIssue(issue["code"], "error", f"{entry['platform']}: {issue['message']}"))
         if blocking:
             raise DraftComplianceError(blocking)
         moment = publish_at or datetime.now(timezone.utc)
@@ -433,6 +444,7 @@ class Service:
                     "publish_at": moment.isoformat(),
                     "api": self._official_api_name(draft.platform),
                     "sponsored": sponsored,
+                    "adaptation_parity": {cid: row.get(draft.platform.value) for cid, row in adaptation["parity"].items()},
                 },
             )
             for draft in plan.drafts
