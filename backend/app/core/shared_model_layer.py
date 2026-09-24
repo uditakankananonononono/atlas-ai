@@ -55,3 +55,29 @@ def run(messages: list[dict], *, tools: list[dict] | None = None, private: bool 
     """Route one task. Defaults to private=True: Atlas handles her contracts and
     mail, so callers must opt out explicitly for public-only content."""
     return (router or atlas_router()).run(Task(messages=messages, tools=tools, private=private, max_tokens=max_tokens))
+
+
+class SharedModelError(RuntimeError):
+    """No route in the shared chain answered; ``attempts`` says why for each one."""
+
+    def __init__(self, message: str, attempts: list):
+        super().__init__(message)
+        self.attempts = attempts
+
+
+def _describe(res: RoutedResult) -> str:
+    return " | ".join(f"{a.provider}: {a.outcome}{(' ' + a.detail) if a.detail else ''}" for a in res.attempts)
+
+
+async def generate(prompt: str, *, private: bool = True, max_tokens: int = 2048,
+                   router: Router | None = None) -> tuple[str, str, str]:
+    """Async text generation through the shared router: returns (provider, model, text).
+    Runs the blocking router in a worker thread. Raises SharedModelError if nothing answered."""
+    import asyncio
+
+    r = router or atlas_router()
+    res = await asyncio.to_thread(r.run, Task(messages=[{"role": "user", "content": prompt}], private=private,
+                                              max_tokens=max_tokens))
+    if not res.ok:
+        raise SharedModelError("no shared-model route answered: " + _describe(res), res.attempts)
+    return res.result.provider, res.result.model, res.result.text

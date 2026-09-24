@@ -65,20 +65,15 @@ def _norm(s: str) -> str:
 
 
 async def private_generate(prompt: str) -> tuple[str, str, str]:
-    """Model layer, restricted to routes on hardware she controls."""
-    from app.core import model_catalog, providers
-    from app.core.providers import ProviderError
+    """Shared model layer (instinct_models) with private=True: only Needle/Ornith/Inkling
+    on hardware she controls can answer; the hosted HF route is skipped, never used."""
+    from app.core import shared_model_layer
 
-    routes = [r for r in model_catalog.default_chain() if r.kind in {model_catalog.LOCAL, model_catalog.SELF_HOSTED}]
-    errors = []
-    for r in routes:
-        try:
-            chosen, text = await providers.generate(prompt, r.provider, r.model)
-            return r.provider, chosen, text
-        except ProviderError as exc:
-            errors.append(f"{r.provider}: {exc}")
-    raise ExtractionError("no local/self-hosted model answered; contract text is not sent to hosted models. "
-                          + " | ".join(errors))
+    try:
+        return await shared_model_layer.generate(prompt, private=True)
+    except shared_model_layer.SharedModelError as exc:
+        raise ExtractionError("no local/self-hosted model answered; contract text is not sent to hosted models. "
+                              + str(exc)) from exc
 
 
 PROMPT = """You extract obligations from a brand collaboration contract for the creator who signed it.
