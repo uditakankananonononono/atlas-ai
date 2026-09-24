@@ -14,6 +14,7 @@ One line per active builder lane. Claim a component before building it; release 
 | atlas-builder-2026-09-24 | M06 scheduling gate on adaptation preview | service.py request_schedule, schemas.py ScheduleIn | shipped |
 | atlas-builder-2026-09-24 | M07 deliverable obligation tracker | backend/app/modules/m07_brand_collaboration/obligations.py, routes.py | shipped |
 | atlas-builder-2026-09-24 | M08 free-first experiment board | backend/app/modules/m08_startup_growth/experiments.py, routes.py | shipped |
+| atlas-builder-2026-09-24 | M08 analytics CSV import (Plausible/mapped) | backend/app/modules/m08_startup_growth/analytics_import.py, experiments.py, routes.py | shipped |
 | atlas-builder-2026-09-24 | M03 agency schema packs (NSF GRFP first) | backend/app/modules/m03_grant_writer/schema_packs.py, data/schema_packs/, routes.py | shipped |
 | atlas-builder-2026-09-24 | M05 per-tenant cadence policy + contact timeline | cadence.py (CadencePolicyStore), campaigns.py, routes.py | shipped |
 | atlas-builder-2026-09-24 | M07 contract -> draft obligations (local model, owner confirms) + attention digest | contract_extraction.py, obligations.py, routes.py | shipped |
