@@ -27,6 +27,12 @@ def execute(preview_id:str,service:Service=Depends(get_service)):
     except RuntimeError as e:raise HTTPException(409,str(e))
 @router.get("/overview",response_model=DashboardOverview)
 def overview(service:Service=Depends(get_service)):return service.overview()
+from .rerun_card import RerunScheduleCard,card_for,m04_stats_source
+def get_rerun_stats_source(t:TenantContext=Depends(require_tenant)):return m04_stats_source(t)
+@router.get("/rerun-schedules",response_model=RerunScheduleCard)
+def rerun_schedules(source=Depends(get_rerun_stats_source)):
+    """Read-only M04 scheduled re-run card: due schedules, awaiting/overdue proposals, verdicts."""
+    return card_for(source)
 @router.get("/modules",response_model=list[ModuleStatus])
 def modules(service:Service=Depends(get_service)):return service.module_statuses()
 @router.get("/kpis",response_model=list[KPI])

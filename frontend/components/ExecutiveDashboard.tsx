@@ -2,7 +2,8 @@
 import React,{FormEvent,useCallback,useEffect,useMemo,useState} from "react";
 import OperationsChart from "./OperationsChart";
 import {Card,CardContent,CardHeader} from "./ui/card";
-import {Approval,Blocker,DashboardView,Digest,DrilldownResult,KPI,ModuleStatus,Snapshot,WidgetConfig,dashboardApi} from "./executive-dashboard/api";
+import {Approval,Blocker,DashboardView,Digest,DrilldownResult,KPI,ModuleStatus,RerunScheduleCard as RerunCard,Snapshot,WidgetConfig,dashboardApi} from "./executive-dashboard/api";
+import RerunScheduleCard from "./executive-dashboard/RerunScheduleCard";
 type Api=ReturnType<typeof dashboardApi>;
 const severityStyle:Record<string,string>={critical:"border-red-500 text-red-300",warning:"border-amber-500 text-amber-300",info:"border-slate-600 text-slate-300"};
 const agentStyle:Record<string,string>={running:"text-emerald-400",idle:"text-slate-400",stalled:"text-amber-400",offline:"text-red-400"};
@@ -28,6 +29,7 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
   const [kpis,setKpis]=useState<KPI[]>([]);const [modules,setModules]=useState<ModuleStatus[]>([]);const [blockers,setBlockers]=useState<Blocker[]>([]);
   const [approvals,setApprovals]=useState<Approval[]>([]);const [digest,setDigest]=useState<Digest|null>(null);const [snapshot,setSnapshot]=useState<Snapshot|null>(null);
   const [drilldown,setDrilldown]=useState<DrilldownResult|null>(null);
+  const [rerunCard,setRerunCard]=useState<RerunCard|null>(null);
   const [selected,setSelected]=useState<Set<string>>(new Set());const [skippedNote,setSkippedNote]=useState<string|null>(null);
   const [command,setCommand]=useState("");const [preview,setPreview]=useState<{id:string;intent:string;read_only:boolean;confidence:number}|null>(null);
   const [live,setLive]=useState(false);const [error,setError]=useState<string|null>(null);const [editView,setEditView]=useState(false);
@@ -35,6 +37,8 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
     try{
       const [v,k,m,b,a,d,s]=await Promise.all([api.getView(),api.kpis(),api.modules(),api.blockers(),api.approvals(),api.digest(),api.snapshot()]);
       setView(v);setKpis(k);setModules(m);setBlockers(b);setApprovals(a);setDigest(d);setSnapshot(s);setError(null);
+      // fetched separately so an M04 outage never blanks the other cards
+      api.rerunSchedules().then(setRerunCard,()=>setRerunCard(null));
     }catch(e){setError(e instanceof Error?e.message:"dashboard refresh failed")}
   },[api]);
   useEffect(()=>{refresh();setLive(true);const timer=window.setInterval(refresh,30000);return()=>window.clearInterval(timer)},[refresh]);
@@ -55,6 +59,7 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
   async function toggleWidget(id:string){if(!view)return;setView(await api.saveView(view.widgets.map(w=>w.id===id?{...w,visible:!w.visible}:w)))}
   const alerts=(snapshot?.data?.alerts??[]).slice(-8).reverse();
   const sections:Record<string,()=>React.JSX.Element|null>={
+    rerun_schedules:()=><RerunScheduleCard card={rerunCard}/>,
     kpi_card:()=><section key="kpis"><h2 className="text-lg font-semibold">KPIs</h2><div className="mt-2 grid gap-3 md:grid-cols-3 xl:grid-cols-4">{kpis.map(k=><button key={k.id} onClick={()=>api.kpiEvidence(k.id).then(setDrilldown)} className="rounded-xl bg-slate-900 p-4 text-left hover:bg-slate-800" title={k.definition}><p className="text-xs text-slate-400">{k.label}</p><strong className="text-2xl">{k.value}<span className="ml-1 text-xs font-normal text-slate-500">{k.unit!=="count"?k.unit:""}</span></strong><br/><Trend kpi={k}/>{k.evidence_total>0&&<span className="ml-2 text-xs text-cyan-400">{k.evidence_total} rows</span>}</button>)}</div></section>,
     module_status:()=><section key="modules"><h2 className="text-lg font-semibold">Modules</h2><div className="mt-2 grid gap-2 md:grid-cols-2 xl:grid-cols-3">{modules.map(m=><button key={m.module_id} onClick={()=>api.drilldown("module",String(m.module_id)).then(setDrilldown)} className="rounded-xl bg-slate-900 p-3 text-left hover:bg-slate-800"><div className="flex justify-between"><strong className="text-sm">{m.module_id}. {m.name}</strong><span className={m.implemented?"text-xs text-emerald-400":"text-xs text-slate-500"}>{m.implemented?"implemented":"planned"}</span></div><p className="mt-1 text-xs text-slate-400">agent <span className={m.agent?agentStyle[m.agent.state]:"text-slate-500"}>{m.agent?m.agent.state:"none"}</span> · {m.pending_approvals} approvals · {m.events_24h} events/24h · {m.open_blockers} blockers</p></button>)}</div></section>,
     blockers:()=>blockers.length?<section key="blockers"><h2 className="text-lg font-semibold">Blockers ({blockers.length})</h2><ul className="mt-2 space-y-2">{blockers.map(b=><li key={b.id} className={`rounded-xl border-l-4 bg-slate-900 p-3 ${severityStyle[b.severity]}`}><p className="text-sm">{b.summary}</p><p className="mt-1 text-xs text-slate-400">{b.recommended_action}</p></li>)}</ul></section>:null,
