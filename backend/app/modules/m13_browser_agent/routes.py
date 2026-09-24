@@ -85,3 +85,20 @@ from .capture_persistence import PersistCaptureRequest,persist_capture
 async def persist_pre_submit_capture(body:PersistCaptureRequest,tenant:TenantContext=Depends(require_tenant),service=Depends(get_service)):
  try:return {'tenant_id':tenant.tenant_id,**await persist_capture(body,tenant.tenant_id,service.store)}
  except ValueError as error:raise HTTPException(409,str(error)) from error
+from pydantic import BaseModel as _CBM,Field as _CBF
+from .capture_bound_submit import execute_capture_bound_submit,request_capture_bound_submit
+class CaptureBoundSubmitIn(SubmitIn):
+ capture_sha256:str=_CBF(pattern=r'^[0-9a-f]{64}$')
+class CaptureBoundExecuteIn(CaptureBoundSubmitIn):
+ approval_id:str=_CBF(min_length=1,max_length=200)
+@router.post('/submit/capture-bound/request',status_code=201)
+async def request_capture_bound(body:CaptureBoundSubmitIn,tenant:TenantContext=Depends(require_tenant),service=Depends(get_service)):
+ try:return await request_capture_bound_submit(service,tenant.tenant_id,tenant.actor_id,body.session_id,body.selector,body.values,body.capture_sha256)
+ except PermissionError as e:raise HTTPException(409,str(e)) from e
+ except NavigationBlocked as e:raise HTTPException(400,str(e)) from e
+@router.post('/submit/capture-bound/execute')
+async def execute_capture_bound(body:CaptureBoundExecuteIn,tenant:TenantContext=Depends(require_tenant),service=Depends(get_service)):
+ try:return await execute_capture_bound_submit(service,service.store.sessions,tenant.tenant_id,body.session_id,body.selector,body.values,body.approval_id,body.capture_sha256)
+ except PermissionError as e:raise HTTPException(409,str(e)) from e
+ except NavigationBlocked as e:raise HTTPException(400,str(e)) from e
+ except RuntimeError as e:raise HTTPException(502,str(e)) from e
