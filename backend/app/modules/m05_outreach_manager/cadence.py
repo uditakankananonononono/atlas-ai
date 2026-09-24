@@ -60,7 +60,8 @@ def relationship(contact: Any) -> str:
 
 
 def evaluate(*, contact: Any, message: Any, messages: list[Any], contacts: Any, now: datetime,
-             live_thread_days: int = LIVE_THREAD_DAYS, campaign_follow_up_days: int | None = None) -> dict[str, Any]:
+             live_thread_days: int = LIVE_THREAD_DAYS, campaign_follow_up_days: int | None = None,
+             rules: dict[str, CadenceRule] | None = None) -> dict[str, Any]:
     """Decide whether ``message`` to ``contact`` may go to review.
 
     ``messages`` is every message this tenant has (all campaigns); ``contacts``
@@ -70,8 +71,9 @@ def evaluate(*, contact: Any, message: Any, messages: list[Any], contacts: Any, 
     the relationship gap. The 30-day cap always applies across campaigns."""
     meta = getattr(contact, "metadata", None) or {}
     key = person_key(contact)
+    rules = rules or RULES
     rel = relationship(contact)
-    rule = RULES[rel]
+    rule = rules[rel]
     cache: dict[str, Any] = {contact.id: contact}
 
     def same_person(item: Any) -> bool:
@@ -141,3 +143,87 @@ def evaluate(*, contact: Any, message: Any, messages: list[Any], contacts: Any, 
         "sent_last_30_days": len(window),
         "evaluated_at": now.isoformat(),
     }
+
+
+# -- owner-editable per-tenant policy ------------------------------------------------
+from sqlalchemy import JSON, DateTime, Integer, String, select  # noqa: E402
+from sqlalchemy.orm import Mapped, mapped_column, sessionmaker  # noqa: E402
+
+from app.core.database import Base, SessionLocal, engine  # noqa: E402
+
+BOUNDS = {"min_gap_days": (0, 90), "max_per_30_days": (1, 60), "live_thread_days": (0, 180)}
+
+
+class CadencePolicyRow(Base):
+    """Append-only: the latest version per tenant is the policy in force."""
+    __tablename__ = "m05_cadence_policies"
+    pk: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[str] = mapped_column(String(120), index=True)
+    version: Mapped[int] = mapped_column(Integer)
+    rules: Mapped[dict] = mapped_column(JSON)
+    live_thread_days: Mapped[int] = mapped_column(Integer)
+    actor: Mapped[str] = mapped_column(String(200))
+    reason: Mapped[str] = mapped_column(String(2000))
+    at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class CadencePolicyError(ValueError):
+    pass
+
+
+def default_policy() -> dict[str, Any]:
+    return {"version": 0, "source": "default", "live_thread_days": LIVE_THREAD_DAYS,
+            "rules": {k: {"min_gap_days": r.min_gap_days, "max_per_30_days": r.max_per_30_days} for k, r in RULES.items()}}
+
+
+class CadencePolicyStore:
+    def __init__(self, tenant_id: str, session_factory: sessionmaker = SessionLocal,
+                 clock=lambda: datetime.now(timezone.utc)):
+        if not tenant_id.strip():
+            raise ValueError("tenant_id is required")
+        self.tenant_id, self.sessions, self.clock = tenant_id.strip(), session_factory, clock
+        Base.metadata.create_all(engine)
+
+    def current(self) -> dict[str, Any]:
+        with self.sessions() as db:
+            row = db.scalar(select(CadencePolicyRow).where(CadencePolicyRow.tenant_id == self.tenant_id)
+                            .order_by(CadencePolicyRow.version.desc()).limit(1))
+        if row is None:
+            return default_policy()
+        return {"version": row.version, "source": "owner", "rules": row.rules, "live_thread_days": row.live_thread_days,
+                "actor": row.actor, "reason": row.reason, "at": row.at.isoformat()}
+
+    def history(self) -> list[dict[str, Any]]:
+        with self.sessions() as db:
+            rows = list(db.scalars(select(CadencePolicyRow).where(CadencePolicyRow.tenant_id == self.tenant_id)
+                                   .order_by(CadencePolicyRow.version)))
+        return [{"version": r.version, "rules": r.rules, "live_thread_days": r.live_thread_days, "actor": r.actor,
+                 "reason": r.reason, "at": r.at.isoformat()} for r in rows]
+
+    def set(self, *, rules: dict[str, dict[str, int]], live_thread_days: int, actor: str, reason: str) -> dict[str, Any]:
+        if set(rules) != set(RULES):
+            raise CadencePolicyError(f"rules must cover exactly {sorted(RULES)}")
+        clean = {}
+        for rel, r in rules.items():
+            clean[rel] = {}
+            for key in ("min_gap_days", "max_per_30_days"):
+                lo, hi = BOUNDS[key]
+                v = int(r.get(key, -1))
+                if not lo <= v <= hi:
+                    raise CadencePolicyError(f"{rel}.{key} must be between {lo} and {hi}")
+                clean[rel][key] = v
+        lo, hi = BOUNDS["live_thread_days"]
+        if not lo <= int(live_thread_days) <= hi:
+            raise CadencePolicyError(f"live_thread_days must be between {lo} and {hi}")
+        if not reason.strip():
+            raise CadencePolicyError("a policy change needs a reason")
+        version = self.current()["version"] + 1
+        with self.sessions.begin() as db:
+            db.add(CadencePolicyRow(tenant_id=self.tenant_id, version=version, rules=clean,
+                                    live_thread_days=int(live_thread_days), actor=actor, reason=reason.strip(),
+                                    at=self.clock()))
+        return self.current()
+
+
+def rules_from(policy: dict[str, Any]) -> tuple[dict[str, CadenceRule], int]:
+    return ({k: CadenceRule(**v) for k, v in policy["rules"].items()}, int(policy["live_thread_days"]))

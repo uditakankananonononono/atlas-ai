@@ -7,6 +7,7 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.approvals import approvals
+from pydantic import BaseModel, Field
 from app.auth.context import TenantContext, require_tenant
 
 from .campaigns import CadenceBlockedError, CampaignNotFoundError, CampaignService, CampaignStateError, MessageNotFoundError
@@ -97,7 +98,11 @@ class Container:
             ClearbitClient(client, os.getenv("CLEARBIT_API_KEY")),
         )
         self.discovery = LabDiscoveryService(LabRegistry.load(), LabPageCollector(client))
-        self.campaigns = CampaignService(SqlCampaignRepository(tenant_id), contacts, approvals, tenant_id=tenant_id)
+        from .cadence import CadencePolicyStore
+
+        self.cadence_policy = CadencePolicyStore(tenant_id)
+        self.campaigns = CampaignService(SqlCampaignRepository(tenant_id), contacts, approvals, tenant_id=tenant_id,
+                                         cadence_policy=self.cadence_policy.current)
         self.contacts = contacts
         sender = _smtp_from_env()
         self.delivery = (
@@ -844,3 +849,40 @@ for _path, _builder_name, _model in _CORPORATE_ENDPOINTS:
         response_model=_model,
         name=f"corporate_{_builder_name}",
     )
+
+
+# --- owner cadence policy and contact timeline ------------------------------------
+class _RuleIn(BaseModel):
+    min_gap_days: int
+    max_per_30_days: int
+
+
+class CadencePolicyIn(BaseModel):
+    rules: dict[str, _RuleIn]
+    live_thread_days: int = 21
+    reason: str = Field(min_length=3, max_length=2000)
+
+
+@router.get("/cadence-policy")
+def get_cadence_policy(container: Container = Depends(get_container)) -> dict:
+    return container.cadence_policy.current() | {"history": container.cadence_policy.history()}
+
+
+@router.put("/cadence-policy")
+def put_cadence_policy(body: CadencePolicyIn, container: Container = Depends(get_container),
+                       tenant: TenantContext = Depends(require_tenant)) -> dict:
+    from .cadence import CadencePolicyError
+    try:
+        return container.cadence_policy.set(rules={k: v.model_dump() for k, v in body.rules.items()},
+                                            live_thread_days=body.live_thread_days,
+                                            actor=getattr(tenant, "user_id", None) or tenant.tenant_id, reason=body.reason)
+    except CadencePolicyError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.get("/contacts/{contact_id}/timeline")
+def contact_timeline(contact_id: str, container: Container = Depends(get_container)) -> dict:
+    try:
+        return container.campaigns.contact_timeline(contact_id)
+    except ContactNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="contact not found") from exc
