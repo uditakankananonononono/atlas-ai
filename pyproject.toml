@@ -14,4 +14,4 @@ testpaths = ["tests"]
 
 [tool.setuptools.packages.find]
 where = ["backend"]
-include = ["app*"]
+include = ["app*", "instinct_models*"]

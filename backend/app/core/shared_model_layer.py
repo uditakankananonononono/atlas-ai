@@ -1,0 +1,57 @@
+"""Atlas wiring for the shared model layer (vendored ``instinct_models``, see
+backend/instinct_models/VENDORED.md for the pinned shared-models commit).
+
+- ``atlas_config()`` builds the shared ProductConfig with product fixed to
+  "atlas". INSTINCT_* env vars are read first; ATLAS_* equivalents fill gaps so
+  existing deployments keep working (ATLAS_HF_MODEL, ATLAS_ORNITH_URL, ...).
+- ``atlas_router()`` returns the shared Needle-first router.
+- ``run(...)`` routes one task. Private content (contracts, personal data) must
+  pass ``private=True`` so it never reaches the hosted HF route; the chain stops
+  instead of falling through to anything hosted or paid.
+"""
+from __future__ import annotations
+
+import os
+from functools import lru_cache
+
+from instinct_models import ProductConfig, Router, Task, load_config
+from instinct_models.router import RoutedResult
+
+_ATLAS_FALLBACKS = {
+    "INKLING_LOCAL_URL": "ATLAS_INKLING_LOCAL_URL",
+    "INKLING_LOCAL_MODEL": "ATLAS_INKLING_LOCAL_MODEL",
+    "HF_MODEL": "ATLAS_HF_MODEL",
+    "ORNITH_URL": "ATLAS_ORNITH_URL",
+    "ORNITH_MODEL": "ATLAS_ORNITH_MODEL",
+    "NEEDLE_WEIGHTS": "ATLAS_NEEDLE_WEIGHTS",
+    "ALLOW_HOSTED": "ATLAS_ALLOW_HOSTED",
+}
+
+
+def atlas_env(env: dict | None = None) -> dict:
+    src = dict(os.environ if env is None else env)
+    out = {k: v for k, v in src.items() if k.startswith("INSTINCT_")}
+    for key, atlas_key in _ATLAS_FALLBACKS.items():
+        if not out.get(f"INSTINCT_{key}") and src.get(atlas_key):
+            out[f"INSTINCT_{key}"] = src[atlas_key]
+    product = out.get("INSTINCT_PRODUCT")
+    if product and product != "atlas":
+        raise ValueError(f"INSTINCT_PRODUCT={product!r} in the Atlas process; Atlas only runs as 'atlas'")
+    out["INSTINCT_PRODUCT"] = "atlas"
+    return out
+
+
+def atlas_config(env: dict | None = None, path: str | None = None) -> ProductConfig:
+    return load_config(atlas_env(env), path=path or os.getenv("INSTINCT_CONFIG_FILE") or None)
+
+
+@lru_cache(maxsize=1)
+def atlas_router() -> Router:
+    return Router.from_config(atlas_config())
+
+
+def run(messages: list[dict], *, tools: list[dict] | None = None, private: bool = True,
+        max_tokens: int = 1024, router: Router | None = None) -> RoutedResult:
+    """Route one task. Defaults to private=True: Atlas handles her contracts and
+    mail, so callers must opt out explicitly for public-only content."""
+    return (router or atlas_router()).run(Task(messages=messages, tools=tools, private=private, max_tokens=max_tokens))

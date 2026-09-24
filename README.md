@@ -94,3 +94,12 @@ Atlas can be packaged and tested without paid services, but the following are no
 - **Operations:** production TLS/domain, backup and restore drill, monitoring alerts, incident owner, retention policy, and load evidence for the chosen capacity.
 
 Missing acceptance evidence is shown as configuration-gated or not live-verified. It must not be described as executed, available, or production-ready.
+
+## Shared model layer (instinct_models)
+
+Atlas uses the model layer shared with Meemee and Sugarcode: https://github.com/uditakankananonononono/shared-models, vendored at `backend/instinct_models` (pin in `backend/instinct_models/VENDORED.md`, currently f8840ff; re-sync with `scripts/sync_shared_models.sh <sha>`).
+
+- `app/core/shared_model_layer.py`: `atlas_config()` / `atlas_router()` / `run()`. Product is always `atlas`. Reads `INSTINCT_*` env, falling back to `ATLAS_*` (`ATLAS_HF_MODEL`, `ATLAS_ORNITH_URL`, `ATLAS_ORNITH_MODEL`, `ATLAS_INKLING_LOCAL_URL`, `ATLAS_NEEDLE_WEIGHTS`, `ATLAS_ALLOW_HOSTED`).
+- `run()` defaults to `private=True`: contract and mail content never reaches the hosted HF route (free tier, metered past it). Set `ATLAS_ALLOW_HOSTED=0` to drop the hosted route entirely.
+- Needle only gets tool-calling tasks. Local routes (Needle, Ornith, Inkling on her own hardware) are free.
+- Needle training data: `app/modules/m07_brand_collaboration/needle_dataset.py` builds rows from confirmed M07 obligation drafts only (pending/rejected never read); arguments appear only when their exact text is in the clause. Feed it to `instinct_models.training.build_needle_jsonl`; the manifest marks it train-locally-only.
