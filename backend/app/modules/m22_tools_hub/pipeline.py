@@ -41,10 +41,12 @@ from .approvals import ApprovalStore
 from .installer import InstallError, ToolInstaller, _install_subject, _rollback_subject
 from .models import InstallReceipt, ManifestError, ReviewDecision, ReviewRecord, ToolManifest
 from .security import ArtifactRejected, SecurityScanner
+from .smoke import SmokeError, language_for, smoke_run
 
 MODULE_ID = 22
 INSTALL_ACTION = "integrate_tool"
 ROLLBACK_ACTION = "rollback_tool"
+SMOKE_ACTION = "smoke_run_tool"
 MAX_ATTEMPTS = 3
 
 
@@ -95,7 +97,7 @@ class JobRow(Base):
     tenant_id: Mapped[str] = mapped_column(String(120), index=True)
     id: Mapped[str] = mapped_column(String(36), index=True)
     proposal_id: Mapped[str] = mapped_column(String(36), index=True)
-    kind: Mapped[str] = mapped_column(String(16))  # install | rollback
+    kind: Mapped[str] = mapped_column(String(16))  # install | rollback | smoke
     approval_id: Mapped[str] = mapped_column(String(36))
     operation_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     state: Mapped[str] = mapped_column(String(16), index=True)  # queued|running|succeeded|failed
@@ -121,6 +123,9 @@ class PortfolioRow(Base):
     backup_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     approved_by: Mapped[str] = mapped_column(String(200))
     status: Mapped[str] = mapped_column(String(16), index=True)  # active|superseded|rolled_back
+    entrypoint: Mapped[str | None] = mapped_column(Text, nullable=True)
+    language: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    smoke_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     installed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
@@ -221,9 +226,12 @@ def _portfolio_view(row: PortfolioRow) -> dict[str, Any]:
         "version": row.version, "artifact_sha256": row.artifact_sha256,
         "manifest_digest": row.manifest_digest, "installed_path": row.installed_path,
         "backup_id": row.backup_id, "rollback_available": bool(row.backup_id) and row.status == "active",
-        "approved_by": row.approved_by, "status": row.status,
+        "approved_by": row.approved_by, "status": row.status, "entrypoint": row.entrypoint,
+        "language": row.language, "smoke": row.smoke_json,
         "installed_at": _aware(row.installed_at).isoformat(),
-        "execution_claim": "installed by the Atlas pipeline worker from a hash-verified, scanned artifact; the tool's runtime behavior is not exercised here",
+        "execution_claim": ("installed from a hash-verified, scanned artifact; entrypoint loaded in an isolated no-network smoke-run"
+                            if (row.smoke_json or {}).get("passed") else
+                            "installed from a hash-verified, scanned artifact; entrypoint not yet shown to load (no passing smoke-run)"),
     }
 
 
@@ -236,7 +244,7 @@ class InstallPipeline:
     def __init__(
         self, tenant_id: str, *, root: Path | None = None, center: Any = None,
         session_factory: sessionmaker = SessionLocal, scanner: SecurityScanner | None = None,
-        create_schema: bool = True,
+        create_schema: bool = True, smoke_backend: Any = None, smoke_limits: Any = None,
     ) -> None:
         if not tenant_id or not tenant_id.strip():
             raise PipelineError("tenant_id is required")
@@ -254,6 +262,8 @@ class InstallPipeline:
         self.grants = ApprovalStore(state_path=tenant_root / "grants.json")
         self.installer = ToolInstaller(tenant_root, self.grants, self.scanner)
         self._lock = threading.Lock()
+        self.smoke_backend = smoke_backend
+        self.smoke_limits = smoke_limits
         if create_schema:
             bind = session_factory.kw.get("bind") or engine
             Base.metadata.create_all(bind, tables=list(PIPELINE_TABLES))
@@ -503,6 +513,8 @@ class InstallPipeline:
         try:
             if job.kind == "install":
                 self._run_install(job)
+            elif job.kind == "smoke":
+                self._run_smoke(job)
             else:
                 self._run_rollback(job)
         except Exception as exc:  # recorded, never swallowed silently
@@ -546,6 +558,8 @@ class InstallPipeline:
                                 tool_id=receipt.tool_id, version=receipt.version, artifact_sha256=receipt.artifact_sha256,
                                 manifest_digest=receipt.manifest_digest, installed_path=receipt.installed_path,
                                 backup_id=receipt.backup_id, approved_by=approver, status="active",
+                                entrypoint=manifest.entrypoint,
+                                language=language_for(dict(manifest.metadata), manifest.entrypoint),
                                 installed_at=receipt.installed_at, updated_at=now))
             p = self._proposal(db, job.proposal_id); p.status = "installed"; p.updated_at = now
         self._finish(job.id, state="succeeded", receipt=_receipt_view(receipt), operation_id=receipt.operation_id, after=record)
@@ -569,6 +583,58 @@ class InstallPipeline:
             if prior is not None:
                 prior.status = "active"; prior.updated_at = now
         self._finish(job.id, state="succeeded", receipt={**_receipt_view(receipt), "rolled_back_at": now.isoformat()}, after=record)
+
+    # -- smoke-run -----------------------------------------------------------
+    def _active_entry(self, db, operation_id: str) -> PortfolioRow:
+        entry = db.scalar(select(PortfolioRow).where(PortfolioRow.tenant_id == self.tenant_id, PortfolioRow.operation_id == operation_id))
+        if entry is None:
+            raise KeyError("installed operation not found")
+        if entry.status != "active":
+            raise PipelineError(f"install is {entry.status}; only the active version can be smoke-run")
+        if not entry.entrypoint:
+            raise PipelineError("install has no recorded entrypoint")
+        return entry
+
+    def propose_smoke(self, operation_id: str, requested_by: str) -> dict[str, Any]:
+        """File a Module 0 approval to run the installed entrypoint once in the no-network sandbox."""
+        with self.sessions() as db:
+            entry = self._active_entry(db, operation_id)
+            payload = {"operation_id": operation_id, "tool_id": entry.tool_id, "version": entry.version,
+                       "artifact_sha256": entry.artifact_sha256, "entrypoint": entry.entrypoint,
+                       "language": entry.language, "requested_by": requested_by,
+                       "effect": "run the tool's entrypoint once: no network, cleared environment, read-only system, time/CPU/file limits"}
+        approval = self.center.submit(module_id=MODULE_ID, action_type=SMOKE_ACTION, user_id=self.tenant_id, payload=payload)
+        return {"operation_id": operation_id, "approval_id": approval["id"], "status": "awaiting_approval",
+                "entrypoint": payload["entrypoint"], "language": payload["language"]}
+
+    def enqueue_smoke(self, operation_id: str, approval_id: str) -> dict[str, Any]:
+        with self.sessions.begin() as db:
+            entry = self._active_entry(db, operation_id)
+            self._approved(approval_id, SMOKE_ACTION, {"operation_id": operation_id, "artifact_sha256": entry.artifact_sha256,
+                                                       "entrypoint": entry.entrypoint})
+            job = self._enqueue(db, proposal_id=entry.proposal_id, kind="smoke", approval_id=approval_id, operation_id=operation_id)
+            db.flush()
+            return _job_view(job)
+
+    def _run_smoke(self, job: JobRow) -> None:
+        with self.sessions() as db:
+            entry = self._active_entry(db, job.operation_id)
+            installed_path, entrypoint, language, digest = entry.installed_path, entry.entrypoint, entry.language, entry.artifact_sha256
+        self._approved(job.approval_id, SMOKE_ACTION, {"operation_id": job.operation_id, "artifact_sha256": digest,
+                                                       "entrypoint": entrypoint})
+        marker = Path(installed_path) / ".atlas-install.json"
+        if not marker.is_file() or json.loads(marker.read_text(encoding="utf-8")).get("version") is None:
+            raise SmokeError("installed tool marker is missing; refusing to run unknown files")
+        evidence = smoke_run(installed_path, entrypoint, language=language or "python",
+                             backend=self.smoke_backend, limits=self.smoke_limits)
+        evidence = {**evidence, "operation_id": job.operation_id, "approval_id": job.approval_id}
+        now = _now()
+
+        def record(db):
+            e = db.scalar(select(PortfolioRow).where(PortfolioRow.tenant_id == self.tenant_id, PortfolioRow.operation_id == job.operation_id))
+            e.smoke_json = evidence; e.updated_at = now
+        self._finish(job.id, state="succeeded" if evidence["passed"] else "failed",
+                     error=None if evidence["passed"] else "smoke-run did not pass", receipt=evidence, after=record)
 
     def drain(self, limit: int = 50) -> list[dict[str, Any]]:
         """Run queued jobs for this tenant (what the Celery beat task calls)."""
