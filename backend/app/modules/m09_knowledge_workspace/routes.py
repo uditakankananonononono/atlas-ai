@@ -58,3 +58,30 @@ from .contradiction_revisions import RevisionChainRequest,verify_revision_chain
 def contradiction_revision_chain(body:RevisionChainRequest,tenant:TenantContext=Depends(require_tenant)):
  try:return {'tenant_id':tenant.tenant_id,**verify_revision_chain(body)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from pydantic import BaseModel as _RBM, Field as _RF
+from .revision_store import RevisionConflict, RevisionRejected, RevisionStore, verify_sources
+from .contradiction_revisions import DecisionRevision
+class RevisionAppendIn(_RBM):
+ revision:DecisionRevision;signature_b64:str|None=_RF(default=None,max_length=200)
+class ActorKeyIn(_RBM):
+ public_key_b64:str=_RF(min_length=40,max_length=100)
+class SourceVerifyIn(_RBM):
+ revision:DecisionRevision;source_uris:dict[str,str]=_RF(default_factory=dict,max_length=50)
+def get_revision_store(t:TenantContext=Depends(require_tenant)):return RevisionStore(t.tenant_id,t.actor_id)
+@router.post('/contradiction-revisions/keys',status_code=201)
+def register_actor_key(body:ActorKeyIn,store:RevisionStore=Depends(get_revision_store)):
+ try:return store.register_key(body.public_key_b64)
+ except RevisionRejected as e:raise HTTPException(422,str(e)) from e
+@router.post('/contradiction-revisions',status_code=201)
+def append_revision(body:RevisionAppendIn,store:RevisionStore=Depends(get_revision_store)):
+ try:return store.append(body.revision,body.signature_b64)
+ except RevisionConflict as e:raise HTTPException(409,str(e)) from e
+ except RevisionRejected as e:raise HTTPException(422,str(e)) from e
+@router.get('/contradiction-revisions/chain')
+def revision_chain(claim_key:str=Query(min_length=1,max_length=500),store:RevisionStore=Depends(get_revision_store)):
+ try:return store.chain(claim_key)
+ except LookupError as e:raise HTTPException(404,str(e)) from e
+@router.post('/contradiction-revisions/verify-sources')
+def verify_revision_sources(body:SourceVerifyIn,tenant:TenantContext=Depends(require_tenant)):
+ return {'tenant_id':tenant.tenant_id,**verify_sources(body.revision,body.source_uris)}

@@ -43,7 +43,7 @@ All module routers below are mounted by `backend/app/main.py`. "Implemented core
 | 6 | Social Media Manager | provider-backed plans, asset prompts, SQL plans/reports, official X metrics, gated scheduling, cross-platform claim/citation parity preview | real asset generation and platform execution after approval |
 | 7 | Brand Collaboration | discovery scoring, tenant ledger, PDF/HTML collateral, reports/invoices, gated send, contract obligation tracker (deadlines, evidence, approvals, invoice/payment status) | live provider integrations and production artifact storage |
 | 8 | Startup Growth | real Next.js archives, Supabase waitlist route, PPTX deck, code-grounded docs, gated publish, free-first experiment board (paid ideas are proposals only) with Plausible/CSV analytics import | deployment executor and broader templates |
-| 9 | Knowledge Workspace | tenant graph, review suggestions, versioning and planner export | Google Docs/Sheets ingestion and richer visual editing |
+| 9 | Knowledge Workspace | tenant graph, review suggestions, versioning, planner export, durable signed contradiction-decision chains with source-hash checks | Google Docs/Sheets ingestion and richer visual editing |
 | 10 | Email Assistant | Gmail OAuth/watch/ingestion, seven-class classifier, action extraction, priority/follow-up, gated replies | production OAuth credentials and approved send execution |
 | 11 | Calendar Intelligence | Google/CalDAV sync, solver, travel/prep/focus constraints, conflict proposals | production credentials and live apply verification |
 | 12 | AI Research Lab | cost/latency/capability router, bounded retries, confidence, YAML DAG execution, and shipped Atlas-provider wiring | durable distributed node runner and live-provider acceptance |
