@@ -1,0 +1,44 @@
+{
+  "agency": "NSF",
+  "program": "GRFP",
+  "solicitation": "NSF 26-526",
+  "competition": "FY 2027",
+  "version": "2026-09-24",
+  "supersedes": null,
+  "source_url": "https://www.nsf.gov/funding/opportunities/grfp-nsf-graduate-research-fellowship-program/nsf26-526/solicitation",
+  "retrieved_at": "2026-09-24T06:05:31Z",
+  "deadlines": [
+    {"id": "reference_letters", "label": "Reference letters (all fields)", "date": "2026-10-16", "time": "20:00", "tz": "America/New_York", "fields": ["*"],
+     "anchor": "Reference letters are due Friday, October 16 by 8:00 p.m. Eastern Time (ET)."},
+    {"id": "application_life_sciences", "label": "Application - Life Sciences", "date": "2026-10-19", "time": "20:00", "tz": "America/New_York",
+     "fields": ["Life Sciences"], "anchor": "October 19, 2026"},
+    {"id": "application_cise_mr_psy_soc", "label": "Application - CISE, Materials Research, Psychology, Social Sciences", "date": "2026-10-20", "time": "20:00", "tz": "America/New_York",
+     "fields": ["Computer and Information Science and Engineering", "Materials Research", "Psychology", "Social Sciences"], "anchor": "October 20, 2026"},
+    {"id": "application_engineering", "label": "Application - Engineering", "date": "2026-10-22", "time": "20:00", "tz": "America/New_York",
+     "fields": ["Engineering"], "anchor": "October 22, 2026"},
+    {"id": "application_chem_geo_math_phys", "label": "Application - Chemistry, Geosciences, Mathematical Sciences, Physics and Astronomy", "date": "2026-10-23", "time": "20:00", "tz": "America/New_York",
+     "fields": ["Chemistry", "Geosciences", "Mathematical Sciences", "Physics and Astronomy"], "anchor": "October 23, 2026"}
+  ],
+  "documents": [
+    {"id": "personal_statement", "label": "Personal, Relevant Background, and Future Goals Statement", "format": "pdf", "max_pages": 3,
+     "required_headings": ["Intellectual Merit", "Broader Impacts"], "no_urls_or_dois_in_references": true,
+     "anchor": "The Personal, Relevant Background, and Future Goals Statement maximum is three (3) pages (PDF)"},
+    {"id": "research_plan", "label": "Graduate Research Plan Statement", "format": "pdf", "max_pages": 2,
+     "required_headings": ["Intellectual Merit", "Broader Impacts"], "no_urls_or_dois_in_references": true,
+     "anchor": "the Graduate Research Plan Statement maximum is two (2) pages (PDF)"},
+    {"id": "transcripts", "label": "Transcripts (official undergraduate)", "format": "pdf",
+     "anchor": "Official undergraduate academic transcripts are required."}
+  ],
+  "counts": [
+    {"id": "reference_writers", "label": "Reference letter writers", "min": 3,
+     "anchor": "Names and email addresses of at least three reference letter writers"}
+  ],
+  "formatting": {
+    "rules": ["8.5 x 11 in pages", "1 in margins on all sides", "Arial/Courier New/Palatino Linotype 10 pt+, or Times New Roman/Computer Modern 11 pt+", "max 6 lines per vertical inch", "PDF", "references: abbreviated titles only, no URLs or DOIs"],
+    "anchor": "References: abbreviated journal or publication titles ONLY, no URLs or DOIs;"
+  },
+  "criteria": [
+    {"name": "Intellectual Merit", "anchor": "Intellectual Merit: The Intellectual Merit criterion encompasses the potential to advance knowledge"},
+    {"name": "Broader Impacts", "anchor": "Broader Impacts: The Broader Impacts criterion encompasses the potential to benefit society"}
+  ]
+}

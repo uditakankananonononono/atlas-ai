@@ -84,3 +84,55 @@ def compliance_lint(body:ComplianceLintIn):
  from .compliance import lint_proposal
  try:return lint_proposal(**body.model_dump())
  except ValueError as e:raise HTTPException(422,str(e))
+
+
+# -- agency schema packs ---------------------------------------------------------
+class SchemaPackDocIn(BaseModel):
+    pages: int | None = Field(default=None, ge=0, le=1000); text: str | None = Field(default=None, max_length=200000); attached: bool = True
+class SchemaPackCheckIn(BaseModel):
+    field: str | None = Field(default=None, max_length=200); documents: dict[str, SchemaPackDocIn] = Field(default_factory=dict)
+    counts: dict[str, int] = Field(default_factory=dict); version: str | None = None
+
+
+@router.get('/schema-packs')
+def schema_pack_catalog(tenant: TenantContext = Depends(require_tenant)):
+    from .schema_packs import catalog
+    return catalog()
+
+
+@router.get('/schema-packs/{agency}/{program}')
+def schema_pack(agency: str, program: str, version: str | None = None, tenant: TenantContext = Depends(require_tenant)):
+    from .schema_packs import PackNotFound, get_pack
+    try: return get_pack(agency, program, version)
+    except PackNotFound as e: raise HTTPException(404, str(e)) from e
+
+
+@router.post('/schema-packs/{agency}/{program}/check')
+def schema_pack_check(agency: str, program: str, body: SchemaPackCheckIn, tenant: TenantContext = Depends(require_tenant)):
+    from datetime import datetime, timezone
+    from .schema_packs import PackNotFound, check, get_pack
+    try: pack = get_pack(agency, program, body.version)
+    except PackNotFound as e: raise HTTPException(404, str(e)) from e
+    sub = body.model_dump(exclude={"version"}); sub["documents"] = {k: v.model_dump() for k, v in body.documents.items()}
+    return check(pack, sub, now=datetime.now(timezone.utc))
+
+
+@router.get('/schema-packs/{agency}/{program}/diff')
+def schema_pack_diff(agency: str, program: str, from_version: str, to_version: str, tenant: TenantContext = Depends(require_tenant)):
+    from .schema_packs import PackNotFound, diff, get_pack
+    try: return diff(get_pack(agency, program, from_version), get_pack(agency, program, to_version))
+    except PackNotFound as e: raise HTTPException(404, str(e)) from e
+
+
+@router.post('/schema-packs/{agency}/{program}/verify-source')
+async def schema_pack_verify(agency: str, program: str, version: str | None = None, tenant: TenantContext = Depends(require_tenant)):
+    """Read-only re-read of the public official call; reports anchors that changed."""
+    import httpx
+    from .schema_packs import PackNotFound, get_pack, verify_source
+    try: pack = get_pack(agency, program, version)
+    except PackNotFound as e: raise HTTPException(404, str(e)) from e
+    async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers={"User-Agent": "Atlas-grant-pack-verifier"}) as client:
+        try:
+            resp = await client.get(pack["source_url"]); resp.raise_for_status()
+        except httpx.HTTPError as e: raise HTTPException(502, f"could not read official source: {e.__class__.__name__}") from e
+    return verify_source(pack, lambda _url: resp.text)
