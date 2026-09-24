@@ -28,6 +28,7 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** contradiction decision-revision verifier binds each append-only revision to the prior revision hash and content hashes for every referenced source snapshot.
 - **Next:** persist revisions transactionally and fetch source bytes to verify captured hashes and actor signatures.
 ## M10 - Email Assistant
+- **Landed:** first real M00 impact-preview drift probe for `send_email_reply`: live Gmail thread metadata, reply target Reply-To/trash state and stored-draft hash are snapshotted at review and re-read before consume; new replies, owner replies sent from Gmail, recipient changes or draft edits block the send, and unreadable state fails closed (`tests/modules/test_m10_drift_probe.py`).
 - **Landed:** evidence-bound thread promise tracker extracts only owner-authored commitments, links each promise to its source message/excerpt, computes due state, and proposes follow-up review without creating tasks, drafts, reminders, or sends.
 - **Landed:** persistent promise-state reconciliation verifies prior snapshot and promise hashes, records reviewer-bound state receipts, completes only a named promise backed by an exact owner-authored completion excerpt, and fails closed on ambiguous updates.
 - **Landed:** tenant/thread-scoped transactional snapshot persistence uses compare-and-swap against the stored reconciliation head so stale writers fail closed without overwrite.

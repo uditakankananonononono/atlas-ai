@@ -34,7 +34,7 @@ All module routers below are mounted by `backend/app/main.py`. "Implemented core
 
 | ID | Module | Current real implementation | Important remaining gap |
 |---:|---|---|---|
-| 0 | Human Approval Center | durable proposals, decisions, expiry, audit events, blocking callbacks | cross-process dashboard fan-out |
+| 0 | Human Approval Center | durable proposals, decisions, expiry, audit events, blocking callbacks, impact preview with live-state drift check (first real probe: M10 reply sends) | cross-process dashboard fan-out |
 | 1 | Opportunity Discovery | RSS/Atom, GitHub and Devpost scans, live spaCy NER + dateparser deadlines + free local embedding match with per-row engine provenance, SQL state, gated digests | scheduled source fleet, DeBERTa eligibility classifier, pgvector persistence of embeddings, 200 verified scholarship sources |
 | 2 | Competition Manager | rule extraction, checklist/drafting, SQL state, evidence status, per-claim evidence completeness score, browser handoff | Docs grounding, winner corpus, announcement monitors and follow-ups |
 | 3 | Grant Writer | grounded staged proposals, deterministic budgets, funded-example corpus/search, approval-gated export and explicit-rule science-grant compliance preflight | complete official funded corpus, agency schema packs and live rate evidence |
@@ -44,7 +44,7 @@ All module routers below are mounted by `backend/app/main.py`. "Implemented core
 | 7 | Brand Collaboration | discovery scoring, tenant ledger, PDF/HTML collateral, reports/invoices, gated send | live provider integrations and production artifact storage |
 | 8 | Startup Growth | real Next.js archives, Supabase waitlist route, PPTX deck, code-grounded docs, gated publish | deployment executor and broader templates |
 | 9 | Knowledge Workspace | tenant graph, review suggestions, versioning and planner export | Google Docs/Sheets ingestion and richer visual editing |
-| 10 | Email Assistant | Gmail OAuth/watch/ingestion, seven-class classifier, action extraction, priority/follow-up, gated replies | production OAuth credentials and approved send execution |
+| 10 | Email Assistant | Gmail OAuth/watch/ingestion, seven-class classifier, action extraction, priority/follow-up, gated replies re-checked against the live thread and draft before any send permit | production OAuth credentials and approved send execution |
 | 11 | Calendar Intelligence | Google/CalDAV sync, solver, travel/prep/focus constraints, conflict proposals | production credentials and live apply verification |
 | 12 | AI Research Lab | cost/latency/capability router, bounded retries, confidence, YAML DAG execution, and shipped Atlas-provider wiring | durable distributed node runner and live-provider acceptance |
 | 13 | Browser Agent | sessions, URL safety, form matching, screenshot-bound single-use approvals | deployed Playwright/VLM runtime and artifact storage |
