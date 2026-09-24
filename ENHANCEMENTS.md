@@ -59,7 +59,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** provider retrieval adapter fails closed unless configured, fetches HTTPS source bytes through the injected authenticated boundary, and verifies the expected content hash.
 - **Next:** persist retrieved bytes immutably and add asymmetric provider signatures.
 - **Landed:** tenant-scoped risk-provider public-key registry pins Ed25519 key IDs to fingerprints, rejects rebinding, and records retirement.
-- **Next:** add provider-authenticated retrieval adapters and immutable snapshot storage using governed keys.
+- **Landed (governed ingest):** `governed_risk_ingest.py` + `POST /calendar-intelligence/schedule-risk/live-evidence/ingest` chains the pieces: the snapshot's (provider, key_id) must be registered and unretired in the tenant key registry, the Ed25519 signature over canonical metadata is checked before any fetch, bytes come through `HttpsProviderRetriever` (configured per provider by `ATLAS_M11_RISK_PROVIDERS` with allowed hosts and a bearer-token env var name; https only, public-address guard, no redirects, 10 MB cap; unconfigured providers fail closed), must hash to the signed `content_sha256`, and are persisted immutably in `RiskSnapshotStore` (`tests/modules/test_m11_governed_ingest.py`).
+- **Next:** feed ingested snapshots straight into the schedule-risk view so cancellation exposure cites a stored, signed snapshot.
 ## M12 - AI Research Lab
 - **Landed:** shipped provider and DAG wiring now constructs without dependency overrides and supports OpenAI, Anthropic, DeepSeek and local Ollama through the shared provider boundary.
 - **Landed (science):** canonical reproducible-run checkpoints pin workflow/code identity, dataset hashes, per-node provider/model/seed, budget and spend receipts, output hashes and explicit resume state without claiming execution or byte verification.
