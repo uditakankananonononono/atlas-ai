@@ -7,7 +7,7 @@ import type {RerunScheduleCard as Card} from "./executive-dashboard/api";
 
 const {apiMock}=vi.hoisted(()=>({apiMock:{
   getView:vi.fn(),kpis:vi.fn(),modules:vi.fn(),blockers:vi.fn(),approvals:vi.fn(),digest:vi.fn(),snapshot:vi.fn(),
-  rerunSchedules:vi.fn(),approvalRequest:vi.fn(),approvalAudit:vi.fn(),decideApprovalRequest:vi.fn(),saveView:vi.fn(),decide:vi.fn(),bulkDecide:vi.fn(),execute:vi.fn(),preview:vi.fn(),sweep:vi.fn(),project:vi.fn(),
+  rerunSchedules:vi.fn(),approvalRequest:vi.fn(),approvalAudit:vi.fn(),decideApprovalRequest:vi.fn(),approvalRequests:vi.fn(),contactTimeline:vi.fn(),messageCadence:vi.fn(),saveView:vi.fn(),decide:vi.fn(),bulkDecide:vi.fn(),execute:vi.fn(),preview:vi.fn(),sweep:vi.fn(),project:vi.fn(),
 }}));
 vi.mock("./executive-dashboard/api",async importOriginal=>{
   const original=await importOriginal<typeof import("./executive-dashboard/api")>();
@@ -29,6 +29,7 @@ beforeEach(()=>{
   apiMock.getView.mockResolvedValue(view);apiMock.kpis.mockResolvedValue([]);apiMock.modules.mockResolvedValue([]);
   apiMock.blockers.mockResolvedValue([blocker]);apiMock.approvals.mockResolvedValue([]);apiMock.digest.mockResolvedValue(null);
   apiMock.snapshot.mockResolvedValue({version:1,last_sequence:0,generated_at:"2026-10-05T09:00:00Z",data:{}});
+  apiMock.approvalRequests.mockResolvedValue([]);
 });
 afterEach(cleanup);
 
@@ -96,5 +97,67 @@ describe("Scheduled re-runs card",()=>{
     await user.click(await screen.findByRole("button",{name:"Open approval for re-run of orig-7"}));
     expect(await screen.findByText("GET /approval-center/requests/r1 failed: 404")).toBeTruthy();
     expect(screen.queryByRole("button",{name:"Approve"})).toBeNull();
+  });
+});
+
+const outreachReq={id:"ap-9",module_id:5,action_type:"send_outreach_email",user_id:"t1",status:"pending",created_at:"2026-10-05T08:00:00Z",expires_at:null,decided_at:null,approved_by:null,
+  payload:{tenant_id:"t1",message_id:"m-new",campaign_id:"c2",contact_id:"k2",recipient:"rao@example.edu",subject:"Grant mentor question",body:"Hello Dr. Rao",cadence:{allowed:true,reasons:[],policy_version:1}}};
+const timeline={person:"email:rao@example.edu",relationship:"cold",rule:{min_gap_days:7,max_per_30_days:2},live_thread_days:21,policy_version:1,contact_records:["k1","k2"],messages:[
+  {message_id:"m-old",campaign_id:"c1",campaign:"Lab search",contact_id:"k1",kind:"initial",sequence:0,status:"sent",subject:"Summer lab inquiry",sent_at:"2026-09-01T10:00:00Z",updated_at:"2026-09-01T10:00:00Z"},
+  {message_id:"m-new",campaign_id:"c2",campaign:"Grant mentor",contact_id:"k2",kind:"initial",sequence:0,status:"pending_approval",subject:"Grant mentor question",sent_at:null,updated_at:"2026-10-05T08:00:00Z"}]};
+
+describe("Outreach approval card with contact timeline",()=>{
+  it("lists pending M05 requests and shows every earlier message to that person inside the card",async()=>{
+    apiMock.rerunSchedules.mockResolvedValue(card);apiMock.approvalRequests.mockResolvedValue([outreachReq]);
+    apiMock.contactTimeline.mockResolvedValue(timeline);
+    apiMock.messageCadence.mockResolvedValue({allowed:false,reasons:[{code:"too_soon",detail:"last message 2 days ago"}],next_allowed_at:"2026-10-10T08:00:00Z",policy_version:2});
+    render(<ExecutiveDashboard/>);
+    await screen.findByText("Outreach sends in the approval center (1)");
+    expect(apiMock.approvalRequests).toHaveBeenCalledWith({status:"pending",module_id:5});
+    await userEvent.click(screen.getByRole("button",{name:"Review"}));
+    const dialog=await screen.findByRole("dialog",{name:"Outreach approval"});
+    const history=await screen.findByRole("region",{name:"Contact timeline"});
+    expect(apiMock.contactTimeline).toHaveBeenCalledWith("k2");
+    expect(apiMock.messageCadence).toHaveBeenCalledWith("m-new");
+    await waitFor(()=>expect(history.textContent).toContain("Summer lab inquiry"));
+    expect(history.textContent).toContain("Earlier messages to this person (1)");
+    expect(history.textContent).toContain("Lab search");
+    expect(history.textContent).toContain("2 contact records");
+    expect(history.textContent).not.toContain("pending_approval");
+    expect(dialog.textContent).toContain("Cadence when filed: allowed");
+    expect(dialog.textContent).toContain("Cadence now: blocked");
+    expect(dialog.textContent).toContain("too_soon: last message 2 days ago");
+    for(const write of [apiMock.decideApprovalRequest,apiMock.decide,apiMock.bulkDecide,apiMock.execute])expect(write).not.toHaveBeenCalled();
+  });
+  it("approving records the M00 decision for that request only",async()=>{
+    apiMock.rerunSchedules.mockResolvedValue(card);apiMock.approvalRequests.mockResolvedValue([outreachReq]);
+    apiMock.contactTimeline.mockResolvedValue(timeline);apiMock.messageCadence.mockResolvedValue({allowed:true,reasons:[]});
+    apiMock.decideApprovalRequest.mockResolvedValue({...outreachReq,status:"approved",approved_by:"executive-dashboard"});
+    render(<ExecutiveDashboard/>);
+    await userEvent.click(await screen.findByRole("button",{name:"Review"}));
+    await screen.findByText("Summer lab inquiry");
+    await userEvent.click(screen.getByRole("button",{name:"Approve"}));
+    expect(apiMock.decideApprovalRequest).toHaveBeenCalledWith("/approval-center/requests/ap-9","approved");
+    expect(await screen.findByText("No decision needed.")).toBeTruthy();
+  });
+  it("a timeline failure is shown as a warning, not hidden, and first contact reads as first contact",async()=>{
+    apiMock.rerunSchedules.mockResolvedValue(card);apiMock.approvalRequests.mockResolvedValue([outreachReq]);
+    apiMock.contactTimeline.mockRejectedValueOnce(new Error("GET /outreach-manager/contacts/k2/timeline failed: 404"));
+    apiMock.messageCadence.mockResolvedValue({allowed:true,reasons:[]});
+    render(<ExecutiveDashboard/>);
+    await userEvent.click(await screen.findByRole("button",{name:"Review"}));
+    expect(await screen.findByText(/Could not load this person's history: GET \/outreach-manager\/contacts\/k2\/timeline failed: 404/)).toBeTruthy();
+    await userEvent.click(screen.getByRole("button",{name:"Close"}));
+    apiMock.contactTimeline.mockResolvedValue({...timeline,contact_records:["k2"],messages:[timeline.messages[1]]});
+    await userEvent.click(screen.getByRole("button",{name:"Review"}));
+    expect(await screen.findByText("No earlier messages. This would be the first contact.")).toBeTruthy();
+  });
+  it("an M00 list failure leaves the M16 queue untouched with no banner",async()=>{
+    apiMock.rerunSchedules.mockResolvedValue(card);apiMock.approvalRequests.mockRejectedValue(new Error("GET /approval-center/requests failed: 500"));
+    render(<ExecutiveDashboard/>);
+    await screen.findByText("Approval queue (0)");
+    await waitFor(()=>expect(apiMock.approvalRequests).toHaveBeenCalled());
+    expect(screen.queryByText(/Outreach sends/)).toBeNull();
+    expect(screen.queryByText(/failed: 500/)).toBeNull();
   });
 });
