@@ -90,3 +90,57 @@ def retire_publication_provider_key(provider:str,key_id:str,tenant_id:str=Depend
  try:
   row=registry.retire(provider,key_id);return {'tenant_id':tenant_id,'provider':provider,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
  except ValueError as error:raise HTTPException(404,str(error)) from error
+
+
+# Approved delivery: consume a render_document approval and return a verified download.
+from fastapi import Response as _Response
+from .delivery import (ApprovedDeliveryService, DeliveryConflict as _DConflict, DeliveryForbidden as _DForbidden,
+                       DeliveryNotFound as _DNotFound, RenderFailed as _DRenderFailed)
+
+
+def get_delivery_service(context: TenantContext = Depends(require_tenant)) -> ApprovedDeliveryService:
+    return ApprovedDeliveryService(context.tenant_id, actor_id=context.actor_id)
+
+
+def _delivery_error(exc: Exception) -> HTTPException:
+    if isinstance(exc, _DNotFound):
+        return HTTPException(404, "not found")
+    if isinstance(exc, _DForbidden):
+        return HTTPException(403, str(exc))
+    if isinstance(exc, _DConflict):
+        return HTTPException(409, str(exc))
+    return HTTPException(422, str(exc))
+
+
+@router.post("/approvals/{approval_id}/deliver", status_code=201)
+def deliver_approved_document(approval_id: str, service: ApprovedDeliveryService = Depends(get_delivery_service)):
+    """Render the exact approved version once and return a signed, expiring private download link."""
+    try:
+        return service.deliver(approval_id)
+    except (_DNotFound, _DForbidden, _DConflict, _DRenderFailed) as exc:
+        raise _delivery_error(exc) from exc
+
+
+@router.get("/deliveries")
+def list_deliveries(limit: int = 100, service: ApprovedDeliveryService = Depends(get_delivery_service)):
+    return service.list(min(max(limit, 1), 500))
+
+
+@router.get("/deliveries/{approval_id}")
+def read_delivery(approval_id: str, service: ApprovedDeliveryService = Depends(get_delivery_service)):
+    """Read back a delivery receipt with a freshly signed download link."""
+    try:
+        return service.readback(approval_id)
+    except _DNotFound as exc:
+        raise _delivery_error(exc) from exc
+
+
+@router.get("/downloads/{token}")
+def download_delivered_document(token: str, service: ApprovedDeliveryService = Depends(get_delivery_service)):
+    try:
+        data, receipt = service.download(token)
+    except (_DNotFound, _DForbidden) as exc:
+        raise _delivery_error(exc) from exc
+    return _Response(content=data, media_type=receipt["mime_type"],
+                     headers={"Content-Disposition": f'attachment; filename="{receipt["filename"]}"',
+                              "X-Content-SHA256": receipt["sha256"], "Cache-Control": "private, no-store"})
