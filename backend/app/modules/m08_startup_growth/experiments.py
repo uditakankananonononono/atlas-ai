@@ -145,6 +145,18 @@ class ExperimentBoard:
         return self._append(experiment_id, "observed", {"exposures": exposures, "conversions": conversions,
                                                         "effort_hours": effort_hours, "source": source, "note": note})
 
+    def import_observation(self, experiment_id: str, parsed: dict[str, Any], *, effort_hours: float = 0.0) -> dict[str, Any]:
+        """Record a parsed analytics import once; the same fingerprint is refused."""
+        card = self.get(experiment_id)
+        if any(o.get("fingerprint") == parsed["fingerprint"] for o in card["observations"]):
+            raise ExperimentRefused("this export was already imported for this experiment")
+        if card["state"] == "stopped":
+            raise ExperimentRefused("experiment is stopped; start a new card")
+        return self._append(experiment_id, "observed", {
+            "exposures": parsed["exposures"], "conversions": parsed["conversions"], "effort_hours": effort_hours,
+            "source": parsed["source"], "note": parsed["unit"], "fingerprint": parsed["fingerprint"],
+            "window": parsed.get("window")})
+
     def decide(self, experiment_id: str, *, decision: str, reason: str) -> dict[str, Any]:
         if decision not in DECISIONS:
             raise ExperimentRefused(f"decision must be one of {sorted(DECISIONS)}")

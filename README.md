@@ -42,7 +42,7 @@ All module routers below are mounted by `backend/app/main.py`. "Implemented core
 | 5 | Outreach Manager | tenant SQL CRM, change history, professor discovery, drafts and gated sends, cross-campaign contact cadence guard | more official enrichment sources and a real approved-send executor |
 | 6 | Social Media Manager | provider-backed plans, asset prompts, SQL plans/reports, official X metrics, gated scheduling, cross-platform claim/citation parity preview | real asset generation and platform execution after approval |
 | 7 | Brand Collaboration | discovery scoring, tenant ledger, PDF/HTML collateral, reports/invoices, gated send, contract obligation tracker (deadlines, evidence, approvals, invoice/payment status) | live provider integrations and production artifact storage |
-| 8 | Startup Growth | real Next.js archives, Supabase waitlist route, PPTX deck, code-grounded docs, gated publish, free-first experiment board (paid ideas are proposals only) | deployment executor and broader templates |
+| 8 | Startup Growth | real Next.js archives, Supabase waitlist route, PPTX deck, code-grounded docs, gated publish, free-first experiment board (paid ideas are proposals only) with Plausible/CSV analytics import | deployment executor and broader templates |
 | 9 | Knowledge Workspace | tenant graph, review suggestions, versioning and planner export | Google Docs/Sheets ingestion and richer visual editing |
 | 10 | Email Assistant | Gmail OAuth/watch/ingestion, seven-class classifier, action extraction, priority/follow-up, gated replies | production OAuth credentials and approved send execution |
 | 11 | Calendar Intelligence | Google/CalDAV sync, solver, travel/prep/focus constraints, conflict proposals | production credentials and live apply verification |

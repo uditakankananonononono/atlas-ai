@@ -69,3 +69,31 @@ def decide_experiment(experiment_id: str, data: DecisionIn, b: ExperimentBoard =
 def extend_experiment_cap(experiment_id: str, data: CapIn, b: ExperimentBoard = Depends(get_board)): return _ex(lambda: b.extend_cap(experiment_id, **data.model_dump()))
 @router.post("/experiments/{experiment_id}/paid-proposals", status_code=201)
 def paid_proposal(experiment_id: str, data: PaidProposalIn, b: ExperimentBoard = Depends(get_board)): return _ex(lambda: b.propose_paid(experiment_id, **data.model_dump()))
+
+
+# -- analytics export import ------------------------------------------------------
+from datetime import date as _date
+from .analytics_import import ImportError_, from_mapped, from_plausible
+
+
+class PlausibleImportIn(_BM):
+    visitors_csv: str = _F(min_length=1, max_length=5_000_000); custom_events_csv: str = _F(min_length=1, max_length=5_000_000)
+    goal: str = _F(min_length=1, max_length=200); start: _date | None = None; end: _date | None = None; effort_hours: float = _F(default=0, ge=0)
+class MappedImportIn(_BM):
+    csv_text: str = _F(min_length=1, max_length=5_000_000); exposures_col: str; conversions_col: str
+    date_col: str | None = None; filter_col: str | None = None; filter_value: str | None = None
+    start: _date | None = None; end: _date | None = None; label: str = _F(default="csv", max_length=100); effort_hours: float = _F(default=0, ge=0)
+
+
+def _imp(b, experiment_id, parse, effort):
+    try: parsed = parse()
+    except ImportError_ as e: raise HTTPException(422, str(e)) from e
+    return _ex(lambda: b.import_observation(experiment_id, parsed, effort_hours=effort)) | {"import": parsed}
+
+
+@router.post("/experiments/{experiment_id}/import/plausible")
+def import_plausible(experiment_id: str, data: PlausibleImportIn, b: ExperimentBoard = Depends(get_board)):
+    return _imp(b, experiment_id, lambda: from_plausible(**data.model_dump(exclude={"effort_hours"})), data.effort_hours)
+@router.post("/experiments/{experiment_id}/import/csv")
+def import_mapped(experiment_id: str, data: MappedImportIn, b: ExperimentBoard = Depends(get_board)):
+    return _imp(b, experiment_id, lambda: from_mapped(**data.model_dump(exclude={"effort_hours"})), data.effort_hours)
