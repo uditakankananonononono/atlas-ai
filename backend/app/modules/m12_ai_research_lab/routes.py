@@ -156,3 +156,21 @@ def fail_checkpoint(body:FailIn,w=Depends(get_checkpoint_worker)):
 def complete_checkpoint(body:CompleteIn,w=Depends(get_checkpoint_worker)):
  try:return w.complete(body.lease_token,body.provider_receipts,body.resume_from_node_id)
  except LeaseError as e:raise HTTPException(409,str(e)) from e
+from .checkpoint_loop import CheckpointLoop,InboxError,InboxNotFound,ReceiptInbox
+class ReceiptsIn(_WBM):provider_receipts:list[SignedProviderReceipt]=_WF(min_length=1,max_length=2000)
+def get_receipt_inbox(tenant:TenantContext=Depends(require_tenant)):return ReceiptInbox(tenant.tenant_id)
+def get_checkpoint_loop(tenant:TenantContext=Depends(require_tenant)):return CheckpointLoop(tenant.tenant_id,worker_id=f"manual:{tenant.actor_id}")
+@router.post('/reproducible-run/{run_id}/receipts',status_code=202)
+def post_checkpoint_receipts(run_id:str,body:ReceiptsIn,inbox=Depends(get_receipt_inbox)):
+ """Store signed provider receipts for a queued checkpoint; verified when the worker loop completes it."""
+ try:return inbox.post(run_id,body.provider_receipts)
+ except InboxNotFound as e:raise HTTPException(404,str(e)) from e
+ except InboxError as e:raise HTTPException(422,str(e)) from e
+@router.get('/reproducible-run/{run_id}/receipts')
+def checkpoint_receipt_status(run_id:str,inbox=Depends(get_receipt_inbox)):
+ try:return inbox.status(run_id)
+ except InboxNotFound as e:raise HTTPException(404,str(e)) from e
+@router.post('/reproducible-run/worker/tick')
+def run_checkpoint_worker_tick(loop=Depends(get_checkpoint_loop)):
+ """Run one pass of the worker loop for the calling tenant (the beat task does this for every tenant)."""
+ return loop.run_once()

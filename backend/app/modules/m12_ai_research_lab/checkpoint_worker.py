@@ -60,13 +60,19 @@ class CheckpointWorker:
         if sessions is SessionLocal:
             Base.metadata.create_all(engine, tables=[CheckpointLeaseRow.__table__])
 
-    def claim(self, worker_id: str, lease_seconds: int = 300) -> dict | None:
+    def claim(self, worker_id: str, lease_seconds: int = 300, queue_row_ids=None) -> dict | None:
+        """Lease the oldest claimable queued checkpoint. ``queue_row_ids`` optionally limits which rows are considered."""
         if not 10 <= lease_seconds <= 3600:
             raise LeaseError("lease_seconds must be 10..3600")
         now = self.clock()
         with self.sessions.begin() as db:
-            queued = db.scalars(select(CheckpointQueueRow).where(CheckpointQueueRow.tenant_id == self.tenant_id,
-                                                                 CheckpointQueueRow.state == "queued")
+            where = [CheckpointQueueRow.tenant_id == self.tenant_id, CheckpointQueueRow.state == "queued"]
+            if queue_row_ids is not None:
+                ids = list(queue_row_ids)
+                if not ids:
+                    return None
+                where.append(CheckpointQueueRow.id.in_(ids))
+            queued = db.scalars(select(CheckpointQueueRow).where(*where)
                                 .order_by(CheckpointQueueRow.enqueued_at, CheckpointQueueRow.id).limit(50)).all()
             for q in queued:
                 lease = db.scalar(select(CheckpointLeaseRow).where(CheckpointLeaseRow.queue_row_id == q.id))
@@ -94,7 +100,7 @@ class CheckpointWorker:
                     if attempts > self.max_attempts:
                         q.state = "failed"
                         continue
-                return {"run_id": q.run_id, "checkpoint_sha256": q.checkpoint_sha256, "lease_token": token,
+                return {"run_id": q.run_id, "checkpoint_sha256": q.checkpoint_sha256, "queue_row_id": q.id, "lease_token": token,
                         "leased_until": until.isoformat(), "attempt": attempts, "checkpoint": q.payload}
         return None
 
