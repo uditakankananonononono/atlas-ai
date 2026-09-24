@@ -13,7 +13,8 @@ def execute_approved_action(approval_id: str, effect_id: str) -> dict[str, objec
     view = default_service().get(approval_id)
     status = view["status"].value if hasattr(view["status"], "value") else view["status"]
     if status != "approved": raise ValueError("approval is not approved")
-    permit = default_service().consume_effect(approval_id, module_id=view["module_id"],
+    from app.modules.m00_approval_center.impact import consume_effect_checked
+    permit = consume_effect_checked(default_service(), approval_id, module_id=view["module_id"],
         action_type=view["action_type"], payload=view["payload"], user_id=view["user_id"],
         effect_id=effect_id, actor="celery-worker")
     result = execute_registered(view["module_id"], view["action_type"], view["payload"])

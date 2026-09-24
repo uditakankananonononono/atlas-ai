@@ -2,6 +2,7 @@
 
 from uuid import uuid4
 
+from pydantic import BaseModel, Field
 from fastapi import APIRouter, HTTPException, Depends
 
 from app.core.approvals import approvals
@@ -135,3 +136,19 @@ router.include_router(core_spec_round6_router)
 # End-to-end opportunity application browser workflow (M1/M2/M13).
 # Imported for side effects: it declares its routes on this router directly.
 from . import application_routes as _application_workflow_routes  # noqa: F401
+
+
+class _EvidenceField(BaseModel):
+    draft: str = Field(min_length=1, max_length=20000)
+    sources: list[dict] = Field(default_factory=list, max_length=50)
+
+
+class _EvidenceIn(BaseModel):
+    fields: dict[str, _EvidenceField] = Field(min_length=1, max_length=40)
+
+
+@router.post("/evidence-completeness")
+def evidence_completeness(body: _EvidenceIn, tenant: TenantContext = Depends(require_tenant)) -> dict:
+    """Score drafted answers: each claim must cite a supporting owner source or say [NEEDS INPUT]."""
+    from .evidence import score_package
+    return score_package({k: v.model_dump() for k, v in body.fields.items()})
