@@ -24,3 +24,9 @@ def test_integrated_flow_refuses_to_generate_from_nothing():
  try:asyncio.run(f.prepare('c','https://official',[{'field':'essay','question':'Why?'}]))
  except ValueError as e:assert 'no owner corpus evidence' in str(e)
  else:raise AssertionError
+def test_integrated_flow_attaches_evidence_completeness():
+ f=IntegratedApplicationFlow(Corpus(),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),ApprovalStore(),'tenant-a')
+ out=asyncio.run(f.prepare('comp1','https://official.example/app',[{'field':'impact','question':'What did you build?'}]))
+ ev=out['evidence_completeness']
+ assert ev['complete'] and ev['overall_score']==1.0
+ assert ev['fields']['impact']['claims'][0]['sources'][0]['source_id']=='doc1'
