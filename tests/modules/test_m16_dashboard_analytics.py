@@ -299,7 +299,7 @@ def test_export_kpis_csv():
     assert row.startswith("grants_won,Grants won,1.0,count,") or row.startswith("grants_won,Grants won,1,count,")
 def test_default_view_when_unset():
     view=svc().get_view(NOW)
-    assert [w.kind for w in view.widgets]==[WidgetKind.KPI_CARD,WidgetKind.BLOCKERS,WidgetKind.MODULE_STATUS,WidgetKind.TIMELINE,WidgetKind.APPROVALS]
+    assert [w.kind for w in view.widgets]==[WidgetKind.KPI_CARD,WidgetKind.BLOCKERS,WidgetKind.MODULE_STATUS,WidgetKind.TIMELINE,WidgetKind.APPROVALS,WidgetKind.RERUN_SCHEDULES]
 def test_save_view_validates_and_normalizes():
     repo=FakeRepo();stored={}
     repo.save_view=lambda layout,at:stored.update(layout=layout,at=at)
@@ -308,7 +308,7 @@ def test_save_view_validates_and_normalizes():
     view=s.save_view(DashboardViewIn(widgets=[WidgetConfig(id="b",kind=WidgetKind.BLOCKERS,position=9),WidgetConfig(id="k",kind=WidgetKind.KPI_CARD,kpi_id="grants_won",position=3)]))
     assert [w.id for w in view.widgets]==["k","b"] and [w.position for w in view.widgets]==[0,1]
     loaded=s.get_view(NOW)
-    assert [w.id for w in loaded.widgets]==["k","b"]
+    assert [w.id for w in loaded.widgets]==["k","b","rerun_schedules"]  # widget kinds added later are appended to saved layouts
     with pytest.raises(ValueError):s.save_view(DashboardViewIn(widgets=[WidgetConfig(id="x",kind=WidgetKind.KPI_CARD,kpi_id="nope"),WidgetConfig(id="x",kind=WidgetKind.BLOCKERS)]))
     with pytest.raises(ValueError):s.save_view(DashboardViewIn(widgets=[WidgetConfig(id="y",kind=WidgetKind.KPI_CARD,kpi_id="nope")]))
 def test_alert_cooldown_buckets():
