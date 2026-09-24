@@ -3,7 +3,7 @@
 Status legend: **Landed** is working code with a named test. **Next** is a proposed enhancement, not an implementation claim.
 
 ## M00 - Human Approval Center
-- **Next:** approval impact preview that compares the exact effect payload with the current external state immediately before consumption.
+- **Landed:** approval impact preview. Modules register read-only state probes, and `POST /approval-center/requests/{id}/review-state` snapshots what the reviewer saw. `GET .../impact-preview` shows the exact effect payload against reviewed and live state with a dotted-path drift list. `/consume` and the Celery executor now run `consume_effect_checked`, so drift since review blocks the permit (409 plus the drift list, audited as `effect_blocked_drift`), and a snapshot with no probe fails closed. Test: `tests/modules/test_m00_impact_preview.py`.
 ## M01 - Opportunity Discovery
 - **Next:** deadline-change monitor with source snapshots and owner-visible eligibility deltas.
 ## M02 - Competition Manager
