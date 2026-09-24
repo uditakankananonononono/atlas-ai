@@ -175,3 +175,24 @@ def propose_from_candidate(candidate_id: str, body: CandidateProposalIn,
                                         entrypoint=body.entrypoint, permissions=body.permissions)
     except ERRORS as exc:
         raise _http(exc) from exc
+
+
+class SmokeEnqueueIn(BaseModel):
+    approval_id: str = Field(min_length=1)
+
+
+@router.post("/installs/{operation_id}/smoke-proposals", status_code=201)
+def propose_smoke(operation_id: str, tenant: TenantContext = Depends(require_tenant),
+                  p: InstallPipeline = Depends(get_pipeline)):
+    try:
+        return p.propose_smoke(operation_id, tenant.actor_id)
+    except ERRORS as exc:
+        raise _http(exc) from exc
+
+
+@router.post("/installs/{operation_id}/smoke-jobs", status_code=202)
+def enqueue_smoke(operation_id: str, body: SmokeEnqueueIn, p: InstallPipeline = Depends(get_pipeline)):
+    try:
+        return p.enqueue_smoke(operation_id, body.approval_id)
+    except ERRORS as exc:
+        raise _http(exc) from exc
