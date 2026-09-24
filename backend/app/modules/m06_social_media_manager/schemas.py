@@ -43,6 +43,8 @@ class ScheduleIn(BaseModel):
 
     publish_at: datetime | None = None
     sponsored: bool = False
+    source: str | None = Field(default=None, max_length=40000)
+    references: dict[int, dict[str, str]] = Field(default_factory=dict)
 
 
 class ScheduleEntryOut(BaseModel):

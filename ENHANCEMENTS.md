@@ -21,7 +21,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Next:** owner-editable cadence rules per tenant (stored policy instead of module constants) and a reviewer-visible cross-campaign contact timeline.
 ## M06 - Social Media Manager
 - **Landed:** cross-platform adaptation preview (`adaptation.py`, `POST /social-media-manager/plans/{id}/adaptation-preview`, `POST /social-media-manager/adaptation-preview`): source claims (sentences with figures, URLs or `[n]` references) are matched against each platform draft into a claim x platform parity matrix (`kept_cited` / `kept_uncited` / `kept` / `dropped`); a kept claim that loses its source and any figure absent from the source are blocking errors; existing platform limits, hashtag caps, disclosure and real X thread chunks are included. Read-only (`tests/modules/test_m06_adaptation.py`).
-- **Next:** gate `request_schedule` on a clean adaptation preview when the plan has a cited source, and paraphrase-aware claim matching for figure-free claims.
+- **Landed:** scheduling gate: `request_schedule` runs the adaptation preview (source = request `source` or the plan brief, optional `references`) and refuses with 422 when any draft has `citation_dropped` or `unsupported_figure`; no approval is filed and the plan stays `draft`. Approved requests carry the per-platform `adaptation_parity`.
+- **Next:** paraphrase-aware claim matching for figure-free claims (free local model), replacing the 50% content-word overlap rule.
 ## M07 - Brand Collaboration
 - **Next:** deliverable obligation tracker linking contract promises, approvals, deadlines, evidence and invoice status.
 ## M08 - Startup Growth

@@ -226,7 +226,8 @@ def adaptation_preview(request: _AdaptIn, tenant: TenantContext = Depends(requir
 def request_schedule(plan_id: str, request: ScheduleIn, service: Service = Depends(get_service)) -> object:
     """Compliance-check drafts, persist schedule entries, file approvals."""
     try:
-        return service.request_schedule(plan_id, request.publish_at, sponsored=request.sponsored)
+        return service.request_schedule(plan_id, request.publish_at, sponsored=request.sponsored,
+                                        source=request.source, references=request.references or None)
     except PlanNotFoundError as error:
         raise HTTPException(status_code=404, detail="plan not found") from error
     except DraftComplianceError as error:
