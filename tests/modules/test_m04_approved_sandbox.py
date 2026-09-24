@@ -263,3 +263,86 @@ def test_http_routes_propose_approve_execute_download(center, tmp_path, monkeypa
     assert download.status_code == 200 and hashlib.sha256(download.content).hexdigest() == sha
     assert client.get("/research-scientist/analyses/artifacts/" + "0" * 64, headers=headers).status_code == 404
     assert [r["approval_id"] for r in client.get("/research-scientist/analyses/executions", headers=headers).json()] == [approval_id]
+
+
+# ---------------------------------------------------------------- environment lock + executed bundle
+import io
+import json
+import zipfile
+
+from app.modules.m04_research_scientist.execution_bundle import build_execution_bundle, verify_execution_bundle
+
+
+@needs_bwrap
+def test_environment_lock_is_captured_inside_the_sandbox(center, tmp_path):
+    import platform
+    receipt = executor(center, tmp_path).execute(submit(center, "print('x')"))
+    lock = receipt["environment_lock"]
+    assert lock["language"] == "python" and lock["backend"] == "bubblewrap"
+    # the sandbox runs the host's /usr/bin/python3, not this test's venv interpreter
+    import subprocess
+    host = subprocess.run(["/usr/bin/python3", "-c", "import platform;print(platform.python_version())"],
+                          capture_output=True, text=True).stdout.strip()
+    assert lock["version"] == host
+    assert isinstance(lock["packages"], dict) and lock["platform"]
+    assert receipt["environment_lock_sha256"] == lock["lock_sha256"] and len(lock["lock_sha256"]) == 64
+
+
+def test_broken_sandbox_fails_before_the_permit_is_consumed(center, tmp_path):
+    from app.modules.m04_research_scientist.approved_sandbox import BackendUnavailableError, SandboxRun
+
+    class Broken:
+        name = "broken"
+        def available(self, language="python"):
+            return True
+        def run(self, **kw):
+            return SandboxRun("broken", {}, 1, False, b"", b"no interpreter", False, False, "", "", 0.0)
+
+    approval = submit(center, "print(1)")
+    with pytest.raises(BackendUnavailableError, match="environment probe failed"):
+        executor(center, tmp_path, backend=Broken()).execute(approval)
+    assert "effect_consumed" not in [e["event"] for e in center.audit(approval)]
+
+
+@needs_bwrap
+def test_executed_bundle_contains_and_verifies_code_data_lock_logs_outputs(center, tmp_path):
+    body = b"a,b\n1,2\n"
+    transport = httpx.MockTransport(lambda r: httpx.Response(200, content=body))
+    fetcher = HttpDatasetFetcher(resolver=lambda h: True, transport=transport)
+    code = STATS + "\nprint(open('/input/data/00_t.csv').read().count('\\n'))\n"
+    ex = executor(center, tmp_path, fetcher=fetcher)
+    receipt = ex.execute(submit(center, code, urls=["https://data.example.org/t.csv"]))
+    payload, manifest = build_execution_bundle(receipt, ex.store, "tenant-a")
+    assert manifest["schema_version"] == 2 and manifest["executed"] is True
+    names = set(zipfile.ZipFile(io.BytesIO(payload)).namelist())
+    assert {"manifest.json", "analysis.py", "environment.lock.json", "logs/stdout.txt", "logs/stderr.txt",
+            "outputs/result.json", "data/00_t.csv", "README.md"} <= names
+    assert manifest["datasets"][0]["bundled_as"] == "data/00_t.csv"
+    assert manifest["environment_lock_sha256"] == receipt["environment_lock_sha256"]
+    assert verify_execution_bundle(payload) == {"valid": True, "problems": [], "manifest_sha256": manifest["manifest_sha256"]}
+
+    # tamper with one output file -> verification names it
+    src = zipfile.ZipFile(io.BytesIO(payload)); out = io.BytesIO()
+    with zipfile.ZipFile(out, "w") as dst:
+        for n in src.namelist():
+            dst.writestr(n, b'{"mean": 99}' if n == "outputs/result.json" else src.read(n))
+    report = verify_execution_bundle(out.getvalue())
+    assert not report["valid"] and "hash mismatch: outputs/result.json" in report["problems"]
+
+    # oversize datasets are referenced by hash, not bundled
+    _, small = build_execution_bundle(receipt, ex.store, "tenant-a", max_dataset_bytes=1)
+    assert small["datasets"][0]["bundled_as"] is None and small["datasets"][0]["sha256"] == hashlib.sha256(body).hexdigest()
+
+
+@needs_bwrap
+def test_bundle_route_and_unfinished_runs(center, tmp_path, monkeypatch):
+    app = FastAPI(); app.include_router(routes.router)
+    ex = executor(center, tmp_path)
+    app.dependency_overrides[routes.get_sandbox_executor] = lambda: ex
+    client = TestClient(app); h = {"X-Atlas-Tenant": "tenant-a"}
+    approval = submit(center, STATS)
+    assert client.get(f"/research-scientist/analyses/{approval}/bundle", headers=h).status_code == 404
+    ex.execute(approval)
+    res = client.get(f"/research-scientist/analyses/{approval}/bundle", headers=h)
+    assert res.status_code == 200 and res.headers["x-atlas-bundle-sha256"] == hashlib.sha256(res.content).hexdigest()
+    assert verify_execution_bundle(res.content)["valid"]

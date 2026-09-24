@@ -253,6 +253,15 @@ class DockerBackend:
     def available(self, language: str = "python") -> bool:
         return bool(self.docker)
 
+    def image_digest(self, language: str) -> str | None:
+        """Local image id (content digest) of the image the run will use."""
+        try:
+            proc = subprocess.run([self.docker or "docker", "image", "inspect", "--format", "{{.Id}}",
+                                   self.images[language]], capture_output=True, text=True, timeout=30)
+        except (OSError, subprocess.TimeoutExpired):
+            return None
+        return proc.stdout.strip() or None if proc.returncode == 0 else None
+
     def command(self, name: str, language: str, input_dir: Path, output_dir: Path,
                 limits: ExecutionLimits) -> list[str]:
         interp = {"python": ["python", "-I", "-B"], "r": ["Rscript", "--vanilla"]}[language]
@@ -311,6 +320,69 @@ def select_backend(preference: str | None = None) -> SandboxBackend:
         if backend.available():
             return backend
     raise BackendUnavailableError("no sandbox backend available: install docker or bubblewrap")
+
+
+# --------------------------------------------------------------------------- environment lock
+
+PYTHON_LOCK_PROBE = r"""
+import json, platform, sys
+import importlib.metadata as md
+packages = {}
+for dist in md.distributions():
+    name = (dist.metadata["Name"] or "").strip()
+    if name:
+        packages[name.lower()] = dist.version
+libc = platform.libc_ver()
+print(json.dumps({
+    "language": "python",
+    "interpreter": sys.version,
+    "implementation": platform.python_implementation(),
+    "version": platform.python_version(),
+    "executable": sys.executable,
+    "platform": platform.platform(),
+    "machine": platform.machine(),
+    "libc": "-".join(x for x in libc if x),
+    "packages": dict(sorted(packages.items())),
+}, sort_keys=True))
+"""
+
+R_LOCK_PROBE = r"""
+ip <- installed.packages()[, c("Package", "Version")]
+pk <- as.list(setNames(ip[, "Version"], ip[, "Package"]))
+pk <- pk[order(names(pk))]
+esc <- function(x) gsub('"', '\\"', x)
+items <- paste0('"', esc(names(pk)), '":"', esc(unlist(pk)), '"', collapse = ",")
+cat(paste0('{"language":"r","interpreter":"', esc(R.version.string), '","version":"',
+           esc(paste(R.version$major, R.version$minor, sep = ".")), '","platform":"', esc(R.version$platform),
+           '","machine":"', esc(Sys.info()[["machine"]]), '","packages":{', items, '}}'))
+"""
+
+
+def capture_environment_lock(backend: "SandboxBackend", language: str, limits: ExecutionLimits) -> dict[str, Any]:
+    """Run a probe inside the same sandbox the analysis will use and hash the result."""
+    probe = PYTHON_LOCK_PROBE if language == "python" else R_LOCK_PROBE
+    work = Path(tempfile.mkdtemp(prefix="atlas-m04-lock-"))
+    try:
+        input_dir, output_dir = work / "input", work / "output"
+        input_dir.mkdir(); output_dir.mkdir()
+        (input_dir / ENTRYPOINTS[language]).write_text(probe, encoding="utf-8")
+        os.chmod(input_dir, 0o755)
+        probe_limits = ExecutionLimits(**{**asdict(limits), "timeout_seconds": min(limits.timeout_seconds, 120)})
+        run = backend.run(language=language, input_dir=input_dir, output_dir=output_dir, limits=probe_limits)
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+    if run.exit_code != 0 or run.timed_out:
+        raise SandboxExecutionError(f"environment probe failed: {run.stderr.decode(errors='replace')[-400:]}")
+    try:
+        lock = json.loads(run.stdout.decode())
+    except ValueError as exc:
+        raise SandboxExecutionError("environment probe returned invalid JSON") from exc
+    image = getattr(backend, "image_digest", None)
+    if callable(image):
+        lock["image_digest"] = image(language)
+    lock["backend"] = backend.name
+    lock["lock_sha256"] = _sha(_canonical(lock).encode())
+    return lock
 
 
 # --------------------------------------------------------------------------- datasets
@@ -560,6 +632,12 @@ class ApprovedSandboxExecutor:
         payload = dict(view["payload"])
         request_hash = _sha(_canonical({"module_id": MODULE_ID, "action_type": SANDBOX_ACTION,
                                         "payload": payload, "user_id": self.tenant_id}).encode())
+        # Environment lock is captured in the same sandbox before the permit is
+        # consumed, so a broken sandbox never burns the human's approval.
+        try:
+            environment_lock = capture_environment_lock(backend, proposal.language, self.limits)
+        except SandboxExecutionError as exc:
+            raise BackendUnavailableError(str(exc)) from exc
         # One-shot permit bound to the exact reviewed payload. A deterministic
         # effect id lets an infrastructure-failed attempt retry the same permit,
         # but only when this store proves the earlier attempt never ran code.
@@ -582,7 +660,9 @@ class ApprovedSandboxExecutor:
             "actor_id": self.actor_id, "state": "started", "objective": proposal.objective,
             "language": proposal.language, "request_hash": request_hash,
             "code_sha256": _sha(proposal.code.encode()), "permit_consumed_at": str(permit.get("consumed_at")),
-            "backend": backend.name, "limits": asdict(self.limits), "datasets": [], "created_at": _now()}
+            "backend": backend.name, "limits": asdict(self.limits), "datasets": [], "created_at": _now(),
+            "environment_lock": environment_lock, "environment_lock_sha256": environment_lock["lock_sha256"]}
+        self.store.put_bytes(self.tenant_id, proposal.code.encode())
         self.store.record(self.tenant_id, receipt)
         work = Path(tempfile.mkdtemp(prefix="atlas-m04-run-"))
         try:
@@ -623,6 +703,7 @@ class ApprovedSandboxExecutor:
             name = _dataset_name(index, url)
             meta = self.fetcher.fetch(url, data_dir / name, budget)
             budget -= int(meta["bytes"])
+            self.store.put_file(self.tenant_id, data_dir / name, meta["sha256"], int(meta["bytes"]))
             staged.append({**meta, "path": f"/input/data/{name}"})
         return staged
 

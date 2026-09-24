@@ -34,3 +34,9 @@ Datasets are downloaded before the run, outside the sandbox: HTTPS only, public 
 Receipts record request hash, code hash, datasets, backend and isolation, limits, exit code, timing, stdout/stderr hashes (capped, truncation flagged), every output file hash, rejected outputs, and a `manifest_sha256` seal (`verify_manifest`). Limits are set with `ATLAS_SANDBOX_<FIELD>` env vars (see `ExecutionLimits`). Storage root: `ATLAS_RUNTIME_DATA_DIR/m04-sandbox` (SQLite + content-addressed files).
 
 Not done: running as a Celery job for long analyses (the route runs synchronously in the API worker thread pool), R execution tested only when Rscript is installed, CI runs the bubblewrap tests only where user namespaces are permitted (they skip otherwise).
+
+### Environment lock and executed bundle (pb8)
+
+Before the permit is consumed, `capture_environment_lock` runs a probe in the same backend, limits and image the analysis will use and records interpreter version, implementation, platform, libc, every installed package with its version and (Docker) the local image id. It is hashed (`environment_lock_sha256`) into the receipt. If the probe fails, the run returns 503 and the approval is not consumed. The approved code and staged dataset bytes are kept in the tenant content store.
+
+`GET /research-scientist/analyses/{approval_id}/bundle` returns a schema-2 zip built from a finished receipt: `analysis.py|R`, `environment.lock.json`, `logs/stdout.txt`, `logs/stderr.txt`, `outputs/...`, `data/...` (datasets up to 50 MB total; larger ones are listed by URL + SHA-256), `README.md`, and `manifest.json` listing every file hash, sealed with `manifest_sha256` and carrying the receipt seal and approval id. `execution_bundle.verify_execution_bundle(bytes)` checks it offline. The R lock probe is written but was not executed here (no Rscript on the builder host).
