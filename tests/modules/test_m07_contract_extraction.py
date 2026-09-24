@@ -82,19 +82,32 @@ def test_bad_model_output_and_private_routes_only(tmp_path, monkeypatch):
     with pytest.raises(ExtractionError):
         asyncio.run(x.extract(brand_id="b1", contract_text=CONTRACT))
 
-    from app.core import model_catalog, providers
-    from app.core.providers import ProviderError
+    from app.core import shared_model_layer as sml
     from app.modules.m07_brand_collaboration import contract_extraction as ce
-    monkeypatch.setenv("HF_TOKEN", "hf_x")
+    from instinct_models import Router
+    from instinct_models.providers import HOSTED, LOCAL, ChatResult, Provider, ProviderError
+
     used = []
 
-    async def fake(prompt, provider, model=None):
-        used.append(provider)
-        raise ProviderError("down")
-    monkeypatch.setattr(providers, "generate", fake)
+    class P(Provider):
+        def __init__(self, name, locality, fail):
+            self.name, self.locality, self.fail = name, locality, fail
+
+        def available(self):
+            return True
+
+        def chat(self, messages, *, tools=None, max_tokens=1024):
+            used.append(self.name)
+            if self.fail:
+                raise ProviderError("down")
+            return ChatResult(self.name, "m", "[]", [], {})
+
+    monkeypatch.setattr(sml, "atlas_router", lambda: Router([P("ornith", LOCAL, True), P("hf", HOSTED, False)]))
     with pytest.raises(ExtractionError, match="not sent to hosted"):
         asyncio.run(ce.private_generate("contract"))
-    assert "huggingface" not in used and used == ["ollama", "openai_compat"]
+    assert used == ["ornith"]
+    monkeypatch.setattr(sml, "atlas_router", lambda: Router([P("ornith", LOCAL, False), P("hf", HOSTED, False)]))
+    assert asyncio.run(ce.private_generate("contract")) == ("ornith", "m", "[]")
 
 
 def test_vet_date_forms():
