@@ -40,6 +40,12 @@ Credit limit, plainly: free HF accounts get about $0.10 of Inference Providers c
 
 `generate_free_first()` with no model name tries Ollama, then the local OpenAI-compatible server, then HF (only if `HF_TOKEN` is set). With `model_name="inkling"` it tries HF Inkling-Small, then HF Inkling, then the self-hosted server. Paid routes are skipped unless `ATLAS_ALLOW_PAID=true`. If every free route fails, it raises `no free model route succeeded; Atlas stopped instead of using a paid provider` and lists why each route failed.
 
+## Where Atlas uses it
+
+M20 (General Cognitive Worker) planner and executive now run through this layer (`backend/app/modules/m20_general_cognitive_worker/model_adapters.py`, bound in `routes.py`). Novel goals are decomposed by the free-first model into steps, then checked by the HTN planner's validation. A model can raise a step's risk tier but never lower it below the tool's registered risk, and approvals still key off the tool's own spec. Failure reflection goes through the same model. Env: `ATLAS_GCW_MODEL` (e.g. `inkling`, `inkling-small`; empty = default chain), `ATLAS_GCW_MODEL_ROUTING=off` to unbind. If no free route answers, planning fails with "planner model unavailable: ... Atlas stopped instead of using a paid provider".
+
+M21 Claire makes no model calls itself. It drives her PC through the paired local client.
+
 ## API
 
 - `GET /api/v1/models/catalog` - the table above as JSON, plus `paid_allowed`.
@@ -49,6 +55,8 @@ Credit limit, plainly: free HF accounts get about $0.10 of Inference Providers c
 Both need a tenant (OIDC in production).
 
 ## Run Inkling-Small yourself (self_hosted)
+
+**If your PC has 96-128 GB of RAM:** it can run the real Inkling-Small with llama.cpp using the 1-bit to 3-bit GGUF builds (75-98 GB). It's slow, a few tokens a second, but it's the actual model. `scripts/inkling/setup.sh --dry-run` shows exactly what your machine gets.
 
 This is the real Inkling-Small, never a smaller stand-in. One command checks the machine, picks the largest real build that fits, starts an OpenAI-compatible server and writes `.env.inkling` for Atlas:
 

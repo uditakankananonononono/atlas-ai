@@ -20,6 +20,12 @@ from app.modules.m00_approval_center.service import (
     Service,
     default_service,
 )
+from app.modules.m00_approval_center.impact import (
+    StateDriftError,
+    capture_review_state,
+    consume_effect_checked,
+    impact_preview,
+)
 
 router = APIRouter(prefix="/approval-center", tags=["approval-center"])
 
@@ -184,10 +190,44 @@ def consume_effect(approval_id: str, body: schemas.EffectConsume,
         current = service.get(approval_id)
         if current["user_id"] != tenant.tenant_id:
             raise ApprovalNotFoundError(approval_id)
-        return service.consume_effect(approval_id, module_id=body.module_id,
+        return consume_effect_checked(service, approval_id, module_id=body.module_id,
             action_type=body.action_type, payload=body.payload, user_id=tenant.tenant_id,
             effect_id=body.effect_id, actor=tenant.actor_id)
     except ApprovalNotFoundError as error:
         raise _not_found(error) from error
+    except StateDriftError as error:
+        raise HTTPException(status_code=409, detail={"error": str(error), "drift": error.drift}) from error
     except ApprovalConflictError as error:
         raise HTTPException(status_code=409, detail=str(error)) from error
+
+
+def _owned(service: Service, approval_id: str, tenant: TenantContext) -> None:
+    if service.get(approval_id)["user_id"] != tenant.tenant_id:
+        raise ApprovalNotFoundError(approval_id)
+
+
+@router.post("/requests/{approval_id}/review-state")
+def capture_review(approval_id: str, body: schemas.ReviewStateCapture | None = None,
+                   service: Service = Depends(get_service),
+                   tenant: TenantContext = Depends(require_tenant)) -> dict:
+    """Snapshot the external state the reviewer is looking at (pending approvals only)."""
+    try:
+        _owned(service, approval_id, tenant)
+        return capture_review_state(service, approval_id, state=body.state if body else None)
+    except ApprovalNotFoundError as error:
+        raise _not_found(error) from error
+    except ApprovalConflictError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
+    except LookupError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@router.get("/requests/{approval_id}/impact-preview")
+def preview_impact(approval_id: str, service: Service = Depends(get_service),
+                   tenant: TenantContext = Depends(require_tenant)) -> dict:
+    """Exact effect payload vs reviewed state vs live state, with a drift list."""
+    try:
+        _owned(service, approval_id, tenant)
+        return impact_preview(service, approval_id)
+    except ApprovalNotFoundError as error:
+        raise _not_found(error) from error

@@ -36,7 +36,7 @@ All module routers below are mounted by `backend/app/main.py`. "Implemented core
 |---:|---|---|---|
 | 0 | Human Approval Center | durable proposals, decisions, expiry, audit events, blocking callbacks | cross-process dashboard fan-out |
 | 1 | Opportunity Discovery | RSS/Atom, GitHub and Devpost scans, live spaCy NER + dateparser deadlines + free local embedding match with per-row engine provenance, SQL state, gated digests | scheduled source fleet, DeBERTa eligibility classifier, pgvector persistence of embeddings, 200 verified scholarship sources |
-| 2 | Competition Manager | rule extraction, checklist/drafting, SQL state, evidence status, browser handoff | Docs grounding, winner corpus, announcement monitors and follow-ups |
+| 2 | Competition Manager | rule extraction, checklist/drafting, SQL state, evidence status, per-claim evidence completeness score, browser handoff | Docs grounding, winner corpus, announcement monitors and follow-ups |
 | 3 | Grant Writer | grounded staged proposals, deterministic budgets, funded-example corpus/search, approval-gated export and explicit-rule science-grant compliance preflight | complete official funded corpus, agency schema packs and live rate evidence |
 | 4 | Research Scientist | literature clustering, provider-backed hypotheses, surveillance, quantitative/environmental methods, approval-gated sandbox proposals, and downloadable content-addressed reproducibility bundles | approved sandbox execution with captured output hashes/logs and live-source acceptance |
 | 5 | Outreach Manager | tenant SQL CRM, change history, professor discovery, drafts and gated sends | more official enrichment sources and a real approved-send executor |
