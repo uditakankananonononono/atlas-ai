@@ -50,6 +50,15 @@ async def _post(provider:str,url:str,*,headers:dict[str,str]|None=None,params:di
 async def generate(prompt: str, provider: str, model: str | None = None) -> tuple[str, str]:
     provider=provider.lower().strip()
     if not prompt.strip(): raise ProviderError("prompt is empty")
+    if provider in {"shared","shared-public"}:
+        # Shared model layer (instinct_models: Needle/Ornith/Inkling). "shared" is private: the hosted HF
+        # route is skipped. "shared-public" may use it (free tier, metered past it) for public-only content.
+        from app.core import shared_model_layer
+        try:
+            used,chosen,text=await shared_model_layer.generate(prompt,private=provider=="shared")
+        except shared_model_layer.SharedModelError as exc:
+            raise ProviderError(str(exc)) from exc
+        return f"{used}:{chosen}",text
     if provider=="openai":
         key=os.getenv("OPENAI_API_KEY")
         if not key: raise ProviderError("OPENAI_API_KEY is not configured")
