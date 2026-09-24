@@ -235,7 +235,7 @@ def select_smoke_backend(language: str) -> SmokeBackend:
     bundled = BwrapSmokeBackend()
     if bundled.available(language):
         return bundled
-    raise SmokeError(f"no sandbox available for {language}: install bubblewrap (or merge the M4 runner)")
+    raise SmokeError(f"no sandbox available for {language}: install bubblewrap (Python can also use the M4 Docker backend)")
 
 
 def language_for(manifest_metadata: dict[str, Any], entrypoint: str) -> str:
