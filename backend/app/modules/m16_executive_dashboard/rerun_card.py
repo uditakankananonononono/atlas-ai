@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Any, Callable
+from urllib.parse import quote
 
 from pydantic import BaseModel, Field
 
@@ -25,6 +26,7 @@ class RerunProposalRow(BaseModel):
     age_hours: float
     overdue: bool = False
     verdict: str | None = None
+    approval_path: str = ""  # the M00 approval-center request this proposal waits on (API path under /api/v1)
 
 
 class RerunScheduleCard(BaseModel):
@@ -45,7 +47,9 @@ class RerunScheduleCard(BaseModel):
 
 
 def _row(item: dict[str, Any]) -> RerunProposalRow:
-    return RerunProposalRow(**{k: item.get(k) for k in RerunProposalRow.model_fields if k in item})
+    row = RerunProposalRow(**{k: item.get(k) for k in RerunProposalRow.model_fields if k in item})
+    row.approval_path = f"/approval-center/requests/{quote(row.rerun_approval_id, safe='')}"
+    return row
 
 
 def build_card(stats: dict[str, Any]) -> RerunScheduleCard:
