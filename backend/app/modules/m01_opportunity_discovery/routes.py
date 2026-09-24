@@ -17,19 +17,28 @@ from app.core.providers import ProviderError, generate
 from .schemas import (
     DigestProposalOut,
     DigestRequestIn,
+    NlpStatusOut,
     OpportunityOut,
     OpportunityType,
     ScanRequestIn,
     ScanResultOut,
     SourceOut,
 )
+from .nlp_stack import default_stack
 from .service import Service
 
 router = APIRouter(tags=["opportunity-discovery"])
 
 def get_service(tenant: TenantContext = Depends(require_tenant)) -> Service:
     """Build a tenant-bound service; tests may override this dependency."""
-    return Service(tenant_id=tenant.tenant_id)
+    return Service(tenant_id=tenant.tenant_id, nlp_stack=default_stack())
+
+
+@router.get("/opportunity-discovery/nlp-status", response_model=NlpStatusOut)
+def nlp_status(service: Service = Depends(get_service)) -> NlpStatusOut:
+    """Which NER, deadline and match engines are live, and why any is degraded."""
+
+    return NlpStatusOut(**service.nlp_status())
 
 
 @router.get("/opportunity-discovery/sources", response_model=list[SourceOut])
