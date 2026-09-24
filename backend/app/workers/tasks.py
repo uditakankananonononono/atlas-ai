@@ -146,3 +146,15 @@ def propose_due_reruns() -> dict[str, int]:
         result = RerunScheduleService(ApprovedSandboxExecutor(tenant_id, actor_id="scheduler")).tick()
         filed += len(result["filed"]); skipped += len(result["skipped"]); errors += len(result["errors"])
     return {"tenants": len(tenants), "filed": filed, "skipped_open": skipped, "errors": errors, "executed": 0}
+
+
+@celery_app.task(name="atlas.m12.run_checkpoint_worker")
+def run_m12_checkpoint_worker() -> dict[str, int]:
+    """Complete due M12 checkpoints per tenant from their receipt inbox. Verifies receipts; makes no provider calls."""
+    from app.modules.m12_ai_research_lab.checkpoint_loop import CheckpointLoop, tenants_with_queued_checkpoints
+    tenants = tenants_with_queued_checkpoints()
+    completed = failed = skipped = 0
+    for tenant_id in tenants:
+        result = CheckpointLoop(tenant_id).run_once()
+        completed += len(result["completed"]); failed += len(result["failed"]); skipped += len(result["skipped"])
+    return {"tenants": len(tenants), "completed": completed, "failed": failed, "skipped": skipped, "provider_calls": 0}
