@@ -171,6 +171,25 @@ class ObligationTracker:
             },
         }
 
+    def attention(self) -> dict[str, Any]:
+        """Items needing the owner across every brand: due soon, overdue, money leaks.
+        Read-only digest meant for the owner's daily brief."""
+        with self.sessions() as db:
+            rows = list(db.scalars(select(ObligationRow).where(ObligationRow.tenant_id == self.tenant_id)))
+        wanted = {"deliverable_overdue", "payment_overdue", "delivered_not_invoiced", "approval_blocked",
+                  "invoiced_before_delivery"}
+        items = []
+        for r in rows:
+            d = self._derive(r, self._events(r.id))
+            reasons = sorted(set(d["flags"]) & wanted) + (["due_soon"] if d["status"] == "due_soon" else [])
+            if reasons:
+                items.append({"id": d["id"], "brand_id": d["brand_id"], "title": d["title"], "status": d["status"],
+                              "billing": d["billing"], "due_at": d["due_at"], "reasons": reasons,
+                              "clause_locator": d["clause"]["locator"]})
+        items.sort(key=lambda i: (0 if "deliverable_overdue" in i["reasons"] or "payment_overdue" in i["reasons"] else 1,
+                                  i["due_at"] or "9999"))
+        return {"as_of": self.clock().isoformat(), "count": len(items), "items": items}
+
     # -- internals ------------------------------------------------------
     def _ev(self, oid: str, kind: str, data: dict[str, Any], at: datetime) -> ObligationEventRow:
         return ObligationEventRow(tenant_id=self.tenant_id, id=str(uuid4()), obligation_id=oid, kind=kind, at=at, data=data)
