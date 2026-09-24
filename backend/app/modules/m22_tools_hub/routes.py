@@ -35,3 +35,6 @@ def integration_receipt(proposal_id:str,body:IntegrationReceiptIn,s:Service=Depe
  try:return s.mark_integrated(proposal_id,body.evidence)
  except KeyError:raise HTTPException(404,'installation proposal not found')
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .pipeline_routes import router as pipeline_router
+router.include_router(pipeline_router)

@@ -1,2 +1,14 @@
 # Integration
-Add catalog entry 22, mount `router`, and inject approved public discovery collectors (official registries, changelog/RSS feeds, GitHub public API, vendor marketplaces). Candidate discovery is read-only. Installation proposals redact secret/token-like config, require Module 0 approval, and include rollback. A separate executor must verify approval and perform installation inside the Atlas sandbox; this lane deliberately does not install software. Persist candidates/proposals/portfolio tenant-scoped in Postgres.
+Mounted through `spec.router` (`/api/v1/tools-hub`). Candidate discovery is read-only. Legacy in-memory installation proposals redact secret/token-like config and require Module 0 approval.
+
+Installation runs through the durable pipeline in `pipeline.py` (routes in `pipeline_routes.py`, prefix `/api/v1/tools-hub/pipeline`):
+
+0. Optional discovery: `POST /discoveries {query}` persists ranked candidates (`GET /candidates`). `POST /candidates/{id}/proposals {version?, entrypoint?, permissions?}` fetches the PyPI wheel / npm tarball, checks the registry digest, and continues at step 1 automatically. GitHub-only candidates are refused (no published digest).
+1. `POST /proposals` with `artifact_base64` (ZIP) + `manifest` - scans first, stores bytes content-addressed, submits a Module 0 `integrate_tool` approval binding the install subject.
+2. After a human approves in Module 0: `POST /proposals/{id}/install-jobs` queues one job.
+3. The Celery beat task `atlas.m22.drain_install_jobs` (or `POST /jobs/{id}/run`) runs it: approval re-check, hash re-check, re-scan, then `ToolInstaller.install` with a single-use grant. The installer writes the receipt.
+4. `GET /portfolio` lists active installs (`?include_history=true` for superseded/rolled back).
+5. Smoke-run (optional, approval-gated): `POST /installs/{operation_id}/smoke-proposals` -> approve `smoke_run_tool` -> `POST /installs/{operation_id}/smoke-jobs {approval_id}`; the worker runs it and stores evidence under `portfolio[].smoke`. Runner: M4's `SandboxBackend` for Python when merged, else bundled bubblewrap (`smoke.py`); the worker image needs `bwrap` (and `node` for npm tools). `ATLAS_SMOKE_BACKEND=bundled` pins the bundled runner.
+6. Rollback: `POST /installs/{operation_id}/rollback-proposals` -> approve `rollback_tool` in Module 0 -> `POST /installs/{operation_id}/rollback-jobs`.
+
+Config: `ATLAS_TOOLS_ROOT` (default `/tmp/atlas-tools`) holds artifacts, per-tenant installs, backups, receipts and consumed-grant state. Tables: `m22_tool_candidates`, `m22_install_proposals`, `m22_install_jobs`, `m22_tool_portfolio`.
