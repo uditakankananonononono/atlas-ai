@@ -26,3 +26,5 @@ class ProducerKeyRegistry:
    row=db.scalar(select(ProducerKeyRow).where(ProducerKeyRow.tenant_id==self.tenant_id,ProducerKeyRow.producer==producer,ProducerKeyRow.key_id==key_id))
    if not row:raise ValueError('producer key not found')
    row.active=False;row.retired_at=datetime.now(timezone.utc);db.flush();return row
+ def get(self,producer,key_id):
+  with self.sessions() as db:return db.scalar(select(ProducerKeyRow).where(ProducerKeyRow.tenant_id==self.tenant_id,ProducerKeyRow.producer==producer,ProducerKeyRow.key_id==key_id))
