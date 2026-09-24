@@ -24,7 +24,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** scheduling gate: `request_schedule` runs the adaptation preview (source = request `source` or the plan brief, optional `references`) and refuses with 422 when any draft has `citation_dropped` or `unsupported_figure`; no approval is filed and the plan stays `draft`. Approved requests carry the per-platform `adaptation_parity`.
 - **Next:** paraphrase-aware claim matching for figure-free claims (free local model), replacing the 50% content-word overlap rule.
 ## M07 - Brand Collaboration
-- **Next:** deliverable obligation tracker linking contract promises, approvals, deadlines, evidence and invoice status.
+- **Landed:** deliverable obligation tracker (`obligations.py`, `/brand-collaboration/obligations*`, `GET /brand-collaboration/brands/{id}/obligations`): each contract promise quotes its clause and locator and links deadlines, delivery evidence (URL or hash), Module 0 approvals, the invoice artifact and owner-recorded payments through append-only, tenant-scoped events. Status (`open`/`due_soon`/`overdue`/`delivered`/`waived`) and billing (`not_invoiced`/`invoiced`/`payment_overdue`/`paid`) are derived, never typed; flags catch delivered-not-invoiced, invoiced-before-delivery, late payment, denied approvals and active exclusivity. Nothing sends or charges (`tests/modules/test_m07_obligations.py`). Also fixed brand discovery persisting `created_at` as a string (failed on SQLite).
+- **Next:** extract draft obligations from an uploaded contract (free local model, owner confirms each row) and surface due-soon/overdue items to the owner's daily brief.
 ## M08 - Startup Growth
 - **Next:** free-first experiment board that records hypothesis, cap, observed conversion and stop decision without auto-spend.
 ## M09 - Knowledge Workspace
