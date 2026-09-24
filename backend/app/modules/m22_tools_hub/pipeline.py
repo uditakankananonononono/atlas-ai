@@ -80,6 +80,7 @@ class ProposalRow(Base):
     install_subject: Mapped[str] = mapped_column(Text)
     scan_json: Mapped[dict] = mapped_column(JSON)
     candidate_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    candidate_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
     requested_by: Mapped[str] = mapped_column(String(200))
     approval_id: Mapped[str] = mapped_column(String(36), index=True)
     status: Mapped[str] = mapped_column(String(24), index=True)
@@ -122,6 +123,27 @@ class PortfolioRow(Base):
     status: Mapped[str] = mapped_column(String(16), index=True)  # active|superseded|rolled_back
     installed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class CandidateRow(Base):
+    __tablename__ = "m22_tool_candidates"
+    __table_args__ = (UniqueConstraint("tenant_id", "dedup_key"),)
+    pk: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    tenant_id: Mapped[str] = mapped_column(String(120), index=True)
+    id: Mapped[str] = mapped_column(String(36), index=True)
+    dedup_key: Mapped[str] = mapped_column(String(64))
+    name: Mapped[str] = mapped_column(String(300))
+    url: Mapped[str] = mapped_column(Text)
+    source: Mapped[str] = mapped_column(String(40), index=True)
+    summary: Mapped[str] = mapped_column(Text, default="")
+    version: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    license: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    score: Mapped[float] = mapped_column(default=0.0)
+    signals_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    evidence_json: Mapped[list] = mapped_column(JSON, default=list)
+    queries_json: Mapped[list] = mapped_column(JSON, default=list)
+    first_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    last_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
 class ArtifactStore:
@@ -169,8 +191,18 @@ def _proposal_view(row: ProposalRow) -> dict[str, Any]:
         "id": row.id, "tenant_id": row.tenant_id, "tool_id": row.tool_id, "version": row.version,
         "artifact_sha256": row.artifact_sha256, "manifest_digest": row.manifest_digest,
         "install_subject": row.install_subject, "scan": row.scan_json, "candidate": row.candidate_json,
+        "candidate_id": row.candidate_id,
         "requested_by": row.requested_by, "approval_id": row.approval_id, "status": row.status,
         "created_at": _aware(row.created_at).isoformat(), "updated_at": _aware(row.updated_at).isoformat(),
+    }
+
+
+def _candidate_view(row: CandidateRow) -> dict[str, Any]:
+    return {
+        "id": row.id, "name": row.name, "url": row.url, "source": row.source, "summary": row.summary,
+        "version": row.version, "license": row.license, "score": row.score, "signals": row.signals_json,
+        "evidence": row.evidence_json, "queries": row.queries_json,
+        "first_seen_at": _aware(row.first_seen_at).isoformat(), "last_seen_at": _aware(row.last_seen_at).isoformat(),
     }
 
 
@@ -193,6 +225,9 @@ def _portfolio_view(row: PortfolioRow) -> dict[str, Any]:
         "installed_at": _aware(row.installed_at).isoformat(),
         "execution_claim": "installed by the Atlas pipeline worker from a hash-verified, scanned artifact; the tool's runtime behavior is not exercised here",
     }
+
+
+PIPELINE_TABLES = (CandidateRow.__table__, ProposalRow.__table__, JobRow.__table__, PortfolioRow.__table__)
 
 
 class InstallPipeline:
@@ -221,11 +256,12 @@ class InstallPipeline:
         self._lock = threading.Lock()
         if create_schema:
             bind = session_factory.kw.get("bind") or engine
-            Base.metadata.create_all(bind, tables=[ProposalRow.__table__, JobRow.__table__, PortfolioRow.__table__])
+            Base.metadata.create_all(bind, tables=list(PIPELINE_TABLES))
 
     # -- proposals ---------------------------------------------------------
     def propose(self, *, artifact: bytes, manifest: dict[str, Any], requested_by: str,
-                candidate: dict[str, Any] | None = None, ttl_seconds: int | None = 7 * 24 * 3600) -> dict[str, Any]:
+                candidate: dict[str, Any] | None = None, ttl_seconds: int | None = 7 * 24 * 3600,
+                candidate_id: str | None = None) -> dict[str, Any]:
         if not requested_by or not requested_by.strip():
             raise PipelineError("requested_by is required")
         try:
@@ -256,7 +292,8 @@ class InstallPipeline:
         row = ProposalRow(
             tenant_id=self.tenant_id, id=str(uuid.uuid4()), tool_id=parsed.tool_id, version=parsed.version,
             artifact_sha256=digest, manifest_digest=parsed.digest, manifest_json=dict(manifest),
-            install_subject=subject, scan_json=scan, candidate_json=candidate, requested_by=requested_by,
+            install_subject=subject, scan_json=scan, candidate_json=candidate, candidate_id=candidate_id,
+            requested_by=requested_by,
             approval_id=approval["id"], status="awaiting_approval", created_at=now, updated_at=now)
         with self.sessions.begin() as db:
             db.add(row)
@@ -278,6 +315,71 @@ class InstallPipeline:
         if row is None:
             raise KeyError("installation proposal not found")
         return row
+
+    # -- discovery candidates ------------------------------------------------
+    def record_candidates(self, candidates: list[Any], query: str) -> list[dict[str, Any]]:
+        """Upsert ranked discovery candidates (Service.Candidate objects) for this tenant."""
+        from .service import Service as DiscoveryService
+        now = _now(); out = []
+        with self.sessions.begin() as db:
+            for c in candidates:
+                key = DiscoveryService._key(c)
+                row = db.scalar(select(CandidateRow).where(CandidateRow.tenant_id == self.tenant_id, CandidateRow.dedup_key == key))
+                signals = {"fit": c.fit, "security": c.security, "maintenance": c.maintenance, "novelty": c.novelty,
+                           "permissions": list(c.permissions)}
+                if row is None:
+                    row = CandidateRow(tenant_id=self.tenant_id, id=str(uuid.uuid4()), dedup_key=key, name=c.name, url=c.url,
+                                       source=c.source, summary=c.summary or "", version=c.version, license=c.license,
+                                       score=float(c.score), signals_json=signals, evidence_json=list(c.evidence),
+                                       queries_json=[query], first_seen_at=now, last_seen_at=now)
+                    db.add(row)
+                else:
+                    row.summary = c.summary or row.summary; row.version = c.version or row.version
+                    row.license = c.license or row.license; row.score = float(c.score); row.signals_json = signals
+                    row.evidence_json = list(c.evidence); row.last_seen_at = now
+                    if query not in (row.queries_json or []):
+                        row.queries_json = [*(row.queries_json or []), query]
+                db.flush(); out.append(_candidate_view(row))
+        return sorted(out, key=lambda x: x["score"], reverse=True)
+
+    async def discover(self, query: str, service: Any) -> list[dict[str, Any]]:
+        if not query or not query.strip():
+            raise PipelineError("query is required")
+        return self.record_candidates(await service.discover(query.strip()), query.strip())
+
+    def list_candidates(self, source: str | None = None, limit: int = 100) -> list[dict[str, Any]]:
+        with self.sessions() as db:
+            q = select(CandidateRow).where(CandidateRow.tenant_id == self.tenant_id)
+            if source:
+                q = q.where(CandidateRow.source == source)
+            return [_candidate_view(r) for r in db.scalars(q.order_by(CandidateRow.score.desc(), CandidateRow.pk).limit(limit))]
+
+    def get_candidate(self, candidate_id: str) -> dict[str, Any]:
+        with self.sessions() as db:
+            row = db.scalar(select(CandidateRow).where(CandidateRow.tenant_id == self.tenant_id, CandidateRow.id == candidate_id))
+            if row is None:
+                raise KeyError("candidate not found")
+            return _candidate_view(row)
+
+    def propose_from_candidate(self, candidate_id: str, *, requested_by: str, version: str | None = None,
+                               entrypoint: str | None = None, permissions: list[str] | None = None,
+                               fetch: Any = None) -> dict[str, Any]:
+        """Fetch the candidate's artifact from its official registry, hash-check, then propose."""
+        from .registry import RegistryError, build_manifest, fetch_for, http_fetch, registry_for_candidate
+        cand = self.get_candidate(candidate_id)
+        try:
+            registry = registry_for_candidate(cand["source"], cand["url"])
+            fetched = fetch_for(registry, cand["name"], version, fetch or http_fetch)
+            manifest = build_manifest(fetched, entrypoint=entrypoint, permissions=permissions)
+        except RegistryError as exc:
+            raise PipelineError(str(exc)) from exc
+        except OSError as exc:
+            raise PipelineError(f"registry fetch failed: {exc}") from exc
+        summary = {"id": cand["id"], "name": cand["name"], "url": cand["url"], "source": cand["source"],
+                   "score": cand["score"], "registry": registry, "registry_digest": fetched.registry_digest,
+                   "registry_version": fetched.registry_version}
+        return self.propose(artifact=fetched.artifact, manifest=manifest, requested_by=requested_by,
+                            candidate=summary, candidate_id=cand["id"])
 
     # -- approval checks -----------------------------------------------------
     def _approved(self, approval_id: str, action: str, expected: dict[str, Any]) -> dict[str, Any]:
@@ -485,7 +587,7 @@ class InstallPipeline:
 
 
 def tenants_with_queued_jobs(session_factory: sessionmaker = SessionLocal) -> list[str]:
-    Base.metadata.create_all(session_factory.kw.get("bind") or engine, tables=[JobRow.__table__])
+    Base.metadata.create_all(session_factory.kw.get("bind") or engine, tables=list(PIPELINE_TABLES))
     with session_factory() as db:
         return sorted(set(db.scalars(select(JobRow.tenant_id).where(JobRow.state == "queued"))))
 
