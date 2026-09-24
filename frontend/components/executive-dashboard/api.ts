@@ -16,6 +16,11 @@ export type WidgetConfig={id:string;kind:"kpi_card"|"module_status"|"blockers"|"
 export type RerunProposalRow={schedule_id:string;original_approval_id:string;rerun_approval_id:string;state:string;filed_at:string;age_hours:number;overdue:boolean;verdict:string|null;approval_path:string};
 export type RerunScheduleCard={available:boolean;reason:string|null;as_of:string;schedules_total:number;schedules_active:number;schedules_due_now:number;proposals_total:number;by_state:Record<string,number>;awaiting_approval:number;approved_not_executed:number;overdue_total:number;verdicts:Record<string,number>;overdue:RerunProposalRow[];recent:RerunProposalRow[]};
 export type ApprovalCenterRequest={id:string;module_id:number;action_type:string;payload:Record<string,unknown>;user_id:string;status:"pending"|"approved"|"denied"|"expired"|"consumed"|string;created_at:string;expires_at:string|null;decided_at:string|null;approved_by:string|null};
+// M05 read-only review context for an outreach send waiting in M00.
+export type CadenceReason={code:string;detail?:string;[k:string]:unknown};
+export type CadenceDecision={allowed:boolean;person?:string;relationship?:string;reasons:CadenceReason[];next_allowed_at?:string|null;policy_version?:number;[k:string]:unknown};
+export type ContactTimelineRow={message_id:string;campaign_id:string;campaign:string|null;contact_id:string;kind:string;sequence:number;status:string;subject:string;sent_at:string|null;updated_at:string};
+export type ContactTimeline={person:string;relationship:string;rule:{min_gap_days:number;max_per_30_days:number};live_thread_days:number;policy_version:number;contact_records:string[];messages:ContactTimelineRow[]};
 export type ApprovalCenterEvent={event:string;actor:string|null;at:string};
 export type DashboardView={widgets:WidgetConfig[];updated_at:string};
 export type CommandPreview={id:string;utterance:string;intent:string;parameters:Record<string,unknown>;plan:Array<Record<string,unknown>>;read_only:boolean;confidence:number;expires_at:string;created_at:string};
@@ -49,6 +54,10 @@ export const dashboardApi=(base:string="/api/v1")=>{
     approvalRequest:(path:string)=>req<ApprovalCenterRequest>(base,path),
     approvalAudit:(path:string)=>req<ApprovalCenterEvent[]>(base,`${path}/audit`),
     decideApprovalRequest:(path:string,decision:"approved"|"denied")=>req<ApprovalCenterRequest>(base,`${path}/decision`,json({decision,decided_by:"executive-dashboard"})),
+    // M05 outreach sends wait in M00 too; the review panel reads the person's history from M05 (read-only).
+    approvalRequests:(q:{status?:string;module_id?:number}={})=>{const qs=new URLSearchParams();if(q.status)qs.set("status",q.status);if(q.module_id!==undefined)qs.set("module_id",String(q.module_id));const t=qs.toString();return req<ApprovalCenterRequest[]>(base,`/approval-center/requests${t?`?${t}`:""}`)},
+    contactTimeline:(contactId:string)=>req<ContactTimeline>(base,`/outreach-manager/contacts/${encodeURIComponent(contactId)}/timeline`),
+    messageCadence:(messageId:string)=>req<CadenceDecision>(base,`/outreach-manager/messages/${encodeURIComponent(messageId)}/cadence`),
     getView:()=>req<DashboardView>(base,`${p}/view`),
     saveView:(widgets:WidgetConfig[])=>req<DashboardView>(base,`${p}/view`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({widgets})}),
     liveUrl:`${base}${p}/live`,

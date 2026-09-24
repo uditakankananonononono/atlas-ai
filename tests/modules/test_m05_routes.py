@@ -289,3 +289,49 @@ def test_cadence_policy_and_timeline_routes(tmp_path, monkeypatch):
     got = client.get("/api/v1/outreach-manager/cadence-policy").json()
     assert got["rules"]["cold"]["min_gap_days"] == 5 and len(got["history"]) == 1
     assert client.get("/api/v1/outreach-manager/contacts/nope/timeline").status_code == 404
+
+
+def test_approval_payload_ids_resolve_to_the_review_timeline():
+    """The M00 review card reads payload.contact_id / payload.message_id and calls the
+    timeline and cadence routes. Pin that contract: every earlier message to the same
+    person (other campaign, other contact record) comes back, plus the pending one."""
+    from datetime import timedelta
+
+    client, container, spy = make_client()
+    now = [datetime(2026, 9, 1, tzinfo=timezone.utc)]
+    container.campaigns = CampaignService(InMemoryCampaignRepository(), container.contacts, spy, clock=lambda: now[0])
+    container.delivery = DeliveryService(container.campaigns, SpyGate(spy), FakeSender())
+    a = client.post("/api/v1/outreach-manager/contacts",
+                    json={"project_id": "labs", "name": "Dr. Rao", "email": "Rao@Example.edu"}).json()
+    b = client.post("/api/v1/outreach-manager/contacts",
+                    json={"project_id": "grants", "name": "Dr. Rao", "email": "rao@example.edu"}).json()
+    c1 = client.post("/api/v1/outreach-manager/campaigns",
+                     json={"project_id": "labs", "name": "Lab search", "goal": "Find a lab"}).json()
+    c2 = client.post("/api/v1/outreach-manager/campaigns",
+                     json={"project_id": "grants", "name": "Grant mentor", "goal": "Find a mentor"}).json()
+    first = client.post(f"/api/v1/outreach-manager/campaigns/{c1['id']}/messages",
+                        json={"contact_id": a["id"], "subject": "Summer lab", "body": "Hi"}).json()
+    assert client.post(f"/api/v1/outreach-manager/messages/{first['id']}/submit").status_code == 200
+    container.campaigns.record_decision(first["id"], True, actor="m00-callback")
+    assert client.post(f"/api/v1/outreach-manager/messages/{first['id']}/send").json()["status"] == "sent"
+
+    now[0] += timedelta(days=8)
+    second = client.post(f"/api/v1/outreach-manager/campaigns/{c2['id']}/messages",
+                         json={"contact_id": b["id"], "subject": "Grant question", "body": "Hi"}).json()
+    assert client.post(f"/api/v1/outreach-manager/messages/{second['id']}/submit").status_code == 200
+    payload = spy.items[-1].payload
+    assert spy.items[-1].module_id == 5
+    assert payload["contact_id"] == b["id"] and payload["message_id"] == second["id"]
+
+    t = client.get(f"/api/v1/outreach-manager/contacts/{payload['contact_id']}/timeline")
+    assert t.status_code == 200
+    body = t.json()
+    assert body["person"] == "email:rao@example.edu" and body["contact_records"] == sorted([a["id"], b["id"]])
+    rows = [(r["message_id"], r["campaign"], r["status"]) for r in body["messages"]]
+    assert rows == [(first["id"], "Lab search", "sent"), (second["id"], "Grant mentor", "pending_approval")]
+    assert body["messages"][0]["sent_at"].startswith("2026-09-01")
+
+    live = client.get(f"/api/v1/outreach-manager/messages/{payload['message_id']}/cadence")
+    assert live.status_code == 200 and "allowed" in live.json() and "reasons" in live.json()
+    # read-only: looking at the history changed nothing
+    assert client.get(f"/api/v1/outreach-manager/messages/{second['id']}").json()["status"] == "pending_approval"
