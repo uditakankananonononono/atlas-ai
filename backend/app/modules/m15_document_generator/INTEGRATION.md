@@ -17,4 +17,4 @@ Validation: PDF parsed with PyMuPDF (page and image counts), DOCX/PPTX checked a
 
 Config: `ATLAS_RUNTIME_DATA_DIR` (store root `m15-delivery`), `ATLAS_DOWNLOAD_SIGNING_KEY` (else a 0600 random key file in the store), `ATLAS_DOWNLOAD_LINK_TTL_SECONDS` (default 3600), `ATLAS_TEXMFHOME` (extra TeX tree).
 
-Not done: object storage (S3/GCS) behind `DeliveryStore`; the production Dockerfile does not install TeX yet, so PDF delivery returns 422 there until `texlive-latex-recommended texlive-fonts-recommended lmodern` is added; the legacy `/publication-worker/execute` route still uses the unconfigured adapters.
+Not done: object storage (S3/GCS) behind `DeliveryStore`; the Dockerfile now installs TeX (see docs/DEPLOYMENT.md), but the image build has not been run in the builder sandbox; the legacy `/publication-worker/execute` route still uses the unconfigured adapters.
