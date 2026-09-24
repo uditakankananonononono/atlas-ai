@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.core.approvals import approvals
 from app.auth.context import TenantContext, require_tenant
 
-from .campaigns import CampaignNotFoundError, CampaignService, CampaignStateError, MessageNotFoundError
+from .campaigns import CadenceBlockedError, CampaignNotFoundError, CampaignService, CampaignStateError, MessageNotFoundError
 from .delivery import (
     DeliveryApprovalError,
     DeliverySendError,
@@ -471,12 +471,25 @@ def submit_message(message_id: str, container: Container = Depends(get_container
     try:
         container.campaigns.submit_for_approval(message_id)
         return container.campaigns.get_message(message_id)
+    except CadenceBlockedError as exc:
+        raise HTTPException(status_code=409, detail={"error": "cadence_blocked", "cadence": exc.decision}) from exc
     except MessageNotFoundError as exc:
         raise HTTPException(status_code=404, detail="message not found") from exc
     except ContactNotFoundError as exc:
         raise HTTPException(status_code=404, detail="contact not found") from exc
     except CampaignStateError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@router.get("/messages/{message_id}/cadence")
+def message_cadence(message_id: str, container: Container = Depends(get_container)) -> dict:
+    """Would this message pass cross-campaign cadence right now? Read-only."""
+    try:
+        return container.campaigns.cadence(message_id)
+    except MessageNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="message not found") from exc
+    except ContactNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="contact not found") from exc
 
 
 @router.post("/messages/{message_id}/reply", response_model=OutreachMessage)

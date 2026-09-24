@@ -122,6 +122,7 @@ def test_reply_cancels_pending_follow_ups():
     service.submit_for_approval(first.id)
     service.record_decision(first.id, approved=True)
     service.mark_sent(first.id, thread_id="t-1")
+    now[0] = now[0] + timedelta(days=6)  # past the campaign follow-up window; cadence refuses earlier
     follow = service.add_draft(
         campaign.id, contact.id, subject="Following up", body="Gentle nudge", kind="follow_up"
     )

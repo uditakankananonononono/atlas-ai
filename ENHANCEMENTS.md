@@ -17,7 +17,8 @@ Status legend: **Landed** is working code with a named test. **Next** is a propo
 - **Landed:** downloadable computational reproducibility bundle with analysis code, input/parameter snapshots, SHA-256 input and manifest identity, dependencies, seed, source URLs and an explicit `execution_performed: false` boundary.
 - **Next:** approved sandbox execution that adds output hashes, logs and environment lock to the same manifest.
 ## M05 - Outreach Manager
-- **Next:** relationship-aware contact cadence that prevents duplicate or socially excessive outreach across campaigns.
+- **Landed:** relationship-aware contact cadence (`cadence.py`, `GET /outreach-manager/messages/{id}/cadence`): before review, every campaign's messages to the same person (matched by normalised email across contact records) are checked; opt-out and bounces are hard stops, a recent reply in another campaign blocks new cold outreach, in-review duplicates across campaigns are refused, and a min gap plus 30-day cap apply by `metadata.relationship` (cold 7d/2, warm 3d/4, close 1d/8; unknown = cold). In-campaign follow-ups use the campaign's own window as their gap. The decision rides in the approval payload and due follow-ups skip people contacted elsewhere (`tests/modules/test_m05_cadence.py`).
+- **Next:** owner-editable cadence rules per tenant (stored policy instead of module constants) and a reviewer-visible cross-campaign contact timeline.
 ## M06 - Social Media Manager
 - **Next:** cross-platform content adaptation preview with claim/citation parity and platform-limit checks.
 ## M07 - Brand Collaboration
