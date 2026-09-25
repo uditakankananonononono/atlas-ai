@@ -125,3 +125,11 @@ def admitted_case_read(case_id:str):
  try:return JSONResponse(reading_route(case_id),headers={'Cache-Control':'private, no-store','X-Robots-Tag':'noindex, noarchive'})
  except KeyError:raise HTTPException(404,'unknown case source')
  except httpx.HTTPError as error:raise HTTPException(502,'source temporarily unavailable') from error
+
+# Student-supplied planning tools; no application submissions or admissions predictions.
+from .planning_tools import TOOLS as planning_tools
+@router.post('/planning/{tool}')
+def planning_tool(tool:str,body:EnhancedParityIn):
+ if tool not in planning_tools:raise HTTPException(404,'unknown planning tool')
+ try:return planning_tools[tool](body.data)
+ except (ValueError,TypeError,KeyError,OverflowError) as error:raise HTTPException(422,str(error)) from error
