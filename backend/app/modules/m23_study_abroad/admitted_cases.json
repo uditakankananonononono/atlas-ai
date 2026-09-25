@@ -6,10 +6,11 @@
     "evidence_type": "institution_published_essay",
     "title": "Incoming Class of 2028 essay snippets",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Olin College of Engineering",
     "outcome_basis": "institution_published",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "hamilton",
@@ -18,10 +19,11 @@
     "evidence_type": "institution_published_essay",
     "title": "Essays by incoming Hamilton students",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Hamilton College",
     "outcome_basis": "institution_published",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "conncoll",
@@ -30,10 +32,11 @@
     "evidence_type": "institution_published_essay",
     "title": "Edie Banovic essay",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Connecticut College",
     "outcome_basis": "institution_published",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "jhu",
@@ -42,10 +45,11 @@
     "evidence_type": "institution_published_essay",
     "title": "Queen’s Gambit",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Johns Hopkins University",
     "outcome_basis": "institution_published",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "mit",
@@ -54,10 +58,11 @@
     "evidence_type": "student_reported_admission",
     "title": "My College Essay",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "MIT",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "tufts",
@@ -66,10 +71,11 @@
     "evidence_type": "student_reported_admission",
     "title": "How I Wrote my College Essay",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Tufts University",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "emory",
@@ -78,10 +84,11 @@
     "evidence_type": "institution_published_essay",
     "title": "Selected Exceptional Essays",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Emory University",
     "outcome_basis": "institution_published",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "pomona",
@@ -90,10 +97,11 @@
     "evidence_type": "student_reported_admission",
     "title": "My Admissions Journey to Pomona",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Pomona College",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "princeton",
@@ -102,10 +110,11 @@
     "evidence_type": "student_reported_admission",
     "title": "An Application Story",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Princeton University",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "dartmouth",
@@ -114,10 +123,11 @@
     "evidence_type": "student_reported_admission",
     "title": "My Dartmouth Acceptance, One Year Later",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Dartmouth College",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "collegevine",
@@ -126,10 +136,11 @@
     "evidence_type": "third_party_accepted_essay",
     "title": "Vanderbilt essay example from accepted student",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Vanderbilt University",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "prepscholar",
@@ -138,10 +149,11 @@
     "evidence_type": "self_reported_application",
     "title": "Successful Harvard application",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Harvard University",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "collegeessayguy",
@@ -150,10 +162,11 @@
     "evidence_type": "third_party_accepted_essay",
     "title": "College essay examples anthology",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": null,
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "collegeraptor",
@@ -162,10 +175,11 @@
     "evidence_type": "third_party_accepted_essay",
     "title": "Application essays that worked",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": null,
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "collegetransitions",
@@ -174,10 +188,11 @@
     "evidence_type": "third_party_case_study",
     "title": "Bethlehem Central Cornell case study",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Cornell University",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "admitraven",
@@ -186,10 +201,11 @@
     "evidence_type": "third_party_case_study",
     "title": "Xander UChicago case study",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "University of Chicago",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "admitsee",
@@ -198,10 +214,11 @@
     "evidence_type": "third_party_profile",
     "title": "Stanford admitted profile, public metadata only",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Stanford University",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "borderless",
@@ -210,10 +227,11 @@
     "evidence_type": "student_reported_admission",
     "title": "Notre Dame admission story",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "University of Notre Dame",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "cornell",
@@ -222,10 +240,11 @@
     "evidence_type": "student_reported_admission",
     "title": "Application process leading to Cornell",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Cornell University",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   },
   {
     "id": "crimson",
@@ -234,9 +253,10 @@
     "evidence_type": "third_party_accepted_essay",
     "title": "Ten successful Harvard essays, 2025",
     "checked_on": "2026-09-25",
-    "access": "public_metadata_only",
+    "access": "public_link_only",
     "example_school": "Harvard University",
     "outcome_basis": "publisher_or_student_reported",
-    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified."
+    "scope_note": "Source index; no essay text stored. Acceptance outcome and causal role of essay not independently verified.",
+    "reading_mode": "publisher_page"
   }
 ]

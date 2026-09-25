@@ -107,7 +107,7 @@ def application_evidence_matrix(data:EvidenceMatrixIn):
  except ValueError as error:raise HTTPException(422,str(error)) from error
 
 # Public case-source index. An opt-in refresh checks the original page and robots rules.
-from .admitted_cases import cases, search_cases, fetch_case_metadata
+from .admitted_cases import cases, search_cases, fetch_case_metadata, reading_route
 import httpx
 @router.get('/admitted-cases')
 def admitted_case_catalog(q:str='',evidence_type:str='',limit:int=20):
@@ -116,5 +116,12 @@ def admitted_case_catalog(q:str='',evidence_type:str='',limit:int=20):
 @router.get('/admitted-cases/{case_id}/live-metadata')
 def admitted_case_live_metadata(case_id:str):
  try:return fetch_case_metadata(case_id)
+ except KeyError:raise HTTPException(404,'unknown case source')
+ except httpx.HTTPError as error:raise HTTPException(502,'source temporarily unavailable') from error
+
+@router.get('/admitted-cases/{case_id}/read')
+def admitted_case_read(case_id:str):
+ from fastapi.responses import JSONResponse
+ try:return JSONResponse(reading_route(case_id),headers={'Cache-Control':'private, no-store','X-Robots-Tag':'noindex, noarchive'})
  except KeyError:raise HTTPException(404,'unknown case source')
  except httpx.HTTPError as error:raise HTTPException(502,'source temporarily unavailable') from error

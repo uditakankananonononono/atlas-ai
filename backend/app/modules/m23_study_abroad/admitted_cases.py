@@ -1,6 +1,6 @@
 """Public, provenance-preserving admitted-student case index.
 
-Only catalog metadata is stored. Fetches are opt-in and return metadata, not essay text.
+Only catalog metadata is stored. Live metadata checks are opt-in; reading opens the publisher page.
 The index is examples, not training data, admission probabilities, or verified causality.
 """
 import json
@@ -13,7 +13,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 CATALOG = Path(__file__).with_name('admitted_cases.json')
-USER_AGENT = 'AtlasCaseResearch/1.0 (+public source metadata; no automated essay copy)'
+USER_AGENT = 'AtlasCaseResearch/1.0 (public source research; no bulk copy)'
 
 @lru_cache(maxsize=1)
 def cases() -> list[dict]:
@@ -67,3 +67,12 @@ def fetch_case_metadata(case_id: str, transport: httpx.BaseTransport | None = No
     # Metadata is not proof of acceptance, and no essay body is retained.
     return {**row, 'live_status': 'page_reachable', 'page_title': title[:250],
             'page_description': description[:500], 'outcome_independently_verified': False}
+
+
+def reading_route(case_id: str) -> dict:
+    """Reading decision only; never copies a publisher's essay or calls the site."""
+    row = next((r for r in cases() if r['id'] == case_id), None)
+    if row is None:
+        raise KeyError(case_id)
+    return {**row, 'live_status': 'source_only',
+            'reason': 'Open the original publisher page for personal reading; Atlas does not rehost this text.'}
