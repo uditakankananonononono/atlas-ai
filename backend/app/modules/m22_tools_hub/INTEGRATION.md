@@ -33,4 +33,29 @@ Any blog or podcast RSS/Atom feed integrates through `feed_collector(url)`: it s
 
 Deliberately excluded after live verification: Bitbucket (its 2.0 API no longer hosts unauthenticated global search; the endpoint 404s) and Gitee (search API returns 200 with empty results for every query tried without credentials).
 
+Phase-2 capabilities (all tested in `tests/modules/test_m22_phase2_features.py`; network-facing ones also smoke-run live 2026-09-25):
+
+1. Kind-filtered discovery: `POST /discoveries {"query", "kinds": ["repository"|"blog"|"article"|"podcast"|"podcast-episode"|"package"|"tool"]}` queries only matching collectors.
+2. Per-source run stats (runs/failures/candidates/latency/status) on `GET /tools-hub/sources`.
+3. Failure cooldown: a source that errors is skipped for `ATLAS_M22_SOURCE_COOLDOWN_SECONDS` (default 300) and reported as cooling down, instead of being retried every query.
+4. Feed autodiscovery (`discover_feeds(url)`, `POST /feeds/discover`): parses feed <link> tags, verifies each advertised URL actually serves a feed (Blogger-style self-referencing links are rejected), then probes well-known paths (/feed, /rss.xml, /feeds/posts/default, ...). https only.
+5. OPML import: `parse_opml` / `collectors_from_opml` / `POST /feeds/opml/parse`; non-https feeds are skipped.
+6. OPML export: `feeds_to_opml` / `POST /feeds/opml/build`.
+7. Canonical dedup keys: tracking params (utm_*, fbclid, gclid, mc_*) stripped, host lowercased, default ports and fragments removed.
+8. Score explanation: `Candidate.explain()` / `GET /candidates/{id}/explain` shows value x weight = contribution per signal.
+9. GitHub maintenance score now uses push recency (`pushed_at`), matching GitLab/Codeberg, instead of a flat 0.8/0.1.
+10. Feed entries carry guid, published date, itunes duration and enclosure byte length in evidence.
+11. iTunes podcast-episode search collector (`itunes-episodes`, entity=podcastEpisode; verified live).
+12. Batch discovery: `POST /discoveries/batch` (up to 20 queries), per-query results plus one deduped ranked merge.
+13. Custom scoring weights per request (`weights` on /discoveries and /discoveries/batch; validated signal names, non-negative, non-zero total).
+14. Runtime blocklist: `GET/POST /blocks/...` adds/removes domains and patterns, persisted to `<ATLAS_TOOLS_ROOT>/m22_blocks.json` so blocks survive restarts.
+15. Candidate export: `GET /candidates/export?format=json|csv|markdown`.
+16. FeedWatcher (`POST /feeds/poll`): returns only entries not seen before; cursors persist in `<ATLAS_TOOLS_ROOT>/m22_feed_watches.json` (500 ids/feed cap).
+17. Repository evidence refresh: `POST /candidates/{id}/refresh` re-fetches stars/forks/activity/license from GitHub/GitLab/Codeberg (GitLab project paths URL-encoded; verified live).
+18. Query history (last 200): `GET /queries`.
+19. Saved-query diffing: re-running a query reports added/removed candidates (`GET /discoveries/{query}/report`).
+20. HTTPS-only enforcement: non-https candidate URLs are refused by default (`ATLAS_M22_ALLOW_INSECURE=1` opts out; feeds were already https-only).
+
+Known limits: feed autodiscovery can only find feeds a site actually publishes (a moved/dead feed, e.g. a blog that removed its RSS, correctly yields none); cooldown/history/diff state is in-memory except the blocklist and watch cursors, which persist; batch discovery runs queries sequentially (each query's sources fan out concurrently).
+
 Candidates carry a `kind` field (`tool` by default; `blog` / `article` / `podcast` / `podcast-episode` / `repository` / `package` from the collectors), persisted in the pipeline's `m22_tool_candidates.signals_json`. Discovery candidates remain read-only research leads; installs still go through the scanned, approval-gated pipeline above, and the registry installer still refuses sources without a registry-published digest.
