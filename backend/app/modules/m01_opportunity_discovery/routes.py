@@ -118,3 +118,21 @@ router.include_router(core_spec_round6_router)
 
 from .expanded_spec_routes_1_66 import router as expanded_spec_router_1_66
 router.include_router(expanded_spec_router_1_66)
+
+# Free student platform read-only discovery and launch routes (17 explicit sources).
+from .student_platforms import BY_ID, PLATFORMS, PlatformUnavailable, discover
+
+@router.get('/opportunity-discovery/student-platforms')
+def student_platforms(tenant: TenantContext = Depends(require_tenant)) -> list[dict]:
+    return [vars(p) for p in PLATFORMS]
+
+@router.get('/opportunity-discovery/student-platforms/{platform_id}/discover')
+def discover_student_platform(platform_id: str, query: str = '', limit: int = Query(default=25, ge=1, le=100), tenant: TenantContext = Depends(require_tenant)) -> dict:
+    if platform_id not in BY_ID:
+        raise HTTPException(status_code=404, detail='unknown student platform')
+    try:
+        return discover(platform_id, query, limit=limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except PlatformUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc

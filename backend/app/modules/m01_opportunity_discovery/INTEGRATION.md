@@ -151,3 +151,49 @@ tenant, and digest approval payloads retain the tenant boundary. The HTTP
 routes construct services from `require_tenant`; callers cannot select another
 tenant in request data. Alembic revision `20260922_m01_tenant_isolation`
 assigns pre-existing development rows to `local` and adds the tenant index.
+
+## 7. Free student platforms (2026-09-25)
+
+`student_platforms.py` adds a separate, read-only M01 surface at
+`GET /opportunity-discovery/student-platforms` and
+`GET /opportunity-discovery/student-platforms/{id}/discover?query=...&limit=25`.
+The latter ranks real public links by deterministic token similarity and returns
+`source_url`, `scanned_at`, the platform ID and the original HTTPS listing URL.
+The platform's source listing is fetched on demand; it is not yet merged into
+`Service.run_scan` or persisted to `m01_opportunities`. A blocked or changed
+source returns 503, never dummy results. No paid key is required.
+
+| Platform | Status and precise boundary | Public source |
+|---|---|---|
+| RippleMatch | Launch only: job matching/auto-apply needs a student account; no application firing | https://ripplematch.com/ |
+| Simplify | Launch only: Copilot is a user-installed browser extension; Atlas does not claim to run it | https://simplify.jobs/copilot |
+| RaiseMe | Launch only: micro-scholarship balance and school matching need the student's account | https://www.raiseme.com/ |
+| Bold.org | Launch only: public listing rate-limited during source check; no circumvention | https://bold.org/scholarships/ |
+| Fastweb | Public HTML scholarship listing discovery (not personalized matching) | https://www.fastweb.com/college-scholarships |
+| Devpost | Launch only: the official hackathon page linked RSS, but RSS returned 403/406 here; older undocumented JSON endpoint is not treated as an API contract | https://devpost.com/hackathons |
+| ChallengeRocket | Public challenge-card discovery, no applications | https://challengerocket.com/hackathons-and-challenges.html |
+| Major League Hacking | Public event-card discovery, no registration | https://www.mlh.com/seasons/2026/events |
+| Internshala | Public internship-card discovery, no applications | https://internshala.com/internships/ |
+| Scholarships360 | Editorial RSS discovery only, not the full scholarship catalog | https://scholarships360.org/feed/ |
+| Unigo | Launch only: no validated public listing feed | https://www.unigo.com/scholarships |
+| Scholarship Roar | Public RSS discovery | https://scholarshiproar.com/feed/ |
+| Scholarship Region | Public RSS discovery | https://www.scholarshipregion.com/feed/ |
+| Opportunities for Africans | Public RSS discovery | https://www.opportunitiesforafricans.com/feed/ |
+| Scholarship Union | Public RSS discovery | https://scholarshipunion.com/feed/ |
+| Opportunities for Youth | Public RSS discovery | https://opportunitiesforyouth.org/feed/ |
+| Kaggle Competitions | Launch only: public listing JavaScript-rendered; anonymous API not validated | https://www.kaggle.com/competitions |
+
+The first seven rows are the requested platforms; the remaining ten are
+additional free public student opportunity platforms (some are regional and
+should not be presented as personalized eligibility matches). Discovery means
+read-only links, not account integrations. Even when a vendor offers automated
+application behavior to *its own* users, Atlas cannot claim that behavior or
+submit on the user's behalf without an authenticated, approval-gated browser
+workflow and its own end-to-end test. Free to browse does not establish that
+every individual listing is free to enter; check its own terms before applying.
+
+The source-specific parser tests and a separately opted-in live smoke suite are
+`tests/modules/test_m01_student_platforms.py` (`ATLAS_M01_LIVE_SMOKE=1`).
+A live smoke success proves the public page responded and an item parsed at
+that moment, not lasting vendor permission, account-action readiness, or
+completeness of the catalog. All sources can change layouts or access policy.
