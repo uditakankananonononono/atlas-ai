@@ -336,7 +336,7 @@ class InstallPipeline:
                 key = DiscoveryService._key(c)
                 row = db.scalar(select(CandidateRow).where(CandidateRow.tenant_id == self.tenant_id, CandidateRow.dedup_key == key))
                 signals = {"fit": c.fit, "security": c.security, "maintenance": c.maintenance, "novelty": c.novelty,
-                           "permissions": list(c.permissions)}
+                           "permissions": list(c.permissions), "kind": getattr(c, "kind", "") or "tool"}
                 if row is None:
                     row = CandidateRow(tenant_id=self.tenant_id, id=str(uuid.uuid4()), dedup_key=key, name=c.name, url=c.url,
                                        source=c.source, summary=c.summary or "", version=c.version, license=c.license,
