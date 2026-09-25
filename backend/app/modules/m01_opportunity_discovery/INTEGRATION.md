@@ -197,3 +197,31 @@ The source-specific parser tests and a separately opted-in live smoke suite are
 A live smoke success proves the public page responded and an item parsed at
 that moment, not lasting vendor permission, account-action readiness, or
 completeness of the catalog. All sources can change layouts or access policy.
+
+## 8. Twenty read-only student opportunity intelligence operations
+
+`student_intelligence.py` adds 20 independently tested, executable transforms
+of actual public listings. `GET /opportunity-discovery/student-insights` accepts
+1-5 `platform_id` query values and returns merged evidence cards, per-source
+errors and launch-only links. `POST /opportunity-discovery/student-insights/search`
+adds composable evidence filters; it never submits applications or reads a
+student account. Each fetch is bounded to the 17 fixed source URLs. The
+operations (numbers match independent tests):
+
+1. Explicit deadline cue extraction; 2. award amount/currency extraction;
+3. delivery-mode evidence; 4. student-level mentions; 5. region mentions;
+6. tracking-free canonical links; 7. stable link IDs; 8. provenance-checked
+cards with unknown fields; 9. exact-link deduplication (never merge by title
+alone); 10. category filter; 11. platform filter; 12. positive keyword filter
+(any/all); 13. negative keyword filter; 14. deadline-window filter with
+optional unknowns; 15. known-expired exclusion; 16. currency-safe minimum
+award filter; 17. delivery-mode filter; 18. level-mention filter;
+19. region-mention filter; 20. source/kind totals and missing-fact counts.
+
+Evidence is deliberately narrow: an event date is not an application deadline;
+a tuition figure is not an award; a mention of India or "undergraduate" is not
+proof of eligibility. Public listing snippets are short. Unknown fields remain
+null and are excluded from constrained filters by default. These operations
+are fully unit-tested, and the combined fetch/annotation route was live-smoked
+against Fastweb and ChallengeRocket. It does not claim per-listing detail-page
+verification, personalized eligibility, or automatic application submission.
