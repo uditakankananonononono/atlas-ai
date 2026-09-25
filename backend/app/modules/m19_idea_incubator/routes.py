@@ -126,3 +126,40 @@ def luxury_venture_outcome(idea_id:str,experiment_id:str,data:LuxuryOutcomeReque
   evidence=service.add_evidence(idea_id,EvidenceCreate(kind=data.evidence_kind,claim=data.outcome.learnings,source=', '.join(data.outcome.source_refs),polarity=polarity,strength=.9,confidence=.8,observed_at=updated.updated_at,metadata={'experiment_id':experiment_id,'target_met':summary['target_met']}))
   return {'experiment':updated,'evidence':evidence,'learning_summary':summary,'idea_stage_changed':False}
  except (LookupError,ConflictError,ValidationError,ValueError) as error:raise _error(error) from error
+
+# Luxury venture studio: real free data sources (M19, expanded 2026-09-25).
+from .luxury_sources import SOURCE_REGISTRY,LuxuryDataService
+from .luxury_service import GroundedStudioRequest,LuxuryVentureService
+def get_luxury_data_service()->LuxuryDataService:return LuxuryDataService()
+def get_luxury_venture_service()->LuxuryVentureService:return LuxuryVentureService()
+@router.get('/luxury-venture-studio/sources')
+def luxury_free_sources()->dict:return SOURCE_REGISTRY
+@router.get('/luxury-venture-studio/news')
+async def luxury_news(query:str=Query(min_length=2,max_length=200),limit:int=Query(15,ge=1,le=40),data:LuxuryDataService=Depends(get_luxury_data_service)):
+ try:items,report=await data.news(query,limit)
+ except Exception as e:raise HTTPException(502,'upstream source failed: '+str(e)[:200]) from e
+ return {'query':query,'items':items,'fetch_report':report,'all_sources_free':True}
+@router.get('/luxury-venture-studio/brand')
+async def luxury_brand_profile(name:str=Query(min_length=2,max_length=200),data:LuxuryDataService=Depends(get_luxury_data_service)):
+ try:profile,report=await data.brand_profile(name)
+ except Exception as e:raise HTTPException(502,'upstream source failed: '+str(e)[:200]) from e
+ return {'profile':profile,'fetch_report':report}
+@router.get('/luxury-venture-studio/company/{ticker}')
+async def luxury_company_facts(ticker:str,data:LuxuryDataService=Depends(get_luxury_data_service)):
+ try:company,report=await data.company_facts(ticker)
+ except ValueError as e:raise HTTPException(422,str(e)) from e
+ except Exception as e:raise HTTPException(502,'upstream source failed: '+str(e)[:200]) from e
+ return {'company':company,'fetch_report':report}
+class LuxuryEvidenceIn(BaseModel):
+ brand_or_segment:str=Field(min_length=2,max_length=200)
+ sector:str=Field(default='other',pattern=r'^(automotive|character_ip|hotel|luxury_hospitality|fashion|jewelry|other)$')
+ ticker:str|None=Field(default=None,pattern=r'^[A-Za-z]{1,6}$')
+ limit:int=Field(default=12,ge=1,le=30)
+@router.post('/luxury-venture-studio/evidence')
+async def luxury_evidence(data:LuxuryEvidenceIn,service:LuxuryVentureService=Depends(get_luxury_venture_service)):
+ try:return await service.collect(data.brand_or_segment,data.sector,data.ticker,data.limit)
+ except ValueError as e:raise HTTPException(422,str(e)) from e
+@router.post('/luxury-venture-studio/grounded')
+async def luxury_grounded_studio(data:GroundedStudioRequest,service:LuxuryVentureService=Depends(get_luxury_venture_service)):
+ try:return await service.grounded_studio(data)
+ except ValueError as e:raise HTTPException(422,str(e)) from e
