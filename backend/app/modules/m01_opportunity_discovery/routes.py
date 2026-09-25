@@ -136,3 +136,55 @@ def discover_student_platform(platform_id: str, query: str = '', limit: int = Qu
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except PlatformUnavailable as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+from .student_intelligence import search_and_analyze
+
+@router.get('/opportunity-discovery/student-insights')
+def student_insights(platform_id: list[str] = Query(...), query: str = '', per_platform: int = Query(default=25, ge=1, le=100), tenant: TenantContext = Depends(require_tenant)) -> dict:
+    """Cross-platform public results, evidence annotations and isolated failures."""
+    try:
+        return search_and_analyze(platform_id, query, per_platform=per_platform)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+from datetime import date as _date
+from pydantic import BaseModel as _BaseModel, Field as _Field
+from .student_intelligence import refine, source_breakdown
+
+class StudentInsightRequest(_BaseModel):
+    platform_ids: list[str] = _Field(min_length=1, max_length=5)
+    query: str = _Field(default='', max_length=200)
+    per_platform: int = _Field(default=25, ge=1, le=100)
+    kind: str | None = None
+    platform: str | None = None
+    terms: list[str] = _Field(default_factory=list, max_length=10)
+    require_all_terms: bool = False
+    exclude: list[str] = _Field(default_factory=list, max_length=10)
+    start: _date | None = None
+    end: _date | None = None
+    hide_expired: bool = False
+    min_award: int | None = _Field(default=None, ge=0)
+    currency: str | None = None
+    delivery: str | None = None
+    level: str | None = None
+    region: str | None = None
+    include_unknown: bool = False
+
+
+@router.post('/opportunity-discovery/student-insights/search')
+def search_student_insights(request: StudentInsightRequest, tenant: TenantContext = Depends(require_tenant)) -> dict:
+    """Fetch selected real public listings, annotate, dedupe, filter and report gaps."""
+    if any(len(term) > 80 for term in request.terms + request.exclude):
+        raise HTTPException(status_code=422, detail='each term must be at most 80 characters')
+    try:
+        result = search_and_analyze(request.platform_ids, request.query, per_platform=request.per_platform)
+        result['items'] = refine(result['items'], kind=request.kind, platform=request.platform,
+            terms=request.terms, require_all_terms=request.require_all_terms,
+            exclude=request.exclude, start=request.start, end=request.end,
+            hide_expired=request.hide_expired, min_award=request.min_award,
+            currency=request.currency, delivery=request.delivery, level=request.level,
+            region=request.region, include_unknown=request.include_unknown)
+        result['breakdown'] = source_breakdown(result['items'])
+        return result
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
