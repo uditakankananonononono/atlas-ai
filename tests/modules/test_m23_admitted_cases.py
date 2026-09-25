@@ -1,6 +1,6 @@
 import httpx
 import pytest
-from app.modules.m23_study_abroad.admitted_cases import cases, search_cases, fetch_case_metadata
+from app.modules.m23_study_abroad.admitted_cases import cases, search_cases, fetch_case_metadata, reading_route
 
 
 def test_twenty_distinct_public_case_sites_with_provenance():
@@ -8,7 +8,7 @@ def test_twenty_distinct_public_case_sites_with_provenance():
     assert len(entries) == 20
     assert len({e['publisher'] for e in entries}) == 20
     assert all(e['checked_on'] == '2026-09-25' and e['scope_note'] for e in entries)
-    assert all(e['access'] == 'public_metadata_only' for e in entries)
+    assert all(e['access'] == 'public_link_only' and e['reading_mode'] == 'publisher_page' for e in entries)
     assert search_cases('Cornell')[0]['id'] in {'cornell', 'collegetransitions'}
     assert search_cases(evidence_type='institution_published_essay')
     assert search_cases('no match') == []
@@ -45,3 +45,11 @@ def test_missing_robots_denied_or_redirects_do_not_fetch_page():
     assert fetch_case_metadata('hamilton', transport=httpx.MockTransport(redirect))['live_status'] == 'robots_unverified'
     with pytest.raises(KeyError):
         fetch_case_metadata('not-in-the-index', transport=httpx.MockTransport(redirect))
+
+
+def test_reader_returns_source_without_touching_site():
+    row = reading_route('hamilton')
+    assert row['live_status'] == 'source_only'
+    assert row['url'].startswith('https://www.hamilton.edu/')
+    assert 'essay_text' not in row
+    with pytest.raises(KeyError): reading_route('not-in-index')
