@@ -128,7 +128,7 @@ def luxury_venture_outcome(idea_id:str,experiment_id:str,data:LuxuryOutcomeReque
  except (LookupError,ConflictError,ValidationError,ValueError) as error:raise _error(error) from error
 
 # Luxury venture studio: real free data sources (M19, expanded 2026-09-25).
-from .luxury_sources import SOURCE_REGISTRY,LuxuryDataService
+from .luxury_sources import LISTED_LUXURY_WATCHLIST,SOURCE_REGISTRY,LuxuryDataService
 from .luxury_service import GroundedStudioRequest,LuxuryVentureService
 def get_luxury_data_service()->LuxuryDataService:return LuxuryDataService()
 def get_luxury_venture_service()->LuxuryVentureService:return LuxuryVentureService()
@@ -163,3 +163,90 @@ async def luxury_evidence(data:LuxuryEvidenceIn,service:LuxuryVentureService=Dep
 async def luxury_grounded_studio(data:GroundedStudioRequest,service:LuxuryVentureService=Depends(get_luxury_venture_service)):
  try:return await service.grounded_studio(data)
  except ValueError as e:raise HTTPException(422,str(e)) from e
+
+# Luxury venture studio phase 2: twenty real tools and data capabilities.
+from .luxury_tools import (MarketSizingIn,PriceSensitivityIn,SECTOR_PRESETS,digest,explain_scorecard,follow_up_plan,interview_script,kpi_sheet,market_sizing,objection_sheet,pitch_outline,positioning_map,price_sensitivity,sector_presets,select_validation_methods)
+@router.get('/luxury-venture-studio/company-compare')
+async def luxury_company_compare(tickers:str=Query(min_length=1,max_length=60),data:LuxuryDataService=Depends(get_luxury_data_service)):
+ chosen=[t.strip().upper() for t in tickers.split(',') if t.strip()]
+ if not 2<=len(chosen)<=6:raise HTTPException(422,'supply 2-6 comma-separated tickers')
+ try:return await data.company_compare(chosen)
+ except Exception as e:raise HTTPException(502,'upstream source failed: '+str(e)[:200]) from e
+@router.get('/luxury-venture-studio/filings')
+async def luxury_filing_search(query:str=Query(min_length=2,max_length=120),limit:int=Query(10,ge=1,le=40),data:LuxuryDataService=Depends(get_luxury_data_service)):
+ try:hits,report=await data.filing_search(query,limit)
+ except Exception as e:raise HTTPException(502,'upstream source failed: '+str(e)[:200]) from e
+ return {'query':query,'filings':hits,'fetch_report':report,'note':'Real SEC EDGAR full-text filing search, free.'}
+@router.get('/luxury-venture-studio/company/{ticker}/contact')
+async def luxury_company_contact(ticker:str,data:LuxuryDataService=Depends(get_luxury_data_service)):
+ try:return await data.company_contact(ticker)
+ except ValueError as e:raise HTTPException(422,str(e)) from e
+ except Exception as e:raise HTTPException(502,'upstream source failed: '+str(e)[:200]) from e
+@router.get('/luxury-venture-studio/mentions')
+async def luxury_mentions(query:str=Query(min_length=2,max_length=120),limit:int=Query(25,ge=1,le=40),data:LuxuryDataService=Depends(get_luxury_data_service)):
+ try:return await data.mentions(query,limit)
+ except Exception as e:raise HTTPException(502,'upstream source failed: '+str(e)[:200]) from e
+@router.get('/luxury-venture-studio/sources/health')
+async def luxury_sources_health(data:LuxuryDataService=Depends(get_luxury_data_service)):
+ try:return await data.sources_health()
+ except Exception as e:raise HTTPException(502,'upstream source failed: '+str(e)[:200]) from e
+class EvidenceRefreshIn(BaseModel):
+ brand_or_segment:str=Field(min_length=2,max_length=200);sector:str=Field(default='other',max_length=40);ticker:str|None=Field(default=None,pattern=r'^[A-Za-z]{1,6}$');prior_source_ids:list[str]=Field(default_factory=list,max_length=100);limit:int=Field(default=12,ge=1,le=30)
+@router.post('/luxury-venture-studio/evidence/refresh')
+async def luxury_evidence_refresh(data:EvidenceRefreshIn,service:LuxuryVentureService=Depends(get_luxury_venture_service)):
+ fresh=await service.collect(data.brand_or_segment,data.sector,data.ticker,data.limit)
+ current={s['source_id'] for s in fresh['sources']};prior=set(data.prior_source_ids)
+ fresh['refresh']={'added':sorted(current-prior),'persisted':sorted(current&prior),'no_longer_returned':sorted(prior-current),'note':'IDs are positional for news items; treat added/no_longer_returned as title-level changes for news sources.'}
+ return fresh
+@router.post('/luxury-venture-studio/tools/price-sensitivity')
+def luxury_price_sensitivity(data:PriceSensitivityIn):
+ try:return price_sensitivity(data)
+ except ValueError as e:raise HTTPException(422,str(e)) from e
+@router.post('/luxury-venture-studio/tools/market-sizing')
+def luxury_market_sizing(data:MarketSizingIn):return market_sizing(data)
+class InterviewScriptIn(BaseModel):
+ customer_job:str=Field(min_length=10,max_length=1000);constraints:list[str]=Field(default_factory=list,max_length=30)
+@router.post('/luxury-venture-studio/tools/interview-script')
+def luxury_interview_script(data:InterviewScriptIn):return interview_script(data.customer_job,data.constraints)
+class ValidationMethodsIn(BaseModel):
+ constraints:list[str]=Field(default_factory=list,max_length=30)
+@router.post('/luxury-venture-studio/tools/validation-methods')
+def luxury_validation_methods(data:ValidationMethodsIn):return select_validation_methods(data.constraints)
+class ConceptToolIn(BaseModel):
+ concept:dict;sector:str=Field(default='other',max_length=40)
+@router.post('/luxury-venture-studio/tools/pitch-outline')
+def luxury_pitch_outline(data:ConceptToolIn):
+ try:return pitch_outline(data.concept,data.sector)
+ except (KeyError,ValueError) as e:raise HTTPException(422,'concept lacks required fields: '+str(e)) from e
+class FollowUpIn(BaseModel):
+ subject:str=Field(min_length=3,max_length=200);days:list[int]|None=None
+@router.post('/luxury-venture-studio/tools/follow-up-plan')
+def luxury_follow_up(data:FollowUpIn):return follow_up_plan(data.subject,data.days)
+@router.post('/luxury-venture-studio/tools/objection-sheet')
+def luxury_objections(data:ConceptToolIn):
+ try:return objection_sheet(data.concept)
+ except (KeyError,ValueError) as e:raise HTTPException(422,'concept lacks required fields: '+str(e)) from e
+@router.post('/luxury-venture-studio/tools/kpi-sheet')
+def luxury_kpis(data:ConceptToolIn):
+ try:return kpi_sheet(data.concept)
+ except (KeyError,ValueError) as e:raise HTTPException(422,'concept lacks required fields: '+str(e)) from e
+class PositioningIn(BaseModel):
+ price_band:float=Field(ge=1,le=5);heritage:float=Field(ge=1,le=5);peers:list[dict]=Field(default_factory=list,max_length=20)
+@router.post('/luxury-venture-studio/tools/positioning-map')
+def luxury_positioning(data:PositioningIn):
+ try:return positioning_map(data.price_band,data.heritage,data.peers)
+ except ValueError as e:raise HTTPException(422,str(e)) from e
+class ScorecardIn(BaseModel):
+ scores:dict
+@router.post('/luxury-venture-studio/tools/explain-scorecard')
+def luxury_explain_scorecard(data:ScorecardIn):return explain_scorecard(data.scores)
+@router.get('/luxury-venture-studio/tools/sector-presets')
+def luxury_sector_presets():return sector_presets()
+@router.get('/luxury-venture-studio/tools/comparable-set')
+def luxury_comparable_set(sector:str=Query(default='other')):
+ listed=[{'ticker':t,'name':n} for t,(n,s,_c) in LISTED_LUXURY_WATCHLIST.items() if s==sector]
+ return {'sector':sector,'listed_comparables':listed,'non_listed_note':'Private or European-listed houses (Chanel, LVMH, Hermes, Kering, Richemont, Moncler, Burberry, Sanrio) are covered through news and reference sources only.'}
+class DigestIn(BaseModel):
+ pack:dict
+@router.post('/luxury-venture-studio/tools/digest')
+def luxury_digest(data:DigestIn):return digest(data.pack)
