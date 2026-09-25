@@ -105,3 +105,16 @@ def application_evidence_matrix(data:EvidenceMatrixIn):
  from .evidence_matrix import build_evidence_matrix
  try:return build_evidence_matrix(data.requirements,data.claims,data.owner_records,data.official_sources)
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+# Public case-source index. An opt-in refresh checks the original page and robots rules.
+from .admitted_cases import cases, search_cases, fetch_case_metadata
+import httpx
+@router.get('/admitted-cases')
+def admitted_case_catalog(q:str='',evidence_type:str='',limit:int=20):
+ return {'cases':search_cases(q,evidence_type,limit),'source_count':len(cases()),'scope':'Public example links and publisher claims only; no copied essays, outcome prediction, or independent outcome verification.'}
+
+@router.get('/admitted-cases/{case_id}/live-metadata')
+def admitted_case_live_metadata(case_id:str):
+ try:return fetch_case_metadata(case_id)
+ except KeyError:raise HTTPException(404,'unknown case source')
+ except httpx.HTTPError as error:raise HTTPException(502,'source temporarily unavailable') from error
