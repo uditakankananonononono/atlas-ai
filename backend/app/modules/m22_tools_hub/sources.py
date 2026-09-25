@@ -47,12 +47,15 @@ Fetch = Callable[[str], bytes]
 
 
 def http_get(url: str, *, accept: str = "application/json, */*", limit: int = MAX_JSON_BYTES,
-             headers: dict[str, str] | None = None) -> bytes:
-    """HTTPS GET with Atlas UA and a hard byte cap."""
+             headers: dict[str, str] | None = None, truncate_ok: bool = False) -> bytes:
+    """HTTPS GET with Atlas UA and a byte cap. ``truncate_ok`` keeps the first
+    ``limit`` bytes instead of failing (for HTML pages and feed probes)."""
     request = Request(url, headers={"User-Agent": USER_AGENT, "Accept": accept, **(headers or {})})
     with urlopen(request, timeout=TIMEOUT_SECONDS) as response:
         data = response.read(limit + 1)
     if len(data) > limit:
+        if truncate_ok:
+            return data[:limit]
         raise SourceError(f"response from {url} exceeds the {limit}-byte cap")
     return data
 
@@ -143,6 +146,15 @@ def _entry_link(elem: ET.Element) -> str:
     return fallback
 
 
+def _enclosure_length(elem: ET.Element) -> str:
+    for child in elem:
+        if _local(child.tag) == "enclosure" and child.get("url"):
+            return child.get("length", "")
+        if _local(child.tag) == "link" and child.get("rel") == "enclosure" and child.get("href"):
+            return child.get("length", "")
+    return ""
+
+
 def _entry_enclosure(elem: ET.Element) -> tuple[str, str]:
     for child in elem:
         tag = _local(child.tag)
@@ -170,15 +182,21 @@ def parse_feed(xml_bytes: bytes, *, max_items: int = MAX_FEED_ITEMS) -> Iterator
             _child_text(entry, "description", "summary", "subtitle", "encoded")
         ))
         published = _child_text(entry, "pubdate", "published", "updated", "date")
+        guid = _child_text(entry, "guid", "id")
+        duration = _child_text(entry, "duration")
         kind = "podcast-episode" if enclosure_type.startswith("audio") or enclosure_url else "blog"
         yield {
             "name": _child_text(entry, "title") or "(untitled)",
             "url": _entry_link(entry),
             "summary": summary,
             "kind": kind,
+            "guid": guid,
+            "published": published,
             "evidence": [e for e in [
                 {"published": published} if published else None,
-                {"enclosure_url": enclosure_url, "enclosure_type": enclosure_type} if enclosure_url else None,
+                {"enclosure_url": enclosure_url, "enclosure_type": enclosure_type,
+                 "enclosure_length": _enclosure_length(entry)} if enclosure_url else None,
+                {"duration": duration} if duration else None,
                 {"author": _child_text(entry, "author", "creator")} if _child_text(entry, "author", "creator") else None,
             ] if e],
         }
@@ -423,6 +441,7 @@ def default_source_collectors() -> list[Any]:
         JsonSourceCollector("hackernews", "article", "https://hn.algolia.com/api/v1/search?query={query}&tags=story&hitsPerPage=20", _parse_hackernews),
         MediumTagCollector(),
         JsonSourceCollector("itunes", "podcast", "https://itunes.apple.com/search?media=podcast&term={query}&limit=20", _parse_itunes),
+        JsonSourceCollector("itunes-episodes", "podcast-episode", "https://itunes.apple.com/search?media=podcast&entity=podcastEpisode&term={query}&limit=20", _parse_itunes_episodes),
         JsonSourceCollector("gitlab", "repository", "https://gitlab.com/api/v4/projects?search={query}&per_page=20&order_by=last_activity_at", _parse_gitlab),
         JsonSourceCollector("codeberg", "repository", "https://codeberg.org/api/v1/repos/search?q={query}&limit=20", _parse_codeberg),
     ]
@@ -431,3 +450,246 @@ def default_source_collectors() -> list[Any]:
     except SourceError:
         pass  # optional config absent - Atlas runs free-first without it
     return collectors
+
+
+# --------------------------------------------------------------------------
+# Phase 2: episode search, feed autodiscovery, OPML, feed watching, refresh
+# --------------------------------------------------------------------------
+
+def _parse_itunes_episodes(payload: Any) -> Iterator[dict[str, Any]]:
+    """Apple Search API with entity=podcastEpisode (shape verified 2026-09-25)."""
+    for x in (payload.get("results") if isinstance(payload, dict) else [])[:20]:
+        show = x.get("collectionName") or "unknown show"
+        yield {
+            "name": x.get("trackName") or "(untitled episode)",
+            "url": x.get("trackViewUrl") or x.get("episodeUrl") or "",
+            "summary": _truncate(_strip_html(x.get("description") or "")) or f"Episode of {show}",
+            "version": None, "license": None,
+            "maintenance": _recency_score(x.get("releaseDate")),
+            "security": 0.6, "fit": 0.6, "novelty": 0.5,
+            "evidence": [{
+                "source": "itunes-episodes", "show": show, "feed_url": x.get("feedUrl"),
+                "released_at": x.get("releaseDate"),
+                "duration_ms": x.get("trackTimeMillis"), "episode_url": x.get("episodeUrl"),
+            }],
+            "permissions": [],
+        }
+
+
+FEED_MIME_TYPES = {
+    "application/rss+xml", "application/atom+xml", "application/feed+json",
+    "application/xml", "text/xml", "application/rdf+xml",
+}
+COMMON_FEED_PATHS = ("/feed", "/feed/", "/rss", "/rss.xml", "/atom.xml", "/feed.xml",
+                     "/index.xml", "/podcast.xml", "/episodes/rss",
+                     "/feeds/posts/default", "/blog/feed", "/blog/rss")
+
+
+def find_feed_links(html_text: str, base_url: str) -> list[str]:
+    """Extract RSS/Atom feed URLs from <link rel=alternate type=...> tags."""
+    from urllib.parse import urljoin
+    out: list[str] = []
+    for match in re.finditer(r"<link\b[^>]*>", html_text or "", re.I):
+        tag = match.group(0)
+        rel = re.search(r"rel=[\"']?([^\"' >]+)", tag, re.I)
+        typ = re.search(r"type=[\"']([^\"']+)[\"']", tag, re.I)
+        href = re.search(r"href=[\"']([^\"']+)[\"']", tag, re.I)
+        if rel and "alternate" in rel.group(1).lower() and typ and href:
+            if typ.group(1).lower().split(";")[0].strip() in FEED_MIME_TYPES:
+                url = urljoin(base_url, html_lib.unescape(href.group(1)))
+                if url not in out:
+                    out.append(url)
+    return out
+
+
+def discover_feeds(site_url: str, *, fetch: Callable[..., bytes] = http_get,
+                   probe_paths: tuple[str, ...] = COMMON_FEED_PATHS) -> list[str]:
+    """Find the RSS/Atom feeds of a blog or podcast site.
+
+    Strategy: parse the site's HTML for feed <link> tags; if none, probe the
+    well-known feed paths. Returns absolute feed URLs, empty list when none.
+    """
+    if not re.fullmatch(r"https://[^/]+(/.*)?", site_url or ""):
+        raise SourceError(f"site URL must be https: {site_url!r}")
+
+    def looks_like_feed(url: str) -> bool:
+        """A declared feed URL only counts if the document is actually a feed;
+        some CMSs (Blogger) advertise a self-referencing <link> to the homepage."""
+        if re.fullmatch(r"https://[^/]+/?", url):
+            return False
+        try:
+            data = fetch(url, accept="application/xml, */*", limit=256 * 1024, truncate_ok=True)
+        except Exception:
+            return False
+        head = data[:8192]
+        return head.lstrip()[:5] == b"<?xml" and (b"<rss" in head or b"<feed" in head or b"<channel" in head)
+
+    html_text = fetch(site_url, accept="text/html, */*", limit=1024 * 1024,
+                      truncate_ok=True).decode("utf-8", errors="replace")
+    verified = [url for url in find_feed_links(html_text, site_url) if looks_like_feed(url)]
+    if verified:
+        return verified
+    base = re.match(r"(https://[^/]+)", site_url).group(1)
+    found: list[str] = []
+    for path in probe_paths:
+        url = base + path
+        if looks_like_feed(url):
+            found.append(url)
+    return found
+
+
+# ---------------------------------------------------------------- OPML ----
+
+def parse_opml(opml_text: str) -> list[dict[str, str]]:
+    """Parse an OPML subscription list into {title, feed_url, site_url} dicts."""
+    try:
+        root = ET.fromstring(opml_text)
+    except ET.ParseError as exc:
+        raise SourceError(f"OPML is not well-formed XML: {exc}") from exc
+    if _local(root.tag) != "opml":
+        raise SourceError("document is not OPML")
+    feeds: list[dict[str, str]] = []
+    for elem in root.iter():
+        if _local(elem.tag) != "outline":
+            continue
+        feed_url = elem.get("xmlUrl") or elem.get("xmlurl") or ""
+        if not feed_url:
+            continue
+        feeds.append({
+            "title": elem.get("title") or elem.get("text") or feed_url,
+            "feed_url": feed_url,
+            "site_url": elem.get("htmlUrl") or elem.get("htmlurl") or "",
+        })
+    return feeds
+
+
+def feeds_to_opml(feeds: list[dict[str, str]], *, title: str = "Atlas M22 feed subscriptions") -> str:
+    """Build an OPML 2.0 document from {title, feed_url, site_url} dicts."""
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+             f'<opml version="2.0"><head><title>{html_lib.escape(title)}</title>',
+             f'<dateCreated>{datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S %z")}</dateCreated>',
+             '</head><body>']
+    for feed in feeds:
+        attrs = f'type="rss" text={html_lib.escape(feed.get("title") or feed["feed_url"], quote=True)!r}'
+        attrs = attrs.replace("'", '"')
+        attrs += f' xmlUrl="{html_lib.escape(feed["feed_url"], quote=True)}"'
+        if feed.get("site_url"):
+            attrs += f' htmlUrl="{html_lib.escape(feed["site_url"], quote=True)}"'
+        lines.append(f"<outline {attrs}/>")
+    lines.append("</body></opml>")
+    return "\n".join(lines)
+
+
+def collectors_from_opml(opml_text: str, *, max_items: int = MAX_FEED_ITEMS) -> list[FeedCollector]:
+    """Turn an OPML subscription list into ready FeedCollectors (https feeds only)."""
+    collectors: list[FeedCollector] = []
+    for feed in parse_opml(opml_text):
+        try:
+            collectors.append(feed_collector(feed["feed_url"], name=feed["title"], max_items=max_items))
+        except SourceError:
+            continue  # non-https feed URLs are skipped, not fatal to the import
+    return collectors
+
+
+# ---------------------------------------------------------- feed watching ----
+
+def _entry_id(entry: dict[str, Any]) -> str:
+    for value in (entry.get("guid"), entry.get("url"), entry.get("name")):
+        if value:
+            base = str(value)
+            break
+    else:
+        base = ""
+    published = next((e.get("published") for e in entry.get("evidence", []) if isinstance(e, dict) and e.get("published")), "")
+    enclosure = next((e.get("enclosure_url") for e in entry.get("evidence", []) if isinstance(e, dict) and e.get("enclosure_url")), "")
+    return hashlib.sha256(f"{base}|{published}|{enclosure}".encode()).hexdigest()
+
+
+class FeedWatcher:
+    """Poll RSS/Atom feeds and return only entries not seen before.
+
+    Seen-entry cursors persist in a JSON state file so watches survive
+    restarts; state is capped at 500 entry ids per feed.
+    """
+
+    def __init__(self, state_path: str | os.PathLike) -> None:
+        self.state_path = os.fspath(state_path)
+        self._state: dict[str, Any] | None = None
+
+    def _load(self) -> dict[str, Any]:
+        if self._state is None:
+            try:
+                with open(self.state_path, encoding="utf-8") as fh:
+                    self._state = json.load(fh)
+            except (OSError, json.JSONDecodeError):
+                self._state = {}
+        return self._state
+
+    def _save(self) -> None:
+        assert self._state is not None
+        os.makedirs(os.path.dirname(self.state_path) or ".", exist_ok=True)
+        tmp = f"{self.state_path}.{os.getpid()}.tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(self._state, fh, indent=1)
+        os.replace(tmp, self.state_path)
+
+    async def poll(self, feed_url: str, *, max_items: int = MAX_FEED_ITEMS,
+                   opener: Callable[[str], Any] | None = None) -> list[dict[str, Any]]:
+        collector = feed_collector(feed_url, max_items=max_items, opener=opener)
+        entries = [x async for x in collector.collect()]
+        state = self._load()
+        seen = set(state.get(feed_url, {}).get("seen", []))
+        new_entries = [e for e in entries if _entry_id(e) not in seen]
+        fresh = [_entry_id(e) for e in entries]
+        state[feed_url] = {
+            "seen": list(dict.fromkeys([*fresh, *(i for i in seen if i not in fresh)]))[:500],
+            "last_polled_at": datetime.now(timezone.utc).isoformat(),
+            "entry_count": len(entries),
+        }
+        self._save()
+        return new_entries
+
+
+# ------------------------------------------------- repository refresh ----
+
+_REPO_REFRESH_URLS = {
+    "github": "https://api.github.com/repos/{name}",
+    "gitlab": "https://gitlab.com/api/v4/projects/{name}",
+    "codeberg": "https://codeberg.org/api/v1/repos/{name}",
+}
+
+
+def refresh_repository_candidate(name: str, source: str, *,
+                                 fetch: Fetch = http_get) -> dict[str, Any]:
+    """Re-fetch current stats for a repository candidate from its source API.
+
+    Returns {"maintenance": float, "evidence": {...}}. Only the git hosts are
+    supported; anything else is a SourceError, not a guess.
+    """
+    if source not in _REPO_REFRESH_URLS:
+        raise SourceError(f"evidence refresh is not supported for source {source!r}")
+    from urllib.parse import quote
+    url = _REPO_REFRESH_URLS[source].format(name=quote(name, safe="") if source == "gitlab" else name)
+    try:
+        payload = json.loads(fetch(url))
+    except json.JSONDecodeError as exc:
+        raise SourceError(f"{source} returned non-JSON content: {exc}") from exc
+    if source == "github":
+        updated = payload.get("pushed_at") or payload.get("updated_at")
+        evidence = {"source": "github", "stars": payload.get("stargazers_count", 0),
+                    "forks": payload.get("forks_count", 0), "updated_at": updated,
+                    "license": (payload.get("license") or {}).get("spdx_id"),
+                    "archived": bool(payload.get("archived"))}
+    elif source == "gitlab":
+        updated = payload.get("last_activity_at")
+        evidence = {"source": "gitlab", "stars": payload.get("star_count", 0),
+                    "forks": payload.get("forks_count", 0), "last_activity_at": updated,
+                    "visibility": payload.get("visibility"),
+                    "archived": bool(payload.get("archived"))}
+    else:
+        updated = payload.get("updated_at")
+        evidence = {"source": "codeberg", "stars": payload.get("stars_count", 0),
+                    "forks": payload.get("forks_count", 0), "updated_at": updated,
+                    "language": payload.get("language"), "archived": bool(payload.get("archived"))}
+    maintenance = 0.1 if evidence.get("archived") else _recency_score(updated)
+    return {"maintenance": maintenance, "evidence": evidence}

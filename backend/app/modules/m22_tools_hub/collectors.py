@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 from urllib.parse import quote_plus
 from urllib.request import Request,urlopen
-from .sources import default_source_collectors
+from .sources import _recency_score, default_source_collectors
 class JsonCollector:
  def __init__(self,name,url,parse,kind="package"):self.name=name;self.url=url;self.parse=parse;self.kind=kind
  async def collect(self,query):
@@ -21,7 +21,7 @@ class JsonCollector:
   payload=await asyncio.to_thread(fetch)
   for item in self.parse(payload):yield item
 def _github(p):
- for x in p.get('items',[])[:20]:yield {'name':x['full_name'],'url':x['html_url'],'summary':x.get('description') or '', 'version':None,'license':(x.get('license') or {}).get('spdx_id'),'maintenance':.8 if not x.get('archived') else .1,'security':.6,'fit':.7,'novelty':.5,'evidence':[{'stars':x.get('stargazers_count',0),'updated_at':x.get('updated_at')}], 'permissions':[], 'kind':'repository'}
+ for x in p.get('items',[])[:20]:yield {'name':x['full_name'],'url':x['html_url'],'summary':x.get('description') or '', 'version':None,'license':(x.get('license') or {}).get('spdx_id'),'maintenance':.1 if x.get('archived') else _recency_score(x.get('pushed_at') or x.get('updated_at')),'security':.6,'fit':.7,'novelty':.5,'evidence':[{'stars':x.get('stargazers_count',0),'updated_at':x.get('updated_at'),'pushed_at':x.get('pushed_at')}], 'permissions':[], 'kind':'repository'}
 def _pypi(p):
  for x in p.get('projects',[])[:20]:yield {'name':x['name'],'url':f"https://pypi.org/project/{x['name']}/",'summary':'Python package from official PyPI index','maintenance':.5,'security':.5,'fit':.6,'novelty':.4,'evidence':[{'source':'pypi'}],'permissions':[], 'kind':'package'}
 def _npm(p):
