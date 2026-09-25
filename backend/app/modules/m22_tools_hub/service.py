@@ -1,6 +1,6 @@
 """Tools Hub: compliant discovery and approval-gated integrations."""
 from __future__ import annotations
-import hashlib,re,uuid
+import asyncio,hashlib,re,uuid
 from dataclasses import dataclass,field
 from datetime import datetime,timezone
 from typing import Any,AsyncIterator,Protocol
@@ -16,7 +16,7 @@ class ApprovalStore(Protocol):
     def put(self,item:ApprovalRequest)->ApprovalRequest:...
 @dataclass
 class Candidate:
-    name:str;url:str;summary:str;source:str;version:str|None=None;license:str|None=None;permissions:list[str]=field(default_factory=list);maintenance:float=0.;security:float=0.;fit:float=0.;novelty:float=0.;evidence:list[dict[str,Any]]=field(default_factory=list);id:str=field(default_factory=lambda:str(uuid.uuid4()))
+    name:str;url:str;summary:str;source:str;version:str|None=None;license:str|None=None;permissions:list[str]=field(default_factory=list);maintenance:float=0.;security:float=0.;fit:float=0.;novelty:float=0.;evidence:list[dict[str,Any]]=field(default_factory=list);id:str=field(default_factory=lambda:str(uuid.uuid4()));kind:str="tool"
     @property
     def score(self):return round(.30*self.fit+.25*self.security+.20*self.maintenance+.15*self.novelty+.10*min(1,len(self.evidence)/3),4)
 @dataclass
@@ -24,19 +24,25 @@ class InstallationProposal:
     candidate_id:str;adapter_type:str;config:dict[str,Any];requested_scopes:list[str];rollback_plan:dict[str,Any];approval_id:str;id:str=field(default_factory=lambda:str(uuid.uuid4()))
 class Service:
     BLOCKED_DOMAINS={"oceanofpdf.com"};BLOCKED_PATTERNS=("self-bot","rotating proxy","credential stuffing","bypass paywall","stealth scraping")
-    def __init__(self,approval_store:ApprovalStore,collectors:list[Collector]=[]):self.approvals=approval_store;self.collectors=collectors;self.candidates={};self.proposals={};self.installed={}
-    async def discover(self,query:str)->list[Candidate]:
+    def __init__(self,approval_store:ApprovalStore,collectors:list[Collector]=[]):self.approvals=approval_store;self.collectors=collectors;self.candidates={};self.proposals={};self.installed={};self.last_errors:dict[str,str]={}
+    async def _drain(self,collector:Collector,query:str)->list[Candidate]:
         found=[]
-        for collector in self.collectors:
-            async for raw in collector.collect(query):
-                candidate=self._normalize(raw,collector.name)
-                if candidate:found.append(candidate)
+        async for raw in collector.collect(query):
+            candidate=self._normalize(raw,collector.name)
+            if candidate:found.append(candidate)
+        return found
+    async def discover(self,query:str)->list[Candidate]:
+        results=await asyncio.gather(*(self._drain(c,query) for c in self.collectors),return_exceptions=True)
+        found=[];self.last_errors={}
+        for collector,result in zip(self.collectors,results):
+            if isinstance(result,Exception):self.last_errors[collector.name]=str(result);continue
+            found.extend(result)
         dedup={self._key(x):x for x in found};ranked=sorted(dedup.values(),key=lambda x:x.score,reverse=True)
         self.candidates.update({x.id:x for x in ranked});return ranked
     def _normalize(self,x,source):
         url=x.get("url","");text=f"{x.get('name','')} {x.get('summary','')}".lower()
         if urlparse(url).hostname in self.BLOCKED_DOMAINS or any(p in text for p in self.BLOCKED_PATTERNS):return None
-        return Candidate(x["name"],url,x.get("summary",""),source,x.get("version"),x.get("license"),x.get("permissions",[]),float(x.get("maintenance",.5)),float(x.get("security",.5)),float(x.get("fit",.5)),float(x.get("novelty",.5)),x.get("evidence",[]))
+        return Candidate(x["name"],url,x.get("summary",""),source,x.get("version"),x.get("license"),x.get("permissions",[]),float(x.get("maintenance",.5)),float(x.get("security",.5)),float(x.get("fit",.5)),float(x.get("novelty",.5)),x.get("evidence",[]),kind=x.get("kind","tool"))
     @staticmethod
     def _key(c):return hashlib.sha256(f"{c.name.lower()}|{urlparse(c.url).netloc}".encode()).hexdigest()
     def propose_install(self,candidate_id:str,adapter_type:str,config:dict[str,Any],scopes:list[str]):
@@ -57,4 +63,6 @@ class Service:
         if evidence.get("candidate_id")!=p.candidate_id:raise ValueError("integration receipt candidate does not match proposal")
         receipt={**evidence,"verified_binding":True,"rollback_available":bool(evidence.get("backup_id")),"execution_claim":"installer receipt supplied and proposal binding verified; runtime behavior not independently verified"}
         self.installed[p.candidate_id]={"proposal":p,"evidence":receipt,"installed_at":now()};return self.installed[p.candidate_id]
+    def sources(self)->list[dict[str,Any]]:
+        return [{"name":c.name,"kind":getattr(c,"kind","tool"),"last_error":self.last_errors.get(c.name)} for c in self.collectors]
     def portfolio(self):return [{"candidate":self.candidates[k],**v} for k,v in self.installed.items()]

@@ -20,6 +20,10 @@ def propose(req:InstallIn,s:Service=Depends(get_service)):
 @router.get("/portfolio")
 def portfolio(s:Service=Depends(get_service)):return s.portfolio()
 
+@router.get("/sources")
+def sources(s:Service=Depends(get_service)):
+ return {"sources":s.sources()}
+
 @router.post('/expanded-259-278/{row_id}')
 def expanded_259_278(row_id:int,payload:dict):
  from .expanded_259_278 import run
