@@ -162,3 +162,16 @@ def test_jev_evaluate_through_client():
                                                          "criteria": {"billing": "Invoices", "tech": "Bugs"}}})
     assert out["answers"]["route"]["choice"] == "billing"
     assert seen["headers"]["Authorization"] == "Bearer sk-a"
+
+
+def test_local_hermes_and_explicit_openclaw_owner_bridge():
+    from instinct_models import OpenClawOwner
+    cfg = sml.atlas_config({"ATLAS_HERMES_URL": "http://127.0.0.1:11434/v1",
+                            "ATLAS_HERMES_MODEL": "hermes3:3b", "ATLAS_ALLOW_HOSTED": "0"})
+    names = [p.name for p in Router.from_config(cfg).providers]
+    assert "hermes-local" in names and "openclaw-owner" not in names
+    assert "inkling-hf-router" not in names
+    with pytest.raises(Exception, match="owner"):
+        sml.openclaw_owner_call([{"role": "user", "content": "hi"}],
+                                env={"ATLAS_OPENCLAW_URL": "http://localhost:18789/v1",
+                                     "ATLAS_OPENCLAW_TOKEN": "dummy"})

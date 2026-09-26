@@ -23,6 +23,8 @@ _ATLAS_FALLBACKS = {
     "HF_MODEL": "ATLAS_HF_MODEL",
     "ORNITH_URL": "ATLAS_ORNITH_URL",
     "ORNITH_MODEL": "ATLAS_ORNITH_MODEL",
+    "HERMES_URL": "ATLAS_HERMES_URL",
+    "HERMES_MODEL": "ATLAS_HERMES_MODEL",
     "NEEDLE_WEIGHTS": "ATLAS_NEEDLE_WEIGHTS",
     "ALLOW_HOSTED": "ATLAS_ALLOW_HOSTED",
     "JEV_API_KEY": "ATLAS_JEV_API_KEY",
@@ -101,3 +103,11 @@ def jev_eval(env: dict | None = None) -> "JevEval":
     e = environ if env is None else env
     return JevEval(api_key=atlas_config(env).jev_api_key,
                    gateway_api_key=e.get("ATLAS_AI_GATEWAY_API_KEY") or e.get("INSTINCT_AI_GATEWAY_API_KEY") or e.get("AI_GATEWAY_API_KEY") or "")
+
+def openclaw_owner_call(messages: list[dict], *, owner_confirmed: bool = False,
+                        env: dict | None = None):
+    """Explicit authenticated-owner call, never registered as an automatic model fallback."""
+    from instinct_models import OpenClawOwner
+    e = os.environ if env is None else env
+    return OpenClawOwner(e.get("ATLAS_OPENCLAW_URL") or "", e.get("ATLAS_OPENCLAW_TOKEN") or "").chat(
+        messages, owner_confirmed=owner_confirmed)
