@@ -97,4 +97,7 @@ def jev_eval(env: dict | None = None) -> "JevEval":
     """
     from instinct_models import JevEval
 
-    return JevEval(api_key=atlas_config(env).jev_api_key)
+    from os import environ
+    e = environ if env is None else env
+    return JevEval(api_key=atlas_config(env).jev_api_key,
+                   gateway_api_key=e.get("ATLAS_AI_GATEWAY_API_KEY") or e.get("INSTINCT_AI_GATEWAY_API_KEY") or e.get("AI_GATEWAY_API_KEY") or "")
