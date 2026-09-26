@@ -16,8 +16,10 @@ def get_service():
     global _service
     if _service is None:
         from .playwright_adapter import PlaywrightSessions
+        from .session_bridge.dispatch import BridgedSessions, HybridSessions
+        from .session_bridge.routes import get_registry
         from .store import SQLStore
-        sessions = PlaywrightSessions()
+        sessions = HybridSessions(PlaywrightSessions(), BridgedSessions(get_registry()))
         _service = Service(sessions, default_service(), SQLStore())
     return _service
 
@@ -102,3 +104,6 @@ async def execute_capture_bound(body:CaptureBoundExecuteIn,tenant:TenantContext=
  except PermissionError as e:raise HTTPException(409,str(e)) from e
  except NavigationBlocked as e:raise HTTPException(400,str(e)) from e
  except RuntimeError as e:raise HTTPException(502,str(e)) from e
+
+from .session_bridge.routes import router as bridge_router
+router.include_router(bridge_router)

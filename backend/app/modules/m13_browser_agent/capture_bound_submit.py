@@ -109,6 +109,10 @@ async def execute_capture_bound_submit(service, sessions_factory, tenant_id: str
     except IntegrityError as exc:
         raise PermissionError("a submit attempt already exists for this approval or capture") from exc
     await service.store.consume(approval_id, tenant_id)
+    authorize = getattr(service.sessions, "authorize_submit", None)
+    if authorize is not None:
+        await authorize(tenant_id, session_id, approval_id=approval_id,
+                        capture_sha256=capture_sha256, selector=selector, values=values)
     state, error = "clicked", None
     try:
         await page.locator(selector).click()

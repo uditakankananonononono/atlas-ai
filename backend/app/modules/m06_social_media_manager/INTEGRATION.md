@@ -60,3 +60,22 @@ Plans and analysis reports are held in memory. If durability is needed, add
 shared tables (e.g. `m06_content_plans`, `m06_analysis_reports`) and a small
 repository behind the existing service constructor; no module code changes
 are required beyond injecting it.
+
+## Social reading layer (2026-09-26)
+
+`social_reading/` reads the owner's Instagram and LinkedIn follower lists and
+feeds through her own logged-in sessions (the M13 paired-PC session bridge)
+and stores people + observed work in `m06_social_people` / `m06_social_work`
+with per-row provenance (source URL, observed/captured timestamps). Fresh
+signals can be harvested into M19 as captured ideas via
+`/social-media-manager/social-reading/ideas/harvest`; each harvested idea
+cites its source signal and each signal is harvested at most once.
+
+Boundaries: this layer is read-only. It never posts, follows, likes,
+comments, or messages - every write remains in M06's approval-gated
+publishing path. Platform terms may restrict automated access; reads run
+through her own session at human speed, and a login wall, challenge, or rate
+limit stops the run and is returned as a 502 `blocked` state, never worked
+around. Instagram reads require the paired daemon and a local instaloader
+login on her PC (`instaloader --login <username>`); LinkedIn reads require
+the paired browser session to be logged in.
