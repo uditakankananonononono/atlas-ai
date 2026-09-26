@@ -593,3 +593,7 @@ def technical_67_75(row_id:int,payload:dict):
     from .technical_67_75 import run
     try:return run(row_id,payload)
     except (ValueError,TypeError,KeyError) as exc:raise HTTPException(status_code=422,detail=str(exc)) from exc
+
+# Social reading layer (read-only; mounted as a sub-router so module prefixing stays stable).
+from .social_reading.routes import router as social_reading_router
+router.include_router(social_reading_router)
