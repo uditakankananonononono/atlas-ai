@@ -134,3 +134,31 @@ def test_m12_is_free_only_unless_paid_allowed(monkeypatch):
         asyncio.run(wiring.AtlasProvider().generate(model_id="openai:gpt-4o-mini", prompt="x", context={}))
     monkeypatch.setenv("ATLAS_ALLOW_PAID", "true")
     assert "openai:gpt-4o-mini" in {m.model_id for m in wiring.active_catalog()}
+
+
+def test_jev_eval_off_without_key():
+    jev = sml.jev_eval({"INSTINCT_PRODUCT": "atlas"})
+    assert jev.name == "jev"
+    assert not jev.available()
+
+
+def test_jev_eval_key_resolution():
+    assert sml.jev_eval({"ATLAS_JEV_API_KEY": "sk-a"}).api_key == "sk-a"
+    assert sml.jev_eval({"INSTINCT_JEV_API_KEY": "sk-i", "ATLAS_JEV_API_KEY": "sk-a"}).api_key == "sk-i"
+    assert sml.jev_eval({"JEV_API_KEY": "sk-j"}).api_key == "sk-j"
+
+
+def test_jev_evaluate_through_client():
+    seen = {}
+
+    def fake(url, body, headers, timeout):
+        seen.update(url=url, body=body, headers=headers)
+        return {"model": "jev-1.13.0", "answers": {"route": {"type": "choice", "choice": "billing"}},
+                "usage": {"input_tokens": 5, "output_tokens": 1}}
+
+    jev = sml.jev_eval({"ATLAS_JEV_API_KEY": "sk-a"})
+    jev.transport = fake
+    out = jev.evaluate("My invoice is wrong", {"route": {"type": "choice", "instructions": "Which team?",
+                                                         "criteria": {"billing": "Invoices", "tech": "Bugs"}}})
+    assert out["answers"]["route"]["choice"] == "billing"
+    assert seen["headers"]["Authorization"] == "Bearer sk-a"

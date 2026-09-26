@@ -25,6 +25,7 @@ _ATLAS_FALLBACKS = {
     "ORNITH_MODEL": "ATLAS_ORNITH_MODEL",
     "NEEDLE_WEIGHTS": "ATLAS_NEEDLE_WEIGHTS",
     "ALLOW_HOSTED": "ATLAS_ALLOW_HOSTED",
+    "JEV_API_KEY": "ATLAS_JEV_API_KEY",
 }
 
 
@@ -34,6 +35,9 @@ def atlas_env(env: dict | None = None) -> dict:
     for key, atlas_key in _ATLAS_FALLBACKS.items():
         if not out.get(f"INSTINCT_{key}") and src.get(atlas_key):
             out[f"INSTINCT_{key}"] = src[atlas_key]
+    # Jev's own documented env name also counts (load_config falls back to it).
+    if src.get("JEV_API_KEY") and not out.get("INSTINCT_JEV_API_KEY"):
+        out["JEV_API_KEY"] = src["JEV_API_KEY"]
     product = out.get("INSTINCT_PRODUCT")
     if product and product != "atlas":
         raise ValueError(f"INSTINCT_PRODUCT={product!r} in the Atlas process; Atlas only runs as 'atlas'")
@@ -81,3 +85,16 @@ async def generate(prompt: str, *, private: bool = True, max_tokens: int = 2048,
     if not res.ok:
         raise SharedModelError("no shared-model route answered: " + _describe(res), res.attempts)
     return res.result.provider, res.result.model, res.result.text
+
+
+def jev_eval(env: dict | None = None) -> "JevEval":
+    """Atlas Jev evaluation client (TypeSafe AI's System One model).
+
+    Key resolution: INSTINCT_JEV_API_KEY, then ATLAS_JEV_API_KEY, then JEV_API_KEY.
+    Without a key the client is unavailable and OFF - nothing is called or billed.
+    Jev is hosted and paid (credits); it evaluates typed questions, it does not chat,
+    and it must never receive private state.
+    """
+    from instinct_models import JevEval
+
+    return JevEval(api_key=atlas_config(env).jev_api_key)
