@@ -6,6 +6,8 @@ Atlas AI is a human-controlled modular work platform owned by Udita. This reposi
 
 This is an active product build, not a finished production service. Modules 0-25 are registered on API routers and have offline tests, but registration is not proof that every requested feature is complete. The row-by-row evidence audit is in [`docs/IMPLEMENTATION_AUDIT.md`](docs/IMPLEMENTATION_AUDIT.md) and [`audits/ledger-140.json`](audits/ledger-140.json). The audit deliberately labels adjacent-but-incomplete work **thin** and absent exact requirements **missing**.
 
+The Claire workbench now exposes its interview, journal and public-opportunity routes. This is a generic JSON action panel, not a guided onboarding flow; TypeScript typecheck passed locally, visual/browser usability is not yet checked.
+
 Claire has a read-only public-opportunity triage route connecting M01 source-backed listings to review cards; it does not scan continuously, log into Pinterest, prove eligibility or submit applications. See [triage limits](docs/CLAIRE_OPPORTUNITY_TRIAGE.md).
 
 Claire also has a separate durable, actor-scoped SQL decision journal with one-line owner reasons, provenance references and lexical ranking. It replaces no legacy route yet, and the source reference is owner-reported rather than verified. See [journal scope](docs/CLAIRE_JOURNAL.md). Its Alembic migration was smoke-tested on an empty local SQLite database but not run on production. This is not an AGI model or external-action grant.
