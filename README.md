@@ -6,6 +6,8 @@ Atlas AI is a human-controlled modular work platform owned by Udita. This reposi
 
 This is an active product build, not a finished production service. Modules 0-25 are registered on API routers and have offline tests, but registration is not proof that every requested feature is complete. The row-by-row evidence audit is in [`docs/IMPLEMENTATION_AUDIT.md`](docs/IMPLEMENTATION_AUDIT.md) and [`audits/ledger-140.json`](audits/ledger-140.json). The audit deliberately labels adjacent-but-incomplete work **thin** and absent exact requirements **missing**.
 
+Claire now also has a consent-first, actor-scoped owner interview with five fixed decision questions, durable SQL answers, corrections by revocation, and export-free context readback. This is a narrow preference-calibration workflow, not a learned AGI model or permission to act. The route never scans accounts, sends outreach, or submits applications; those need separate live integrations and exact owner approval. Tests for this slice: 2 direct behavioral tests passed locally; the full Atlas suite was not rerun in this environment (Python 3.10 only, while the app requires 3.12). The independent Sept 27 audit reported 9,071 passed, 1 stale-assertion failure and 12 environment-dependent skips on its then-current revision, which does not validate this new slice.
+
 The previous README was stale. It still described the first foundation commit and called current modules stubs even after their implementations landed. It also claimed auth, tenant state, workers, providers, billing and deployment were all deferred, which is no longer true. This README replaces those claims rather than papering over remaining gaps.
 
 ## Run locally
