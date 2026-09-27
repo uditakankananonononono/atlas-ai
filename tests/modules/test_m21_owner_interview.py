@@ -53,3 +53,26 @@ def test_question_choices_validate_and_restart_persists(tmp_path):
     reopened, _, _ = stores(tmp_path)
     assert reopened.next_question()["status"] == "complete"
     assert reopened.next_question()["answered"] == len(QUESTIONS)
+
+
+def test_authenticated_api_separates_actors_and_requires_consent(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    from app.main import app
+    from app.modules.m21_claire import owner_interview_routes as routes
+    from app.core.database import SessionLocal
+    engine = create_engine(f"sqlite:///{tmp_path/'api.db'}", connect_args={"check_same_thread": False})
+    sessions = sessionmaker(bind=engine)
+    monkeypatch.setattr(routes, "SessionLocal", sessions)
+    c = TestClient(app)
+    url = "/api/v1/claire/interview"
+    a = {"x-atlas-tenant": "t", "x-atlas-actor": "a"}
+    b = {"x-atlas-tenant": "t", "x-atlas-actor": "b"}
+    assert c.get(url + "/next", headers=a).json()["status"] == "consent_required"
+    assert c.post(url + "/answers", headers=a, json={"question_id": "evidence", "choice": "stop", "reason": "caution", "source_reference": "msg"}).status_code == 403
+    assert c.put(url + "/consent", headers=a, json={"enabled": True}).status_code == 200
+    result = c.post(url + "/answers", headers=a, json={"question_id": "evidence", "choice": "stop", "reason": "caution", "source_reference": "msg"})
+    assert result.status_code == 201
+    assert c.get(url + "/context", headers=a).json()["preferences"][0]["choice"] == "stop"
+    assert c.get(url + "/context", headers=b).json()["preferences"] == []
+    assert c.delete(url + f"/answers/{result.json()['id']}", headers=b).status_code == 404
+    assert c.delete(url + f"/answers/{result.json()['id']}", headers=a).status_code == 200
