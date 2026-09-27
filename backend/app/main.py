@@ -13,6 +13,7 @@ from app.modules.m21_claire.personalization_routes import router as claire_perso
 from app.modules.m21_claire.owner_interview_routes import router as claire_interview_router
 from app.modules.m21_claire.persistent_journal_routes import router as claire_journal_router
 from app.modules.m21_claire.opportunity_triage_routes import router as claire_opportunity_router
+from app.modules.m21_claire.social_signal_review_routes import router as claire_social_signal_router
 from app.modules.m02_competition_manager.profile_routes import router as competition_profile_router
 from app.modules.m25_knowledge_copilot.routes import router as knowledge_copilot_router
 from app.modules.m20_general_cognitive_worker.agi_routes import router as agi_runtime_router
@@ -32,6 +33,7 @@ app.include_router(claire_personalization_router,prefix="/api/v1",dependencies=[
 app.include_router(claire_interview_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(claire_journal_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(claire_opportunity_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
+app.include_router(claire_social_signal_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(competition_profile_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(knowledge_copilot_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(agi_runtime_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
