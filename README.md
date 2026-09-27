@@ -6,6 +6,8 @@ Atlas AI is a human-controlled modular work platform owned by Udita. This reposi
 
 This is an active product build, not a finished production service. Modules 0-25 are registered on API routers and have offline tests, but registration is not proof that every requested feature is complete. The row-by-row evidence audit is in [`docs/IMPLEMENTATION_AUDIT.md`](docs/IMPLEMENTATION_AUDIT.md) and [`audits/ledger-140.json`](audits/ledger-140.json). The audit deliberately labels adjacent-but-incomplete work **thin** and absent exact requirements **missing**.
 
+Frontend security maintenance: pinned Next.js 16.3.6 replaced 14.2.32; point-in-time `npm audit --omit=dev` found zero production dependency advisories after the update, and clean install/typecheck/build passed on Node 22. Browser E2E and production deployment are not verified. See [dependency audit](docs/FRONTEND_DEPENDENCY_AUDIT_20260927.md).
+
 The Claire workbench now exposes its interview, journal and public-opportunity routes. This is a generic JSON action panel, not a guided onboarding flow; TypeScript typecheck passed locally, visual/browser usability is not yet checked.
 
 Claire has a read-only public-opportunity triage route connecting M01 source-backed listings to review cards; it does not scan continuously, log into Pinterest, prove eligibility or submit applications. See [triage limits](docs/CLAIRE_OPPORTUNITY_TRIAGE.md).
