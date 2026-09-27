@@ -1,0 +1,5 @@
+# Claire public-opportunity triage
+
+`POST /api/v1/claire/opportunities/triage` composes the existing M01 read-only public student-listing adapters and evidence annotators into review cards. It returns source URLs, exact deadline/award mentions or unknown values, and per-source failures. It does not infer eligibility from age/region mentions, fetch official rules pages, log in, stage applications, send outreach, or submit anything. A source marked launch-only remains launch-only. Blocked/rate-limited sources report failures; no bypass is attempted.
+
+This is a narrow functional connection to Claire, not continuous scanning or Pinterest access. At most five configured platforms and 25 items per source are read per request; schedule and account-based monitoring are not implemented. A user's request to scan more often must respect platform rate limits. Two tests cover source-linked cards, explicit unknowns, invalid URL removal, API route and query validation. No live-source scan was run in this change, so current provider availability remains unknown.
