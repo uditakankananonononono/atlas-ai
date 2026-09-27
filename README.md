@@ -8,7 +8,7 @@ This is an active product build, not a finished production service. Modules 0-25
 
 Frontend security maintenance: pinned Next.js 16.3.6 replaced 14.2.32; point-in-time `npm audit --omit=dev` found zero production dependency advisories after the update, and clean install/typecheck/build passed on Node 22. Browser E2E and production deployment are not verified. See [dependency audit](docs/FRONTEND_DEPENDENCY_AUDIT_20260927.md).
 
-The Claire workbench now exposes its interview, journal and public-opportunity routes. This is a generic JSON action panel, not a guided onboarding flow; TypeScript typecheck passed locally, visual/browser usability is not yet checked.
+The Claire workbench now exposes its interview, journal and public-opportunity routes. This is a generic JSON action panel, not a guided onboarding flow; TypeScript typecheck passed locally, one mocked Chromium E2E verified consent PUT and review-card rendering; live API and the full browser suite remain unverified.
 
 Claire has a read-only public-opportunity triage route connecting M01 source-backed listings to review cards; it does not scan continuously, log into Pinterest, prove eligibility or submit applications. See [triage limits](docs/CLAIRE_OPPORTUNITY_TRIAGE.md).
 
