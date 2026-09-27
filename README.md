@@ -10,6 +10,8 @@ Frontend security maintenance: pinned Next.js 16.3.6 replaced 14.2.32; point-in-
 
 The Claire workbench now exposes its interview, journal and public-opportunity routes. This is a generic JSON action panel, not a guided onboarding flow; TypeScript typecheck passed locally, one mocked Chromium E2E verified consent PUT and review-card rendering; live API and the full browser suite remain unverified.
 
+Claire also exposes a tenant-scoped, read-only review route over already stored M06 social observations. Cards mark handles and text as unverified and require source review; the route does not scan an account, verify identities, contact anyone or post publicly. The route and direct-store behavior were tested locally against SQLite, not a live social account or deployed backend. See [social review limits](docs/CLAIRE_SOCIAL_REVIEW.md).
+
 Claire has a read-only public-opportunity triage route connecting M01 source-backed listings to review cards; it does not scan continuously, log into Pinterest, prove eligibility or submit applications. See [triage limits](docs/CLAIRE_OPPORTUNITY_TRIAGE.md).
 
 Claire also has a separate durable, actor-scoped SQL decision journal with one-line owner reasons, provenance references and lexical ranking. It replaces no legacy route yet, and the source reference is owner-reported rather than verified. See [journal scope](docs/CLAIRE_JOURNAL.md). Its Alembic migration was smoke-tested on an empty local SQLite database but not run on production. This is not an AGI model or external-action grant.
