@@ -7,6 +7,16 @@ import math
 import sys
 from fractions import Fraction
 META={93:('50.2','system_delay'),94:('50.3','emergent_behavior'),95:('52.1','constraint_identification'),96:('52.2','constraint_improvement'),97:('61.1','exponential_model'),98:('61.2','logarithmic_model'),99:('61.3','power_law_model'),100:('68.1','value_creation'),101:('68.2','value_capture'),102:('72.1','wip_measurement'),103:('72.2','throughput_measurement'),104:('72.3','cycle_time_measurement'),105:('72.4','littles_law_check'),106:('82.1','bidding_optimization'),107:('82.2','selling_optimization'),108:('101.1','expertise_positioning'),109:('101.2','credibility_evidence'),110:('103.1','rapport_plan'),111:('103.2','similarity_grounding'),112:('104.1','shared_identity'),113:('104.2','shared_purpose'),114:('111.1','citation_influence'),115:('111.2','academic_idea_flow')};BY={x[1]:r for r,x in META.items()}
+# Fixed policy, not caller configurable: caps exact-arithmetic work per request.
+MAX_EXACT_SAMPLES=256
+
+def _check_exact_size(d,*keys):
+ # Check all arrays before validation/conversion or any Fraction allocation.
+ for key in keys:
+  values=d.get(key)
+  if isinstance(values,list) and len(values)>MAX_EXACT_SAMPLES:
+   raise ValueError(f'{key} supports at most {MAX_EXACT_SAMPLES} values')
+
 def _f(x,n):
  if isinstance(x,bool) or not isinstance(x,(int,float)):raise ValueError(f'{n} must be finite')
  # Check integers before any float coercion (math.isfinite also coerces ints).
@@ -52,6 +62,7 @@ def _run(method,d):
  if method not in BY:raise ValueError('unsupported atomic concept')
  r=BY[method];aid=META[r][0];limits=['Decision support on supplied evidence; no external effect or scale claim.'];o={}
  if r==93:
+  _check_exact_size(d,'input','response')
   impulse=_v(d,'input');response=_v(d,'response');_same(impulse,response);maxlag=d.get('max_lag',len(impulse)-1)
   if isinstance(maxlag,bool) or not isinstance(maxlag,int):raise ValueError('max_lag must be an integer')
   if maxlag<0:raise ValueError('max_lag must be nonnegative')
@@ -107,12 +118,16 @@ def _run(method,d):
   if bid is None:raise ValueError('supported auction_type required')
   o={'recommended_bid':bid,'max_willingness_to_pay':value,'auction_type':kind,'strategy':'symmetric risk-neutral uniform-private-value benchmark' if kind=='first_price' else 'truthful private-value benchmark'};limits+=['Requires independent private values and benchmark distribution; never bids automatically.']
  elif r==107:
+  _check_exact_size(d,'buyer_values')
   _v(d,'buyer_values')
   values=sorted(Fraction(x) for x in d['buyer_values'])
   if any(v<0 for v in values):raise ValueError('buyer_values must be nonnegative')
   best_r,best_rev=None,None
-  for r0 in sorted(set(values)):
-   rev=r0*sum(v>=r0 for v in values)
+  # The first occurrence of a price begins its entire >= price suffix.
+  # Sorting plus one scan replaces the quadratic all-buyers candidate count.
+  for i,r0 in enumerate(values):
+   if i and r0==values[i-1]:continue
+   rev=r0*(len(values)-i)
    if best_rev is None or rev>best_rev:best_r,best_rev=r0,rev
   # Ascending candidates and strict improvement retain the lowest exact maximizer.
   best=(_finite_result(best_r,'reserve'),_finite_result(best_rev,'reserve revenue'));o={'recommended_reserve':best[0],'empirical_revenue_bound':best[1],'buyer_count':len(values),'mechanism':d.get('mechanism','second_price_with_reserve')};limits+=['Empirical reserve can overfit; validate out of sample and follow auction law. Equal exact revenues choose the lowest reserve. Unrepresentable float revenue is rejected.']
