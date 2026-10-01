@@ -16,7 +16,7 @@ from pathlib import Path
 import socket
 import sqlite3
 import time
-from urllib.parse import parse_qsl, urljoin, urlsplit, urlunsplit
+from urllib.parse import unquote_plus, parse_qsl, urljoin, urlsplit, urlunsplit
 from urllib.robotparser import RobotFileParser
 from defusedxml import ElementTree as ET
 from defusedxml.common import DefusedXmlException
@@ -27,9 +27,12 @@ from warcio.archiveiterator import ArchiveIterator
 
 
 WARC_CHUNK = 65536
+WARC_HEADER_LINE_MAX = 65536
+WARC_HEADER_BLOCK_MAX = 1_048_576
 DENIED_NETWORKS = tuple(ipaddress.ip_network(n) for n in (
     'fec0::/10', '192.0.0.0/24', '192.88.99.0/24', '2001:20::/28',
-    '2001::/32', '64:ff9b:1::/48', '::/96', '100.64.0.0/10', '198.18.0.0/15'))
+    '2001::/32', '64:ff9b:1::/48', '::/96', '100.64.0.0/10', '198.18.0.0/15',
+    '192.31.196.0/24', '192.52.193.0/24', '192.175.48.0/24', '2001:1::/32', '2001:3::/32', '2001:4:112::/48', '2001:30::/28'))
 NAT64_NETWORK = ipaddress.ip_network('64:ff9b::/96')
 
 
@@ -68,15 +71,62 @@ class Limits:
             raise ValueError('limits must be positive; interval may be zero for tests')
 
 
-SENSITIVE_QUERY_TOKENS = ('token', 'secret', 'key', 'auth', 'sig', 'pass', 'pwd', 'session', 'cred', 'jwt', 'bearer')
+SENSITIVE_QUERY_TOKENS = ('token', 'secret', 'key', 'auth', 'sig', 'pass', 'pwd', 'session', 'cred', 'jwt', 'bearer', 'cookie')
+_BEARER_VALUE = re.compile(r'\bbearer[\s+]+[A-Za-z0-9._~+/=-]{16,}', re.I)
+_JWT_VALUE = re.compile(r'eyJ[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]*')
+
+
+def _decode_stable(text: str) -> str:
+    """NFKC + percent-decode in a loop until stable. Raises if it never settles."""
+    for _ in range(32):
+        nxt = unicodedata.normalize('NFKC', unquote_plus(text))
+        if nxt == text: return text
+        text = nxt
+    raise CollectionError('credentials in URL are forbidden')
+
+
+def _bad_chars(text: str) -> bool:
+    return any(unicodedata.category(c) in ('Cc', 'Cf', 'Cs', 'Co', 'Cn') for c in text)
+
+
+def _sensitive_key(key: str) -> bool:
+    key = _decode_stable(key)
+    if _bad_chars(key): return True
+    flat = re.sub(r'[^a-z0-9]', '', key.lower())
+    return any(t in flat for t in SENSITIVE_QUERY_TOKENS)
+
+
+def _sensitive_value(value: str) -> bool:
+    value = _decode_stable(value)
+    return _bad_chars(value) or bool(_BEARER_VALUE.search(value) or _JWT_VALUE.search(value))
+
+
+def _screen_url_credentials(p) -> None:
+    """Defense-in-depth heuristic, NOT a guarantee: it rejects URLs whose query keys (any ';' or '&'
+    separated pair), query values (Bearer/JWT shaped), or path segments look like credentials.
+    Unusual encodings or opaque secrets can still pass; credentials belong in CredentialStore."""
+    pairs = [x for x in re.split(r'[&;]', p.query) if x != '']
+    for pair in pairs:
+        key, _, value = pair.partition('=')
+        if _sensitive_key(key) or _sensitive_value(value) or (_sensitive_value(key) and not value):
+            raise CollectionError('credentials in URL are forbidden')
+    for segment in p.path.split('/'):
+        for part in segment.split(';'):
+            key, eq, value = part.partition('=')
+            decoded = _decode_stable(part)
+            flat = re.sub(r'[^a-z0-9]', '', decoded.lower())
+            if _bad_chars(decoded) or _sensitive_value(part) or (eq and _sensitive_key(key)) or flat in _SENSITIVE_SEGMENTS:
+                raise CollectionError('credentials in URL are forbidden')
+
+
+_SENSITIVE_SEGMENTS = frozenset(t + s for t in ('token', 'accesstoken', 'authtoken', 'bearer', 'apikey', 'secret', 'session', 'sessionid', 'auth', 'jwt', 'password', 'passwd', 'key', 'sig', 'signature', 'credentials', 'cred') for s in ('', 's'))
 
 
 def origin(url: str) -> str:
     p = urlsplit(url)
     if p.scheme not in ('http', 'https') or not p.hostname or p.username or p.password or p.fragment:
         raise CollectionError('require an HTTP(S) URL without credentials or fragment')
-    if any(any(t in k.lower().replace('-', '').replace('_', '') for t in SENSITIVE_QUERY_TOKENS) for k, _ in parse_qsl(p.query, keep_blank_values=True)):
-        raise CollectionError('credentials in URL are forbidden')
+    _screen_url_credentials(p)
     try:
         port = p.port
     except ValueError as exc:
@@ -88,19 +138,19 @@ def origin(url: str) -> str:
 
 
 def normalized_license(value: str) -> str:
-    """NFKC + casefold, then collapse every run of characters outside [a-z0-9]
-    (any dash, space, underscore, zero-width char, punctuation) to one '-'."""
-    text = unicodedata.normalize('NFKC', str(value)).casefold()
-    return re.sub(r'[^a-z0-9]+', '-', text).strip('-')
+    """Exact-token form: surrounding whitespace stripped, ASCII-casefolded. Nothing else is
+    normalized, so look-alikes ('MIT.', '-mit', 'cc-by-4.0+', zero-width or Unicode dashes) never match."""
+    return str(value).strip().lower() if isinstance(value, str) else ''
 
 
 # Explicit reviewed allowlist. Anything not here is never training_eligible.
 _REVIEWED_LICENSES = ('cc0-1.0', 'cc-by-4.0', 'cc-by-sa-4.0', 'mit', 'apache-2.0', 'bsd-2-clause', 'bsd-3-clause', 'public-domain-explicit')
-TRAINING_LICENSE_ALLOWLIST = frozenset(normalized_license(x) for x in _REVIEWED_LICENSES)
+TRAINING_LICENSE_ALLOWLIST = frozenset(_REVIEWED_LICENSES)
 
 
 def license_training_eligible(value: str) -> bool:
-    return normalized_license(value) in TRAINING_LICENSE_ALLOWLIST
+    token = normalized_license(value)
+    return token.isascii() and token in TRAINING_LICENSE_ALLOWLIST
 
 
 def html_text(data: bytes) -> str:
@@ -124,15 +174,37 @@ def atomic_json(path: Path, data):
 
 
 class BoundedReader:
-    def __init__(self, stream, limit, check):
+    def __init__(self, stream, limit, check, label='input'):
+        self.label = label
         self.stream, self.limit, self.check, self.used = stream, limit, check, 0
+        self.header_line_max = self.header_block_max = None
+        self.in_headers, self.run, self.block = False, 0, 0
+
+    def begin_headers(self): self.in_headers, self.run, self.block = True, 0, 0
+    def end_headers(self): self.in_headers = False
+
+    def _scan(self, data):
+        if not self.in_headers or not data: return
+        self.block += len(data)
+        first, last = data.find(b'\n'), data.rfind(b'\n')
+        if first < 0:
+            self.run += len(data)
+        else:
+            longest = self.run + first
+            if len(data) > self.header_line_max:
+                longest = max([longest] + [len(x) for x in data.split(b'\n')])
+            if longest > self.header_line_max: self.run = longest
+            self.run = max(self.run, 0) if longest > self.header_line_max else len(data) - last - 1
+        if self.run > self.header_line_max or self.block > self.header_block_max:
+            raise CollectionError('WARC header line or header block too large')
 
     def _take(self, method, size=-1):
         self.check()
         remaining = self.limit - self.used
         size = min(size, remaining+1) if size >= 0 else remaining+1
         data = method(size); self.used += len(data)
-        if self.used > self.limit: raise CollectionError('expanded input byte quota exceeded')
+        self._scan(data)
+        if self.used > self.limit: raise CollectionError(f'expanded {self.label} byte quota exceeded')
         return data
 
     def read(self, size=-1): return self._take(self.stream.read, size)
@@ -206,6 +278,12 @@ class Collector:
                 inner = ip.sixtofour
             elif ip in NAT64_NETWORK:
                 inner = ipaddress.IPv4Address(int(ip) & 0xFFFFFFFF)
+            # ISATAP interface id (RFC 5214): [0200|0000]:5efe:a.b.c.d. Checked for every IPv6
+            # address, including the interface-id of 6to4 addresses.
+            iid = int(ip) & 0xFFFFFFFFFFFFFFFF
+            if (iid >> 32) in (0x00005EFE, 0x02005EFE):
+                if not self._address_allowed(str(ipaddress.IPv4Address(iid & 0xFFFFFFFF)), embedded=True):
+                    return False
             if inner is not None:
                 return self._address_allowed(str(inner), embedded=True)
         if ip.is_multicast or ip.is_reserved or ip.is_unspecified or ip.is_link_local or ip.is_private and not ip.is_loopback:
@@ -386,6 +464,48 @@ class Collector:
             f.close(); return bz2.open(path, 'rb')
         return f
 
+    def _warc_rows(self, path, limit):
+        """Every decompressed byte warcio pulls (WARC headers, HTTP headers, payload) is charged to
+        max_parse_bytes by BoundedReader. While warcio parses the next record's headers the reader is in
+        header mode: any line over WARC_HEADER_LINE_MAX or more than WARC_HEADER_BLOCK_MAX bytes
+        (plus one 16 KiB warcio read-ahead block) is rejected, so a single huge header cannot be buffered."""
+        parsed = count = 0
+        with self._open_input(path) as raw_input:
+            f = BoundedReader(raw_input, self.limits.max_parse_bytes, self.check_stop, 'WARC')
+            f.header_line_max, f.header_block_max = WARC_HEADER_LINE_MAX, WARC_HEADER_BLOCK_MAX
+            records = iter(ArchiveIterator(f))
+            while True:
+                self.check_stop()
+                f.begin_headers()
+                try:
+                    record = next(records)
+                except StopIteration:
+                    if not count: raise CollectionError('no WARC records found')
+                    break
+                finally:
+                    f.end_headers()
+                count += 1
+                cl = record.rec_headers.get_header('Content-Length')
+                if not str(record.rec_headers.protocol or '').startswith('WARC/') or record.rec_type is None or not (cl or '').isascii() or not (cl or '').isdigit():
+                    raise CollectionError('invalid WARC record header')
+                stream = record.content_stream()
+                kept, size = [], 0
+                while True:
+                    self.check_stop()
+                    chunk = stream.read(min(WARC_CHUNK, self.limits.max_parse_bytes - parsed + 1))
+                    if not chunk: break
+                    parsed += len(chunk)
+                    if parsed>self.limits.max_parse_bytes: raise CollectionError('expanded WARC byte quota exceeded')
+                    if size <= limit:
+                        kept.append(chunk); size += len(chunk)
+                if getattr(record.raw_stream, 'limit', 0):
+                    raise CollectionError('truncated WARC record')
+                data = b''.join(kept)
+                if record.rec_type != 'response' or not record.http_headers or record.http_headers.get_statuscode() != '200': continue
+                if 'html' not in (record.http_headers.get_header('Content-Type') or ''): continue
+                if len(data)>limit: raise CollectionError('WARC record byte quota exceeded')
+                yield html_text(data), {'record_url': record.rec_headers.get_header('WARC-Target-URI'), 'warc_date': record.rec_headers.get_header('WARC-Date')}
+
     def _rows(self, source, path):
         limit = self.limits.max_record_bytes
         if source.format == 'parquet':
@@ -401,25 +521,12 @@ class Collector:
                     yield text, {}
             return
         if source.format == 'commoncrawl':
-            parsed = 0
-            with path.open('rb') as f:
-                for record in ArchiveIterator(f):
-                    self.check_stop()
-                    stream = record.content_stream()
-                    kept, size = [], 0
-                    while True:
-                        self.check_stop()
-                        chunk = stream.read(min(WARC_CHUNK, self.limits.max_parse_bytes - parsed + 1))
-                        if not chunk: break
-                        parsed += len(chunk)
-                        if parsed>self.limits.max_parse_bytes: raise CollectionError('expanded WARC byte quota exceeded')
-                        if size <= limit:
-                            kept.append(chunk); size += len(chunk)
-                    data = b''.join(kept)
-                    if record.rec_type != 'response' or not record.http_headers or record.http_headers.get_statuscode() != '200': continue
-                    if 'html' not in (record.http_headers.get_header('Content-Type') or ''): continue
-                    if len(data)>limit: raise CollectionError('WARC record byte quota exceeded')
-                    yield html_text(data), {'record_url': record.rec_headers.get_header('WARC-Target-URI'), 'warc_date': record.rec_headers.get_header('WARC-Date')}
+            try:
+                yield from self._warc_rows(path, limit)
+            except CollectionError:
+                raise
+            except Exception as exc:  # warcio ArchiveLoadFailed, gzip/zlib/EOF/OS/value errors
+                raise CollectionError(f'invalid WARC: {type(exc).__name__}') from exc
             return
         with self._open_input(path) as raw_input:
             f = BoundedReader(raw_input, self.limits.max_parse_bytes, self.check_stop)

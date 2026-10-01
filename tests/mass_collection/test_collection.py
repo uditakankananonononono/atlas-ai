@@ -331,7 +331,7 @@ def test_license_allowlist_denies(tmp_path, lic):
     assert _eligibility(tmp_path, lic) is False
 
 
-@pytest.mark.parametrize('lic', ['CC-BY\u20134.0', 'CC\u2011BY-4.0', 'cc--by-4.0', 'cc-by\u200b-4.0', 'MIT\u200b', 'MIT.', ' Apache-2.0 ', 'CC0-1.0', 'cc_by_sa_4.0', 'BSD-3-Clause', 'bsd-2-clause', 'public-domain-explicit'])
+@pytest.mark.parametrize('lic', [' Apache-2.0 ', 'CC0-1.0', 'BSD-3-Clause', 'bsd-2-clause', 'public-domain-explicit'])
 def test_license_allowlist_allows_reviewed_variants(tmp_path, lic):
     assert _eligibility(tmp_path, lic) is True
 
@@ -438,6 +438,139 @@ def test_dns_pin_allows_public_and_unwrapped_public(tmp_path, monkeypatch):
     import socket as real_socket
     from app.mass_collection import engine
     for address in ('93.184.216.34', '2606:4700:4700::1111', '::ffff:93.184.216.34', '64:ff9b::5db8:d822', '2002:5db8:d822::1'):
+        fam = real_socket.AF_INET6 if ':' in address else real_socket.AF_INET
+        monkeypatch.setattr(engine.socket, 'getaddrinfo', lambda *a, _f=fam, _a=address, **k: [(_f, real_socket.SOCK_STREAM, 6, '', (_a, 80))])
+        c = Collector(tmp_path/'d', limits=Limits(request_interval=0))
+        assert c._pinned_url('http://example.org/page')[2] == 'example.org', address
+
+
+# ---- round 4 ----
+def _warc(tmp_path, name='r4.warc.gz', http=None, warc=None, body=b'<p>ok</p>', gzip_=True):
+    out = io.BytesIO(); writer = WARCWriter(out, gzip=gzip_)
+    h = StatusAndHeaders('200 OK', [('Content-Type', 'text/html')] + list(http or []), protocol='HTTP/1.0')
+    writer.write_record(writer.create_warc_record('https://example.org/a', 'response', payload=io.BytesIO(body), http_headers=h, warc_headers_dict=warc or {}))
+    path = tmp_path/name; path.write_bytes(out.getvalue())
+    return path
+
+
+def _ingest_warc(tmp_path, path, **limits):
+    c = collector(tmp_path/'data', **limits)
+    return c, c.ingest_file(source('https://data.commoncrawl.org/x.warc.gz', 'commoncrawl'), path)
+
+
+def test_warc_huge_http_header_line_rejected_with_default_limits(tmp_path):
+    path = _warc(tmp_path, http=[('X-Big', 'a'*5_000_000)])
+    with pytest.raises(CollectionError):
+        _ingest_warc(tmp_path, path)
+
+
+def test_warc_huge_warc_header_line_rejected_with_default_limits(tmp_path):
+    path = _warc(tmp_path, warc={'X-Big': 'a'*5_000_000})
+    with pytest.raises(CollectionError):
+        _ingest_warc(tmp_path, path)
+
+
+def test_warc_many_header_lines_rejected(tmp_path):
+    path = _warc(tmp_path, http=[(f'X-{i}', 'v') for i in range(200_000)])
+    with pytest.raises(CollectionError):
+        _ingest_warc(tmp_path, path)
+
+
+def test_warc_headers_charged_to_parse_quota(tmp_path):
+    path = _warc(tmp_path, http=[(f'X-{i}', 'v'*20) for i in range(300)])
+    with pytest.raises(CollectionError):
+        _ingest_warc(tmp_path, path, max_parse_bytes=3000)
+
+
+def test_warc_normal_still_ingests(tmp_path):
+    c, r = _ingest_warc(tmp_path, _warc(tmp_path, http=[('X-A', 'b')]))
+    assert r['inserted'] == 1
+
+
+@pytest.mark.parametrize('data', [b'WARC/1.0\r\nbad\r\n\r\n', b'not a warc at all', b'\x1f\x8b\x08\x00garbage-gzip', b'WARC/1.0\r\nWARC-Type: response\r\nContent-Length: abc\r\n\r\n'])
+def test_warc_corrupt_maps_to_collection_error(tmp_path, data):
+    p = tmp_path/'bad.warc.gz'; p.write_bytes(data)
+    with pytest.raises(CollectionError):
+        _ingest_warc(tmp_path, p)
+
+
+def test_warc_truncated_gzip_maps_to_collection_error(tmp_path):
+    p = _warc(tmp_path); raw = p.read_bytes(); p.write_bytes(raw[:len(raw)//2])
+    with pytest.raises(CollectionError):
+        _ingest_warc(tmp_path, p)
+
+
+def _cred_store(tmp_path):
+    from app.mass_collection.credentials import CredentialStore
+    return CredentialStore(tmp_path/'credentials.json', 't', master_secret='local-test-key')
+
+
+def test_credentials_deeply_nested_json_is_collection_error(tmp_path):
+    store = _cred_store(tmp_path)
+    (tmp_path/'credentials.json').write_text('['*200000 + ']'*200000)
+    with pytest.raises(CollectionError): store.headers('mine', 'https://example.org')
+    with pytest.raises(CollectionError): store.save('mine', 'https://example.org', 'tok', owner_confirmed=True)
+
+
+@pytest.mark.parametrize('flag', ['yes', 'true', 1, 'True', float('nan'), None, [], 0.5])
+def test_credentials_save_requires_literal_true(tmp_path, flag):
+    with pytest.raises(CollectionError):
+        _cred_store(tmp_path).save('mine', 'https://example.org', 'tok', owner_confirmed=flag)
+
+
+@pytest.mark.parametrize('raw', ['"yes"', 'NaN', '1', '"true"', 'null', '[]'])
+def test_credentials_headers_requires_stored_true(tmp_path, raw):
+    store = _cred_store(tmp_path)
+    store.save('mine', 'https://example.org', 'tok', owner_confirmed=True)
+    assert store.headers('mine', 'https://example.org')['Authorization'] == 'Bearer tok'
+    p = tmp_path/'credentials.json'
+    p.write_text(p.read_text().replace('"owner_confirmed": true', '"owner_confirmed": ' + raw))
+    with pytest.raises(CollectionError): store.headers('mine', 'https://example.org')
+
+
+@pytest.mark.parametrize('query', [
+    'a=1&access%2Dtoken=1', 'a=1;token=1', 'a=1;api_key=2', 'tok%252Ben=1', '%2574oken=1', '%25252574oken=1', 'tok\u200ben=1', 'tok%E2%80%8Ben=1', 'tok%00en=1', 'tok\x01en=1',
+    '\uff54oken=1', 'T.O.K.E.N=1', 'api key=1', 'x.secret=1', 'q=Bearer%20abcdefghijklmnopqrstuv', 'q=bearer+abcdefghijklmnopqrstuv',
+    'q=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.c2lnbmF0dXJl', 'q=%65yJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.c2ln',
+])
+def test_query_key_screen_round4(query):
+    from app.mass_collection.engine import origin
+    with pytest.raises(CollectionError): origin('https://example.org/p?' + query)
+
+
+@pytest.mark.parametrize('path', ['/token/abc', '/api/Token/abc', '/a/%74oken/b', '/api_key/x', '/a;token=1/b', '/x/eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.c2ln'])
+def test_path_token_segments_rejected(path):
+    from app.mass_collection.engine import origin
+    with pytest.raises(CollectionError): origin('https://example.org' + path)
+
+
+def test_query_screen_round4_allows_benign():
+    from app.mass_collection.engine import origin
+    assert origin('https://example.org/blog/tokenizer-notes/keyboard?q=bearer+bonds&page=2;lang=en') == 'https://example.org'
+
+
+@pytest.mark.parametrize('lic', ['-mit', 'mit-', 'cc-by-4.0+', 'mit+', 'MIT.', 'MIT\u200b', 'CC-BY\u20134.0', 'CC\u2011BY-4.0', 'cc--by-4.0', 'cc_by_sa_4.0', 'cc-by\u200b-4.0', '.mit', 'apache-2.0;', '(mit)', 'mit/apache-2.0', 'mit or apache-2.0', '\uff2d\uff29\uff34', 'MIT\u00a0x'])
+def test_license_exact_token_only(tmp_path, lic):
+    assert _eligibility(tmp_path, lic) is False
+
+
+@pytest.mark.parametrize('lic', ['MIT', ' mit ', '\tApache-2.0\n', 'CC-BY-4.0', 'cc0-1.0', 'BSD-3-Clause', 'public-domain-explicit'])
+def test_license_exact_token_allowed(tmp_path, lic):
+    assert _eligibility(tmp_path, lic) is True
+
+
+@pytest.mark.parametrize('address', [
+    '2002:5db8:d822:0:0:5efe:0a00:0001', '2002:5db8:d822::200:5efe:7f00:1', '2002:5db8:d822:1:0:5efe:c0a8:1', '2002:5db8:d822::5efe:a00:1',
+    '192.31.196.1', '192.52.193.1', '192.175.48.1', '2001:1::1', '2001:1:0:1::5', '2001:3::1', '2001:4:112::1', '2001:30::1', '2001:3f::1',
+])
+def test_dns_pin_round4_denies(tmp_path, monkeypatch, address):
+    test_dns_pin_explicit_denylist_and_unwrap(tmp_path, monkeypatch, address)
+
+
+def test_dns_pin_round4_allows_public(tmp_path, monkeypatch):
+    import socket as real_socket
+    from app.mass_collection import engine
+    for address in ('2002:5db8:d822:0:0:5efe:5db8:d822', '2002:5db8:d822::1', '192.31.195.1', '2606:4700:4700::1111'):
         fam = real_socket.AF_INET6 if ':' in address else real_socket.AF_INET
         monkeypatch.setattr(engine.socket, 'getaddrinfo', lambda *a, _f=fam, _a=address, **k: [(_f, real_socket.SOCK_STREAM, 6, '', (_a, 80))])
         c = Collector(tmp_path/'d', limits=Limits(request_interval=0))
