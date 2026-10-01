@@ -8,6 +8,7 @@ from __future__ import annotations
 from datetime import datetime
 import re
 import unicodedata
+import json
 
 _CUE = r'(?:application deadline|deadline|apply by|(?:applications?|submissions?) (?:close|due)(?: by)?)'
 _MONTH = r'(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept?|Oct|Nov|Dec)\.?'
@@ -52,7 +53,7 @@ def deadline_evidence(text: str) -> dict:
             continue
         end = matches[index+1].start() if index+1 < len(matches) else len(text)
         tail = text[match.end():end]
-        result['evidence'].append(text[match.start():end].strip())
+        result['evidence'].append(text[match.start():end].strip()[:600])
         # Any additional calendar date, partial date or extension conflicts.
         if re.search(_CALENDAR, tail, re.I) or re.search(r'(?:/|to|through|until|extended)\s*(?:[0-9]{1,2}-[0-9]{1,2}|[A-Za-z]{3,9}\s+[0-9]{1,2}|[0-9]{1,2}\s+[A-Za-z]{3,9})', tail, re.I):
             result['unknowns'].append('conflicting_deadline_statements')
@@ -62,7 +63,7 @@ def deadline_evidence(text: str) -> dict:
             continue
         # Explicit unrelated field boundaries preserve mixed-prose cards;
         # unmarked suffix prose still abstains. Conflicts were checked first.
-        tail = re.split(r'(?:[.!?]\s+|\n+)(?=(?:Award|Prize|Eligibility|Eligible applicants|Who can apply|Applicants must|Open to|Posted|Location)\b)', tail, maxsplit=1, flags=re.I)[0]
+        # No field-boundary cutting. Additional prose makes this non-standalone.
         # No word-list guessing: unexplained suffix tokens always stay unknown,
         # including across line/sentence breaks. Punctuation alone is harmless.
         if any(not (ch.isspace() or unicodedata.category(ch).startswith('P')) for ch in tail):
@@ -123,10 +124,18 @@ def evidence_card(row: dict, *, fetched_at: str, content_sha256: str) -> dict:
         title_deadline = deadline_evidence(row['title'])
         if title_deadline['evidence'] or title_deadline['value']:
             deadline = title_deadline
+    # A title with deadline-like vocabulary or unknown-script tokens is not a
+    # safe generic heading. Preserve every earlier safety reason when abstaining.
+    title_uncertain = (any(ch.isalpha() and not ch.isascii() for ch in row['title']) or
+                       re.search(r'\b(?:no|not|invalid|deadline|previous|archived|expired)\b', row['title'], re.I))
+    title_is_field = bool(_DEADLINE.fullmatch(row['title'].strip().rstrip('.')))
     if len(re.findall(_CALENDAR, text, re.I)) > 1:
-        deadline = {'value': None, 'timezone': None, 'precision': 'unknown', 'evidence': deadline['evidence'], 'unknowns': ['conflicting_deadline_statements']}
-    if title_risk:
-        deadline = {'value': None, 'timezone': None, 'precision': 'unknown', 'evidence': deadline['evidence'], 'unknowns': ['qualified_or_negated_deadline']}
+        deadline['value'], deadline['timezone'], deadline['precision'] = None, None, 'unknown'
+        deadline['unknowns'].append('conflicting_deadline_statements')
+    if title_risk or (title_uncertain and not title_is_field):
+        deadline['value'], deadline['timezone'], deadline['precision'] = None, None, 'unknown'
+        deadline['unknowns'].append('title_context_unknown')
+    deadline['unknowns'] = list(dict.fromkeys(deadline['unknowns']))
     statements = []
     contexts = []
     truncated = False
@@ -146,7 +155,7 @@ def evidence_card(row: dict, *, fetched_at: str, content_sha256: str) -> dict:
         first = lines[0].strip() if lines else ''
         if re.fullmatch(r'(?:Eligibility|Requirements|Applicants must|Open to)\s*:?', first, re.I):
             value = lines[1].strip() if len(lines) > 1 else ''
-            if not value or re.match(r'(?:Award|Prize|Deadline|Location|Posted)\s*:', value, re.I):
+            if not value or re.match(r'[^:]{1,80}:', value):
                 boundary_unknown = True
                 continue
             first += ' ' + value
@@ -171,14 +180,29 @@ def evidence_card(row: dict, *, fetched_at: str, content_sha256: str) -> dict:
         unknowns.append('eligibility_evidence_truncated')
     unknowns.extend(row.get('source_unknowns', []))
     unknowns.extend(deadline['unknowns'])
-    output = {key: value for key, value in row.items() if key != 'evidence_text'}
+    output = {key: value for key, value in row.items() if key not in {'evidence_text', 'source_unknowns', 'eligibility_statements'}}
+    output['title_original_length'] = len(row['title'])
+    output['title'] = row['title'][:300]
+    output['title_truncated'] = len(row['title']) > 300
+    output['description_original_length'] = len(row.get('evidence_text', row.get('description', '')))
+    output['description'] = row.get('description', '')[:600]
+    output['description_truncated'] = output['description_original_length'] > 600
     if 'evidence_text' in row:
         output['description_original_length'] = len(row['evidence_text'])
         output['description_truncated'] = len(row['evidence_text']) > 600
         output['description'] = row['evidence_text'][:600]
-    return dict(output, fetched_at=fetched_at, content_sha256=content_sha256,
+    card = dict(output, fetched_at=fetched_at, content_sha256=content_sha256,
                 deadline=deadline, eligibility={'evidence': list(dict.fromkeys(statements)),
                                                'verdict': None, 'basis': 'source_statements_only',
                                                'source_context': text[cue_matches[0].start():cue_matches[0].start()+600].strip() if cue_matches else None,
                                                'source_contexts': contexts},
                 unknowns=unknowns, evidence_status='public_listing_only')
+
+    if len(json.dumps(card, ensure_ascii=True).encode()) > 20000:
+        card['eligibility']['evidence'] = []
+        card['eligibility']['source_context'] = None
+        card['eligibility']['source_contexts'] = []
+        card['deadline']['evidence'] = []
+        card['deadline']['value'] = None
+        card['unknowns'].append('card_output_limit_exceeded')
+    return card

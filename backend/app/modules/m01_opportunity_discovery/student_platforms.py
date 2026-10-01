@@ -11,6 +11,7 @@ from html import unescape
 from urllib.parse import urljoin, urlsplit
 import re
 import time
+import json
 import xml.etree.ElementTree as ET
 
 import httpx
@@ -251,11 +252,24 @@ def discover(platform_id: str, query: str = '', *, limit: int = 25, client: http
             record = dict(row, source_url=source.url, platform=source.id,
                           opportunity_kind=source.kind)
             items.append(evidence_card(record, fetched_at=fetched_at, content_sha256=content_hash))
+            if len(items) >= limit:
+                break
+        output_bytes = 0
+        bounded_items = []
+        for item in items:
+            size = len(json.dumps(item, ensure_ascii=True).encode())
+            if output_bytes + size > 200000:
+                break
+            bounded_items.append(item)
+            output_bytes += size
+        output_limited = len(bounded_items) < len(items)
+        items = bounded_items
         if not rows or (not items and not query):
             raise PlatformUnavailable(f'{source.id}: no listing items parsed; layout may have changed')
         return {'platform': source.id, 'mode': source.mode, 'launch_url': source.url,
                 'scanned_at': fetched_at, 'fetched_at': fetched_at, 'content_sha256': content_hash,
-                'query_semantics': 'literal_substring_source_order', 'items': items[:limit]}
+                'query_semantics': 'literal_substring_source_order', 'items': items[:limit],
+                'output_limited': output_limited, 'item_output_bytes': output_bytes, 'aggregate_item_byte_limit': 200000}
     except httpx.HTTPError as exc:
         raise PlatformUnavailable(f'{source.id}: source request failed ({type(exc).__name__})') from exc
     finally:
