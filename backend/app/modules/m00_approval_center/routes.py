@@ -102,6 +102,20 @@ def decide_request(
         raise HTTPException(status_code=409, detail=str(error)) from error
 
 
+@router.post("/requests/{approval_id}/revoke", response_model=schemas.ApprovalView)
+def revoke_request(approval_id: str, service: Service = Depends(get_service),
+                   tenant: TenantContext = Depends(require_tenant)) -> dict:
+    """Revoke using the authenticated actor, never an actor from request JSON."""
+    try:
+        return service.revoke(approval_id, tenant_id=tenant.tenant_id, revoked_by=tenant.actor_id)
+    except ApprovalNotFoundError as error:
+        raise _not_found(error) from error
+    except ApprovalConflictError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
+    except PermissionError as error:
+        raise HTTPException(status_code=403, detail=str(error)) from error
+
+
 @router.get("/requests/{approval_id}/audit", response_model=list[schemas.ApprovalEventView])
 def audit_request(approval_id: str, service: Service = Depends(get_service), tenant: TenantContext = Depends(require_tenant)) -> list[dict]:
     """Return the immutable event log for one request."""
@@ -133,7 +147,7 @@ async def stream_events(response: Response, service: Service = Depends(get_servi
                     approval = event.get("approval") if isinstance(event, dict) else None
                     if isinstance(approval, dict) and approval.get("user_id") != tenant.tenant_id:
                         continue
-                    if isinstance(event, dict) and event.get("type") == "approval_expired":
+                    if isinstance(event, dict) and event.get("type") in {"approval_expired", "approval_revoked"}:
                         try:
                             expired = service.get(str(event.get("approval_id", "")))
                         except ApprovalNotFoundError:

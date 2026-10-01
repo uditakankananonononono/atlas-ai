@@ -174,25 +174,57 @@ class Service:
         Raises ValueError for an unknown module id so a misrouted gated
         action fails loudly instead of sitting in the queue forever.
         """
+        with self._sessions.begin() as db:
+            view = self._submit_in_transaction(db, module_id=module_id, action_type=action_type,
+                payload=payload, user_id=user_id, ttl_seconds=ttl_seconds)
+        self._publish_request(view)
+        return view
+
+    def _submit_in_transaction(self, db, *, module_id, action_type, payload, user_id, ttl_seconds):
+        """Private atomic composition hook; caller owns commit and publication."""
         if module_id not in BY_ID:
             raise ValueError(f"unknown module id: {module_id}")
         now = self._clock()
-        expires_at = now + timedelta(seconds=ttl_seconds) if ttl_seconds else None
-        row = ApprovalRequestRow(
-            id=str(uuid4()),
-            user_id=user_id,
-            module_id=module_id,
-            action_type=action_type,
-            payload=payload,
-            status=ApprovalStatus.PENDING.value,
-            created_at=now,
-            expires_at=expires_at,
-        )
-        with self._sessions.begin() as db:
-            db.add(row)
-            db.add(ApprovalEventRow(approval_id=row.id, event="created", actor=None, at=now))
-        view = _view(row)
+        row = ApprovalRequestRow(id=str(uuid4()), user_id=user_id, module_id=module_id,
+            action_type=action_type, payload=payload, status=ApprovalStatus.PENDING.value,
+            created_at=now, expires_at=now + timedelta(seconds=ttl_seconds) if ttl_seconds else None)
+        db.add(row)
+        db.add(ApprovalEventRow(approval_id=row.id, event="created", actor=None, at=now))
+        db.flush()
+        return _view(row)
+
+    def _publish_request(self, view):
         self._broadcaster.publish({"type": "approval_request", "approval": _jsonable(view)})
+
+    def revoke(self, approval_id: str, *, tenant_id: str, revoked_by: str) -> dict[str, Any]:
+        """Owner-only revocation, serialized against promotion's approval lock.
+
+        Authentication of the service caller remains the transport's job. This
+        checks the server owner directory, not an arbitrary matching actor label.
+        Revocation cannot undo an already consumed action.
+        """
+        from app.core.discovery import _configured_promotion_service, CandidateApprovalUseRow
+        authority = _configured_promotion_service()._authority
+        if not revoked_by or authority._owner_for_tenant(tenant_id) != revoked_by:
+            raise PermissionError("current owner revocation required")
+        with self._sessions() as db:
+            if db.get_bind().dialect.name == "sqlite":
+                from sqlalchemy import text
+                db.execute(text("BEGIN IMMEDIATE"))
+            row = db.scalar(select(ApprovalRequestRow).where(
+                ApprovalRequestRow.id == approval_id).with_for_update())
+            if row is None or row.user_id != tenant_id:
+                raise ApprovalNotFoundError(approval_id)
+            if db.get(CandidateApprovalUseRow, approval_id):
+                raise ApprovalConflictError("approval already consumed")
+            revoked = db.scalar(select(ApprovalEventRow.id).where(
+                ApprovalEventRow.approval_id == approval_id, ApprovalEventRow.event == "revoked"))
+            if not revoked:
+                db.add(ApprovalEventRow(approval_id=approval_id, event="revoked",
+                    actor=revoked_by, at=self._clock()))
+            view = _view(row)
+            db.commit()
+        self._broadcaster.publish({"type": "approval_revoked", "approval_id": approval_id})
         return view
 
     def get(self, approval_id: str) -> dict[str, Any]:
@@ -320,7 +352,8 @@ class Service:
             time.sleep(poll_interval_seconds)
 
     def _fetch(self, db: Session, approval_id: str) -> ApprovalRequestRow:
-        row = db.get(ApprovalRequestRow, approval_id)
+        row = db.scalar(select(ApprovalRequestRow).where(
+            ApprovalRequestRow.id == approval_id).with_for_update())
         if row is None:
             raise ApprovalNotFoundError(approval_id)
         return row
