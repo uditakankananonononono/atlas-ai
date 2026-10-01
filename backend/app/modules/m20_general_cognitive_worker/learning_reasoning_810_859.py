@@ -39,6 +39,13 @@ def learning(row,p):
  if row==820:out['chunks']=[{'label':c.get('label'),'elements':c.get('elements',[]),'organizing_principle':c.get('principle')} for c in req(p,'chunks',list)]
  if row in (821,822):out['support_levels']=[{'phase':'model','support':1.0},{'phase':'guided','support':.66},{'phase':'prompted','support':.33},{'phase':'independent','support':0.0}];out['fade_on_evidence_not_time']=True
  if row==823:out['metacognitive_loop']=['plan strategy','predict performance','monitor understanding','evaluate evidence','adjust strategy'];out['calibration_required']=True
+ if row==823:
+  if 'predictions' in p or 'outcomes' in p:
+   try:
+    from .observed_calibration import analyze
+    out.update(analyze(p))
+   except (ValueError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  else:out['execution_status']='worksheet_only_no_observed_outcomes'
  if row==824:out['srl_cycle']=['forethought','performance monitoring','self-reflection'];out['choice_of_strategy']=p.get('strategy')
  if row==825:
   goal=req(p,'goal',dict);out['goal']={'specific':goal.get('specific'),'metric':goal.get('metric'),'target':goal.get('target'),'deadline':goal.get('deadline'),'feasibility_evidence':goal.get('feasibility_evidence'),'implementation_intention':goal.get('if_then')}
