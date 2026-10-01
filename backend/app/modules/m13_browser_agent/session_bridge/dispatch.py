@@ -213,6 +213,7 @@ class BridgedSessions:
         self._expired_selector: dict[tuple[str, str], str] = {}
         # One armed submit per (tenant, session); consumed by the next click.
         self._armed: dict[tuple[str, str], dict[str, str]] = {}
+        self._consumed_selector: dict[tuple[str, str], str] = {}
         self._dispatched: dict[tuple[str, str], Any] = {}
         # Last URL reported by the daemon per (tenant, session); lets a fresh
         # page handle know where the paired browser currently is.
@@ -296,16 +297,19 @@ class BridgedSessions:
         device = self.registry.get_device(device_id)
         if device is None or device.tenant_id != tenant_id:
             raise DeviceOffline("no paired device for this session")
+        deadline = round(time.time() + self.arm_ttl_seconds, 3)
         token = protocol.submit_token(device.command_secret, approval_id=approval_id,
                                       capture_sha256=capture_sha256, selector=selector,
-                                      values_digest=values_digest(values), preview_sha256=extra_binding)
+                                      values_digest=values_digest(values), preview_sha256=extra_binding,
+                                      deadline=deadline)
         self._dispatched.pop((tenant_id, session_id), None)
         self._guard.pop((tenant_id, session_id), None)
         self._expired_selector.pop((tenant_id, session_id), None)
+        self._consumed_selector.pop((tenant_id, session_id), None)
         self._armed[(tenant_id, session_id)] = {
             "approval_id": approval_id, "capture_sha256": capture_sha256, "token": token, "selector": selector,
             "values_digest": values_digest(values), "values": values,
-            "armed_at": self.clock(), "deadline": time.time() + self.arm_ttl_seconds,
+            "armed_at": self.clock(), "deadline": deadline,
             "preview": preview, "readback_selectors": readback_selectors or {}}
         if extra_binding:
             self._armed[(tenant_id, session_id)]["preview_sha256"] = extra_binding
@@ -315,6 +319,8 @@ class BridgedSessions:
         key = (tenant_id, f"{protocol.PC_SESSION_PREFIX}{device_id}.{local_name}")
         armed = self._live_armed(key)
         if armed is None:
+            if selector == self._consumed_selector.get(key):
+                raise BridgeError("the approved submit was already used on this control; preview and approve again")
             if selector == self._expired_selector.pop(key, None):
                 # Never fall back to an unapproved navigation click of the approved control.
                 raise BridgeError("the armed approval expired before the click; preview and approve again")
@@ -325,6 +331,8 @@ class BridgedSessions:
             # arming nor be dispatched while an approved submit is pending.
             raise BridgeError("an approved submit is armed on this session; refusing unrelated click")
         del self._armed[key]
+        # A consumed arming must refuse, not fall through to CLICK_NAV (audit finding F3).
+        self._consumed_selector[key] = selector
         return CommandKind.CLICK_SUBMIT, armed
 
     def _live_armed(self, key):

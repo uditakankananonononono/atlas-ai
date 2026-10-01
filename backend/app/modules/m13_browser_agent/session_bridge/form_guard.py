@@ -26,6 +26,25 @@ SUBMIT_OVERRIDES = ("formaction", "formmethod", "formenctype", "formtarget", "fo
 # Seconds an approved submit stays armed with nobody clicking it.
 ARM_TTL_SECONDS = 120.0
 
+# True when clicking the element would submit a form: a submit-type button or input
+# (including the implicit type of a bare <button> inside a form, the form= attribute
+# and a <label> that activates such a control). Used by CLICK_NAV and generic clicks.
+SUBMIT_CONTROL_JS = """
+(el) => {
+  const isSubmit = (node) => {
+    if (!node) return false;
+    const tag = node.tagName;
+    if (tag === 'BUTTON') return node.form !== null && node.type === 'submit';
+    if (tag === 'INPUT') return node.form !== null && (node.type === 'submit' || node.type === 'image');
+    return false;
+  };
+  const control = el.closest('button,input,label');
+  if (!control) return false;
+  if (control.tagName === 'LABEL') return isSubmit(control.control);
+  return isSubmit(control);
+}
+"""
+
 # (selector) -> facts. Read with prototype getters, never form.action directly.
 FORM_FACTS_JS = """
 (selector) => {
@@ -218,59 +237,85 @@ class NetworkGuard:
             return False
         return _form_body(request.post_data or "") == self.values
 
-    async def _hop_allowed(self, request) -> bool:
-        previous = request.redirected_from
-        if _origin(previous.url) == _origin(request.url):
-            return True
-        try:
-            response = await previous.response()
-            status = response.status if response is not None else None
-        except Exception:  # noqa: BLE001 - unknown status is not allowed to carry anything cross-origin
-            status = None
-        return status == 303 and request.method.upper() == "GET" and not request.post_data
+    @staticmethod
+    def _fetch_headers(original: dict, url: str, method: str, origin_of_page: tuple) -> dict:
+        """Headers for a guard-issued fetch, copied from the browser's own request where visible.
+
+        route.fetch is not the browser network stack, so Sec-Fetch-* and Content-Type
+        are copied from the original request (the raw header set Chromium produced) and
+        adjusted per hop: a hop converted to GET drops the body headers, and
+        Sec-Fetch-Site is recomputed against the page that started the navigation.
+        Residual differences from a real navigation: header order and casing, the
+        connection (a Playwright client, not Chromium's network stack), and the Sec-Fetch
+        values are synthesized for a user-activated main-frame form navigation because
+        Playwright does not expose Chromium's own.
+        """
+        keep = {"accept", "accept-language", "accept-encoding", "upgrade-insecure-requests", "referer",
+                "origin", "content-type", "user-agent"}
+        headers = {k: v for k, v in original.items()
+                   if k.lower() in keep or k.lower().startswith("sec-ch-")}
+        if method != "POST":
+            for name in [k for k in headers if k.lower() in {"content-type", "origin"}]:
+                del headers[name]
+        target = _origin(url)
+        site = "same-origin" if target == origin_of_page else (
+            "same-site" if target[1] == origin_of_page[1] else "cross-site")
+        # Playwright hides Sec-Fetch-* from routed requests (the network stack adds them
+        # later), so they are rebuilt for a main-frame form navigation started by the
+        # approved user-activated click.
+        headers.update({"sec-fetch-mode": "navigate", "sec-fetch-dest": "document",
+                        "sec-fetch-user": "?1", "sec-fetch-site": site})
+        return headers
 
     async def _send_approved(self, route, request) -> None:
         """Send the approved POST and judge every redirect hop before the browser sees it.
 
-        Chromium follows redirects inside the network stack and does not call the
-        route handler for the hops, so the hops are inspected here: the request is
-        fetched with redirects disabled. A same-origin 301/302/307/308 hop is
-        followed by this guard itself (307/308 replay the body, only ever to the
-        same origin) until the chain ends; a 303 is left to the browser, which
-        turns it into a GET. A cross-origin hop of any other status is aborted
-        and reported. The browser then receives the final response for the
-        approved request, so its URL stays the form action (documented residual).
+        Chromium follows redirects inside the network stack and never calls the route
+        handler for the hops, so this guard resolves the entire chain itself with
+        redirects disabled and hands the browser only the final non-redirect response.
+        Hop rules, applied to every hop:
+          * 307/308 replay the method and body and are allowed only same-origin;
+          * 301/302 turn the POST into a GET and are allowed only same-origin;
+          * a 303 straight out of the approved POST may go anywhere (it becomes a bodyless
+            GET, the one hop that cannot carry the approved body); every hop after any
+            GET has been issued must stay on the origin of the hop before it;
+          * more than MAX_GUARDED_HOPS hops, a missing Location, or a loop is blocked.
+        A blocked hop is reported and the request aborted, so nothing past it is fetched.
+        The browser's URL stays the form action (documented residual).
         """
         url = request.url
-        response = await route.fetch(max_redirects=0)
+        method = "POST"
+        body = request.post_data_buffer
+        page_origin = _origin(self.page.url)
+        original = await request.all_headers()
+        response = await route.fetch(max_redirects=0, headers=self._fetch_headers(original, url, "POST", page_origin))
+        seen = {url}
         hops = 0
-        while response.status in REDIRECT_STATUSES and response.headers.get("location"):
-            target = urljoin(url, response.headers["location"])
-            if response.status == 303:
-                break
-            if _origin(target) != _origin(url) or hops >= MAX_GUARDED_HOPS:
-                self.blocked.append(f"redirect {response.status} {url[:100]} -> {target[:100]}")
+        while response.status in REDIRECT_STATUSES:
+            location = response.headers.get("location")
+            target = urljoin(url, location) if location else None
+            same = target is not None and _origin(target) == _origin(url)
+            first_303 = response.status == 303 and method == "POST"
+            if (target is None or hops >= MAX_GUARDED_HOPS or target in seen
+                    or not (same or first_303)
+                    or urlsplit(target).scheme.lower() not in {"http", "https"}):
+                self.blocked.append(f"redirect {response.status} {url[:100]} -> {str(target)[:100]}")
                 await route.abort("blockedbyclient")
                 return
-            if response.status in (301, 302):
-                break  # the browser turns this POST into a GET to the same origin
+            if response.status in (301, 302, 303) and method != "GET":
+                method, body = "GET", None
             hops += 1
+            seen.add(target)
             url = target
-            response = await route.fetch(url=target, max_redirects=0)
-        headers = dict(response.headers)
-        if hops and response.status in REDIRECT_STATUSES and headers.get("location"):
-            headers["location"] = urljoin(url, headers["location"])
-        await route.fulfill(response=response, headers=headers)
+            options = {"url": target, "method": method, "max_redirects": 0,
+                       "headers": self._fetch_headers(original, target, method, page_origin)}
+            if body is not None:
+                options["post_data"] = body
+            response = await route.fetch(**options)
+        await route.fulfill(response=response)
 
     async def _route(self, route, request) -> None:
         method = request.method.upper()
-        if request.redirected_from is not None and self._root(request) is self._approved_request:
-            if await self._hop_allowed(request):
-                await route.continue_()
-                return
-            self.blocked.append(f"redirect {method} {request.redirected_from.url[:100]} -> {request.url[:100]}")
-            await route.abort("blockedbyclient")
-            return
         if self._is_approved(request):
             self.approved_post_sent = True
             self._approved_request = request

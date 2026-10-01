@@ -22,9 +22,16 @@ class Locator:
     async def input_value(self): return self.page.values[self.sel]
 
 
+FAKE_HTML = '<html><body>fake form</body></html>'
+
+
 class Page:
     def __init__(self): self.url, self.clicked, self.values, self.fail_click = URL, [], {"#name": "Ada", "#email": "a@b.co"}, False
     def locator(self, sel): return Locator(self, sel)
+    async def content(self): return FAKE_HTML
+
+
+FAKE_HTML = '<html><body>fake form</body></html>'
 
 
 class Sessions:
@@ -36,7 +43,7 @@ class Store:
     def __init__(self):
         self.events, self.consumed = [], set()
         self.captures = {CAP: SimpleNamespace(session_id="s1", artifact={"destination": URL, "fields": {"#name": "Ada", "#email": "a@b.co"},
-                                                                        "dom_sha256": "d" * 64, "screenshot_sha256": "e" * 64, "captured_at": "now"})}
+                                                                        "dom_sha256": __import__("hashlib").sha256(FAKE_HTML.encode()).hexdigest(), "screenshot_sha256": "e" * 64, "captured_at": "now"})}
     async def append_audit(self, e): self.events.append(e)
     async def get_capture(self, t, h): return self.captures.get(h) if t == "t" else None
     async def was_consumed(self, a): return a in self.consumed
@@ -117,3 +124,10 @@ async def test_failed_click_is_recorded_and_never_replays(env):
     with pytest.raises(PermissionError):
         await execute_capture_bound_submit(svc, sf, "t", "s1", "#go", V, req["approval_id"], CAP)
     assert svc.sessions.p.clicked == []
+
+
+@pytest.fixture(autouse=True)
+def _allow_fake_server_side_submit(monkeypatch):
+    # These tests drive fake in-process pages. The default refuses server-side submits
+    # (no click-time guard); see test_m13_server_side_refusal.py.
+    monkeypatch.setattr(Service, "allow_unguarded_server_submit", True, raising=False)

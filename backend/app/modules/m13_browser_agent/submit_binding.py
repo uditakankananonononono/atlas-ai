@@ -53,3 +53,52 @@ async def build_binding_preview(sessions, tenant_id: str, session_id: str, selec
     return {"url": facts["url"], "form_action": facts["action"], "form_facts": facts,
             "method": form.get("method", "get"), "form_text": form.get_text(" ", strip=True),
             "submit": str(button), "values": dict(values), "field_names": field_names}
+
+
+UNGUARDED_FLAG = "allow_unguarded_server_submit"
+
+
+async def bind_for_submit(service, tenant_id: str, session_id: str, selector: str,
+                          values: dict[str, str]) -> dict | None:
+    """Reviewed destination preview for the click; refuses sessions that have no click-time guard.
+
+    Paired-device sessions get the browser-resolved preview. Server-side sessions have
+    no route guard or arming (audit: M13 gap), so an approved submit there is refused
+    unless the service was explicitly built with ``allow_unguarded_server_submit``.
+    """
+    from .session_bridge.protocol import is_pc_session
+    sessions = service.sessions
+    if getattr(sessions, "authorize_submit", None) is not None and is_pc_session(session_id):
+        return await build_binding_preview(sessions, tenant_id, session_id, selector, values)
+    if getattr(service, UNGUARDED_FLAG, False):
+        return None
+    raise PermissionError("approved submits on server-side sessions have no click-time guard; "
+                          "use a paired device session")
+
+
+def reviewed_destination(preview: dict | None) -> dict:
+    """Facts the owner reviews in the approval payload (form_action was never shown before)."""
+    if preview is None:
+        return {}
+    return {"form_action": preview["form_action"], "form_method": preview["method"],
+            "form_enctype": preview["form_facts"]["enctype"], "form_page_url": preview["url"]}
+
+
+def check_reviewed_destination(payload: dict, preview: dict | None) -> None:
+    """At execute: the destination the owner approved must be the one the browser resolves now."""
+    if preview is None:
+        return
+    reviewed = reviewed_destination(preview)
+    for key, now in reviewed.items():
+        if payload.get(key) != now:
+            raise PermissionError(f"approved {key} {payload.get(key)!r} differs from the live form ({now!r}); approve again")
+
+
+async def check_dom_unchanged(service, tenant_id: str, session_id: str, payload: dict) -> None:
+    """dom_sha256 is stored with the approval; compare it with the live DOM before the click."""
+    approved = payload.get("dom_sha256")
+    if not approved:
+        return
+    live = hashlib.sha256((await service.extract(tenant_id, session_id)).encode()).hexdigest()
+    if live != approved:
+        raise PermissionError("the page DOM changed since the approved capture (dom_sha256 mismatch); capture and approve again")

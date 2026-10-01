@@ -73,6 +73,8 @@ async def request_capture_bound_submit(service, tenant_id: str, actor_id: str, s
                "form_values": dict(values), "values_digest": values_digest(values), "page_url": page_url,
                "capture_sha256": capture_sha256, "dom_sha256": artifact.get("dom_sha256"),
                "screenshot_sha256": artifact.get("screenshot_sha256"), "captured_at": artifact.get("captured_at")}
+    from .submit_binding import reviewed_destination
+    payload.update(reviewed_destination(await _bind(service, tenant_id, session_id, selector, values)))
     view = service.approvals.submit(module_id=13, action_type="browser_submit_capture_bound", user_id=tenant_id,
                                     payload=payload, ttl_seconds=3600)
     await service.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.SUBMIT, {
@@ -81,14 +83,9 @@ async def request_capture_bound_submit(service, tenant_id: str, actor_id: str, s
 
 
 async def _bind(service, tenant_id, session_id, selector, values) -> dict | None:
-    """Reviewed destination preview for a paired device; built before the approval is consumed."""
-    if getattr(service.sessions, "authorize_submit", None) is None:
-        return None
-    from .session_bridge.protocol import is_pc_session
-    if not is_pc_session(session_id):
-        return None
-    from .submit_binding import build_binding_preview
-    return await build_binding_preview(service.sessions, tenant_id, session_id, selector, values)
+    """Reviewed destination preview; refuses server-side sessions that have no click-time guard."""
+    from .submit_binding import bind_for_submit
+    return await bind_for_submit(service, tenant_id, session_id, selector, values)
 
 
 async def _arm(service, tenant_id, session_id, approval_id, capture_sha256, selector, values, preview) -> None:
@@ -119,6 +116,9 @@ async def execute_capture_bound_submit(service, sessions_factory, tenant_id: str
     if await service.store.was_consumed(approval_id):
         raise PermissionError("approval was already consumed")
     preview = await _bind(service, tenant_id, session_id, selector, values)
+    from .submit_binding import check_dom_unchanged, check_reviewed_destination
+    check_reviewed_destination(p, preview)
+    await check_dom_unchanged(service, tenant_id, session_id, p)
     now = datetime.now(timezone.utc)
     try:
         with sessions_factory.begin() as db:

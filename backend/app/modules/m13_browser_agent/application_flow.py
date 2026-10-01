@@ -490,6 +490,9 @@ class ApplicationFlow:
             "screenshot_path": current["screenshot_path"],
             "screenshot_digest": current["screenshot_digest"],
         }
+        from .submit_binding import bind_for_submit, reviewed_destination
+        payload.update(reviewed_destination(await bind_for_submit(
+            self.browser, tenant_id, session_id, record.submit_selector, current["form_values"])))
         view = self.approvals.submit(
             module_id=2,
             action_type="application_final_submit",
@@ -573,9 +576,18 @@ class ApplicationFlow:
             await self._audit(record, ActionType.SUBMIT, {"phase": "refused", "reason": "approval replay", "approval_id": approval_id})
             raise PermissionError("approval was already consumed")
 
+        # Bind the click to the reviewed destination before the approval is consumed, then
+        # arm it so the paired device runs the guarded submit path (audit finding F3).
+        from .submit_binding import bind_for_submit, check_reviewed_destination, preview_digest
+        preview = await bind_for_submit(self.browser, tenant_id, session_id, payload["selector"], readback)
+        check_reviewed_destination(payload, preview)
         # Consume before the external effect: a failed click cannot replay.
         await self.browser.store.consume(approval_id, tenant_id)
         try:
+            if preview is not None:
+                await self.browser.sessions.authorize_submit(
+                    tenant_id, session_id, approval_id=approval_id, capture_sha256=preview_digest(preview),
+                    selector=payload["selector"], values=readback, preview=preview)
             await page.locator(payload["selector"]).click()
         except Exception as error:
             record.status = WorkflowStatus.FAILED.value
