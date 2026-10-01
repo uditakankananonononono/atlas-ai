@@ -1,0 +1,3 @@
+A defect reproduced: no approval supplied; candidate status= approved source enabled= True
+E defect reproduced: duplicated ranking accepted: ['a', 'a', 'b']
+native modules: /tmp/atlas-ai/backend/app/core/discovery.py /tmp/atlas-ai/backend/app/modules/m21_claire/training.py
