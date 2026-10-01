@@ -1,0 +1,40 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /tmp/atlas-venv/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/atlas-ai
+configfile: pyproject.toml
+plugins: asyncio-1.4.0, anyio-4.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 29 items
+
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options0-ranking0] PASSED [  3%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options1-ranking1] PASSED [  6%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options2-ranking2] PASSED [ 10%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options3-ranking3] PASSED [ 13%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options4-ranking4] PASSED [ 17%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options5-ranking5] PASSED [ 20%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options6-ranking6] PASSED [ 24%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options7-ranking7] PASSED [ 27%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options8-ranking8] PASSED [ 31%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options9-ranking9] PASSED [ 34%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options10-ranking10] PASSED [ 37%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options11-ranking11] PASSED [ 41%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options12-ranking12] PASSED [ 44%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options13-ranking13] PASSED [ 48%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options14-ranking14] PASSED [ 51%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[ab-ranking15] PASSED [ 55%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[options16-ab] PASSED [ 58%]
+tests/test_preference_dataset_permutation_native.py::test_invalid_ranking_rejected[None-None] PASSED [ 62%]
+tests/test_preference_dataset_permutation_native.py::test_negative_fixture PASSED [ 65%]
+tests/test_preference_dataset_permutation_native.py::test_below_minimum_rejected[0] PASSED [ 68%]
+tests/test_preference_dataset_permutation_native.py::test_below_minimum_rejected[1] PASSED [ 72%]
+tests/test_preference_dataset_permutation_native.py::test_below_minimum_rejected[19] PASSED [ 75%]
+tests/test_preference_dataset_permutation_native.py::test_at_and_above_minimum[20] PASSED [ 79%]
+tests/test_preference_dataset_permutation_native.py::test_at_and_above_minimum[21] PASSED [ 82%]
+tests/test_preference_dataset_permutation_native.py::test_at_and_above_minimum[2001] PASSED [ 86%]
+tests/test_preference_dataset_permutation_native.py::test_generated_permutations PASSED [ 89%]
+tests/test_preference_dataset_permutation_native.py::test_unicode_and_optional_empty_context PASSED [ 93%]
+tests/test_preference_dataset_permutation_native.py::test_dataset_does_not_alias_input_lists PASSED [ 96%]
+tests/test_preference_dataset_permutation_native.py::test_malformed_records_and_collection_rejected PASSED [100%]
+
+============================== 29 passed in 1.35s ==============================

@@ -15,11 +15,18 @@ class TrainingService:
   examples=[{'text':x,'provenance':'owner_authored'} for x in clean];body=json.dumps(examples,sort_keys=True).encode()
   return TrainingDataset('voice_lora',examples,sha256(body).hexdigest())
  def preference_dataset(self,rankings:list[dict]):
+  if not isinstance(rankings,list):raise ValueError('rankings must be a list')
   examples=[]
   for r in rankings:
+   if not isinstance(r,dict):raise ValueError('each ranking must be a record')
    opts=r.get('options',[]);order=r.get('ranking',[])
-   if len(opts)<2 or set(opts)!=set(order):raise ValueError('ranking must order every supplied option exactly once')
-   examples.append({'context':r.get('context',''),'ranking':order,'options':opts,'provenance':'owner_ranked'})
+   if (not isinstance(opts,list) or not isinstance(order,list) or len(opts)<2
+       or any(not isinstance(x,str) or not x.strip() for x in opts+order)
+       or len(order)!=len(opts) or len(set(opts))!=len(opts)
+       or len(set(order))!=len(order) or set(opts)!=set(order)):raise ValueError('ranking must order every supplied option exactly once')
+   context=r.get('context','')
+   if not isinstance(context,str):raise ValueError('ranking context must be text')
+   examples.append({'context':context,'ranking':list(order),'options':list(opts),'provenance':'owner_ranked'})
   if len(examples)<20:raise ValueError('preference training requires at least 20 owner rankings')
   body=json.dumps(examples,sort_keys=True).encode();return TrainingDataset('preference',examples,sha256(body).hexdigest())
  def propose_training(self,dataset:TrainingDataset,base_model:str,method:str):

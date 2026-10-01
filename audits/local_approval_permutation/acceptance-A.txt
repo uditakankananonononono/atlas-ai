@@ -1,0 +1,40 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /tmp/atlas-venv/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/atlas-ai
+configfile: pyproject.toml
+plugins: asyncio-1.4.0, anyio-4.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 29 items
+
+tests/test_discovery_promotion_approval_native.py::test_no_record_and_no_authority_fail_closed PASSED [  3%]
+tests/test_discovery_promotion_approval_native.py::test_invalid_decisions_leave_state_unchanged[pending] PASSED [  6%]
+tests/test_discovery_promotion_approval_native.py::test_invalid_decisions_leave_state_unchanged[denied] PASSED [ 10%]
+tests/test_discovery_promotion_approval_native.py::test_invalid_decisions_leave_state_unchanged[expired] PASSED [ 13%]
+tests/test_discovery_promotion_approval_native.py::test_invalid_decisions_leave_state_unchanged[revoked] PASSED [ 17%]
+tests/test_discovery_promotion_approval_native.py::test_invalid_decisions_leave_state_unchanged[wrong_tenant] PASSED [ 20%]
+tests/test_discovery_promotion_approval_native.py::test_invalid_decisions_leave_state_unchanged[wrong_owner] PASSED [ 24%]
+tests/test_discovery_promotion_approval_native.py::test_invalid_decisions_leave_state_unchanged[wrong_action] PASSED [ 27%]
+tests/test_discovery_promotion_approval_native.py::test_invalid_decisions_leave_state_unchanged[wrong_hash] PASSED [ 31%]
+tests/test_discovery_promotion_approval_native.py::test_invalid_decisions_leave_state_unchanged[no_decision_event] PASSED [ 34%]
+tests/test_discovery_promotion_approval_native.py::test_invalid_decisions_leave_state_unchanged[no_expiry] PASSED [ 37%]
+tests/test_discovery_promotion_approval_native.py::test_invalid_decisions_leave_state_unchanged[missing_record] PASSED [ 41%]
+tests/test_discovery_promotion_approval_native.py::test_valid_approval_enabled_once_and_tenant_isolation PASSED [ 44%]
+tests/test_discovery_promotion_approval_native.py::test_same_approval_race_has_one_winner PASSED [ 48%]
+tests/test_discovery_promotion_approval_native.py::test_denied_race_leaves_state_unchanged PASSED [ 51%]
+tests/test_discovery_promotion_approval_native.py::test_binding_immutable_and_cannot_reuse_for_another_candidate PASSED [ 55%]
+tests/test_discovery_promotion_approval_native.py::test_candidate_change_is_stale PASSED [ 58%]
+tests/test_discovery_promotion_approval_native.py::test_existing_disabled_source_enabled_only_for_exact_reviewed_config[config] PASSED [ 62%]
+tests/test_discovery_promotion_approval_native.py::test_existing_disabled_source_enabled_only_for_exact_reviewed_config[cadence_seconds] PASSED [ 65%]
+tests/test_discovery_promotion_approval_native.py::test_existing_disabled_source_enabled_only_for_exact_reviewed_config[daily_request_cap] PASSED [ 68%]
+tests/test_discovery_promotion_approval_native.py::test_existing_disabled_source_enabled_only_for_exact_reviewed_config[enabled] PASSED [ 72%]
+tests/test_discovery_promotion_approval_native.py::test_existing_source_valid_approval PASSED [ 75%]
+tests/test_discovery_promotion_approval_native.py::test_rollback_when_authority_raises PASSED [ 79%]
+tests/test_discovery_promotion_approval_native.py::test_review_payload_drift_denied PASSED [ 82%]
+tests/test_discovery_promotion_approval_native.py::test_consumption_receipt_cannot_be_deleted_or_updated PASSED [ 86%]
+tests/test_discovery_promotion_approval_native.py::test_migration_sqlite_upgrade_immutability_and_downgrade PASSED [ 89%]
+tests/test_discovery_promotion_approval_native.py::test_trusted_owner_directory_change_denies_old_actor PASSED [ 93%]
+tests/test_discovery_promotion_approval_native.py::test_different_candidate_race_cannot_overwrite_reviewed_source PASSED [ 96%]
+tests/test_discovery_promotion_approval_native.py::test_false_caller_payload_cannot_override_server_decision PASSED [100%]
+
+============================== 29 passed in 3.21s ==============================
