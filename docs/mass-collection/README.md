@@ -25,8 +25,8 @@ current terms and data rights, and set `terms_accepted` yourself. The example is
 intentionally non-executable without operator edits. Use `unknown` rather than
 inventing a license. `training_reviewed` defaults false. It is an operator attestation,
 not a legal verifier. Unknown licenses should never be marked reviewed.
-`training_eligible` is an ALLOWLIST: the license, after NFKC, casefold and collapsing every
-run of non-alphanumeric characters to `-`, must equal one of cc0-1.0, cc-by-4.0, cc-by-sa-4.0,
+`training_eligible` is an ALLOWLIST: the license, after stripping surrounding whitespace and
+lowercasing (nothing else: no NFKC, no punctuation folding; `MIT.`, `-mit`, `cc-by-4.0+` fail), must equal one of cc0-1.0, cc-by-4.0, cc-by-sa-4.0,
 mit, apache-2.0, bsd-2-clause, bsd-3-clause, public-domain-explicit. Everything else is false.
 
 ```sh
@@ -91,7 +91,7 @@ people's accounts. Use a documented export/read endpoint that you own and that
 allows this use. Store the token interactively, never in config/URL/argv. Source
 URLs containing sensitive query keys (`token`, `access_token`, `api_key`,
 `password`, `signature`, `secret`, `session`, `key`, `auth`, `sig`) are rejected
-before any request. This screen is defense-in-depth only: it cannot prove a URL
+before any request. Keys are NFKC-normalized, percent-decoded until stable, stripped of non-alphanumerics and matched by substring; `;` separates pairs like `&`; control/zero-width characters, Bearer/JWT-shaped values and `/token/`-style path segments are also rejected. WARC input: every decompressed byte is charged to max_parse_bytes, header lines over 64 KiB or header blocks over 1 MiB are rejected, and all parser errors become CollectionError. This screen is defense-in-depth only: it cannot prove a URL
 carries no credential, so keep secrets out of URLs regardless:
 
 ```sh
