@@ -178,9 +178,8 @@ class ToolDispatcher:
         ledger = self.ledger
         res = ledger.reserve(
             task_id=task_id or "-", node_id=node_id or "-", tool=name,
-            # runtime bookkeeping keys ("_expectation_claim_id") are random per run
-            # and are not part of the effect's identity
-            args={k: v for k, v in arguments.items() if not str(k).startswith("_")},
+            # effect_identity excludes only the exact runtime bookkeeping key.
+            args=arguments,
             lease_seconds=tool.spec.timeout_seconds + 30,
             provider_idempotent=tool.spec.provider_idempotent)
         if res.replayed:  # recorded receipt: never invoke again
@@ -197,9 +196,6 @@ class ToolDispatcher:
             ledger.fail_safe(res, f"not executed: {exc}")
             record.succeeded = False
             record.result_summary = f"not executed: {exc}"
-        except (ToolError, ApprovalPending) as exc:
-            ledger.fail_safe(res, f"tool layer refused: {exc}")
-            raise
         except BaseException as exc:  # handler may or may not have had its effect
             ledger.mark_indeterminate(res, f"{type(exc).__name__}: {exc}")
             if isinstance(exc, (KeyboardInterrupt, SystemExit, asyncio.CancelledError)):

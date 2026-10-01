@@ -35,6 +35,33 @@ persistence, and the FastAPI surface.
    replace the dict stores - the retrieval contracts are already similarity-
    based.
 
+## Effect durability: choose the dispatch path explicitly
+
+`CognitiveWorkerService` creates its dispatcher without a durable ledger. A
+bare `ToolDispatcher(registry, safety)` does the same, including the path in
+`cross_module_proofs.py`. Those dispatchers use a process-local in-memory
+SQLite effect ledger. **Their reservations and receipts disappear on process
+restart, so a non-idempotent external write can run again.** Saving service
+tasks through `GCWRepository` does not make that dispatcher ledger durable.
+The `bind_service(CognitiveWorkerService(...))` wiring above is therefore not
+a crash-safe external-write path.
+
+For restart protection use `GCWRuntime(repo, ...)`, which binds an
+`EffectLedger(repo.engine, repo.tenant_id)` to its dispatcher and checkpoints
+its plans. Standalone dispatchers must explicitly receive an
+`EffectLedger` over the deployment's durable SQL engine and correct tenant;
+callers must also persist stable task/node ids and arguments. Passing an
+in-memory engine does not provide restart protection. The built-in durable
+runtime route and the separately bound service are different paths.
+
+After an invocation loses its receipt, the durable runtime blocks rather
+than guessing whether to retry. An operator must verify the external state
+and call `reconcile_effect(..., outcome="applied" | "not_applied", actor=...,
+note=...)`. This also works immediately after a killed worker, without first
+running the task again; a live invocation is refused. Provider-idempotent
+tools remain a separate opt-in contract. See `docs/EFFECT_LEDGER.md` for the
+lease/PID and database-test limits.
+
 ## Honest boundaries
 - LLM-driven steps (de novo planning, attention scoring in production,
   reflections) are protocol-injected; offline they are deterministic
