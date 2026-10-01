@@ -12,6 +12,7 @@ from .receipts import ReceiptChain  # same hash-chain format the server registry
 from ..session_bridge import protocol
 from ..session_bridge.protocol import BlockKind, CommandKind
 from .config import DaemonConfig
+from .effects import EffectLedger
 
 # Heuristics for "the site stopped us". Each is a reason to report blocked,
 # never to retry or evade.
@@ -123,6 +124,8 @@ class Daemon:
         self.identity = identity
         self.browser = BrowserHandle(config)
         self.receipts = ReceiptChain(config.device_id)
+        self.effects = EffectLedger(Path(config.effect_ledger_path) if config.effect_ledger_path
+                                    else Path(config.key_path).parent / "submit-effects.sqlite3")
         self._last_action_at = 0.0
         self._capabilities = set(config.capabilities)
 
@@ -137,6 +140,7 @@ class Daemon:
 
     async def execute(self, command: dict[str, Any]) -> dict[str, Any]:
         command_id, kind, args = protocol.parse_command(command)
+        args = dict(args)  # freeze wire fields before any await
         session = str(args.get("session", "default"))[:120]
         capability = "click_submit" if kind is CommandKind.CLICK_SUBMIT else kind.value
         if capability not in self._capabilities:
@@ -145,25 +149,53 @@ class Daemon:
             return protocol.make_result(command_id, ok=False,
                                         error=f"capability '{capability}' was not granted at pairing",
                                         blocked=BlockKind.POLICY.value, receipt=event)
+        submit_claims = None
         if kind is CommandKind.CLICK_SUBMIT:
-            token = str(args.get("token", ""))
-            if not protocol.verify_submit_token(
-                    self.config.command_secret,
-                    approval_id=str(args.get("approval_id", "")),
-                    capture_sha256=str(args.get("capture_sha256", "")),
-                    selector=str(args.get("selector", "")),
-                    values_digest=str(args.get("values_digest", "")),
-                    token=token):
+            # Do not coerce/truncate signed claims. A token for another device,
+            # session, action or expired approval must never reach the browser.
+            submit_claims = dict(
+                approval_id=args.get("approval_id"), capture_sha256=args.get("capture_sha256"),
+                selector=args.get("selector"), values_digest=args.get("values_digest"),
+                device_id=self.config.device_id, session=args.get("session"),
+                expires_at=args.get("expires_at"), token=args.get("token"), action=kind.value)
+            if not protocol.verify_submit_token(self.config.command_secret, **submit_claims):
                 event = self._receipt_event(command_id, "blocked", {"reason": "submit token invalid"})
                 return protocol.make_result(command_id, ok=False,
-                                            error="submit token missing or invalid; the click was not approved",
+                                            error="submit token missing, expired or invalid; the click was not approved",
                                             blocked=BlockKind.POLICY.value, receipt=event)
-        await self._pace()
+            session = args["session"]
+            try:
+                reserved = self.effects.reserve(self.config.device_id, args["approval_id"],
+                                                command_id, session)
+            except Exception as error:
+                return protocol.make_result(command_id, ok=False,
+                                            error=f"effect reservation unavailable; no click: {error}",
+                                            blocked=BlockKind.POLICY.value)
+            if not reserved:
+                event = self._receipt_event(command_id, "blocked", {"reason": "effect already reserved"})
+                return protocol.make_result(command_id, ok=False,
+                                            error="effect already reserved; outcome may be uncertain; do not retry",
+                                            blocked=BlockKind.POLICY.value, receipt=event)
         try:
+            await self._pace()
+            if submit_claims is not None and not protocol.verify_submit_token(
+                    self.config.command_secret, **submit_claims):
+                return protocol.make_result(command_id, ok=False,
+                                            error="submit token expired before effect; reservation retained",
+                                            blocked=BlockKind.POLICY.value)
             result = await self._run(kind, session, args)
         except Exception as error:  # noqa: BLE001 - report, never retry blindly
-            event = self._receipt_event(command_id, "failed", {"error": str(error)[:1000]})
-            return protocol.make_result(command_id, ok=False, error=str(error)[:2000], receipt=event)
+            detail = str(error)
+            if submit_claims is not None:
+                detail = f"effect outcome uncertain; reservation retained; do not retry: {error}"
+            event = self._receipt_event(command_id, "failed", {"error": detail[:1000]})
+            return protocol.make_result(command_id, ok=False, error=detail[:2000], receipt=event)
+        if submit_claims is not None:
+            try:
+                self.effects.completed(self.config.device_id, args["approval_id"])
+            except Exception as error:
+                return protocol.make_result(command_id, ok=False,
+                                            error=f"effect outcome uncertain; do not retry: {error}")
         block = detect_block(result.get("url", ""), result.get("http_status"),
                              result.get("html_excerpt", ""))
         if block is not None:
@@ -204,6 +236,13 @@ class Daemon:
         if kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT):
             extra = {}
             if kind is CommandKind.CLICK_SUBMIT:
+                if not protocol.verify_submit_token(
+                        self.config.command_secret, approval_id=args.get("approval_id"),
+                        capture_sha256=args.get("capture_sha256"), selector=args.get("selector"),
+                        values_digest=args.get("values_digest"), device_id=self.config.device_id,
+                        session=session, expires_at=args.get("expires_at"), token=args.get("token"),
+                        action=kind.value):
+                    raise RuntimeError("submit token expired before click; reservation retained")
                 extra = {"approval_id": args.get("approval_id"), "capture_sha256": args.get("capture_sha256")}
             await page.locator(str(args["selector"])).click()
             return {"url": page.url, **extra}

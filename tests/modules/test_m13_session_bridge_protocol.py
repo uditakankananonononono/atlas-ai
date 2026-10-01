@@ -63,11 +63,11 @@ def test_pacing_is_clamped_to_human_speed_bounds():
 def test_submit_token_verification():
     secret = "s3cret"
     token = protocol.submit_token(secret, approval_id="a1", capture_sha256="c" * 64,
-                                  selector="#go", values_digest="d" * 64)
+                                  selector="#go", values_digest="d" * 64, device_id="dev1", session="s", expires_at=2000000000)
     assert protocol.verify_submit_token(secret, approval_id="a1", capture_sha256="c" * 64,
-                                        selector="#go", values_digest="d" * 64, token=token)
+                                        selector="#go", values_digest="d" * 64, device_id="dev1", session="s", expires_at=2000000000, token=token)
     # Any drift in the approved content fails verification.
     assert not protocol.verify_submit_token(secret, approval_id="a1", capture_sha256="c" * 64,
-                                            selector="#other", values_digest="d" * 64, token=token)
+                                            selector="#other", values_digest="d" * 64, device_id="dev1", session="s", expires_at=2000000000, token=token)
     assert not protocol.verify_submit_token("wrong-secret", approval_id="a1", capture_sha256="c" * 64,
-                                            selector="#go", values_digest="d" * 64, token=token)
+                                            selector="#go", values_digest="d" * 64, device_id="dev1", session="s", expires_at=2000000000, token=token)
