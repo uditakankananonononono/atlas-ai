@@ -13,9 +13,9 @@ def item(platform='fastweb', title='STEM scholarship', url='https://www.fastweb.
 
 
 def cards():
-    return [s.annotate(item(description='Award: $5,000. Remote undergraduate students in India. Deadline: October 10, 2026.')),
+    return [s.annotate(item(description='Deadline: October 10, 2026. Award: $5,000. Remote undergraduate students in India.')),
             s.annotate(item(title='Art program', url='https://www.fastweb.com/college-scholarships/scholarships/124-art',
-                            description='Award: INR 2,000. In-person graduate students in Europe. Deadline: September 1, 2026.')),
+                            description='Deadline: September 1, 2026. Award: INR 2,000. In-person graduate students in Europe.')),
             s.annotate(item(title='Science fellowship', url='https://www.fastweb.com/college-scholarships/scholarships/125-science',
                             description='Posted September 2, 2026. Tuition $100,000.'))]
 
