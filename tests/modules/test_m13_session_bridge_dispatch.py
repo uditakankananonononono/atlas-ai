@@ -115,7 +115,9 @@ async def test_click_defaults_to_nav_and_armed_click_becomes_submit(env):
     from app.modules.m13_browser_agent.security import values_digest
     assert protocol.verify_submit_token(
         device["command_secret"], approval_id="a1", capture_sha256="c" * 64,
-        selector="#go", values_digest=values_digest(values), token=command["args"]["token"])
+        selector="#go", values_digest=values_digest(values), token=command["args"]["token"],
+        device_id=device["device_id"], session=command["args"]["session"],
+        expires_at=command["args"]["expires_at"])
 
     # The armed token is one-shot: the next click is a nav click again.
     await page.locator("#go").click()

@@ -76,7 +76,7 @@ class FakeBrowser:
 @pytest.fixture
 def daemon(tmp_path):
     config = DaemonConfig(server_url="https://atlas.test", device_id="dev1",
-                          command_secret="topsecret", pacing_seconds=0,
+                          command_secret="topsecret", key_path=str(tmp_path / "key.pem"), pacing_seconds=0,
                           capabilities=["navigate", "extract", "read_values", "fill",
                                         "click_nav", "click_submit"])
     identity = DeviceIdentity.load_or_create(tmp_path / "key.pem")
@@ -92,7 +92,7 @@ def _command(kind, args, command_id="cmd-1"):
 @pytest.mark.asyncio
 async def test_capability_not_granted_is_blocked(tmp_path):
     config = DaemonConfig(server_url="https://atlas.test", device_id="dev1",
-                          command_secret="topsecret", pacing_seconds=0,
+                          command_secret="topsecret", key_path=str(tmp_path / "key.pem"), pacing_seconds=0,
                           capabilities=["extract"])
     daemon = Daemon(config, DeviceIdentity.load_or_create(tmp_path / "key.pem"))
     daemon.browser = FakeBrowser()
@@ -116,9 +116,10 @@ async def test_submit_click_requires_valid_token(daemon):
 @pytest.mark.asyncio
 async def test_submit_click_with_valid_token_runs(daemon):
     token = protocol.submit_token("topsecret", approval_id="a1", capture_sha256="c" * 64,
-                                  selector="#go", values_digest="d" * 64)
+                                  selector="#go", values_digest="d" * 64, device_id="dev1", session="s",
+                                  expires_at=2000000000)
     args = {"session": "s", "selector": "#go", "approval_id": "a1",
-            "capture_sha256": "c" * 64, "values_digest": "d" * 64, "token": token}
+            "capture_sha256": "c" * 64, "values_digest": "d" * 64, "token": token, "expires_at": 2000000000}
     answer = await daemon.execute(_command(CommandKind.CLICK_SUBMIT, args))
     assert answer["ok"] is True
     assert daemon.browser._page.clicked == ["#go"]

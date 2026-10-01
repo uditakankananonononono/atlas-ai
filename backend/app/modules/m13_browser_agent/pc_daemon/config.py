@@ -18,6 +18,7 @@ class DaemonConfig:
     cdp_url: str | None = None               # e.g. http://127.0.0.1:9222 to attach to her Chrome
     pacing_seconds: float = 5.0
     capabilities: list[str] = field(default_factory=lambda: ["navigate", "extract", "screenshot", "read_values"])
+    effect_ledger_path: str | None = None  # defaults beside the persistent device key
     command_timeout_seconds: float = 90.0
 
     @classmethod

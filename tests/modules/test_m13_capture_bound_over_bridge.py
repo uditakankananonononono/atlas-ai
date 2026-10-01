@@ -128,7 +128,9 @@ async def test_capture_bound_submit_over_bridge(env, tmp_path):
     token = submit_commands[0]["args"]["token"]
     assert protocol.verify_submit_token(
         device["command_secret"], approval_id=staged["approval_id"], capture_sha256=CAP,
-        selector="#go", values_digest=values_digest(V), token=token)
+        selector="#go", values_digest=values_digest(V), token=token,
+        device_id=device["device_id"], session=submit_commands[0]["args"]["session"],
+        expires_at=submit_commands[0]["args"]["expires_at"])
 
     # Replay is impossible: the approval was consumed.
     with pytest.raises(PermissionError, match="consumed|not approved"):
