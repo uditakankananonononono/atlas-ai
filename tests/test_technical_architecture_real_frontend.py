@@ -10,9 +10,9 @@ def package(): return json.loads((FRONTEND/'package.json').read_text())
 def lock(): return json.loads((FRONTEND/'package-lock.json').read_text())
 
 
-def test_a01_next14_is_installed_and_app_router_build_source_exists():
-    assert package()['dependencies']['next']=='14.2.32'
-    assert lock()['packages']['node_modules/next']['version']=='14.2.32'
+def test_a01_security_pinned_next_is_installed_and_app_router_build_source_exists():
+    assert package()['dependencies']['next']=='16.3.6'
+    assert lock()['packages']['node_modules/next']['version']=='16.3.6'
     assert (FRONTEND/'app/layout.tsx').is_file() and (FRONTEND/'app/page.tsx').is_file()
     assert not (FRONTEND/'pages/_app.tsx').exists()
 
