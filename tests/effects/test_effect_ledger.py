@@ -221,8 +221,9 @@ async def test_succeeded_effect_is_replayed_from_receipt(tmp_path):
 @pytest.mark.parametrize("trigger_sql, calls_expected, state_expected", [
     # reserve transaction fails -> rolled back, handler never runs, no row
     ("CREATE TRIGGER t BEFORE INSERT ON m20_effect_ledger BEGIN SELECT RAISE(ABORT,'disk full'); END", 0, None),
-    # mark-invoking commit fails -> handler never runs, reservation stays 'reserved'
-    ("CREATE TRIGGER t BEFORE UPDATE ON m20_effect_ledger WHEN NEW.state='invoking' BEGIN SELECT RAISE(ABORT,'disk full'); END", 0, "reserved"),
+    # mark-invoking commit fails -> handler never runs; the dispatcher releases the
+    # reservation (state 'failed', retakeable) instead of stranding it 'reserved'
+    ("CREATE TRIGGER t BEFORE UPDATE ON m20_effect_ledger WHEN NEW.state='invoking' BEGIN SELECT RAISE(ABORT,'disk full'); END", 0, "failed"),
 ])
 async def test_rollback_before_invocation_never_runs_handler(tmp_path, trigger_sql, calls_expected, state_expected):
     calls = []

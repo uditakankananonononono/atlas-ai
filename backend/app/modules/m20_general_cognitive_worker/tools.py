@@ -188,7 +188,18 @@ class ToolDispatcher:
             record.finished_at = datetime.now(timezone.utc)
             self.records.append(record)
             return record
-        ledger.mark_invoking(res)  # committed before the handler runs
+        try:
+            ledger.mark_invoking(res)  # committed before the handler runs
+        except BaseException as exc:
+            # The handler was never called, so the reservation is provably
+            # effect-free. Release it, or a live owner would keep it
+            # EffectInProgress past the lease. Best effort: if the ledger is
+            # unreachable the row stays until this process exits.
+            try:
+                ledger.release(res, f"mark_invoking failed: {type(exc).__name__}: {exc}")
+            except Exception:
+                pass
+            raise
         token = CURRENT_EFFECT_ID.set(res.effect_id)
         try:
             result = await asyncio.wait_for(tool.handler(arguments), timeout=tool.spec.timeout_seconds)
