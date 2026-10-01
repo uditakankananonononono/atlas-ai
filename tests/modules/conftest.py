@@ -4,6 +4,8 @@ In the real repo these packages exist and every stub below is skipped (the
 guard import succeeds). In a bare workspace they provide the minimal surface
 the module package imports at load time so domain logic can be tested.
 """
+import pytest
+
 
 import sys
 import types
@@ -123,3 +125,9 @@ def _stub_app_core() -> None:
 
 
 _stub_app_core()
+
+
+@pytest.fixture(autouse=True)
+def _isolated_device_anchor(tmp_path, monkeypatch):
+    """Keep each test's device anchor out of the real ~/.atlas-pc."""
+    monkeypatch.setenv("ATLAS_PC_ANCHOR_DIR", str(tmp_path / "anchors"))

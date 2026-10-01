@@ -138,20 +138,45 @@ class Daemon:
         self._init_store()
 
     # -- consumed-submit store -------------------------------------------------------
-    # File layout: {"v":1,"epoch":<random>,"created_at":<ts>,"seq":<n>,"consumed":{key:expiry},
-    # "mac":HMAC(command_secret, body)}. Rules, all fail closed and checked under an flock on
-    # every CLICK_SUBMIT, not only at start-up: the file must exist and parse with this exact
-    # shape and a valid MAC, its epoch must be the one this daemon adopted, its seq may never go
-    # backwards, and a token armed before the store was created is refused (so deleting the
-    # file cannot reopen replay). A bad store refuses submits with a clear error; it never
-    # prevents the daemon starting. To recover, move the file aside and restart: the new store
-    # refuses every token armed before it existed.
+    # Record: {"v":1,"device","epoch","created_at","seq","consumed":{key:expiry},"strict","mac"},
+    # HMAC with the command secret, bound to this device id. Next to it is an ANCHOR, a second
+    # signed copy of (device, epoch, seq) kept in a different directory keyed by device id
+    # (config.anchor_dir, env ATLAS_PC_ANCHOR_DIR, default ~/.atlas-pc/anchors), shared by every
+    # record path of this device. Everything fails closed and is checked under an flock on every
+    # CLICK_SUBMIT, not only at start-up:
+    #  - record missing/unparseable/wrong shape/bad MAC/other device/other epoch than the anchor,
+    #    or record seq below the anchor seq (an older snapshot was restored, even before a restart);
+    #  - an error is STICKY: once a daemon saw a bad record it refuses every submit until restart;
+    #  - a record re-created while a lock file or anchor still exists is "strict": it refuses any
+    #    token armed before it existed (arming time = deadline - ARM_TTL_SECONDS).
+    # Start-up never raises. Recovery: move the bad record aside and restart.
+    # Out of scope (documented): an attacker who can write the state dir, the anchor dir AND holds
+    # the command secret; anyone who deletes record, lock file and anchor together.
 
     def _mac(self, body: dict[str, Any]) -> str:
         import hashlib
         import hmac
         payload = json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
         return hmac.new(self.config.command_secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
+
+    @property
+    def anchor_path(self) -> Path:
+        base = os.environ.get("ATLAS_PC_ANCHOR_DIR") or str(Path.home() / ".atlas-pc" / "anchors")
+        safe = "".join(ch if ch.isalnum() or ch in "-_" else "_" for ch in self.config.device_id) or "device"
+        return Path(base) / f"{safe}.anchor.json"
+
+    def _signed(self, body: dict[str, Any]) -> dict[str, Any]:
+        return {**body, "mac": self._mac(body)}
+
+    def _verify(self, raw: Any) -> dict[str, Any]:
+        import hmac
+        if not isinstance(raw, dict):
+            raise ValueError("wrong shape")
+        mac = raw.get("mac")
+        body = {k: v for k, v in raw.items() if k != "mac"}
+        if not isinstance(mac, str) or not hmac.compare_digest(mac, self._mac(body)):
+            raise ValueError("integrity check failed")
+        return raw
 
     def _store_lock(self):
         import contextlib
@@ -173,31 +198,31 @@ class Daemon:
         return lock()
 
     def _read_store(self) -> dict[str, Any]:
-        """Parsed, validated store. Raises FileNotFoundError or ValueError."""
-        raw = json.loads(Path(self.consumed_path).read_text())
-        if not isinstance(raw, dict) or raw.get("v") != 1:
-            raise ValueError("wrong shape")
-        mac = raw.get("mac")
-        body = {k: v for k, v in raw.items() if k != "mac"}
-        import hmac
-        if not isinstance(mac, str) or not hmac.compare_digest(mac, self._mac(body)):
-            raise ValueError("integrity check failed")
+        """Parsed, validated record. Raises FileNotFoundError or ValueError."""
+        raw = self._verify(json.loads(Path(self.consumed_path).read_text()))
         consumed = raw.get("consumed")
-        if (not isinstance(raw.get("epoch"), str) or not raw["epoch"]
-                or isinstance(raw.get("seq"), bool) or not isinstance(raw.get("seq"), int)
+        if (raw.get("v") != 1 or raw.get("device") != self.config.device_id
+                or not isinstance(raw.get("epoch"), str) or not raw["epoch"]
                 or not isinstance(raw.get("strict"), bool)
+                or isinstance(raw.get("seq"), bool) or not isinstance(raw.get("seq"), int)
                 or isinstance(raw.get("created_at"), bool) or not isinstance(raw.get("created_at"), (int, float))
                 or not isinstance(consumed, dict)
                 or any(not isinstance(k, str) or isinstance(v, bool) or not isinstance(v, (int, float))
                        for k, v in consumed.items())):
-            raise ValueError("wrong shape")
+            raise ValueError("wrong shape or another device's record")
         return raw
 
-    def _write_store(self) -> None:
-        body = {"v": 1, "epoch": self._store_epoch, "created_at": self._store_created,
-                "seq": self._store_seq, "consumed": self._consumed_submit, "strict": self._store_strict}
-        body["mac"] = self._mac(body)
-        path = Path(self.consumed_path)
+    def _read_anchor(self) -> dict[str, Any] | None:
+        try:
+            raw = self._verify(json.loads(self.anchor_path.read_text()))
+        except FileNotFoundError:
+            return None
+        if (raw.get("v") != 1 or raw.get("device") != self.config.device_id or not isinstance(raw.get("epoch"), str)
+                or isinstance(raw.get("seq"), bool) or not isinstance(raw.get("seq"), int)):
+            raise ValueError("anchor has the wrong shape")
+        return raw
+
+    def _atomic_write(self, path: Path, body: dict[str, Any]) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         tmp = path.with_suffix(path.suffix + f".{os.getpid()}.tmp")
         fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
@@ -207,6 +232,15 @@ class Daemon:
             os.fsync(handle.fileno())
         os.replace(tmp, path)
 
+    def _write_store(self) -> None:
+        """Record first, anchor second: a crash between them leaves the record ahead (safe)."""
+        self._atomic_write(Path(self.consumed_path), self._signed({
+            "v": 1, "device": self.config.device_id, "epoch": self._store_epoch,
+            "created_at": self._store_created, "seq": self._store_seq,
+            "consumed": self._consumed_submit, "strict": self._store_strict}))
+        self._atomic_write(self.anchor_path, self._signed({
+            "v": 1, "device": self.config.device_id, "epoch": self._store_epoch, "seq": self._store_seq}))
+
     def _adopt(self, raw: dict[str, Any]) -> None:
         self._store_epoch = raw["epoch"]
         self._store_created = float(raw["created_at"])
@@ -214,25 +248,39 @@ class Daemon:
         self._store_strict = raw["strict"]
         self._consumed_submit = {k: float(v) for k, v in raw["consumed"].items()}
 
+    def _check_against_anchor(self, raw: dict[str, Any]) -> None:
+        """Raise ValueError unless the record is consistent with the device anchor."""
+        anchor = self._read_anchor()
+        if anchor is None:
+            if raw["seq"] > 0:
+                raise ValueError("the device anchor is missing but the record has been used")
+            return
+        if anchor["epoch"] != raw["epoch"]:
+            raise ValueError("the record is not the one the device anchor points to")
+        if raw["seq"] < anchor["seq"]:
+            raise ValueError("the record went backwards (an older copy was restored)")
+
     def _init_store(self) -> None:
         if not self.consumed_path:
             self._store_epoch = "memory"
             return
         try:
-            # The lock file outlives the record. Lock present + record missing means the record
-            # was lost after use: the new store is "strict" (refuses tokens armed before it).
             lost = Path(self.consumed_path + ".lock").exists()
             with self._store_lock():
                 try:
-                    self._adopt(self._read_store())
+                    raw = self._read_store()
                 except FileNotFoundError:
                     import secrets
-                    self._store_strict = lost
+                    # Missing record: strict when anything proves one existed (lock file or anchor).
+                    self._store_strict = lost or self._read_anchor() is not None
                     self._store_epoch = secrets.token_hex(16)
                     self._store_created = time.time()
                     self._store_seq = 0
                     self._consumed_submit = {}
                     self._write_store()
+                else:
+                    self._check_against_anchor(raw)
+                    self._adopt(raw)
         except (OSError, ValueError) as error:
             self._store_error = f"consumed-submit record {self.consumed_path} is unusable at start-up ({error})"
 
@@ -249,24 +297,23 @@ class Daemon:
             for key in keys:
                 self._consumed_submit[key] = deadline + 3600.0
             return None
+        hint = "Move the record file aside and restart the daemon to start a new one (older tokens are then refused)."
+        if self._store_error:
+            return f"{self._store_error}; refusing every submit. {hint}"
         try:
             with self._store_lock():
                 try:
                     raw = self._read_store()
+                    if raw["epoch"] != self._store_epoch:
+                        raise ValueError("the record was replaced by a different one")
+                    self._check_against_anchor(raw)
                 except FileNotFoundError:
-                    if self._store_epoch is not None and not self._store_error:
-                        return ("the consumed-submit record disappeared after it was created; refusing every submit. "
-                                "Restart the daemon to start a new record (tokens armed earlier are then refused)")
-                    return (f"the consumed-submit record {self.consumed_path} is missing; restart the daemon to create it")
+                    self._store_error = f"the consumed-submit record {self.consumed_path} disappeared"
+                    return f"{self._store_error}; refusing every submit. {hint}"
                 except (OSError, ValueError) as error:
-                    return (f"the consumed-submit record {self.consumed_path} is unreadable or has the wrong shape "
-                            f"({error}); refusing. Move the file aside and restart the daemon to start a new record")
-                if self._store_epoch is not None and not self._store_error and raw["epoch"] != self._store_epoch:
-                    return "the consumed-submit record was replaced by a different one; refusing"
-                if raw["seq"] < self._store_seq and not self._store_error:
-                    return "the consumed-submit record went backwards (older copy restored); refusing"
+                    self._store_error = f"the consumed-submit record {self.consumed_path} is unusable ({error})"
+                    return f"{self._store_error}; refusing every submit. {hint}"
                 self._adopt(raw)
-                self._store_error = ""
                 now = time.time()
                 for key, expires in list(self._consumed_submit.items()):
                     if expires < now:
@@ -402,26 +449,30 @@ class Daemon:
             # Baseline guard for every daemon-driven click: nothing is approved here, so any
             # non-GET request or body-carrying navigation (including a JS-driven submit from a
             # button, label, or custom element) is aborted and reported.
-            guard = form_guard.NetworkGuard(page)
+            taint = await form_guard.NetworkGuard.collect_taint(page)
+            allowed_href = await locator.evaluate("el => (el.closest('a') || {}).href || ''")
+            guard = form_guard.NetworkGuard(page, taint=taint, allowed_href=allowed_href)
             await guard.install()
+            page_blocked = []
             try:
-                await page.evaluate(form_guard.NAV_GUARD_JS)
+                await page.evaluate(form_guard.NAV_GUARD_JS, await guard.expose_reporter())
                 await locator.click()
                 try:
                     await page.wait_for_load_state("domcontentloaded", timeout=5000)
                 except Exception:  # noqa: BLE001 - best effort; the guard report decides
                     pass
-                await asyncio.sleep(0.25)  # let timer-driven submits reach the route guard
-                page_blocked = []
+                # Context-level guard stays up until the page (and any popup) is idle plus a
+                # quiet period, so timer-driven and pagehide requests are still judged.
+                await guard.settle()
                 try:
-                    page_blocked = await page.evaluate(form_guard.GUARD_STATE_JS) or []
+                    recalled = await page.evaluate(form_guard.NAV_RECALL_JS) or []
+                    guard.page_reports.extend(item for item in recalled if item not in guard.page_reports)
                     await page.evaluate(form_guard.GUARD_REMOVE_JS)
                 except Exception:  # noqa: BLE001 - navigation destroyed the old document
                     pass
             finally:
                 await guard.remove()
             report = guard.report()
-            report["blocked"] = [*report["blocked"], *[f"page-guard: {item}" for item in page_blocked]]
             if report["blocked"]:
                 raise PermissionError("navigation click attempted an unapproved request; blocked: "
                                       + "; ".join(report["blocked"])[:500])
@@ -497,7 +548,8 @@ class Daemon:
         if actual != preview["values"]:
             raise PermissionError("approved form values differ from the reviewed preview")
         # Mitigation for click-time rewrites (TOCTOU). Not a proof: see M18_LOGIN_EXPERIMENTS.md.
-        guard = form_guard.NetworkGuard(page, preview, actual)
+        guard = form_guard.NetworkGuard(page, preview, actual,
+                                        taint=await form_guard.NetworkGuard.collect_taint(page))
         await guard.install()
         try:
             await page.evaluate(form_guard.GUARD_JS, {"selector": args["selector"], "expected": reviewed})
@@ -506,6 +558,7 @@ class Daemon:
                 await page.wait_for_load_state("domcontentloaded", timeout=5000)
             except Exception:  # noqa: BLE001 - load state is best effort; the guard report decides
                 pass
+            await guard.settle(1.5)
             page_blocked = []
             try:
                 page_blocked = await page.evaluate(form_guard.GUARD_STATE_JS) or []
