@@ -123,3 +123,54 @@ allow re-preview of submitting, unknown, succeeded, stopped or expired runs.
 Browser operations are not serialized across runs: changing the shared page
 still requires re-review. No real-site recipes or real-platform validation are
 claimed.
+
+## Round 3: form destination, form attributes, click-time rewrites, arming TTL
+
+**Browser-resolved destination (N1).** Python `urljoin(page.url, action)` ignores
+`<base href>`; Chromium does not. The preview and the device pre-click now read
+the form's destination from the real DOM through the `HTMLFormElement.prototype`
+accessors (so `<input name="action">` clobbering cannot spoof them) and bind
+`form_facts` (`action`, `base_uri`, `base_count`, `method`, `enctype`, `target`,
+`no_validate`, `on_attrs`) into the preview digest. Any `<base>` element, at
+preview or on the device before the click, is rejected, and the browser-resolved
+action must equal the reviewed action exactly. This needs a new read-only
+`form_facts` command (it uses the paired device's existing `read_values`
+capability, so no re-pairing is needed).
+
+**Form-level attributes (N2).** Rejected at preview and again on the device:
+`enctype` other than the recipe's reviewed value (`BrowserRecipe.form_enctype`,
+default urlencoded), any `target`, `novalidate`, and any `on*` attribute on the
+form, anything inside it, or any ancestor (including `<body onload>`; this is
+deliberately strict). The form must use POST. All of it is part of the digest.
+
+**Click-time rewrites (N3), a mitigation, not a proof.** During the approved
+click the device installs (a) a capturing `submit` listener that re-reads the
+browser-resolved action/method/enctype/target/base and cancels a mismatch, and
+(b) a network route guard that allows exactly one request: a main-frame POST to
+the reviewed URL whose urlencoded body equals the approved values (redirect hops
+of that request are allowed). Every other navigation and every other non-GET/HEAD
+request is aborted and reported. The runner records `guard.blocked`; a blocked
+request with no approved POST ends in `approval_burned` (nothing was sent), a
+blocked request alongside the approved POST ends in `unknown` with no auto-retry.
+The guard is removed after the click.
+
+Residual limits, stated plainly:
+- Scripts are not blocked. Any script already running in the paired browser can
+  still change the page between the final check and the click, and the in-page
+  listener can be pre-empted (the network guard is tested to hold on its own).
+- The network guard sees this page's HTTP requests only. It does not cover
+  service workers, WebSockets, or browser-level traffic outside the page route.
+- Plain GET subresource requests are allowed (so the page renders); a GET with a
+  side effect to another URL is not stopped.
+- Body binding is only possible for urlencoded forms. `multipart/form-data` and
+  `text/plain` recipes would get destination/method binding but no body check.
+- A hostile page could behave differently when it is not under review. The owner
+  review of the screenshot and preview remains the primary control.
+
+**Arming TTL (N4).** An armed approved submit now expires (`arm_ttl_seconds`,
+default 120 s on the server, plus a wall-clock `deadline` the daemon enforces).
+After expiry the arming is dropped, `is_armed` is false, unrelated clicks work
+again, and a click on the approved control raises instead of falling back to a
+navigation click. The approval itself was already consumed, so the owner must
+preview and approve again. The in-memory arming is lost on a server restart, which
+also frees the session.

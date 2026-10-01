@@ -40,7 +40,15 @@ class CommandKind(str, Enum):
     CLICK_NAV = "click_nav"        # reversible in-page navigation (open a dialog, a tab)
     CLICK_SUBMIT = "click_submit"  # irreversible external effect; requires an approval token
     SOCIAL_READ = "social_read"    # daemon-side read-only collection (e.g. instaloader)
+    FORM_FACTS = "form_facts"      # read-only: browser-resolved form destination and attributes
     CLOSE = "close"
+
+
+def capability_for(kind: CommandKind) -> str:
+    """Pairing capability a command needs. Form facts are a read of the page."""
+    if kind is CommandKind.FORM_FACTS:
+        return CommandKind.READ_VALUES.value
+    return kind.value
 
 
 class BlockKind(str, Enum):

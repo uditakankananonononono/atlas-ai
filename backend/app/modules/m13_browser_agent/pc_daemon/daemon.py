@@ -138,7 +138,7 @@ class Daemon:
     async def execute(self, command: dict[str, Any]) -> dict[str, Any]:
         command_id, kind, args = protocol.parse_command(command)
         session = str(args.get("session", "default"))[:120]
-        capability = "click_submit" if kind is CommandKind.CLICK_SUBMIT else kind.value
+        capability = protocol.capability_for(kind)
         if capability not in self._capabilities:
             event = self._receipt_event(command_id, "blocked", {"reason": "capability not granted",
                                                               "capability": capability})
@@ -157,6 +157,13 @@ class Daemon:
                 event = self._receipt_event(command_id, "blocked", {"reason": "submit token invalid"})
                 return protocol.make_result(command_id, ok=False,
                                             error="submit token missing or invalid; the click was not approved",
+                                            blocked=BlockKind.POLICY.value, receipt=event)
+            deadline = args.get("deadline")
+            # Arming TTL enforced on the device too. Servers that predate the TTL send none.
+            if deadline is not None and (not isinstance(deadline, (int, float)) or time.time() > float(deadline)):
+                event = self._receipt_event(command_id, "blocked", {"reason": "arming expired"})
+                return protocol.make_result(command_id, ok=False,
+                                            error="the approved submit was armed too long ago; approve again",
                                             blocked=BlockKind.POLICY.value, receipt=event)
         await self._pace()
         try:
@@ -198,64 +205,114 @@ class Daemon:
                 if await locator.count():
                     values[str(selector)] = await locator.first.input_value()
             return {"values": values, "url": page.url}
+        if kind is CommandKind.FORM_FACTS:
+            from ..session_bridge.form_guard import FORM_FACTS_JS
+            return {"facts": await page.evaluate(FORM_FACTS_JS, str(args["selector"])), "url": page.url}
         if kind is CommandKind.FILL:
             await page.locator(str(args["selector"])).fill(str(args["value"]))
             return {"url": page.url}
-        if kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT):
-            if kind is CommandKind.CLICK_SUBMIT and "preview" in args:
-                from bs4 import BeautifulSoup
-                from urllib.parse import urljoin
-                from hashlib import sha256
-                preview = args["preview"]
-                snapshot_hash = sha256(json.dumps(preview, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
-                if snapshot_hash != args.get("capture_sha256"):
-                    raise PermissionError("submit preview does not match approved digest")
-                soup = BeautifulSoup(await page.content(), "html.parser")
-                button = soup.select(args["selector"])
-                if len(button) != 1 or str(button[0]) != preview["submit"]:
-                    raise PermissionError("approved submit target changed on device")
-                form = button[0].find_parent("form")
-                if form is not None and any(
-                        attr in node.attrs for node in [button[0], *form.select("input,button")]
-                        for attr in ("formaction", "formmethod", "formenctype", "formtarget", "formnovalidate")):
-                    raise PermissionError("submit control overrides the reviewed form destination on device")
-                if (form is None or page.url != preview["url"]
-                    or urljoin(page.url, form.get("action") or page.url) != preview["form_action"]
-                    or form.get("method", "get") != preview["method"]
-                    or form.get_text(" ", strip=True) != preview["form_text"]):
-                    raise PermissionError("approved destination or form changed on device")
-                if "allowed_fields" in preview:
-                    fields = form.select('input,textarea,select,button[name]')
-                    names = [node.get('name') for node in fields]
-                    if (soup.select('[form]')
-                            or any(name not in preview['allowed_fields'] for name in names)
-                            or len(set(names)) != len(names)
-                            or any(node.get('type', '').lower() == 'password' for node in fields)
-                            or {f'[name="{name}"]' for name in names} != set(preview['values'])):
-                        raise PermissionError("reviewed form field allowlist changed on device")
-                for field, selector in args.get("readback_selectors", {}).items():
-                    nodes = soup.select(selector)
-                    if len(nodes) != 1 or nodes[0].get_text(" ", strip=True) != preview[field]:
-                        raise PermissionError("approved account or terms changed on device")
-            if kind is CommandKind.CLICK_SUBMIT and "values" in args:
-                from ..security import values_digest
+        if kind is CommandKind.CLICK_NAV:
+            await page.locator(str(args["selector"])).click()
+            return {"url": page.url}
+        if kind is CommandKind.CLICK_SUBMIT:
+            return await self._click_submit(page, args)
+        if kind is CommandKind.CLOSE:
+            closed = await self.browser.close_page(session)
+            return {"closed": closed}
+        raise RuntimeError(f"unsupported command kind: {kind}")
+
+    async def _click_submit(self, page: Any, args: dict[str, Any]) -> dict[str, Any]:
+        """The one approved click: verify in the real browser, guard it, then click."""
+        from bs4 import BeautifulSoup
+        from hashlib import sha256
+        from ..security import values_digest
+        from ..session_bridge import form_guard
+        preview = args.get("preview")
+        if preview is None:
+            # Generic M13 capture-bound submit (no reviewed form preview): the original
+            # values check and plain click. The M18 login runner always sends a preview.
+            if "values" in args:
+                from ..security import values_digest as _vd
                 actual = {}
                 for selector in args["values"]:
                     locator = page.locator(selector)
                     if await locator.count() != 1:
                         raise PermissionError("approved form selector changed")
                     actual[selector] = await locator.input_value()
-                if values_digest(actual) != args.get("values_digest"):
+                if _vd(actual) != args.get("values_digest"):
                     raise PermissionError("approved form values changed on paired device")
-            extra = {}
-            if kind is CommandKind.CLICK_SUBMIT:
-                extra = {"approval_id": args.get("approval_id"), "capture_sha256": args.get("capture_sha256")}
             await page.locator(str(args["selector"])).click()
-            return {"url": page.url, **extra}
-        if kind is CommandKind.CLOSE:
-            closed = await self.browser.close_page(session)
-            return {"closed": closed}
-        raise RuntimeError(f"unsupported command kind: {kind}")
+            return {"url": page.url, "approval_id": args.get("approval_id"),
+                    "capture_sha256": args.get("capture_sha256")}
+        if not isinstance(preview, dict) or "values" not in args:
+            raise PermissionError("approved submit requires the reviewed preview")
+        snapshot_hash = sha256(json.dumps(preview, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
+        if snapshot_hash != args.get("capture_sha256"):
+            raise PermissionError("submit preview does not match approved digest")
+        soup = BeautifulSoup(await page.content(), "html.parser")
+        button = soup.select(args["selector"])
+        if len(button) != 1 or str(button[0]) != preview["submit"]:
+            raise PermissionError("approved submit target changed on device")
+        form = button[0].find_parent("form")
+        if form is None:
+            raise PermissionError("approved destination or form changed on device")
+        if any(attr in node.attrs for node in [button[0], *form.select("input,button")]
+               for attr in form_guard.SUBMIT_OVERRIDES):
+            raise PermissionError("submit control overrides the reviewed form destination on device")
+        reviewed = preview.get("form_facts")
+        if not isinstance(reviewed, dict):
+            raise PermissionError("approved preview has no browser-resolved form facts")
+        form_guard.static_form_checks(soup, form, button[0], reviewed.get("enctype", form_guard.DEFAULT_ENCTYPE))
+        # The browser, not urljoin, decides where the form posts (<base>, clobbering, scripts).
+        live = form_guard.validate_facts(await page.evaluate(form_guard.FORM_FACTS_JS, args["selector"]),
+                                         reviewed["enctype"])
+        if (live != reviewed or live["url"] != preview["url"] or page.url != preview["url"]
+                or live["action"] != preview["form_action"]
+                or form.get("method", "get") != preview["method"]
+                or form.get_text(" ", strip=True) != preview["form_text"]):
+            raise PermissionError("approved destination or form changed on device")
+        fields = form.select('input,textarea,select,button[name]')
+        names = [node.get('name') for node in fields]
+        if (soup.select('[form]')
+                or any(name not in preview['allowed_fields'] for name in names)
+                or len(set(names)) != len(names)
+                or any(node.get('type', '').lower() == 'password' for node in fields)
+                or {f'[name="{name}"]' for name in names} != set(preview['values'])):
+            raise PermissionError("reviewed form field allowlist changed on device")
+        for field, selector in args.get("readback_selectors", {}).items():
+            nodes = soup.select(selector)
+            if len(nodes) != 1 or nodes[0].get_text(" ", strip=True) != preview[field]:
+                raise PermissionError("approved account or terms changed on device")
+        actual = {}
+        for selector in args["values"]:
+            locator = page.locator(selector)
+            if await locator.count() != 1:
+                raise PermissionError("approved form selector changed")
+            actual[selector] = await locator.input_value()
+        if values_digest(actual) != args.get("values_digest"):
+            raise PermissionError("approved form values changed on paired device")
+        # Mitigation for click-time rewrites (TOCTOU). Not a proof: see M18_LOGIN_EXPERIMENTS.md.
+        guard = form_guard.NetworkGuard(page, preview, actual)
+        await guard.install()
+        try:
+            await page.evaluate(form_guard.GUARD_JS, {"selector": args["selector"], "expected": reviewed})
+            await page.locator(str(args["selector"])).click()
+            try:
+                await page.wait_for_load_state("domcontentloaded", timeout=5000)
+            except Exception:  # noqa: BLE001 - load state is best effort; the guard report decides
+                pass
+            page_blocked = []
+            try:
+                page_blocked = await page.evaluate(form_guard.GUARD_STATE_JS) or []
+                await page.evaluate(form_guard.GUARD_REMOVE_JS)
+            except Exception:  # noqa: BLE001 - navigation destroyed the old document
+                pass
+        finally:
+            await guard.remove()
+        report = guard.report()
+        report["blocked"] = [*report["blocked"], *[f"page-guard: {item}" for item in page_blocked]]
+        return {"url": page.url, "approval_id": args.get("approval_id"),
+                "capture_sha256": args.get("capture_sha256"), "guard": report}
 
     def connect_url(self) -> str:
         timestamp = str(int(time.time()))
