@@ -82,3 +82,35 @@ def test_github_closed_and_unsafe_rows_excluded():
                       ('https://safe.example/', 'Intern 🔒')]:
         with client(template.format(url=url, role=role).encode()) as tx:
             with pytest.raises(PlatformUnavailable): discover('simplify', client=tx)
+
+
+def test_oversized_stream_stops_before_consuming_entire_response():
+    class Stream(httpx.SyncByteStream):
+        def __init__(self): self.chunks = 0; self.closed = False
+        def __iter__(self):
+            for _ in range(100):
+                self.chunks += 1
+                yield b'x' * 100000
+        def close(self): self.closed = True
+    stream = Stream()
+    tx = httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(
+        200, stream=stream, headers={'content-type':'text/plain'}, request=req)))
+    with tx:
+        with pytest.raises(PlatformUnavailable, match='2 MB'): discover('simplify', client=tx)
+    assert stream.chunks == 21 and stream.closed
+
+
+def test_redirect_not_followed_even_with_redirecting_client():
+    calls = []
+    def transport(req):
+        calls.append(str(req.url))
+        return httpx.Response(302, headers={'location':'https://private.example/'}, request=req)
+    with httpx.Client(transport=httpx.MockTransport(transport), follow_redirects=True) as tx:
+        with pytest.raises(PlatformUnavailable, match='302'): discover('simplify', client=tx)
+    assert calls == [BY_ID['simplify'].url]
+
+
+def test_xml_entity_declarations_are_not_parsed():
+    payload = b'<!DOCTYPE rss [<!ENTITY a "Expansion">]><rss><channel><item><title>&a;</title></item></channel></rss>'
+    with client(payload, 'application/rss+xml') as tx:
+        with pytest.raises(PlatformUnavailable, match='declarations'): discover('scholarshiproar', client=tx)

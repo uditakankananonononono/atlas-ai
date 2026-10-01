@@ -1,3 +1,12 @@
+# Current student discovery contract (2026-10-01 candidate)
+
+See `docs/acceptance/M01_PUBLIC_DISCOVERY.md` for the current finite acceptance,
+source-policy research, all 17 IDs and original-blueprint reconciliation.
+This candidate removes student-route token scores, adds evidence/unknowns and
+read-only Simplify public GitHub-list discovery, and disables Internshala
+extraction under its current terms. No account automation or applications.
+The older dated notes below are historical context, not current certification.
+
 # Module 1 (Opportunity Discovery Engine) - integration notes for the integrator
 
 This lane owns only `backend/app/modules/m01_opportunity_discovery/` and

@@ -40,7 +40,7 @@ PLATFORMS = (
     StudentPlatform('devpost', 'Devpost', 'https://devpost.com/hackathons', 'launch_only', 'hackathon', reason='Devpost terms prohibit automated scraping/crawling. No undocumented API or browser workaround.'),
     StudentPlatform('challengerocket', 'ChallengeRocket', 'https://challengerocket.com/hackathons-and-challenges.html', 'html', 'competition', r'^/(?:hackathon-|cassini|pwc-(?:rpa|ai|crisis)|euroclear-hackathon|open-learning-by-globalworth)'),
     StudentPlatform('mlh', 'Major League Hacking', 'https://www.mlh.com/seasons/2026/events', 'html', 'hackathon', r'^/events/\d+-'),
-    StudentPlatform('internshala', 'Internshala', 'https://internshala.com/internships/', 'html', 'internship', r'^/internship/detail/'),
+    StudentPlatform('internshala', 'Internshala', 'https://internshala.com/internships/', 'launch_only', 'internship', reason='Terms prohibit automated data extraction for AI systems/RAG without prior written consent. No crawling or browser workaround.'),
     StudentPlatform('scholarships360', 'Scholarships360', 'https://scholarships360.org/feed/', 'rss', 'scholarship', reason='Editorial feed, not a complete scholarship-search API.'),
     StudentPlatform('unigo', 'Unigo', 'https://www.unigo.com/scholarships', 'launch_only', 'scholarship', reason='Public landing page is available; no validated listings feed or account-matching API.'),
     StudentPlatform('scholarshiproar', 'Scholarship Roar', 'https://scholarshiproar.com/feed/', 'rss', 'scholarship'),
@@ -86,6 +86,8 @@ def _safe_target(source: StudentPlatform, href: str) -> str | None:
 
 
 def _read_rss(source: StudentPlatform, payload: bytes) -> list[dict[str, str]]:
+    if re.search(br'<!\s*(?:DOCTYPE|ENTITY)\b', payload, re.I):
+        raise PlatformUnavailable(f'{source.id}: XML declarations are not supported')
     try:
         root = ET.fromstring(payload)
     except ET.ParseError as exc:
@@ -182,13 +184,20 @@ def discover(platform_id: str, query: str = '', *, limit: int = 25, client: http
     own_client = client is None
     client = client or httpx.Client(timeout=15, follow_redirects=False, headers={'User-Agent': 'AtlasAI-StudentDiscovery/1.0'})
     try:
-        response = client.get(source.url)
-        if str(response.url) != source.url:
-            raise PlatformUnavailable(f'{source.id}: unexpected redirect; no results claimed')
-        if response.status_code != 200:
-            raise PlatformUnavailable(f'{source.id}: HTTP {response.status_code}; no results claimed')
-        if len(response.content) > 2_000_000:
-            raise PlatformUnavailable(f'{source.id}: response exceeds 2 MB limit')
+        # Streaming bounds decoded bytes during transfer, not after a potentially
+        # unbounded client.get has buffered an entire response.
+        with client.stream('GET', source.url, follow_redirects=False) as response:
+            if str(response.url) != source.url:
+                raise PlatformUnavailable(f'{source.id}: unexpected redirect; no results claimed')
+            if response.status_code != 200:
+                raise PlatformUnavailable(f'{source.id}: HTTP {response.status_code}; no results claimed')
+            chunks, size = [], 0
+            for chunk in response.iter_bytes():
+                size += len(chunk)
+                if size > 2_000_000:
+                    raise PlatformUnavailable(f'{source.id}: response exceeds 2 MB limit')
+                chunks.append(chunk)
+            payload = b''.join(chunks)
         ctype = response.headers.get('content-type', '').lower()
         if source.mode == 'rss' and not ('xml' in ctype or 'rss' in ctype):
             raise PlatformUnavailable(f'{source.id}: expected RSS/XML, got {ctype or "unknown"}')
@@ -196,11 +205,11 @@ def discover(platform_id: str, query: str = '', *, limit: int = 25, client: http
             raise PlatformUnavailable(f'{source.id}: expected public README text')
         if source.mode == 'html' and 'html' not in ctype:
             raise PlatformUnavailable(f'{source.id}: expected HTML, got {ctype or "unknown"}')
-        rows = (_read_rss(source, response.content) if source.mode == 'rss' else
-                _read_github_readme(response.content) if source.mode == 'github_readme' else
-                _read_html(source, response.content))
+        rows = (_read_rss(source, payload) if source.mode == 'rss' else
+                _read_github_readme(payload) if source.mode == 'github_readme' else
+                _read_html(source, payload))
         fetched_at = datetime.now(timezone.utc).isoformat()
-        content_hash = sha256(response.content).hexdigest()
+        content_hash = sha256(payload).hexdigest()
         seen = set()
         items = []
         for row in rows:
@@ -225,7 +234,7 @@ def discover(platform_id: str, query: str = '', *, limit: int = 25, client: http
             record = dict(row, source_url=source.url, platform=source.id,
                           opportunity_kind=source.kind)
             items.append(evidence_card(record, fetched_at=fetched_at, content_sha256=content_hash))
-        if not rows:
+        if not rows or (not items and not query):
             raise PlatformUnavailable(f'{source.id}: no listing items parsed; layout may have changed')
         return {'platform': source.id, 'mode': source.mode, 'launch_url': source.url,
                 'scanned_at': fetched_at, 'fetched_at': fetched_at, 'content_sha256': content_hash,
