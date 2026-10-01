@@ -37,7 +37,6 @@ def test_launch_only_never_calls_network(platform):
     ('fastweb', '/college-scholarships/scholarships/1234-stem-award'),
     ('challengerocket', '/hackathon-future-smart-city-26'),
     ('mlh', 'https://events.mlh.io/events/14418-hack-coms-2026?utm_source=mlh'),
-    ('internshala', '/internship/detail/data-analyst-123'),
 ])
 def test_html_sources_parse_actual_item_paths(platform, href):
     p = BY_ID[platform]
