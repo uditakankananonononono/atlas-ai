@@ -30,6 +30,7 @@ from .schemas import (
 )
 from .semantic_memory import SemanticMemory
 from .skill_library import SkillLibrary
+from .effect_ledger import EffectIndeterminate, EffectInProgress
 from .tools import ApprovalPending, ToolBlockedError, ToolDispatcher
 from .working_memory import WorkingMemory
 
@@ -165,6 +166,13 @@ class DeliberativeLoop:
         # Optional hook invoked after planning and before each run, so the
         # durable runtime can register pre-dispatch expectations.
         self.before_run: Any = None
+        # Optional durable-state hook: called after planning and after every
+        # step so a restart sees stable node ids and finished steps.
+        self.checkpoint: Any = None
+
+    def _checkpoint(self, context: TaskContext) -> None:
+        if self.checkpoint is not None:
+            self.checkpoint(context)
 
     def _trace(self, phase: str, detail: str, *, task_id: str | None = None, policy_basis: str = "") -> None:
         self.traces.append(TraceEntry(task_id=task_id, phase=phase, detail=detail, policy_basis=policy_basis))
@@ -199,6 +207,7 @@ class DeliberativeLoop:
         self.wm.put(MemoryChunk(
             type=ChunkType.GOAL, content=context.goal, confidence=1.0, source="executive",
         ), active_goal=context.goal, partition=context.id)
+        self._checkpoint(context)  # persist the plan (stable node ids) before any effect
         if self.before_run is not None:
             self.before_run(context)
         return self.run(context)
@@ -208,6 +217,13 @@ class DeliberativeLoop:
         if self.before_run is not None:
             self.before_run(context)
         ticks = 0
+        held = [n for n in context.plan if n.state == TaskState.BLOCKED
+                and n.result_summary.startswith("INDETERMINATE effect")]
+        if held:  # awaiting manual reconciliation; never silently retried or failed
+            context.state = TaskState.BLOCKED
+            self._trace("act", f"{held[0].tool} still INDETERMINATE; manual reconciliation required",
+                        task_id=context.id, policy_basis="reserve-before-invoke effect ledger")
+            return context
         context.state = TaskState.RUNNING
         while ticks < self.max_ticks and ticks < budget.seconds:
             ticks += 1
@@ -250,7 +266,7 @@ class DeliberativeLoop:
                 import asyncio
                 record = _run_async(self.dispatcher.dispatch(
                     node.tool, node.arguments, task_id=context.id,
-                    granted_approval_id=node.approval_id,
+                    granted_approval_id=node.approval_id, node_id=node.id,
                 ))
                 if record.succeeded:
                     node.state = TaskState.SUCCEEDED
@@ -263,6 +279,21 @@ class DeliberativeLoop:
                     self._trace("evaluate", f"{node.tool} failed: {record.result_summary}",
                                 task_id=context.id)
                     self._reflect_on_failure(context, node, record.result_summary)
+            except EffectIndeterminate as unknown:
+                node.state = TaskState.BLOCKED
+                node.result_summary = f"INDETERMINATE effect {unknown.effect_id}: manual reconciliation required"
+                context.state = TaskState.BLOCKED
+                self._trace("act", f"{node.tool} INDETERMINATE (effect {unknown.effect_id}); "
+                            "not retried, manual reconciliation required",
+                            task_id=context.id, policy_basis="reserve-before-invoke effect ledger")
+                self._close_episode(context, EpisodeOutcome.ABANDONED)
+                return context
+            except EffectInProgress as busy:
+                node.attempts -= 1
+                node.state = TaskState.PENDING
+                self._trace("act", f"{node.tool} held by another worker (effect {busy}); not invoked",
+                            task_id=context.id, policy_basis="reserve-before-invoke effect ledger")
+                return context
             except ApprovalPending as pending:
                 node.state = TaskState.WAITING_APPROVAL
                 node.approval_id = pending.approval_id
@@ -281,9 +312,28 @@ class DeliberativeLoop:
                 node.state = TaskState.FAILED if node.attempts >= node.max_attempts else TaskState.PENDING
                 self._trace("evaluate", f"{node.tool} error: {exc}", task_id=context.id)
                 self._reflect_on_failure(context, node, str(exc))
+            self._checkpoint(context)
         context.state = TaskState.FAILED
         self._trace("evaluate", "budget exhausted", task_id=context.id)
         self._close_episode(context, EpisodeOutcome.FAILED)
+        return context
+
+    def resume_after_reconciliation(self, context: TaskContext, node_id: str, *, applied: bool,
+                                    result_summary: str = "") -> TaskContext:
+        """Apply a human reconciliation of an INDETERMINATE effect to its node."""
+        for node in context.plan:
+            if node.id == node_id and node.state == TaskState.BLOCKED:
+                if applied:
+                    node.state = TaskState.SUCCEEDED
+                    node.result_summary = result_summary or "reconciled: effect applied"
+                else:
+                    node.state = TaskState.PENDING
+                    node.attempts = max(0, node.attempts - 1)
+                    node.result_summary = ""
+                context.state = TaskState.RUNNING
+                self._trace("act", f"effect for {node.title!r} reconciled by a human: "
+                            f"{'applied' if applied else 'not applied'}", task_id=context.id,
+                            policy_basis="reserve-before-invoke effect ledger")
         return context
 
     def resume_after_approval(self, context: TaskContext, node_id: str, approved: bool) -> TaskContext:
