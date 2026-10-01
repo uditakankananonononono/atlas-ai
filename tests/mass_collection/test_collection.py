@@ -311,3 +311,134 @@ def test_broadened_sensitive_query_key_screen(tmp_path):
     for key in ('secret', 'session', 'key', 'auth', 'sig', 'token', 'access_token', 'api_key', 'password', 'signature', 'Secret', 'AUTH'):
         with pytest.raises(CollectionError): origin(f'https://example.org/page?{key}=x')
     assert origin('https://example.org/page?q=python') == 'https://example.org'
+
+
+# ---- round 3 ----
+def _eligibility(tmp_path, lic):
+    from dataclasses import replace
+    c = collector(tmp_path/'data')
+    path = tmp_path/'t'; path.write_text('Payload for ' + repr(lic))
+    c.ingest_file(replace(source('https://example.org/d', 'text', training_reviewed=True), license=lic), path)
+    m = c.export()
+    return json.loads((c.root/m['shards'][0]['path']).read_text().splitlines()[0])['training_eligible']
+
+
+@pytest.mark.parametrize('lic', [
+    '\uff35\uff2e\uff2b\uff2e\uff2f\uff37\uff2e', 'All Rights Reserved.', 'none', 'n/a', 'proprietary', 'unknown', 'GPL-3.0',
+    'cc-by-nc-4.0', ' - ', 'm\u200bit', 'mit license', 'cc-by-4.0-extra', 'cc-by-4',
+])
+def test_license_allowlist_denies(tmp_path, lic):
+    assert _eligibility(tmp_path, lic) is False
+
+
+@pytest.mark.parametrize('lic', ['CC-BY\u20134.0', 'CC\u2011BY-4.0', 'cc--by-4.0', 'cc-by\u200b-4.0', 'MIT\u200b', 'MIT.', ' Apache-2.0 ', 'CC0-1.0', 'cc_by_sa_4.0', 'BSD-3-Clause', 'bsd-2-clause', 'public-domain-explicit'])
+def test_license_allowlist_allows_reviewed_variants(tmp_path, lic):
+    assert _eligibility(tmp_path, lic) is True
+
+
+def test_license_allowlist_still_requires_review_and_not_owner_or_cc(tmp_path):
+    from dataclasses import replace
+    c = collector(tmp_path/'data')
+    path = tmp_path/'t'; path.write_text('x')
+    c.ingest_file(replace(source('https://example.org/d', 'text', training_reviewed=False), license='mit'), path)
+    row = json.loads((c.root/c.export()['shards'][0]['path']).read_text().splitlines()[0])
+    assert row['training_eligible'] is False
+
+
+def test_warc_30mb_skipped_record_stops_at_parse_limit(tmp_path):
+    out = io.BytesIO(); writer = WARCWriter(out, gzip=True)
+    headers = StatusAndHeaders('200 OK', [('Content-Type', 'application/octet-stream')], protocol='HTTP/1.0')
+    writer.write_record(writer.create_warc_record('https://example.org/big.bin', 'response', payload=io.BytesIO(b'x'*30_000_000), http_headers=headers))
+    path = tmp_path/'big.warc.gz'; path.write_bytes(out.getvalue())
+    c = collector(tmp_path/'data', max_parse_bytes=5000)
+    with pytest.raises(CollectionError, match='WARC'):
+        c.ingest_file(source('https://data.commoncrawl.org/big.warc.gz', 'commoncrawl'), path)
+    assert c.export()['records'] == 0
+
+
+def test_warc_skipped_record_drain_is_chunked_and_bounded(tmp_path, monkeypatch):
+    from app.mass_collection import engine
+    reads = []
+    real = engine.ArchiveIterator
+    class Spy:
+        def __init__(self, f):
+            self.it = real(f)
+        def __iter__(self):
+            for rec in self.it:
+                stream = rec.content_stream()
+                orig = stream.read
+                def read(n=-1, _o=orig):
+                    reads.append(n); return _o(n)
+                rec.content_stream = lambda s=stream, r=read: type('S', (), {'read': staticmethod(r)})()
+                yield rec
+    monkeypatch.setattr(engine, 'ArchiveIterator', Spy)
+    out = io.BytesIO(); writer = WARCWriter(out, gzip=True)
+    headers = StatusAndHeaders('200 OK', [('Content-Type', 'application/octet-stream')], protocol='HTTP/1.0')
+    writer.write_record(writer.create_warc_record('https://example.org/big.bin', 'response', payload=io.BytesIO(b'x'*3_000_000), http_headers=headers))
+    path = tmp_path/'b.warc.gz'; path.write_bytes(out.getvalue())
+    c = collector(tmp_path/'data', max_parse_bytes=100_000)
+    with pytest.raises(CollectionError):
+        c.ingest_file(source('https://data.commoncrawl.org/b.warc.gz', 'commoncrawl'), path)
+    assert reads and all(n != -1 and n <= 1_048_576 for n in reads)
+
+
+@pytest.mark.parametrize('payload', [
+    {'mine': {'origin': 'https://example.org', 'token': 5, 'owner_confirmed': True}},
+    {'mine': {'origin': 'https://example.org', 'token': None, 'owner_confirmed': True}},
+    {'mine': ['https://example.org', 'x', True]},
+    {'mine': 'row'},
+    {'mine': None},
+    ['mine'],
+    None,
+    'str',
+    5,
+])
+def test_structurally_corrupt_credentials_raise_collection_error(tmp_path, payload):
+    from app.mass_collection.credentials import CredentialStore
+    store = CredentialStore(tmp_path/'credentials.json', 't', master_secret='local-test-key')
+    (tmp_path/'credentials.json').write_text(json.dumps(payload))
+    with pytest.raises(CollectionError): store.headers('mine', 'https://example.org/page')
+
+
+@pytest.mark.parametrize('payload', [['x'], None, 'str'])
+def test_save_over_corrupt_store_raises_collection_error(tmp_path, payload):
+    from app.mass_collection.credentials import CredentialStore
+    store = CredentialStore(tmp_path/'credentials.json', 't', master_secret='local-test-key')
+    (tmp_path/'credentials.json').write_text(json.dumps(payload))
+    with pytest.raises(CollectionError): store.save('mine', 'https://example.org', 'tok', owner_confirmed=True)
+
+
+@pytest.mark.parametrize('query', ['token', 'x-API-Key=1', 'access-token=1', 'X_Auth_Token=1', 'sessionid=1', 'JWT=1', 'bearer=1', 'client_secret=1', 'credentials=1', 'passwd=1', 'pwd=1', 'sig=1', 'Authorization=1', 'q=1&token', 'apiKey=1', 'PASS=1', 'X-Amz-Signature=1'])
+def test_query_key_screen_normalized_substring_and_blank(query):
+    from app.mass_collection.engine import origin
+    with pytest.raises(CollectionError): origin('https://example.org/page?' + query)
+
+
+def test_query_key_screen_allows_benign():
+    from app.mass_collection.engine import origin
+    assert origin('https://example.org/p?q=python&page=2&lang=en') == 'https://example.org'
+
+
+@pytest.mark.parametrize('address', [
+    'fec0::1', 'febf::1' if False else 'fec0:0:0:1::5', 'feff::1', '192.0.0.9', '192.0.0.10', '192.0.0.1', '192.88.99.1', '2001:20::1', '2001:2f::1',
+    '::ffff:127.0.0.1', '::ffff:10.0.0.1', '::ffff:192.0.0.9', '2002:7f00:1::1', '2002:0a00:0001::1', '2002:c000:0009::1', '64:ff9b::7f00:1', '64:ff9b::a00:1', '64:ff9b::c000:9', '64:ff9b:1::1', '::ffff:0.0.0.0',
+    '2001:0:4136:e378:8000:63bf:3fff:fdd2',
+])
+def test_dns_pin_explicit_denylist_and_unwrap(tmp_path, monkeypatch, address):
+    import socket as real_socket
+    from app.mass_collection import engine
+    fam = real_socket.AF_INET6 if ':' in address else real_socket.AF_INET
+    monkeypatch.setattr(engine.socket, 'getaddrinfo', lambda *a, **k: [(fam, real_socket.SOCK_STREAM, 6, '', (address, 80))])
+    c = Collector(tmp_path/'d', limits=Limits(request_interval=0))
+    with pytest.raises(CollectionError, match='network target rejected'):
+        c._pinned_url('http://example.org/page')
+
+
+def test_dns_pin_allows_public_and_unwrapped_public(tmp_path, monkeypatch):
+    import socket as real_socket
+    from app.mass_collection import engine
+    for address in ('93.184.216.34', '2606:4700:4700::1111', '::ffff:93.184.216.34', '64:ff9b::5db8:d822', '2002:5db8:d822::1'):
+        fam = real_socket.AF_INET6 if ':' in address else real_socket.AF_INET
+        monkeypatch.setattr(engine.socket, 'getaddrinfo', lambda *a, _f=fam, _a=address, **k: [(_f, real_socket.SOCK_STREAM, 6, '', (_a, 80))])
+        c = Collector(tmp_path/'d', limits=Limits(request_interval=0))
+        assert c._pinned_url('http://example.org/page')[2] == 'example.org', address
