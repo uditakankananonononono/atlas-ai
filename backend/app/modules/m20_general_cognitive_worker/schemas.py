@@ -214,6 +214,10 @@ class ToolSpec(BaseModel):
     capabilities: list[str] = Field(default_factory=list)
     timeout_seconds: int = 60
     max_retries: int = 2
+    # True only when the provider honours an idempotency key (the effect id,
+    # exposed via effect_ledger.CURRENT_EFFECT_ID). Only then may an
+    # INDETERMINATE effect be retried automatically.
+    provider_idempotent: bool = False
 
 
 class TaskContext(BaseModel):

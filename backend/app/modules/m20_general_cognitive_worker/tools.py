@@ -13,6 +13,9 @@ import asyncio
 from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable
 
+from .effect_ledger import (
+    CURRENT_EFFECT_ID, EffectError, EffectIndeterminate, EffectInProgress, EffectLedger, ToolNotExecuted,
+)
 from .safety import SafetyGate
 from .schemas import ActionRecord, ApprovalGateDecision, Risk, ToolSpec
 
@@ -102,10 +105,21 @@ class ToolRegistry:
 class ToolDispatcher:
     """Executes tools through the safety gate with timeouts and retries."""
 
-    def __init__(self, registry: ToolRegistry, safety: SafetyGate) -> None:
+    def __init__(self, registry: ToolRegistry, safety: SafetyGate,
+                 ledger: EffectLedger | None = None) -> None:
         self.registry = registry
         self.safety = safety
         self.records: list[ActionRecord] = []
+        # Non-idempotent tools are reserved here before invocation. Runtimes
+        # bind a durable ledger; a bare dispatcher gets a process-local one
+        # (same protocol, but lost on restart - bind a durable ledger in prod).
+        if ledger is None:
+            import sqlalchemy as sa
+            from sqlalchemy.pool import StaticPool
+            ledger = EffectLedger(
+                sa.create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False},
+                                 poolclass=StaticPool), "ephemeral")
+        self.ledger = ledger
 
     async def dispatch(
         self,
@@ -115,6 +129,7 @@ class ToolDispatcher:
         context: dict[str, Any] | None = None,
         task_id: str | None = None,
         granted_approval_id: str | None = None,
+        node_id: str | None = None,
     ) -> ActionRecord:
         tool = self.registry.get(name)
         context = context or {}
@@ -131,6 +146,9 @@ class ToolDispatcher:
         if not may_proceed and approval_id is not None:
             raise ApprovalPending(name, approval_id)
         record = ActionRecord(tool=name, arguments=arguments, started_at=datetime.now(timezone.utc))
+        if tool.spec.risk != Risk.READ:
+            return await self._dispatch_reserved(tool, name, arguments, record,
+                                                 task_id=task_id, node_id=node_id)
         attempts = max(1, tool.spec.max_retries)
         last_error: Exception | None = None
         for _ in range(attempts):
@@ -149,6 +167,55 @@ class ToolDispatcher:
                 last_error = exc
         record.succeeded = False
         record.result_summary = f"failed after {attempts} attempt(s): {last_error}"
+        record.finished_at = datetime.now(timezone.utc)
+        self.records.append(record)
+        return record
+
+    async def _dispatch_reserved(self, tool: RegisteredTool, name: str, arguments: dict[str, Any],
+                                 record: ActionRecord, *, task_id: str | None,
+                                 node_id: str | None) -> ActionRecord:
+        """Reserve durably, mark invoking, THEN call the handler exactly once."""
+        ledger = self.ledger
+        res = ledger.reserve(
+            task_id=task_id or "-", node_id=node_id or "-", tool=name,
+            # runtime bookkeeping keys ("_expectation_claim_id") are random per run
+            # and are not part of the effect's identity
+            args={k: v for k, v in arguments.items() if not str(k).startswith("_")},
+            lease_seconds=tool.spec.timeout_seconds + 30,
+            provider_idempotent=tool.spec.provider_idempotent)
+        if res.replayed:  # recorded receipt: never invoke again
+            record.succeeded = True
+            record.result_summary = res.result_summary
+            record.finished_at = datetime.now(timezone.utc)
+            self.records.append(record)
+            return record
+        ledger.mark_invoking(res)  # committed before the handler runs
+        token = CURRENT_EFFECT_ID.set(res.effect_id)
+        try:
+            result = await asyncio.wait_for(tool.handler(arguments), timeout=tool.spec.timeout_seconds)
+        except ToolNotExecuted as exc:
+            ledger.fail_safe(res, f"not executed: {exc}")
+            record.succeeded = False
+            record.result_summary = f"not executed: {exc}"
+        except (ToolError, ApprovalPending) as exc:
+            ledger.fail_safe(res, f"tool layer refused: {exc}")
+            raise
+        except BaseException as exc:  # handler may or may not have had its effect
+            ledger.mark_indeterminate(res, f"{type(exc).__name__}: {exc}")
+            if isinstance(exc, (KeyboardInterrupt, SystemExit, asyncio.CancelledError)):
+                raise
+            raise EffectIndeterminate(res.effect_id, f"{type(exc).__name__}: {exc}") from exc
+        else:
+            record.succeeded = True
+            record.result_summary = str(result)[:500]
+            try:
+                ledger.complete(res, record.result_summary)
+            except EffectError:
+                raise
+            except Exception as exc:  # receipt not durable: state stays 'invoking'
+                raise EffectIndeterminate(res.effect_id, f"receipt not saved: {exc}") from exc
+        finally:
+            CURRENT_EFFECT_ID.reset(token)
         record.finished_at = datetime.now(timezone.utc)
         self.records.append(record)
         return record

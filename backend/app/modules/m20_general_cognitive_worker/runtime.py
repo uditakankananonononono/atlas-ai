@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
+from .effect_ledger import EffectLedger
 from .embeddings import EmbeddingProvider
 from .executive import DeliberativeLoop, ExecutiveModel, MetaReasoner
 from .htn_planner import HTNPlanner, PlannerModel
@@ -125,7 +126,8 @@ class GCWRuntime:
         self.safety = SafetyGate(
             approvals=approval_gate or InMemoryApprovalGate(), sandbox=sandbox_policy,
         )
-        self.dispatcher = ToolDispatcher(self.tools, self.safety)
+        self.ledger = EffectLedger(repo.engine, repo.tenant_id)
+        self.dispatcher = ToolDispatcher(self.tools, self.safety, self.ledger)
         self.loop = DeliberativeLoop(
             planner=self.planner, dispatcher=self.dispatcher,
             working_memory=self.working_memory, episodic=self.episodic,
@@ -138,6 +140,7 @@ class GCWRuntime:
         self.sandbox = SandboxRunner(policy=sandbox_policy)
         self.meta = MetaReasoner()
         self.loop.before_run = self._register_expectations
+        self.loop.checkpoint = self._persist_context
         self._persisted_traces = 0
         if _hydrate:
             for context in repo.list_tasks():
@@ -215,6 +218,22 @@ class GCWRuntime:
         self.loop.max_ticks = max_ticks
         self._run_and_persist(context)
         self._evaluate_expectations(context)
+        return context
+
+    def reconcile_effect(self, task_id: str, node_id: str, *, outcome: str, actor: str,
+                         note: str) -> TaskContext | None:
+        """Manual reconciliation of an INDETERMINATE effect, then resume the task."""
+        context = self.get_task(task_id)
+        if context is None:
+            return None
+        node = next((n for n in context.plan if n.id == node_id), None)
+        if node is None or node.tool is None:
+            raise KeyError(node_id)
+        from .effect_ledger import effect_identity
+        effect_id, _ = effect_identity(self.tenant_id, task_id, node_id, node.tool, node.arguments)
+        self.ledger.reconcile(effect_id, outcome=outcome, actor=actor, note=note)
+        self.loop.resume_after_reconciliation(context, node_id, applied=outcome == "applied")
+        self._persist_context(context)
         return context
 
     def resume(self, task_id: str, node_id: str, *, approved: bool) -> TaskContext | None:
