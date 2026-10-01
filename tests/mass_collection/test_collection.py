@@ -575,3 +575,164 @@ def test_dns_pin_round4_allows_public(tmp_path, monkeypatch):
         monkeypatch.setattr(engine.socket, 'getaddrinfo', lambda *a, _f=fam, _a=address, **k: [(_f, real_socket.SOCK_STREAM, 6, '', (_a, 80))])
         c = Collector(tmp_path/'d', limits=Limits(request_interval=0))
         assert c._pinned_url('http://example.org/page')[2] == 'example.org', address
+
+
+# ---- round 5 ----
+
+@pytest.mark.parametrize('kw', [
+    {'terms_accepted': 'false'}, {'terms_accepted': 'no'}, {'terms_accepted': 1}, {'terms_accepted': None},
+    {'training_reviewed': 'no'}, {'training_reviewed': 1}, {'training_reviewed': []},
+    {'owner_account': 'false'}, {'owner_account': 0},
+    {'license': ['MIT']}, {'license': 5}, {'license': None}, {'license': {'a': 1}},
+    {'text_field': 5}, {'text_field': None}, {'dataset': 3}, {'credential': 5}, {'credential': ['x']},
+    {'url': 5}, {'url': None}, {'format': ['html']}, {'terms_url': None},
+])
+def test_source_field_types_are_validated(kw):
+    base = dict(url='https://example.org/a', format='html', license='MIT', terms_url='https://example.org/t', terms_accepted=True)
+    base.update(kw)
+    with pytest.raises(CollectionError):
+        Source(**base)
+
+
+@pytest.mark.parametrize('kw', [
+    {'max_records': '5'}, {'max_records': 1.5}, {'max_records': True}, {'max_records': None}, {'max_storage_bytes': '10'},
+    {'shard_records': [1]}, {'request_interval': '3'}, {'request_interval': True}, {'timeout': '30'}, {'timeout': float('nan')},
+    {'request_interval': float('inf')}, {'timeout': float('inf')},
+])
+def test_limits_field_types_are_validated(kw):
+    with pytest.raises((CollectionError, ValueError)):
+        Limits(**kw)
+
+
+def test_source_valid_types_still_work():
+    s = Source(url='https://example.org/a', format='html', license='MIT', terms_url='https://example.org/t', terms_accepted=True, training_reviewed=True)
+    assert s.training_reviewed is True and Limits(request_interval=0, timeout=1.5).timeout == 1.5
+
+
+@pytest.mark.parametrize('flag', ['no', 'false', 'False', 0])
+def test_training_eligible_is_real_bool_and_false_for_non_bool_flags(tmp_path, flag):
+    from app.mass_collection.__main__ import main
+    cfg = tmp_path/'c.json'
+    cfg.write_text(json.dumps({'sources': [{'url': 'https://example.org/a', 'format': 'text', 'license': 'MIT', 'terms_url': 'https://example.org/t', 'terms_accepted': True, 'training_reviewed': flag}]}))
+    data = tmp_path/'d.txt'; data.write_text('hello')
+    assert main(['--root', str(tmp_path/'root'), 'ingest', str(cfg), str(data)]) == 1
+    assert not list((tmp_path/'root').rglob('*.jsonl'))
+
+
+def test_training_eligible_value_is_bool_type(tmp_path):
+    s = Source(url='https://example.org/a', format='text', license='MIT', terms_url='https://example.org/t', terms_accepted=True, training_reviewed=True)
+    c = collector(tmp_path/'d'); d = tmp_path/'x.txt'; d.write_text('hello'); c.ingest_file(s, d)
+    row = json.loads((c.root/c.export()['shards'][0]['path']).read_text())
+    assert row['training_eligible'] is True
+    s2 = Source(url='https://example.org/b', format='text', license='MIT', terms_url='https://example.org/t', terms_accepted=True)
+    d.write_text('other'); c.ingest_file(s2, d)
+    rows = [json.loads(l) for l in (c.root/c.export()['shards'][0]['path']).read_text().splitlines()]
+    assert all(type(r['training_eligible']) is bool for r in rows)
+
+
+@pytest.mark.parametrize('bad', [
+    {'license': ['MIT']}, {'terms_accepted': 'false'}, {'training_reviewed': 'no'}, {'max_records': 'x'}, 'notadict', 7,
+])
+def test_cli_bad_config_types_exit_cleanly(tmp_path, bad):
+    from app.mass_collection.__main__ import main
+    src = {'url': 'https://example.org/a', 'format': 'text', 'license': 'MIT', 'terms_url': 'https://example.org/t', 'terms_accepted': True}
+    if isinstance(bad, dict) and 'max_records' in bad: cfg = {'sources': [src], 'limits': bad}
+    elif isinstance(bad, dict): cfg = {'sources': [{**src, **bad}]}
+    else: cfg = {'sources': [bad]}
+    p = tmp_path/'c.json'; p.write_text(json.dumps(cfg))
+    d = tmp_path/'d.txt'; d.write_text('x')
+    assert main(['--root', str(tmp_path/'r'), 'ingest', str(p), str(d)]) == 1
+
+
+def _stream_src(url, fmt):
+    return source(url, fmt)
+
+
+@pytest.mark.parametrize('fmt,comp', [('text', gzip.compress), ('jsonl', gzip.compress), ('text', bz2.compress), ('jsonl', bz2.compress), ('wikipedia', bz2.compress), ('html', gzip.compress), ('arxiv', gzip.compress)])
+def test_truncated_compressed_input_is_collection_error_and_job_stopped(tmp_path, fmt, comp):
+    payload = (b'{"text":"%s"}\n' % (b'abcdefghij'*500)) * 200 if fmt == 'jsonl' else b'<p>' + b'abcdefghij 0123456789 '*3000
+    raw = comp(payload); path = tmp_path/'in.data'; path.write_bytes(raw[:len(raw)//2])
+    c = collector(tmp_path/'d')
+    with pytest.raises(CollectionError): c.ingest_file(source('https://example.org/x', fmt), path)
+
+
+def test_collect_truncated_gzip_job_ends_stopped(tmp_path, server, monkeypatch):
+    url, _ = server
+    raw = gzip.compress(b'{"text":"%s"}\n' % (b'abcdefghij'*5000)); cut = raw[:len(raw)//2]
+    c = collector(tmp_path/'d')
+    monkeypatch.setattr(c, '_download', lambda s, key: (_write(c.root/'downloads'/f'{key}.data', cut), s.url))
+    with pytest.raises(CollectionError): c.collect(source(url+'/rows', 'jsonl'))
+    assert c.status()['jobs'] == {'stopped': 1}
+
+
+def _write(path, data):
+    path.write_bytes(data); return path
+
+
+@pytest.mark.parametrize('fmt,data', [
+    ('jsonl', b'[' * 200000 + b']' * 200000 + b'\n'),
+    ('jsonl', b'[1,2]\n'), ('jsonl', b'"str"\n'), ('jsonl', b'7\n'), ('jsonl', b'null\n'), ('jsonl', b'{"text":"a"}\n{bad\n'),
+    ('wikipedia', b'<a>' * 100000), ('arxiv', b'<a>' * 100000), ('text', b'\xff\xfe\x00bad'),
+])
+def test_hostile_parser_inputs_end_stopped(tmp_path, monkeypatch, fmt, data):
+    c = collector(tmp_path/'d')
+    monkeypatch.setattr(c, '_download', lambda s, key: (_write(c.root/'downloads'/f'{key}.data', data), s.url))
+    with pytest.raises(CollectionError): c.collect(source('https://example.org/'+fmt, fmt))
+    assert c.status()['jobs'] == {'stopped': 1}
+    with pytest.raises(CollectionError): c.ingest_file(source('https://example.org/'+fmt, fmt), c.root/'downloads'/(list(c.root.joinpath('downloads').iterdir())[0].name))
+
+
+def test_memory_error_maps_to_collection_error(tmp_path, monkeypatch):
+    c = collector(tmp_path/'d'); p = tmp_path/'x.txt'; p.write_text('hi')
+    monkeypatch.setattr(c, '_rows', lambda s, path: (_ for _ in ()).throw(MemoryError()))
+    with pytest.raises(CollectionError): c.ingest_file(source('https://example.org/x', 'text'), p)
+
+
+def test_cli_hostile_inputs_exit_one(tmp_path):
+    from app.mass_collection.__main__ import main
+    cfg = tmp_path/'c.json'; cfg.write_text(json.dumps({'sources': [{'url': 'https://example.org/a', 'format': 'jsonl', 'license': 'MIT', 'terms_url': 'https://example.org/t', 'terms_accepted': True}]}))
+    for data in (gzip.compress(b'{"text":"%s"}\n' % hashlib.sha256(b'k').hexdigest().encode()*4000)[:300], b'[' * 200000):
+        f = tmp_path/'in'; f.write_bytes(data)
+        assert main(['--root', str(tmp_path/'r'), 'ingest', str(cfg), str(f)]) == 1
+    deep = tmp_path/'deep.json'; deep.write_text('[' * 200000 + ']' * 200000)
+    assert main(['--root', str(tmp_path/'r'), 'ingest', str(deep), str(f)]) == 1
+
+
+@pytest.mark.parametrize('address', [
+    '3fff::1', '3fff:fff:ffff::1', '2001:db8::1', '5f00::1', '5f00:1::1', '100::1', '2001:2::1', '2001:10::1', '2001:0::1', '2001:1ff::1', '2620:4f:8000::1',
+    '0.1.2.3', '192.0.2.1', '198.51.100.7', '203.0.113.9', '240.0.0.1', '255.255.255.255', '10.1.1.1', '172.16.0.1', '192.168.1.1', '169.254.1.1',
+    '::ffff:240.0.0.1', '64:ff9b::c000:201', '2002:c000:0201::1',
+])
+def test_dns_pin_round5_denies(tmp_path, monkeypatch, address):
+    test_dns_pin_explicit_denylist_and_unwrap(tmp_path, monkeypatch, address)
+
+
+def test_denied_networks_cover_iana_special_purpose():
+    import ipaddress
+    from app.mass_collection.engine import DENIED_NETWORKS
+    for n in ('3fff::/20', '5f00::/16', '2001:db8::/32', '2001::/23', '100::/64', '0.0.0.0/8', '240.0.0.0/4', '192.0.2.0/24', '198.51.100.0/24', '203.0.113.0/24'):
+        net = ipaddress.ip_network(n)
+        assert any(net.subnet_of(d) for d in DENIED_NETWORKS if d.version == net.version), n
+
+
+@pytest.mark.parametrize('query', [
+    'pw=1', 'PW=x', 'tkn=1', 'otp=123456', 'code=abc', 'p=abc', 'q=1&otp',
+    'q=ghp_abcdefghijklmnopqrstuvwxyz0123456789', 'q=github_pat_11ABCDEFG0abcdefghijklmnop', 'v=sk-abcdefghijklmnopqrstuvwx', 'v=sk-proj-abcdefghijklmnopqrstuvwxyz',
+    'v=AKIAIOSFODNN7EXAMPLE', 'v=xoxb-123456789012-abcdefghij', 'v=xoxp-123456789012-abcdefghij', 'v=AIzaSyA1234567890abcdefghijklmnopqrstuvw',
+    'q=bearerabcdefghijklmnopqrstuv', 'q=Bearer:abcdefghijklmnopqrstuv', 'q=bearer_abcdefghijklmnopqrstuv', 'q=bearer-abcdefghijklmnopqrstuv', 'q=BEARER%3Dabcdefghijklmnopqrstuv',
+])
+def test_query_screen_round5(query):
+    from app.mass_collection.engine import origin
+    with pytest.raises(CollectionError): origin('https://example.org/p?' + query)
+
+
+@pytest.mark.parametrize('path', ['/x/ghp_abcdefghijklmnopqrstuvwxyz0123456789', '/AKIAIOSFODNN7EXAMPLE/z'])
+def test_path_round5(path):
+    from app.mass_collection.engine import origin
+    with pytest.raises(CollectionError): origin('https://example.org' + path)
+
+
+def test_query_screen_round5_allows_benign():
+    from app.mass_collection.engine import origin
+    for q in ('page=2', 'encoding=utf8', 'lang=en&sort=new', 'q=sk-learn', 'q=bearer+bonds', 'q=bearish'):
+        assert origin('https://example.org/x?' + q) == 'https://example.org'

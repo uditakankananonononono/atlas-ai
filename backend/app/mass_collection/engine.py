@@ -12,6 +12,8 @@ import json
 import os
 import re
 import unicodedata
+import math
+import zlib
 from pathlib import Path
 import socket
 import sqlite3
@@ -32,12 +34,34 @@ WARC_HEADER_BLOCK_MAX = 1_048_576
 DENIED_NETWORKS = tuple(ipaddress.ip_network(n) for n in (
     'fec0::/10', '192.0.0.0/24', '192.88.99.0/24', '2001:20::/28',
     '2001::/32', '64:ff9b:1::/48', '::/96', '100.64.0.0/10', '198.18.0.0/15',
-    '192.31.196.0/24', '192.52.193.0/24', '192.175.48.0/24', '2001:1::/32', '2001:3::/32', '2001:4:112::/48', '2001:30::/28'))
+    '192.31.196.0/24', '192.52.193.0/24', '192.175.48.0/24', '2001:1::/32', '2001:3::/32', '2001:4:112::/48', '2001:30::/28',
+    # Round 5: explicit IANA special-purpose entries so the denylist does not depend on the running Python's tables.
+    '3fff::/20', '5f00::/16', '2001:db8::/32', '2001::/23', '2001:2::/48', '2001:10::/28', '100::/64', '2620:4f:8000::/48',
+    '0.0.0.0/8', '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16', '169.254.0.0/16', '192.0.2.0/24', '198.51.100.0/24',
+    '203.0.113.0/24', '240.0.0.0/4', '255.255.255.255/32'))
 NAT64_NETWORK = ipaddress.ip_network('64:ff9b::/96')
 
 
 class CollectionError(RuntimeError):
     """A policy, quota, parse, or transport stop. Never bypass a stop."""
+
+
+# Everything that can go wrong while reading untrusted input, mapped to CollectionError by callers.
+INGEST_ERRORS = (OSError, ValueError, EOFError, zlib.error, RecursionError, MemoryError, TypeError, AttributeError,
+                 IndexError, KeyError, ET.ParseError, DefusedXmlException)
+
+
+def _need(value, kind, name):
+    if kind is bool:
+        ok = type(value) is bool
+    elif kind is int:
+        ok = type(value) is int
+    elif kind == 'number':
+        ok = type(value) in (int, float) and math.isfinite(value)
+    else:
+        ok = isinstance(value, kind) and type(value) is not bool
+    if not ok:
+        raise CollectionError(f'{name} has the wrong type')
 
 
 @dataclass(frozen=True)
@@ -53,6 +77,13 @@ class Source:
     text_field: str = 'text'
     dataset: str = ''
 
+    def __post_init__(self):
+        for name in ('url', 'format', 'license', 'terms_url', 'text_field', 'dataset'):
+            _need(getattr(self, name), str, name)
+        if self.credential is not None: _need(self.credential, str, 'credential')
+        for name in ('terms_accepted', 'owner_account', 'training_reviewed'):
+            _need(getattr(self, name), bool, name)
+
 
 @dataclass(frozen=True)
 class Limits:
@@ -67,12 +98,18 @@ class Limits:
     timeout: float = 30.0
 
     def __post_init__(self):
+        for k in ('max_records', 'max_storage_bytes', 'max_download_bytes', 'max_record_bytes', 'max_parse_bytes', 'max_disk_bytes', 'shard_records'):
+            _need(getattr(self, k), int, k)
+        for k in ('request_interval', 'timeout'):
+            _need(getattr(self, k), 'number', k)
         if any(getattr(self, k) <= 0 for k in ('max_records', 'max_storage_bytes', 'max_download_bytes', 'max_record_bytes', 'max_parse_bytes', 'max_disk_bytes', 'shard_records', 'timeout')) or self.request_interval < 0:
             raise ValueError('limits must be positive; interval may be zero for tests')
 
 
+SENSITIVE_EXACT_KEYS = frozenset(('pw', 'tkn', 'otp', 'code', 'p'))  # too short for substring matching
 SENSITIVE_QUERY_TOKENS = ('token', 'secret', 'key', 'auth', 'sig', 'pass', 'pwd', 'session', 'cred', 'jwt', 'bearer', 'cookie')
-_BEARER_VALUE = re.compile(r'\bbearer[\s+]+[A-Za-z0-9._~+/=-]{16,}', re.I)
+_BEARER_VALUE = re.compile(r'\bbearer[\s+:=_-]*[A-Za-z0-9._~+/=-]{16,}', re.I)
+_KEY_VALUES = re.compile(r'ghp_[A-Za-z0-9]{20,}|gh[ousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|\bsk-[A-Za-z0-9_-]{20,}|\bAKIA[0-9A-Z]{16}\b|xox[abprs]-[A-Za-z0-9-]{10,}|AIza[0-9A-Za-z_-]{35}')
 _JWT_VALUE = re.compile(r'eyJ[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]*')
 
 
@@ -93,12 +130,12 @@ def _sensitive_key(key: str) -> bool:
     key = _decode_stable(key)
     if _bad_chars(key): return True
     flat = re.sub(r'[^a-z0-9]', '', key.lower())
-    return any(t in flat for t in SENSITIVE_QUERY_TOKENS)
+    return flat in SENSITIVE_EXACT_KEYS or any(t in flat for t in SENSITIVE_QUERY_TOKENS)
 
 
 def _sensitive_value(value: str) -> bool:
     value = _decode_stable(value)
-    return _bad_chars(value) or bool(_BEARER_VALUE.search(value) or _JWT_VALUE.search(value))
+    return _bad_chars(value) or bool(_BEARER_VALUE.search(value) or _JWT_VALUE.search(value) or _KEY_VALUES.search(value))
 
 
 def _screen_url_credentials(p) -> None:
@@ -441,7 +478,7 @@ class Collector:
                     db.execute('UPDATE jobs SET state=?,inserted=inserted+? WHERE key=?', ('complete', result['inserted'], key))
                 path.unlink(missing_ok=True); path.with_suffix('.json').unlink(missing_ok=True)
                 return result
-            except (CollectionError, OSError, ValueError, ET.ParseError, DefusedXmlException, KeyError) as exc:
+            except (CollectionError, *INGEST_ERRORS) as exc:
                 with self.db() as db:
                     db.execute('UPDATE jobs SET state=? WHERE key=?', ('stopped', key))
                 if isinstance(exc, CollectionError): raise
@@ -453,7 +490,7 @@ class Collector:
         with self.writer():
             try:
                 return self._ingest(source, Path(path), source.url)
-            except (ValueError, OSError, ET.ParseError, DefusedXmlException, KeyError) as exc:
+            except INGEST_ERRORS as exc:
                 raise CollectionError('input parsing or local storage failed') from exc
 
     def _open_input(self, path):
@@ -548,6 +585,7 @@ class Collector:
                     if len(line)>limit: raise CollectionError('JSONL record byte quota exceeded')
                     if not line.strip(): continue
                     row = json.loads(line)
+                    if not isinstance(row, dict): raise CollectionError('JSONL rows must be objects')
                     text = row[source.text_field]
                     if not isinstance(text, str): raise CollectionError('text_field must contain strings')
                     yield text, {'upstream_id': str(row.get('id', ''))}
@@ -577,7 +615,7 @@ class Collector:
             if len(raw)>self.limits.max_record_bytes: raise CollectionError('record byte quota exceeded')
             ident = hashlib.sha256(raw).hexdigest()
             provenance = {'url': source.url, 'final_url': final_url, 'dataset': source.dataset, 'format': source.format, 'collected_at': utcnow(), 'terms_url': source.terms_url, 'license': source.license, 'training_reviewed': source.training_reviewed, 'owner_account': source.owner_account, **extra}
-            row = {'id': ident, 'text': text, 'license': source.license, 'training_eligible': source.training_reviewed and license_training_eligible(source.license) and not source.owner_account and source.format!='commoncrawl', 'provenance': provenance}
+            row = {'id': ident, 'text': text, 'license': source.license, 'training_eligible': bool(source.training_reviewed is True and license_training_eligible(source.license) and not source.owner_account and source.format!='commoncrawl'), 'provenance': provenance}
             body = json.dumps(row, ensure_ascii=False, sort_keys=True)
             size = len(body.encode('utf-8'))+1
             with self.db() as db:

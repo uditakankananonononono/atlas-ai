@@ -7,7 +7,8 @@ import json
 import os
 from pathlib import Path
 import sys
-from .engine import Collector, Source, Limits, CollectionError
+import zlib
+from .engine import Collector, Source, Limits, CollectionError, INGEST_ERRORS
 from .credentials import CredentialStore
 
 
@@ -47,7 +48,7 @@ def main(argv=None):
             else: result = c.status()
         print(json.dumps(result, indent=2))
         return 0
-    except (CollectionError, ValueError, OSError, TypeError) as exc:
+    except (CollectionError, *INGEST_ERRORS) as exc:
         print(f'Collection stopped: {exc}', file=sys.stderr)
         return 1
 
