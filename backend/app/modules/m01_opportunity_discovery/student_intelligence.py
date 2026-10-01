@@ -87,7 +87,7 @@ def annotate(item: dict) -> dict:
     result = dict(item)
     result['url'] = canonical_link(item['url'])
     result['id'] = stable_id(result)
-    result['deadline'] = item.get('deadline') or extract_deadline(text)
+    result['deadline'] = item.get('deadline') or extract_deadline(item.get('description', ''))
     result['award'] = extract_award(text)
     result['delivery'] = extract_delivery(text)
     result['student_level'] = extract_student_level(text)

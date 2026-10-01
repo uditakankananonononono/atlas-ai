@@ -63,10 +63,11 @@ def _plain_text(value: str) -> str:
     soup = BeautifulSoup(unescape(value), 'html.parser')
     for node in soup.select('script, style, template, noscript'):
         node.decompose()
-    for node in soup.select('p, div, li, section, article, h1, h2, h3, h4, tr, br'):
+    for node in soup.select('p, div, li, section, article, h1, h2, h3, h4, h5, h6, tr, td, th, dt, dd, br'):
         node.insert_before('\n')
         node.insert_after('\n')
-    return soup.get_text(' ', strip=True).strip()
+    text = soup.get_text('', strip=False)
+    return '\n'.join(re.sub(r'[ \t]+', ' ', line).strip() for line in text.splitlines() if line.strip())
 
 
 def _safe_target(source: StudentPlatform, href: str) -> str | None:
