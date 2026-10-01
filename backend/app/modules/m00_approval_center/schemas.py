@@ -30,6 +30,8 @@ class ApprovalView(BaseModel):
     status: ApprovalStatus
     created_at: datetime
     expires_at: datetime | None
+    approved_use_by: datetime | None = None
+    revoked_at: datetime | None = None
     decided_at: datetime | None
     approved_by: str | None
 
@@ -101,6 +103,7 @@ class EffectConsume(BaseModel):
 
 
 class EffectPermit(BaseModel):
+    replayed: bool = False
     approval_id: str
     effect_id: str
     allowed: bool
