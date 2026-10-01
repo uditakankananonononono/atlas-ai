@@ -4,6 +4,8 @@ Atlas AI is a human-controlled modular work platform owned by Udita. This reposi
 
 ## Honest state
 
+**October 1 independent depth audit:** the historical 2,006-row feature ledger is not a completion certificate. In the first 126 fully inspected mapped branches, 108 were worksheets/planning helpers and 18 performed bounded computation. The remaining 1,880 rows were not adjudicated for semantic depth. All 3,880 mapped offline tests passed, but some tests only checked fields/flags. See `audits/depth-verification-2026-10-01.json` for the row-level first-pass status. No new full production acceptance is claimed. Local repairs are tracked separately from shipped and live-accepted work.
+
 This is an active product build, not a finished production service. Modules 0-25 are registered on API routers and have offline tests, but registration is not proof that every requested feature is complete. The row-by-row evidence audit is in [`docs/IMPLEMENTATION_AUDIT.md`](docs/IMPLEMENTATION_AUDIT.md) and [`audits/ledger-140.json`](audits/ledger-140.json). The audit deliberately labels adjacent-but-incomplete work **thin** and absent exact requirements **missing**.
 
 Frontend security maintenance: pinned Next.js 16.3.6 replaced 14.2.32; point-in-time `npm audit --omit=dev` found zero production dependency advisories after the update, and clean install/typecheck/build passed on Node 22. Browser E2E and production deployment are not verified. See [dependency audit](docs/FRONTEND_DEPENDENCY_AUDIT_20260927.md).
