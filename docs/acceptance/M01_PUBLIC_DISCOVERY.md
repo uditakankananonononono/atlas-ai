@@ -298,3 +298,13 @@ accepted; its new corpus accepts 20/32 positives, zero wrong accepted. Eligibili
 remains 18/42 and 15/15 respectively, zero wrong captured. Authored corpora only.
 No broad precision/recall, arbitrary-script negation guarantee, deployment or
 source-permission acceptance is claimed. Independent final audit remains pending.
+
+### Explicit compatibility-test change after seventh audit
+
+Four original mixed-prose tests keep the original cards/text order but change
+expected behavior: date-window [a] -> [], include-unknown [a,c] -> [a,b,c]; expiry
+[a,c] -> [a,b,c]; deadline-unknown count 1 -> 3 (award count still 1); constrained
+refine [a] -> []. Named `contract_change_mixed_prose` tests record old/new results.
+Reason: independent corpora showed invalidation after field boundaries being
+wrongly accepted; standalone abstention is safer but loses mixed-prose recall.
+Any passing suite count after this change must state these expectations changed.

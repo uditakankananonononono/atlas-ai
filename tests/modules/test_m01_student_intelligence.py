@@ -88,16 +88,18 @@ def test_13_negative_terms():
     assert s.exclude_terms([item(), item(title='No essay')], ['essay']) == [item()]
 
 
-def test_14_deadline_window_unknown_handling():
+def test_14_contract_change_mixed_prose_abstains_in_window():
+    # Old: [a] / [a,c]. New: [] / [a,b,c], wrong-accept safety cost.
     a, b, c = cards()
-    assert s.deadline_window([a, b, c], date(2026,10,1), date(2026,10,31)) == [a]
-    assert s.deadline_window([a,b,c], date(2026,10,1), date(2026,10,31), include_unknown=True) == [a,c]
+    assert s.deadline_window([a, b, c], date(2026,10,1), date(2026,10,31)) == []
+    assert s.deadline_window([a,b,c], date(2026,10,1), date(2026,10,31), include_unknown=True) == [a,b,c]
     with pytest.raises(ValueError): s.deadline_window([a], date(2026,10,31), date(2026,10,1))
 
 
-def test_15_expired_filter_keeps_unknown():
+def test_15_contract_change_mixed_prose_expiry_unknown():
+    # Old: [a,c]. New: [a,b,c], no safely parsed deadline on mixed prose.
     a, b, c = cards()
-    assert s.exclude_expired([a,b,c], today=date(2026,9,25)) == [a,c]
+    assert s.exclude_expired([a,b,c], today=date(2026,9,25)) == [a,b,c]
 
 
 def test_16_minimum_award_never_crosses_currency():
@@ -124,9 +126,10 @@ def test_19_region_mention_filter():
     assert s.filter_region_mentions([a,b,c], 'India', include_unknown=True) == [a,c]
 
 
-def test_20_source_breakdown_and_unknowns():
+def test_20_contract_change_mixed_prose_deadline_unknown_counts():
+    # Old deadline_unknown=1. New=3; award_unknown remains 1.
     result = s.source_breakdown(cards())
-    assert result['total'] == 3 and result['deadline_unknown'] == result['award_unknown'] == 1
+    assert result['total'] == 3 and result['deadline_unknown'] == 3 and result['award_unknown'] == 1
     assert result['by_platform'] == {'fastweb': 3}
 
 
@@ -142,10 +145,11 @@ def test_live_aggregation_isolates_failures_and_labels_launch(monkeypatch):
     with pytest.raises(ValueError): s.search_and_analyze(['fastweb'] * 2)
 
 
-def test_refine_composes_real_evidence_filters():
+def test_contract_change_mixed_prose_refine_abstains():
+    # Old [a]; new [] because strict date filter cannot accept unknown.
     a, b, c = cards()
     assert s.refine([a,b,c], kind='scholarship', terms=['STEM'], start=date(2026,10,1), end=date(2026,10,31),
-                    min_award=3000, currency='USD', delivery='remote', level='undergraduate', region='India') == [a]
+                    min_award=3000, currency='USD', delivery='remote', level='undergraduate', region='India') == []
     with pytest.raises(ValueError): s.refine([a], start=date(2026,10,1))
     with pytest.raises(ValueError): s.refine([a], min_award=100)
 
