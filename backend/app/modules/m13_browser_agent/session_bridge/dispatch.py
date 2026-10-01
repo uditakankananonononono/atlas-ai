@@ -245,7 +245,8 @@ class BridgedSessions:
     # -- approval arming ----------------------------------------------------
 
     async def authorize_submit(self, tenant_id: str, session_id: str, *, approval_id: str,
-                               capture_sha256: str, selector: str, values: dict[str, str]) -> None:
+                               capture_sha256: str, selector: str, values: dict[str, str], preview: dict | None = None,
+                               readback_selectors: dict | None = None) -> None:
         """Arm the next click on this session as the approved submit.
 
         Called by the M13 submit path only after the approval was consumed.
@@ -262,7 +263,10 @@ class BridgedSessions:
                                       capture_sha256=capture_sha256, selector=selector,
                                       values_digest=values_digest(values))
         self._armed[(tenant_id, session_id)] = {
-            "approval_id": approval_id, "capture_sha256": capture_sha256, "token": token}
+            "approval_id": approval_id, "capture_sha256": capture_sha256, "token": token,
+            "values_digest": values_digest(values), "values": values}
+        if preview is not None:
+            self._armed[(tenant_id, session_id)].update(preview=preview, readback_selectors=readback_selectors or {})
 
     def _click_class(self, tenant_id: str, device_id: str, local_name: str,
                      selector: str) -> tuple[CommandKind, dict[str, str]]:

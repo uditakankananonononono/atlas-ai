@@ -142,6 +142,7 @@ def request_step_approval(run_id:str,step_id:str,payload:dict):
 
 @router.post('/runs/{run_id}/steps/{step_id}/receipts')
 def record_receipt(run_id:str,step_id:str,payload:dict):
+ raise HTTPException(409,"Caller receipts cannot prove execution; use login-run adapter readback")
  try:return _runner.record_adapter_receipt(run_id,step_id,adapter=str(payload.get('adapter','')),provider_receipt_id=str(payload.get('provider_receipt_id','')),status=str(payload.get('status','')),observed_at=str(payload.get('observed_at','')),payload_sha256=str(payload.get('payload_sha256','')))
  except KeyError:raise HTTPException(404,'run or step not found')
  except ValueError as error:raise HTTPException(422,str(error)) from error
@@ -168,6 +169,7 @@ def durable_request_approval(run_id:str,step_id:str,payload:dict,r:DurableHustle
  except ValueError as error:raise HTTPException(422,str(error)) from error
 @router.post('/durable-runs/{run_id}/steps/{step_id}/receipts')
 def durable_receipt(run_id:str,step_id:str,payload:dict,r:DurableHustleRunner=Depends(durable_runner)):
+ raise HTTPException(409,"Caller receipts cannot prove execution; use login-run adapter readback")
  try:return r.record_adapter_receipt(run_id,step_id,adapter=str(payload.get('adapter','')),provider_receipt_id=str(payload.get('provider_receipt_id','')),status=str(payload.get('status','')),observed_at=str(payload.get('observed_at','')),payload_sha256=str(payload.get('payload_sha256','')))
  except KeyError:raise HTTPException(404,'run or step not found')
  except ValueError as error:raise HTTPException(422,str(error)) from error
