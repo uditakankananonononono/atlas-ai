@@ -18,7 +18,8 @@ import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 
-from sqlalchemy import JSON, DateTime, String, select
+from sqlalchemy import JSON, DateTime, String, select, event, DDL, text
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, Session, mapped_column, sessionmaker
 from uuid import uuid4
 
@@ -60,6 +61,8 @@ class ApprovalRequestRow(Base):
     status: Mapped[str] = mapped_column(String(20), index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    approved_use_by: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     approved_by: Mapped[str | None] = mapped_column(String(120), nullable=True)
 
@@ -87,6 +90,8 @@ def _view(row: ApprovalRequestRow) -> dict[str, Any]:
         "status": ApprovalStatus(row.status),
         "created_at": _aware(row.created_at),
         "expires_at": _aware(row.expires_at) if row.expires_at else None,
+        "approved_use_by": _aware(row.approved_use_by) if row.approved_use_by else None,
+        "revoked_at": _aware(row.revoked_at) if row.revoked_at else None,
         "decided_at": _aware(row.decided_at) if row.decided_at else None,
         "approved_by": row.approved_by,
     }
@@ -141,6 +146,7 @@ class Service:
         session_factory: sessionmaker | None = None,
         broadcaster: ApprovalBroadcaster | None = None,
         clock: Callable[[], datetime] | None = None,
+        approved_use_ttl_seconds: int = 3600,
     ) -> None:
         if session_factory is None:
             # Production schema lifecycle belongs to Alembic. Auto-creation is
@@ -150,6 +156,9 @@ class Service:
             if os.getenv("ATLAS_AUTO_CREATE_SCHEMA") == "1":
                 Base.metadata.create_all(engine)
             session_factory = SessionLocal
+        if approved_use_ttl_seconds <= 0:
+            raise ValueError("approved_use_ttl_seconds must be positive")
+        self._approved_use_ttl_seconds = approved_use_ttl_seconds
         self._sessions = session_factory
         self._broadcaster = broadcaster or ApprovalBroadcaster()
         self._clock = clock or (lambda: datetime.now(timezone.utc))
@@ -236,7 +245,9 @@ class Service:
             raise ValueError("decision must be approved or denied")
         now = self._clock()
         with self._sessions.begin() as db:
-            row = self._fetch(db, approval_id)
+            _serialize_writes(db)
+            row = _locked_request(db, approval_id)
+            now = self._clock()
             if self._expire_if_overdue(db, row, now):
                 raise ApprovalConflictError("approval has expired")
             if row.status != ApprovalStatus.PENDING.value:
@@ -244,6 +255,8 @@ class Service:
             row.status = decision.value
             row.decided_at = now
             row.approved_by = decided_by
+            if decision == ApprovalStatus.APPROVED:
+                row.approved_use_by = now + timedelta(seconds=self._approved_use_ttl_seconds)
             db.add(ApprovalEventRow(approval_id=row.id, event=decision.value, actor=decided_by, at=now))
             view = _view(row)
         self._broadcaster.publish({"type": "approval_decision", "approval": _jsonable(view)})
@@ -353,7 +366,7 @@ def _jsonable(view: dict[str, Any]) -> dict[str, Any]:
     """Convert a view dict into JSON-serializable form for event payloads."""
     result = dict(view)
     result["status"] = view["status"].value if isinstance(view["status"], ApprovalStatus) else view["status"]
-    for key in ("created_at", "expires_at", "decided_at"):
+    for key in ("created_at", "expires_at", "decided_at", "approved_use_by", "revoked_at"):
         if isinstance(result.get(key), datetime):
             result[key] = result[key].isoformat()
     return result
@@ -430,6 +443,7 @@ class ApprovalPolicyRow(Base):
 
 class ApprovalIdempotencyRow(Base):
     __tablename__ = "m00_approval_idempotency"
+    tenant_id: Mapped[str] = mapped_column(String(120), primary_key=True)
     key: Mapped[str] = mapped_column(String(200), primary_key=True)
     request_hash: Mapped[str] = mapped_column(String(64))
     approval_id: Mapped[str] = mapped_column(String(36), unique=True, index=True)
@@ -543,59 +557,142 @@ def _install_extensions() -> None:
         if effect == "deny":
             return {"decision": "deny", "allowed": False, "reason": "denied by policy",
                     "policy_id": policy["id"], "approval": None}
+        if module_id not in BY_ID:
+            raise ValueError(f"unknown module id: {module_id}")
         digest = _request_hash(module_id=module_id, action_type=action_type, payload=payload, user_id=user_id)
-        if idempotency_key:
-            with self._sessions() as db:
-                idem = db.get(ApprovalIdempotencyRow, idempotency_key)
-                if idem:
-                    if idem.request_hash != digest:
+        # Reserve key, request and initial audit in one transaction. ON CONFLICT
+        # waits for the competing transaction on PostgreSQL; SQLite serializes
+        # writers before any read, including separate processes.
+        created = False
+        with self._sessions.begin() as db:
+            _serialize_writes(db)
+            now = self._clock()
+            approval_id = str(uuid4())
+            if idempotency_key:
+                dialect = db.get_bind().dialect.name
+                if dialect == "postgresql":
+                    from sqlalchemy.dialects.postgresql import insert
+                elif dialect == "sqlite":
+                    from sqlalchemy.dialects.sqlite import insert
+                else:
+                    raise RuntimeError("atomic gate supports SQLite and PostgreSQL only")
+                reservation = insert(ApprovalIdempotencyRow).values(
+                    tenant_id=user_id, key=idempotency_key, request_hash=digest,
+                    approval_id=approval_id, created_at=now).on_conflict_do_nothing(
+                        index_elements=["tenant_id", "key"]).returning(ApprovalIdempotencyRow.approval_id)
+                won = db.scalar(reservation)
+                if won is None:
+                    idem = db.get(ApprovalIdempotencyRow, (user_id, idempotency_key))
+                    if idem is None or idem.request_hash != digest:
                         raise ApprovalConflictError("idempotency key belongs to another request")
-                    return {"decision": "review", "allowed": False, "reason": "existing review",
-                            "policy_id": policy["id"] if policy else None, "approval": self.get(idem.approval_id)}
-        approval = self.submit(module_id=module_id, action_type=action_type, payload=payload,
-                               user_id=user_id,
-                               ttl_seconds=policy["review_ttl_seconds"] if policy else None)
-        if idempotency_key:
-            with self._sessions.begin() as db:
-                db.add(ApprovalIdempotencyRow(key=idempotency_key, request_hash=digest,
-                                               approval_id=approval["id"], created_at=self._clock()))
-        return {"decision": "review", "allowed": False, "reason": "human review required",
+                    row = self._fetch(db, idem.approval_id)
+                    self._expire_if_overdue(db, row, now)
+                    approval = _view(row)
+                else:
+                    created = True
+            else:
+                created = True
+            if created:
+                ttl = policy["review_ttl_seconds"] if policy else None
+                row = ApprovalRequestRow(id=approval_id, user_id=user_id, module_id=module_id,
+                    action_type=action_type, payload=payload, status=ApprovalStatus.PENDING.value,
+                    created_at=now, expires_at=now + timedelta(seconds=ttl) if ttl else None)
+                db.add(row)
+                db.add(ApprovalEventRow(approval_id=approval_id, event="created", actor=None, at=now))
+                db.flush()
+                approval = _view(row)
+        if created:
+            self._broadcaster.publish({"type": "approval_request", "approval": _jsonable(approval)})
+        return {"decision": "review", "allowed": False,
+                "reason": "human review required" if created else "existing review",
                 "policy_id": policy["id"] if policy else None, "approval": approval}
+
+    def revoke(self: Service, approval_id: str, *, actor: str) -> dict[str, Any]:
+        """Revoke unconsumed authority without rewriting the human decision."""
+        with self._sessions.begin() as db:
+            _serialize_writes(db)
+            row = _locked_request(db, approval_id)
+            if row.revoked_at is None:
+                row.revoked_at = self._clock()
+                db.add(ApprovalEventRow(approval_id=approval_id, event="revoked", actor=actor, at=row.revoked_at))
+            return _view(row)
 
     def consume_effect(self: Service, approval_id: str, *, module_id: int, action_type: str,
                        payload: dict[str, Any], user_id: str, effect_id: str,
                        actor: str) -> dict[str, Any]:
-        """Atomically issue a one-shot permit bound to the exact reviewed request."""
+        """Claim once. Replay is a receipt, NOT fresh execution authority."""
         digest = _request_hash(module_id=module_id, action_type=action_type, payload=payload, user_id=user_id)
-        now = self._clock()
-        with self._sessions.begin() as db:
-            row = self._fetch(db, approval_id)
-            if self._expire_if_overdue(db, row, now):
-                raise ApprovalConflictError("approval has expired")
-            existing = db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.approval_id == approval_id))
-            if existing:
-                if existing.effect_id == effect_id and existing.request_hash == digest:
-                    return {"approval_id": approval_id, "effect_id": effect_id,
-                            "allowed": True, "consumed_at": _aware(existing.consumed_at)}
-                raise ApprovalConflictError("approval has already been consumed")
-            if row.status != ApprovalStatus.APPROVED.value:
-                raise ApprovalConflictError(f"approval is {row.status}, not approved")
-            stored = _request_hash(module_id=row.module_id, action_type=row.action_type,
-                                   payload=row.payload, user_id=row.user_id)
-            if stored != digest:
-                raise ApprovalConflictError("effect does not match approved request")
-            if db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.effect_id == effect_id)):
-                raise ApprovalConflictError("effect id has already been used")
-            db.add(ApprovalEffectRow(approval_id=approval_id, effect_id=effect_id,
-                                     request_hash=digest, actor=actor, consumed_at=now))
-            db.add(ApprovalEventRow(approval_id=approval_id, event="effect_consumed", actor=actor, at=now))
-        return {"approval_id": approval_id, "effect_id": effect_id, "allowed": True, "consumed_at": now}
+        try:
+            with self._sessions.begin() as db:
+                _serialize_writes(db)
+                row = _locked_request(db, approval_id)
+                now = self._clock()
+                if row.revoked_at is not None:
+                    raise ApprovalConflictError("approval has been revoked")
+                if row.status != ApprovalStatus.APPROVED.value:
+                    raise ApprovalConflictError(f"approval is {row.status}, not approved")
+                stored = _request_hash(module_id=row.module_id, action_type=row.action_type,
+                                       payload=row.payload, user_id=row.user_id)
+                if stored != digest:
+                    raise ApprovalConflictError("effect does not match approved request")
+                existing = db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.approval_id == approval_id))
+                if existing:
+                    if existing.effect_id == effect_id and existing.request_hash == digest:
+                        return {"approval_id": approval_id, "effect_id": effect_id,
+                                "allowed": True, "replayed": True, "consumed_at": _aware(existing.consumed_at)}
+                    raise ApprovalConflictError("approval has already been consumed")
+                if row.approved_use_by is None or _aware(row.approved_use_by) <= now:
+                    raise ApprovalConflictError("approved use deadline has expired")
+                if db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.effect_id == effect_id)):
+                    raise ApprovalConflictError("effect id has already been used")
+                db.add(ApprovalEffectRow(approval_id=approval_id, effect_id=effect_id,
+                                         request_hash=digest, actor=actor, consumed_at=now))
+                db.add(ApprovalEventRow(approval_id=approval_id, event="effect_consumed", actor=actor, at=now))
+                db.flush()
+                # Recheck after inserts/flush immediately before transaction commit.
+                # No permit escapes if the clock crosses its deadline during work.
+                if _aware(row.approved_use_by) <= self._clock():
+                    raise ApprovalConflictError("approved use deadline has expired")
+            return {"approval_id": approval_id, "effect_id": effect_id, "allowed": True,
+                    "replayed": False, "consumed_at": now}
+        except IntegrityError as exc:
+            raise ApprovalConflictError("effect id has already been used") from exc
 
     Service.upsert_policy = upsert_policy
     Service.list_policies = list_policies
     Service.evaluate_policy = evaluate_policy
     Service.gate = gate
     Service.consume_effect = consume_effect
+    Service.revoke = revoke
 
 
 _install_extensions()
+
+
+def _serialize_writes(db: Session) -> None:
+    if db.get_bind().dialect.name == "sqlite":
+        db.execute(text("BEGIN IMMEDIATE"))
+
+
+def _locked_request(db: Session, approval_id: str) -> ApprovalRequestRow:
+    row = db.scalar(select(ApprovalRequestRow).where(ApprovalRequestRow.id == approval_id).with_for_update())
+    if row is None:
+        raise ApprovalNotFoundError(approval_id)
+    return row
+
+
+for operation in ("UPDATE", "DELETE"):
+    event.listen(ApprovalEventRow.__table__, "after_create", DDL(
+        f"CREATE TRIGGER m00_events_no_{operation.lower()} BEFORE {operation} ON m00_approval_events "
+        "BEGIN SELECT RAISE(ABORT, 'approval audit is append-only'); END"
+    ).execute_if(dialect="sqlite"))
+
+# PostgreSQL also blocks TRUNCATE. Role ACLs remain the deployment boundary.
+for statement in (
+    "CREATE OR REPLACE FUNCTION m00_audit_append_only() RETURNS trigger LANGUAGE plpgsql AS $$ "
+    "BEGIN RAISE EXCEPTION 'approval audit is append-only'; END $$",
+    "CREATE TRIGGER m00_audit_no_mutation BEFORE UPDATE OR DELETE OR TRUNCATE "
+    "ON m00_approval_events FOR EACH STATEMENT EXECUTE FUNCTION m00_audit_append_only()",
+    "REVOKE UPDATE, DELETE, TRUNCATE ON m00_approval_events FROM PUBLIC",
+):
+    event.listen(ApprovalEventRow.__table__, "after_create", DDL(statement).execute_if(dialect="postgresql"))
