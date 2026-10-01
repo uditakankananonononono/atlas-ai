@@ -4,6 +4,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+from alembic.config import Config
+from alembic.script import ScriptDirectory
+
 
 def test_clean_database_upgrades_to_head_with_product_and_cognitive_tables(tmp_path):
     database=tmp_path/'clean.sqlite'
@@ -15,7 +18,9 @@ def test_clean_database_upgrades_to_head_with_product_and_cognitive_tables(tmp_p
         tables={row[0] for row in db.execute("select name from sqlite_master where type='table'")}
         revision=db.execute('select version_num from alembic_version').fetchone()[0]
         m01_columns={row[1] for row in db.execute("pragma table_info('m01_opportunities')")}
-    assert revision=='20260924_m09_key_governance'
+    expected_heads = ScriptDirectory.from_config(Config('alembic.ini')).get_heads()
+    assert len(expected_heads) == 1, 'Migration graph must have one unambiguous head'
+    assert revision == expected_heads[0]
     assert {'match_engine','deadline_engine'} <= m01_columns
     assert {'m10_reviewer_public_keys','m10_reviewer_key_events'} <= tables
     assert {'m00_approval_requests','collection_sources','m20_tasks','m20_semantic_facts','m20_episodes','m22_install_proposals','m22_install_jobs','m22_tool_portfolio'} <= tables
