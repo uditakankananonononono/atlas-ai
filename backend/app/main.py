@@ -21,10 +21,13 @@ from app.modules.m20_general_cognitive_worker.product_orchestrator_routes import
 from app.core.model_routes import router as model_catalog_router
 from app.self_improve.routes import router as self_improve_router
 
+from app.mass_collection.routes import router as mass_collection_router
+
 configure_telemetry()
 app = FastAPI(title="Atlas AI", version="0.1.0")
 app.add_middleware(ProductionBoundaryMiddleware,limit_per_minute=int(os.getenv("ATLAS_RATE_LIMIT_PER_MINUTE","120")))
 app.include_router(router, prefix="/api/v1")
+app.include_router(mass_collection_router, prefix="/api/v1", dependencies=[Depends(require_tenant)])
 app.include_router(google_grounding_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(acceptance_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(runtime_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])

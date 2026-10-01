@@ -1,0 +1,9 @@
+Attempt: .venv/bin/python -m pytest tests/mass_collection tests/modules/test_secrets_shadow_compat.py -q
+ImportError while loading conftest '/home/sandbox/atlas-ai/tests/modules/conftest.py'.
+tests/modules/conftest.py:125: in <module>
+    _stub_app_core()
+tests/modules/conftest.py:94: in _stub_app_core
+    from sqlalchemy import create_engine
+E   ModuleNotFoundError: No module named 'sqlalchemy'
+
+The adjacent modules suite did not execute. It needs Atlas base dependencies.
