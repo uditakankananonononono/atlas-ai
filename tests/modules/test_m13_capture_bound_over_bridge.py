@@ -22,6 +22,8 @@ from app.modules.m13_browser_agent.session_bridge.registry import BridgeRegistry
 CAP = "c" * 64
 URL = "https://example.com/form"
 V = {"#name": "Ada", "#email": "a@b.co"}
+FORM_HTML = ('<html><body><form method="post" action="/submit"><input id="name" name="name">'
+             '<input id="email" name="email"><button id="go">Go</button></form></body></html>')
 
 
 class FakeConnection:
@@ -39,7 +41,12 @@ class FakeConnection:
         if kind is CommandKind.SCREENSHOT:
             return {"png_base64": base64.b64encode(b"\x89PNG-fake").decode(), "url": self.url}
         if kind is CommandKind.EXTRACT:
-            return {"html": "<html>form</html>", "url": self.url}
+            return {"html": FORM_HTML, "url": self.url}
+        if kind is CommandKind.FORM_FACTS:
+            return {"facts": {"url": URL, "base_uri": URL, "base_count": 0, "action": "https://example.com/submit",
+                              "method": "post", "enctype": "application/x-www-form-urlencoded", "target": "",
+                              "accept_charset": "", "no_validate": False, "on_attrs": [], "overrides": [],
+                              "external_controls": 0}, "url": self.url}
         return {"url": self.url}
 
 
@@ -128,7 +135,10 @@ async def test_capture_bound_submit_over_bridge(env, tmp_path):
     token = submit_commands[0]["args"]["token"]
     assert protocol.verify_submit_token(
         device["command_secret"], approval_id=staged["approval_id"], capture_sha256=CAP,
-        selector="#go", values_digest=values_digest(V), token=token)
+        selector="#go", values_digest=values_digest(V), token=token,
+        preview_sha256=submit_commands[0]["args"]["preview_sha256"])
+    preview = submit_commands[0]["args"]["preview"]
+    assert preview["form_action"] == "https://example.com/submit" and preview["field_names"] == {"#name": "name", "#email": "email"}
 
     # Replay is impossible: the approval was consumed.
     with pytest.raises(PermissionError, match="consumed|not approved"):

@@ -174,3 +174,36 @@ again, and a click on the approved control raises instead of falling back to a
 navigation click. The approval itself was already consumed, so the owner must
 preview and approve again. The in-memory arming is lost on a server restart, which
 also frees the session.
+
+
+## Round 4 audit fixes (m18-login-hardening)
+
+1. **Every CLICK_SUBMIT needs a reviewed destination preview.** The daemon has no
+   preview-less click path any more. The M13 capture-bound submit and `Service.submit`
+   build one before the approval is consumed (`submit_binding.build_binding_preview`:
+   browser-resolved form facts, submit control, full field set, selector to field name
+   map). Its digest is carried as `preview_sha256` and covered by the HMAC token.
+   `authorize_submit` refuses to arm without a preview. M13 forms must therefore be
+   fully described by the approved values: extra named fields, password fields,
+   duplicate names, `[form]` controls and `<base>` are refused.
+2. **Redirects.** Chromium follows redirects inside the network stack and never calls a
+   route handler for the hops, so the old "allow redirect hops" branch never ran and a
+   307/308 carried the approved body anywhere. The guard now sends the approved POST with
+   `route.fetch(max_redirects=0)` and judges each hop: same-origin hops are followed by the
+   guard itself (max 5; 307/308 replay the body only to the same origin), a 303 is left to
+   the browser (it becomes a GET), any other cross-origin hop is aborted and reported as
+   `redirect ...`. Residuals: the browser receives the final response for the original
+   request, so `page.url` stays on the form action after a same-origin redirect chain; the
+   guard's own fetch uses the browser context's cookie jar and headers, not byte-identical to
+   a native navigation; a 301/302 same-origin hop is handed back to the browser as a GET.
+3. **Replay.** The daemon keeps a consumed cache keyed by token and approval id and refuses
+   a second CLICK_SUBMIT before doing anything. The cache is in memory: a daemon restart
+   forgets it. To bound that, a numeric `deadline` is now mandatory on every CLICK_SUBMIT
+   (arming TTL, 120 s), so a replay across a restart still has to land inside the TTL.
+   A token the daemon accepted but whose click then failed is also spent.
+4. **multipart/form-data and text/plain are refused**, not body-bound: `ALLOWED_ENCTYPES`
+   is urlencoded only (recipe construction raises), `validate_facts` and `authorize_submit`
+   refuse other encodings, and `NetworkGuard` never approves a non-urlencoded POST.
+5. **`window.__atlasGuard` remains page-writable.** Not fixed. It is advisory; the
+   authoritative report is the daemon-side `NetworkGuard`. A hostile page can hide what the
+   page guard blocked but cannot hide a network-guard block.

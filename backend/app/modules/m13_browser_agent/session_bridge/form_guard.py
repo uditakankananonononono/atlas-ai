@@ -16,10 +16,12 @@ other URLs, requests the browser makes outside this page's route).
 from __future__ import annotations
 
 from typing import Any
-from urllib.parse import parse_qsl
+from urllib.parse import parse_qsl, urljoin, urlsplit
 
 DEFAULT_ENCTYPE = "application/x-www-form-urlencoded"
-ALLOWED_ENCTYPES = (DEFAULT_ENCTYPE, "multipart/form-data", "text/plain")
+# Only urlencoded bodies can be compared with the approved values at click time.
+# multipart/form-data and text/plain recipes are refused (audit finding 4).
+ALLOWED_ENCTYPES = (DEFAULT_ENCTYPE,)
 SUBMIT_OVERRIDES = ("formaction", "formmethod", "formenctype", "formtarget", "formnovalidate")
 # Seconds an approved submit stays armed with nobody clicking it.
 ARM_TTL_SECONDS = 120.0
@@ -99,6 +101,10 @@ GUARD_JS = """
   return true;
 }
 """
+# Audit finding 5 (not fixed, documented): window.__atlasGuard lives in the page's own
+# JS world, so a hostile page can overwrite or clear it and hide what the page guard
+# blocked. The page guard is advisory. The authoritative report is NetworkGuard.report(),
+# which lives in the daemon process and is not readable or writable by page scripts.
 GUARD_STATE_JS = "() => window.__atlasGuard ? window.__atlasGuard.blocked.slice() : null"
 GUARD_REMOVE_JS = "() => { if (window.__atlasGuard) { window.__atlasGuard.remove(); } return true; }"
 
@@ -143,8 +149,8 @@ def validate_facts(facts: Any, expected_enctype: str = DEFAULT_ENCTYPE) -> dict:
         raise PermissionError("form novalidate/target/accept-charset is not allowed")
     if facts["overrides"] or facts["external_controls"]:
         raise PermissionError("submit control overrides or external form controls are not allowed")
-    if facts["enctype"] != expected_enctype:
-        raise PermissionError("form enctype differs from the reviewed value")
+    if expected_enctype != DEFAULT_ENCTYPE or facts["enctype"] != DEFAULT_ENCTYPE:
+        raise PermissionError("only urlencoded forms can be body-bound; multipart and text/plain are refused")
     if facts["method"] != "post":
         raise PermissionError("approved publication must be a POST form")
     return facts
@@ -154,21 +160,43 @@ def _form_body(text: str) -> dict[str, str]:
     return {name: value.replace("\r\n", "\n") for name, value in parse_qsl(text, keep_blank_values=True)}
 
 
+def field_name_map(preview: dict) -> dict[str, str]:
+    """selector -> form field name. M13 previews carry it; M18 selectors are [name="x"]."""
+    mapped = preview.get("field_names")
+    if isinstance(mapped, dict):
+        return {str(k): str(v) for k, v in mapped.items()}
+    return {selector: selector.split('"')[1] for selector in preview.get("values", {})}
+
+
+REDIRECT_STATUSES = (301, 302, 303, 307, 308)
+MAX_GUARDED_HOPS = 5
+
+
+def _origin(url: str) -> tuple[str, str, int | None]:
+    parts = urlsplit(url)
+    return (parts.scheme.lower(), (parts.hostname or "").lower(), parts.port or {"http": 80, "https": 443}.get(parts.scheme.lower()))
+
+
 class NetworkGuard:
     """Route guard installed on the page for the duration of the approved click.
 
     Allows exactly one request: the reviewed POST to the reviewed URL whose
     urlencoded body equals the approved values. Redirect hops of that request are
-    server driven and allowed. Every other navigation and every other non-GET/HEAD
-    request is aborted and recorded. Plain GET subresources are left alone so the
-    page still renders; that is a documented residual.
+    followed only when the hop stays on the previous hop's origin, or when the
+    previous response was a 303 and the browser turned the hop into a GET. Any
+    other hop (for example a 307/308 that would replay the approved body to
+    another origin) is aborted and reported. Every other navigation and every
+    other non-GET/HEAD request is aborted and recorded. Plain GET subresources are
+    left alone so the page still renders; that is a documented residual.
+    Non-urlencoded enctypes have no body check, so nothing is ever approved for them.
     """
 
     def __init__(self, page, preview: dict, expected_values: dict[str, str]):
         self.page = page
         self.action = preview["form_action"]
         self.enctype = preview["form_facts"]["enctype"]
-        self.values = {selector.split('"')[1]: value.replace("\r\n", "\n") for selector, value in expected_values.items()}
+        names = field_name_map(preview)
+        self.values = {names[selector]: value.replace("\r\n", "\n") for selector, value in expected_values.items()}
         self.blocked: list[str] = []
         self.approved_post_sent = False
         self._approved_request = None
@@ -184,22 +212,69 @@ class NetworkGuard:
             return False
         if not request.is_navigation_request() or request.frame != self.page.main_frame:
             return False
-        if self.enctype == DEFAULT_ENCTYPE:
-            if not (request.headers.get("content-type", "").lower().startswith(DEFAULT_ENCTYPE)):
-                return False
-            if _form_body(request.post_data or "") != self.values:
-                return False
-        return True
+        if self.enctype != DEFAULT_ENCTYPE:
+            return False  # fail closed: no click-time body check exists for this encoding
+        if not (request.headers.get("content-type", "").lower().startswith(DEFAULT_ENCTYPE)):
+            return False
+        return _form_body(request.post_data or "") == self.values
+
+    async def _hop_allowed(self, request) -> bool:
+        previous = request.redirected_from
+        if _origin(previous.url) == _origin(request.url):
+            return True
+        try:
+            response = await previous.response()
+            status = response.status if response is not None else None
+        except Exception:  # noqa: BLE001 - unknown status is not allowed to carry anything cross-origin
+            status = None
+        return status == 303 and request.method.upper() == "GET" and not request.post_data
+
+    async def _send_approved(self, route, request) -> None:
+        """Send the approved POST and judge every redirect hop before the browser sees it.
+
+        Chromium follows redirects inside the network stack and does not call the
+        route handler for the hops, so the hops are inspected here: the request is
+        fetched with redirects disabled. A same-origin 301/302/307/308 hop is
+        followed by this guard itself (307/308 replay the body, only ever to the
+        same origin) until the chain ends; a 303 is left to the browser, which
+        turns it into a GET. A cross-origin hop of any other status is aborted
+        and reported. The browser then receives the final response for the
+        approved request, so its URL stays the form action (documented residual).
+        """
+        url = request.url
+        response = await route.fetch(max_redirects=0)
+        hops = 0
+        while response.status in REDIRECT_STATUSES and response.headers.get("location"):
+            target = urljoin(url, response.headers["location"])
+            if response.status == 303:
+                break
+            if _origin(target) != _origin(url) or hops >= MAX_GUARDED_HOPS:
+                self.blocked.append(f"redirect {response.status} {url[:100]} -> {target[:100]}")
+                await route.abort("blockedbyclient")
+                return
+            if response.status in (301, 302):
+                break  # the browser turns this POST into a GET to the same origin
+            hops += 1
+            url = target
+            response = await route.fetch(url=target, max_redirects=0)
+        headers = dict(response.headers)
+        if hops and response.status in REDIRECT_STATUSES and headers.get("location"):
+            headers["location"] = urljoin(url, headers["location"])
+        await route.fulfill(response=response, headers=headers)
 
     async def _route(self, route, request) -> None:
         method = request.method.upper()
         if request.redirected_from is not None and self._root(request) is self._approved_request:
-            await route.continue_()
+            if await self._hop_allowed(request):
+                await route.continue_()
+                return
+            self.blocked.append(f"redirect {method} {request.redirected_from.url[:100]} -> {request.url[:100]}")
+            await route.abort("blockedbyclient")
             return
         if self._is_approved(request):
             self.approved_post_sent = True
             self._approved_request = request
-            await route.continue_()
+            await self._send_approved(route, request)
             return
         if method in {"GET", "HEAD"} and not request.is_navigation_request():
             await route.continue_()

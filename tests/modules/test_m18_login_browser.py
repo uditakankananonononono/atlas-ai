@@ -35,8 +35,12 @@ async def setup(tmp_path):
         submit_attr = None
         html_hook = None
         post_paths = []
+        redirect = None
+        redirects = {}
+        hits = []
         def log_message(self, *args): pass
         def do_GET(self):
+            self.hits.append((self.headers['Host'], 'GET', self.path, ''))
             if self.path == '/throttle':
                 self.send_response(429); self.end_headers(); return
             self.send_response(200); self.send_header('Content-Type', 'text/html'); self.end_headers()
@@ -63,6 +67,11 @@ async def setup(tmp_path):
             from urllib.parse import parse_qs
             body = self.rfile.read(int(self.headers['Content-Length'])).decode()
             self.post_paths.append(self.path)
+            self.hits.append((self.headers['Host'], self.command, self.path, body))
+            if self.path in Site.redirects:
+                self.send_response(Site.redirects[self.path][0]); self.send_header('Location', Site.redirects[self.path][1]); self.end_headers(); return
+            if self.path == '/publish' and Site.redirect:
+                self.send_response(Site.redirect[0]); self.send_header('Location', Site.redirect[1]); self.end_headers(); return
             if self.path != '/publish':
                 self.send_response(200); self.end_headers(); return
             self.posts.append(parse_qs(body)['draft'][0])
@@ -79,7 +88,7 @@ async def setup(tmp_path):
     caps = ['navigate', 'extract', 'screenshot', 'read_values', 'fill', 'click_submit']
     paired = registry.confirm_pairing(challenge['server_nonce'], challenge['code'], name='Local owner', public_key=identity.public_key_pem(), capabilities=caps)
     config = DaemonConfig(device_id=paired['device_id'], command_secret=paired['command_secret'], capabilities=caps, pacing_seconds=0)
-    daemon = Daemon(config, identity)
+    daemon = Daemon(config, identity); Site.daemon = daemon
     pw = await async_playwright().start(); browser = await pw.chromium.launch(headless=True)
     daemon.browser._context = await browser.new_context()
     page = await daemon.browser.page('experiment')
@@ -803,3 +812,217 @@ async def test_n3_network_layer_alone_blocks_when_page_guard_is_defeated(setup, 
     assert [p for p in setup[6].post_paths if p != '/publish'] == []
     assert 'SWAPPED' not in setup[6].posts
     assert r.store.get('tenant', run['id'])['guard']['blocked']
+
+
+# ---- round 4 audit findings ------------------------------------------------
+
+async def _compose_with_values(setup):
+    factory, recipe, approvals, registry, paired, page, site, path = setup
+    origin = recipe.compose_url.rsplit('/compose', 1)[0]
+    await page.goto(origin + '/compose')
+    await page.fill('#draft', 'Tutoring pilot')
+    await page.fill('#run_id', 'run-1')
+    return page, paired
+
+
+def _token_args(paired, selector, values, **extra):
+    from app.modules.m13_browser_agent.security import values_digest
+    from app.modules.m13_browser_agent.session_bridge import protocol
+    approval, capture = 'appr-1', 'c' * 64
+    digest_ = values_digest(values)
+    token = protocol.submit_token(paired['command_secret'], approval_id=approval, capture_sha256=capture,
+                                  selector=selector, values_digest=digest_)
+    return {'session': 'experiment', 'selector': selector, 'approval_id': approval, 'capture_sha256': capture,
+            'values_digest': digest_, 'values': values, 'token': token, **extra}
+
+
+@pytest.mark.asyncio
+async def test_f1_previewless_click_submit_is_refused_and_cannot_post_to_evil(setup):
+    from app.modules.m13_browser_agent.session_bridge import protocol
+    page, paired = await _compose_with_values(setup)
+    daemon_page = page
+    await daemon_page.evaluate("document.querySelector('#publish').addEventListener('click', () => { document.querySelector('form').setAttribute('action', '/evil'); })")
+    values = {'[name="draft"]': 'Tutoring pilot'}
+    # Recover the daemon from the setup closure through a command sent over the same wire.
+    daemon = setup_daemon(setup)
+    answer = await daemon.execute(protocol.make_command(protocol.CommandKind.CLICK_SUBMIT, _token_args(paired, '#publish', values)))
+    assert answer['ok'] is False, answer
+    assert '/evil' not in setup[6].post_paths
+    assert setup[6].posts == []
+
+
+def setup_daemon(setup):
+    return setup[6].daemon
+
+
+@pytest.mark.asyncio
+async def test_f1_m13_capture_bound_submit_still_works_with_binding_and_blocks_rewrite(setup, tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from app.modules.m13_browser_agent.capture_bound_submit import (
+        execute_capture_bound_submit, request_capture_bound_submit)
+    from app.modules.m13_browser_agent.service import Service as BrowserService
+    from app.modules.m13_browser_agent.session_bridge import protocol
+    factory, recipe, approvals, registry, paired, page, site, path = setup
+    origin = recipe.compose_url.rsplit('/compose', 1)[0]
+    # Fixture site is loopback; the public-URL gate is not under test here.
+    from app.modules.m13_browser_agent import capture_bound_submit as cbs
+    monkeypatch.setattr(cbs, 'validate_public_url', lambda url, allowed=None: url.split('#')[0])
+    sessions = factory().sessions
+    sid = f"pc.{paired['device_id']}.experiment"
+    bridged = await sessions.page('tenant', sid)
+    await bridged.goto(origin + '/compose')
+    page, paired = await _compose_with_values(setup)
+    values = {'[name="draft"]': 'Tutoring pilot', '[name="audience"]': 'public', '[name="run_id"]': 'run-1'}
+    cap = 'e' * 64
+    class Store:
+        def __init__(self):
+            self.events, self.consumed = [], set()
+            self.captures = {cap: SimpleNamespace(session_id=sid, artifact={'destination': origin + '/compose', 'fields': dict(values), 'dom_sha256': 'd'*64, 'screenshot_sha256': 'e'*64, 'captured_at': 'now'})}
+        async def append_audit(self, e): self.events.append(e)
+        async def get_capture(self, t, h): return self.captures.get(h) if t == 'tenant' else None
+        async def was_consumed(self, a): return a in self.consumed
+        async def consume(self, a, t):
+            if a in self.consumed: raise PermissionError('approval was already consumed')
+            self.consumed.add(a)
+    class Approvals:
+        def __init__(self): self.rows, self.n = {}, 0
+        def submit(self, **kw):
+            self.n += 1; i = f'a{self.n}'
+            self.rows[i] = {'id': i, 'payload': kw['payload'], 'status': ApprovalStatus.PENDING}; return self.rows[i]
+        def get(self, i): return self.rows.get(i)
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+    from app.core.database import Base
+    engine = create_engine(f'sqlite:///{tmp_path}/m13.db'); Base.metadata.create_all(engine)
+    sf = sessionmaker(bind=engine, expire_on_commit=False)
+    service = BrowserService(sessions, Approvals(), Store(), str(tmp_path), {'127.0.0.1'})
+    staged = await request_capture_bound_submit(service, 'tenant', 'owner', sid, '#publish', values, cap)
+    service.approvals.rows[staged['approval_id']]['status'] = ApprovalStatus.APPROVED
+    result = await execute_capture_bound_submit(service, sf, 'tenant', sid, '#publish', values, staged['approval_id'], cap)
+    assert result['status'] == 'submitted'
+    assert setup[6].posts == ['Tutoring pilot']
+    cmds = [c for c in setup[6].commands if c['kind'] == 'click_submit']
+    assert len(cmds) == 1 and cmds[0]['args']['preview']['form_facts']['action'].endswith('/publish')
+    # Second flow: a click-time rewrite to /evil is stopped.
+    bridged = await sessions.page('tenant', sid)
+    await bridged.goto(origin + '/compose')
+    page, paired = await _compose_with_values(setup)
+    await page.fill('#run_id', 'run-1')
+    await page.evaluate("document.querySelector('#publish').addEventListener('click', () => { document.querySelector('form').setAttribute('action', '/evil'); })")
+    staged = await request_capture_bound_submit(service, 'tenant', 'owner', sid, '#publish', values, cap)
+    service.approvals.rows[staged['approval_id']]['status'] = ApprovalStatus.APPROVED
+    service.store.consumed.clear()
+    from sqlalchemy import text
+    with sf.begin() as db:
+        db.execute(text('delete from m13_capture_submit_attempts'))
+    try:
+        await execute_capture_bound_submit(service, sf, 'tenant', sid, '#publish', values, staged['approval_id'], cap)
+    except Exception:
+        pass
+    assert '/evil' not in setup[6].post_paths
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('code', [307, 308])
+async def test_f2_cross_origin_307_308_redirect_does_not_carry_body(setup, code):
+    factory, recipe, approvals, registry, paired, page, site, path = setup
+    r, run = await ready(setup)
+    port = recipe.compose_url.split(':')[2].split('/')[0]
+    site.redirect = (code, f'http://localhost:{port}/sink')
+    try:
+        await r.execute('tenant', run['id'], 'owner')
+    except Exception:
+        pass
+    site.redirect = None
+    assert [h for h in site.hits if h[0].startswith('localhost')] == []
+    guard = r.store.get('tenant', run['id']).get('guard') or {}
+    assert any('redirect' in item for item in guard.get('blocked', [])), guard
+
+
+@pytest.mark.asyncio
+async def test_f2_cross_origin_303_to_get_is_allowed_and_same_origin_307_is_allowed(setup):
+    factory, recipe, approvals, registry, paired, page, site, path = setup
+    r, run = await ready(setup)
+    port = recipe.compose_url.split(':')[2].split('/')[0]
+    site.redirect = (303, f'http://localhost:{port}/receipt')
+    try:
+        await r.execute('tenant', run['id'], 'owner')
+    except Exception:
+        pass
+    site.redirect = None
+    got = [h for h in site.hits if h[0].startswith('localhost')]
+    assert got and all(h[1] == 'GET' and h[3] == '' for h in got)
+
+
+@pytest.mark.asyncio
+async def test_f3_daemon_rejects_replayed_click_submit(setup):
+    from app.modules.m13_browser_agent.session_bridge import protocol
+    r, run = await ready(setup)
+    result = await r.execute('tenant', run['id'], 'owner')
+    assert result['state'] == 'succeeded' and len(setup[6].posts) == 1
+    command = [c for c in setup[6].commands if c['kind'] == 'click_submit'][-1]
+    page, _ = await _compose_with_values(setup)
+    for selector, value in command['args']['values'].items():
+        await page.fill(selector, value)
+    replay = protocol.make_command(protocol.CommandKind.CLICK_SUBMIT, dict(command['args']))
+    answer = await setup_daemon(setup).execute(replay)
+    assert answer['ok'] is False and 'replay' in answer['error'].lower(), answer
+    assert len(setup[6].posts) == 1
+
+
+def test_f4_multipart_and_text_plain_recipes_refused_at_arming(setup):
+    import dataclasses
+    recipe = setup[1]
+    for enctype in ('multipart/form-data', 'text/plain'):
+        with pytest.raises(ValueError):
+            dataclasses.replace(recipe, form_enctype=enctype)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('enctype', ['multipart/form-data', 'text/plain'])
+async def test_f4_network_guard_never_approves_non_urlencoded_body(setup, enctype):
+    from app.modules.m13_browser_agent.session_bridge import form_guard
+    factory, recipe, approvals, registry, paired, page, site, path = setup
+    origin = recipe.compose_url.rsplit('/compose', 1)[0]
+    await page.set_content(f'<form method="post" action="{origin}/publish" enctype="{enctype}"><input name="draft" value="x"><button id="b">go</button></form>')
+    preview = {'form_action': origin + '/publish', 'form_facts': {'enctype': enctype}, 'values': {'[name="draft"]': 'x'}}
+    guard = form_guard.NetworkGuard(page, preview, {'[name="draft"]': 'x'})
+    await guard.install()
+    try:
+        await page.click('#b')
+        await asyncio.sleep(0.3)
+    finally:
+        await guard.remove()
+    assert '/publish' not in site.post_paths
+    assert guard.approved_post_sent is False
+
+
+@pytest.mark.asyncio
+async def test_f2_same_origin_307_chain_that_ends_cross_origin_is_blocked(setup):
+    factory, recipe, approvals, registry, paired, page, site, path = setup
+    r, run = await ready(setup)
+    port = recipe.compose_url.split(':')[2].split('/')[0]
+    site.redirect = (307, '/hop1')
+    site.redirects = {'/hop1': (308, f'http://localhost:{port}/sink')}
+    try:
+        await r.execute('tenant', run['id'], 'owner')
+    except Exception:
+        pass
+    site.redirect, site.redirects = None, {}
+    assert [h for h in site.hits if h[0].startswith('localhost')] == []
+    assert any('redirect' in item for item in (r.store.get('tenant', run['id']).get('guard') or {}).get('blocked', []))
+
+
+@pytest.mark.asyncio
+async def test_f2_same_origin_307_hop_is_still_allowed(setup):
+    factory, recipe, approvals, registry, paired, page, site, path = setup
+    r, run = await ready(setup)
+    site.redirect = (307, '/hop1')
+    try:
+        await r.execute('tenant', run['id'], 'owner')
+    except Exception:
+        pass
+    site.redirect = None
+    hop = [h for h in site.hits if h[2] == '/hop1']
+    assert len(hop) == 1 and 'draft=Tutoring+pilot' in hop[0][3]
+    assert (r.store.get('tenant', run['id']).get('guard') or {}).get('blocked') == []

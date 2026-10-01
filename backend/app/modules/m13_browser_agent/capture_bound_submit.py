@@ -80,6 +80,24 @@ async def request_capture_bound_submit(service, tenant_id: str, actor_id: str, s
     return {"status": "awaiting_approval", "approval_id": view["id"], "capture_sha256": capture_sha256, "page_url": page_url}
 
 
+async def _bind(service, tenant_id, session_id, selector, values) -> dict | None:
+    """Reviewed destination preview for a paired device; built before the approval is consumed."""
+    if getattr(service.sessions, "authorize_submit", None) is None:
+        return None
+    from .session_bridge.protocol import is_pc_session
+    if not is_pc_session(session_id):
+        return None
+    from .submit_binding import build_binding_preview
+    return await build_binding_preview(service.sessions, tenant_id, session_id, selector, values)
+
+
+async def _arm(service, tenant_id, session_id, approval_id, capture_sha256, selector, values, preview) -> None:
+    authorize = getattr(service.sessions, "authorize_submit", None)
+    if authorize is not None:
+        await authorize(tenant_id, session_id, approval_id=approval_id, capture_sha256=capture_sha256,
+                        selector=selector, values=values, preview=preview)
+
+
 async def execute_capture_bound_submit(service, sessions_factory, tenant_id: str, session_id: str, selector: str,
                                        values: dict[str, str], approval_id: str, capture_sha256: str) -> dict:
     view = service.approvals.get(approval_id)
@@ -100,6 +118,7 @@ async def execute_capture_bound_submit(service, sessions_factory, tenant_id: str
         raise PermissionError(f"live field values changed since the approved capture: {changed}")
     if await service.store.was_consumed(approval_id):
         raise PermissionError("approval was already consumed")
+    preview = await _bind(service, tenant_id, session_id, selector, values)
     now = datetime.now(timezone.utc)
     try:
         with sessions_factory.begin() as db:
@@ -109,10 +128,7 @@ async def execute_capture_bound_submit(service, sessions_factory, tenant_id: str
     except IntegrityError as exc:
         raise PermissionError("a submit attempt already exists for this approval or capture") from exc
     await service.store.consume(approval_id, tenant_id)
-    authorize = getattr(service.sessions, "authorize_submit", None)
-    if authorize is not None:
-        await authorize(tenant_id, session_id, approval_id=approval_id,
-                        capture_sha256=capture_sha256, selector=selector, values=values)
+    await _arm(service, tenant_id, session_id, approval_id, capture_sha256, selector, values, preview)
     state, error = "clicked", None
     try:
         await page.locator(selector).click()

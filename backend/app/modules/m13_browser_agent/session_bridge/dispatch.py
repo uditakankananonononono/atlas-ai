@@ -22,6 +22,7 @@ from typing import Any
 from . import protocol
 from .protocol import (BlockKind, BridgeError, CommandKind, DeviceOffline,
                        PlatformBlocked, clamp_pacing, is_pc_session, split_pc_session)
+from . import form_guard
 from .form_guard import ARM_TTL_SECONDS
 from .registry import BridgeRegistry
 
@@ -283,22 +284,31 @@ class BridgedSessions:
         this session consumes it, whether it succeeds or fails.
         """
         from ..security import values_digest
+        from ..submit_binding import preview_digest
+        # No preview, no arming: the daemon would refuse the click anyway (audit finding 1).
+        if not isinstance(preview, dict) or not preview.get("form_facts"):
+            raise PermissionError("an approved submit needs a reviewed destination preview")
+        if preview["form_facts"].get("enctype") != form_guard.DEFAULT_ENCTYPE:
+            raise PermissionError("only urlencoded forms can be approved; multipart and text/plain are refused")
+        pdigest = preview_digest(preview)
+        extra_binding = "" if pdigest == capture_sha256 else pdigest
         device_id, _ = split_pc_session(session_id)
         device = self.registry.get_device(device_id)
         if device is None or device.tenant_id != tenant_id:
             raise DeviceOffline("no paired device for this session")
         token = protocol.submit_token(device.command_secret, approval_id=approval_id,
                                       capture_sha256=capture_sha256, selector=selector,
-                                      values_digest=values_digest(values))
+                                      values_digest=values_digest(values), preview_sha256=extra_binding)
         self._dispatched.pop((tenant_id, session_id), None)
         self._guard.pop((tenant_id, session_id), None)
         self._expired_selector.pop((tenant_id, session_id), None)
         self._armed[(tenant_id, session_id)] = {
             "approval_id": approval_id, "capture_sha256": capture_sha256, "token": token, "selector": selector,
             "values_digest": values_digest(values), "values": values,
-            "armed_at": self.clock(), "deadline": time.time() + self.arm_ttl_seconds}
-        if preview is not None:
-            self._armed[(tenant_id, session_id)].update(preview=preview, readback_selectors=readback_selectors or {})
+            "armed_at": self.clock(), "deadline": time.time() + self.arm_ttl_seconds,
+            "preview": preview, "readback_selectors": readback_selectors or {}}
+        if extra_binding:
+            self._armed[(tenant_id, session_id)]["preview_sha256"] = extra_binding
 
     def _click_class(self, tenant_id: str, device_id: str, local_name: str,
                      selector: str) -> tuple[CommandKind, dict[str, str]]:

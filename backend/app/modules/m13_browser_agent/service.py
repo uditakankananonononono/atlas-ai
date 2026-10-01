@@ -100,13 +100,11 @@ class Service:
             raise PermissionError("approved form values do not match")
         if await self.store.was_consumed(approval_id):
             raise PermissionError("approval was already consumed")
+        from .capture_bound_submit import _arm, _bind
+        preview = await _bind(self, tenant_id, session_id, selector, values)
         # Consume before the external effect. A failed click requires a fresh approval and cannot replay.
         await self.store.consume(approval_id, tenant_id)
-        authorize = getattr(self.sessions, "authorize_submit", None)
-        if authorize is not None:
-            await authorize(tenant_id, session_id, approval_id=approval_id,
-                            capture_sha256=str(payload.get("capture_sha256", "")),
-                            selector=selector, values=values)
+        await _arm(self, tenant_id, session_id, approval_id, str(payload.get("capture_sha256", "")), selector, values, preview)
         await page.locator(selector).click()
         await self.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.SUBMIT, {"phase": "executed", "selector": selector, "approval_id": approval_id, "digest": expected["values_digest"], "page_url": current_url}))
         return {"status": "submitted"}
