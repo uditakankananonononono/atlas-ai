@@ -14,17 +14,34 @@ _MONTH = r'(?:January|February|March|April|May|June|July|August|September|Octobe
 _CALENDAR = r'(?:[0-9]{4}-[0-9]{2}-[0-9]{2}|' + _MONTH + r'\s+[0-9]{1,2}(?:st|nd|rd|th)?,?\s+[0-9]{4}|[0-9]{1,2}(?:st|nd|rd|th)?\s+' + _MONTH + r'\s+[0-9]{4})'
 _DATE = r'(?:[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[Tt][0-9]{2}:[0-9]{2}(?::[0-9]{2}(?:\.[0-9]+)?)?(?:[Zz]|[+-][0-9]{2}:?[0-9]{2})?)?|' + _CALENDAR + r')'
 _DEADLINE = re.compile(r'\b' + _CUE + r'\s*[:\-]?\s*(?:(?:on|is)\s+)?(?P<date>' + _DATE + r')(?![A-Za-z0-9:+-])', re.I)
-_ELIGIBILITY = re.compile(r'(?:^|(?<=[.!?\n]))\s*(?:Eligibility|Eligible applicants|Who can apply|Applicants must|You must|Open to|Must be|Only [A-Za-z ]+ may apply|Restricted to|Available to|Not open to|Minimum GPA|Requirements)\b', re.I)
+_ELIGIBILITY = re.compile(r'(?:^|(?<=[.!?\n]))\s*(?:Eligibility\s*:|Requirements\s*:|Eligible applicants\b|Applicants must\s*:?|Students must\b|Must (?:be|have)\b|Only [A-Za-z ]+ (?:may|can) apply\b|Restricted to\b|Not open to\b|Open (?:only )?to\b|Minimum GPA\s*[:0-9]|Age limit\s*:|Citizenship required\b|GPA must be\b|Available to (?:(?:international|undergraduate|graduate|high school) )?students\b)', re.I)
 
 
 def deadline_evidence(text: str) -> dict:
     result = {'value': None, 'timezone': None, 'precision': 'unknown', 'evidence': [], 'unknowns': []}
+    if len(text) > 100000:
+        result['unknowns'].append('deadline_input_limit_exceeded')
+        return result
+    if re.search(r'\b(?:archived|expired listing|last year|applications?[^\n.!?]{0,80}closed)\b', text, re.I):
+        result['unknowns'].extend(['historical_or_closed_listing', 'qualified_or_negated_deadline'])
+        return result
     candidates = []
     matches = list(_DEADLINE.finditer(text))
+    if len(matches) > 256:
+        result['unknowns'].append('deadline_input_limit_exceeded')
+        return result
+    previous_end = 0
     for index, match in enumerate(matches):
         raw = match['date']
-        prefix = re.split(r'[.!?\n;]', text[:match.start()])[-1].strip()
-        qualifier_words = re.findall(r'[A-Za-z]+', prefix.casefold())
+        prefix_start = max(previous_end, match.start() - 2048)
+        prefix_window = text[prefix_start:match.start()]
+        prefix = re.split(r'[.!?;]', prefix_window)[-1].strip()
+        if re.search(r'\b(?:no|not(?: the)?|never)[\s.!?;]*$', prefix_window, re.I) or any(unicodedata.category(ch).startswith('S') for ch in prefix_window):
+            result['evidence'].append(match.group(0))
+            result['unknowns'].append('qualified_or_negated_deadline')
+            continue
+        previous_end = match.end()
+        qualifier_words = re.findall(r'[^\W\d_]+', prefix.casefold(), re.UNICODE)
         if any(word not in {'the', 'application', 'submission', 'applications', 'submissions'} for word in qualifier_words):
             result['evidence'].append(match.group(0))
             result['unknowns'].append('qualified_or_negated_deadline')
@@ -36,9 +53,12 @@ def deadline_evidence(text: str) -> dict:
         if re.search(_CALENDAR, tail, re.I) or re.search(r'(?:/|to|through|until|extended)\s*(?:[0-9]{1,2}-[0-9]{1,2}|[A-Za-z]{3,9}\s+[0-9]{1,2}|[0-9]{1,2}\s+[A-Za-z]{3,9})', tail, re.I):
             result['unknowns'].append('conflicting_deadline_statements')
             continue
+        if re.search(r'\b(?:provisional|obsolete|unconfirmed|draft|not final|subject to change|may change|tentative|cancelled|canceled|superseded|no longer|withdrawn)\b', tail, re.I):
+            result['unknowns'].append('deadline_caveat_unresolved')
+            continue
         # Explicit unrelated field boundaries preserve mixed-prose cards;
         # unmarked suffix prose still abstains. Conflicts were checked first.
-        tail = re.split(r'[.!?]\s+(?=(?:Award|Prize|Eligibility|Eligible applicants|Who can apply|Applicants must|Open to|Posted|Location)\b)', tail, maxsplit=1, flags=re.I)[0]
+        tail = re.split(r'(?:[.!?]\s+|\n+)(?=(?:Award|Prize|Eligibility|Eligible applicants|Who can apply|Applicants must|Open to|Posted|Location)\b)', tail, maxsplit=1, flags=re.I)[0]
         # No word-list guessing: unexplained suffix tokens always stay unknown,
         # including across line/sentence breaks. Punctuation alone is harmless.
         if any(not (ch.isspace() or unicodedata.category(ch).startswith('P')) for ch in tail):
@@ -93,13 +113,24 @@ def deadline_evidence(text: str) -> dict:
 
 def evidence_card(row: dict, *, fetched_at: str, content_sha256: str) -> dict:
     text = f"{row['title']}\n{row.get('evidence_text', row.get('description', ''))}"
-    deadline = deadline_evidence(text)
+    title_risk = re.search(r'\b(?:no deadline|previous deadline|expired|archived|applications? closed)\b', row['title'], re.I)
+    deadline = deadline_evidence(row.get('evidence_text', row.get('description', '')))
+    if not deadline['evidence'] and not deadline['value']:
+        title_deadline = deadline_evidence(row['title'])
+        if title_deadline['evidence'] or title_deadline['value']:
+            deadline = title_deadline
+    if title_risk:
+        deadline = {'value': None, 'timezone': None, 'precision': 'unknown', 'evidence': deadline['evidence'], 'unknowns': ['qualified_or_negated_deadline']}
     statements = []
     contexts = []
     truncated = False
     boundary_unknown = False
     for match in _ELIGIBILITY.finditer(text):
         context = text[match.start():].strip()
+        if re.match(r'(?:Open to (?:interpretation|discussion)|Applicants must (?:click|visit|read)|Eligibility: (?:not specified|unknown|not stated))\b', context, re.I):
+            continue
+        # Join label-only line with the following source value, not later fields.
+        context = re.sub(r'^([^\n:]+:)\s*\n\s*', r'\1 ', context)
         contexts.append(context[:600])
         truncated = truncated or len(context) > 600
         protected = re.sub(r'\b[A-Z]\.(?=\s+[A-Z][a-z])|\b(?:[A-Za-z]\.){2,}|\b(?:Dr|Mr|Mrs|Ms|Prof|Sr|Jr)\.', lambda m: m[0].replace('.', '\x00'), context, flags=re.I)

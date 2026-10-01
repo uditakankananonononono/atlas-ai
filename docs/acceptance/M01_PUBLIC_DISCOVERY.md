@@ -221,3 +221,28 @@ recall. No measured production recall or broad semantic extraction claim is made
 Named clock/timezone prose, weekday/date disagreements and numeric locale grammar
 remain outside this slice unless specifically supported by a test. Date-only
 values do not assert an instant or complete eligibility. Publication remains held.
+
+## Fifth audit candidate follow-up
+
+Unicode qualifier words are examined in a bounded prefix window without newline
+reset. Unknown qualifiers and negation abstain. Historical/closed-listing cues now
+also abstain rather than presenting a historical date as a current deadline.
+Provisional/obsolete/unconfirmed/draft/change caveats are checked across the full
+suffix before unrelated-field segmentation. This is a finite conservative grammar,
+not an exhaustive language or caveat recognizer.
+
+Deadline input >100,000 characters or >256 cues is rejected with
+`deadline_input_limit_exceeded`. Prefix work is bounded to 2,048 characters per
+cue and adjacent-cue segments; no repeated full-prefix slicing. The 20,000-cue
+performance test requires abstention under two seconds. This does not claim hard
+process isolation, parsing arbitrary-sized inputs or D6 hard wall-clock timeout.
+
+HTML block boundaries survive text extraction (p/div/li/br/headings/table cells/
+definition terms). Eligibility-only labels join their next source line, then
+preserve field boundaries. Narrowed requirement cues abstain on ambiguous marketing
+phrasing. The frozen independent corpus remains unchanged: this builder rerun
+records 33 correct / 0 wrong-accepted / 21 missed deadlines of 54 positives (145
+cases total), and 21 correct / 0 wrong-accepted / 21 missed eligibility positives
+(57 cases total). These are authored-corpus results, NOT production precision or
+recall. Thirty-three accepted cases do not prove universal correctness. Structural
+corpus rerun has no FAIL rows; independent final retest still required.

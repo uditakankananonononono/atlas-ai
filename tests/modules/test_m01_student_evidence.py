@@ -260,3 +260,33 @@ def test_round4_fulltext_query_and_html_blocks():
     with client(body, 'application/rss+xml') as tx:
         rows = discover('scholarshiproar', 'unique-query-term', client=tx)['items']
     assert len(rows) == 1 and rows[0]['eligibility']['evidence'][0] == 'Eligibility: Students.'
+
+@pytest.mark.parametrize('prefix', ['没有', 'без ', 'لا ', 'No\n', 'Not the\n', 'aucune '])
+def test_r5_unicode_and_multiline_qualifier(prefix):
+    assert deadline_evidence(prefix+'deadline: November 12, 2026')['value'] is None
+
+@pytest.mark.parametrize('caveat', ['provisional', 'obsolete', 'not final', 'subject to change'])
+def test_r5_post_field_caveat(caveat):
+    assert deadline_evidence('Deadline: November 12, 2026. Award: $500. This date is '+caveat+'.')['value'] is None
+
+@pytest.mark.parametrize('text', ['Requirements gathering workshop', 'Available to download: brochure', 'Minimum GPA calculation explained', 'Available to watch on YouTube', 'You must act now to save 20%', 'Eligibility checker available on our website', 'Who can apply? Read our website to find out.'])
+def test_r5_nonrequirements_not_eligibility(text):
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    row = evidence_card({'title':'Award','description':text}, fetched_at='x', content_sha256='x')
+    assert not row['eligibility']['evidence']
+
+def test_r5_block_boundary_and_header_value():
+    from app.modules.m01_opportunity_discovery.student_platforms import _plain_text
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    text = _plain_text('<p>Eligibility:</p><p>Undergraduates only</p><p>Award: $500</p>')
+    assert '\n' in text
+    row = evidence_card({'title':'Award','description':text}, fetched_at='x', content_sha256='x')
+    assert 'Undergraduates only' in row['eligibility']['evidence'][0]
+    assert 'Award' not in row['eligibility']['evidence'][0]
+
+def test_r5_many_cues_bounded_work():
+    import time
+    start = time.monotonic()
+    result = deadline_evidence(('Deadline: November 12, 2026.\n') * 20000)
+    assert time.monotonic() - start < 2.0
+    assert 'deadline_input_limit_exceeded' in result['unknowns']
