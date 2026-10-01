@@ -185,7 +185,7 @@ class BridgedSessions:
         self.registry = registry
         self.hub = hub or HUB
         # One armed submit per (tenant, session); consumed by the next click.
-        self._armed: dict[tuple[str, str], dict[str, str]] = {}
+        self._armed: dict[tuple[str, str], dict[str, Any]] = {}
         # Last URL reported by the daemon per (tenant, session); lets a fresh
         # page handle know where the paired browser currently is.
         self._urls: dict[tuple[str, str], str] = {}
@@ -254,18 +254,22 @@ class BridgedSessions:
         this session consumes it, whether it succeeds or fails.
         """
         from ..security import values_digest
-        device_id, _ = split_pc_session(session_id)
+        device_id, local_name = split_pc_session(session_id)
         device = self.registry.get_device(device_id)
         if device is None or device.tenant_id != tenant_id:
             raise DeviceOffline("no paired device for this session")
+        expires_at = int(time.time()) + protocol.SUBMIT_TOKEN_TTL_SECONDS
+        digest = values_digest(values)
         token = protocol.submit_token(device.command_secret, approval_id=approval_id,
                                       capture_sha256=capture_sha256, selector=selector,
-                                      values_digest=values_digest(values))
+                                      values_digest=digest, device_id=device_id, session=local_name,
+                                      expires_at=expires_at)
         self._armed[(tenant_id, session_id)] = {
-            "approval_id": approval_id, "capture_sha256": capture_sha256, "token": token}
+            "approval_id": approval_id, "capture_sha256": capture_sha256, "token": token,
+            "values_digest": digest, "expires_at": expires_at}
 
     def _click_class(self, tenant_id: str, device_id: str, local_name: str,
-                     selector: str) -> tuple[CommandKind, dict[str, str]]:
+                     selector: str) -> tuple[CommandKind, dict[str, Any]]:
         key = (tenant_id, f"{protocol.PC_SESSION_PREFIX}{device_id}.{local_name}")
         armed = self._armed.pop(key, None)
         if armed is None:

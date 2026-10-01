@@ -12,6 +12,7 @@ import hashlib
 import hmac
 import json
 import secrets
+import time
 from enum import Enum
 from typing import Any
 
@@ -152,18 +153,52 @@ def clamp_pacing(value: float | int | None) -> float:
     return max(MIN_PACING_SECONDS, min(MAX_PACING_SECONDS, float(value)))
 
 
+SUBMIT_TOKEN_TTL_SECONDS = 120
+
+
+def _submit_claims(*, approval_id: str, capture_sha256: str, selector: str,
+                   values_digest: str, device_id: str, session: str,
+                   expires_at: int, action: str) -> dict[str, Any]:
+    claims = dict(approval_id=approval_id, capture_sha256=capture_sha256,
+                  selector=selector, values_digest=values_digest, device_id=device_id,
+                  session=session, expires_at=expires_at, action=action, token_version=2)
+    if any(not isinstance(value, str) or not value for value in
+           (approval_id, capture_sha256, selector, values_digest, device_id, session)):
+        raise ValueError("submit claims require nonempty strings")
+    if type(expires_at) is not int or expires_at <= 0 or action != CommandKind.CLICK_SUBMIT.value:
+        raise ValueError("invalid submit expiry or action")
+    return claims
+
+
 def submit_token(command_secret: str, *, approval_id: str, capture_sha256: str,
-                 selector: str, values_digest: str) -> str:
-    """One-shot proof that this exact approved click may run on the device."""
-    body = "|".join([approval_id, capture_sha256, selector, values_digest])
-    return hmac.new(command_secret.encode("utf-8"), body.encode("utf-8"), hashlib.sha256).hexdigest()
+                 selector: str, values_digest: str, device_id: str, session: str,
+                 expires_at: int, action: str = CommandKind.CLICK_SUBMIT.value) -> str:
+    """Bound, expiring proof. One-shot enforcement lives in the durable daemon ledger.
+
+    Legacy unbound tokens are intentionally not accepted. Server and daemon must
+    be upgraded together. Canonical JSON avoids delimiter ambiguity.
+    """
+    claims = _submit_claims(approval_id=approval_id, capture_sha256=capture_sha256,
+                           selector=selector, values_digest=values_digest,
+                           device_id=device_id, session=session,
+                           expires_at=expires_at, action=action)
+    return hmac.new(command_secret.encode("utf-8"), canonical_json(claims).encode("utf-8"),
+                    hashlib.sha256).hexdigest()
 
 
 def verify_submit_token(command_secret: str, *, approval_id: str, capture_sha256: str,
-                        selector: str, values_digest: str, token: str) -> bool:
-    expected = submit_token(command_secret, approval_id=approval_id, capture_sha256=capture_sha256,
-                            selector=selector, values_digest=values_digest)
-    return hmac.compare_digest(expected, token)
+                        selector: str, values_digest: str, device_id: str, session: str,
+                        expires_at: int, token: str,
+                        action: str = CommandKind.CLICK_SUBMIT.value) -> bool:
+    try:
+        expected = submit_token(command_secret, approval_id=approval_id,
+                                capture_sha256=capture_sha256, selector=selector,
+                                values_digest=values_digest, device_id=device_id,
+                                session=session, expires_at=expires_at, action=action)
+        return (isinstance(token, str) and time.time() < expires_at
+                and hmac.compare_digest(expected, token))
+    except (ValueError, TypeError):
+        return False
 
 
 def canonical_json(data: dict[str, Any]) -> str:
