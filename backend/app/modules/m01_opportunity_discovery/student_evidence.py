@@ -2,6 +2,12 @@
 
 No model, score, inferred eligibility or invented timezone. Source text is data:
 script/style content is excluded before transcription by adapters.
+
+KNOWN LIMITS (2026-10-01): English finite grammar, not universal safety.
+Titles "Tentative application date" / "Never apply" can leave an accepted date.
+Newline/fullwidth-colon Contact and "Open to Contact:" forms can contaminate
+eligibility excerpts. Verdict is always null; inspect retained source context.
+Do not use this as autonomous application/eligibility/deadline authorization.
 """
 from __future__ import annotations
 
