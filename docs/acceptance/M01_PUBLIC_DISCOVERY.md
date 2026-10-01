@@ -246,3 +246,29 @@ cases total), and 21 correct / 0 wrong-accepted / 21 missed eligibility positive
 (57 cases total). These are authored-corpus results, NOT production precision or
 recall. Thirty-three accepted cases do not prove universal correctness. Structural
 corpus rerun has no FAIL rows; independent final retest still required.
+
+## Sixth audit candidate: abstention and bounded eligibility
+
+One calendar date is required across title and description. Description safety
+unknowns are never replaced by title fallback; fallback is permitted only for
+`deadline_not_stated_in_listing`. Deadline prefixes are scanned as complete
+adjacent-cue segments, not a silently truncated window, and punctuation/newlines
+do not reset qualifier tokens. Unrecognized Unicode qualifiers abstain. This
+rejects preceding eligibility prose as well as qualifiers; the RSS mixed-prose
+fixture now explicitly expects abstention while preserving actual eligibility.
+Multiple posting/event/calendar dates also abstain, even if a human could separate
+the fields. These are explicit coverage losses, not claimed semantic resolution.
+
+Eligibility inputs above 100K characters or 16 cues abstain. Adjacent-cue source
+segments are bounded before substitutions; output has at most 16 excerpts and
+contexts, 600 characters each. Empty label joins reject unrelated fields, and
+colonless Open-to labels may join a genuine following requirement. Requirement
+excerpts require explicit requirement-bearing vocabulary, abstaining on generic
+marketing or unknown/brochure text. This finite grammar is not a learned
+eligibility classifier. Annotate uses the same title+description safety card.
+
+Sixth frozen/new corpus reruns: zero wrong accepted in each deadline/eligibility
+corpus. Frozen deadline 33/54 positives captured, eligibility 18/42; new deadline
+30/32, eligibility 15/15. These are fixed authored corpus results, not production
+precision/recall or assurance against unseen phrases. Independent re-audit pending.
+D6 cooperative transport timing remains unchanged and open as scoped limitation.
