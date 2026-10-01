@@ -31,8 +31,8 @@ def _date(text: str) -> date | None:
 
 def extract_deadline(text: str) -> dict:
     """1. Explicit 'apply by/deadline' date, never a posting or event date."""
-    m = re.search(r'\b(?:application deadline|deadline|apply by|applications? (?:close|due))\s*[:\-]?\s*' + DATE_RE, text, re.I)
-    return {'value': _date(m.group(1)).isoformat(), 'evidence': m.group(0)} if m and _date(m.group(1)) else {'value': None, 'evidence': None}
+    from .student_evidence import deadline_evidence
+    return deadline_evidence(text)
 
 
 def extract_award(text: str) -> dict:

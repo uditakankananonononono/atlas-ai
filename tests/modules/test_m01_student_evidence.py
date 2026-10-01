@@ -55,7 +55,7 @@ def test_deadline_precision_and_ambiguity(text, value, precision, tz):
 @pytest.mark.parametrize('platform', [p for p in BY_ID if BY_ID[p].mode == 'rss'])
 def test_all_rss_routes_preserve_exact_evidence_without_inference(platform):
     body = b'''<rss><channel><item><title>Evidence Award</title><link>https://publisher.example/award</link>
-    <description><![CDATA[<p>Deadline: 2027-01-03. Eligibility: undergraduate students in India.</p>
+    <description><![CDATA[<p>Eligibility: undergraduate students in India. Deadline: 2027-01-03.</p>
     <script>Deadline: 2028-01-03.</script>]]></description></item></channel></rss>'''
     with client(body, 'application/rss+xml') as tx:
         row = discover(platform, client=tx)['items'][0]
@@ -184,3 +184,34 @@ def test_audit_fetch_total_budget(monkeypatch):
     monkeypatch.setattr(module.time, 'monotonic', lambda: next(ticks))
     with client(FIXTURE.read_bytes()) as tx:
         with pytest.raises(PlatformUnavailable, match='time budget'): discover('simplify', client=tx)
+
+@pytest.mark.parametrize('tail', ['5 p.m.', '17h', '1700', 'by 5', 'EOD', 'close of business', 'AoE', 'CET', 'CST', 'AEST', 'JST', 'BST', 'PT', 'ET', '+0530', '-0800', '\n5pm'])
+def test_reaudit_arbitrary_tail_not_date_only(tail):
+    r = deadline_evidence('Deadline: Oct 1, 2026 ' + tail)
+    assert r['value'] is None and 'unsupported_deadline_time_or_timezone' in r['unknowns']
+
+@pytest.mark.parametrize('text', ['Deadline: 2026-10-01 / 10-05', 'Deadline: Oct 1, 2026 / Oct 5', 'Deadline: Oct 1, 2026. Extended to Oct 8, 2026.'])
+def test_reaudit_abbreviated_or_extended_conflict(text):
+    assert 'conflicting_deadline_statements' in deadline_evidence(text)['unknowns']
+
+@pytest.mark.parametrize('month', ['Sept', 'Sept.'])
+def test_reaudit_september(month):
+    assert deadline_evidence(f'Deadline: {month} 1, 2026')['value'] == '2026-09-01'
+
+@pytest.mark.parametrize('iso', ['2026-10-01t10:00:00z', '2026-10-01T10:00:00-0800'])
+def test_reaudit_iso_case_and_offset(iso):
+    assert deadline_evidence('Deadline: ' + iso)['precision'] == 'instant'
+
+def test_reaudit_fraction_precision_reason():
+    r = deadline_evidence('Deadline: 2026-10-01T10:00:00.1234567Z')
+    assert r['value'] is None and 'unsupported_deadline_fraction_precision' in r['unknowns']
+
+def test_reaudit_eligibility_no_silent_context_loss():
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    desc = 'Eligibility: Dr. Smith lab only. Not for minors.\nMust be enrolled.'
+    r = evidence_card({'title':'Award', 'description':desc}, fetched_at='x', content_sha256='f'*64)
+    assert r['eligibility']['source_context'] == desc
+    assert 'eligibility_context_boundary_unknown' in r['unknowns']
+    desc = 'Eligibility: ' + 'x'*590
+    r = evidence_card({'title':'Award', 'description':desc}, fetched_at='x', content_sha256='f'*64)
+    assert ('eligibility_evidence_truncated' in r['unknowns']) == (len(desc) > 600)
