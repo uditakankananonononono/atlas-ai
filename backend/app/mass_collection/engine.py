@@ -63,7 +63,7 @@ def origin(url: str) -> str:
     p = urlsplit(url)
     if p.scheme not in ('http', 'https') or not p.hostname or p.username or p.password or p.fragment:
         raise CollectionError('require an HTTP(S) URL without credentials or fragment')
-    if any(k.lower() in {'token', 'access_token', 'api_key', 'password', 'signature'} for k, _ in parse_qsl(p.query)):
+    if any(k.lower() in {'token', 'access_token', 'api_key', 'password', 'signature', 'secret', 'session', 'key', 'auth', 'sig'} for k, _ in parse_qsl(p.query)):
         raise CollectionError('credentials in URL are forbidden')
     try:
         port = p.port
@@ -73,6 +73,12 @@ def origin(url: str) -> str:
     host = f'[{host}]' if ':' in host else host
     default = 443 if p.scheme == 'https' else 80
     return f'{p.scheme}://{host}' + (f':{port}' if port and port != default else '')
+
+
+def normalized_license(value: str) -> str:
+    """Strip, lowercase, and collapse whitespace/underscores to '-' so blocklist
+    lookalikes (' unknown', 'All Rights Reserved') cannot bypass the screen."""
+    return '-'.join(value.strip().lower().replace('_', ' ').split())
 
 
 def html_text(data: bytes) -> str:
@@ -174,8 +180,8 @@ class Collector:
             raise CollectionError('no DNS addresses')
         for address in addresses:
             ip = ipaddress.ip_address(address)
-            if not ip.is_global and not (self.allow_loopback and ip.is_loopback):
-                raise CollectionError('private, loopback, reserved or link-local network target rejected')
+            if ip.is_multicast or ip.is_reserved or ip.is_unspecified or (not ip.is_global and not (self.allow_loopback and ip.is_loopback)):
+                raise CollectionError('private, loopback, reserved, multicast, unspecified or link-local network target rejected')
         ip = addresses[0]
         ip = f'[{ip}]' if ':' in ip else ip
         port = f':{p.port}' if p.port else ''
@@ -355,11 +361,11 @@ class Collector:
             with path.open('rb') as f:
                 for record in ArchiveIterator(f):
                     self.check_stop()
-                    if record.rec_type != 'response' or not record.http_headers or record.http_headers.get_statuscode() != '200': continue
-                    if 'html' not in (record.http_headers.get_header('Content-Type') or ''): continue
                     data = record.content_stream().read(limit+1)
                     parsed += len(data)
                     if parsed>self.limits.max_parse_bytes: raise CollectionError('expanded WARC byte quota exceeded')
+                    if record.rec_type != 'response' or not record.http_headers or record.http_headers.get_statuscode() != '200': continue
+                    if 'html' not in (record.http_headers.get_header('Content-Type') or ''): continue
                     if len(data)>limit: raise CollectionError('WARC record byte quota exceeded')
                     yield html_text(data), {'record_url': record.rec_headers.get_header('WARC-Target-URI'), 'warc_date': record.rec_headers.get_header('WARC-Date')}
             return
@@ -412,7 +418,7 @@ class Collector:
             if len(raw)>self.limits.max_record_bytes: raise CollectionError('record byte quota exceeded')
             ident = hashlib.sha256(raw).hexdigest()
             provenance = {'url': source.url, 'final_url': final_url, 'dataset': source.dataset, 'format': source.format, 'collected_at': utcnow(), 'terms_url': source.terms_url, 'license': source.license, 'training_reviewed': source.training_reviewed, 'owner_account': source.owner_account, **extra}
-            row = {'id': ident, 'text': text, 'license': source.license, 'training_eligible': source.training_reviewed and source.license.lower() not in {'unknown', 'unknown-per-page', 'all-rights-reserved'} and not source.owner_account and source.format!='commoncrawl', 'provenance': provenance}
+            row = {'id': ident, 'text': text, 'license': source.license, 'training_eligible': source.training_reviewed and normalized_license(source.license) not in {'unknown', 'unknown-per-page', 'all-rights-reserved'} and not source.owner_account and source.format!='commoncrawl', 'provenance': provenance}
             body = json.dumps(row, ensure_ascii=False, sort_keys=True)
             size = len(body.encode('utf-8'))+1
             with self.db() as db:
