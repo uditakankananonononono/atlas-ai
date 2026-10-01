@@ -140,3 +140,47 @@ def test_eligibility_abbreviation_keeps_full_evidence():
     row = evidence_card({'title':'Award','description': sentence}, fetched_at='2026-10-01T00:00:00+00:00', content_sha256='f'*64)
     assert row['eligibility']['evidence'] == [sentence]
     assert row['eligibility']['verdict'] is None
+
+
+@pytest.mark.parametrize('suffix', ['5pm', '11 PM', 'midnight', 'end of day', 'noon Eastern', '11pm UTC', 'Pacific Time'])
+def test_audit_stated_unparsed_clock_is_not_date_only(suffix):
+    result = deadline_evidence('Deadline: Oct 1, 2026 ' + suffix)
+    assert result['value'] is None and 'unsupported_deadline_time_or_timezone' in result['unknowns']
+
+
+@pytest.mark.parametrize('text', ['Deadline: 2026-10-01 or 2026-10-05',
+    'Deadline: 2026-10-01/2026-10-05', 'Deadline: Oct 1, 2026 and Oct 2, 2026'])
+def test_audit_multiple_date_values_are_conflicts(text):
+    result = deadline_evidence(text)
+    assert result['value'] is None and 'conflicting_deadline_statements' in result['unknowns']
+
+
+@pytest.mark.parametrize('text', ['Deadline: 2026-10-01T10:00:00.123Z', 'Deadline: 2026-10-01T10:00+0530'])
+def test_audit_supported_iso_forms(text):
+    result = deadline_evidence(text)
+    assert result['value'] is not None and result['timezone'] is not None
+
+
+def test_audit_eligibility_sentence_boundary_and_truncation():
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    row = evidence_card({'title':'Award', 'description':'Eligibility: U.S. citizens. Winners receive a prize.'}, fetched_at='x', content_sha256='f'*64)
+    assert row['eligibility']['evidence'] == ['Eligibility: U.S. citizens.']
+    row = evidence_card({'title':'Award', 'description':'Eligibility: ' + 'x '*400}, fetched_at='x', content_sha256='f'*64)
+    assert 'eligibility_evidence_truncated' in row['unknowns']
+
+
+def test_audit_company_flags_not_asserted_on_child_rows():
+    from app.modules.m01_opportunity_discovery.student_platforms import _read_github_readme
+    def row(company):
+        return '<tr><td>'+company+'</td><td>Intern</td><td>NYC</td><td><a href="https://example.org/apply"><img alt="Apply"></a></td><td>0d</td></tr>'
+    rows = _read_github_readme(('<table>'+row('Company 🇺🇸')+row('↳')+'</table>').encode())
+    assert rows[1]['eligibility_statements'] == []
+    assert 'company_marker_applicability_unknown' in rows[1]['source_unknowns']
+
+
+def test_audit_fetch_total_budget(monkeypatch):
+    from app.modules.m01_opportunity_discovery import student_platforms as module
+    ticks = iter([0., 0., 20.])
+    monkeypatch.setattr(module.time, 'monotonic', lambda: next(ticks))
+    with client(FIXTURE.read_bytes()) as tx:
+        with pytest.raises(PlatformUnavailable, match='time budget'): discover('simplify', client=tx)

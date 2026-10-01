@@ -112,3 +112,26 @@ Live smoke is deliberately opt-in (`ATLAS_M01_LIVE_SMOKE=1`) and must be scoped 
 sources whose present policy permits the intended use. One successful fetch is
 not completeness, durable permission or scale proof. No recurring scraping is
 scheduled. Full repo gates and independent adversarial audit are separate.
+
+## API compatibility audit (follow-up)
+
+Repository search of frontend and backend consumers found no frontend use of
+student-platform `/discover` scores or student `deadline.evidence`. Legacy generic
+opportunity scores in ranking/service and expanded-spec helpers are a different
+API and remain unchanged. In-repo student tests were updated for the intentional
+schema change. External clients have not been inventoried.
+
+Breaking changes for this candidate: `/student-platforms/{id}/discover` no longer
+returns `score`; query is literal substring filtering, not token ranking.
+`/student-insights` deadline evidence can be a list of source statements rather
+than one string. Clients must accept a list, nullable value/timezone, explicit
+precision and unknowns. No production deployment or migration is implied.
+
+Fetch timing: 15-second elapsed budget is checked before opening, between decoded
+body chunks and after stream completion, with 5-second connect / 1-second read
+idle timeouts. This is a cooperative elapsed cap, not guaranteed hard cancellation
+of a transport blocked inside header parsing or an injected custom transport.
+No hard wall-clock isolation claim is made; this remains an audit limitation.
+Eligibility statements are sentence-bounded with dotted initials protected;
+600-character excerpt truncation is explicitly flagged. Company-cell eligibility
+markers are not asserted for inherited child rows; applicability stays unknown.

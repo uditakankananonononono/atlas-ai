@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from html import unescape
 from urllib.parse import urljoin, urlsplit
 import re
+import time
 import xml.etree.ElementTree as ET
 
 import httpx
@@ -136,6 +137,7 @@ def _read_github_readme(payload: bytes) -> list[dict]:
         if len(cells) != 5:
             continue
         company_text = cells[0].get_text(' ', strip=True)
+        inherited = company_text == '↳'
         if company_text != '↳':
             company = company_text
         if not company:
@@ -159,11 +161,12 @@ def _read_github_readme(payload: bytes) -> list[dict]:
         statements = []
         for marker, meaning in [('🇺🇸', 'Requires U.S. Citizenship'), ('🛂', 'Does NOT offer sponsorship'),
                                 ('🎓', "Advanced degree required (Master's, PhD, MBA)")]:
-            if marker in role or marker in company:
+            if marker in role or (not inherited and marker in company_text):
                 statements.append(f'{marker}: {meaning} (repository legend)')
         rows.append({'title': f'{company}: {role}', 'url': href,
                      'description': f"Location: {cells[2].get_text(' ', strip=True)}",
-                     'eligibility_statements': statements})
+                     'eligibility_statements': statements,
+                     'source_unknowns': ['company_marker_applicability_unknown'] if inherited and any(m in company for m in ('🇺🇸', '🛂', '🎓')) else []})
     return rows
 
 
@@ -181,22 +184,30 @@ def discover(platform_id: str, query: str = '', *, limit: int = 25, client: http
     if source.mode == 'launch_only':
         return {'platform': source.id, 'mode': source.mode, 'launch_url': source.url,
                 'reason': source.reason, 'items': [], 'scanned_at': None}
+    started = time.monotonic()
+    budget_seconds = 15.0
+    def check_budget():
+        if time.monotonic() - started >= budget_seconds:
+            raise PlatformUnavailable(f'{source.id}: total fetch time budget exceeded')
     own_client = client is None
     client = client or httpx.Client(timeout=15, follow_redirects=False, headers={'User-Agent': 'AtlasAI-StudentDiscovery/1.0'})
     try:
         # Streaming bounds decoded bytes during transfer, not after a potentially
         # unbounded client.get has buffered an entire response.
-        with client.stream('GET', source.url, follow_redirects=False) as response:
+        check_budget()
+        with client.stream('GET', source.url, follow_redirects=False, timeout=httpx.Timeout(1.0, connect=5.0)) as response:
             if str(response.url) != source.url:
                 raise PlatformUnavailable(f'{source.id}: unexpected redirect; no results claimed')
             if response.status_code != 200:
                 raise PlatformUnavailable(f'{source.id}: HTTP {response.status_code}; no results claimed')
             chunks, size = [], 0
             for chunk in response.iter_bytes():
+                check_budget()
                 size += len(chunk)
                 if size > 2_000_000:
                     raise PlatformUnavailable(f'{source.id}: response exceeds 2 MB limit')
                 chunks.append(chunk)
+            check_budget()
             payload = b''.join(chunks)
         ctype = response.headers.get('content-type', '').lower()
         if source.mode == 'rss' and not ('xml' in ctype or 'rss' in ctype):
