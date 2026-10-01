@@ -10,6 +10,8 @@ import hashlib
 import ipaddress
 import json
 import os
+import re
+import unicodedata
 from pathlib import Path
 import socket
 import sqlite3
@@ -22,6 +24,13 @@ from defusedxml.common import DefusedXmlException
 from bs4 import BeautifulSoup
 import httpx
 from warcio.archiveiterator import ArchiveIterator
+
+
+WARC_CHUNK = 65536
+DENIED_NETWORKS = tuple(ipaddress.ip_network(n) for n in (
+    'fec0::/10', '192.0.0.0/24', '192.88.99.0/24', '2001:20::/28',
+    '2001::/32', '64:ff9b:1::/48', '::/96', '100.64.0.0/10', '198.18.0.0/15'))
+NAT64_NETWORK = ipaddress.ip_network('64:ff9b::/96')
 
 
 class CollectionError(RuntimeError):
@@ -59,11 +68,14 @@ class Limits:
             raise ValueError('limits must be positive; interval may be zero for tests')
 
 
+SENSITIVE_QUERY_TOKENS = ('token', 'secret', 'key', 'auth', 'sig', 'pass', 'pwd', 'session', 'cred', 'jwt', 'bearer')
+
+
 def origin(url: str) -> str:
     p = urlsplit(url)
     if p.scheme not in ('http', 'https') or not p.hostname or p.username or p.password or p.fragment:
         raise CollectionError('require an HTTP(S) URL without credentials or fragment')
-    if any(k.lower() in {'token', 'access_token', 'api_key', 'password', 'signature', 'secret', 'session', 'key', 'auth', 'sig'} for k, _ in parse_qsl(p.query)):
+    if any(any(t in k.lower().replace('-', '').replace('_', '') for t in SENSITIVE_QUERY_TOKENS) for k, _ in parse_qsl(p.query, keep_blank_values=True)):
         raise CollectionError('credentials in URL are forbidden')
     try:
         port = p.port
@@ -76,9 +88,19 @@ def origin(url: str) -> str:
 
 
 def normalized_license(value: str) -> str:
-    """Strip, lowercase, and collapse whitespace/underscores to '-' so blocklist
-    lookalikes (' unknown', 'All Rights Reserved') cannot bypass the screen."""
-    return '-'.join(value.strip().lower().replace('_', ' ').split())
+    """NFKC + casefold, then collapse every run of characters outside [a-z0-9]
+    (any dash, space, underscore, zero-width char, punctuation) to one '-'."""
+    text = unicodedata.normalize('NFKC', str(value)).casefold()
+    return re.sub(r'[^a-z0-9]+', '-', text).strip('-')
+
+
+# Explicit reviewed allowlist. Anything not here is never training_eligible.
+_REVIEWED_LICENSES = ('cc0-1.0', 'cc-by-4.0', 'cc-by-sa-4.0', 'mit', 'apache-2.0', 'bsd-2-clause', 'bsd-3-clause', 'public-domain-explicit')
+TRAINING_LICENSE_ALLOWLIST = frozenset(normalized_license(x) for x in _REVIEWED_LICENSES)
+
+
+def license_training_eligible(value: str) -> bool:
+    return normalized_license(value) in TRAINING_LICENSE_ALLOWLIST
 
 
 def html_text(data: bytes) -> str:
@@ -169,6 +191,29 @@ class Collector:
     def stop(self):
         (self.root/'STOP').touch(mode=0o600)
 
+    def _address_allowed(self, address, *, embedded=False):
+        try:
+            ip = ipaddress.ip_address(address)
+        except ValueError:
+            return False
+        if any(ip in net for net in DENIED_NETWORKS):
+            return False
+        if ip.version == 6:
+            inner = None
+            if ip.ipv4_mapped is not None:
+                return self._address_allowed(str(ip.ipv4_mapped), embedded=embedded)
+            if ip.sixtofour is not None:
+                inner = ip.sixtofour
+            elif ip in NAT64_NETWORK:
+                inner = ipaddress.IPv4Address(int(ip) & 0xFFFFFFFF)
+            if inner is not None:
+                return self._address_allowed(str(inner), embedded=True)
+        if ip.is_multicast or ip.is_reserved or ip.is_unspecified or ip.is_link_local or ip.is_private and not ip.is_loopback:
+            return False
+        if ip.is_loopback:
+            return self.allow_loopback and not embedded
+        return ip.is_global
+
     def _pinned_url(self, url):
         original = origin(url)
         p = urlsplit(url)
@@ -179,8 +224,7 @@ class Collector:
         if not addresses:
             raise CollectionError('no DNS addresses')
         for address in addresses:
-            ip = ipaddress.ip_address(address)
-            if ip.is_multicast or ip.is_reserved or ip.is_unspecified or (not ip.is_global and not (self.allow_loopback and ip.is_loopback)):
+            if not self._address_allowed(address):
                 raise CollectionError('private, loopback, reserved, multicast, unspecified or link-local network target rejected')
         ip = addresses[0]
         ip = f'[{ip}]' if ':' in ip else ip
@@ -361,9 +405,17 @@ class Collector:
             with path.open('rb') as f:
                 for record in ArchiveIterator(f):
                     self.check_stop()
-                    data = record.content_stream().read(limit+1)
-                    parsed += len(data)
-                    if parsed>self.limits.max_parse_bytes: raise CollectionError('expanded WARC byte quota exceeded')
+                    stream = record.content_stream()
+                    kept, size = [], 0
+                    while True:
+                        self.check_stop()
+                        chunk = stream.read(min(WARC_CHUNK, self.limits.max_parse_bytes - parsed + 1))
+                        if not chunk: break
+                        parsed += len(chunk)
+                        if parsed>self.limits.max_parse_bytes: raise CollectionError('expanded WARC byte quota exceeded')
+                        if size <= limit:
+                            kept.append(chunk); size += len(chunk)
+                    data = b''.join(kept)
                     if record.rec_type != 'response' or not record.http_headers or record.http_headers.get_statuscode() != '200': continue
                     if 'html' not in (record.http_headers.get_header('Content-Type') or ''): continue
                     if len(data)>limit: raise CollectionError('WARC record byte quota exceeded')
@@ -418,7 +470,7 @@ class Collector:
             if len(raw)>self.limits.max_record_bytes: raise CollectionError('record byte quota exceeded')
             ident = hashlib.sha256(raw).hexdigest()
             provenance = {'url': source.url, 'final_url': final_url, 'dataset': source.dataset, 'format': source.format, 'collected_at': utcnow(), 'terms_url': source.terms_url, 'license': source.license, 'training_reviewed': source.training_reviewed, 'owner_account': source.owner_account, **extra}
-            row = {'id': ident, 'text': text, 'license': source.license, 'training_eligible': source.training_reviewed and normalized_license(source.license) not in {'unknown', 'unknown-per-page', 'all-rights-reserved'} and not source.owner_account and source.format!='commoncrawl', 'provenance': provenance}
+            row = {'id': ident, 'text': text, 'license': source.license, 'training_eligible': source.training_reviewed and license_training_eligible(source.license) and not source.owner_account and source.format!='commoncrawl', 'provenance': provenance}
             body = json.dumps(row, ensure_ascii=False, sort_keys=True)
             size = len(body.encode('utf-8'))+1
             with self.db() as db:

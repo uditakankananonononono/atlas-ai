@@ -25,6 +25,9 @@ current terms and data rights, and set `terms_accepted` yourself. The example is
 intentionally non-executable without operator edits. Use `unknown` rather than
 inventing a license. `training_reviewed` defaults false. It is an operator attestation,
 not a legal verifier. Unknown licenses should never be marked reviewed.
+`training_eligible` is an ALLOWLIST: the license, after NFKC, casefold and collapsing every
+run of non-alphanumeric characters to `-`, must equal one of cc0-1.0, cc-by-4.0, cc-by-sa-4.0,
+mit, apache-2.0, bsd-2-clause, bsd-3-clause, public-domain-explicit. Everything else is false.
 
 ```sh
 PYTHONPATH=backend .venv-collection/bin/python -m app.mass_collection --root ./data/corpus --tenant local collect /path/to/reviewed-config.json

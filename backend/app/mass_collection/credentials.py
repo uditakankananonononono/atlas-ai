@@ -20,7 +20,11 @@ class CredentialStore:
         site = origin(url)
         if not site.startswith('https://') and not site.startswith('http://127.0.0.1:'):
             raise CollectionError('credentials require HTTPS')
-        rows = json.loads(self.path.read_text()) if self.path.exists() else {}
+        try:
+            rows = json.loads(self.path.read_text()) if self.path.exists() else {}
+            if not isinstance(rows, dict): raise TypeError('credential store must be an object')
+        except (OSError, ValueError, TypeError) as exc:
+            raise CollectionError('credential store unreadable') from exc
         rows[name] = {'origin': site, 'token': self.cipher.encrypt(bearer), 'owner_confirmed': True}
         self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         atomic_json(self.path, rows)
@@ -31,5 +35,5 @@ class CredentialStore:
             if row['origin'] != origin(url) or not row['owner_confirmed']:
                 raise CollectionError('credential origin or ownership mismatch')
             return {'Authorization': 'Bearer '+self.cipher.decrypt(row['token'])}
-        except (OSError, KeyError, ValueError, InvalidToken) as exc:
+        except (OSError, KeyError, ValueError, TypeError, AttributeError, InvalidToken, TokenCryptoError) as exc:
             raise CollectionError('credential unavailable') from exc

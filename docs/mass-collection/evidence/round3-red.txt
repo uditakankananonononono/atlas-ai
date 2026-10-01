@@ -1,0 +1,4 @@
+FAILED tests/mass_collection/test_collection.py::test_dns_pin_explicit_denylist_and_unwrap[2001:2f::1]
+FAILED tests/mass_collection/test_collection.py::test_dns_pin_explicit_denylist_and_unwrap[::ffff:192.0.0.9]
+FAILED tests/mass_collection/test_collection.py::test_dns_pin_allows_public_and_unwrapped_public
+51 failed, 54 passed, 1 warning in 5.71s
