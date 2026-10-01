@@ -9,4 +9,4 @@ def methods():return [{'atomic_row':r,'atomic_row_id':x[0],'method':x[1]} for r,
 @router.post('/analyze')
 def analyze(req:Request):
  try:return run(req.method,req.data)
- except (ValueError,KeyError,TypeError) as e:raise HTTPException(422,str(e))
+ except (ValueError,KeyError,TypeError,ArithmeticError) as e:raise HTTPException(422,str(e))

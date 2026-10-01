@@ -4,9 +4,14 @@ private-value auction expected-utility strategies; graph centrality/path tracing
 """
 from __future__ import annotations
 import math
+import sys
+from fractions import Fraction
 META={93:('50.2','system_delay'),94:('50.3','emergent_behavior'),95:('52.1','constraint_identification'),96:('52.2','constraint_improvement'),97:('61.1','exponential_model'),98:('61.2','logarithmic_model'),99:('61.3','power_law_model'),100:('68.1','value_creation'),101:('68.2','value_capture'),102:('72.1','wip_measurement'),103:('72.2','throughput_measurement'),104:('72.3','cycle_time_measurement'),105:('72.4','littles_law_check'),106:('82.1','bidding_optimization'),107:('82.2','selling_optimization'),108:('101.1','expertise_positioning'),109:('101.2','credibility_evidence'),110:('103.1','rapport_plan'),111:('103.2','similarity_grounding'),112:('104.1','shared_identity'),113:('104.2','shared_purpose'),114:('111.1','citation_influence'),115:('111.2','academic_idea_flow')};BY={x[1]:r for r,x in META.items()}
 def _f(x,n):
- if isinstance(x,bool) or not isinstance(x,(int,float)) or not math.isfinite(x):raise ValueError(f'{n} must be finite')
+ if isinstance(x,bool) or not isinstance(x,(int,float)):raise ValueError(f'{n} must be finite')
+ # Check integers before any float coercion (math.isfinite also coerces ints).
+ if isinstance(x,int) and abs(x)>int(sys.float_info.max):raise ValueError(f'{n} is outside the finite float range')
+ if not math.isfinite(x):raise ValueError(f'{n} must be finite')
  return float(x)
 def _v(d,k,n=1):
  x=d.get(k)
@@ -19,7 +24,31 @@ def _ols(x,y):
  if den<=0:raise ValueError('predictor has zero variance')
  b=sum((a-mx)*(c-my) for a,c in zip(x,y))/den;a=my-b*mx;pred=[a+b*z for z in x];sst=sum((z-my)**2 for z in y);return a,b,1-sum((u-v)**2 for u,v in zip(y,pred))/sst if sst else 1
 
+def _finite_result(x,n):
+ """Round an exact result to the API float, rejecting overflow/total underflow."""
+ try:value=float(x)
+ except OverflowError:raise ValueError(f'{n} is outside the finite float range') from None
+ if not math.isfinite(value) or (x!=0 and value==0):raise ValueError(f'{n} is outside the nonzero finite float range')
+ return value
+
+def _check_finite_tree(x):
+ if isinstance(x,float) and not math.isfinite(x):raise ValueError('result contains a nonfinite number')
+ if isinstance(x,dict):
+  for v in x.values():_check_finite_tree(v)
+ elif isinstance(x,(list,tuple)):
+  for v in x:_check_finite_tree(v)
+
 def run(method,d):
+ """Analyze supplied evidence; numeric/domain failures are ValueError (HTTP 422)."""
+ if not isinstance(method,str) or not isinstance(d,dict):raise ValueError('method and data must be a string and object')
+ try:
+  result=_run(method,d)
+  _check_finite_tree(result)
+  return result
+ except (ArithmeticError,KeyError,TypeError,AttributeError,IndexError) as e:
+  raise ValueError(f'invalid domain or numeric range: {e}') from None
+
+def _run(method,d):
  if method not in BY:raise ValueError('unsupported atomic concept')
  r=BY[method];aid=META[r][0];limits=['Decision support on supplied evidence; no external effect or scale claim.'];o={}
  if r==93:
@@ -27,10 +56,15 @@ def run(method,d):
   if isinstance(maxlag,bool) or not isinstance(maxlag,int):raise ValueError('max_lag must be an integer')
   if maxlag<0:raise ValueError('max_lag must be nonnegative')
   if maxlag>=len(impulse):raise ValueError('max_lag must be smaller than the sample length so every lag has overlapping samples')
-  scores=[]
+  # Exact raw mean products, not Pearson correlation: no centering/variance division.
+  # This also avoids intermediate overflow and cancellation, without rescaling data.
+  exact_input=[Fraction(x) for x in d['input']];exact_response=[Fraction(x) for x in d['response']]
+  exact_scores=[]
   for lag in range(maxlag+1):
-   pairs=list(zip(impulse[:len(impulse)-lag],response[lag:]));assert pairs;scores.append(sum(a*b for a,b in pairs)/len(pairs))
-  best=max(range(len(scores)),key=lambda i:scores[i]);o={'estimated_delay_periods':best,'lag_scores':scores,'direct_effect_at_zero':scores[0]}
+   pairs=zip(exact_input[:len(impulse)-lag],exact_response[lag:])
+   exact_scores.append(sum((a*b for a,b in pairs),Fraction(0))/(len(impulse)-lag))
+  scores=[_finite_result(x,'lag score') for x in exact_scores]
+  best=max(range(len(scores)),key=lambda i:exact_scores[i]);o={'estimated_delay_periods':best,'lag_scores':scores,'direct_effect_at_zero':scores[0]};limits+=['Raw mean-product lag score, not variance-normalized correlation. Constant series are valid; earliest exact-score tie wins. Unrepresentable float scores are rejected.']
  elif r==94:
   individual=_v(d,'individual_predictions');observed=_v(d,'observed_system');_same(individual,observed);res=[y-x for x,y in zip(individual,observed)];threshold=_f(d.get('threshold',0),'threshold');o={'interaction_residuals':res,'emergent_indices':[i for i,x in enumerate(res) if abs(x)>threshold],'emergent_fraction':sum(abs(x)>threshold for x in res)/len(res)}
  elif r==95:
@@ -73,13 +107,15 @@ def run(method,d):
   if bid is None:raise ValueError('supported auction_type required')
   o={'recommended_bid':bid,'max_willingness_to_pay':value,'auction_type':kind,'strategy':'symmetric risk-neutral uniform-private-value benchmark' if kind=='first_price' else 'truthful private-value benchmark'};limits+=['Requires independent private values and benchmark distribution; never bids automatically.']
  elif r==107:
-  values=sorted(_v(d,'buyer_values'))
+  _v(d,'buyer_values')
+  values=sorted(Fraction(x) for x in d['buyer_values'])
   if any(v<0 for v in values):raise ValueError('buyer_values must be nonnegative')
   best_r,best_rev=None,None
   for r0 in sorted(set(values)):
    rev=r0*sum(v>=r0 for v in values)
    if best_rev is None or rev>best_rev:best_r,best_rev=r0,rev
-  best=(best_r,best_rev);o={'recommended_reserve':best[0],'empirical_revenue_bound':best[1],'buyer_count':len(values),'mechanism':d.get('mechanism','second_price_with_reserve')};limits+=['Empirical reserve can overfit; validate out of sample and follow auction law.']
+  # Ascending candidates and strict improvement retain the lowest exact maximizer.
+  best=(_finite_result(best_r,'reserve'),_finite_result(best_rev,'reserve revenue'));o={'recommended_reserve':best[0],'empirical_revenue_bound':best[1],'buyer_count':len(values),'mechanism':d.get('mechanism','second_price_with_reserve')};limits+=['Empirical reserve can overfit; validate out of sample and follow auction law. Equal exact revenues choose the lowest reserve. Unrepresentable float revenue is rejected.']
  elif r in {108,109}:
   claims=d.get('claims');
   if not isinstance(claims,list) or not claims:raise ValueError('claims required')
