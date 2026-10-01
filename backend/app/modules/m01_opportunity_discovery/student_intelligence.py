@@ -87,12 +87,12 @@ def annotate(item: dict) -> dict:
     result = dict(item)
     result['url'] = canonical_link(item['url'])
     result['id'] = stable_id(result)
-    result['deadline'] = extract_deadline(text)
+    result['deadline'] = item.get('deadline') or extract_deadline(text)
     result['award'] = extract_award(text)
     result['delivery'] = extract_delivery(text)
     result['student_level'] = extract_student_level(text)
     result['region'] = extract_region(text)
-    result['evidence_status'] = 'text_mentions_only'
+    result['evidence_status'] = item.get('evidence_status', 'text_mentions_only')
     return result
 
 

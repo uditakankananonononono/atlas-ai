@@ -15,7 +15,8 @@ import xml.etree.ElementTree as ET
 import httpx
 from bs4 import BeautifulSoup
 
-from .service import cosine_similarity
+from hashlib import sha256
+from .student_evidence import evidence_card
 
 
 @dataclass(frozen=True)
@@ -23,7 +24,7 @@ class StudentPlatform:
     id: str
     name: str
     url: str
-    mode: str  # rss, html, or launch_only
+    mode: str  # rss, html, github_readme, or launch_only
     kind: str
     path_pattern: str = ""
     reason: str = ""
@@ -32,11 +33,11 @@ class StudentPlatform:
 # Only these exact URLs are fetched. Entries marked launch_only are not scans.
 PLATFORMS = (
     StudentPlatform('ripplematch', 'RippleMatch', 'https://ripplematch.com/', 'launch_only', 'job', reason='Account matching and auto-apply require an authorized interactive account flow.'),
-    StudentPlatform('simplify', 'Simplify', 'https://simplify.jobs/copilot', 'launch_only', 'job', reason='Copilot is a user-installed Chrome extension; Atlas does not run it or submit forms.'),
+    StudentPlatform('simplify', 'Simplify public community internship list', 'https://raw.githubusercontent.com/SimplifyJobs/Summer2027-Internships/dev/README.md', 'github_readme', 'internship', reason='Public Pitt CSC/Simplify maintained list only. No simplify.jobs scraping, Copilot, matching, autofill or applications.'),
     StudentPlatform('raiseme', 'RaiseMe', 'https://www.raiseme.com/', 'launch_only', 'scholarship', reason='Micro-scholarship balances and school matching require the student account.'),
     StudentPlatform('bold', 'Bold.org', 'https://bold.org/scholarships/', 'launch_only', 'scholarship', reason='The public listing returned a rate-limit challenge; do not evade it.'),
     StudentPlatform('fastweb', 'Fastweb', 'https://www.fastweb.com/college-scholarships', 'html', 'scholarship', r'^/college-scholarships/scholarships/\d+-'),
-    StudentPlatform('devpost', 'Devpost', 'https://devpost.com/hackathons', 'launch_only', 'hackathon', reason='Official listing and linked RSS were checked; the RSS returned 403/406 from this environment, so automated discovery is not claimed.'),
+    StudentPlatform('devpost', 'Devpost', 'https://devpost.com/hackathons', 'launch_only', 'hackathon', reason='Devpost terms prohibit automated scraping/crawling. No undocumented API or browser workaround.'),
     StudentPlatform('challengerocket', 'ChallengeRocket', 'https://challengerocket.com/hackathons-and-challenges.html', 'html', 'competition', r'^/(?:hackathon-|cassini|pwc-(?:rpa|ai|crisis)|euroclear-hackathon|open-learning-by-globalworth)'),
     StudentPlatform('mlh', 'Major League Hacking', 'https://www.mlh.com/seasons/2026/events', 'html', 'hackathon', r'^/events/\d+-'),
     StudentPlatform('internshala', 'Internshala', 'https://internshala.com/internships/', 'html', 'internship', r'^/internship/detail/'),
@@ -57,9 +58,21 @@ class PlatformUnavailable(RuntimeError):
     pass
 
 
+def _plain_text(value: str) -> str:
+    soup = BeautifulSoup(unescape(value), 'html.parser')
+    for node in soup.select('script, style, template, noscript'):
+        node.decompose()
+    return soup.get_text(' ', strip=True)[:600]
+
+
 def _safe_target(source: StudentPlatform, href: str) -> str | None:
     url = urljoin(source.url, href)
-    parsed = urlsplit(url)
+    try:
+        parsed = urlsplit(url)
+        if parsed.port not in (None, 443):
+            return None
+    except ValueError:
+        return None
     if parsed.scheme != 'https' or parsed.hostname is None or parsed.username or parsed.password:
         return None
     if source.id == 'mlh':
@@ -81,11 +94,11 @@ def _read_rss(source: StudentPlatform, payload: bytes) -> list[dict[str, str]]:
     ns = '{http://www.w3.org/2005/Atom}'
     for item in root.iter('item'):
         rows.append({'title': ''.join(item.findtext('title', '')).strip(), 'url': item.findtext('link', '').strip(),
-                     'description': unescape(re.sub('<[^>]+>', ' ', item.findtext('description', '')))[:600]})
+                     'description': _plain_text(item.findtext('description', ''))})
     for item in root.iter(f'{ns}entry'):
         link = next((x.get('href', '') for x in item.findall(f'{ns}link') if x.get('rel') in (None, 'alternate')), '')
         rows.append({'title': item.findtext(f'{ns}title', '').strip(), 'url': link,
-                     'description': unescape(re.sub('<[^>]+>', ' ', item.findtext(f'{ns}summary', '')))[:600]})
+                     'description': _plain_text(item.findtext(f'{ns}summary', ''))})
     return rows
 
 
@@ -112,8 +125,48 @@ def _read_html(source: StudentPlatform, payload: bytes) -> list[dict[str, str]]:
     return rows
 
 
+def _read_github_readme(payload: bytes) -> list[dict]:
+    """Read the maintained public HTML tables, never fetch application links."""
+    soup = BeautifulSoup(payload, 'html.parser')
+    rows, company = [], ''
+    for tr in soup.select('table tr'):
+        cells = tr.find_all('td', recursive=False)
+        if len(cells) != 5:
+            continue
+        company_text = cells[0].get_text(' ', strip=True)
+        if company_text != '↳':
+            company = company_text
+        if not company:
+            continue
+        role = cells[1].get_text(' ', strip=True)
+        if '🔒' in tr.get_text():
+            continue
+        application = next((a for a in cells[3].select('a[href]')
+                            if a.find('img', alt='Apply')), None)
+        if application is None:
+            continue
+        href = application['href']
+        try:
+            target = urlsplit(href)
+            if target.scheme != 'https' or not target.hostname or target.username or target.password:
+                continue
+            if target.port not in (None, 443):
+                continue
+        except ValueError:
+            continue
+        statements = []
+        for marker, meaning in [('🇺🇸', 'Requires U.S. Citizenship'), ('🛂', 'Does NOT offer sponsorship'),
+                                ('🎓', "Advanced degree required (Master's, PhD, MBA)")]:
+            if marker in role or marker in company:
+                statements.append(f'{marker}: {meaning} (repository legend)')
+        rows.append({'title': f'{company}: {role}', 'url': href,
+                     'description': f"Location: {cells[2].get_text(' ', strip=True)}",
+                     'eligibility_statements': statements})
+    return rows
+
+
 def discover(platform_id: str, query: str = '', *, limit: int = 25, client: httpx.Client | None = None) -> dict:
-    """Fetch a public source and return provenance-bearing, deterministically ranked links.
+    """Fetch one public source and return evidence-bearing links in source order.
 
     The caller cannot supply arbitrary URLs; the fixed registry is the SSRF boundary.
     No application or account action is exposed here.
@@ -130,6 +183,8 @@ def discover(platform_id: str, query: str = '', *, limit: int = 25, client: http
     client = client or httpx.Client(timeout=15, follow_redirects=False, headers={'User-Agent': 'AtlasAI-StudentDiscovery/1.0'})
     try:
         response = client.get(source.url)
+        if str(response.url) != source.url:
+            raise PlatformUnavailable(f'{source.id}: unexpected redirect; no results claimed')
         if response.status_code != 200:
             raise PlatformUnavailable(f'{source.id}: HTTP {response.status_code}; no results claimed')
         if len(response.content) > 2_000_000:
@@ -137,31 +192,44 @@ def discover(platform_id: str, query: str = '', *, limit: int = 25, client: http
         ctype = response.headers.get('content-type', '').lower()
         if source.mode == 'rss' and not ('xml' in ctype or 'rss' in ctype):
             raise PlatformUnavailable(f'{source.id}: expected RSS/XML, got {ctype or "unknown"}')
+        if source.mode == 'github_readme' and 'text/plain' not in ctype:
+            raise PlatformUnavailable(f'{source.id}: expected public README text')
         if source.mode == 'html' and 'html' not in ctype:
             raise PlatformUnavailable(f'{source.id}: expected HTML, got {ctype or "unknown"}')
-        rows = _read_rss(source, response.content) if source.mode == 'rss' else _read_html(source, response.content)
+        rows = (_read_rss(source, response.content) if source.mode == 'rss' else
+                _read_github_readme(response.content) if source.mode == 'github_readme' else
+                _read_html(source, response.content))
+        fetched_at = datetime.now(timezone.utc).isoformat()
+        content_hash = sha256(response.content).hexdigest()
         seen = set()
         items = []
         for row in rows:
-            url = row['url'] if source.mode == 'rss' else _safe_target(source, row['url'])
+            url = row['url'] if source.mode in ('rss', 'github_readme') else _safe_target(source, row['url'])
             # RSS item links may go to the original publisher; allow only HTTPS,
             # never turn these links into network requests or auto-submit targets.
-            if source.mode == 'rss':
-                target = urlsplit(url)
+            if source.mode in ('rss', 'github_readme'):
+                try:
+                    target = urlsplit(url)
+                    if target.port not in (None, 443):
+                        continue
+                except ValueError:
+                    continue
                 if target.scheme != 'https' or not target.hostname or target.username or target.password:
                     continue
             if not url or url in seen or not row['title']:
                 continue
             seen.add(url)
-            score = cosine_similarity(query, row['title'] + ' ' + row['description']) if query else 0.0
-            items.append({'title': row['title'], 'url': url, 'description': row['description'],
-                          'score': round(score, 4), 'source_url': source.url, 'platform': source.id,
-                          'opportunity_kind': source.kind})
-        if not items:
+            # Literal substring search, not an embedding/eligibility score.
+            if query and query.casefold() not in (row['title'] + ' ' + row['description']).casefold():
+                continue
+            record = dict(row, source_url=source.url, platform=source.id,
+                          opportunity_kind=source.kind)
+            items.append(evidence_card(record, fetched_at=fetched_at, content_sha256=content_hash))
+        if not rows:
             raise PlatformUnavailable(f'{source.id}: no listing items parsed; layout may have changed')
-        items.sort(key=lambda item: item['score'], reverse=True)
         return {'platform': source.id, 'mode': source.mode, 'launch_url': source.url,
-                'scanned_at': datetime.now(timezone.utc).isoformat(), 'items': items[:limit]}
+                'scanned_at': fetched_at, 'fetched_at': fetched_at, 'content_sha256': content_hash,
+                'query_semantics': 'literal_substring_source_order', 'items': items[:limit]}
     except httpx.HTTPError as exc:
         raise PlatformUnavailable(f'{source.id}: source request failed ({type(exc).__name__})') from exc
     finally:
