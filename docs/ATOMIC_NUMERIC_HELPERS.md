@@ -41,12 +41,38 @@ Other representable subnormal outputs use ordinary float rounding. For
 example `[1e308]` paired with `[1e308]` returns 422. `[0,0]` paired with a
 constant series returns zero scores and lag 0.
 
+## Input-size and CPU policy
+
+Both exact helpers accept at most **256 values per array**: `buyer_values`
+for `selling_optimization`, and each of `input` and `response` for
+`system_delay`. A longer array raises ValueError at `run` and returns HTTP
+422 with a string `detail` such as `input supports at most 256 values` at
+the mounted API. Checks run before numeric conversion or Fraction allocation;
+lag's cap applies even when `max_lag` is zero. There is no truncation,
+resampling, or configurable caller override. This deliberately rejects
+previously accepted oversized requests, while leaving accepted results,
+exact comparisons, rounding, and tie rules unchanged.
+
+Reserve candidates are scanned once after sorting exact values; the first
+occurrence of each threshold has demand equal to its remaining suffix length.
+This is O(n log n) comparisons, rather than a demand scan for every threshold.
+Lag still uses O(n * (max_lag + 1)) exact products, at most 32,896 products
+for 256 samples and all 256 lags. The cap is conservative because fractions
+at widely separated binary scales cost more than small integers.
+
+Regression tests compare maximum-size results to independent Fraction
+oracles and bound each helper call to 5 seconds on the test runner (including
+all lags). This is a regression threshold, not a latency SLA or proof of
+worst-case wall time on every deployment. Request parsing/body size, huge
+integer token parsing, concurrency, rate limits and unrelated algorithms
+require separate resource controls.
+
 ## Limits
 
 These are decision-support calculations, not automatic bids or effects.
 Reserve revenue is an empirical bound that can overfit, not a promise of
 future auction revenue. Exact rational arithmetic costs more CPU and memory
-than float arithmetic; this change adds no sample-size cap, request quota or
-performance guarantee. Unrelated algorithms have not been redesigned for
+than float arithmetic; the fixed sample cap bounds these two helpers but
+does not add a request quota or deployment-wide performance guarantee. Unrelated algorithms have not been redesigned for
 numerical conditioning. The shared result guard rejects nonfinite results,
 and arithmetic/domain failures are converted to ValueError / HTTP 422.
