@@ -242,3 +242,21 @@ def test_third_audit_spaced_initial():
     from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
     row = evidence_card({'title':'Award','description':'Eligibility: A. Chen lab only. No minors.'}, fetched_at='x', content_sha256='f'*64)
     assert row['eligibility']['evidence'][0] == 'Eligibility: A. Chen lab only.'
+
+@pytest.mark.parametrize('prefix', ['Early bird ', 'Registration ', 'Previous ', "Last year's ", 'No '])
+def test_round4_qualified_deadline_abstains(prefix):
+    r = deadline_evidence(prefix+'deadline: Oct 1, 2026')
+    assert r['value'] is None and 'qualified_or_negated_deadline' in r['unknowns']
+
+@pytest.mark.parametrize('sentence', ['Must be enrolled.', 'Must be 18.', 'Only juniors may apply.', 'Restricted to residents.', 'Available to international students.', 'Not open to minors.', 'Minimum GPA 3.5.', 'Requirements: US citizenship.'])
+def test_round4_eligibility_cues(sentence):
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    r = evidence_card({'title':'Award','description':sentence}, fetched_at='x', content_sha256='f'*64)
+    assert r['eligibility']['evidence'] and 'eligibility_not_stated_in_listing' not in r['unknowns']
+
+def test_round4_fulltext_query_and_html_blocks():
+    text = '<p>Eligibility: Students.</p><p>Award: $500.</p><p>'+('x '*350)+'unique-query-term</p>'
+    body = ('<rss><channel><item><title>Award</title><link>https://example.org/a</link><description><![CDATA['+text+']]></description></item></channel></rss>').encode()
+    with client(body, 'application/rss+xml') as tx:
+        rows = discover('scholarshiproar', 'unique-query-term', client=tx)['items']
+    assert len(rows) == 1 and rows[0]['eligibility']['evidence'][0] == 'Eligibility: Students.'

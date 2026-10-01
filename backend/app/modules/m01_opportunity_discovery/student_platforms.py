@@ -63,7 +63,10 @@ def _plain_text(value: str) -> str:
     soup = BeautifulSoup(unescape(value), 'html.parser')
     for node in soup.select('script, style, template, noscript'):
         node.decompose()
-    return soup.get_text(' ', strip=True)
+    for node in soup.select('p, div, li, section, article, h1, h2, h3, h4, tr, br'):
+        node.insert_before('\n')
+        node.insert_after('\n')
+    return soup.get_text(' ', strip=True).strip()
 
 
 def _safe_target(source: StudentPlatform, href: str) -> str | None:
@@ -242,7 +245,7 @@ def discover(platform_id: str, query: str = '', *, limit: int = 25, client: http
                 continue
             seen.add(url)
             # Literal substring search, not an embedding/eligibility score.
-            if query and query.casefold() not in (row['title'] + ' ' + row['description']).casefold():
+            if query and query.casefold() not in (row['title'] + ' ' + row.get('evidence_text', row['description'])).casefold():
                 continue
             record = dict(row, source_url=source.url, platform=source.id,
                           opportunity_kind=source.kind)

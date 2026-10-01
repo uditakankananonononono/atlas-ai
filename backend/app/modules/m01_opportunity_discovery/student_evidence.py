@@ -14,7 +14,7 @@ _MONTH = r'(?:January|February|March|April|May|June|July|August|September|Octobe
 _CALENDAR = r'(?:[0-9]{4}-[0-9]{2}-[0-9]{2}|' + _MONTH + r'\s+[0-9]{1,2}(?:st|nd|rd|th)?,?\s+[0-9]{4}|[0-9]{1,2}(?:st|nd|rd|th)?\s+' + _MONTH + r'\s+[0-9]{4})'
 _DATE = r'(?:[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[Tt][0-9]{2}:[0-9]{2}(?::[0-9]{2}(?:\.[0-9]+)?)?(?:[Zz]|[+-][0-9]{2}:?[0-9]{2})?)?|' + _CALENDAR + r')'
 _DEADLINE = re.compile(r'\b' + _CUE + r'\s*[:\-]?\s*(?:(?:on|is)\s+)?(?P<date>' + _DATE + r')(?![A-Za-z0-9:+-])', re.I)
-_ELIGIBILITY = re.compile(r'(?:^|(?<=[.!?\n]))\s*(?:Eligibility|Eligible applicants|Who can apply|Applicants must|You must|Open to)\b', re.I)
+_ELIGIBILITY = re.compile(r'(?:^|(?<=[.!?\n]))\s*(?:Eligibility|Eligible applicants|Who can apply|Applicants must|You must|Open to|Must be|Only [A-Za-z ]+ may apply|Restricted to|Available to|Not open to|Minimum GPA|Requirements)\b', re.I)
 
 
 def deadline_evidence(text: str) -> dict:
@@ -23,6 +23,12 @@ def deadline_evidence(text: str) -> dict:
     matches = list(_DEADLINE.finditer(text))
     for index, match in enumerate(matches):
         raw = match['date']
+        prefix = re.split(r'[.!?\n;]', text[:match.start()])[-1].strip()
+        qualifier_words = re.findall(r'[A-Za-z]+', prefix.casefold())
+        if any(word not in {'the', 'application', 'submission', 'applications', 'submissions'} for word in qualifier_words):
+            result['evidence'].append(match.group(0))
+            result['unknowns'].append('qualified_or_negated_deadline')
+            continue
         end = matches[index+1].start() if index+1 < len(matches) else len(text)
         tail = text[match.end():end]
         result['evidence'].append(text[match.start():end].strip())
@@ -103,7 +109,7 @@ def evidence_card(row: dict, *, fetched_at: str, content_sha256: str) -> dict:
     statements.extend(row.get('eligibility_statements', []))
     unknowns = ['personal_eligibility_not_evaluated', 'entry_cost_not_verified', 'detail_page_not_fetched']
     if not statements:
-        unknowns.append('eligibility_not_stated_in_listing')
+        unknowns.append('eligibility_not_found_by_supported_cues')
     if boundary_unknown:
         unknowns.append('eligibility_context_boundary_unknown')
     if truncated:

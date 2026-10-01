@@ -198,3 +198,26 @@ coverage corpus on 6d97f6a, not sampled production recall. No production recall,
 precision, complete source coverage or durable policy permission is established
 by these tests. No new live fetch or account action in this follow-up. D6 remains
 cooperative timing only, with the blocked-chunk counterexample disclosed above.
+
+## Fourth audit follow-up
+
+Unrecognized qualifier words before a deadline cue cause abstention with
+`qualified_or_negated_deadline`; only the/application/submission forms are
+whitelisted. This rejects early-bird, registration, previous/year-specific and
+negated cues rather than asserting the wrong deadline category. Past calendar
+dates are preserved as source dates, not silently advanced; existing expired
+filters hide them when requested. They are not asserted to be current cycle dates.
+
+Eligibility supported cues include must-be, only-X-may-apply, restricted-to,
+available-to, not-open-to, minimum-GPA and requirements. When nothing matches,
+the reason is now `eligibility_not_found_by_supported_cues`, never a claim that
+the listing contains no eligibility text. Later context restrictions remain
+flagged and available within explicit context limits. RSS HTML block boundaries
+are retained; queries inspect the same full sanitized text as extraction, while
+display description remains bounded. No separate live scan is implied.
+
+The independent fresh-corpus ~47% figure is corpus coverage, not production
+recall. No measured production recall or broad semantic extraction claim is made.
+Named clock/timezone prose, weekday/date disagreements and numeric locale grammar
+remain outside this slice unless specifically supported by a test. Date-only
+values do not assert an instant or complete eligibility. Publication remains held.
