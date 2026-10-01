@@ -10,8 +10,8 @@ import re
 
 _CUE = r'(?:application deadline|deadline|apply by|applications? (?:close|due))'
 _DATE = r'(?:\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2})?(?:Z|[+-]\d{2}:\d{2})?)?|(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec) \d{1,2},? \d{4})'
-_DEADLINE = re.compile(r'\b' + _CUE + r'\s*[:\-]?\s*(?P<date>' + _DATE + r')', re.I)
-_ELIGIBILITY = re.compile(r'(?:^|(?<=[.!?\n]))\s*((?:Eligibility|Eligible applicants|Who can apply|Applicants must|You must|Open to)\b[^\n.!?]*(?:[.!?]|$))', re.I)
+_DEADLINE = re.compile(r'\b' + _CUE + r'\s*[:\-]?\s*(?P<date>' + _DATE + r')(?![A-Za-z0-9:+-])', re.I)
+_ELIGIBILITY = re.compile(r'(?:^|(?<=[.!?\n]))\s*((?:Eligibility|Eligible applicants|Who can apply|Applicants must|You must|Open to)\b[^\n]{0,600})', re.I)
 
 
 def deadline_evidence(text: str) -> dict:
@@ -24,7 +24,7 @@ def deadline_evidence(text: str) -> dict:
         result['evidence'].append(statement)
         # A range, a second deadline, a locale-specific time or unspecified clock
         # time cannot safely be turned into a single instant/date.
-        if re.match(r'\s*(?:to\b|through\b|until\b|[-–]|at\b|\d{1,2}:|(?:UTC|GMT|EST|EDT|PST|PDT|IST)\b)', tail, re.I):
+        if re.match(r'[ ,]*(?:to\b|through\b|until\b|[-–]|at\b|\d{1,2}:|(?:UTC|GMT|EST|EDT|PST|PDT|IST)\b)', tail, re.I):
             result['unknowns'].append('unsupported_deadline_time_or_range')
             continue
         try:
