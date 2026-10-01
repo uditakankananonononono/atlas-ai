@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 from dataclasses import dataclass
 from hashlib import sha256
 import json
-from typing import Callable, Protocol
+from typing import Callable
+import os
 from sqlalchemy import JSON, DateTime, String, Text, UniqueConstraint, select, text, event, DDL
 from sqlalchemy.orm import Mapped, mapped_column
 from app.core.collection import CollectionSourceRow, CollectorType
@@ -43,8 +44,12 @@ PROMOTION_ACTION = "promote_discovery_source"
 class CandidateApprovalBindingRow(Base):
     """Append-only binding. Consumption is separate so this record never changes."""
     __tablename__ = "discovery_approval_bindings"
-    candidate_id: Mapped[int] = mapped_column(primary_key=True)
-    approval_id: Mapped[str] = mapped_column(String(36), unique=True)
+    __table_args__ = (UniqueConstraint("candidate_id", "version"),)
+    approval_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    candidate_id: Mapped[int] = mapped_column(index=True)
+    version: Mapped[int]
+    source_key: Mapped[str] = mapped_column(String(300))
+    target_source_id: Mapped[int | None] = mapped_column(nullable=True)
     tenant_id: Mapped[str] = mapped_column(String(120))
     scope_sha256: Mapped[str] = mapped_column(String(64))
 
@@ -52,7 +57,7 @@ class CandidateApprovalBindingRow(Base):
 class CandidateApprovalUseRow(Base):
     __tablename__ = "discovery_approval_uses"
     approval_id: Mapped[str] = mapped_column(String(36), primary_key=True)
-    candidate_id: Mapped[int] = mapped_column(unique=True)
+    candidate_id: Mapped[int] = mapped_column(index=True)
     source_id: Mapped[int]
     used_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
@@ -66,22 +71,24 @@ for table in (CandidateApprovalBindingRow.__table__, CandidateApprovalUseRow.__t
         ).execute_if(dialect="sqlite"))
 
 
+# Mirror production migration guards in PostgreSQL create_all test databases.
+for table in (CandidateApprovalBindingRow.__table__, CandidateApprovalUseRow.__table__):
+    event.listen(table, "before_create", DDL("""CREATE OR REPLACE FUNCTION
+        discovery_approval_immutable() RETURNS trigger AS $$
+        BEGIN RAISE EXCEPTION 'immutable discovery approval record' USING ERRCODE = '23000'; END;
+        $$ LANGUAGE plpgsql""").execute_if(dialect="postgresql"))
+    event.listen(table, "after_create", DDL(
+        f"CREATE TRIGGER {table.name}_immutable BEFORE UPDATE OR DELETE ON {table.name} "
+        "FOR EACH ROW EXECUTE FUNCTION discovery_approval_immutable()"
+    ).execute_if(dialect="postgresql"))
+
+
 @dataclass(frozen=True)
 class VerifiedPromotionDecision:
     approval_id: str
     tenant_id: str
     scope_sha256: str
     expires_at: datetime
-
-
-class PromotionApprovalAuthority(Protocol):
-    """Server dependency, never deserialized from a caller's request/approved flag.
-
-    Implementations must read current approval, owner identity, expiry and
-    revocation under the same transaction/lock as promotion.
-    """
-    def verify(self, db, approval_id: str, tenant_id: str,
-               scope_sha256: str, now: datetime) -> VerifiedPromotionDecision: ...
 
 
 def _utc(moment: datetime) -> datetime:
@@ -123,7 +130,7 @@ class NativePromotionApprovalAuthority:
         return VerifiedPromotionDecision(approval_id, tenant_id, scope_sha256, _utc(row.expires_at))
 
 
-def _scope(candidate, source):
+def _scope(candidate, source, source_key, version):
     mapping = {"instagram": "public_instagram", "linkedin": "public_linkedin", "x": "x_api"}
     keys = {"instagram": "accounts", "linkedin": "creator_urls", "x": "accounts"}
     if candidate.platform not in mapping:
@@ -150,7 +157,8 @@ def _scope(candidate, source):
     scope = {"action": PROMOTION_ACTION, "tenant_id": candidate.tenant_id,
              "candidate_id": candidate.id, "platform": candidate.platform,
              "account_key": candidate.account_key, "profile_url": candidate.profile_url,
-             "source_key": f"tracked:{candidate.platform}", "source_id": source.id if source else None,
+             "attempt_version": version, "operation": "update" if source else "add",
+             "source_key": source_key, "source_id": source.id if source else None,
              "prior_config": source.config if source else None,
              "prior_enabled": source.enabled if source else None,
              "config": config, "enabled": True, **settings}
@@ -159,89 +167,158 @@ def _scope(candidate, source):
     return scope, digest
 
 
-def _source(db, candidate):
+def _identity(candidate):
+    # Stable per-account key, not one mutable bucket for an entire platform.
+    return f"tracked:{candidate.platform}:{sha256(candidate.account_key.encode()).hexdigest()}"
+
+
+def _source(db, candidate, source_key):
     return db.scalar(select(CollectionSourceRow).where(
         CollectionSourceRow.tenant_id == candidate.tenant_id,
-        CollectionSourceRow.source_key == f"tracked:{candidate.platform}").with_for_update())
+        CollectionSourceRow.source_key == source_key).with_for_update())
+
+
+def _lock(db, tenant_id, candidate_id):
+    dialect = db.get_bind().dialect.name
+    if dialect == "sqlite":
+        db.execute(text("BEGIN IMMEDIATE"))
+    elif dialect == "postgresql":
+        key = int.from_bytes(sha256(f"discovery:{tenant_id}:{candidate_id}".encode()).digest()[:8],
+                             "big", signed=True)
+        db.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": key})
+    else:
+        raise RuntimeError("promotion requires SQLite or PostgreSQL transaction locking")
+
+
+def _latest(db, candidate_id):
+    return db.scalar(select(CandidateApprovalBindingRow).where(
+        CandidateApprovalBindingRow.candidate_id == candidate_id).order_by(
+        CandidateApprovalBindingRow.version.desc()).limit(1))
 
 
 def request_candidate_promotion(tenant_id: str, candidate_id: int, *,
-                                approval_service, ttl_seconds: int = 3600) -> str:
-    """Prepare a Module 0 review request and bind its exact scope, without enabling.
+                                approval_service, ttl_seconds: int = 3600,
+                                target_source_id: int | None = None) -> str:
+    """Atomically create an immutable owner-review attempt and Module 0 request.
 
-    A candidate is bound once. A stale/rejected request cannot be rebound to
-    different authority. Restaging a changed candidate requires a new identity.
-    An orphan pending request after a crash cannot authorize promotion.
+    Pending duplicate requests return the same id. Denied, expired or revoked
+    attempts can be retried with a fresh id/version. Used permits never rebind.
+    Updating an existing source requires its explicit id, not a platform default.
     """
+    from app.modules.m00_approval_center.service import ApprovalRequestRow, ApprovalEventRow, Service
     if ttl_seconds <= 0:
         raise ValueError("approval expiry is required")
+    if not isinstance(approval_service, Service):
+        raise TypeError("native Module 0 service required")
     with SessionLocal() as db:
-        candidate = db.get(DiscoveryCandidateRow, candidate_id)
-        if candidate is None or candidate.tenant_id != tenant_id:
-            raise LookupError("candidate not found")
-        if candidate.status != "pending_review" or db.get(CandidateApprovalBindingRow, candidate_id):
-            raise PermissionError("candidate already reviewed or bound")
-        scope, digest = _scope(candidate, _source(db, candidate))
-        view = approval_service.submit(module_id=0, action_type=PROMOTION_ACTION,
-            payload={"scope": scope, "scope_sha256": digest}, user_id=tenant_id, ttl_seconds=ttl_seconds)
-        db.add(CandidateApprovalBindingRow(candidate_id=candidate_id, approval_id=view["id"],
-            tenant_id=tenant_id, scope_sha256=digest))
-        db.commit()
-        return view["id"]
-
-
-def promote_candidate(tenant_id: str, candidate_id: int, *,
-                      approval_authority: PromotionApprovalAuthority | None = None) -> int:
-    """Consume the candidate's immutable owner approval and enable exactly once.
-
-    The authority is supplied by trusted server composition, never HTTP JSON.
-    Denials roll back every source/candidate/use change. SQLite serializes writes;
-    PostgreSQL serializes the tenant/platform source key, including absent rows.
-    """
-    if approval_authority is None:
-        raise PermissionError("trusted server approval authority required")
-    with SessionLocal() as db:
-        dialect = db.get_bind().dialect.name
-        if dialect not in {"sqlite", "postgresql"}:
-            raise RuntimeError("promotion requires SQLite or PostgreSQL transaction locking")
-        if dialect == "sqlite":
-            db.execute(text("BEGIN IMMEDIATE"))
+        # The request and binding must be committed by the same database session.
+        with approval_service._sessions() as approval_db:
+            if approval_db.get_bind() is not db.get_bind():
+                raise ValueError("approval service must use the discovery database")
+        _lock(db, tenant_id, candidate_id)
         candidate = db.scalar(select(DiscoveryCandidateRow).where(
             DiscoveryCandidateRow.id == candidate_id).with_for_update())
         if candidate is None or candidate.tenant_id != tenant_id:
             raise LookupError("candidate not found")
-        if dialect == "postgresql":
-            # Stable signed int64 key, not Python's per-process hash().
-            lock_key = int.from_bytes(sha256(f"{tenant_id}:{candidate.platform}".encode()).digest()[:8],
-                                      "big", signed=True)
-            db.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": lock_key})
-        binding = db.get(CandidateApprovalBindingRow, candidate_id)
-        if (binding is None or binding.tenant_id != tenant_id or
-            candidate.status != "pending_review" or db.get(CandidateApprovalUseRow, binding.approval_id)):
-            raise PermissionError("unused bound approval required")
-        source = _source(db, candidate)
-        scope, digest = _scope(candidate, source)
-        if digest != binding.scope_sha256:
-            raise PermissionError("reviewed source configuration changed")
-        now = datetime.now(timezone.utc)
-        decision = approval_authority.verify(db, binding.approval_id, tenant_id, digest, now)
-        if (not isinstance(decision, VerifiedPromotionDecision) or
-            decision.approval_id != binding.approval_id or decision.tenant_id != tenant_id or
-            decision.scope_sha256 != digest or _utc(decision.expires_at) <= datetime.now(timezone.utc)):
-            raise PermissionError("verified approval does not match binding")
-        if source is None:
-            source = CollectionSourceRow(tenant_id=tenant_id, source_key=scope["source_key"],
-                **{key: scope[key] for key in ("collector_type", "priority", "cadence_seconds",
-                    "cost_per_1000_requests_usd", "daily_request_cap")},
-                enabled=True, config=scope["config"], next_run_at=now)
-            db.add(source)
-            db.flush()
-        else:
-            source.config = scope["config"]
-            source.enabled = True
-        db.add(CandidateApprovalUseRow(approval_id=binding.approval_id, candidate_id=candidate_id,
-                                      source_id=source.id, used_at=now))
-        candidate.status = "approved"
-        candidate.reviewed_at = now
+        latest = _latest(db, candidate_id)
+        if candidate.status != "pending_review":
+            if latest and db.get(CandidateApprovalUseRow, latest.approval_id):
+                return latest.approval_id  # duplicate request, not another permit
+            raise PermissionError("candidate already reviewed")
+        if latest:
+            row = db.get(ApprovalRequestRow, latest.approval_id)
+            revoked = db.scalar(select(ApprovalEventRow.id).where(
+                ApprovalEventRow.approval_id == latest.approval_id,
+                ApprovalEventRow.event == "revoked"))
+            if row and not revoked and row.status in {"pending", "approved"} and (
+                    row.expires_at and _utc(row.expires_at) > datetime.now(timezone.utc)):
+                if target_source_id != latest.target_source_id:
+                    raise PermissionError("active attempt targets a different source")
+                return latest.approval_id
+        source_key = _identity(candidate)
+        if target_source_id is not None:
+            target = db.get(CollectionSourceRow, target_source_id)
+            if target is None or target.tenant_id != tenant_id:
+                raise LookupError("target source not found")
+            source_key = target.source_key
+        source = _source(db, candidate, source_key)
+        if target_source_id is None and source is not None:
+            raise PermissionError("existing source requires an explicit update review")
+        version = latest.version + 1 if latest else 1
+        scope, digest = _scope(candidate, source, source_key, version)
+        view = approval_service._submit_in_transaction(db, module_id=0, action_type=PROMOTION_ACTION,
+            payload={"scope": scope, "scope_sha256": digest}, user_id=tenant_id, ttl_seconds=ttl_seconds)
+        db.add(CandidateApprovalBindingRow(candidate_id=candidate_id, approval_id=view["id"],
+            version=version, source_key=source_key, target_source_id=target_source_id,
+            tenant_id=tenant_id, scope_sha256=digest))
         db.commit()
-        return source.id
+    approval_service._publish_request(view)
+    return view["id"]
+
+
+class _PromotionService:
+    """Private trusted composition/test seam. Not a request-facing authority API."""
+    def __init__(self, sessions, authority):
+        self._sessions = sessions
+        self._authority = authority
+
+    def promote(self, tenant_id, candidate_id):
+        with self._sessions() as db:
+            _lock(db, tenant_id, candidate_id)
+            candidate = db.scalar(select(DiscoveryCandidateRow).where(
+                DiscoveryCandidateRow.id == candidate_id).with_for_update())
+            if candidate is None or candidate.tenant_id != tenant_id:
+                raise LookupError("candidate not found")
+            binding = _latest(db, candidate_id)
+            if (binding is None or binding.tenant_id != tenant_id or
+                candidate.status != "pending_review" or db.get(CandidateApprovalUseRow, binding.approval_id)):
+                raise PermissionError("unused bound approval required")
+            if db.get_bind().dialect.name == "postgresql":
+                key = int.from_bytes(sha256(f"source:{tenant_id}:{binding.source_key}".encode()).digest()[:8],
+                                     "big", signed=True)
+                db.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": key})
+            source = _source(db, candidate, binding.source_key)
+            if (source.id if source else None) != binding.target_source_id:
+                raise PermissionError("reviewed source configuration changed")
+            scope, digest = _scope(candidate, source, binding.source_key, binding.version)
+            if digest != binding.scope_sha256:
+                raise PermissionError("reviewed source configuration changed")
+            now = datetime.now(timezone.utc)
+            decision = self._authority.verify(db, binding.approval_id, tenant_id, digest, now)
+            if (not isinstance(decision, VerifiedPromotionDecision) or
+                decision.approval_id != binding.approval_id or decision.tenant_id != tenant_id or
+                decision.scope_sha256 != digest or _utc(decision.expires_at) <= datetime.now(timezone.utc)):
+                raise PermissionError("verified approval does not match binding")
+            if source is None:
+                source = CollectionSourceRow(tenant_id=tenant_id, source_key=scope["source_key"],
+                    **{key: scope[key] for key in ("collector_type", "priority", "cadence_seconds",
+                        "cost_per_1000_requests_usd", "daily_request_cap")},
+                    enabled=True, config=scope["config"], next_run_at=now)
+                db.add(source)
+                db.flush()
+            else:
+                source.config = scope["config"]
+                source.enabled = True
+            db.add(CandidateApprovalUseRow(approval_id=binding.approval_id, candidate_id=candidate_id,
+                                          source_id=source.id, used_at=now))
+            candidate.status = "approved"
+            candidate.reviewed_at = now
+            db.commit()
+            return source.id
+
+
+def _configured_promotion_service():
+    # Deployment-owned environment only. Never take owner maps from API callers.
+    owners = json.loads(os.environ.get("ATLAS_PROMOTION_OWNERS_JSON", "{}"))
+    if not isinstance(owners, dict) or any(not isinstance(v, str) or not v for v in owners.values()):
+        raise RuntimeError("invalid server promotion owner directory")
+    return _PromotionService(SessionLocal, NativePromotionApprovalAuthority(owners.get))
+
+
+def promote_candidate(tenant_id: str, candidate_id: int) -> int:
+    """Resolve the server authority internally and consume one durable permit.
+
+    No authority/approved parameter is accepted. The security boundary excludes
+    a malicious process owner or a principal able to rewrite the approval DB.
+    """
+    return _configured_promotion_service().promote(tenant_id, candidate_id)
