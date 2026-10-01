@@ -19,6 +19,7 @@ from urllib.parse import urljoin, urlsplit
 from uuid import uuid4
 
 from bs4 import BeautifulSoup
+from app.modules.m13_browser_agent.session_bridge import form_guard
 from app.modules.m13_browser_agent.session_bridge.protocol import PlatformBlocked, is_pc_session, split_pc_session, validate_identifier
 
 
@@ -53,6 +54,9 @@ class BrowserRecipe:
     allowed_fields: tuple[str, ...]
     # Only explicitly installed test recipes may access a loopback fake site.
     local_test: bool = False
+    # The only form encoding the reviewed recipe accepts. Body binding at the
+    # network layer is only possible for urlencoded forms.
+    form_enctype: str = form_guard.DEFAULT_ENCTYPE
 
     def url(self, url):
         parsed = urlsplit(url)
@@ -73,6 +77,8 @@ class BrowserRecipe:
                 or any(not isinstance(name, str) or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_-]{0,127}", name) is None for name in fields)):
             raise ValueError("recipe requires an explicit unique form field allowlist")
         object.__setattr__(self, 'allowed_fields', fields)
+        if self.form_enctype not in form_guard.ALLOWED_ENCTYPES:
+            raise ValueError("recipe form enctype is not a valid form encoding")
         if self.platform not in {'pinterest', 'x', 'youtube', 'instagram', 'local_fixture'}:
             raise ValueError("platform is not allowlisted")
         if self.platform == 'local_fixture' and not self.local_test:
@@ -109,6 +115,17 @@ class LoginRunStore:
     def create(self, tenant, run):
         with self.db() as db:
             db.execute('INSERT INTO m18_login_runs VALUES(?,?,?,?)', (tenant, run['id'], run['revision'], canonical(run)))
+        return run
+
+    def annotate(self, tenant, run, **fields):
+        """Persist extra observed facts without a state transition."""
+        old = run['revision']
+        run = dict(run, revision=old + 1, **fields)
+        with self.db() as db:
+            changed = db.execute('UPDATE m18_login_runs SET revision=?,body=? WHERE tenant=? AND id=? AND revision=?',
+                                 (run['revision'], canonical(run), tenant, run['id'], old)).rowcount
+            if changed != 1:
+                raise PermissionError('run changed concurrently; reload before continuing')
         return run
 
     def save(self, tenant, run, state):
@@ -204,6 +221,7 @@ class LoginHustleRunner:
         if soup.select('[form]'):
             raise PermissionError('external form-associated controls are not supported')
         fields = form.select('input,textarea,select,button[name]')
+        form_guard.static_form_checks(soup, form, button, recipe.form_enctype)
         # A submit control may override the form's reviewed destination, method or
         # encoding; the preview only binds the form's own action/method.
         if any(attr in node.attrs for node in [button, *form.select('input,button')] for attr in SUBMIT_OVERRIDES):
@@ -238,9 +256,16 @@ class LoginHustleRunner:
         content = await self.sessions.read_values(tenant, run['session_id'], [recipe.content_selector])
         if content.get(recipe.content_selector) != run['draft']:
             raise PermissionError('draft content changed; review a new preview')
-        action = recipe.url(urljoin(page.url, form.get('action') or page.url))
+        # The browser decides where the form posts: <base>, scripts and DOM
+        # clobbering all change that, and urljoin(page.url) ignores them.
+        facts = form_guard.validate_facts(
+            await self.sessions.form_facts(tenant, run['session_id'], recipe.submit_selector), recipe.form_enctype)
+        action = recipe.url(facts['action'])
+        if (facts['url'] != page.url or action != urljoin(page.url, form.get('action') or page.url)
+                or facts['method'] != form.get('method', 'get').strip().lower()):
+            raise PermissionError('browser-resolved form destination differs from the page markup')
         return {'url': page.url, 'account': run['account'], 'form_action': action,
-                'method': form.get('method', 'get'), 'form_text': form.get_text(' ', strip=True),
+                'form_facts': facts, 'method': form.get('method', 'get'), 'form_text': form.get_text(' ', strip=True),
                 'submit': str(nodes[0]), 'values': values, 'allowed_fields': list(recipe.allowed_fields),
                 'terms': recipe.free_terms, 'draft': run['draft'], 'hypothesis': run['hypothesis'],
                 'limits': run['limits'], 'source_hashes': [s['sha256'] for s in run['sources']]}
@@ -333,6 +358,19 @@ class LoginHustleRunner:
                 run['outcome'] = 'Click was not verified as the approved submit. Readback needed; no automatic retry.'
                 run = self.store.save(tenant, run, 'unknown')
                 raise PermissionError('dispatched click was not verified as the approved submit')
+            guard = self.sessions.submit_guard(tenant, sid) or {}
+            run = self.store.annotate(tenant, run, guard={'approved_post_sent': bool(guard.get('approved_post_sent')),
+                                                           'blocked': list(guard.get('blocked', []))[:20]})
+            if guard.get('blocked'):
+                if not guard.get('approved_post_sent'):
+                    run['outcome'] = ('The click-time network guard aborted a request that differed from the reviewed '
+                                      'form; the approved POST was not sent. Preview again to approve a new submit.')
+                    run = self.store.save(tenant, run, 'approval_burned')
+                    raise PermissionError('network guard aborted a non-reviewed request; nothing was published')
+                run['outcome'] = ('The approved POST was sent but the guard also aborted another request. '
+                                  'Readback needed; no automatic retry.')
+                run = self.store.save(tenant, run, 'unknown')
+                raise PermissionError('guard aborted extra requests during the approved click')
             return await self.reconcile(tenant, rid)
         except PlatformBlocked as error:
             run['pause_reason'] = error.kind.value

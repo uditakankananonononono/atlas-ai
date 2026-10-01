@@ -33,6 +33,8 @@ async def setup(tmp_path):
         commands = []
         extra_field = None
         submit_attr = None
+        html_hook = None
+        post_paths = []
         def log_message(self, *args): pass
         def do_GET(self):
             if self.path == '/throttle':
@@ -51,6 +53,8 @@ async def setup(tmp_path):
                     html = html.replace('<button id="publish"', '<button id="publish" '+self.submit_attr[0]+'="'+self.submit_attr[1]+'"')
                 if self.extra_field and self.path == '/compose':
                     html = html.replace('</form>', '<input name="'+self.extra_field+'" value="DO_NOT_COPY"></form>')
+                if Site.html_hook and self.path == '/compose':
+                    html = Site.html_hook(html)
                 if self.path == '/receipt' and self.posts:
                     html += '<div id="receipt">'+str(len(self.posts))+'</div><div id="published">'+self.posts[-1]+'</div><div id="receipt_account">owner</div><div id="receipt_run">'+self.keys[-1]+'</div>'
                 html += '</body></html>'
@@ -58,6 +62,9 @@ async def setup(tmp_path):
         def do_POST(self):
             from urllib.parse import parse_qs
             body = self.rfile.read(int(self.headers['Content-Length'])).decode()
+            self.post_paths.append(self.path)
+            if self.path != '/publish':
+                self.send_response(200); self.end_headers(); return
             self.posts.append(parse_qs(body)['draft'][0])
             self.keys.append(parse_qs(body)['run_id'][0])
             self.send_response(303); self.send_header('Location', '/receipt'); self.end_headers()
@@ -483,7 +490,7 @@ async def test_f2_lost_arming_fails_closed_before_any_unverified_click_and_recov
     with pytest.raises(PermissionError):
         await r.execute('tenant', run['id'], 'owner')
     assert not setup[6].posts
-    assert not any(c['args'].get('selector') == '#publish' for c in setup[6].commands)
+    assert not any(c['args'].get('selector') == '#publish' and c['kind'].startswith('click') for c in setup[6].commands)
     burned = r.store.get('tenant', run['id'])
     assert burned['state'] == 'approval_burned'
     # Recovery: nothing was dispatched, so a fresh reviewed preview and approval may continue.
@@ -547,6 +554,16 @@ async def test_f1_daemon_preclick_independently_refuses_submit_override(setup, a
         form = button.find_parent('form')
         return [f'[name="{n.get("name")}"]' for n in form.select('input,textarea,select,button[name]')]
     LoginHustleRunner.form_selectors = staticmethod(lax)
+    import types
+    from app.modules.m18_side_hustle_scraper import login_runner as lr
+    from app.modules.m13_browser_agent.session_bridge import form_guard as fg
+    real_guard = lr.form_guard
+    # The server-side browser-facts check is a second layer; disable it here (runner only)
+    # so this test still proves the daemon's own pre-click refusal.
+    lax_guard = types.SimpleNamespace(**{k: getattr(fg, k) for k in dir(fg) if not k.startswith('__')})
+    lax_guard.validate_facts = lambda facts, enctype=fg.DEFAULT_ENCTYPE: dict(facts)
+    lax_guard.static_form_checks = lambda *a, **k: None
+    lr.form_guard = lax_guard
     try:
         run = r.create('tenant', 'owner', platform='local_fixture', account='owner',
                        session_id=f"pc.{paired['device_id']}.experiment")
@@ -556,5 +573,233 @@ async def test_f1_daemon_preclick_independently_refuses_submit_override(setup, a
         with pytest.raises(RuntimeError):
             await r.execute('tenant', run['id'], 'owner')
     finally:
-        LoginHustleRunner.form_selectors = real
+        LoginHustleRunner.form_selectors = staticmethod(real)
+        lr.form_guard = real_guard
     assert not site.posts
+
+
+# ---- Round 3: <base>, form-level attributes, click-time rewrites, arming TTL ----
+
+BASE_HOOKS = {
+    'base_absolute_action': lambda h: h.replace('<head>', '<head>').replace('<html>', '<html><head><base href="/evil/"></head>'),
+    'base_relative_action': lambda h: h.replace('action="/publish"', 'action="publish"').replace('<html>', '<html><head><base href="/evil/"></head>'),
+    'base_in_body': lambda h: h.replace('action="/publish"', 'action="publish"').replace('<form', '<base href="/evil/"><form'),
+}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('name', list(BASE_HOOKS))
+async def test_n1_base_element_rejected_at_preview(setup, name):
+    setup[6].html_hook = BASE_HOOKS[name]
+    with pytest.raises(PermissionError):
+        await ready(setup)
+    assert not setup[6].post_paths
+
+
+@pytest.mark.asyncio
+async def test_n1_base_injected_after_preview_cannot_divert_post(setup):
+    setup[6].html_hook = lambda h: h.replace('action="/publish"', 'action="publish"')
+    r, run = await ready(setup)
+    assert run['preview']['form_action'].endswith('/publish')
+    await setup[5].evaluate("""() => {const b=document.createElement('base');b.href='/evil/';document.head.append(b)}""")
+    # Ground truth: the browser really resolves the form against <base>.
+    assert (await setup[5].evaluate("document.querySelector('form').action")).endswith('/evil/publish')
+    with pytest.raises(PermissionError):
+        await r.execute('tenant', run['id'], 'owner')
+    assert setup[6].post_paths == []
+
+
+@pytest.mark.asyncio
+async def test_n1_base_injected_between_arming_and_click_stops_on_device(setup):
+    setup[6].html_hook = lambda h: h.replace('action="/publish"', 'action="publish"')
+    r, run = await ready(setup)
+    original = r.sessions.authorize_submit
+    async def arm_then_base(*args, **kwargs):
+        await original(*args, **kwargs)
+        await setup[5].evaluate("""() => {const b=document.createElement('base');b.href='/evil/';document.head.append(b)}""")
+    r.sessions.authorize_submit = arm_then_base
+    with pytest.raises(Exception):
+        await r.execute('tenant', run['id'], 'owner')
+    assert setup[6].post_paths == []
+    assert r.store.get('tenant', run['id'])['state'] != 'succeeded'
+
+
+FORM_ATTR_HOOKS = {
+    'enctype_multipart': lambda h: h.replace('<form method="post"', '<form enctype="multipart/form-data" method="post"'),
+    'enctype_text': lambda h: h.replace('<form method="post"', '<form enctype="text/plain" method="post"'),
+    'target_blank': lambda h: h.replace('<form method="post"', '<form target="_blank" method="post"'),
+    'onsubmit': lambda h: h.replace('<form method="post"', '<form onsubmit="this.action=\'/evil\'" method="post"'),
+    'novalidate': lambda h: h.replace('<form method="post"', '<form novalidate method="post"'),
+    'onclick_button': lambda h: h.replace('<button id="publish"', '<button id="publish" onclick="void 0"'),
+    'oninput_control': lambda h: h.replace('<textarea', '<textarea oninput="void 0"'),
+    'onfocus_input': lambda h: h.replace('<input name="audience"', '<input onfocus="void 0" name="audience"'),
+    'onload_body': lambda h: h.replace('<body>', '<body onload="void 0">'),
+}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('name', list(FORM_ATTR_HOOKS))
+async def test_n2_form_level_attributes_rejected_at_preview(setup, name):
+    setup[6].html_hook = FORM_ATTR_HOOKS[name]
+    with pytest.raises(PermissionError):
+        await ready(setup)
+    assert not setup[6].post_paths
+
+
+MUTATIONS = {
+    'enctype': "document.querySelector('form').setAttribute('enctype','multipart/form-data')",
+    'target': "document.querySelector('form').setAttribute('target','_blank')",
+    'novalidate': "document.querySelector('form').setAttribute('novalidate','')",
+    'onsubmit': "document.querySelector('form').setAttribute('onsubmit','void 0')",
+    'onclick': "document.querySelector('#publish').setAttribute('onclick','void 0')",
+    'control_on': "document.querySelector('#draft').setAttribute('onchange','void 0')",
+    'accept_charset': "document.querySelector('form').setAttribute('accept-charset','utf-16')",
+    'onsubmit_property': "document.querySelector('form').onsubmit = () => true",
+    'button_onclick_property': "document.querySelector('#publish').onclick = () => true",
+    'window_onsubmit_property': "window.onsubmit = () => true",
+}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('name', list(MUTATIONS))
+async def test_n2_attribute_added_after_preview_cannot_submit(setup, name):
+    r, run = await ready(setup)
+    await setup[5].evaluate(MUTATIONS[name])
+    with pytest.raises(PermissionError):
+        await r.execute('tenant', run['id'], 'owner')
+    assert setup[6].post_paths == []
+
+
+@pytest.mark.asyncio
+async def test_n2_attributes_bound_in_preview_digest(setup):
+    r, run = await ready(setup)
+    facts = run['preview']['form_facts']
+    assert facts['enctype'] == 'application/x-www-form-urlencoded'
+    assert facts['base_count'] == 0 and facts['on_attrs'] == [] and not facts['no_validate']
+    assert facts['action'] == run['preview']['form_action']
+
+
+async def arm_hook(setup, script, **run_kwargs):
+    """Install page JS the static HTML checks cannot see, after preview."""
+    r, run = await ready(setup)
+    await setup[5].evaluate(script)
+    return r, run
+
+
+N3_SCRIPTS = {
+    'click_rewrites_action': "document.querySelector('#publish').addEventListener('click',()=>{document.querySelector('form').action='/evil/click'})",
+    'submit_bubble_rewrites_action': "document.querySelector('form').addEventListener('submit',()=>{document.querySelector('form').action='/evil/bubble'})",
+    'early_capture_rewrites_action': "window.addEventListener('submit',()=>{document.querySelector('form').action='/evil/capture'},true)",
+    'click_adds_base': "document.querySelector('#publish').addEventListener('click',()=>{const b=document.createElement('base');b.href='/evil/';document.head.append(b);document.querySelector('form').setAttribute('action','x')})",
+    'click_changes_draft': "document.querySelector('#publish').addEventListener('click',()=>{document.querySelector('#draft').value='SWAPPED'})",
+    'click_posts_elsewhere': "document.querySelector('#publish').addEventListener('click',()=>{fetch('/evil/beacon',{method:'POST',body:'x'})})",
+    'click_sets_method_enctype': "document.querySelector('#publish').addEventListener('click',()=>{const f=document.querySelector('form');f.enctype='text/plain'})",
+}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('name', list(N3_SCRIPTS))
+async def test_n3_click_time_rewrites_never_reach_the_network(setup, name):
+    r, run = await arm_hook(setup, N3_SCRIPTS[name])
+    try:
+        await r.execute('tenant', run['id'], 'owner')
+    except Exception:
+        pass
+    assert [p for p in setup[6].post_paths if p != '/publish'] == []
+    final = r.store.get('tenant', run['id'])
+    assert final['state'] != 'succeeded'
+    if name == 'click_changes_draft':
+        assert not setup[6].posts or setup[6].posts == ['Tutoring pilot']
+    # The mitigation must report honestly that it stopped something.
+    assert final['state'] in {'approval_burned', 'unknown'}
+    assert final['guard']['blocked'], final
+    sent = name == 'click_posts_elsewhere'
+    assert final['guard']['approved_post_sent'] is sent, final['guard']
+    assert final['state'] == ('unknown' if sent else 'approval_burned')
+    assert 'SWAPPED' not in setup[6].posts
+
+
+@pytest.mark.asyncio
+async def test_n3_guard_is_removed_after_click_and_normal_flow_still_publishes(setup):
+    r, run = await ready(setup)
+    result = await r.execute('tenant', run['id'], 'owner')
+    assert result['state'] == 'succeeded' and setup[6].post_paths == ['/publish']
+    assert result['guard']['approved_post_sent'] is True and result['guard']['blocked'] == []
+    # After the approved click the page is no longer under the route guard.
+    await setup[5].evaluate("fetch('/after',{method:'POST',body:'x'})")
+    await asyncio.sleep(0.3)
+    assert '/after' in setup[6].post_paths
+
+
+@pytest.mark.asyncio
+async def test_n4_unclicked_arming_expires_and_does_not_block_session(setup):
+    from app.modules.m13_browser_agent.session_bridge.protocol import BridgeError
+    r, run = await ready(setup)
+    sessions = r.sessions
+    now = [1000.0]
+    sessions.clock = lambda: now[0]
+    sid, aid = run['session_id'], run['approval_id']
+    recipe = setup[1]
+    await sessions.authorize_submit('tenant', sid, approval_id=aid, capture_sha256=run['preview_sha256'],
+                                    selector=recipe.submit_selector, values=run['preview']['values'], preview=run['preview'])
+    assert sessions.is_armed('tenant', sid, approval_id=aid, selector=recipe.submit_selector)
+    now[0] += 5
+    with pytest.raises(BridgeError, match='armed'):
+        await (await sessions.page('tenant', sid)).locator('#terms').click()
+    now[0] += 10_000
+    assert not sessions.is_armed('tenant', sid, approval_id=aid, selector=recipe.submit_selector)
+    # Session is usable again: unrelated clicks are no longer refused for the stale arming.
+    try:
+        await (await sessions.page('tenant', sid)).locator('#terms').click()
+    except BridgeError as error:
+        assert 'armed' not in str(error)
+    assert ('tenant', sid) not in sessions._armed
+    assert setup[6].post_paths == []
+
+
+@pytest.mark.asyncio
+async def test_n4_expired_arming_cannot_send_the_approved_click(setup):
+    from app.modules.m13_browser_agent.session_bridge.protocol import BridgeError
+    r, run = await ready(setup)
+    sessions = r.sessions
+    now = [1000.0]
+    sessions.clock = lambda: now[0]
+    sid, aid = run['session_id'], run['approval_id']
+    recipe = setup[1]
+    await sessions.authorize_submit('tenant', sid, approval_id=aid, capture_sha256=run['preview_sha256'],
+                                    selector=recipe.submit_selector, values=run['preview']['values'], preview=run['preview'])
+    now[0] += 10_000
+    with pytest.raises(BridgeError):
+        await (await sessions.page('tenant', sid)).locator(recipe.submit_selector).click()
+    assert setup[6].post_paths == []
+
+
+@pytest.mark.asyncio
+async def test_n4_daemon_refuses_click_past_its_deadline(setup):
+    r, run = await ready(setup)
+    sessions = r.sessions
+    sid, aid = run['session_id'], run['approval_id']
+    recipe = setup[1]
+    await sessions.authorize_submit('tenant', sid, approval_id=aid, capture_sha256=run['preview_sha256'],
+                                    selector=recipe.submit_selector, values=run['preview']['values'], preview=run['preview'])
+    sessions._armed[('tenant', sid)]['deadline'] = 1.0  # epoch seconds in the distant past
+    from app.modules.m13_browser_agent.session_bridge.protocol import BridgeError
+    with pytest.raises(BridgeError):
+        await (await sessions.page('tenant', sid)).locator(recipe.submit_selector).click()
+    assert setup[6].post_paths == []
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('name', ['submit_bubble_rewrites_action', 'click_rewrites_action', 'click_changes_draft', 'click_posts_elsewhere'])
+async def test_n3_network_layer_alone_blocks_when_page_guard_is_defeated(setup, monkeypatch, name):
+    # A hostile page can pre-empt the in-page guard; the route guard must hold by itself.
+    from app.modules.m13_browser_agent.session_bridge import form_guard
+    monkeypatch.setattr(form_guard, 'GUARD_JS', '() => true')
+    r, run = await arm_hook(setup, N3_SCRIPTS[name])
+    try:
+        await r.execute('tenant', run['id'], 'owner')
+    except Exception:
+        pass
+    assert [p for p in setup[6].post_paths if p != '/publish'] == []
+    assert 'SWAPPED' not in setup[6].posts
+    assert r.store.get('tenant', run['id'])['guard']['blocked']
