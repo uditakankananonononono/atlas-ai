@@ -112,7 +112,10 @@ def canonical_args(args: dict[str, Any]) -> str:
 
 
 def effect_identity(tenant_id: str, task_id: str, node_id: str, tool: str, args: dict[str, Any]) -> tuple[str, str]:
-    args_hash = hashlib.sha256(canonical_args(args).encode()).hexdigest()
+    # The claim id changes between runs. Other underscore-prefixed arguments
+    # can be real tool inputs and MUST remain part of the effect identity.
+    identity_args = {k: v for k, v in args.items() if k != "_expectation_claim_id"}
+    args_hash = hashlib.sha256(canonical_args(identity_args).encode()).hexdigest()
     key = "|".join([tenant_id, task_id, node_id, tool, args_hash])
     return hashlib.sha256(key.encode()).hexdigest(), args_hash
 
@@ -258,6 +261,16 @@ class EffectLedger:
             raise ValueError("outcome must be 'applied' or 'not_applied'")
         if not actor or not note:
             raise ValueError("actor and note are required")
+        # A killed worker may have left INVOKING without any restart dispatch
+        # to classify it. Use the same liveness rule and owner-scoped CAS as
+        # reserve; never convert a live invocation or a safe reservation.
+        row = self.get(effect_id)
+        if row is not None and row["state"] == INVOKING:
+            if not self._owner_dead(row):
+                raise EffectInProgress(effect_id)
+            self._cas(effect_id, expect_state=INVOKING, expect_owner=row["owner"],
+                      state=INDETERMINATE,
+                      error="worker died after invocation began and before the final receipt")
         state = RECONCILED_APPLIED if outcome == "applied" else RECONCILED_NOT_APPLIED
         ok = self._cas(effect_id, expect_state=INDETERMINATE, expect_owner=None, state=state,
                        note=f"{actor}: {note}", result_summary=result_summary or f"reconciled by {actor}: {outcome}")

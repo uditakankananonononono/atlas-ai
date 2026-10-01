@@ -232,6 +232,9 @@ class GCWRuntime:
         from .effect_ledger import effect_identity
         effect_id, _ = effect_identity(self.tenant_id, task_id, node_id, node.tool, node.arguments)
         self.ledger.reconcile(effect_id, outcome=outcome, actor=actor, note=note)
+        # A crash can leave the last checkpoint PENDING rather than BLOCKED.
+        # Only after the ledger accepts reconciliation can we resume this node.
+        node.state = TaskState.BLOCKED
         self.loop.resume_after_reconciliation(context, node_id, applied=outcome == "applied")
         self._persist_context(context)
         return context
