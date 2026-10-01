@@ -125,6 +125,10 @@ class Daemon:
         self.receipts = ReceiptChain(config.device_id)
         self._last_action_at = 0.0
         self._capabilities = set(config.capabilities)
+        # One-shot submit tokens/approvals already seen by this process (audit finding 3).
+        # In memory only: a daemon restart forgets them, which the mandatory short
+        # deadline on every CLICK_SUBMIT bounds to the arming TTL.
+        self._consumed_submit: dict[str, float] = {}
 
     async def _pace(self) -> None:
         wait = self.config.pacing_seconds - (time.monotonic() - self._last_action_at)
@@ -153,18 +157,34 @@ class Daemon:
                     capture_sha256=str(args.get("capture_sha256", "")),
                     selector=str(args.get("selector", "")),
                     values_digest=str(args.get("values_digest", "")),
+                    preview_sha256=str(args.get("preview_sha256", "")),
                     token=token):
                 event = self._receipt_event(command_id, "blocked", {"reason": "submit token invalid"})
                 return protocol.make_result(command_id, ok=False,
                                             error="submit token missing or invalid; the click was not approved",
                                             blocked=BlockKind.POLICY.value, receipt=event)
             deadline = args.get("deadline")
-            # Arming TTL enforced on the device too. Servers that predate the TTL send none.
-            if deadline is not None and (not isinstance(deadline, (int, float)) or time.time() > float(deadline)):
+            # Arming TTL enforced on the device too. A deadline is mandatory so a replay
+            # after a daemon restart cannot outlive the arming window.
+            if (isinstance(deadline, bool) or not isinstance(deadline, (int, float))
+                    or time.time() > float(deadline)):
                 event = self._receipt_event(command_id, "blocked", {"reason": "arming expired"})
                 return protocol.make_result(command_id, ok=False,
                                             error="the approved submit was armed too long ago; approve again",
                                             blocked=BlockKind.POLICY.value, receipt=event)
+            now = time.time()
+            for key, expires in list(self._consumed_submit.items()):
+                if expires < now:
+                    del self._consumed_submit[key]
+            keys = (f"token:{token}", f"approval:{args.get('approval_id', '')}")
+            if any(key in self._consumed_submit for key in keys):
+                event = self._receipt_event(command_id, "blocked", {"reason": "submit token replayed"})
+                return protocol.make_result(command_id, ok=False,
+                                            error="submit token already used (replay refused); approve again",
+                                            blocked=BlockKind.POLICY.value, receipt=event)
+            # Consume before any browser effect: a failed or ambiguous click never replays.
+            for key in keys:
+                self._consumed_submit[key] = float(deadline) + 3600.0
         await self._pace()
         try:
             result = await self._run(kind, session, args)
@@ -228,26 +248,14 @@ class Daemon:
         from ..security import values_digest
         from ..session_bridge import form_guard
         preview = args.get("preview")
-        if preview is None:
-            # Generic M13 capture-bound submit (no reviewed form preview): the original
-            # values check and plain click. The M18 login runner always sends a preview.
-            if "values" in args:
-                from ..security import values_digest as _vd
-                actual = {}
-                for selector in args["values"]:
-                    locator = page.locator(selector)
-                    if await locator.count() != 1:
-                        raise PermissionError("approved form selector changed")
-                    actual[selector] = await locator.input_value()
-                if _vd(actual) != args.get("values_digest"):
-                    raise PermissionError("approved form values changed on paired device")
-            await page.locator(str(args["selector"])).click()
-            return {"url": page.url, "approval_id": args.get("approval_id"),
-                    "capture_sha256": args.get("capture_sha256")}
+        # Every CLICK_SUBMIT needs the reviewed destination preview (audit finding 1).
+        # There is no preview-less plain-click path.
         if not isinstance(preview, dict) or "values" not in args:
             raise PermissionError("approved submit requires the reviewed preview")
         snapshot_hash = sha256(json.dumps(preview, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
-        if snapshot_hash != args.get("capture_sha256"):
+        # M18 binds the preview digest as the capture digest; M13 capture-bound submits
+        # carry it separately, covered by the HMAC token.
+        if snapshot_hash != (args.get("preview_sha256") or args.get("capture_sha256")):
             raise PermissionError("submit preview does not match approved digest")
         soup = BeautifulSoup(await page.content(), "html.parser")
         button = soup.select(args["selector"])
@@ -273,11 +281,14 @@ class Daemon:
             raise PermissionError("approved destination or form changed on device")
         fields = form.select('input,textarea,select,button[name]')
         names = [node.get('name') for node in fields]
+        field_names = form_guard.field_name_map(preview)
+        allowed = preview.get('allowed_fields', list(field_names.values()))
         if (soup.select('[form]')
-                or any(name not in preview['allowed_fields'] for name in names)
+                or any(name not in allowed for name in names)
                 or len(set(names)) != len(names)
                 or any(node.get('type', '').lower() == 'password' for node in fields)
-                or {f'[name="{name}"]' for name in names} != set(preview['values'])):
+                or set(names) != set(field_names.values())
+                or set(field_names) != set(preview['values'])):
             raise PermissionError("reviewed form field allowlist changed on device")
         for field, selector in args.get("readback_selectors", {}).items():
             nodes = soup.select(selector)
@@ -291,6 +302,8 @@ class Daemon:
             actual[selector] = await locator.input_value()
         if values_digest(actual) != args.get("values_digest"):
             raise PermissionError("approved form values changed on paired device")
+        if actual != preview["values"]:
+            raise PermissionError("approved form values differ from the reviewed preview")
         # Mitigation for click-time rewrites (TOCTOU). Not a proof: see M18_LOGIN_EXPERIMENTS.md.
         guard = form_guard.NetworkGuard(page, preview, actual)
         await guard.install()

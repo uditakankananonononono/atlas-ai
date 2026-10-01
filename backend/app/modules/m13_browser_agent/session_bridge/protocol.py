@@ -171,16 +171,24 @@ def clamp_pacing(value: float | int | None) -> float:
 
 
 def submit_token(command_secret: str, *, approval_id: str, capture_sha256: str,
-                 selector: str, values_digest: str) -> str:
-    """One-shot proof that this exact approved click may run on the device."""
-    body = "|".join([approval_id, capture_sha256, selector, values_digest])
+                 selector: str, values_digest: str, preview_sha256: str = "") -> str:
+    """Proof that this exact approved click may run on the device.
+
+    ``preview_sha256`` binds the reviewed destination preview when its digest is
+    not already the capture digest (the M13 capture-bound flow). The device keeps
+    a consumed-token cache, so each token works once per device process.
+    """
+    parts = [approval_id, capture_sha256, selector, values_digest]
+    if preview_sha256:
+        parts.append(preview_sha256)
+    body = "|".join(parts)
     return hmac.new(command_secret.encode("utf-8"), body.encode("utf-8"), hashlib.sha256).hexdigest()
 
 
 def verify_submit_token(command_secret: str, *, approval_id: str, capture_sha256: str,
-                        selector: str, values_digest: str, token: str) -> bool:
+                        selector: str, values_digest: str, token: str, preview_sha256: str = "") -> bool:
     expected = submit_token(command_secret, approval_id=approval_id, capture_sha256=capture_sha256,
-                            selector=selector, values_digest=values_digest)
+                            selector=selector, values_digest=values_digest, preview_sha256=preview_sha256)
     return hmac.compare_digest(expected, token)
 
 
