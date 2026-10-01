@@ -114,3 +114,29 @@ def test_xml_entity_declarations_are_not_parsed():
     payload = b'<!DOCTYPE rss [<!ENTITY a "Expansion">]><rss><channel><item><title>&a;</title></item></channel></rss>'
     with client(payload, 'application/rss+xml') as tx:
         with pytest.raises(PlatformUnavailable, match='declarations'): discover('scholarshiproar', client=tx)
+
+
+@pytest.mark.parametrize('text', [
+    'Deadline: 2027-01-030', 'Deadline: January 3, 20270',
+    'Deadline: 2027-01-03, 17:00', 'Deadline: 2027-01-03T12:00Zgarbage',
+    'Deadline: 2027-01-03T12:00:000Z', 'Deadline: 2027-01-03T12:00Z to 2027-01-04',
+])
+def test_no_truncated_date_prefix_success(text):
+    assert deadline_evidence(text)['value'] is None
+
+
+def test_instant_deadline_filters_do_not_crash_or_invent_timezone():
+    from datetime import date
+    from app.modules.m01_opportunity_discovery.student_intelligence import deadline_window, exclude_expired
+    card = {'deadline': deadline_evidence('Deadline: 2027-01-03T23:30:00-05:00.')}
+    assert deadline_window([card], date(2027,1,3), date(2027,1,3)) == [card]
+    assert exclude_expired([card], today=date(2027,1,4)) == []
+    assert card['deadline']['timezone'] == 'UTC-05:00'
+
+
+def test_eligibility_abbreviation_keeps_full_evidence():
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    sentence = 'Eligibility: U.S. citizens studying engineering must be enrolled full-time.'
+    row = evidence_card({'title':'Award','description': sentence}, fetched_at='2026-10-01T00:00:00+00:00', content_sha256='f'*64)
+    assert row['eligibility']['evidence'] == [sentence]
+    assert row['eligibility']['verdict'] is None

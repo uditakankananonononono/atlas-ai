@@ -132,16 +132,22 @@ def exclude_terms(items: list[dict], terms: list[str]) -> list[dict]:
     return [i for i in items if not any(x in f"{i['title']} {i.get('description', '')}".casefold() for x in blocked)]
 
 
+def _deadline_date(item: dict) -> date:
+    """Calendar-date filters use the explicitly stated date, not a guessed UTC cutoff."""
+    value = item['deadline']['value']
+    return datetime.fromisoformat(value.replace('Z', '+00:00')).date() if 'T' in value else date.fromisoformat(value)
+
+
 def deadline_window(items: list[dict], start: date, end: date, *, include_unknown: bool = False) -> list[dict]:
     """14. Explicit deadline window; unknown optionally retained and labeled."""
     if end < start: raise ValueError('end before start')
-    return [i for i in items if (i['deadline']['value'] is None and include_unknown) or (i['deadline']['value'] is not None and start <= date.fromisoformat(i['deadline']['value']) <= end)]
+    return [i for i in items if (i['deadline']['value'] is None and include_unknown) or (i['deadline']['value'] is not None and start <= _deadline_date(i) <= end)]
 
 
 def exclude_expired(items: list[dict], *, today: date | None = None) -> list[dict]:
     """15. Hide known expired deadlines, retain unknowns as unknown."""
     today = today or datetime.now(timezone.utc).date()
-    return [i for i in items if not i['deadline']['value'] or date.fromisoformat(i['deadline']['value']) >= today]
+    return [i for i in items if not i['deadline']['value'] or _deadline_date(i) >= today]
 
 
 def minimum_award(items: list[dict], amount: int, currency: str, *, include_unknown: bool = False) -> list[dict]:
