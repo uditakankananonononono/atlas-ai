@@ -23,9 +23,13 @@ def run(method,d):
  if method not in BY:raise ValueError('unsupported atomic concept')
  r=BY[method];aid=META[r][0];limits=['Decision support on supplied evidence; no external effect or scale claim.'];o={}
  if r==93:
-  impulse=_v(d,'input');response=_v(d,'response');_same(impulse,response);maxlag=int(d.get('max_lag',len(impulse)-1));scores=[]
+  impulse=_v(d,'input');response=_v(d,'response');_same(impulse,response);maxlag=d.get('max_lag',len(impulse)-1)
+  if isinstance(maxlag,bool) or not isinstance(maxlag,int):raise ValueError('max_lag must be an integer')
+  if maxlag<0:raise ValueError('max_lag must be nonnegative')
+  if maxlag>=len(impulse):raise ValueError('max_lag must be smaller than the sample length so every lag has overlapping samples')
+  scores=[]
   for lag in range(maxlag+1):
-   pairs=list(zip(impulse[:len(impulse)-lag or None],response[lag:]));scores.append(sum(a*b for a,b in pairs)/len(pairs))
+   pairs=list(zip(impulse[:len(impulse)-lag],response[lag:]));assert pairs;scores.append(sum(a*b for a,b in pairs)/len(pairs))
   best=max(range(len(scores)),key=lambda i:scores[i]);o={'estimated_delay_periods':best,'lag_scores':scores,'direct_effect_at_zero':scores[0]}
  elif r==94:
   individual=_v(d,'individual_predictions');observed=_v(d,'observed_system');_same(individual,observed);res=[y-x for x,y in zip(individual,observed)];threshold=_f(d.get('threshold',0),'threshold');o={'interaction_residuals':res,'emergent_indices':[i for i,x in enumerate(res) if abs(x)>threshold],'emergent_fraction':sum(abs(x)>threshold for x in res)/len(res)}
@@ -69,7 +73,13 @@ def run(method,d):
   if bid is None:raise ValueError('supported auction_type required')
   o={'recommended_bid':bid,'max_willingness_to_pay':value,'auction_type':kind,'strategy':'symmetric risk-neutral uniform-private-value benchmark' if kind=='first_price' else 'truthful private-value benchmark'};limits+=['Requires independent private values and benchmark distribution; never bids automatically.']
  elif r==107:
-  values=sorted(_v(d,'buyer_values'));reserve_candidates=sorted(set([0]+values));best=max((r0,sum(v>=r0 for v in values)*r0) for r0 in reserve_candidates);o={'recommended_reserve':best[0],'empirical_revenue_bound':best[1],'buyer_count':len(values),'mechanism':d.get('mechanism','second_price_with_reserve')};limits+=['Empirical reserve can overfit; validate out of sample and follow auction law.']
+  values=sorted(_v(d,'buyer_values'))
+  if any(v<0 for v in values):raise ValueError('buyer_values must be nonnegative')
+  best_r,best_rev=None,None
+  for r0 in sorted(set(values)):
+   rev=r0*sum(v>=r0 for v in values)
+   if best_rev is None or rev>best_rev:best_r,best_rev=r0,rev
+  best=(best_r,best_rev);o={'recommended_reserve':best[0],'empirical_revenue_bound':best[1],'buyer_count':len(values),'mechanism':d.get('mechanism','second_price_with_reserve')};limits+=['Empirical reserve can overfit; validate out of sample and follow auction law.']
  elif r in {108,109}:
   claims=d.get('claims');
   if not isinstance(claims,list) or not claims:raise ValueError('claims required')
