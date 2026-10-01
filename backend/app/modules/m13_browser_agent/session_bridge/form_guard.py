@@ -27,6 +27,8 @@ ALLOWED_ENCTYPES = (DEFAULT_ENCTYPE,)
 SUBMIT_OVERRIDES = ("formaction", "formmethod", "formenctype", "formtarget", "formnovalidate")
 # Seconds an approved submit stays armed with nobody clicking it.
 ARM_TTL_SECONDS = 120.0
+TAINT_MIN_LEN = 4  # shorter form values are too common to treat as data in a URL
+QUIET_SECONDS = 2.5  # how long the baseline guard outlives the last page activity
 
 # True when clicking the element would submit a form: a submit-type button or input
 # (including the implicit type of a bare <button> inside a form, the form= attribute
@@ -130,19 +132,55 @@ GUARD_JS = """
 # like GUARD_JS: it stops declarative and scripted submits from running at all. The
 # authoritative control is NetworkGuard (baseline mode) in the daemon process.
 NAV_GUARD_JS = """
-() => {
+(reporter) => {
   if (window.__atlasGuard) window.__atlasGuard.remove();
   const blocked = [];
+  const note = (what) => {
+    blocked.push(what);
+    try { window[reporter](what); } catch (e) {}
+    try { const k = '__atlasBlocked'; const l = JSON.parse(sessionStorage.getItem(k) || '[]'); l.push(what); sessionStorage.setItem(k, JSON.stringify(l)); } catch (e) {}
+  };
   const handler = (event) => {
-    blocked.push('submit event');
+    note('submit event');
     event.preventDefault();
     event.stopImmediatePropagation();
   };
   window.addEventListener('submit', handler, true);
-  window.__atlasGuard = {blocked, remove: () => window.removeEventListener('submit', handler, true)};
+  // Script-level wrappers. They exist because a keepalive request issued while the page unloads
+  // is not visible to the network route. They only cover code that calls these globals after this
+  // point; anything that cached the originals earlier, or borrows an iframe's, is not stopped here.
+  const orig = {fetch: window.fetch, send: XMLHttpRequest.prototype.send, open: XMLHttpRequest.prototype.open,
+                beacon: navigator.sendBeacon, submit: HTMLFormElement.prototype.submit,
+                requestSubmit: HTMLFormElement.prototype.requestSubmit};
+  const safe = (m) => ['GET', 'HEAD'].includes(String(m || 'GET').toUpperCase());
+  window.fetch = function(input, init) {
+    const method = (init && init.method) || (input && input.method) || 'GET';
+    if (!safe(method)) { note('script fetch ' + method); return Promise.reject(new TypeError('blocked by Atlas guard')); }
+    return orig.fetch.apply(this, arguments);
+  };
+  XMLHttpRequest.prototype.open = function(method) { this.__atlasMethod = method; return orig.open.apply(this, arguments); };
+  XMLHttpRequest.prototype.send = function() {
+    if (!safe(this.__atlasMethod)) { note('script xhr ' + this.__atlasMethod); throw new DOMException('blocked by Atlas guard', 'NetworkError'); }
+    return orig.send.apply(this, arguments);
+  };
+  navigator.sendBeacon = function() { note('script sendBeacon'); return false; };
+  HTMLFormElement.prototype.submit = function() { note('script form.submit'); };
+  HTMLFormElement.prototype.requestSubmit = function() { note('script form.requestSubmit'); };
+  window.__atlasGuard = {blocked, remove: () => {
+    window.removeEventListener('submit', handler, true);
+    window.fetch = orig.fetch; XMLHttpRequest.prototype.send = orig.send; XMLHttpRequest.prototype.open = orig.open;
+    navigator.sendBeacon = orig.beacon; HTMLFormElement.prototype.submit = orig.submit;
+    HTMLFormElement.prototype.requestSubmit = orig.requestSubmit;
+  }};
   return true;
 }
 """
+# Same-origin fallback for a report made while the document unloads (the binding call can be lost).
+NAV_RECALL_JS = "() => { try { const k='__atlasBlocked'; const l=JSON.parse(sessionStorage.getItem(k)||'[]'); sessionStorage.removeItem(k); return l; } catch (e) { return []; } }"
+TAINT_JS = """
+() => [...new Set([...document.querySelectorAll('input,textarea,select')]
+  .map(e => e.value).filter(v => v && v.length >= %d))].slice(0, 200)
+""" % TAINT_MIN_LEN
 GUARD_STATE_JS = "() => window.__atlasGuard ? window.__atlasGuard.blocked.slice() : null"
 GUARD_REMOVE_JS = "() => { if (window.__atlasGuard) { window.__atlasGuard.remove(); } return true; }"
 
@@ -215,32 +253,76 @@ def _origin(url: str) -> tuple[str, str, int | None]:
     return (parts.scheme.lower(), (parts.hostname or "").lower(), parts.port or {"http": 80, "https": 443}.get(parts.scheme.lower()))
 
 
-def cookies_from_set_cookie(url: str, headers: list[str]) -> list[dict]:
-    """Playwright cookie dicts from raw Set-Cookie header values received for ``url``."""
-    from http.cookies import CookieError, SimpleCookie
+def _is_secure_context(url: str) -> bool:
     parts = urlsplit(url)
-    out = []
-    for raw in headers:
-        jar = SimpleCookie()
+    return parts.scheme == "https" or (parts.hostname or "") in {"localhost", "127.0.0.1", "::1"}
+
+
+def parse_set_cookie(url: str, raw: str, now: float | None = None, top_site: str = "") -> dict | None:
+    """One Set-Cookie header value -> {'set': playwright cookie} | {'delete': filter} | None (rejected).
+
+    Follows RFC 6265bis closely enough for this guard: no comma splitting (a header is one cookie),
+    values kept verbatim (quotes included), Max-Age beats Expires, a past Expires or Max-Age <= 0
+    deletes, Domain must domain-match the host, Secure needs a secure context, __Secure-/__Host-
+    prefixes and SameSite=None need Secure, Partitioned becomes a partition key.
+    """
+    from email.utils import parsedate_to_datetime
+    now = time.time() if now is None else now
+    parts = urlsplit(url)
+    host = (parts.hostname or "").lower()
+    pieces = raw.split(";")
+    name, sep, value = pieces[0].partition("=")
+    name, value = name.strip(), value.strip()
+    if not sep or not name or any(ch in name for ch in ' \t"()<>@,:\\/[]?={}'):
+        return None
+    attrs: dict[str, str | bool] = {}
+    for piece in pieces[1:]:
+        key, _, val = piece.partition("=")
+        key = key.strip().lower()
+        if key:
+            attrs[key] = val.strip() if _ else True
+    domain_attr = str(attrs.get("domain", "")).lstrip(".").lower() if isinstance(attrs.get("domain"), str) else ""
+    if domain_attr and not (host == domain_attr or host.endswith("." + domain_attr)):
+        return None
+    path_attr = attrs.get("path")
+    path = path_attr if isinstance(path_attr, str) and path_attr.startswith("/") else (
+        parts.path.rsplit("/", 1)[0] or "/")
+    secure = "secure" in attrs
+    if secure and not _is_secure_context(url):
+        return None
+    if name.startswith("__Secure-") and not secure:
+        return None
+    if name.startswith("__Host-") and not (secure and path == "/" and not domain_attr):
+        return None
+    same_site = str(attrs.get("samesite", "")).capitalize() if isinstance(attrs.get("samesite"), str) else ""
+    if same_site == "None" and not secure:
+        return None
+    expires = None
+    if isinstance(attrs.get("max-age"), str):
         try:
-            jar.load(raw)
-        except CookieError:
-            continue
-        for name, morsel in jar.items():
-            path = morsel["path"] or (parts.path.rsplit("/", 1)[0] or "/")
-            cookie = {"name": name, "value": morsel.value, "domain": morsel["domain"] or parts.hostname or "",
-                      "path": path, "httpOnly": bool(morsel["httponly"]), "secure": bool(morsel["secure"])}
-            same_site = str(morsel["samesite"]).capitalize()
-            if same_site in {"Strict", "Lax", "None"}:
-                cookie["sameSite"] = same_site
-            if morsel["max-age"]:
-                try:
-                    cookie["expires"] = max(time.time() + int(morsel["max-age"]), 1)
-                except ValueError:
-                    pass
-            if cookie["domain"]:
-                out.append(cookie)
-    return out
+            seconds = int(str(attrs["max-age"]))
+            expires = now + seconds if seconds > 0 else 0.0
+        except ValueError:
+            pass
+    if expires is None and isinstance(attrs.get("expires"), str):
+        try:
+            expires = parsedate_to_datetime(str(attrs["expires"])).timestamp()
+        except (TypeError, ValueError):
+            expires = None
+    domain = ("." + domain_attr) if domain_attr else host
+    if expires is not None and expires <= now:
+        return {"delete": {"name": name, "domain": domain if domain_attr else host, "path": path}}
+    cookie = {"name": name, "value": value, "domain": domain, "path": path,
+              "httpOnly": "httponly" in attrs, "secure": secure}
+    if same_site in {"Strict", "Lax", "None"}:
+        cookie["sameSite"] = same_site
+    if expires is not None:
+        cookie["expires"] = expires
+    if "partitioned" in attrs:
+        if not secure:
+            return None
+        cookie["partitionKey"] = top_site or f"{parts.scheme}://{host}"
+    return {"set": cookie}
 
 
 class NetworkGuard:
@@ -257,11 +339,19 @@ class NetworkGuard:
     Non-urlencoded enctypes have no body check, so nothing is ever approved for them.
     """
 
-    def __init__(self, page, preview: dict | None = None, expected_values: dict[str, str] | None = None):
+    def __init__(self, page, preview: dict | None = None, expected_values: dict[str, str] | None = None,
+                 *, taint=(), allowed_href: str = ""):
         """With a preview this is the armed-submit guard. With none it is the baseline guard
         for every other daemon-driven click: nothing is ever approved, so every non-GET/HEAD
         request and every navigation that carries a body is aborted and reported."""
         self.page = page
+        self.context = page.context
+        self.taint = {v for v in (taint or ()) if len(v) >= TAINT_MIN_LEN}
+        self.allowed_href = allowed_href
+        self.start_origin = _origin(page.url)
+        self.popups: list = []
+        self._known_pages: list = []
+        self._page_handler = None
         if preview is None:
             self.action = None
             self.enctype = None
@@ -327,14 +417,21 @@ class NetworkGuard:
     async def _persist_cookies(self, url: str, response) -> None:
         """Store every Set-Cookie of a guard-resolved hop in the browser context.
 
-        The guard fetches hops itself with redirects disabled, so Chromium never sees the
-        intermediate responses. Without this a session cookie set on a redirect hop is lost.
+        route.fetch shares the context cookie jar for plain cookies, but expiry, deletion and
+        partitioning are not reliably applied, so each header is parsed and applied explicitly.
         """
         try:
-            cookies = cookies_from_set_cookie(url, [item["value"] for item in response.headers_array
-                                                    if item["name"].lower() == "set-cookie"])
-            if cookies:
-                await self.page.context.add_cookies(cookies)
+            top_site = ""
+            for item in response.headers_array:
+                if item["name"].lower() != "set-cookie":
+                    continue
+                parsed = parse_set_cookie(url, item["value"], top_site=top_site)
+                if parsed is None:
+                    self.blocked.append(f"set-cookie rejected for {url[:100]}")
+                elif "delete" in parsed:
+                    await self.context.clear_cookies(**parsed["delete"])
+                else:
+                    await self.context.add_cookies([parsed["set"]])
         except Exception as error:  # noqa: BLE001 - a bad cookie must not strand the routed request
             self.blocked.append(f"cookie not stored for {url[:100]}: {str(error)[:100]}")
 
@@ -387,6 +484,11 @@ class NetworkGuard:
             await self._persist_cookies(target, response)
         await route.fulfill(response=response)
 
+    def _tainted(self, url: str) -> bool:
+        from urllib.parse import unquote_plus
+        decoded = unquote_plus(unquote_plus(url))
+        return any(value in decoded or value in url for value in self.taint)
+
     async def _route(self, route, request) -> None:
         method = request.method.upper()
         if self._is_approved(request):
@@ -394,23 +496,79 @@ class NetworkGuard:
             self._approved_request = request
             await self._send_approved(route, request)
             return
-        if method in {"GET", "HEAD"} and (self.action is None or not request.is_navigation_request()):
-            # Baseline mode (plain navigation clicks) lets bodyless GET/HEAD navigations through.
-            await route.continue_()
-            return
+        if method in {"GET", "HEAD"}:
+            if self._tainted(request.url):
+                self.blocked.append(f"{method} carrying form data {request.url[:120]}")
+                await route.abort("blockedbyclient")
+                return
+            if self.action is None:
+                # Baseline mode: bodyless GETs pass, but a cross-origin GET that carries a query
+                # (the beacon shape) passes only when it is exactly the clicked link.
+                cross = _origin(request.url) != self.start_origin
+                if cross and urlsplit(request.url).query and request.url != self.allowed_href:
+                    self.blocked.append(f"{method} cross-origin with query {request.url[:120]}")
+                    await route.abort("blockedbyclient")
+                    return
+                await route.continue_()
+                return
+            if not request.is_navigation_request():
+                await route.continue_()
+                return
         self.blocked.append(f"{method} {request.url[:200]}")
         await route.abort("blockedbyclient")
 
+    async def expose_reporter(self) -> str:
+        """A page binding that survives navigation, so a report made just before unload still arrives."""
+        import secrets
+        name = f"__atlasReport_{secrets.token_hex(6)}"
+        self.page_reports: list[str] = []
+        await self.page.expose_function(name, lambda what: self.page_reports.append(str(what)[:100]))
+        return name
+
     async def install(self) -> None:
+        """Route at CONTEXT level so popups and new tabs are guarded like the page itself."""
         self._handler = self._route
-        await self.page.route("**/*", self._handler)
+        self._known_pages = list(self.context.pages)
+        self._page_handler = lambda new_page: self.popups.append(new_page)
+        self.context.on("page", self._page_handler)
+        await self.context.route("**/*", self._handler)
+
+    async def settle(self, quiet: float = QUIET_SECONDS) -> None:
+        """Keep the guard up until the page is idle plus a quiet period (late timers, keepalives)."""
+        import asyncio
+        for page in [self.page, *self.popups]:
+            try:
+                await page.wait_for_load_state("networkidle", timeout=5000)
+            except Exception:  # noqa: BLE001 - best effort; the quiet period still runs
+                pass
+        await asyncio.sleep(quiet)
 
     async def remove(self) -> None:
+        if self._page_handler is not None:
+            try:
+                self.context.remove_listener("page", self._page_handler)
+            except Exception:  # noqa: BLE001
+                pass
+            self._page_handler = None
         if self._handler is not None:
             try:
-                await self.page.unroute("**/*", self._handler)
+                await self.context.unroute("**/*", self._handler)
             finally:
                 self._handler = None
+        for popup in self.popups:
+            try:
+                self.blocked.append(f"popup opened {popup.url[:100]}")
+                await popup.close()
+            except Exception:  # noqa: BLE001 - already closed
+                pass
+        self.popups = []
 
     def report(self) -> dict:
-        return {"approved_post_sent": self.approved_post_sent, "blocked": list(self.blocked)}
+        return {"approved_post_sent": self.approved_post_sent,
+                "blocked": [*self.blocked, *[f"page-guard: {item}" for item in getattr(self, "page_reports", [])]]}
+
+    @staticmethod
+    async def collect_taint(page) -> list[str]:
+        """Every non-trivial value currently in the page's form controls (data that must not leave)."""
+        values = await page.evaluate(TAINT_JS)
+        return [v for v in values if isinstance(v, str)]

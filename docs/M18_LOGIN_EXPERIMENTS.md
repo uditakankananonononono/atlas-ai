@@ -240,3 +240,42 @@ Pessimistic notes. Nothing here is a proof.
 - Minor: Set-Cookie of each guard-resolved hop is added to the browser context. Honest note: the
   new test passes on the round-5 code too, because `route.fetch` already shares the context's
   cookie jar, so the explicit step is belt and braces, not a demonstrated fix.
+
+## Round 7 (fixes for round-6 audit)
+
+Pessimistic notes. Nothing here is a proof.
+
+- Click guard (every daemon-driven click, CLICK_NAV and CLICK_SUBMIT): routed at BROWSER CONTEXT level,
+  so popups and new tabs are guarded; installed before the click and kept until the page and any popup
+  are network-idle plus a quiet period (2.5 s nav, 1.5 s armed submit). Non-GET/HEAD is aborted; any GET
+  whose URL contains a current non-trivial (>=4 chars) form value is aborted; a cross-origin GET with a
+  query is aborted unless it is exactly the clicked link. Popups opened during the window are closed and
+  reported. Script wrappers (fetch, XHR, sendBeacon, form.submit/requestSubmit) cover keepalive requests
+  at pagehide, which the network route cannot see; their reports go through a navigation-surviving
+  binding plus a same-origin sessionStorage fallback.
+  Residuals: the guard is time-boxed, so anything fired after the quiet period is unguarded; the owner's
+  own browsing is deliberately not blocked outside a click window (the context is shared with them);
+  the taint check is substring matching, so encoded, split or transformed data (base64, hashes, chunks,
+  values under 4 chars) passes, and it can false-positive on a link that happens to contain a form value;
+  cross-origin GET without a query, and any GET without form data, passes (path-only exfil of
+  non-form data is not detected); script wrappers only cover the current document and only code that calls
+  the globals afterwards (cached originals or an iframe's clean fetch bypass them); documents loaded after
+  a navigation inside the window are covered by the network route only; keepalive requests issued during
+  unload are visible to the script wrapper but not to the route, so a page that cached `fetch` earlier
+  can still send one (the pagehide test passes because the wrapper blocks it, not because the route does);
+  clicks that open `target=_blank` link navigations are treated as popups and closed.
+- Consumed store: bound to the device id; signed; plus an ANCHOR (signed device/epoch/seq) in a separate
+  directory (ATLAS_PC_ANCHOR_DIR, default ~/.atlas-pc/anchors) shared by every record path of the
+  device. A record whose seq is below the anchor (older snapshot, even across a restart), whose epoch is
+  not the anchor's, or that is missing while an anchor or lock file exists (strict re-creation) is
+  refused or strict. A store error is sticky until restart. Out of scope and honestly open: an attacker
+  who can write both the state dir and the anchor dir and holds the command secret; deleting record,
+  lock file and anchor together; the anchor is a file, not an OS keychain or hardware counter; arming
+  time for the strict check is estimated as deadline - ARM_TTL_SECONDS, so clock skew or a longer
+  configured TTL weakens it; a token armed before a record loss with an arming time inside the
+  estimate error can pass; two different device ids are two stores by design.
+- Set-Cookie: own parser. Max-Age beats Expires; a past Expires or Max-Age <= 0 deletes via
+  clear_cookies; quoted values kept verbatim; no comma splitting; Partitioned maps to a partition key
+  (needs Secure; the key is the hop's own site, not necessarily the top-level site); Domain must
+  match the host; Secure needs a secure context; __Secure-/__Host- and SameSite=None rules enforced.
+  Not implemented: public-suffix checks on Domain, cookie size/count limits, Priority, SameParty.
