@@ -215,3 +215,30 @@ def test_reaudit_eligibility_no_silent_context_loss():
     desc = 'Eligibility: ' + 'x'*590
     r = evidence_card({'title':'Award', 'description':desc}, fetched_at='x', content_sha256='f'*64)
     assert ('eligibility_evidence_truncated' in r['unknowns']) == (len(desc) > 600)
+
+@pytest.mark.parametrize('offset', ['+1260', '+0199', '-0060', '+00:99', '+1500', '+14:01'])
+def test_third_audit_offset_fields(offset):
+    r = deadline_evidence('Deadline: 2026-10-01T12:00'+offset)
+    assert r['value'] is None and 'invalid_deadline_timezone_offset' in r['unknowns']
+
+@pytest.mark.parametrize('symbol', ['🕔', '⏰', '∑', '€', '−'])
+def test_third_audit_symbols_not_punctuation(symbol):
+    assert deadline_evidence('Deadline: Oct 1, 2026 '+symbol)['value'] is None
+
+@pytest.mark.parametrize('text', ['Deadline: Oct. 1st, 2026', 'Deadline: 1 October 2026', 'Submissions due by October 1, 2026', 'Applications close on October  1,\n2026'])
+def test_third_audit_safe_english_grammar(text):
+    assert deadline_evidence(text)['value'] == '2026-10-01'
+
+def test_third_audit_rss_full_evidence():
+    text = 'Eligibility: '+('student '*90)+'Not open to minors. Deadline: October 1, 2026.'
+    body = ('<rss><channel><item><title>Award</title><link>https://example.org/a</link><description>'+text+'</description></item></channel></rss>').encode()
+    with client(body, 'application/rss+xml') as tx:
+        row = discover('scholarshiproar', client=tx)['items'][0]
+    assert row['deadline']['value'] == '2026-10-01'
+    assert 'eligibility_evidence_truncated' in row['unknowns']
+    assert row['description_original_length'] == len(text)
+
+def test_third_audit_spaced_initial():
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    row = evidence_card({'title':'Award','description':'Eligibility: A. Chen lab only. No minors.'}, fetched_at='x', content_sha256='f'*64)
+    assert row['eligibility']['evidence'][0] == 'Eligibility: A. Chen lab only.'

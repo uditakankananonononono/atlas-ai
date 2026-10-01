@@ -164,3 +164,37 @@ breaking-schema migration.
 The timing cap remains cooperative. Independent mock stalled 25 seconds inside
 a single chunk, proving it is not a hard 15-second wall-clock cap. Socket idle
 timeouts do not constrain injected transports. No process isolation implemented.
+
+## Third audit follow-up (supersedes whole-tail rule above)
+
+Status remains candidate. Offset fields are validated before ISO parsing:
+absolute hours <=14, minutes <60, and hour 14 requires minute 00. Invalid values
+are unknown, never silently normalized. Unsupported precision remains explicit.
+RSS/Atom text is no longer truncated before extraction: the full sanitized text
+within the fetched 2 MB source is examined; returned description is still bounded
+at 600, with original length and truncation flag. Eligibility contexts retain
+their own explicit limits. Thus display truncation is not evidence truncation.
+
+Suffix acceptance uses Unicode whitespace or Unicode P-category punctuation,
+not a blacklist of words. Symbols/emoji/Unicode mathematical minus are unknown.
+Mixed-prose dates now stop at a punctuation-separated, explicitly labeled
+unrelated field (Award, Prize, Eligibility, Posted, Location and the listed
+eligibility cue forms). Any later calendar date/extension is checked for conflict
+before that boundary. Other unexplained suffix tokens abstain. All four original
+mixed-prose date-filter/breakdown/refine fixtures are restored unchanged in fact
+order and must pass. This is a narrow field-boundary grammar, not an unrestricted
+semantic claim that following prose is unrelated.
+
+Safe English grammar now includes dotted months, ordinal days, day-first named
+months, explicit-year dates, whitespace inside named dates, close on/deadline is,
+and submissions/applications due by. Locale-ambiguous numeric dates, missing-year,
+rolling, multilingual text, ambiguous named timezones and colloquial clock
+phrasing remain unsupported. Spaced single initials before a surname are
+protected in eligibility excerpts. Other abbreviations can still require manual
+inspection of the retained context.
+
+The independent auditor's prior 22/56 (39.3%) result describes its purpose-authored
+coverage corpus on 6d97f6a, not sampled production recall. No production recall,
+precision, complete source coverage or durable policy permission is established
+by these tests. No new live fetch or account action in this follow-up. D6 remains
+cooperative timing only, with the blocked-chunk counterexample disclosed above.

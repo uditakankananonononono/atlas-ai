@@ -63,7 +63,7 @@ def _plain_text(value: str) -> str:
     soup = BeautifulSoup(unescape(value), 'html.parser')
     for node in soup.select('script, style, template, noscript'):
         node.decompose()
-    return soup.get_text(' ', strip=True)[:600]
+    return soup.get_text(' ', strip=True)
 
 
 def _safe_target(source: StudentPlatform, href: str) -> str | None:
@@ -97,11 +97,13 @@ def _read_rss(source: StudentPlatform, payload: bytes) -> list[dict[str, str]]:
     ns = '{http://www.w3.org/2005/Atom}'
     for item in root.iter('item'):
         rows.append({'title': ''.join(item.findtext('title', '')).strip(), 'url': item.findtext('link', '').strip(),
-                     'description': _plain_text(item.findtext('description', ''))})
+                     'evidence_text': _plain_text(item.findtext('description', ''))})
     for item in root.iter(f'{ns}entry'):
         link = next((x.get('href', '') for x in item.findall(f'{ns}link') if x.get('rel') in (None, 'alternate')), '')
         rows.append({'title': item.findtext(f'{ns}title', '').strip(), 'url': link,
-                     'description': _plain_text(item.findtext(f'{ns}summary', ''))})
+                     'evidence_text': _plain_text(item.findtext(f'{ns}summary', ''))})
+    for row in rows:
+        row['description'] = row['evidence_text'][:600]
     return rows
 
 
