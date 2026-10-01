@@ -1,0 +1,9 @@
+# Tested on CPython 3.12.14. Complete deps for isolated CLI + route tests.
+httpx==0.28.1
+beautifulsoup4==4.15.0
+warcio==1.8.1
+defusedxml==0.7.1
+pyarrow==23.0.1
+cryptography==46.0.7
+fastapi==0.142.2
+pytest==8.4.2

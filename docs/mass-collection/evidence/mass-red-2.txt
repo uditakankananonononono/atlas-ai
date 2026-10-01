@@ -1,0 +1,63 @@
+........FFFF                                                             [100%]
+=================================== FAILURES ===================================
+__________________________ test_xml_entities_rejected __________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-1/test_xml_entities_rejected0')
+
+    def test_xml_entities_rejected(tmp_path):
+        path = tmp_path/'bad.xml'
+        path.write_text('<!DOCTYPE mediawiki [<!ENTITY evil "payload">]><mediawiki><page><revision><text>&evil;</text></revision></page></mediawiki>')
+        c = collector(tmp_path/'data')
+>       with pytest.raises(CollectionError): c.ingest_file(source('https://example.org/dump', 'wikipedia'), path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CollectionError
+
+tests/mass_collection/test_collection.py:147: Failed
+___________________________ test_parquet_real_parser ___________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-1/test_parquet_real_parser0')
+
+    def test_parquet_real_parser(tmp_path):
+>       import pyarrow as pa
+E       ModuleNotFoundError: No module named 'pyarrow'
+
+tests/mass_collection/test_collection.py:151: ModuleNotFoundError
+_____________________ test_all_provenance_and_review_flags _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-1/test_all_provenance_and_review0')
+
+    def test_all_provenance_and_review_flags(tmp_path):
+        path = tmp_path/'text.txt'; path.write_text('Shared')
+        c = collector(tmp_path/'data')
+        c.ingest_file(source('https://example.org/a', 'text', training_reviewed=True), path)
+        c.ingest_file(source('https://example.org/b', 'text'), path)
+        m = c.export(); row = json.loads((c.root/m['shards'][0]['path']).read_text())
+        assert len(row['provenance_all']) == 2
+>       assert not row['training_eligible']
+E       assert not True
+
+tests/mass_collection/test_collection.py:166: AssertionError
+____________________ test_routes_tenant_isolation_and_stop _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-1/test_routes_tenant_isolation_a0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9232e99d90>
+
+    def test_routes_tenant_isolation_and_stop(tmp_path, monkeypatch):
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+>       from app.mass_collection.routes import router
+E       ModuleNotFoundError: No module named 'app.mass_collection.routes'
+
+tests/mass_collection/test_collection.py:172: ModuleNotFoundError
+=============================== warnings summary ===============================
+tests/mass_collection/test_collection.py::test_routes_tenant_isolation_and_stop
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/mass_collection/test_collection.py::test_xml_entities_rejected
+FAILED tests/mass_collection/test_collection.py::test_parquet_real_parser - M...
+FAILED tests/mass_collection/test_collection.py::test_all_provenance_and_review_flags
+FAILED tests/mass_collection/test_collection.py::test_routes_tenant_isolation_and_stop
+4 failed, 8 passed, 1 warning in 3.50s

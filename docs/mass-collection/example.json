@@ -1,0 +1,25 @@
+{
+  "limits": {
+    "max_records": 100000,
+    "max_storage_bytes": 1000000000,
+    "max_download_bytes": 250000000,
+    "max_record_bytes": 2000000,
+    "max_parse_bytes": 2000000000,
+    "max_disk_bytes": 4000000000,
+    "shard_records": 10000,
+    "request_interval": 3.0,
+    "timeout": 30.0
+  },
+  "sources": [
+    {
+      "url": "https://example.org/operator-must-replace-with-reviewed-dataset.jsonl",
+      "format": "jsonl",
+      "license": "unknown",
+      "terms_url": "https://example.org/operator-must-replace-with-terms",
+      "terms_accepted": false,
+      "training_reviewed": false,
+      "text_field": "text",
+      "dataset": "operator-must-fill"
+    }
+  ]
+}
