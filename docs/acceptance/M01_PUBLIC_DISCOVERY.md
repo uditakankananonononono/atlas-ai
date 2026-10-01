@@ -319,3 +319,35 @@ action destination. Unknown caller fields are not copied. Final serialized-card
 size is checked again after reduction, with a small null-value fallback schema.
 This output reduction is not claim of source completeness or applicable deadline.
 Full-suite counts still include the four documented mixed-prose contract changes.
+
+## Final bounded claim and known limits
+
+Round-8 defect fixes on e38582c were independently verified; that does not close
+all known safety gaps. This final docs-only follow-up makes no new parsing fix.
+The feature is read-only public link discovery with abstention-first, finite
+English evidence transcription. It is NOT reliable autonomous eligibility or
+deadline authorization, a trained model, broad multilingual interpretation,
+auto-apply, complete catalog, PC deployment or policy certification.
+
+Known counterexamples remain: titles "Tentative application date" and "Never
+apply" can retain an accepted description date; newline/fullwidth-colon Contact
+forms and "Open to Contact:" siblings can contaminate eligibility evidence.
+These are explicitly not certified. Null personal verdict is mandatory; a human
+must inspect source context/terms and detail page before any application decision.
+
+Measured authored-corpus results on round7 standalone grammar: frozen deadlines
+28/54 positives captured, zero wrong accepted in that corpus; prior new deadlines
+20/32 captured, zero wrong accepted there; frozen eligibility 18/42, new eligibility
+15/15, zero wrong captures in those corpora. Separate later counterexamples prove
+those zeros are not general correctness. Named inactive-title fixes do not cure
+unknown title phrases. Direct reproduced final known-limit probes accept 2/2
+questionable title deadlines; the three shown Contact shapes capture 3/3 evidence
+excerpts. These are deliberately selected tests, not production rates.
+
+Recall cost: removing unrelated-field boundary cutting reduced frozen deadline
+capture from 33/54 to 28/54 and prior new from 30/32 to 20/32. Four original
+mixed-prose expectations changed visibly, not reordered. Full M01 last runs:
+402 passed, 16 skipped, one dependency warning twice, after those contract changes.
+Live source evidence is separately scoped to one builder and one auditor public
+README fetch, not every registry route. D6 cooperative timeout is not a hard cap.
+No PR, deployment, account automation or application submission completed.
