@@ -202,6 +202,38 @@ class Daemon:
             await page.locator(str(args["selector"])).fill(str(args["value"]))
             return {"url": page.url}
         if kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT):
+            if kind is CommandKind.CLICK_SUBMIT and "preview" in args:
+                from bs4 import BeautifulSoup
+                from urllib.parse import urljoin
+                from hashlib import sha256
+                preview = args["preview"]
+                snapshot_hash = sha256(json.dumps(preview, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
+                if snapshot_hash != args.get("capture_sha256"):
+                    raise PermissionError("submit preview does not match approved digest")
+                soup = BeautifulSoup(await page.content(), "html.parser")
+                button = soup.select(args["selector"])
+                if len(button) != 1 or str(button[0]) != preview["submit"]:
+                    raise PermissionError("approved submit target changed on device")
+                form = button[0].find_parent("form")
+                if (form is None or page.url != preview["url"]
+                    or urljoin(page.url, form.get("action") or page.url) != preview["form_action"]
+                    or form.get("method", "get") != preview["method"]
+                    or form.get_text(" ", strip=True) != preview["form_text"]):
+                    raise PermissionError("approved destination or form changed on device")
+                for field, selector in args.get("readback_selectors", {}).items():
+                    nodes = soup.select(selector)
+                    if len(nodes) != 1 or nodes[0].get_text(" ", strip=True) != preview[field]:
+                        raise PermissionError("approved account or terms changed on device")
+            if kind is CommandKind.CLICK_SUBMIT and "values" in args:
+                from ..security import values_digest
+                actual = {}
+                for selector in args["values"]:
+                    locator = page.locator(selector)
+                    if await locator.count() != 1:
+                        raise PermissionError("approved form selector changed")
+                    actual[selector] = await locator.input_value()
+                if values_digest(actual) != args.get("values_digest"):
+                    raise PermissionError("approved form values changed on paired device")
             extra = {}
             if kind is CommandKind.CLICK_SUBMIT:
                 extra = {"approval_id": args.get("approval_id"), "capture_sha256": args.get("capture_sha256")}
