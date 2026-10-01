@@ -58,9 +58,22 @@ After an invocation loses its receipt, the durable runtime blocks rather
 than guessing whether to retry. An operator must verify the external state
 and call `reconcile_effect(..., outcome="applied" | "not_applied", actor=...,
 note=...)`. This also works immediately after a killed worker, without first
-running the task again; a live invocation is refused. Provider-idempotent
-tools remain a separate opt-in contract. See `docs/EFFECT_LEDGER.md` for the
-lease/PID and database-test limits.
+running the task again. A live invocation is refused - but only while the
+owner is verifiably live: on the same host that means the owning PID is
+alive with a matching process start-time token (so PID reuse cannot
+resurrect a dead owner), and in that case reconciliation and retake are
+refused even after the lease has expired. Cross-host owners cannot be
+PID-checked; their expired leases are still reconcilable/retakable.
+Provider-idempotent tools remain a separate opt-in contract. See
+`docs/EFFECT_LEDGER.md` for the lease/PID and database-test limits.
+
+Handler rule: tool handlers must not block the event loop with synchronous
+I/O or sleeps. `asyncio.wait_for` cannot cancel a loop-blocking handler, so
+it runs past its timeout and its lease while still alive. The ledger refuses
+to retake or reconcile such a live invocation, but the dispatch call itself
+still returns only after the handler yields, and the operator sees a stuck
+INVOKING row until the owner exits. Do blocking work with async I/O or
+`loop.run_in_executor`.
 
 ## Honest boundaries
 - LLM-driven steps (de novo planning, attention scoring in production,

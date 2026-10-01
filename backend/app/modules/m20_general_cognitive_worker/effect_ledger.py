@@ -6,8 +6,13 @@ Contract (deliberately narrow - this is NOT general exactly-once):
   the effect in transactional state (``reserve``) and then marks it
   ``invoking`` (``mark_invoking``). Both are committed before the handler
   runs. If either commit fails, the handler is never called.
-* The effect identity is ``sha256(tenant | task | node | tool | canonical
-  args)``. It is immutable: the same key with different arguments is refused.
+* The effect identity is ``sha256(json([tenant, task, node, tool,
+  args_hash]))`` - a JSON-array encoding, so components containing "|" (or
+  any other separator) cannot collide with a different component split. It
+  is immutable: the same key with different arguments is refused. Rows
+  written before this encoding fix keep their old "|"-joined identity; the
+  ledger reads them back through the legacy key so a recorded effect is
+  never silently re-invoked after the upgrade (see docs/EFFECT_LEDGER.md).
 * Duplicate or concurrent workers race on a primary key + compare-and-swap
   updates. Exactly one wins the reservation; the others see
   ``EffectInProgress``.
@@ -22,8 +27,19 @@ Contract (deliberately narrow - this is NOT general exactly-once):
   effect, so the reservation can be re-taken once its lease/owner is dead.
 
 Limits: remote systems are not made exactly-once. The ledger can only record
-what this process saw. Owner liveness uses the lease and, on the same host, a
-PID check (PID reuse is possible; the lease bounds it for other hosts).
+what this process saw. Owner liveness: on the same host a verifiably live
+owner process (PID plus /proc start-time identity, so PID reuse does not
+resurrect a dead owner) is NEVER treated as dead - even past its lease. A
+handler that blocks the event loop outlives its lease while running, and
+retaking it would double the external effect. Cross-host owners cannot be
+PID-checked; only the lease bounds them. Rows written before the liveness
+fix carry no start-time token and fall back to plain PID liveness.
+
+Handlers must not block the event loop with synchronous I/O or sleeps:
+asyncio.wait_for cannot cancel a loop-blocking handler, so it runs past its
+timeout and lease. The ledger refuses to retake or reconcile such a live
+invocation, but the dispatch call itself still returns only after the
+handler yields. Use async I/O or an executor for blocking work.
 """
 from __future__ import annotations
 
@@ -66,6 +82,10 @@ effects = sa.Table(
     sa.Column("owner", sa.String(64), nullable=False),
     sa.Column("owner_host", sa.String(255), nullable=False),
     sa.Column("owner_pid", sa.Integer, nullable=False),
+    # Process start-time token (/proc/<pid>/stat field 22) identifying the
+    # owning process instance; "" where /proc is unavailable or on rows
+    # written before this column existed. Guards against PID reuse.
+    sa.Column("owner_pid_start", sa.String(40), nullable=False, default=""),
     sa.Column("lease_expires_at", sa.String(40), nullable=False),
     sa.Column("result_summary", sa.Text, nullable=False, default=""),
     sa.Column("error", sa.Text, nullable=False, default=""),
@@ -116,8 +136,26 @@ def effect_identity(tenant_id: str, task_id: str, node_id: str, tool: str, args:
     # can be real tool inputs and MUST remain part of the effect identity.
     identity_args = {k: v for k, v in args.items() if k != "_expectation_claim_id"}
     args_hash = hashlib.sha256(canonical_args(identity_args).encode()).hexdigest()
-    key = "|".join([tenant_id, task_id, node_id, tool, args_hash])
+    # JSON-array encoding is unambiguous: components containing "|" (or any
+    # other separator) cannot collide with a different split of the same
+    # joined string, which the previous "|".join(...) encoding allowed
+    # ((task='T|N', node='X') collided with (task='T', node='N|X')).
+    key = json.dumps([tenant_id, task_id, node_id, tool, args_hash], separators=(",", ":"))
     return hashlib.sha256(key.encode()).hexdigest(), args_hash
+
+
+def _legacy_effect_id(tenant_id: str, task_id: str, node_id: str, tool: str, args_hash: str) -> str:
+    # Pre-fix identity encoding ("|"-joined). Ambiguous when components
+    # contain "|"; kept read-only so rows written before the encoding fix
+    # remain authoritative for their effect.
+    return hashlib.sha256("|".join([tenant_id, task_id, node_id, tool, args_hash]).encode()).hexdigest()
+
+
+def legacy_effect_identity(tenant_id: str, task_id: str, node_id: str, tool: str, args: dict[str, Any]) -> str:
+    """The pre-fix effect id for these components, for reconciling rows that
+    were reserved before the identity encoding changed."""
+    _, args_hash = effect_identity(tenant_id, task_id, node_id, tool, args)
+    return _legacy_effect_id(tenant_id, task_id, node_id, tool, args_hash)
 
 
 @dataclass(frozen=True)
@@ -139,6 +177,34 @@ def _pid_alive(pid: int) -> bool:
     return True
 
 
+def _proc_state_and_start(pid: int) -> tuple[str, str]:
+    """(state, start-time token) for a Linux process via /proc, else ("", "").
+
+    The start-time token (stat field 22) distinguishes a live process from a
+    later, unrelated process that reused its PID. ("", "") means the check is
+    unavailable on this platform; callers then fall back to PID liveness only.
+    """
+    try:
+        with open(f"/proc/{pid}/stat", "rb") as fh:
+            raw = fh.read().decode()
+        rest = raw.rsplit(")", 1)[1].split()  # comm may contain spaces/parens
+        return rest[0], rest[19]              # state (field 3), starttime (field 22)
+    except (OSError, IndexError):
+        return "", ""
+
+
+def _owner_process_alive(pid: int, recorded_start: str) -> bool:
+    """Same-host owner liveness with a PID-reuse guard."""
+    if pid <= 0 or not _pid_alive(pid):
+        return False
+    state, start = _proc_state_and_start(pid)
+    if state == "Z":
+        return False                          # killed but not yet reaped
+    if recorded_start and start and start != recorded_start:
+        return False                          # PID reused by a newer process
+    return True
+
+
 class EffectLedger:
     """Tenant-scoped durable ledger over any SQLAlchemy engine."""
 
@@ -150,6 +216,26 @@ class EffectLedger:
         self.lease_seconds = lease_seconds
         self.worker_id = f"{socket.gethostname()}:{os.getpid()}:{uuid.uuid4().hex[:8]}"
         metadata.create_all(engine)
+        self._ensure_owner_pid_start_column()
+
+    def _ensure_owner_pid_start_column(self) -> None:
+        """Add owner_pid_start to tables created before the liveness fix.
+
+        Rows that predate the column get the default "" and are liveness-
+        checked by PID only (no PID-reuse guard), which is the same
+        conservative direction as before: a live PID means a live owner.
+        """
+        if "owner_pid_start" in {c["name"] for c in sa.inspect(self.engine).get_columns(effects.name)}:
+            return
+        try:
+            with self.engine.begin() as conn:
+                conn.execute(sa.text(
+                    f"ALTER TABLE {effects.name} ADD COLUMN owner_pid_start VARCHAR(40) NOT NULL DEFAULT ''"))
+        except Exception:
+            # A concurrent ledger may have added it first; verify once more.
+            cols = {c["name"] for c in sa.inspect(self.engine).get_columns(effects.name)}
+            if "owner_pid_start" not in cols:
+                raise
 
     # -- helpers -------------------------------------------------------------
     def _where(self, effect_id: str):
@@ -176,9 +262,13 @@ class EffectLedger:
             return conn.execute(sa.update(effects).where(sa.and_(*cond)).values(**values)).rowcount == 1
 
     def _owner_dead(self, row: dict[str, Any]) -> bool:
-        if datetime.fromisoformat(row["lease_expires_at"]) <= _now():
-            return True
-        return row["owner_host"] == socket.gethostname() and not _pid_alive(row["owner_pid"])
+        # A verifiably live owner on this host is never dead - even past its
+        # lease. A loop-blocking handler outlives its lease while running;
+        # retaking it would double the external effect. Cross-host owners
+        # cannot be PID-checked, so only the lease bounds them.
+        if row["owner_host"] == socket.gethostname():
+            return not _owner_process_alive(row["owner_pid"], row.get("owner_pid_start") or "")
+        return datetime.fromisoformat(row["lease_expires_at"]) <= _now()
 
     # -- reserve -------------------------------------------------------------
     def reserve(self, *, task_id: str, node_id: str, tool: str, args: dict[str, Any],
@@ -186,9 +276,17 @@ class EffectLedger:
         effect_id, args_hash = effect_identity(self.tenant_id, task_id, node_id, tool, args)
         lease = _iso(_now() + timedelta(seconds=lease_seconds or self.lease_seconds))
         now = _iso(_now())
+        # Rows reserved before the identity-encoding fix keep their old
+        # "|"-joined id; they stay authoritative for their effect, so the
+        # same effect is never silently re-invoked after the upgrade.
+        legacy_row = self.get(_legacy_effect_id(self.tenant_id, task_id, node_id, tool, args_hash))
+        if legacy_row is not None:
+            return self._classify_existing(legacy_row, legacy_row["effect_id"],
+                                           args_hash, provider_idempotent, lease)
         values = dict(tenant_id=self.tenant_id, effect_id=effect_id, task_id=task_id, node_id=node_id,
                       tool=tool, args_hash=args_hash, state=RESERVED, attempt=1, owner=self.worker_id,
-                      owner_host=socket.gethostname(), owner_pid=os.getpid(), lease_expires_at=lease,
+                      owner_host=socket.gethostname(), owner_pid=os.getpid(),
+                      owner_pid_start=_proc_state_and_start(os.getpid())[1], lease_expires_at=lease,
                       result_summary="", error="", note="", created_at=now, updated_at=now)
         try:
             with self.engine.begin() as conn:      # one transaction; rollback leaves no row
@@ -235,7 +333,8 @@ class EffectLedger:
     def _take(self, effect_id: str, expect_state: str, row: dict[str, Any], lease: str, *, bump: bool) -> bool:
         return self._cas(effect_id, expect_state=expect_state, expect_owner=row["owner"],
                          state=RESERVED, owner=self.worker_id, owner_host=socket.gethostname(),
-                         owner_pid=os.getpid(), lease_expires_at=lease,
+                         owner_pid=os.getpid(), owner_pid_start=_proc_state_and_start(os.getpid())[1],
+                         lease_expires_at=lease,
                          attempt=row["attempt"] + (1 if bump else 0), error="")
 
     # -- transitions ---------------------------------------------------------
