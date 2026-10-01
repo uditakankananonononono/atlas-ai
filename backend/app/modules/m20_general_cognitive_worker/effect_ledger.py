@@ -28,8 +28,8 @@ Contract (deliberately narrow - this is NOT general exactly-once):
 
 Limits: remote systems are not made exactly-once. The ledger can only record
 what this process saw. Owner liveness: on the same host a verifiably live
-owner process (PID plus /proc start-time identity, so PID reuse does not
-resurrect a dead owner) is NEVER treated as dead - even past its lease. A
+owner process (PID plus boot id, PID namespace and /proc start-time identity,
+so PID reuse, including after a reboot, does not resurrect a dead owner) is NEVER treated as dead - even past its lease. A
 handler that blocks the event loop outlives its lease while running, and
 retaking it would double the external effect. Cross-host owners cannot be
 PID-checked; only the lease bounds them. Rows written before the liveness
@@ -85,7 +85,7 @@ effects = sa.Table(
     # Process start-time token (/proc/<pid>/stat field 22) identifying the
     # owning process instance; "" where /proc is unavailable or on rows
     # written before this column existed. Guards against PID reuse.
-    sa.Column("owner_pid_start", sa.String(40), nullable=False, default=""),
+    sa.Column("owner_pid_start", sa.String(64), nullable=False, default=""),
     sa.Column("lease_expires_at", sa.String(40), nullable=False),
     sa.Column("result_summary", sa.Text, nullable=False, default=""),
     sa.Column("error", sa.Text, nullable=False, default=""),
@@ -177,12 +177,30 @@ def _pid_alive(pid: int) -> bool:
     return True
 
 
-def _proc_state_and_start(pid: int) -> tuple[str, str]:
-    """(state, start-time token) for a Linux process via /proc, else ("", "").
+def _environment_token() -> str:
+    """Identify this boot and PID namespace: "<boot6>.<pidns>".
 
-    The start-time token (stat field 22) distinguishes a live process from a
-    later, unrelated process that reused its PID. ("", "") means the check is
-    unavailable on this platform; callers then fall back to PID liveness only.
+    PIDs and start times are only comparable within one boot and one PID
+    namespace. start-time ticks restart at boot, so after a reboot a recycled
+    PID can carry a start time equal to a dead owner's. "" where unavailable.
+    """
+    try:
+        with open("/proc/sys/kernel/random/boot_id") as fh:
+            boot = hashlib.sha256(fh.read().strip().encode()).hexdigest()[:6]
+    except OSError:
+        return ""
+    try:
+        ns = os.readlink("/proc/self/ns/pid").strip("pid:[]") or "0"
+    except OSError:
+        ns = "0"
+    return f"{boot}.{ns}"
+
+
+def _proc_state_and_start(pid: int) -> tuple[str, str]:
+    """(state, start-time ticks) for a Linux process via /proc, else ("", "").
+
+    ("", "") means the check is unavailable on this platform; callers then
+    fall back to PID liveness only.
     """
     try:
         with open(f"/proc/{pid}/stat", "rb") as fh:
@@ -193,15 +211,70 @@ def _proc_state_and_start(pid: int) -> tuple[str, str]:
         return "", ""
 
 
-def _owner_process_alive(pid: int, recorded_start: str) -> bool:
-    """Same-host owner liveness with a PID-reuse guard."""
-    if pid <= 0 or not _pid_alive(pid):
+def current_owner_token(pid: int | None = None) -> str:
+    """Start-time token stored with a reservation: "<boot6>.<pidns>:<start>"
+    (just "<start>" where the environment id is unavailable, "" without /proc)."""
+    start = _proc_state_and_start(pid if pid is not None else os.getpid())[1]
+    if not start:
+        return ""
+    env = _environment_token()
+    return f"{env}:{start}" if env else start
+
+
+def _split_token(token: str) -> tuple[str, str]:
+    env, sep, start = token.rpartition(":")
+    return (env, start) if sep else ("", token)  # legacy rows: bare start ticks
+
+
+def _has_live_threads(pid: int) -> bool:
+    """True if a zombie thread-group leader still has running threads.
+
+    After the main thread calls pthread_exit, /proc/PID/stat shows state Z
+    while the other threads keep running; the process is alive.
+    """
+    try:
+        tids = os.listdir(f"/proc/{pid}/task")
+    except OSError:
+        return False
+    for tid in tids:
+        if tid == str(pid):
+            continue
+        try:
+            with open(f"/proc/{pid}/task/{tid}/stat", "rb") as fh:
+                state = fh.read().decode().rsplit(")", 1)[1].split()[0]
+        except (OSError, IndexError):
+            continue
+        if state not in ("Z", "X"):
+            return True
+    return False
+
+
+def _owner_process_alive(pid: int, recorded_token: str) -> bool | None:
+    """Same-host owner liveness with PID-reuse, reboot and zombie handling.
+
+    True = alive, False = dead, None = cannot be verified from this PID
+    namespace (the caller must fall back to the lease). Assumes owner_host
+    (hostname) uniquely identifies the machine; containers sharing a hostname
+    but not a PID namespace are detected through the namespace id in the token
+    for rows written after this fix.
+    """
+    if pid <= 0:
+        return False
+    rec_env, rec_start = _split_token(recorded_token or "")
+    if rec_env:
+        cur_env = _environment_token()
+        if cur_env and cur_env != rec_env:
+            rec_boot, cur_boot = rec_env.split(".")[0], cur_env.split(".")[0]
+            # Different boot: no process survives a reboot. Same boot but a
+            # different PID namespace: PIDs are not comparable - unverifiable.
+            return False if rec_boot != cur_boot else None
+    if not _pid_alive(pid):
         return False
     state, start = _proc_state_and_start(pid)
-    if state == "Z":
-        return False                          # killed but not yet reaped
-    if recorded_start and start and start != recorded_start:
+    if rec_start and start and start != rec_start:
         return False                          # PID reused by a newer process
+    if state == "Z":
+        return _has_live_threads(pid)         # reaped-pending, unless threads still run
     return True
 
 
@@ -246,6 +319,31 @@ class EffectLedger:
             row = conn.execute(sa.select(effects).where(self._where(effect_id))).mappings().first()
         return dict(row) if row else None
 
+    def get_legacy(self, task_id: str, node_id: str, tool: str, args_hash: str) -> dict[str, Any] | None:
+        """The pre-fix "|"-joined row for this effect, only if it really is this effect.
+
+        The legacy id is ambiguous: (task='T|N', node='X') and (task='T',
+        node='N|X') hash alike. A row found under the legacy id is accepted
+        only when its stored task/node/tool/args_hash equal the request
+        (tenant is already scoped); otherwise it belongs to a different
+        effect and is ignored.
+        """
+        row = self.get(_legacy_effect_id(self.tenant_id, task_id, node_id, tool, args_hash))
+        if row is None:
+            return None
+        if (row["task_id"], row["node_id"], row["tool"], row["args_hash"]) != (task_id, node_id, tool, args_hash):
+            return None
+        return row
+
+    def resolve_effect_id(self, task_id: str, node_id: str, tool: str, args: dict[str, Any]) -> str:
+        """Effect id to act on: the new-encoding id, or a matching legacy row's id."""
+        effect_id, args_hash = effect_identity(self.tenant_id, task_id, node_id, tool, args)
+        if self.get(effect_id) is None:
+            legacy = self.get_legacy(task_id, node_id, tool, args_hash)
+            if legacy is not None:
+                return legacy["effect_id"]
+        return effect_id
+
     def list(self, state: str | None = None) -> list[dict[str, Any]]:
         stmt = sa.select(effects).where(effects.c.tenant_id == self.tenant_id)
         if state:
@@ -267,7 +365,10 @@ class EffectLedger:
         # retaking it would double the external effect. Cross-host owners
         # cannot be PID-checked, so only the lease bounds them.
         if row["owner_host"] == socket.gethostname():
-            return not _owner_process_alive(row["owner_pid"], row.get("owner_pid_start") or "")
+            alive = _owner_process_alive(row["owner_pid"], row.get("owner_pid_start") or "")
+            if alive is not None:
+                return not alive
+            # Unverifiable (different PID namespace, same hostname): lease only.
         return datetime.fromisoformat(row["lease_expires_at"]) <= _now()
 
     # -- reserve -------------------------------------------------------------
@@ -279,14 +380,14 @@ class EffectLedger:
         # Rows reserved before the identity-encoding fix keep their old
         # "|"-joined id; they stay authoritative for their effect, so the
         # same effect is never silently re-invoked after the upgrade.
-        legacy_row = self.get(_legacy_effect_id(self.tenant_id, task_id, node_id, tool, args_hash))
+        legacy_row = self.get_legacy(task_id, node_id, tool, args_hash)
         if legacy_row is not None:
             return self._classify_existing(legacy_row, legacy_row["effect_id"],
                                            args_hash, provider_idempotent, lease)
         values = dict(tenant_id=self.tenant_id, effect_id=effect_id, task_id=task_id, node_id=node_id,
                       tool=tool, args_hash=args_hash, state=RESERVED, attempt=1, owner=self.worker_id,
                       owner_host=socket.gethostname(), owner_pid=os.getpid(),
-                      owner_pid_start=_proc_state_and_start(os.getpid())[1], lease_expires_at=lease,
+                      owner_pid_start=current_owner_token(), lease_expires_at=lease,
                       result_summary="", error="", note="", created_at=now, updated_at=now)
         try:
             with self.engine.begin() as conn:      # one transaction; rollback leaves no row
@@ -333,7 +434,7 @@ class EffectLedger:
     def _take(self, effect_id: str, expect_state: str, row: dict[str, Any], lease: str, *, bump: bool) -> bool:
         return self._cas(effect_id, expect_state=expect_state, expect_owner=row["owner"],
                          state=RESERVED, owner=self.worker_id, owner_host=socket.gethostname(),
-                         owner_pid=os.getpid(), owner_pid_start=_proc_state_and_start(os.getpid())[1],
+                         owner_pid=os.getpid(), owner_pid_start=current_owner_token(),
                          lease_expires_at=lease,
                          attempt=row["attempt"] + (1 if bump else 0), error="")
 
@@ -349,6 +450,21 @@ class EffectLedger:
 
     def fail_safe(self, res: Reservation, error: str) -> None:
         self._cas(res.effect_id, expect_state=INVOKING, expect_owner=res.owner, state=FAILED, error=error[:2000])
+
+    def release(self, res: Reservation, error: str) -> bool:
+        """Give up a reservation whose handler was provably never called.
+
+        Used by the dispatcher when mark_invoking fails. RESERVED -> FAILED, or
+        INVOKING -> FAILED when the mark_invoking commit landed but its
+        acknowledgement was lost. Both are safe only because the handler never
+        ran. Owner-scoped CAS: a reservation another worker took is untouched.
+        FAILED rows are retakeable, so the effect is not stuck EffectInProgress.
+        """
+        err = f"not executed: {error}"[:2000]
+        for st in (RESERVED, INVOKING):
+            if self._cas(res.effect_id, expect_state=st, expect_owner=res.owner, state=FAILED, error=err):
+                return True
+        return False
 
     def mark_indeterminate(self, res: Reservation, error: str) -> None:
         self._cas(res.effect_id, expect_state=INVOKING, expect_owner=res.owner, state=INDETERMINATE, error=error[:2000])
