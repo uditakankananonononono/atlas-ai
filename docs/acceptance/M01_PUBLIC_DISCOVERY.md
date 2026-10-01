@@ -272,3 +272,29 @@ corpus. Frozen deadline 33/54 positives captured, eligibility 18/42; new deadlin
 30/32, eligibility 15/15. These are fixed authored corpus results, not production
 precision/recall or assurance against unseen phrases. Independent re-audit pending.
 D6 cooperative transport timing remains unchanged and open as scoped limitation.
+
+## Seventh audit candidate (supersedes field-boundary acceptance)
+
+Only standalone explicit deadline fields are accepted. Additional suffix prose,
+including unrelated Award/Eligibility/Location fields, now abstains; no boundary
+cutting can erase later invalidation. Title with unknown script/deadline-like
+context cannot upgrade a description into acceptance. Safety reasons accumulate,
+never replace earlier input-limit/historical reasons. Generic unknown-field labels
+are not joined as eligibility values (any second colon-header is denied).
+
+Card display title <=300 and description <=600 characters. Deadline evidence
+excerpt <=600 per cue; eligibility <=16 contexts of <=600. A serialized card
+above 20,000 bytes drops excerpts with an explicit output-limit unknown and null
+deadline. Discovery stops after requested item count, then retains only items
+whose aggregate serialized bytes fit 200,000, with output_limited metadata.
+These are conservative output limits, not total parser memory/process isolation.
+
+The original mixed-prose fixtures remain in their original order and four prior
+acceptance expectations currently fail under the new standalone contract. They
+are visible intentional compatibility failures, not hidden/reordered tests. No
+full-suite green claim until those expectations are reconciled with this scope.
+Frozen sixth-audit corpus rerun now accepts 28/54 deadline positives, zero wrong
+accepted; its new corpus accepts 20/32 positives, zero wrong accepted. Eligibility
+remains 18/42 and 15/15 respectively, zero wrong captured. Authored corpora only.
+No broad precision/recall, arbitrary-script negation guarantee, deployment or
+source-permission acceptance is claimed. Independent final audit remains pending.

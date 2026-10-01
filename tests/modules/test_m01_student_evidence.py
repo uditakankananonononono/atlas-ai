@@ -317,3 +317,34 @@ def test_r6_eligibility_work_and_output_bounded():
     assert time.monotonic()-start < 1
     assert len(json.dumps(r['eligibility'])) < 12000
     assert 'eligibility_input_limit_exceeded' in r['unknowns']
+
+@pytest.mark.parametrize('tail', ['Award: $500. Deadline is invalid', 'Eligibility: students. Deadline is not valid', 'Location: Delhi. The deadline is не окончательно'])
+def test_r7_standalone_field_only(tail):
+    assert deadline_evidence('Deadline: November 12, 2026. '+tail)['value'] is None
+
+@pytest.mark.parametrize('title', ['Not the deadline', 'Deadline is invalid', 'अंतिम तिथि नहीं'])
+def test_r7_unknown_title_wins(title):
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    assert evidence_card({'title':title,'description':'Deadline: November 12, 2026'}, fetched_at='x', content_sha256='x')['deadline']['value'] is None
+
+@pytest.mark.parametrize('field', ['Contact: student office', 'Fees: students pay $50', 'Funding: students receive money', 'Benefits: students receive $500', 'Selection: GPA ranking'])
+def test_r7_unknown_field_not_eligibility(field):
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    assert not evidence_card({'title':'Award','description':'Eligibility:\n'+field}, fetched_at='x', content_sha256='x')['eligibility']['evidence']
+
+def test_r7_card_output_bound():
+    import json
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    r=evidence_card({'title':'x'*15000,'description':'x'*200000}, fetched_at='x', content_sha256='x')
+    assert len(json.dumps(r).encode()) <= 20000
+
+def test_r7_aggregate_limit_and_no_reason_loss():
+    import json
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    body=('<rss><channel>'+''.join('<item><title>'+('x'*15000)+'</title><link>https://example.org/'+str(i)+'</link><description>Eligibility: students.</description></item>' for i in range(100))+'</channel></rss>').encode()
+    with client(body,'application/rss+xml') as tx:
+        r=discover('scholarshiproar',limit=100,client=tx)
+    assert sum(len(json.dumps(i).encode()) for i in r['items']) <= 200000
+    card=evidence_card({'title':'Deadline: November 12, 2026','description':'x'*100001+'Deadline: November 13, 2026'}, fetched_at='x', content_sha256='x')
+    assert 'deadline_input_limit_exceeded' in card['deadline']['unknowns']
+    assert 'conflicting_deadline_statements' in card['deadline']['unknowns']
