@@ -3,11 +3,12 @@ import json
 import os
 from functools import lru_cache
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from app.auth.context import TenantContext, require_tenant
 from app.modules.m00_approval_center.service import default_service
 from app.modules.m13_browser_agent.session_bridge.dispatch import BridgedSessions
 from app.modules.m13_browser_agent.session_bridge.routes import get_registry
+from app.modules.m13_browser_agent.session_bridge.protocol import split_pc_session
 from .login_runner import BrowserRecipe, LoginHustleRunner, LoginRunStore
 
 router = APIRouter(prefix='/side-hustle-scraper/login-runs', tags=['side-hustle-login'])
@@ -30,7 +31,7 @@ def get_login_runner():
             raise ValueError('local fixture adapters may not be installed by environment')
         return build_login_runner(store=LoginRunStore(os.environ.get('ATLAS_M18_LOGIN_DB', 'atlas-m18-login.sqlite3')),
             sessions=BridgedSessions(get_registry()), approvals=default_service(), recipes=recipes, receipt_key=key)
-    except ValueError as error:
+    except (ValueError, TypeError) as error:
         raise HTTPException(503, 'Installed browser adapter configuration invalid') from error
 
 
@@ -39,6 +40,12 @@ class CreateIn(BaseModel):
     platform: str
     account: str
     session_id: str
+
+    @field_validator('session_id')
+    @classmethod
+    def safe_session(cls, value):
+        split_pc_session(value)
+        return value
 
 
 class PreviewIn(BaseModel):
