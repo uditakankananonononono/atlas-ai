@@ -135,3 +135,32 @@ No hard wall-clock isolation claim is made; this remains an audit limitation.
 Eligibility statements are sentence-bounded with dotted initials protected;
 600-character excerpt truncation is explicitly flagged. Company-cell eligibility
 markers are not asserted for inherited child rows; applicability stays unknown.
+
+## Second audit follow-up: deliberately strict transcription
+
+Date-only acceptance now requires all suffix text up to the next explicit
+ deadline cue to be punctuation/whitespace only. Any unexplained token, including
+ a newline-separated clock or a later prose sentence, makes the value unknown.
+This is conservative abstention, not an NLP interpretation of prose. Mixed
+listing text may therefore yield fewer usable dates. Tests move separate award
+and eligibility statements before a terminal deadline and separately assert
+that a trailing unknown token causes abstention; no assertion is weakened to
+allow a wrong first-date answer. Calendar/partial-date extensions conflict.
+Sept/Sept. normalize to September. Fraction precision above six digits is
+unsupported and explicitly labeled; lowercase ISO t/z and compact numeric
+offsets are supported. Unsupported deadline syntax has its own reason code.
+
+Eligibility evidence retains a sentence-bounded quoted excerpt and separately
+`source_context`/`source_contexts` (up to 600 source characters per context).
+Any excluded context has `eligibility_context_boundary_unknown`; an actual
+source context longer than 600 has `eligibility_evidence_truncated`. No claim
+that subsequent sentences/newlines are irrelevant. Dotted initials and common
+honorifics are protected in sentence boundaries, but this is not full semantic
+eligibility interpretation. All deadline.evidence outputs, including direct
+student-intelligence annotation, are now lists. No old string-producing path
+remains on this student surface. External clients still need the documented
+breaking-schema migration.
+
+The timing cap remains cooperative. Independent mock stalled 25 seconds inside
+a single chunk, proving it is not a hard 15-second wall-clock cap. Socket idle
+timeouts do not constrain injected transports. No process isolation implemented.
