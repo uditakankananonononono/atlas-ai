@@ -83,7 +83,7 @@ def annotate(item: dict) -> dict:
     """8. Source-derived evidence card, including every unknown field."""
     if item.get('platform') not in BY_ID or not item.get('source_url') == BY_ID[item['platform']].url:
         raise ValueError('platform/source provenance mismatch')
-    text = f"{item.get('title', '')} {item.get('description', '')}"
+    text = f"{item.get('title', '')}\n{item.get('description', '')}"
     result = dict(item)
     result['url'] = canonical_link(item['url'])
     result['id'] = stable_id(result)
