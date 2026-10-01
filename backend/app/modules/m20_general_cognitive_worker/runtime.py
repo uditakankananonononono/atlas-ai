@@ -229,8 +229,14 @@ class GCWRuntime:
         node = next((n for n in context.plan if n.id == node_id), None)
         if node is None or node.tool is None:
             raise KeyError(node_id)
-        from .effect_ledger import effect_identity
+        from .effect_ledger import effect_identity, legacy_effect_identity
         effect_id, _ = effect_identity(self.tenant_id, task_id, node_id, node.tool, node.arguments)
+        if self.ledger.get(effect_id) is None:
+            # Rows reserved before the identity-encoding fix live under the
+            # old "|"-joined id; reconcile must still reach them.
+            legacy_id = legacy_effect_identity(self.tenant_id, task_id, node_id, node.tool, node.arguments)
+            if self.ledger.get(legacy_id) is not None:
+                effect_id = legacy_id
         self.ledger.reconcile(effect_id, outcome=outcome, actor=actor, note=note)
         # A crash can leave the last checkpoint PENDING rather than BLOCKED.
         # Only after the ledger accepts reconciliation can we resume this node.
