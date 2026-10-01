@@ -129,32 +129,166 @@ class Daemon:
         # One-shot submit tokens/approvals already used (audit findings 3 and F2). Kept on
         # disk so a restart cannot replay them; the deadline is also signed into the token.
         self.consumed_path = config.consumed_path or ""
-        self._consumed_submit: dict[str, float] = self._load_consumed()
+        self._consumed_submit: dict[str, float] = {}
+        self._store_epoch: str | None = None
+        self._store_seq = 0
+        self._store_strict = False
+        self._store_created = time.time()
+        self._store_error = ""
+        self._init_store()
 
-    def _load_consumed(self) -> dict[str, float]:
-        if not self.consumed_path:
-            return {}
-        try:
-            raw = json.loads(Path(self.consumed_path).read_text())
-        except FileNotFoundError:
-            return {}
-        except (OSError, ValueError):
-            # Unreadable record: fail closed rather than forget what was consumed.
-            raise RuntimeError(f"consumed-submit record {self.consumed_path} is unreadable; refusing to start")
-        return {str(k): float(v) for k, v in raw.items()} if isinstance(raw, dict) else {}
+    # -- consumed-submit store -------------------------------------------------------
+    # File layout: {"v":1,"epoch":<random>,"created_at":<ts>,"seq":<n>,"consumed":{key:expiry},
+    # "mac":HMAC(command_secret, body)}. Rules, all fail closed and checked under an flock on
+    # every CLICK_SUBMIT, not only at start-up: the file must exist and parse with this exact
+    # shape and a valid MAC, its epoch must be the one this daemon adopted, its seq may never go
+    # backwards, and a token armed before the store was created is refused (so deleting the
+    # file cannot reopen replay). A bad store refuses submits with a clear error; it never
+    # prevents the daemon starting. To recover, move the file aside and restart: the new store
+    # refuses every token armed before it existed.
 
-    def _persist_consumed(self) -> None:
-        if not self.consumed_path:
-            return
+    def _mac(self, body: dict[str, Any]) -> str:
+        import hashlib
+        import hmac
+        payload = json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
+        return hmac.new(self.config.command_secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
+
+    def _store_lock(self):
+        import contextlib
+        import fcntl
+
+        @contextlib.contextmanager
+        def lock():
+            path = Path(self.consumed_path + ".lock")
+            path.parent.mkdir(parents=True, exist_ok=True)
+            fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o600)
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX)
+                yield
+            finally:
+                try:
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+                finally:
+                    os.close(fd)
+        return lock()
+
+    def _read_store(self) -> dict[str, Any]:
+        """Parsed, validated store. Raises FileNotFoundError or ValueError."""
+        raw = json.loads(Path(self.consumed_path).read_text())
+        if not isinstance(raw, dict) or raw.get("v") != 1:
+            raise ValueError("wrong shape")
+        mac = raw.get("mac")
+        body = {k: v for k, v in raw.items() if k != "mac"}
+        import hmac
+        if not isinstance(mac, str) or not hmac.compare_digest(mac, self._mac(body)):
+            raise ValueError("integrity check failed")
+        consumed = raw.get("consumed")
+        if (not isinstance(raw.get("epoch"), str) or not raw["epoch"]
+                or isinstance(raw.get("seq"), bool) or not isinstance(raw.get("seq"), int)
+                or not isinstance(raw.get("strict"), bool)
+                or isinstance(raw.get("created_at"), bool) or not isinstance(raw.get("created_at"), (int, float))
+                or not isinstance(consumed, dict)
+                or any(not isinstance(k, str) or isinstance(v, bool) or not isinstance(v, (int, float))
+                       for k, v in consumed.items())):
+            raise ValueError("wrong shape")
+        return raw
+
+    def _write_store(self) -> None:
+        body = {"v": 1, "epoch": self._store_epoch, "created_at": self._store_created,
+                "seq": self._store_seq, "consumed": self._consumed_submit, "strict": self._store_strict}
+        body["mac"] = self._mac(body)
         path = Path(self.consumed_path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = path.with_suffix(path.suffix + ".tmp")
+        tmp = path.with_suffix(path.suffix + f".{os.getpid()}.tmp")
         fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
         with os.fdopen(fd, "w") as handle:
-            handle.write(json.dumps(self._consumed_submit))
+            handle.write(json.dumps(body))
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(tmp, path)
+
+    def _adopt(self, raw: dict[str, Any]) -> None:
+        self._store_epoch = raw["epoch"]
+        self._store_created = float(raw["created_at"])
+        self._store_seq = int(raw["seq"])
+        self._store_strict = raw["strict"]
+        self._consumed_submit = {k: float(v) for k, v in raw["consumed"].items()}
+
+    def _init_store(self) -> None:
+        if not self.consumed_path:
+            self._store_epoch = "memory"
+            return
+        try:
+            # The lock file outlives the record. Lock present + record missing means the record
+            # was lost after use: the new store is "strict" (refuses tokens armed before it).
+            lost = Path(self.consumed_path + ".lock").exists()
+            with self._store_lock():
+                try:
+                    self._adopt(self._read_store())
+                except FileNotFoundError:
+                    import secrets
+                    self._store_strict = lost
+                    self._store_epoch = secrets.token_hex(16)
+                    self._store_created = time.time()
+                    self._store_seq = 0
+                    self._consumed_submit = {}
+                    self._write_store()
+        except (OSError, ValueError) as error:
+            self._store_error = f"consumed-submit record {self.consumed_path} is unusable at start-up ({error})"
+
+    def _consume_submit(self, keys: tuple[str, ...], deadline: float) -> str | None:
+        """Atomically record one-shot use. Returns an error string (refuse) or None (consumed)."""
+        from ..session_bridge.form_guard import ARM_TTL_SECONDS
+        if not self.consumed_path:
+            now = time.time()
+            for key, expires in list(self._consumed_submit.items()):
+                if expires < now:
+                    del self._consumed_submit[key]
+            if any(key in self._consumed_submit for key in keys):
+                return "replay"
+            for key in keys:
+                self._consumed_submit[key] = deadline + 3600.0
+            return None
+        try:
+            with self._store_lock():
+                try:
+                    raw = self._read_store()
+                except FileNotFoundError:
+                    if self._store_epoch is not None and not self._store_error:
+                        return ("the consumed-submit record disappeared after it was created; refusing every submit. "
+                                "Restart the daemon to start a new record (tokens armed earlier are then refused)")
+                    return (f"the consumed-submit record {self.consumed_path} is missing; restart the daemon to create it")
+                except (OSError, ValueError) as error:
+                    return (f"the consumed-submit record {self.consumed_path} is unreadable or has the wrong shape "
+                            f"({error}); refusing. Move the file aside and restart the daemon to start a new record")
+                if self._store_epoch is not None and not self._store_error and raw["epoch"] != self._store_epoch:
+                    return "the consumed-submit record was replaced by a different one; refusing"
+                if raw["seq"] < self._store_seq and not self._store_error:
+                    return "the consumed-submit record went backwards (older copy restored); refusing"
+                self._adopt(raw)
+                self._store_error = ""
+                now = time.time()
+                for key, expires in list(self._consumed_submit.items()):
+                    if expires < now:
+                        del self._consumed_submit[key]
+                if any(key in self._consumed_submit for key in keys):
+                    return "replay"
+                if self._store_strict and deadline - ARM_TTL_SECONDS < self._store_created:
+                    return ("this submit was armed before the consumed-submit record existed, so it cannot be "
+                            "proven unused; approve again")
+                for key in keys:
+                    self._consumed_submit[key] = deadline + 3600.0
+                self._store_seq += 1
+                try:
+                    self._write_store()
+                except OSError:
+                    for key in keys:
+                        self._consumed_submit.pop(key, None)
+                    self._store_seq -= 1
+                    raise
+        except OSError as error:
+            return f"cannot record the one-shot use of this submit ({error}); refusing"
+        return None
 
     async def _pace(self) -> None:
         wait = self.config.pacing_seconds - (time.monotonic() - self._last_action_at)
@@ -199,27 +333,17 @@ class Daemon:
                 return protocol.make_result(command_id, ok=False,
                                             error="the approved submit was armed too long ago; approve again",
                                             blocked=BlockKind.POLICY.value, receipt=event)
-            now = time.time()
-            for key, expires in list(self._consumed_submit.items()):
-                if expires < now:
-                    del self._consumed_submit[key]
             keys = (f"token:{token}", f"approval:{args.get('approval_id', '')}")
-            if any(key in self._consumed_submit for key in keys):
+            # Consume before any browser effect: a failed or ambiguous click never replays.
+            problem = self._consume_submit(keys, float(deadline))
+            if problem == "replay":
                 event = self._receipt_event(command_id, "blocked", {"reason": "submit token replayed"})
                 return protocol.make_result(command_id, ok=False,
                                             error="submit token already used (replay refused); approve again",
                                             blocked=BlockKind.POLICY.value, receipt=event)
-            # Consume before any browser effect: a failed or ambiguous click never replays.
-            for key in keys:
-                self._consumed_submit[key] = float(deadline) + 3600.0
-            try:
-                self._persist_consumed()
-            except OSError as error:
-                for key in keys:
-                    self._consumed_submit.pop(key, None)
-                event = self._receipt_event(command_id, "blocked", {"reason": "consumed record not writable"})
-                return protocol.make_result(command_id, ok=False,
-                                            error=f"cannot record the one-shot use of this submit ({error}); refusing",
+            if problem:
+                event = self._receipt_event(command_id, "blocked", {"reason": "consumed record refused"})
+                return protocol.make_result(command_id, ok=False, error=problem,
                                             blocked=BlockKind.POLICY.value, receipt=event)
         await self._pace()
         try:
@@ -268,14 +392,40 @@ class Daemon:
             await page.locator(str(args["selector"])).fill(str(args["value"]))
             return {"url": page.url}
         if kind is CommandKind.CLICK_NAV:
+            from ..session_bridge import form_guard
             from ..session_bridge.form_guard import SUBMIT_CONTROL_JS
             locator = page.locator(str(args["selector"]))
             # Navigation clicks never submit. Submit-type controls go through the armed,
             # previewed CLICK_SUBMIT path only (audit finding F3).
             if await locator.evaluate(SUBMIT_CONTROL_JS):
                 raise PermissionError("this control would submit a form; submits need an approved, previewed CLICK_SUBMIT")
-            await locator.click()
-            return {"url": page.url}
+            # Baseline guard for every daemon-driven click: nothing is approved here, so any
+            # non-GET request or body-carrying navigation (including a JS-driven submit from a
+            # button, label, or custom element) is aborted and reported.
+            guard = form_guard.NetworkGuard(page)
+            await guard.install()
+            try:
+                await page.evaluate(form_guard.NAV_GUARD_JS)
+                await locator.click()
+                try:
+                    await page.wait_for_load_state("domcontentloaded", timeout=5000)
+                except Exception:  # noqa: BLE001 - best effort; the guard report decides
+                    pass
+                await asyncio.sleep(0.25)  # let timer-driven submits reach the route guard
+                page_blocked = []
+                try:
+                    page_blocked = await page.evaluate(form_guard.GUARD_STATE_JS) or []
+                    await page.evaluate(form_guard.GUARD_REMOVE_JS)
+                except Exception:  # noqa: BLE001 - navigation destroyed the old document
+                    pass
+            finally:
+                await guard.remove()
+            report = guard.report()
+            report["blocked"] = [*report["blocked"], *[f"page-guard: {item}" for item in page_blocked]]
+            if report["blocked"]:
+                raise PermissionError("navigation click attempted an unapproved request; blocked: "
+                                      + "; ".join(report["blocked"])[:500])
+            return {"url": page.url, "guard": report}
         if kind is CommandKind.CLICK_SUBMIT:
             return await self._click_submit(page, args)
         if kind is CommandKind.CLOSE:

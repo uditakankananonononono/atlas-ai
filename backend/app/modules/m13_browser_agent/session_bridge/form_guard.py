@@ -15,6 +15,8 @@ other URLs, requests the browser makes outside this page's route).
 """
 from __future__ import annotations
 
+import time
+
 from typing import Any
 from urllib.parse import parse_qsl, urljoin, urlsplit
 
@@ -124,6 +126,23 @@ GUARD_JS = """
 # JS world, so a hostile page can overwrite or clear it and hide what the page guard
 # blocked. The page guard is advisory. The authoritative report is NetworkGuard.report(),
 # which lives in the daemon process and is not readable or writable by page scripts.
+# Baseline page guard for daemon-driven clicks that are not the armed submit. Advisory
+# like GUARD_JS: it stops declarative and scripted submits from running at all. The
+# authoritative control is NetworkGuard (baseline mode) in the daemon process.
+NAV_GUARD_JS = """
+() => {
+  if (window.__atlasGuard) window.__atlasGuard.remove();
+  const blocked = [];
+  const handler = (event) => {
+    blocked.push('submit event');
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  };
+  window.addEventListener('submit', handler, true);
+  window.__atlasGuard = {blocked, remove: () => window.removeEventListener('submit', handler, true)};
+  return true;
+}
+"""
 GUARD_STATE_JS = "() => window.__atlasGuard ? window.__atlasGuard.blocked.slice() : null"
 GUARD_REMOVE_JS = "() => { if (window.__atlasGuard) { window.__atlasGuard.remove(); } return true; }"
 
@@ -196,6 +215,34 @@ def _origin(url: str) -> tuple[str, str, int | None]:
     return (parts.scheme.lower(), (parts.hostname or "").lower(), parts.port or {"http": 80, "https": 443}.get(parts.scheme.lower()))
 
 
+def cookies_from_set_cookie(url: str, headers: list[str]) -> list[dict]:
+    """Playwright cookie dicts from raw Set-Cookie header values received for ``url``."""
+    from http.cookies import CookieError, SimpleCookie
+    parts = urlsplit(url)
+    out = []
+    for raw in headers:
+        jar = SimpleCookie()
+        try:
+            jar.load(raw)
+        except CookieError:
+            continue
+        for name, morsel in jar.items():
+            path = morsel["path"] or (parts.path.rsplit("/", 1)[0] or "/")
+            cookie = {"name": name, "value": morsel.value, "domain": morsel["domain"] or parts.hostname or "",
+                      "path": path, "httpOnly": bool(morsel["httponly"]), "secure": bool(morsel["secure"])}
+            same_site = str(morsel["samesite"]).capitalize()
+            if same_site in {"Strict", "Lax", "None"}:
+                cookie["sameSite"] = same_site
+            if morsel["max-age"]:
+                try:
+                    cookie["expires"] = max(time.time() + int(morsel["max-age"]), 1)
+                except ValueError:
+                    pass
+            if cookie["domain"]:
+                out.append(cookie)
+    return out
+
+
 class NetworkGuard:
     """Route guard installed on the page for the duration of the approved click.
 
@@ -210,12 +257,21 @@ class NetworkGuard:
     Non-urlencoded enctypes have no body check, so nothing is ever approved for them.
     """
 
-    def __init__(self, page, preview: dict, expected_values: dict[str, str]):
+    def __init__(self, page, preview: dict | None = None, expected_values: dict[str, str] | None = None):
+        """With a preview this is the armed-submit guard. With none it is the baseline guard
+        for every other daemon-driven click: nothing is ever approved, so every non-GET/HEAD
+        request and every navigation that carries a body is aborted and reported."""
         self.page = page
-        self.action = preview["form_action"]
-        self.enctype = preview["form_facts"]["enctype"]
-        names = field_name_map(preview)
-        self.values = {names[selector]: value.replace("\r\n", "\n") for selector, value in expected_values.items()}
+        if preview is None:
+            self.action = None
+            self.enctype = None
+            self.values = {}
+        else:
+            self.action = preview["form_action"]
+            self.enctype = preview["form_facts"]["enctype"]
+            names = field_name_map(preview)
+            self.values = {names[selector]: value.replace("\r\n", "\n")
+                           for selector, value in (expected_values or {}).items()}
         self.blocked: list[str] = []
         self.approved_post_sent = False
         self._approved_request = None
@@ -227,7 +283,8 @@ class NetworkGuard:
         return request
 
     def _is_approved(self, request) -> bool:
-        if self.approved_post_sent or request.method.upper() != "POST" or request.url != self.action:
+        if (self.action is None or self.approved_post_sent or request.method.upper() != "POST"
+                or request.url != self.action):
             return False
         if not request.is_navigation_request() or request.frame != self.page.main_frame:
             return False
@@ -267,6 +324,20 @@ class NetworkGuard:
                         "sec-fetch-user": "?1", "sec-fetch-site": site})
         return headers
 
+    async def _persist_cookies(self, url: str, response) -> None:
+        """Store every Set-Cookie of a guard-resolved hop in the browser context.
+
+        The guard fetches hops itself with redirects disabled, so Chromium never sees the
+        intermediate responses. Without this a session cookie set on a redirect hop is lost.
+        """
+        try:
+            cookies = cookies_from_set_cookie(url, [item["value"] for item in response.headers_array
+                                                    if item["name"].lower() == "set-cookie"])
+            if cookies:
+                await self.page.context.add_cookies(cookies)
+        except Exception as error:  # noqa: BLE001 - a bad cookie must not strand the routed request
+            self.blocked.append(f"cookie not stored for {url[:100]}: {str(error)[:100]}")
+
     async def _send_approved(self, route, request) -> None:
         """Send the approved POST and judge every redirect hop before the browser sees it.
 
@@ -289,6 +360,7 @@ class NetworkGuard:
         page_origin = _origin(self.page.url)
         original = await request.all_headers()
         response = await route.fetch(max_redirects=0, headers=self._fetch_headers(original, url, "POST", page_origin))
+        await self._persist_cookies(url, response)
         seen = {url}
         hops = 0
         while response.status in REDIRECT_STATUSES:
@@ -312,6 +384,7 @@ class NetworkGuard:
             if body is not None:
                 options["post_data"] = body
             response = await route.fetch(**options)
+            await self._persist_cookies(target, response)
         await route.fulfill(response=response)
 
     async def _route(self, route, request) -> None:
@@ -321,7 +394,8 @@ class NetworkGuard:
             self._approved_request = request
             await self._send_approved(route, request)
             return
-        if method in {"GET", "HEAD"} and not request.is_navigation_request():
+        if method in {"GET", "HEAD"} and (self.action is None or not request.is_navigation_request()):
+            # Baseline mode (plain navigation clicks) lets bodyless GET/HEAD navigations through.
             await route.continue_()
             return
         self.blocked.append(f"{method} {request.url[:200]}")

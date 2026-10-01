@@ -215,3 +215,28 @@ also frees the session.
 - **F3 submit via click.** `CLICK_NAV` (daemon) and the generic server-side `click` refuse submit-type controls (submit buttons, bare `<button>` in a form, `input[type=submit|image]`, `form=` association, a `<label>` for one, a child of one). A consumed arming now refuses the next click of the same control in `BridgedSessions` instead of falling through to `CLICK_NAV`. `application_flow` binds a preview, checks the reviewed form action and arms the submit before clicking. Residual: a script can still click a non-form control that navigates by JS; that is not detectable here.
 - **M13 gaps.** Approval payloads now carry `form_action`, `form_method`, `form_enctype` and `form_page_url`; execute re-binds and refuses a different destination. `dom_sha256` is compared with the live DOM at execute. Server-side (non-paired) sessions have no route guard or arming, so approved submits there are refused unless the service sets `allow_unguarded_server_submit` (tests with fake pages do).
 - **F4 headers.** The re-issued request copies Accept/Accept-Language/Accept-Encoding/User-Agent/Referer/Origin/Content-Type/Sec-CH-* from the routed request. Playwright hides Sec-Fetch-*, so those are synthesized for a user-activated main-frame form navigation (`navigate`/`document`/`?1`, Site recomputed per hop). Still different: header order and casing, TLS/connection fingerprint, and HTTP version negotiation.
+
+## Round 6 (fixes for round-5 audit V1, V2, minor)
+
+Pessimistic notes. Nothing here is a proof.
+
+- V1: every daemon-driven click now runs under `NetworkGuard` in baseline mode (nothing approved):
+  every non-GET/HEAD request is aborted and reported, plus a page-level capturing submit blocker.
+  A blocked request makes CLICK_NAV fail with the blocked list. Residuals: bodyless GET navigations
+  are allowed (a GET form submit carries its data in the query string and is only caught by the
+  advisory page guard); a click that causes an async POST later than ~0.25 s after the click may
+  land after the guard is removed; the page guard is in the page's own JS world and can be defeated;
+  only the daemon-process route guard is authoritative.
+- V2: the consumed store is `{v,epoch,created_at,seq,consumed,strict,mac}` (HMAC with the command
+  secret), read and written under flock on `<path>.lock`, re-read before every consume. Missing
+  file under a running daemon, other epoch, lower seq, bad shape or bad MAC all refuse submits
+  with a clear error; start-up never raises. A store re-created while the lock file still exists
+  is `strict` and refuses tokens armed before it existed (arming time estimated as
+  deadline - ARM_TTL_SECONDS, so clock skew or a longer configured TTL weakens that check).
+  Residuals: someone who deletes the record AND the lock file AND restarts looks like a first
+  run and is not detected; anyone holding the command secret can forge a valid record; a
+  different state directory is a different store; the MAC does not stop rollback of the whole
+  state directory together with a restart.
+- Minor: Set-Cookie of each guard-resolved hop is added to the browser context. Honest note: the
+  new test passes on the round-5 code too, because `route.fetch` already shares the context's
+  cookie jar, so the explicit step is belt and braces, not a demonstrated fix.
