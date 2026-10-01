@@ -59,7 +59,8 @@ def test_all_rss_routes_preserve_exact_evidence_without_inference(platform):
     <script>Deadline: 2028-01-03.</script>]]></description></item></channel></rss>'''
     with client(body, 'application/rss+xml') as tx:
         row = discover(platform, client=tx)['items'][0]
-    assert row['deadline']['value'] == '2027-01-03' and row['deadline']['timezone'] is None
+    assert row['deadline']['value'] is None and row['deadline']['timezone'] is None
+    assert 'qualified_or_negated_deadline' in row['deadline']['unknowns']
     assert row['eligibility']['evidence'] == ['Eligibility: undergraduate students in India.']
     assert row['eligibility']['verdict'] is None
     assert '2028' not in row['description']
@@ -234,7 +235,8 @@ def test_third_audit_rss_full_evidence():
     body = ('<rss><channel><item><title>Award</title><link>https://example.org/a</link><description>'+text+'</description></item></channel></rss>').encode()
     with client(body, 'application/rss+xml') as tx:
         row = discover('scholarshiproar', client=tx)['items'][0]
-    assert row['deadline']['value'] == '2026-10-01'
+    assert row['deadline']['value'] is None
+    assert 'qualified_or_negated_deadline' in row['deadline']['unknowns']
     assert 'eligibility_evidence_truncated' in row['unknowns']
     assert row['description_original_length'] == len(text)
 
@@ -290,3 +292,28 @@ def test_r5_many_cues_bounded_work():
     result = deadline_evidence(('Deadline: November 12, 2026.\n') * 20000)
     assert time.monotonic() - start < 2.0
     assert 'deadline_input_limit_exceeded' in result['unknowns']
+
+@pytest.mark.parametrize('prefix', ['No'+' '*3000, 'Not the'+' '*6000, 'ليس. ', '不是; '])
+def test_r6_no_truncated_qualifier(prefix):
+    assert deadline_evidence(prefix+'deadline: November 12, 2026')['value'] is None
+
+@pytest.mark.parametrize('desc', ['x'*100001+'No deadline: November 12, 2026', 'Archived listing. No current application round.', 'Deadline: November 12, 2026. '*258])
+def test_r6_title_cannot_override_safety(desc):
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    r=evidence_card({'title':'Deadline: November 12, 2026','description':desc}, fetched_at='x', content_sha256='x')
+    assert r['deadline']['value'] is None
+
+@pytest.mark.parametrize('text', ['Eligibility:\nAward: $500', 'Requirements:\nDeadline: November 12, 2026', 'Applicants must:\nLocation: Delhi'])
+def test_r6_no_unrelated_label_join(text):
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    r=evidence_card({'title':'Award','description':text}, fetched_at='x', content_sha256='x')
+    assert not r['eligibility']['evidence']
+
+def test_r6_eligibility_work_and_output_bounded():
+    import time,json
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    start=time.monotonic()
+    r=evidence_card({'title':'Award','description':'Eligibility: students. '*8000}, fetched_at='x', content_sha256='x')
+    assert time.monotonic()-start < 1
+    assert len(json.dumps(r['eligibility'])) < 12000
+    assert 'eligibility_input_limit_exceeded' in r['unknowns']

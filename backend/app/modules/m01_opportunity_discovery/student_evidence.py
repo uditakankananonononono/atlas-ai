@@ -30,13 +30,17 @@ def deadline_evidence(text: str) -> dict:
     if len(matches) > 256:
         result['unknowns'].append('deadline_input_limit_exceeded')
         return result
+    calendar_dates = list(re.finditer(_CALENDAR, text, re.I))
+    if len(calendar_dates) > 1:
+        result['unknowns'].append('conflicting_deadline_statements')
+        return result
     previous_end = 0
     for index, match in enumerate(matches):
         raw = match['date']
-        prefix_start = max(previous_end, match.start() - 2048)
+        prefix_start = previous_end
         prefix_window = text[prefix_start:match.start()]
-        prefix = re.split(r'[.!?;]', prefix_window)[-1].strip()
-        if re.search(r'\b(?:no|not(?: the)?|never)[\s.!?;]*$', prefix_window, re.I) or any(unicodedata.category(ch).startswith('S') for ch in prefix_window):
+        prefix = prefix_window.strip()
+        if re.search(r'\b(?:no|not|never)\b', prefix_window, re.I) or any((ch.isalpha() and not ch.isascii()) or unicodedata.category(ch).startswith('S') for ch in prefix_window):
             result['evidence'].append(match.group(0))
             result['unknowns'].append('qualified_or_negated_deadline')
             continue
@@ -115,30 +119,50 @@ def evidence_card(row: dict, *, fetched_at: str, content_sha256: str) -> dict:
     text = f"{row['title']}\n{row.get('evidence_text', row.get('description', ''))}"
     title_risk = re.search(r'\b(?:no deadline|previous deadline|expired|archived|applications? closed)\b', row['title'], re.I)
     deadline = deadline_evidence(row.get('evidence_text', row.get('description', '')))
-    if not deadline['evidence'] and not deadline['value']:
+    if deadline['unknowns'] == ['deadline_not_stated_in_listing']:
         title_deadline = deadline_evidence(row['title'])
         if title_deadline['evidence'] or title_deadline['value']:
             deadline = title_deadline
+    if len(re.findall(_CALENDAR, text, re.I)) > 1:
+        deadline = {'value': None, 'timezone': None, 'precision': 'unknown', 'evidence': deadline['evidence'], 'unknowns': ['conflicting_deadline_statements']}
     if title_risk:
         deadline = {'value': None, 'timezone': None, 'precision': 'unknown', 'evidence': deadline['evidence'], 'unknowns': ['qualified_or_negated_deadline']}
     statements = []
     contexts = []
     truncated = False
     boundary_unknown = False
-    for match in _ELIGIBILITY.finditer(text):
-        context = text[match.start():].strip()
-        if re.match(r'(?:Open to (?:interpretation|discussion)|Applicants must (?:click|visit|read)|Eligibility: (?:not specified|unknown|not stated))\b', context, re.I):
-            continue
-        # Join label-only line with the following source value, not later fields.
-        context = re.sub(r'^([^\n:]+:)\s*\n\s*', r'\1 ', context)
+    eligibility_limited = len(text) > 100000
+    cue_matches = list(_ELIGIBILITY.finditer(text[:100001])) if not eligibility_limited else []
+    if len(cue_matches) > 16:
+        eligibility_limited = True
+        cue_matches = []
+    for index, match in enumerate(cue_matches):
+        end = cue_matches[index+1].start() if index+1 < len(cue_matches) else len(text)
+        context = text[match.start():end].strip()
         contexts.append(context[:600])
         truncated = truncated or len(context) > 600
-        protected = re.sub(r'\b[A-Z]\.(?=\s+[A-Z][a-z])|\b(?:[A-Za-z]\.){2,}|\b(?:Dr|Mr|Mrs|Ms|Prof|Sr|Jr)\.', lambda m: m[0].replace('.', '\x00'), context, flags=re.I)
-        sentence = re.split(r'(?<=[.!?])\s+|\n', protected, maxsplit=1)[0].replace('\x00', '.')
+        protected = re.sub(r'\b[A-Z]\.(?=\s+[A-Z][a-z])|\b(?:[A-Za-z]\.){2,}|\b(?:Dr|Mr|Mrs|Ms|Prof|Sr|Jr)\.', lambda m: m[0].replace('.', '\x00'), context[:601], flags=re.I)
+        lines = protected.splitlines()
+        first = lines[0].strip() if lines else ''
+        if re.fullmatch(r'(?:Eligibility|Requirements|Applicants must|Open to)\s*:?', first, re.I):
+            value = lines[1].strip() if len(lines) > 1 else ''
+            if not value or re.match(r'(?:Award|Prize|Deadline|Location|Posted)\s*:', value, re.I):
+                boundary_unknown = True
+                continue
+            first += ' ' + value
+        sentence = re.split(r'(?<=[.!?])\s+', first, maxsplit=1)[0].replace('\x00', '.')
+        # Evidence excerpts require explicit requirement-bearing vocabulary, not
+        # merely a cue header or an invitation to inspect another page.
+        if re.search(r'\b(?:unknown|not stated|not specified|see|website|brochure|click|download|guide|calculation|discussion|interpretation|preview|example|demo|save|fun|read|visit|quick|filters)\b', sentence, re.I):
+            continue
+        if not re.search(r'\b(?:students?|undergraduates?|graduates?|minors?|juniors?|seniors?|citizens?|citizenship|residents?|enrolled|GPA|age|aged|years?|18|doctoral|lab|full-time)\b', sentence, re.I):
+            continue
         boundary_unknown = boundary_unknown or len(sentence) < len(context)
         statements.append(sentence[:600])
     statements.extend(row.get('eligibility_statements', []))
     unknowns = ['personal_eligibility_not_evaluated', 'entry_cost_not_verified', 'detail_page_not_fetched']
+    if eligibility_limited:
+        unknowns.append('eligibility_input_limit_exceeded')
     if not statements:
         unknowns.append('eligibility_not_found_by_supported_cues')
     if boundary_unknown:
@@ -155,6 +179,6 @@ def evidence_card(row: dict, *, fetched_at: str, content_sha256: str) -> dict:
     return dict(output, fetched_at=fetched_at, content_sha256=content_sha256,
                 deadline=deadline, eligibility={'evidence': list(dict.fromkeys(statements)),
                                                'verdict': None, 'basis': 'source_statements_only',
-                                               'source_context': contexts[0] if contexts else None,
+                                               'source_context': text[cue_matches[0].start():cue_matches[0].start()+600].strip() if cue_matches else None,
                                                'source_contexts': contexts},
                 unknowns=unknowns, evidence_status='public_listing_only')

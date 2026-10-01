@@ -21,7 +21,8 @@ def cards():
 
 
 def test_01_explicit_deadline_only():
-    assert s.extract_deadline('Posted 2026-09-01. Deadline: 2026-10-10')['value'] == '2026-10-10'
+    assert s.extract_deadline('Posted 2026-09-01. Deadline: 2026-10-10')['value'] is None
+    assert 'conflicting_deadline_statements' in s.extract_deadline('Posted 2026-09-01. Deadline: 2026-10-10')['unknowns']
     assert s.extract_deadline('Event date 2026-10-10')['value'] is None
 
 
