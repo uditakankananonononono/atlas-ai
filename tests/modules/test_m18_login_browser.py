@@ -32,6 +32,7 @@ async def setup(tmp_path):
         keys = []
         commands = []
         extra_field = None
+        submit_attr = None
         def log_message(self, *args): pass
         def do_GET(self):
             if self.path == '/throttle':
@@ -46,6 +47,8 @@ async def setup(tmp_path):
                 <form method="post" action="/publish"><p id="terms">Free publication. No fees.</p>
                 <label>Public draft<textarea id="draft" name="draft"></textarea></label>
                 <input name="audience" value="public"><input id="run_id" name="run_id"><button id="publish">Publish once</button></form>'''
+                if self.submit_attr and self.path == '/compose':
+                    html = html.replace('<button id="publish"', '<button id="publish" '+self.submit_attr[0]+'="'+self.submit_attr[1]+'"')
                 if self.extra_field and self.path == '/compose':
                     html = html.replace('</form>', '<input name="'+self.extra_field+'" value="DO_NOT_COPY"></form>')
                 if self.path == '/receipt' and self.posts:
@@ -410,3 +413,148 @@ async def test_unreviewable_controls_refused(setup, markup):
     with pytest.raises(PermissionError):
         await r.snapshot('tenant', run)
     assert not setup[6].posts
+
+
+# ---- audit fixes: F1 submit-control overrides, F2 arming, F3 identifier cap, F4 revoke ----
+
+OVERRIDES = ["formaction='/evil'", "formmethod='get'", "formenctype='text/plain'", "formtarget='_blank'"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('attr', OVERRIDES)
+async def test_f1_submit_control_override_refused_at_preview(setup, attr):
+    factory, recipe, approvals, registry, paired, page, site, path = setup
+    r = factory()
+    run = r.create('tenant', 'owner', platform='local_fixture', account='owner',
+                   session_id=f"pc.{paired['device_id']}.experiment")
+    await r.discover('tenant', run['id'])
+    name, value = attr.split('=')
+    site.submit_attr = (name, value.strip("'"))
+    with pytest.raises(PermissionError):
+        await r.preview('tenant', run['id'], 'owner', hypothesis='Bounded test', draft='Draft', max_minutes=10)
+    assert r.store.get('tenant', run['id'])['state'] == 'blueprint_ready'
+    assert not site.posts
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('attr', ['formaction', 'formmethod', 'formenctype', 'formtarget'])
+async def test_f1_device_refuses_override_added_after_approval(setup, attr):
+    r, run = await ready(setup)
+    original = r.sessions.authorize_submit
+    async def arm_then_override(*args, **kwargs):
+        await original(*args, **kwargs)
+        await setup[5].evaluate("a => document.querySelector('#publish').setAttribute(a, a=='formaction' ? '/evil' : a=='formmethod' ? 'get' : a=='formtarget' ? '_blank' : 'text/plain')", attr)
+    r.sessions.authorize_submit = arm_then_override
+    with pytest.raises(RuntimeError):
+        await r.execute('tenant', run['id'], 'owner')
+    assert not setup[6].posts
+    assert r.store.get('tenant', run['id'])['state'] == 'unknown'
+
+
+@pytest.mark.asyncio
+async def test_f2_intervening_click_cannot_consume_arming_or_unverify_submit(setup):
+    r, run = await ready(setup)
+    original = r.sessions.authorize_submit
+    async def arm_then_click_elsewhere(*args, **kwargs):
+        await original(*args, **kwargs)
+        other = await r.sessions.page('tenant', run['session_id'], True)
+        with pytest.raises(Exception):
+            await other.locator('#draft').click()
+    r.sessions.authorize_submit = arm_then_click_elsewhere
+    setup[6].commands.clear()
+    result = await r.execute('tenant', run['id'], 'owner')
+    assert result['state'] == 'succeeded', result
+    submits = [c for c in setup[6].commands if c['kind'] == 'click_submit']
+    navs = [c for c in setup[6].commands if c['kind'] == 'click_nav']
+    assert len(submits) == 1 and submits[0]['args']['selector'] == '#publish'
+    assert not any(c['args']['selector'] == '#publish' for c in navs)
+    assert setup[6].posts == ['Tutoring pilot']
+
+
+@pytest.mark.asyncio
+async def test_f2_lost_arming_fails_closed_before_any_unverified_click_and_recovers(setup):
+    r, run = await ready(setup)
+    original = r.sessions.authorize_submit
+    async def arm_then_lose(*args, **kwargs):
+        await original(*args, **kwargs)
+        r.sessions._armed.clear()
+    r.sessions.authorize_submit = arm_then_lose
+    setup[6].commands.clear()
+    with pytest.raises(PermissionError):
+        await r.execute('tenant', run['id'], 'owner')
+    assert not setup[6].posts
+    assert not any(c['args'].get('selector') == '#publish' for c in setup[6].commands)
+    burned = r.store.get('tenant', run['id'])
+    assert burned['state'] == 'approval_burned'
+    # Recovery: nothing was dispatched, so a fresh reviewed preview and approval may continue.
+    r.sessions.authorize_submit = original
+    fresh = await r.preview('tenant', run['id'], 'owner', hypothesis='Retry after burned approval', draft='Tutoring pilot', max_minutes=20)
+    assert fresh['approval_id'] != run['approval_id'] and fresh['state'] == 'awaiting_approval'
+    setup[2].decide(fresh['approval_id'], ApprovalStatus.APPROVED, 'owner')
+    assert (await r.execute('tenant', run['id'], 'owner'))['state'] == 'succeeded'
+    assert setup[6].posts == ['Tutoring pilot']
+
+
+@pytest.mark.asyncio
+async def test_f2_click_verified_as_submit_or_run_is_unknown(setup):
+    r, run = await ready(setup)
+    # Device answers a click without echoing the approved submit identity.
+    original = r.sessions._execute
+    async def strip(tenant, device, name, kind, args, timeout=60.0):
+        result = await original(tenant, device, name, kind, args, timeout=timeout)
+        result.pop('approval_id', None)
+        return result
+    r.sessions._execute = strip
+    with pytest.raises(PermissionError):
+        await r.execute('tenant', run['id'], 'owner')
+    assert r.store.get('tenant', run['id'])['state'] == 'unknown'
+
+
+def test_f3_identifier_cap_matches_daemon_page_key():
+    from app.modules.m13_browser_agent.session_bridge.protocol import validate_identifier, make_pc_session
+    assert validate_identifier('a' * 120) == 'a' * 120
+    for n in (121, 128):
+        with pytest.raises(ValueError):
+            validate_identifier('a' * n)
+        with pytest.raises(ValueError):
+            make_pc_session('dev', 'a' * n)
+
+
+@pytest.mark.asyncio
+async def test_f4_reprieview_revokes_superseded_approval(setup):
+    r, first = await ready(setup)
+    old = first['approval_id']
+    assert setup[2].get(old)['status'] == 'approved'
+    second = await r.preview('tenant', first['id'], 'owner', hypothesis='Recheck', draft='Changed draft', max_minutes=20)
+    assert second['approval_id'] != old
+    assert setup[2].get(old)['status'] == 'denied'
+    with pytest.raises(Exception):
+        setup[2].consume_effect(old, module_id=18, action_type='login_publish',
+                                payload=r.payload(first), user_id='tenant', effect_id='x', actor='owner')
+    assert setup[2].get(second['approval_id'])['status'] == 'pending'
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('attr', OVERRIDES)
+async def test_f1_daemon_preclick_independently_refuses_submit_override(setup, attr):
+    from app.modules.m18_side_hustle_scraper.login_runner import LoginHustleRunner
+    factory, recipe, approvals, registry, paired, page, site, path = setup
+    name, value = attr.split('=')
+    site.submit_attr = (name, value.strip("'"))
+    r = factory()
+    real = LoginHustleRunner.form_selectors
+    def lax(soup, button, rec):  # simulate a server that missed the override
+        form = button.find_parent('form')
+        return [f'[name="{n.get("name")}"]' for n in form.select('input,textarea,select,button[name]')]
+    LoginHustleRunner.form_selectors = staticmethod(lax)
+    try:
+        run = r.create('tenant', 'owner', platform='local_fixture', account='owner',
+                       session_id=f"pc.{paired['device_id']}.experiment")
+        await r.discover('tenant', run['id'])
+        run = await r.preview('tenant', run['id'], 'owner', hypothesis='Bounded', draft='Draft', max_minutes=10)
+        approvals.decide(run['approval_id'], ApprovalStatus.APPROVED, 'owner')
+        with pytest.raises(RuntimeError):
+            await r.execute('tenant', run['id'], 'owner')
+    finally:
+        LoginHustleRunner.form_selectors = real
+    assert not site.posts

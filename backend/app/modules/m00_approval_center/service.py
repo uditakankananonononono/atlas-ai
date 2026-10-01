@@ -591,6 +591,26 @@ def _install_extensions() -> None:
             db.add(ApprovalEventRow(approval_id=approval_id, event="effect_consumed", actor=actor, at=now))
         return {"approval_id": approval_id, "effect_id": effect_id, "allowed": True, "consumed_at": now}
 
+    def revoke(self: Service, approval_id: str, *, actor: str) -> dict[str, Any]:
+        """Withdraw an approval that has not been consumed (idempotent).
+
+        A pending or approved request with no effect permit becomes denied so it
+        can no longer be consumed. Consumed or already-final requests are returned
+        unchanged; revocation never rewrites history.
+        """
+        now = self._clock()
+        with self._sessions.begin() as db:
+            row = self._fetch(db, approval_id)
+            consumed = db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.approval_id == approval_id))
+            if consumed is None and row.status in {ApprovalStatus.PENDING.value, ApprovalStatus.APPROVED.value}:
+                row.status = ApprovalStatus.DENIED.value
+                row.decided_at = now
+                db.add(ApprovalEventRow(approval_id=row.id, event="revoked", actor=actor, at=now))
+            view = _view(row)
+        self._broadcaster.publish({"type": "approval_decision", "approval": _jsonable(view)})
+        return view
+
+    Service.revoke = revoke
     Service.upsert_policy = upsert_policy
     Service.list_policies = list_policies
     Service.evaluate_policy = evaluate_policy

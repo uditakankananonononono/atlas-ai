@@ -77,8 +77,8 @@ class PlatformBlocked(BridgeError):
 
 def validate_identifier(value: str) -> str:
     """One bounded ASCII component, never a path or encoded path."""
-    if not isinstance(value, str) or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value) is None:
-        raise ValueError("invalid identifier: use 1-128 ASCII letters, digits, underscore or hyphen")
+    if not isinstance(value, str) or re.fullmatch(r"[A-Za-z0-9_-]{1,120}", value) is None:
+        raise ValueError("invalid identifier: use 1-120 ASCII letters, digits, underscore or hyphen")
     return value
 
 

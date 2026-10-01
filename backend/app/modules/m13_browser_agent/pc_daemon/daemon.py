@@ -215,6 +215,10 @@ class Daemon:
                 if len(button) != 1 or str(button[0]) != preview["submit"]:
                     raise PermissionError("approved submit target changed on device")
                 form = button[0].find_parent("form")
+                if form is not None and any(
+                        attr in node.attrs for node in [button[0], *form.select("input,button")]
+                        for attr in ("formaction", "formmethod", "formenctype", "formtarget", "formnovalidate")):
+                    raise PermissionError("submit control overrides the reviewed form destination on device")
                 if (form is None or page.url != preview["url"]
                     or urljoin(page.url, form.get("action") or page.url) != preview["form_action"]
                     or form.get("method", "get") != preview["method"]

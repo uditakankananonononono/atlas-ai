@@ -22,6 +22,9 @@ from bs4 import BeautifulSoup
 from app.modules.m13_browser_agent.session_bridge.protocol import PlatformBlocked, is_pc_session, split_pc_session, validate_identifier
 
 
+SUBMIT_OVERRIDES = ('formaction', 'formmethod', 'formenctype', 'formtarget', 'formnovalidate')
+
+
 def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
@@ -201,6 +204,10 @@ class LoginHustleRunner:
         if soup.select('[form]'):
             raise PermissionError('external form-associated controls are not supported')
         fields = form.select('input,textarea,select,button[name]')
+        # A submit control may override the form's reviewed destination, method or
+        # encoding; the preview only binds the form's own action/method.
+        if any(attr in node.attrs for node in [button, *form.select('input,button')] for attr in SUBMIT_OVERRIDES):
+            raise PermissionError('submit control overrides the reviewed form destination, method or encoding')
         names = [node.get('name') for node in fields]
         if (any(node.get('type', '').lower() == 'password' for node in fields)
                 or any(name not in recipe.allowed_fields for name in names)
@@ -240,7 +247,7 @@ class LoginHustleRunner:
 
     async def preview(self, tenant, rid, actor, *, hypothesis, draft, max_minutes):
         run = self.store.get(tenant, rid)
-        if run['actor'] != actor or run['state'] not in {'blueprint_ready', 'awaiting_approval'}:
+        if run['actor'] != actor or run['state'] not in {'blueprint_ready', 'awaiting_approval', 'approval_burned'}:
             raise PermissionError('only the selecting owner can review a sourced blueprint')
         if not hypothesis.strip() or not draft.strip() or len(draft) > 5000 or not 1 <= max_minutes <= 120:
             raise ValueError('bounded hypothesis, draft (<=5000 chars), and 1-120 owner minutes required')
@@ -268,8 +275,13 @@ class LoginHustleRunner:
             # Direct submit forces explicit human review, never a policy auto-allow.
             approval = self.approvals.submit(module_id=18, action_type='login_publish',
                 payload=self.payload(run), user_id=tenant)
+            superseded = run.get('approval_id')
             run['approval_id'] = approval['id']
-            return self.store.save(tenant, run, 'awaiting_approval')
+            saved = self.store.save(tenant, run, 'awaiting_approval')
+            if superseded and superseded != approval['id']:
+                # The earlier approval named a different preview; it must not stay usable.
+                self.approvals.revoke(superseded, actor=actor)
+            return saved
         except PlatformBlocked as error:
             run['pause_reason'] = error.kind.value
             return self.store.save(tenant, run, 'paused')
@@ -301,19 +313,32 @@ class LoginHustleRunner:
             if approval['status'] != 'approved' or approval.get('approved_by') != actor:
                 raise PermissionError('matching owner approval required')
             self.approvals.consume_effect(run['approval_id'], module_id=18, action_type='login_publish',
-                payload=self.payload(run), user_id=tenant, effect_id=f"m18-login:{tenant}:{rid}", actor=actor)
+                payload=self.payload(run), user_id=tenant, effect_id=f"m18-login:{tenant}:{rid}:{run['approval_id']}", actor=actor)
             # Durable claim before network: a crash cannot repeat the click.
             run = self.store.save(tenant, run, 'submitting')
             recipe, page = await self.page(tenant, run)
             await self.sessions.authorize_submit(tenant, run['session_id'], approval_id=run['approval_id'],
                 capture_sha256=run['preview_sha256'], selector=recipe.submit_selector, values=snapshot['values'],
                 preview=snapshot, readback_selectors={'account': recipe.account_selector, 'terms': recipe.terms_selector})
+            sid, aid = run['session_id'], run['approval_id']
+            if not self.sessions.is_armed(tenant, sid, approval_id=aid, selector=recipe.submit_selector):
+                # Nothing was dispatched, so no unverified click can have happened.
+                self.sessions.disarm(tenant, sid)
+                run['outcome'] = ('Approval was used but the submit could not be armed; nothing was sent. '
+                                  'Preview again to review and approve a new submit.')
+                run = self.store.save(tenant, run, 'approval_burned')
+                raise PermissionError('approved submit is no longer armed; no click was sent')
             await page.locator(recipe.submit_selector).click()
+            if not self.sessions.submit_dispatched(tenant, sid, aid):
+                run['outcome'] = 'Click was not verified as the approved submit. Readback needed; no automatic retry.'
+                run = self.store.save(tenant, run, 'unknown')
+                raise PermissionError('dispatched click was not verified as the approved submit')
             return await self.reconcile(tenant, rid)
         except PlatformBlocked as error:
             run['pause_reason'] = error.kind.value
             return self.store.save(tenant, run, 'unknown' if run['state'] == 'submitting' else 'paused')
         except Exception:
+            self.sessions.disarm(tenant, run['session_id'])
             if run['state'] == 'submitting':
                 run['outcome'] = 'Submit may have occurred. Readback needed; no automatic retry.'
                 self.store.save(tenant, run, 'unknown')

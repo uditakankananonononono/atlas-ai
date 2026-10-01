@@ -163,7 +163,10 @@ class BridgedPage:
 
     async def _click(self, selector: str) -> None:
         kind, extra = self._sessions._click_class(self.tenant_id, self.device_id, self.local_name, selector)
-        await self._execute(kind, {"selector": selector, **extra})
+        result = await self._execute(kind, {"selector": selector, **extra})
+        if kind is CommandKind.CLICK_SUBMIT and isinstance(result, dict):
+            # Record what the device says it dispatched so the caller can verify it.
+            self._sessions._dispatched[(self.tenant_id, self.session_id)] = result.get("approval_id")
 
     async def goto(self, url: str, wait_until: str = "domcontentloaded") -> Any:
         result = await self._execute(CommandKind.NAVIGATE, {"url": url, "wait_until": wait_until}, timeout=90.0)
@@ -201,6 +204,7 @@ class BridgedSessions:
         self.hub = hub or HUB
         # One armed submit per (tenant, session); consumed by the next click.
         self._armed: dict[tuple[str, str], dict[str, str]] = {}
+        self._dispatched: dict[tuple[str, str], Any] = {}
         # Last URL reported by the daemon per (tenant, session); lets a fresh
         # page handle know where the paired browser currently is.
         self._urls: dict[tuple[str, str], str] = {}
@@ -277,8 +281,9 @@ class BridgedSessions:
         token = protocol.submit_token(device.command_secret, approval_id=approval_id,
                                       capture_sha256=capture_sha256, selector=selector,
                                       values_digest=values_digest(values))
+        self._dispatched.pop((tenant_id, session_id), None)
         self._armed[(tenant_id, session_id)] = {
-            "approval_id": approval_id, "capture_sha256": capture_sha256, "token": token,
+            "approval_id": approval_id, "capture_sha256": capture_sha256, "token": token, "selector": selector,
             "values_digest": values_digest(values), "values": values}
         if preview is not None:
             self._armed[(tenant_id, session_id)].update(preview=preview, readback_selectors=readback_selectors or {})
@@ -286,10 +291,26 @@ class BridgedSessions:
     def _click_class(self, tenant_id: str, device_id: str, local_name: str,
                      selector: str) -> tuple[CommandKind, dict[str, str]]:
         key = (tenant_id, f"{protocol.PC_SESSION_PREFIX}{device_id}.{local_name}")
-        armed = self._armed.pop(key, None)
+        armed = self._armed.get(key)
         if armed is None:
             return CommandKind.CLICK_NAV, {}
+        if selector != armed["selector"]:
+            # Fail closed: an unrelated click must neither consume the one-shot
+            # arming nor be dispatched while an approved submit is pending.
+            raise BridgeError("an approved submit is armed on this session; refusing unrelated click")
+        del self._armed[key]
         return CommandKind.CLICK_SUBMIT, armed
+
+    def is_armed(self, tenant_id: str, session_id: str, *, approval_id: str, selector: str) -> bool:
+        armed = self._armed.get((tenant_id, session_id))
+        return bool(armed and armed["approval_id"] == approval_id and armed["selector"] == selector)
+
+    def disarm(self, tenant_id: str, session_id: str) -> None:
+        self._armed.pop((tenant_id, session_id), None)
+
+    def submit_dispatched(self, tenant_id: str, session_id: str, approval_id: str) -> bool:
+        """True once, only if the device echoed this approval on a CLICK_SUBMIT."""
+        return self._dispatched.pop((tenant_id, session_id), None) == approval_id
 
     # -- transport ----------------------------------------------------------
 
@@ -336,6 +357,15 @@ class HybridSessions:
 
     async def close_session(self, tenant_id: str, session_id: str) -> bool:
         return await self._backend(session_id).close_session(tenant_id, session_id)
+
+    def is_armed(self, tenant_id: str, session_id: str, **kwargs) -> bool:
+        return self.bridged.is_armed(tenant_id, session_id, **kwargs)
+
+    def disarm(self, tenant_id: str, session_id: str) -> None:
+        self.bridged.disarm(tenant_id, session_id)
+
+    def submit_dispatched(self, tenant_id: str, session_id: str, approval_id: str) -> bool:
+        return self.bridged.submit_dispatched(tenant_id, session_id, approval_id)
 
     async def authorize_submit(self, tenant_id: str, session_id: str, **kwargs) -> None:
         """Arm an approved submit; only meaningful for paired-PC sessions."""
