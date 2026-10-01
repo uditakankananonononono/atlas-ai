@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import re
 import sqlite3
 from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta
@@ -18,7 +19,7 @@ from urllib.parse import urljoin, urlsplit
 from uuid import uuid4
 
 from bs4 import BeautifulSoup
-from app.modules.m13_browser_agent.session_bridge.protocol import PlatformBlocked, is_pc_session
+from app.modules.m13_browser_agent.session_bridge.protocol import PlatformBlocked, is_pc_session, split_pc_session, validate_identifier
 
 
 def canonical(value):
@@ -46,6 +47,7 @@ class BrowserRecipe:
     receipt_account_selector: str
     correlation_selector: str
     receipt_correlation_selector: str
+    allowed_fields: tuple[str, ...]
     # Only explicitly installed test recipes may access a loopback fake site.
     local_test: bool = False
 
@@ -63,6 +65,11 @@ class BrowserRecipe:
         return url
 
     def __post_init__(self):
+        fields = tuple(self.allowed_fields)
+        if (not fields or len(set(fields)) != len(fields)
+                or any(not isinstance(name, str) or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_-]{0,127}", name) is None for name in fields)):
+            raise ValueError("recipe requires an explicit unique form field allowlist")
+        object.__setattr__(self, 'allowed_fields', fields)
         if self.platform not in {'pinterest', 'x', 'youtube', 'instagram', 'local_fixture'}:
             raise ValueError("platform is not allowlisted")
         if self.platform == 'local_fixture' and not self.local_test:
@@ -127,8 +134,10 @@ class LoginHustleRunner:
         return recipe
 
     def create(self, tenant, actor, *, platform, account, session_id):
+        validate_identifier(tenant)
         if not is_pc_session(session_id):
             raise ValueError('login experiments require an owner-paired PC session')
+        split_pc_session(session_id)
         recipe = self.recipes.get(platform)
         if recipe is None:
             raise ValueError('platform adapter is not installed; no execution was attempted')
@@ -182,6 +191,27 @@ class LoginHustleRunner:
             run['pause_reason'] = error.kind.value
             return self.store.save(tenant, run, 'paused')
 
+    @staticmethod
+    def form_selectors(soup, button, recipe):
+        form = button.find_parent('form')
+        if form is None:
+            raise PermissionError('publication must be a non-login form')
+        # Refuse external form-associated controls too: they can be submitted
+        # without belonging to this DOM subtree.
+        if soup.select('[form]'):
+            raise PermissionError('external form-associated controls are not supported')
+        fields = form.select('input,textarea,select,button[name]')
+        names = [node.get('name') for node in fields]
+        if (any(node.get('type', '').lower() == 'password' for node in fields)
+                or any(name not in recipe.allowed_fields for name in names)
+                or len(set(names)) != len(names)):
+            raise PermissionError('adapter form contains fields outside the reviewed allowlist')
+        for selector in (recipe.content_selector, recipe.correlation_selector):
+            nodes = form.select(selector)
+            if len(nodes) != 1 or nodes[0] not in fields:
+                raise PermissionError('draft and correlation must be allowlisted form fields')
+        return [f'[name="{name}"]' for name in names]
+
     async def snapshot(self, tenant, run):
         recipe, page = await self.page(tenant, run)
         html = await page.content()
@@ -194,29 +224,23 @@ class LoginHustleRunner:
         if len(nodes) != 1:
             raise PermissionError('submit target changed')
         form = nodes[0].find_parent('form')
-        # Bind every non-secret form field, destination, button and visible terms.
-        if form is None or form.select('input[type=password]'):
-            raise PermissionError('publication must be a non-login form')
-        selectors = [f'[name="{n.get("name")}"]' for n in form.select('input[name],textarea[name],select[name]')]
-        if any(any(word in key.lower() for word in ('token', 'password', 'secret', 'csrf', 'session')) for key in selectors):
-            raise PermissionError('adapter form contains sensitive fields; needs a site-specific safe recipe')
+        selectors = self.form_selectors(soup, nodes[0], recipe)
         values = await self.sessions.read_values(tenant, run['session_id'], selectors)
+        if set(values) != set(selectors):
+            raise PermissionError('adapter returned unexpected form fields')
         content = await self.sessions.read_values(tenant, run['session_id'], [recipe.content_selector])
         if content.get(recipe.content_selector) != run['draft']:
             raise PermissionError('draft content changed; review a new preview')
         action = recipe.url(urljoin(page.url, form.get('action') or page.url))
-        # Reject sensitive hidden/session fields: never copy or persist tokens.
-        if any(any(word in key.lower() for word in ('token', 'password', 'secret', 'csrf', 'session')) for key in values):
-            raise PermissionError('adapter form contains sensitive fields; needs a site-specific safe recipe')
         return {'url': page.url, 'account': run['account'], 'form_action': action,
                 'method': form.get('method', 'get'), 'form_text': form.get_text(' ', strip=True),
-                'submit': str(nodes[0]), 'values': values,
+                'submit': str(nodes[0]), 'values': values, 'allowed_fields': list(recipe.allowed_fields),
                 'terms': recipe.free_terms, 'draft': run['draft'], 'hypothesis': run['hypothesis'],
                 'limits': run['limits'], 'source_hashes': [s['sha256'] for s in run['sources']]}
 
     async def preview(self, tenant, rid, actor, *, hypothesis, draft, max_minutes):
         run = self.store.get(tenant, rid)
-        if run['actor'] != actor or run['state'] != 'blueprint_ready':
+        if run['actor'] != actor or run['state'] not in {'blueprint_ready', 'awaiting_approval'}:
             raise PermissionError('only the selecting owner can review a sourced blueprint')
         if not hypothesis.strip() or not draft.strip() or len(draft) > 5000 or not 1 <= max_minutes <= 120:
             raise ValueError('bounded hypothesis, draft (<=5000 chars), and 1-120 owner minutes required')
@@ -229,6 +253,10 @@ class LoginHustleRunner:
             recipe.url(page.url)
             soup = BeautifulSoup(await page.content(), 'html.parser')
             self.identity(soup, recipe.account_selector, run)
+            buttons = soup.select(recipe.submit_selector)
+            if len(buttons) != 1:
+                raise PermissionError('submit target changed')
+            self.form_selectors(soup, buttons[0], recipe)
             await page.locator(recipe.content_selector).fill(draft)
             await page.locator(recipe.correlation_selector).fill(run['id'])
             snapshot = await self.snapshot(tenant, run)

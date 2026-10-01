@@ -30,6 +30,8 @@ async def setup(tmp_path):
     class Site(BaseHTTPRequestHandler):
         posts = []
         keys = []
+        commands = []
+        extra_field = None
         def log_message(self, *args): pass
         def do_GET(self):
             if self.path == '/throttle':
@@ -44,6 +46,8 @@ async def setup(tmp_path):
                 <form method="post" action="/publish"><p id="terms">Free publication. No fees.</p>
                 <label>Public draft<textarea id="draft" name="draft"></textarea></label>
                 <input name="audience" value="public"><input id="run_id" name="run_id"><button id="publish">Publish once</button></form>'''
+                if self.extra_field and self.path == '/compose':
+                    html = html.replace('</form>', '<input name="'+self.extra_field+'" value="DO_NOT_COPY"></form>')
                 if self.path == '/receipt' and self.posts:
                     html += '<div id="receipt">'+str(len(self.posts))+'</div><div id="published">'+self.posts[-1]+'</div><div id="receipt_account">owner</div><div id="receipt_run">'+self.keys[-1]+'</div>'
                 html += '</body></html>'
@@ -75,6 +79,7 @@ async def setup(tmp_path):
     await page.reload()
     class Wire:
         async def send_json(self, command):
+            Site.commands.append(command)
             answer = await daemon.execute(command)
             await connection.handle_message(answer)
     connection = DaemonConnection(Wire(), paired['device_id'], 2)
@@ -82,7 +87,7 @@ async def setup(tmp_path):
     connection.pacing_seconds = 0
     hub = ConnectionHub(); await hub.register(connection)
     sessions = BridgedSessions(registry, hub)
-    recipe = BrowserRecipe('local_fixture', origin, origin+'/discover', origin+'/compose', '#account', '.source', '#draft', '#publish', '#terms', 'Free publication. No fees.', '#receipt', '#published', '#receipt_account', '#run_id', '#receipt_run', True)
+    recipe = BrowserRecipe('local_fixture', origin, origin+'/discover', origin+'/compose', '#account', '.source', '#draft', '#publish', '#terms', 'Free publication. No fees.', '#receipt', '#published', '#receipt_account', '#run_id', '#receipt_run', ('draft', 'audience', 'run_id'), True)
     store = LoginRunStore(tmp_path/'runs.db')
     def runner(recipes=None):
         return build_login_runner(store=store, sessions=sessions, approvals=approvals,
@@ -267,4 +272,141 @@ async def test_expired_experiment_cannot_submit_even_if_approved(setup):
     run['expires_at']='2000-01-01T00:00:00+00:00'
     r.store.save('tenant',run,'awaiting_approval')
     assert (await r.execute('tenant',run['id'],'owner'))['state']=='expired'
+    assert not setup[6].posts
+
+
+@pytest.mark.parametrize('tenant,session', [
+    ('../escape', 'pc.device.experiment'),
+    ('/tmp/escape', 'pc.device.experiment'),
+    ('tenant', 'pc.device.../../../escape'),
+    ('tenant', 'pc.device./tmp/escape'),
+    ('tenant', 'pc.device.name\\escape'),
+    ('tenant', 'pc.device.%2e%2e%2fescape'),
+    ('tenant', 'pc.device.name\x00'),
+])
+def test_create_rejects_path_components_before_persistence(tmp_path, tenant, session):
+    from app.modules.m18_side_hustle_scraper.login_runner import LoginHustleRunner
+    store = LoginRunStore(tmp_path/'runs.db')
+    # No installed adapter needed: invalid identifiers must fail before lookup.
+    r = LoginHustleRunner(store, None, None, {}, b'k'*32)
+    with pytest.raises(ValueError, match='identifier|session'):
+        r.create(tenant, 'owner', platform='local_fixture', account='owner', session_id=session)
+
+
+@pytest.mark.parametrize('session', ['pc.d.../escape', 'pc.d./tmp/escape', 'pc.d.name\\escape'])
+def test_create_schema_rejects_unsafe_session(session):
+    from app.modules.m18_side_hustle_scraper.login_routes import CreateIn
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError):
+        CreateIn(platform='local_fixture', account='owner', session_id=session)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('field', ['api_key', 'cookie', 'bearer', 'private', 'unreviewed_custom'])
+async def test_unknown_fields_never_read_persisted_or_approved(setup, field):
+    r, run = await ready(setup, False)
+    approval_before = json.dumps(setup[2].get(run['approval_id']), default=str)
+    await setup[5].evaluate("name => {const n=document.createElement('input');n.name=name;n.value='DO_NOT_COPY';document.querySelector('form').append(n)}", field)
+    with pytest.raises(PermissionError):
+        await r.snapshot('tenant', run)
+    assert 'DO_NOT_COPY' not in json.dumps(r.store.get('tenant', run['id']))
+    assert approval_before == json.dumps(setup[2].get(run['approval_id']), default=str)
+    assert not any(field in selector for command in setup[6].commands
+                   if command['kind'] == 'read_values'
+                   for selector in command['args']['selectors'])
+    assert not setup[6].posts
+
+
+@pytest.mark.asyncio
+async def test_first_run_can_repreview_after_second_run_uses_browser(setup):
+    r, first = await ready(setup)
+    _, second = await ready(setup, False)
+    with pytest.raises(PermissionError):
+        await r.execute('tenant', first['id'], 'owner')
+    refreshed = await r.preview('tenant', first['id'], 'owner', hypothesis='Recheck interest',
+                                draft='Reviewed first-run draft', max_minutes=20)
+    assert refreshed['approval_id'] != first['approval_id']
+    assert refreshed['state'] == 'awaiting_approval'
+    assert setup[2].get(refreshed['approval_id'])['status'] == 'pending'
+    with pytest.raises(PermissionError):
+        await r.execute('tenant', first['id'], 'owner')
+    setup[2].decide(refreshed['approval_id'], ApprovalStatus.APPROVED, 'owner')
+    assert (await r.execute('tenant', first['id'], 'owner'))['state'] == 'succeeded'
+    assert setup[6].posts == ['Reviewed first-run draft']
+    assert r.store.get('tenant', second['id'])['state'] == 'awaiting_approval'
+
+
+def test_screenshot_path_refuses_symlink_escape(tmp_path):
+    from app.modules.m13_browser_agent.session_bridge.dispatch import screenshot_path
+    root = tmp_path/'root'
+    root.mkdir()
+    outside = tmp_path/'outside'
+    outside.mkdir()
+    (root/'tenant').symlink_to(outside, target_is_directory=True)
+    with pytest.raises(ValueError, match='root'):
+        screenshot_path('tenant', 'pc.device.experiment', root=root)
+    assert not list(outside.iterdir())
+
+
+@pytest.mark.parametrize('tenant,session', [('..', 'pc.device.name'), ('tenant', 'pc.device.../escape')])
+def test_screenshot_path_refuses_unsafe_components(tmp_path, tenant, session):
+    from app.modules.m13_browser_agent.session_bridge.dispatch import screenshot_path
+    with pytest.raises(ValueError):
+        screenshot_path(tenant, session, root=tmp_path)
+
+
+@pytest.mark.asyncio
+async def test_recipe_field_allowlist_is_shown_to_reviewer(setup):
+    r, run = await ready(setup, False)
+    expected = ['draft', 'audience', 'run_id']
+    assert run['preview']['allowed_fields'] == expected
+    assert setup[2].get(run['approval_id'])['payload']['preview']['allowed_fields'] == expected
+
+
+@pytest.mark.asyncio
+async def test_device_refuses_field_added_after_server_approval(setup):
+    r, run = await ready(setup)
+    original = r.sessions.authorize_submit
+    async def arm_then_add(*args, **kwargs):
+        await original(*args, **kwargs)
+        await setup[5].evaluate("const n=document.createElement('input');n.name='api_key';n.value='DO_NOT_COPY';document.querySelector('form').append(n)")
+    r.sessions.authorize_submit = arm_then_add
+    with pytest.raises(RuntimeError):
+        await r.execute('tenant', run['id'], 'owner')
+    assert r.store.get('tenant', run['id'])['state'] == 'unknown'
+    assert not setup[6].posts
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('field', ['api_key', 'cookie', 'bearer', 'private', 'custom_field'])
+async def test_initial_preview_refuses_unknown_fields_before_fill_or_approval(setup, field):
+    factory, recipe, approvals, registry, paired, page, site, path = setup
+    r = factory()
+    run = r.create('tenant', 'owner', platform='local_fixture', account='owner',
+                   session_id=f"pc.{paired['device_id']}.experiment")
+    await r.discover('tenant', run['id'])
+    site.extra_field = field
+    site.commands.clear()
+    with pytest.raises(PermissionError):
+        await r.preview('tenant', run['id'], 'owner', hypothesis='Bounded test', draft='Draft', max_minutes=10)
+    assert not any(command['kind'] in {'fill', 'read_values', 'screenshot'} for command in site.commands)
+    assert r.store.get('tenant', run['id'])['state'] == 'blueprint_ready'
+    assert 'DO_NOT_COPY' not in json.dumps(r.store.get('tenant', run['id']))
+    from app.modules.m00_approval_center.service import ApprovalRequestRow
+    with approvals._sessions() as db:
+        assert db.query(ApprovalRequestRow).count() == 0
+    assert not site.posts
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('markup', [
+    '<input name="audience" value="duplicate">',
+    '<input value="unnamed">',
+    '<input name="draft" form="other" value="external">',
+])
+async def test_unreviewable_controls_refused(setup, markup):
+    r, run = await ready(setup, False)
+    await setup[5].evaluate("html => document.querySelector('form').insertAdjacentHTML('beforeend', html)", markup)
+    with pytest.raises(PermissionError):
+        await r.snapshot('tenant', run)
     assert not setup[6].posts

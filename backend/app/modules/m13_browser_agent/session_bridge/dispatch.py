@@ -25,6 +25,21 @@ from .protocol import (BlockKind, BridgeError, CommandKind, DeviceOffline,
 from .registry import BridgeRegistry
 
 
+def screenshot_path(tenant_id: str, session_id: str, *, root=Path("/tmp/atlas-browser")) -> str:
+    """Validate components and refuse symlink-resolved paths outside the root."""
+    protocol.validate_identifier(tenant_id)
+    if is_pc_session(session_id):
+        split_pc_session(session_id)
+    else:
+        protocol.validate_identifier(session_id)
+    import secrets as _secrets
+    root = Path(root).resolve()
+    path = (root / tenant_id / session_id / f"{_secrets.token_hex(12)}.png").resolve()
+    if not path.is_relative_to(root):
+        raise ValueError("screenshot path resolves outside its root")
+    return str(path)
+
+
 class DaemonConnection:
     """One live daemon websocket: correlates commands to results by id."""
 
@@ -199,6 +214,7 @@ class BridgedSessions:
         return None
 
     async def page(self, tenant_id: str, session_id: str, persistent: bool = False) -> BridgedPage:
+        protocol.validate_identifier(tenant_id)
         device_id, local_name = split_pc_session(session_id)
         device = self.registry.get_device(device_id)
         if device is None or device.tenant_id != tenant_id:
@@ -235,9 +251,8 @@ class BridgedSessions:
         return str(result.get("html", ""))
 
     async def screenshot(self, tenant_id: str, session_id: str, mask_selectors: list[str] | None = None) -> str:
+        path = screenshot_path(tenant_id, session_id)
         page = await self.page(tenant_id, session_id, True)
-        import secrets as _secrets
-        path = f"/tmp/atlas-browser/{tenant_id}/{session_id}/{_secrets.token_hex(12)}.png"
         mask = [BridgedLocator(page, selector) for selector in (mask_selectors or [])]
         await page.screenshot(path=path, full_page=True, mask=mask)
         return path
@@ -342,8 +357,7 @@ class HybridSessions:
     async def screenshot(self, tenant_id: str, session_id: str, mask_selectors: list[str] | None = None) -> str:
         if is_pc_session(session_id):
             return await self.bridged.screenshot(tenant_id, session_id, mask_selectors)
-        import secrets as _secrets
-        path = f"/tmp/atlas-browser/{tenant_id}/{session_id}/{_secrets.token_hex(12)}.png"
+        path = screenshot_path(tenant_id, session_id)
         page = await self.server.page(tenant_id, session_id, False)
         mask = [page.locator(selector) for selector in (mask_selectors or [])]
         Path(path).parent.mkdir(parents=True, exist_ok=True)

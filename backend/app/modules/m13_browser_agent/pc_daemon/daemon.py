@@ -220,6 +220,15 @@ class Daemon:
                     or form.get("method", "get") != preview["method"]
                     or form.get_text(" ", strip=True) != preview["form_text"]):
                     raise PermissionError("approved destination or form changed on device")
+                if "allowed_fields" in preview:
+                    fields = form.select('input,textarea,select,button[name]')
+                    names = [node.get('name') for node in fields]
+                    if (soup.select('[form]')
+                            or any(name not in preview['allowed_fields'] for name in names)
+                            or len(set(names)) != len(names)
+                            or any(node.get('type', '').lower() == 'password' for node in fields)
+                            or {f'[name="{name}"]' for name in names} != set(preview['values'])):
+                        raise PermissionError("reviewed form field allowlist changed on device")
                 for field, selector in args.get("readback_selectors", {}).items():
                     nodes = soup.select(selector)
                     if len(nodes) != 1 or nodes[0].get_text(" ", strip=True) != preview[field]:

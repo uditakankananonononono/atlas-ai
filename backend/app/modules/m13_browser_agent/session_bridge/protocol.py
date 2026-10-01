@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import re
 import secrets
 from enum import Enum
 from typing import Any
@@ -74,6 +75,13 @@ class PlatformBlocked(BridgeError):
         self.detail = detail
 
 
+def validate_identifier(value: str) -> str:
+    """One bounded ASCII component, never a path or encoded path."""
+    if not isinstance(value, str) or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value) is None:
+        raise ValueError("invalid identifier: use 1-128 ASCII letters, digits, underscore or hyphen")
+    return value
+
+
 def is_pc_session(session_id: str) -> bool:
     return session_id.startswith(PC_SESSION_PREFIX)
 
@@ -86,12 +94,14 @@ def split_pc_session(session_id: str) -> tuple[str, str]:
     device_id, _, name = rest.partition(".")
     if not device_id or not name:
         raise ValueError("paired-PC session id must be pc.<device_id>.<name>")
+    validate_identifier(device_id)
+    validate_identifier(name)
     return device_id, name
 
 
 def make_pc_session(device_id: str, name: str) -> str:
-    if not device_id or not name or "." in device_id:
-        raise ValueError("invalid device id or session name")
+    validate_identifier(device_id)
+    validate_identifier(name)
     return f"{PC_SESSION_PREFIX}{device_id}.{name}"
 
 

@@ -46,7 +46,13 @@ submit. Scaling beyond shared local SQLite requires a separately reviewed store.
 records. Only pinterest, x, youtube and instagram names are eligible in deployed
 configuration. Each requires exact origin, discovery/compose URLs, selectors for
 account/source/content/submit/no-fee terms/receipt/receipt content/receipt account,
-and correlation input/receipt correlation. URLs cannot leave the exact origin.
+and correlation input/receipt correlation. An explicit `allowed_fields` array
+of exact public form field names is mandatory; there is no inferred or default
+allowlist. The allowlist is included in the preview and M0 approval payload.
+Unknown fields, duplicate names, password inputs, unnamed inputs and external
+form-associated controls are refused before value reads, fills or screenshots.
+Operators must not allowlist secrets. Changing the allowlist changes the recipe
+digest and requires a new run. URLs cannot leave the exact origin.
 There are intentionally **no bundled real-platform recipes**: none have been
 verified. An uninstalled platform returns a blocker, never pretend execution.
 A site's actual no-fee terms and safe correlation readback must be reviewed
@@ -98,3 +104,22 @@ payload. An expired run cannot submit even with an approved M0 request. `/stop`
 lets the selecting owner stop before a durable submit claim; a claimed effect
 must instead be inspected/reconciled. Lost/dismissed approvals do not authorize
 execution. A stopped run cannot use its old approval.
+
+## Hardening and recovery
+
+Tenant, device and local session names must each be 1-128 ASCII letters, digits,
+underscores or hyphens. Session IDs remain `pc.<device>.<name>`. The schema and
+runner validate session IDs, and the screenshot path builder independently
+validates components and checks resolved containment under `/tmp/atlas-browser`,
+including existing symlinks. This is not protection against a hostile process
+racing local filesystem symlink changes; the server's local filesystem remains
+a trusted boundary.
+
+An `awaiting_approval` run can be previewed again by its selecting owner. A
+successful re-preview binds a fresh snapshot, expiry and new pending approval;
+the old approval no longer matches that run. This recovers a first run after a
+second run changes the shared browser. It does not retry a durable submit or
+allow re-preview of submitting, unknown, succeeded, stopped or expired runs.
+Browser operations are not serialized across runs: changing the shared page
+still requires re-review. No real-site recipes or real-platform validation are
+claimed.
