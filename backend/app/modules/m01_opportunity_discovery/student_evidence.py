@@ -9,7 +9,7 @@ from datetime import datetime
 import re
 
 _CUE = r'(?:application deadline|deadline|apply by|applications? (?:close|due))'
-_DATE = r'(?:\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2})?(?:Z|[+-]\d{2}:\d{2})?)?|(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec) \d{1,2},? \d{4})'
+_DATE = r'(?:\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,6})?)?(?:Z|[+-]\d{2}:?\d{2})?)?|(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec) \d{1,2},? \d{4})'
 _DEADLINE = re.compile(r'\b' + _CUE + r'\s*[:\-]?\s*(?P<date>' + _DATE + r')(?![A-Za-z0-9:+-])', re.I)
 _ELIGIBILITY = re.compile(r'(?:^|(?<=[.!?\n]))\s*((?:Eligibility|Eligible applicants|Who can apply|Applicants must|You must|Open to)\b[^\n]{0,600})', re.I)
 
@@ -19,11 +19,19 @@ def deadline_evidence(text: str) -> dict:
     candidates = []
     for match in _DEADLINE.finditer(text):
         raw = match['date']
-        tail = text[match.end():match.end() + 60]
+        tail = text[match.end():]
+        # Only examine this sentence; do not consume a later independent cue.
+        tail = re.split(r'[.!?](?:\s|$)|\n', tail, maxsplit=1)[0]
         statement = match.group(0).strip()
         result['evidence'].append(statement)
         # A range, a second deadline, a locale-specific time or unspecified clock
         # time cannot safely be turned into a single instant/date.
+        if re.search(_DATE, tail, re.I):
+            result['unknowns'].append('conflicting_deadline_statements')
+            continue
+        if re.search(r'\b(?:\d{1,2}\s*(?:am|pm)|midnight|noon|end of day|Eastern|Pacific|Central|Mountain|UTC|GMT|EST|EDT|PST|PDT|IST|time)\b', tail, re.I):
+            result['unknowns'].append('unsupported_deadline_time_or_timezone')
+            continue
         if re.match(r'[ ,]*(?:to\b|through\b|until\b|[-–]|at\b|\d{1,2}:|(?:UTC|GMT|EST|EDT|PST|PDT|IST)\b)', tail, re.I):
             result['unknowns'].append('unsupported_deadline_time_or_range')
             continue
@@ -62,11 +70,24 @@ def deadline_evidence(text: str) -> dict:
 def evidence_card(row: dict, *, fetched_at: str, content_sha256: str) -> dict:
     text = f"{row['title']}\n{row.get('description', '')}"
     deadline = deadline_evidence(text)
-    statements = [match[1].strip() for match in _ELIGIBILITY.finditer(text)]
+    statements = []
+    truncated = False
+    for match in _ELIGIBILITY.finditer(text):
+        # Protect dotted initials/abbreviations, then split at sentence-ending
+        # punctuation followed by whitespace. No eligibility verdict is inferred.
+        statement = match[1].strip()
+        protected = re.sub(r'\b(?:[A-Za-z]\.){2,}', lambda m: m[0].replace('.', '\x00'), statement)
+        sentence = re.split(r'(?<=[.!?])\s+', protected, maxsplit=1)[0].replace('\x00', '.')
+        if len(sentence) >= 600 or (len(statement) >= 600 and not re.search(r'[.!?](?:\s|$)', protected)):
+            truncated = True
+        statements.append(sentence)
     statements.extend(row.get('eligibility_statements', []))
     unknowns = ['personal_eligibility_not_evaluated', 'entry_cost_not_verified', 'detail_page_not_fetched']
     if not statements:
         unknowns.append('eligibility_not_stated_in_listing')
+    if truncated:
+        unknowns.append('eligibility_evidence_truncated')
+    unknowns.extend(row.get('source_unknowns', []))
     unknowns.extend(deadline['unknowns'])
     return dict(row, fetched_at=fetched_at, content_sha256=content_sha256,
                 deadline=deadline, eligibility={'evidence': list(dict.fromkeys(statements)),
