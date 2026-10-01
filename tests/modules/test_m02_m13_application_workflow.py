@@ -172,6 +172,7 @@ def rig(tmp_path, dns_guard):
     page = FakePage()
     audit = FakeAuditStore()
     browser = BrowserService(FakeSessions(page), approvals, audit, str(tmp_path), {"example.com"})
+    browser.allow_unguarded_server_submit = True  # fake in-process page; default refuses
     flow = ApplicationFlow(browser, InMemoryApplicationSessionStore(), approvals, clock=lambda: now[0])
 
     competition = Competition(

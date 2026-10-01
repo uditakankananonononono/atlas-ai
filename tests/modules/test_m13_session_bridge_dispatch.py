@@ -126,12 +126,15 @@ async def test_click_defaults_to_nav_and_armed_click_becomes_submit(env):
     assert protocol.verify_submit_token(
         device["command_secret"], approval_id="a1", capture_sha256="c" * 64,
         selector="#go", values_digest=values_digest(values), token=command["args"]["token"],
-        preview_sha256=command["args"]["preview_sha256"])
+        preview_sha256=command["args"]["preview_sha256"], deadline=command["args"]["deadline"])
     assert command["args"]["preview"] == preview
 
-    # The armed token is one-shot: the next click is a nav click again.
-    await page.locator("#go").click()
-    assert hub.connection.commands[-1]["kind"] is CommandKind.CLICK_NAV
+    # The armed token is one-shot: a consumed arming refuses the next click of the same
+    # control instead of falling through to CLICK_NAV (round-4 finding F3).
+    count = len(hub.connection.commands)
+    with pytest.raises(BridgeError, match="already used"):
+        await page.locator("#go").click()
+    assert len(hub.connection.commands) == count
 
 
 @pytest.mark.asyncio

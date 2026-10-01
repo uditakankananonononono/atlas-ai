@@ -87,7 +87,7 @@ async def setup(tmp_path):
     challenge = registry.create_challenge('tenant')
     caps = ['navigate', 'extract', 'screenshot', 'read_values', 'fill', 'click_submit']
     paired = registry.confirm_pairing(challenge['server_nonce'], challenge['code'], name='Local owner', public_key=identity.public_key_pem(), capabilities=caps)
-    config = DaemonConfig(device_id=paired['device_id'], command_secret=paired['command_secret'], capabilities=caps, pacing_seconds=0)
+    config = DaemonConfig(device_id=paired['device_id'], command_secret=paired['command_secret'], capabilities=caps, pacing_seconds=0, consumed_path=str(tmp_path/'consumed.json'))
     daemon = Daemon(config, identity); Site.daemon = daemon
     pw = await async_playwright().start(); browser = await pw.chromium.launch(headless=True)
     daemon.browser._context = await browser.new_context()
@@ -830,10 +830,12 @@ def _token_args(paired, selector, values, **extra):
     from app.modules.m13_browser_agent.session_bridge import protocol
     approval, capture = 'appr-1', 'c' * 64
     digest_ = values_digest(values)
+    import time as _time
+    deadline = extra.pop('deadline', _time.time() + 60)
     token = protocol.submit_token(paired['command_secret'], approval_id=approval, capture_sha256=capture,
-                                  selector=selector, values_digest=digest_)
+                                  selector=selector, values_digest=digest_, deadline=deadline)
     return {'session': 'experiment', 'selector': selector, 'approval_id': approval, 'capture_sha256': capture,
-            'values_digest': digest_, 'values': values, 'token': token, **extra}
+            'values_digest': digest_, 'values': values, 'token': token, 'deadline': deadline, **extra}
 
 
 @pytest.mark.asyncio
@@ -873,11 +875,13 @@ async def test_f1_m13_capture_bound_submit_still_works_with_binding_and_blocks_r
     await bridged.goto(origin + '/compose')
     page, paired = await _compose_with_values(setup)
     values = {'[name="draft"]': 'Tutoring pilot', '[name="audience"]': 'public', '[name="run_id"]': 'run-1'}
+    import hashlib
+    dom_sha = hashlib.sha256((await sessions.extract('tenant', sid)).encode()).hexdigest()
     cap = 'e' * 64
     class Store:
         def __init__(self):
             self.events, self.consumed = [], set()
-            self.captures = {cap: SimpleNamespace(session_id=sid, artifact={'destination': origin + '/compose', 'fields': dict(values), 'dom_sha256': 'd'*64, 'screenshot_sha256': 'e'*64, 'captured_at': 'now'})}
+            self.captures = {cap: SimpleNamespace(session_id=sid, artifact={'destination': origin + '/compose', 'fields': dict(values), 'dom_sha256': dom_sha, 'screenshot_sha256': 'e'*64, 'captured_at': 'now'})}
         async def append_audit(self, e): self.events.append(e)
         async def get_capture(self, t, h): return self.captures.get(h) if t == 'tenant' else None
         async def was_consumed(self, a): return a in self.consumed

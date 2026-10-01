@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -125,10 +126,35 @@ class Daemon:
         self.receipts = ReceiptChain(config.device_id)
         self._last_action_at = 0.0
         self._capabilities = set(config.capabilities)
-        # One-shot submit tokens/approvals already seen by this process (audit finding 3).
-        # In memory only: a daemon restart forgets them, which the mandatory short
-        # deadline on every CLICK_SUBMIT bounds to the arming TTL.
-        self._consumed_submit: dict[str, float] = {}
+        # One-shot submit tokens/approvals already used (audit findings 3 and F2). Kept on
+        # disk so a restart cannot replay them; the deadline is also signed into the token.
+        self.consumed_path = config.consumed_path or ""
+        self._consumed_submit: dict[str, float] = self._load_consumed()
+
+    def _load_consumed(self) -> dict[str, float]:
+        if not self.consumed_path:
+            return {}
+        try:
+            raw = json.loads(Path(self.consumed_path).read_text())
+        except FileNotFoundError:
+            return {}
+        except (OSError, ValueError):
+            # Unreadable record: fail closed rather than forget what was consumed.
+            raise RuntimeError(f"consumed-submit record {self.consumed_path} is unreadable; refusing to start")
+        return {str(k): float(v) for k, v in raw.items()} if isinstance(raw, dict) else {}
+
+    def _persist_consumed(self) -> None:
+        if not self.consumed_path:
+            return
+        path = Path(self.consumed_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as handle:
+            handle.write(json.dumps(self._consumed_submit))
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp, path)
 
     async def _pace(self) -> None:
         wait = self.config.pacing_seconds - (time.monotonic() - self._last_action_at)
@@ -158,6 +184,7 @@ class Daemon:
                     selector=str(args.get("selector", "")),
                     values_digest=str(args.get("values_digest", "")),
                     preview_sha256=str(args.get("preview_sha256", "")),
+                    deadline=args.get("deadline"),
                     token=token):
                 event = self._receipt_event(command_id, "blocked", {"reason": "submit token invalid"})
                 return protocol.make_result(command_id, ok=False,
@@ -185,6 +212,15 @@ class Daemon:
             # Consume before any browser effect: a failed or ambiguous click never replays.
             for key in keys:
                 self._consumed_submit[key] = float(deadline) + 3600.0
+            try:
+                self._persist_consumed()
+            except OSError as error:
+                for key in keys:
+                    self._consumed_submit.pop(key, None)
+                event = self._receipt_event(command_id, "blocked", {"reason": "consumed record not writable"})
+                return protocol.make_result(command_id, ok=False,
+                                            error=f"cannot record the one-shot use of this submit ({error}); refusing",
+                                            blocked=BlockKind.POLICY.value, receipt=event)
         await self._pace()
         try:
             result = await self._run(kind, session, args)
@@ -232,7 +268,13 @@ class Daemon:
             await page.locator(str(args["selector"])).fill(str(args["value"]))
             return {"url": page.url}
         if kind is CommandKind.CLICK_NAV:
-            await page.locator(str(args["selector"])).click()
+            from ..session_bridge.form_guard import SUBMIT_CONTROL_JS
+            locator = page.locator(str(args["selector"]))
+            # Navigation clicks never submit. Submit-type controls go through the armed,
+            # previewed CLICK_SUBMIT path only (audit finding F3).
+            if await locator.evaluate(SUBMIT_CONTROL_JS):
+                raise PermissionError("this control would submit a form; submits need an approved, previewed CLICK_SUBMIT")
+            await locator.click()
             return {"url": page.url}
         if kind is CommandKind.CLICK_SUBMIT:
             return await self._click_submit(page, args)
