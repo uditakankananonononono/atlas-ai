@@ -54,7 +54,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import sqlalchemy as sa
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import DBAPIError, IntegrityError
 
 RESERVED = "reserved"
 INVOKING = "invoking"
@@ -278,6 +278,12 @@ def _owner_process_alive(pid: int, recorded_token: str) -> bool | None:
     return True
 
 
+def worker_identity(hostname: str, pid: int) -> str:
+    """Compact owner fence; hostname itself is kept separately for liveness."""
+    host_id = hashlib.sha256(hostname.encode()).hexdigest()[:32]
+    return f"{host_id}:{pid}:{uuid.uuid4().hex[:8]}"
+
+
 class EffectLedger:
     """Tenant-scoped durable ledger over any SQLAlchemy engine."""
 
@@ -287,9 +293,31 @@ class EffectLedger:
         self.engine = engine
         self.tenant_id = tenant_id
         self.lease_seconds = lease_seconds
-        self.worker_id = f"{socket.gethostname()}:{os.getpid()}:{uuid.uuid4().hex[:8]}"
-        metadata.create_all(engine)
+        # Keep the owner fence within the original VARCHAR(64), even for a
+        # long hostname. owner_host retains the full name for liveness checks.
+        self.worker_id = worker_identity(socket.gethostname(), os.getpid())
+        self._create_schema()
         self._ensure_owner_pid_start_column()
+
+    def _create_schema(self) -> None:
+        """checkfirst is not atomic: another first-boot worker can win DDL.
+
+        Retry only duplicate-table/type races, in a fresh transaction. Other
+        database failures still abort initialization, before any invocation.
+        """
+        for attempt in range(3):
+            try:
+                metadata.create_all(self.engine, checkfirst=True)
+                return
+            except DBAPIError as exc:
+                code = getattr(exc.orig, "sqlstate", None)
+                constraint = getattr(getattr(exc.orig, "diag", None), "constraint_name", "")
+                duplicate = (code == "42P07" or
+                             (code == "23505" and constraint == "pg_type_typname_nsp_index") or
+                             (self.engine.dialect.name == "sqlite" and
+                              "table m20_effect_ledger already exists" in str(exc.orig)))
+                if not duplicate or attempt == 2:
+                    raise
 
     def _ensure_owner_pid_start_column(self) -> None:
         """Add owner_pid_start to tables created before the liveness fix.
@@ -351,8 +379,9 @@ class EffectLedger:
         with self.engine.connect() as conn:
             return [dict(r) for r in conn.execute(stmt.order_by(effects.c.created_at)).mappings()]
 
-    def _cas(self, effect_id: str, *, expect_state: str, expect_owner: str | None, **values) -> bool:
-        cond = [self._where(effect_id), effects.c.state == expect_state]
+    def _cas(self, effect_id: str, *, expect_state: str, expect_owner: str | None, expect_attempt: int, **values) -> bool:
+        cond = [self._where(effect_id), effects.c.state == expect_state,
+                effects.c.attempt == expect_attempt]
         if expect_owner is not None:
             cond.append(effects.c.owner == expect_owner)
         values["updated_at"] = _iso(_now())
@@ -416,12 +445,12 @@ class EffectLedger:
                 return Reservation(effect_id, row["attempt"] + 1, self.worker_id)
             raise EffectInProgress(effect_id)
         if state == RESERVED:
-            if self._owner_dead(row) and self._take(effect_id, RESERVED, row, lease, bump=False):
-                return Reservation(effect_id, row["attempt"], self.worker_id)
+            if self._owner_dead(row) and self._take(effect_id, RESERVED, row, lease, bump=True):
+                return Reservation(effect_id, row["attempt"] + 1, self.worker_id)
             raise EffectInProgress(effect_id)
         if state == INVOKING:
             if self._owner_dead(row):
-                self._cas(effect_id, expect_state=INVOKING, expect_owner=row["owner"], state=INDETERMINATE,
+                self._cas(effect_id, expect_state=INVOKING, expect_owner=row["owner"], expect_attempt=row["attempt"], state=INDETERMINATE,
                           error="worker died after invocation began and before the final receipt")
                 row = self.get(effect_id) or row
                 if row["state"] == INDETERMINATE:
@@ -432,7 +461,7 @@ class EffectLedger:
         raise EffectError(f"unknown ledger state {state!r}")
 
     def _take(self, effect_id: str, expect_state: str, row: dict[str, Any], lease: str, *, bump: bool) -> bool:
-        return self._cas(effect_id, expect_state=expect_state, expect_owner=row["owner"],
+        return self._cas(effect_id, expect_state=expect_state, expect_owner=row["owner"], expect_attempt=row["attempt"],
                          state=RESERVED, owner=self.worker_id, owner_host=socket.gethostname(),
                          owner_pid=os.getpid(), owner_pid_start=current_owner_token(),
                          lease_expires_at=lease,
@@ -440,16 +469,16 @@ class EffectLedger:
 
     # -- transitions ---------------------------------------------------------
     def mark_invoking(self, res: Reservation) -> None:
-        if not self._cas(res.effect_id, expect_state=RESERVED, expect_owner=res.owner, state=INVOKING):
+        if not self._cas(res.effect_id, expect_state=RESERVED, expect_owner=res.owner, expect_attempt=res.attempt, state=INVOKING):
             raise EffectInProgress(res.effect_id)
 
     def complete(self, res: Reservation, result_summary: str) -> None:
-        if not self._cas(res.effect_id, expect_state=INVOKING, expect_owner=res.owner,
+        if not self._cas(res.effect_id, expect_state=INVOKING, expect_owner=res.owner, expect_attempt=res.attempt,
                          state=SUCCEEDED, result_summary=result_summary[:2000]):
             raise EffectIndeterminate(res.effect_id, "lost ownership before final receipt")
 
     def fail_safe(self, res: Reservation, error: str) -> None:
-        self._cas(res.effect_id, expect_state=INVOKING, expect_owner=res.owner, state=FAILED, error=error[:2000])
+        self._cas(res.effect_id, expect_state=INVOKING, expect_owner=res.owner, expect_attempt=res.attempt, state=FAILED, error=error[:2000])
 
     def release(self, res: Reservation, error: str) -> bool:
         """Give up a reservation whose handler was provably never called.
@@ -457,17 +486,18 @@ class EffectLedger:
         Used by the dispatcher when mark_invoking fails. RESERVED -> FAILED, or
         INVOKING -> FAILED when the mark_invoking commit landed but its
         acknowledgement was lost. Both are safe only because the handler never
-        ran. Owner-scoped CAS: a reservation another worker took is untouched.
+        ran. Owner/attempt-scoped CAS: a newer reservation is untouched, even
+        when the same worker retook it.
         FAILED rows are retakeable, so the effect is not stuck EffectInProgress.
         """
         err = f"not executed: {error}"[:2000]
         for st in (RESERVED, INVOKING):
-            if self._cas(res.effect_id, expect_state=st, expect_owner=res.owner, state=FAILED, error=err):
+            if self._cas(res.effect_id, expect_state=st, expect_owner=res.owner, expect_attempt=res.attempt, state=FAILED, error=err):
                 return True
         return False
 
     def mark_indeterminate(self, res: Reservation, error: str) -> None:
-        self._cas(res.effect_id, expect_state=INVOKING, expect_owner=res.owner, state=INDETERMINATE, error=error[:2000])
+        self._cas(res.effect_id, expect_state=INVOKING, expect_owner=res.owner, expect_attempt=res.attempt, state=INDETERMINATE, error=error[:2000])
 
     def reconcile(self, effect_id: str, *, outcome: str, actor: str, note: str,
                   result_summary: str = "") -> dict[str, Any]:
@@ -477,17 +507,22 @@ class EffectLedger:
         if not actor or not note:
             raise ValueError("actor and note are required")
         # A killed worker may have left INVOKING without any restart dispatch
-        # to classify it. Use the same liveness rule and owner-scoped CAS as
+        # to classify it. Use the same liveness rule and owner/attempt-scoped CAS as
         # reserve; never convert a live invocation or a safe reservation.
         row = self.get(effect_id)
         if row is not None and row["state"] == INVOKING:
             if not self._owner_dead(row):
                 raise EffectInProgress(effect_id)
-            self._cas(effect_id, expect_state=INVOKING, expect_owner=row["owner"],
+            self._cas(effect_id, expect_state=INVOKING, expect_owner=row["owner"], expect_attempt=row["attempt"],
                       state=INDETERMINATE,
                       error="worker died after invocation began and before the final receipt")
+        # Reload after a dead-owner transition; fence the human decision to
+        # this observed indeterminate attempt, not a later retry's row.
+        row = self.get(effect_id)
+        if row is None or row["state"] != INDETERMINATE:
+            raise EffectError("effect is not indeterminate (or does not belong to this tenant)")
         state = RECONCILED_APPLIED if outcome == "applied" else RECONCILED_NOT_APPLIED
-        ok = self._cas(effect_id, expect_state=INDETERMINATE, expect_owner=None, state=state,
+        ok = self._cas(effect_id, expect_state=INDETERMINATE, expect_owner=row["owner"], expect_attempt=row["attempt"], state=state,
                        note=f"{actor}: {note}", result_summary=result_summary or f"reconciled by {actor}: {outcome}")
         if not ok:
             raise EffectError("effect is not indeterminate (or does not belong to this tenant)")

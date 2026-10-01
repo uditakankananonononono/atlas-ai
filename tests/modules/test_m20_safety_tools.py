@@ -96,7 +96,7 @@ async def test_dispatcher_success_retry_and_preflight():
 
     registry.register(ToolSpec(name="send_email", description="send mail", risk=Risk.EXTERNAL), send)
     with pytest.raises(ApprovalPending) as exc:
-        await dispatcher.dispatch("send_email", {"to": "x@y.z"})
+        await dispatcher.dispatch("send_email", {"to": "x@y.z"}, task_id="T", node_id="send")
     assert gate.decision(exc.value.approval_id) == ApprovalGateDecision.PENDING
 
     with pytest.raises(ToolBlockedError):
@@ -116,6 +116,6 @@ async def test_dispatcher_preconditions():
     ), deploy)
     dispatcher = ToolDispatcher(registry, SafetyGate())
     with pytest.raises(ToolBlockedError):
-        await dispatcher.dispatch("deploy", {}, context={"tests_passing": False})
-    record = await dispatcher.dispatch("deploy", {}, context={"tests_passing": True})
+        await dispatcher.dispatch("deploy", {}, task_id="T", node_id="deploy", context={"tests_passing": False})
+    record = await dispatcher.dispatch("deploy", {}, task_id="T", node_id="deploy", context={"tests_passing": True})
     assert record.succeeded

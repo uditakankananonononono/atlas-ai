@@ -132,6 +132,11 @@ class ToolDispatcher:
         node_id: str | None = None,
     ) -> ActionRecord:
         tool = self.registry.get(name)
+        if tool.spec.risk != Risk.READ and (
+            not isinstance(task_id, str) or not task_id.strip() or
+            not isinstance(node_id, str) or not node_id.strip()
+        ):
+            raise ToolBlockedError(name, ["non-READ effects require non-empty task_id and node_id"])
         context = context or {}
         missing = tool.check_preconditions(context)
         if missing:
@@ -177,7 +182,7 @@ class ToolDispatcher:
         """Reserve durably, mark invoking, THEN call the handler exactly once."""
         ledger = self.ledger
         res = ledger.reserve(
-            task_id=task_id or "-", node_id=node_id or "-", tool=name,
+            task_id=task_id, node_id=node_id, tool=name,
             # effect_identity excludes only the exact runtime bookkeeping key.
             args=arguments,
             lease_seconds=tool.spec.timeout_seconds + 30,

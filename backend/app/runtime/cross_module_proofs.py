@@ -291,7 +291,7 @@ class CognitiveEvidenceWorkflow:
                     raise ValueError(f"plan requested disallowed or missing tool: {node.tool!r}")
                 if node.risk in {Risk.EXTERNAL, Risk.IRREVERSIBLE}:
                     raise ValueError("plan contains an external or irreversible step")
-                record = await dispatcher.dispatch(node.tool, node.arguments, task_id=task_id)
+                record = await dispatcher.dispatch(node.tool, node.arguments, task_id=task_id, node_id=node.id)
                 value = results[node.tool]
                 canonical = repr(sorted(value.items())).encode("utf-8")
                 evidence.append(EvidenceItem(

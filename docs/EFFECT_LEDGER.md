@@ -34,15 +34,15 @@ called pthread_exit) is alive. Assumption, only partly handled: `owner_host` (ho
 or hosts sharing a hostname are distinguished only for new-format tokens, and only when they differ in boot id or PID namespace;
 identical hostnames on different hosts with the same boot id and namespace (cloned images with a reused boot id) remain unsafe.
 Dispatcher fail-safe: if `mark_invoking` raises after `reserve`, the dispatcher calls `EffectLedger.release`
-(RESERVED or INVOKING, owner-scoped, to FAILED, handler provably never called) so a live owner does not strand the row as
+(RESERVED or INVOKING, owner/attempt-scoped, to FAILED, handler provably never called) so a live owner does not strand the row as
 `EffectInProgress`. If the ledger is unreachable at that moment the release itself fails and the row stays until the process
 exits (then the normal dead-owner path applies) or, for a cross-host owner, until the lease expires. Token length is at most about 38 characters, which still fits the original VARCHAR(40) on existing tables (new tables use 64; the startup ALTER is unchanged).
-SQLite file DB tested only; Postgres remains untested.
+SQLite file DB and focused PostgreSQL 14.24 regressions tested; the full crash/restart suite still uses SQLite.
 Handlers must not block the event loop with synchronous I/O or sleeps (use async I/O or an executor): wait_for cannot
 cancel them, they run past their timeout/lease, and the dispatch call returns only after they yield.
 The liveness fix adds a nullable-default `owner_pid_start` column; `EffectLedger` adds it to pre-existing tables with a
 best-effort ALTER TABLE on startup. A bare `ToolDispatcher()` gets a process-local in-memory ledger (not durable); `GCWRuntime` binds the
-durable one. `service.py`'s own dispatcher uses that in-memory default (not changed). SQLite file DB tested only; Postgres untested.
+durable one. `service.py`'s own dispatcher uses that in-memory default (not changed). The full crash/restart suite still uses SQLite; focused PostgreSQL regressions cover startup DDL, owner storage and attempt fencing.
 The plan is now checkpointed after planning and after every step so node ids are stable across restarts.
 
 `reconcile_effect` can be called directly after a crash: the ledger classifies a dead/expired
@@ -52,3 +52,31 @@ Effect hashing excludes `_expectation_claim_id` centrally for both dispatch and 
 other underscore-prefixed arguments, such as `_destination`, are part of identity.
 The service/default-dispatcher restart gap and safe integration choices are spelled out in
 `backend/app/modules/m20_general_cognitive_worker/INTEGRATION.md`.
+
+
+## Audit limits L1-L4
+
+* Owner ids now use a 32-hex SHA-256 hostname prefix plus PID and an 8-hex random suffix.
+  The complete hostname stays in owner_host for liveness. This fits the original VARCHAR(64),
+  including a 255-character input hostname; existing owner strings are opaque and still accepted.
+  No owner-column migration or data rewrite is required. Stop old workers before deploying this
+  change: their unfenced transition code is not made safe by deploying new workers beside them.
+* Startup uses checkfirst and at most three create_all attempts, in fresh transactions, for
+  SQLite duplicate-table errors and PostgreSQL duplicate-table / pg_type unique races only.
+  Permission errors and unrelated storage errors still fail closed. This is not a replacement
+  for managed migrations, and does not promise all database dialects or concurrent destructive DDL.
+* Every transition, including mark_invoking, dead-owner classification, retake and reconciliation,
+  compares the observed attempt. Every retake increments it, including a never-invoked RESERVED
+  row. attempt is now an ownership generation, not a count of handler calls. A stale reservation
+  cannot release or overwrite a newer reservation held by the same worker id.
+* Non-READ dispatch requires non-empty, non-whitespace task_id and node_id, checked before
+  safety preflight, reservation or invocation. The caller must persist stable ids for the intended
+  effect. READ calls still work without ids. CognitiveEvidenceWorkflow now passes its real plan
+  node id; ExecutiveController already did. Distinct intended effects must use distinct node ids.
+
+Remaining limits: the ephemeral dispatcher still loses receipts on restart. Attempt fencing does
+not cancel a stale remote handler or fence a provider. Cross-host lease expiry can still overlap a
+slow effect without provider-side idempotency. Operator reconciliation can still be wrong. None of
+these changes makes remote effects exactly-once. The PG tests are optional via
+EFFECT_TEST_POSTGRES_URL and use isolated schemas; they do not cover PostgreSQL failover or SIGKILL
+at all receipt boundaries. Do not infer production safety from these focused tests.
