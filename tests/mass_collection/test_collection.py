@@ -239,3 +239,75 @@ def test_parallel_writers_dedupe(tmp_path):
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
         assert sum(pool.map(run, range(2))) == 1
     assert c.export()['records'] == 1
+
+
+def test_license_normalization_blocks_lookalikes(tmp_path):
+    from dataclasses import replace
+    c = collector(tmp_path/'data')
+    variants = (' unknown', 'unknown ', '  UNKNOWN', 'All Rights Reserved', 'all rights reserved', ' all_rights_reserved ', 'unknown_per_page')
+    for i, lic in enumerate(variants):
+        path = tmp_path/f'text{i}'; path.write_text(f'Payload {i}')
+        c.ingest_file(replace(source(f'https://example.org/data{i}', 'text', training_reviewed=True), license=lic), path)
+    m = c.export()
+    assert m['records'] == len(variants)
+    for shard in m['shards']:
+        for line in (c.root/shard['path']).read_text().splitlines():
+            row = json.loads(line)
+            assert row['training_eligible'] is False, row['license']
+
+
+def test_dns_pin_rejects_global_multicast_and_reserved(tmp_path, monkeypatch):
+    import socket as real_socket
+    from app.mass_collection import engine
+    cases = ('224.0.1.1', '239.255.255.250', '240.0.0.1', '0.0.0.0')
+    for address in cases:
+        def fake_getaddrinfo(*args, _address=address, **kwargs):
+            return [(real_socket.AF_INET, real_socket.SOCK_STREAM, 6, '', (_address, 80))]
+        monkeypatch.setattr(engine.socket, 'getaddrinfo', fake_getaddrinfo)
+        c = collector(tmp_path/f'data-{address.replace(".", "-")}')
+        with pytest.raises(CollectionError, match='network target rejected'):
+            c._pinned_url('http://example.org/page')
+    monkeypatch.undo()
+
+
+def test_warc_skipped_records_count_against_parse_quota(tmp_path):
+    out = io.BytesIO(); writer = WARCWriter(out, gzip=True)
+    headers = StatusAndHeaders('200 OK', [('Content-Type', 'application/octet-stream')], protocol='HTTP/1.0')
+    big = writer.create_warc_record('https://example.org/big.bin', 'response', payload=io.BytesIO(b'x'*5000), http_headers=headers)
+    writer.write_record(big)
+    html_headers = StatusAndHeaders('200 OK', [('Content-Type', 'text/html')], protocol='HTTP/1.0')
+    small = writer.create_warc_record('https://example.org/a', 'response', payload=io.BytesIO(b'<p>ok</p>'), http_headers=html_headers)
+    writer.write_record(small)
+    path = tmp_path/'sample.warc.gz'; path.write_bytes(out.getvalue())
+    c = collector(tmp_path/'data', max_parse_bytes=2000)
+    s = source('https://data.commoncrawl.org/sample.warc.gz', 'commoncrawl')
+    with pytest.raises(CollectionError): c.ingest_file(s, path)
+    assert c.export()['records'] == 0
+
+
+def test_corrupted_credential_raises_collection_error(tmp_path):
+    from app.mass_collection.credentials import CredentialStore
+    store = CredentialStore(tmp_path/'credentials.json', 't', master_secret='local-test-key')
+    store.save('mine', 'https://example.org', 'real-token', owner_confirmed=True)
+    rows = json.loads((tmp_path/'credentials.json').read_text())
+    rows['mine']['token'] = rows['mine']['token'][:-4] + 'AAAA'
+    (tmp_path/'credentials.json').write_text(json.dumps(rows))
+    with pytest.raises(CollectionError): store.headers('mine', 'https://example.org/page')
+
+
+def test_missing_token_key_gives_clean_cli_message(tmp_path, monkeypatch, capsys):
+    from app.mass_collection.credentials import CredentialStore
+    from app.mass_collection.__main__ import main
+    monkeypatch.delenv('ATLAS_TOKEN_KEY', raising=False)
+    with pytest.raises(CollectionError): CredentialStore(tmp_path/'credentials.json', 't')
+    monkeypatch.setattr('getpass.getpass', lambda prompt: 'tok')
+    code = main(['--root', str(tmp_path/'corpus'), 'credential', 'mine', 'https://example.org', '--confirm-own-account'])
+    assert code == 1
+    assert 'Collection stopped: ATLAS_TOKEN_KEY is not configured' in capsys.readouterr().err
+
+
+def test_broadened_sensitive_query_key_screen(tmp_path):
+    from app.mass_collection.engine import origin
+    for key in ('secret', 'session', 'key', 'auth', 'sig', 'token', 'access_token', 'api_key', 'password', 'signature', 'Secret', 'AUTH'):
+        with pytest.raises(CollectionError): origin(f'https://example.org/page?{key}=x')
+    assert origin('https://example.org/page?q=python') == 'https://example.org'

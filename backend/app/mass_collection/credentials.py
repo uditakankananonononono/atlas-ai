@@ -1,14 +1,18 @@
 """Origin-scoped owner credentials encrypted with Atlas's existing TokenCipher."""
 from pathlib import Path
 import json
-from app.core.token_crypto import TokenCipher
+from cryptography.fernet import InvalidToken
+from app.core.token_crypto import TokenCipher, TokenCryptoError
 from .engine import CollectionError, origin, atomic_json
 
 
 class CredentialStore:
     def __init__(self, path: Path | str, tenant: str, *, master_secret=None):
         self.path = Path(path)
-        self.cipher = TokenCipher(tenant, master_secret)
+        try:
+            self.cipher = TokenCipher(tenant, master_secret)
+        except TokenCryptoError as exc:
+            raise CollectionError(str(exc)) from exc
 
     def save(self, name: str, url: str, bearer: str, *, owner_confirmed: bool):
         if not owner_confirmed or not name or not bearer or '\n' in bearer or '\r' in bearer:
@@ -27,5 +31,5 @@ class CredentialStore:
             if row['origin'] != origin(url) or not row['owner_confirmed']:
                 raise CollectionError('credential origin or ownership mismatch')
             return {'Authorization': 'Bearer '+self.cipher.decrypt(row['token'])}
-        except (OSError, KeyError, ValueError) as exc:
+        except (OSError, KeyError, ValueError, InvalidToken) as exc:
             raise CollectionError('credential unavailable') from exc

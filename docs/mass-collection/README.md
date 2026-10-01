@@ -85,7 +85,11 @@ and require a separately reviewed source, which can affect CDN-backed downloads.
 Only origin-scoped bearer-authenticated HTTP endpoints are supported, not automated
 password login, OAuth refresh, arbitrary cookies, browser sessions, or other
 people's accounts. Use a documented export/read endpoint that you own and that
-allows this use. Store the token interactively, never in config/URL/argv:
+allows this use. Store the token interactively, never in config/URL/argv. Source
+URLs containing sensitive query keys (`token`, `access_token`, `api_key`,
+`password`, `signature`, `secret`, `session`, `key`, `auth`, `sig`) are rejected
+before any request. This screen is defense-in-depth only: it cannot prove a URL
+carries no credential, so keep secrets out of URLs regardless:
 
 ```sh
 # Set ATLAS_TOKEN_KEY through the existing secure local environment mechanism.
