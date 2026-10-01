@@ -308,3 +308,14 @@ refine [a] -> []. Named `contract_change_mixed_prose` tests record old/new resul
 Reason: independent corpora showed invalidation after field boundaries being
 wrongly accepted; standalone abstention is safer but loses mixed-prose recall.
 Any passing suite count after this change must state these expectations changed.
+
+## Eighth interim fix, no recall expansion
+
+Inactive title status words (cancelled/canceled/withdrawn/obsolete) abstain.
+Same-line nested colon fields are not eligibility requirements. Emitted row fields
+use an allowlist; URL/source URL display is <=2048 characters with
+`url_display_truncated_not_actionable` if cut. Such a URL must not be used as an
+action destination. Unknown caller fields are not copied. Final serialized-card
+size is checked again after reduction, with a small null-value fallback schema.
+This output reduction is not claim of source completeness or applicable deadline.
+Full-suite counts still include the four documented mixed-prose contract changes.

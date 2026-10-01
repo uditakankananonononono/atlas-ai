@@ -127,7 +127,7 @@ def evidence_card(row: dict, *, fetched_at: str, content_sha256: str) -> dict:
     # A title with deadline-like vocabulary or unknown-script tokens is not a
     # safe generic heading. Preserve every earlier safety reason when abstaining.
     title_uncertain = (any(ch.isalpha() and not ch.isascii() for ch in row['title']) or
-                       re.search(r'\b(?:no|not|invalid|deadline|previous|archived|expired)\b', row['title'], re.I))
+                       re.search(r'\b(?:no|not|invalid|deadline|previous|archived|expired|cancelled|canceled|withdrawn|obsolete)\b', row['title'], re.I))
     title_is_field = bool(_DEADLINE.fullmatch(row['title'].strip().rstrip('.')))
     if len(re.findall(_CALENDAR, text, re.I)) > 1:
         deadline['value'], deadline['timezone'], deadline['precision'] = None, None, 'unknown'
@@ -160,6 +160,8 @@ def evidence_card(row: dict, *, fetched_at: str, content_sha256: str) -> dict:
                 continue
             first += ' ' + value
         sentence = re.split(r'(?<=[.!?])\s+', first, maxsplit=1)[0].replace('\x00', '.')
+        if ':' in sentence and ':' in sentence.split(':', 1)[1]:
+            continue
         # Evidence excerpts require explicit requirement-bearing vocabulary, not
         # merely a cue header or an invitation to inspect another page.
         if re.search(r'\b(?:unknown|not stated|not specified|see|website|brochure|click|download|guide|calculation|discussion|interpretation|preview|example|demo|save|fun|read|visit|quick|filters)\b', sentence, re.I):
@@ -180,7 +182,10 @@ def evidence_card(row: dict, *, fetched_at: str, content_sha256: str) -> dict:
         unknowns.append('eligibility_evidence_truncated')
     unknowns.extend(row.get('source_unknowns', []))
     unknowns.extend(deadline['unknowns'])
-    output = {key: value for key, value in row.items() if key not in {'evidence_text', 'source_unknowns', 'eligibility_statements'}}
+    allowed = {'title','description','url','source_url','platform','opportunity_kind'}
+    output = {key: value[:2048] if isinstance(value, str) else None for key, value in row.items() if key in allowed}
+    if any(isinstance(value, str) and len(value) > 2048 for key, value in row.items() if key in {'url','source_url'}):
+        unknowns.append('url_display_truncated_not_actionable')
     output['title_original_length'] = len(row['title'])
     output['title'] = row['title'][:300]
     output['title_truncated'] = len(row['title']) > 300
@@ -205,4 +210,11 @@ def evidence_card(row: dict, *, fetched_at: str, content_sha256: str) -> dict:
         card['deadline']['evidence'] = []
         card['deadline']['value'] = None
         card['unknowns'].append('card_output_limit_exceeded')
+    if len(json.dumps(card, ensure_ascii=True).encode()) > 20000:
+        # Last-resort small schema, never leak caller-supplied oversized fields.
+        return {'title': output['title'][:300], 'platform': str(output.get('platform',''))[:80],
+                'deadline': {'value': None, 'timezone': None, 'precision': 'unknown', 'evidence': [],
+                             'unknowns': list(dict.fromkeys(deadline['unknowns'] + ['card_output_limit_exceeded']))},
+                'eligibility': {'evidence': [], 'verdict': None, 'basis': 'output_limit'},
+                'unknowns': ['card_output_limit_exceeded'], 'evidence_status': 'unavailable_output_limit'}
     return card

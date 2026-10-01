@@ -348,3 +348,21 @@ def test_r7_aggregate_limit_and_no_reason_loss():
     card=evidence_card({'title':'Deadline: November 12, 2026','description':'x'*100001+'Deadline: November 13, 2026'}, fetched_at='x', content_sha256='x')
     assert 'deadline_input_limit_exceeded' in card['deadline']['unknowns']
     assert 'conflicting_deadline_statements' in card['deadline']['unknowns']
+
+@pytest.mark.parametrize('title', ['Cancelled listing','Canceled opportunity','Withdrawn listing','Obsolete listing'])
+def test_r8_inactive_title_abstains(title):
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    r=evidence_card({'title':title,'description':'Deadline: November 12, 2026'}, fetched_at='x', content_sha256='x')
+    assert r['deadline']['value'] is None
+
+@pytest.mark.parametrize('length', [25000,100000])
+def test_r8_every_field_output_bound(length):
+    import json
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    r=evidence_card({'title':'Award','description':'','url':'https://example.org/'+('x'*length),'extra':'x'*length}, fetched_at='x', content_sha256='x')
+    assert len(json.dumps(r).encode()) <= 20000
+
+def test_r8_same_line_unknown_field_abstains():
+    from app.modules.m01_opportunity_discovery.student_evidence import evidence_card
+    r=evidence_card({'title':'Award','description':'Eligibility: Contact: student office'}, fetched_at='x', content_sha256='x')
+    assert not r['eligibility']['evidence']
