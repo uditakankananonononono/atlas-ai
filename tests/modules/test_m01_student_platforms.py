@@ -18,7 +18,7 @@ def fake_client(url, body, content_type='text/html', status=200):
 def test_seventeen_named_platforms_are_unique_and_capability_labeled():
     assert len(PLATFORMS) == len(BY_ID) == 17
     assert {'ripplematch', 'simplify', 'raiseme', 'bold', 'fastweb', 'devpost', 'challengerocket'} <= BY_ID.keys()
-    assert {p.mode for p in PLATFORMS} == {'rss', 'html', 'launch_only'}
+    assert {p.mode for p in PLATFORMS} == {'rss', 'html', 'launch_only', 'github_readme'}
     for p in PLATFORMS:
         assert p.url.startswith('https://')
         assert p.mode != 'launch_only' or p.reason
@@ -49,11 +49,13 @@ def test_html_sources_parse_actual_item_paths(platform, href):
         result = discover(platform, 'STEM hackathon', client=client)
     assert len(result['items']) == 1
     item = result['items'][0]
-    assert item['title'] == 'STEM Hackathon Opportunity' and item['score'] > 0
+    assert item['title'] == 'STEM Hackathon Opportunity' and 'score' not in item
+    assert item['fetched_at'] and item['deadline']['value'] is None
+    assert item['eligibility']['verdict'] is None and item['unknowns']
     assert item['source_url'] == p.url and 'utm_' not in item['url']
 
 
-def test_rss_parser_ranks_and_rejects_unsafe_links():
+def test_rss_parser_literal_search_and_rejects_unsafe_links():
     p = BY_ID['scholarshiproar']
     rss = '''<?xml version="1.0"?><rss><channel>
     <item><title>History scholarship</title><link>https://scholarshiproar.com/a</link></item>
@@ -62,7 +64,8 @@ def test_rss_parser_ranks_and_rejects_unsafe_links():
     </channel></rss>'''
     with fake_client(p.url, rss, 'application/rss+xml') as client:
         items = discover(p.id, 'STEM', client=client)['items']
-    assert len(items) == 2 and items[0]['title'] == 'STEM scholarship'
+    assert len(items) == 1 and items[0]['title'] == 'STEM scholarship'
+    assert 'score' not in items[0]
 
 
 def test_block_challenge_and_malformed_payload_are_not_silent_success():
