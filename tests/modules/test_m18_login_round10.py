@@ -50,6 +50,7 @@ async def test_auditor_r9_vector(setup_mode, name):
         await page.evaluate(V[name])
     except Exception as error:  # noqa: BLE001 - the vector cannot even be set up: the frame-deny script threw
         assert 'blocked by Atlas guard' in str(error), error
+        await page.evaluate("document.body.insertAdjacentHTML('beforeend','<button id=attack type=button>go</button>')")  # the vector is neutralised at setup; the click still happens
     if 'prelist' in name:
         await page.fill('#draft', SECRET + '2')
     site.hits.clear(); site.posts.clear(); site.post_paths.clear(); _drain_udp()
