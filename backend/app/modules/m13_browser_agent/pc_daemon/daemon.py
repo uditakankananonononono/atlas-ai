@@ -203,7 +203,7 @@ class BrowserHandle:
                     and "html" in (response.headers.get("content-type") or ""):
                 body = (await response.body()).decode("utf-8", "replace")
                 page._atlas_doc_urls = (response.url.split("#")[0], form_guard.markup_urls(body, response.url))
-                page._atlas_cookies = {(c["name"], c["domain"], c["path"]): dict(c)
+                page._atlas_cookies = {(c["name"], c["domain"], c["path"], str(c.get("partitionKey"))): dict(c)
                                        for c in await page.context.cookies()}  # httpOnly too: the SERVER can plant those
         except Exception:  # noqa: BLE001 - no snapshot means nothing is pre-approved
             pass

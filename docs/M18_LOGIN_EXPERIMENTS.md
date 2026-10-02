@@ -463,17 +463,17 @@ What changed:
   Remaining timing channel: ONE bit per click, whether the page asked within the window.
 - Before the daemon sends it, `pre_nav_problem()` refuses if (a) the page URL when it asked is not the
   URL of the server's response (replaceState or pushState would put data in Referer), or (b) any
-  script-writable (non-httpOnly) cookie differs from the baseline taken when the document loaded. On a
+  cookie (script-writable or httpOnly, since round 13) differs from the baseline taken when the document loaded. On a
   cookie difference the new cookies are removed from the jar. No load-time snapshot means refusal.
 - Cost and false positives: a click now takes at least 0.8 s. A page whose own script sets a cookie after
   load (consent banner, analytics) makes the guarded click refuse; that is the fail-closed choice.
-  httpOnly cookies cannot be written by script and are not compared.
+  (Superseded in round 13: httpOnly cookies ARE compared, because a server can set them.)
 - The tests assert the arrival time of the navigation is the same for a page delay of 0 and 500 ms and
   that a 2.5 s delay sends nothing.
 
 Honest limits that remain: one bit per click through whether/within-window; anything a script learns
-and the owner later sends by hand; the window before the click; Cookie contents only for non-httpOnly
-cookies (a script cannot set httpOnly ones). A second guarded click is a second bit, so a script that
+and the owner later sends by hand; the window before the click; Cookie contents (since round 13 httpOnly
+cookies are included, since a server can set those). A second guarded click is a second bit, so a script that
 survives many clicks can still move data one bit at a time: the guard bounds the rate, not the total.
 
 ## Round 13 (independent review of round 12: pass with limits, two items)
@@ -506,3 +506,4 @@ survives many clicks can still move data one bit at a time: the guard bounds the
   closed). Cookies for other domains or paths the context holds are compared too.
 - The nine `test_two_doc` cases in `test_zz_auditor_r8.py` used to only print what the server saw; each
   now also asserts no leaked marker and no POST reached the server.
+- Cookies are keyed by name, domain, path and partition key (CHIPS), so partitioned and unpartitioned cookies of the same name are separate entries.
