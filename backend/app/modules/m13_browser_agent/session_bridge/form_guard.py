@@ -761,7 +761,8 @@ class NetworkGuard:
             return "no load-time snapshot of the page, so its URL and cookies cannot be vouched for"
         if getattr(self, "url_at_request", self.page.url).split("#")[0] != self.shipped_url:
             return "page URL changed after load (it would ride in Referer)"
-        now = {(c["name"], c["domain"], c["path"]): dict(c) for c in await self.context.cookies()}
+        now = {(c["name"], c["domain"], c["path"], str(c.get("partitionKey"))): dict(c)
+               for c in await self.context.cookies()}  # partition identity is part of the key
         def view(jar):
             # EVERY attribute the browser reports, so an expiry-, SameSite- or Secure-only change counts.
             return {k: (v.get("value"), bool(v.get("httpOnly")), v.get("expires", -1),
@@ -775,7 +776,7 @@ class NetworkGuard:
                 try:
                     if key in now:
                         await self.context.clear_cookies(name=key[0], domain=key[1], path=key[2])
-                    keep = {k: v for k, v in old.items() if k in ("name", "value", "domain", "path", "expires", "httpOnly", "secure", "sameSite")}
+                    keep = {k: v for k, v in old.items() if k in ("name", "value", "domain", "path", "expires", "httpOnly", "secure", "sameSite", "partitionKey")}
                     await self.context.add_cookies([keep])
                 except Exception:  # noqa: BLE001
                     pass

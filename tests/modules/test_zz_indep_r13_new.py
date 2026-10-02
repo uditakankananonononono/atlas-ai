@@ -127,3 +127,31 @@ async def test_documented_navigation_presence_bit_still_exists(setup):
     present=any(h[2].startswith('/idea?page=2') for h in site.hits)
     print('DOCUMENTED_PRESENCE_BIT',absent,present)
     assert absent and present
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('attr,header', [
+    ('sameSite','baseline=fixed; HttpOnly; SameSite=Strict; Path=/'),
+    ('secure','baseline=fixed; HttpOnly; Secure; Path=/'),
+    ('expires','baseline=fixed; HttpOnly; Max-Age=3600; Path=/'),
+])
+async def test_server_only_attribute_change_is_not_mistaken_for_unchanged_cookie(setup,attr,header):
+    site=setup[6]; page=setup[5]; original=site.do_GET; raw=[]
+    await page.context.add_cookies([{'name':'baseline','value':'fixed','domain':'127.0.0.1','path':'/','httpOnly':True,'sameSite':'Lax'}])
+    def get(self):
+        raw.append((self.path,self.headers.get('Cookie'),self.headers.get('Referer')))
+        if self.path=='/attribute-source':
+            self.send_response(200); self.send_header('Set-Cookie',header); self.end_headers(); return
+        return original(self)
+    site.do_GET=get
+    try:
+        page=await compose(setup); await page.fill('#draft',SECRET)
+        before=await page.context.cookies()
+        await page.evaluate("fetch('/attribute-source')"); await page.wait_for_timeout(200)
+        changed=await page.context.cookies()
+        assert changed!=before, 'server attribute vector ineffective'
+        assert changed[0]['value']==before[0]['value'] and changed[0]['httpOnly']==before[0]['httpOnly']
+        raw.clear(); answer=await click(setup)
+        print('SERVER_ATTRIBUTE',attr,'answer',answer,'before',before,'changed',changed,'after',await page.context.cookies(),'raw',raw)
+        assert not answer['ok'], (attr,'server changed cookie attribute but navigation was sent',raw)
+        assert await page.context.cookies()==before
+    finally: site.do_GET=original
