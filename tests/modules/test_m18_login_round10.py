@@ -108,7 +108,7 @@ async def test_a_browser_started_through_launch_args_resolves_only_the_site_and_
         except Exception as error:  # noqa: BLE001
             failure = str(error)
         assert failure and 'ERR_NAME_NOT_RESOLVED' in failure, failure
-        assert not seen
+        assert not [h for h in seen if h[1] != '/favicon.ico'], seen  # a late favicon of the first page is not the secret host
         _drain_udp()
         await page.evaluate("p => { try { new RTCPeerConnection({iceServers:[{urls:'stun:127.0.0.1:'+p}]}).createDataChannel('x') } catch (e) {} }", UDP.getsockname()[1])
         await page.wait_for_timeout(1500)
