@@ -831,6 +831,8 @@ async def test_n3_network_layer_alone_blocks_when_page_guard_is_defeated(setup, 
 async def _compose_with_values(setup):
     factory, recipe, approvals, registry, paired, page, site, path = setup
     origin = recipe.compose_url.rsplit('/compose', 1)[0]
+    for name in list(site.daemon._resting):  # the test plays the daemon's NAVIGATE: lift the resting guard
+        await site.daemon._lift_resting(name)
     await page.goto(origin + '/compose')
     await page.fill('#draft', 'Tutoring pilot')
     await page.fill('#run_id', 'run-1')

