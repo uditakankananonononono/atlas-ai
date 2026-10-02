@@ -507,3 +507,12 @@ survives many clicks can still move data one bit at a time: the guard bounds the
 - The nine `test_two_doc` cases in `test_zz_auditor_r8.py` used to only print what the server saw; each
   now also asserts no leaked marker and no POST reached the server.
 - Cookies are keyed by name, domain, path and partition key (CHIPS), so partitioned and unpartitioned cookies of the same name are separate entries.
+
+## Round 14b (review of round 14: one defect)
+
+- Restore used `clear_cookies(name, domain, path)`, which ignores the partition key. With an unpartitioned
+  `dup=a` and a partitioned `dup=b` in the jar, restoring one deleted the other and did not bring it back.
+  Restore now works per (name, domain, path) group: clear the group, then re-add every baseline cookie of
+  that group with all its attributes (partition key included). Tests: `test_zz_indep_r14_cookie_probes.py`
+  `test_p3_*` and the mirror `test_p3b_*` failed before and pass after.
+- Honest limit: "restore puts all back" means every cookie the browser reported at load time is re-added with the attributes the browser reports (value, httpOnly, expires, sameSite, secure, partitionKey). A cookie the browser refuses to re-add (for example one whose expiry has since passed) is silently skipped, and the click is refused either way.
