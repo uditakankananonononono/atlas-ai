@@ -131,3 +131,4 @@ _stub_app_core()
 def _isolated_device_anchor(tmp_path, monkeypatch):
     """Keep each test's device anchor out of the real ~/.atlas-pc."""
     monkeypatch.setenv("ATLAS_PC_ANCHOR_DIR", str(tmp_path / "anchors"))
+    monkeypatch.setenv("ATLAS_PC_ANCHOR_DIR2", str(tmp_path / "anchors-secondary"))

@@ -279,3 +279,47 @@ Pessimistic notes. Nothing here is a proof.
   (needs Secure; the key is the hop's own site, not necessarily the top-level site); Domain must
   match the host; Secure needs a secure context; __Secure-/__Host- and SameSite=None rules enforced.
   Not implemented: public-suffix checks on Domain, cookie size/count limits, Priority, SameParty.
+
+## Round 8 (fixes for round-7 audit)
+
+Threat-model statement first. The page under the daemon is untrusted and runs its own scripts. The guard
+stops what a daemon-driven click, and the document that click produced, can send. It cannot stop a page
+from sending data the page itself already holds, before any click, and it cannot give a proof. Anything
+below marked "open" is open.
+
+- Guard lifetime (finding 1): the guard is no longer removed after a quiet period. It RESTS on the session
+  page for the life of that document and is lifted only when the daemon replaces the document (NAVIGATE),
+  closes the session, or starts the next guarded click. Timers at 6 s and 12 s, EventSource reconnects and
+  service-worker messages therefore meet the guard. After an approved submit a baseline guard is left on the
+  resulting document the same way.
+- Network policy (finding 2), baseline mode: non-GET/HEAD aborted; websocket/eventsource/ping/beacon resource
+  types aborted; requests from service workers aborted; every cross-origin request aborted unless it is exactly
+  the clicked link as the page's top-level navigation; same-origin GETs allowed only for URLs already present
+  in the page before the click (resource timing entries, src/href/action attributes) and, after the click's own
+  top-level navigation, plain assets (no query) of the new document; the substring taint check is kept as a
+  second layer only. Popups: the opener is asked, a page created during the click window counts as a popup,
+  and a navigation whose frame does not exist yet (a popup's first request) is aborted in the window. Popups
+  are closed and reported. Foreign tabs of the shared browser are passed through untouched.
+  Injected in the live document: a CSP meta (default-src 'self', connect-src 'none', form-action 'none',
+  frame-src 'none') plus wrappers for fetch/XHR/sendBeacon/WebSocket/EventSource/window.open/form.submit.
+  The document a click navigates to is delivered with the same CSP plus `sandbox allow-scripts
+  allow-same-origin` (no popups, no form submission), redirects handed back unfollowed so each hop is judged.
+  Open: after the click's navigation, same-origin plain-asset GETs of the new document are allowed, so that
+  document's own scripts can still send path-encoded data to its own origin by requesting an asset path;
+  cross-origin assets (CDN scripts, fonts, images) of a guarded page do not load, so real pages render
+  degraded after a guarded click; a popup first request after the click window and before the page has a
+  frame cannot be told from a tab the owner opened and is passed through; CSP meta and wrappers can be
+  undone or bypassed by hostile script (cached originals, an iframe, removing the meta) and are layers, not
+  controls; prefetch requests are not seen by Playwright's route at all, the CSP is what stops them; a page
+  loaded by NAVIGATE is unguarded until the first guarded click.
+- Store (finding 3): the record pins two anchor directories (ATLAS_PC_ANCHOR_DIR or ~/.atlas-pc/anchors, and
+  ATLAS_PC_ANCHOR_DIR2 or /var/tmp/atlas-pc-anchors-<uid>); both anchors are signed, keyed by device id and
+  pin the same directories; any change of those directories, any anchor with another epoch, a record below the
+  highest anchor seq, or no anchor at all for an existing record is refused. An unset consumed_path now means
+  a per-device default file, never memory-only. Open and not detectable: restoring the record AND both anchors
+  together (a full home plus /var/tmp snapshot restore); deleting record, lock file and all anchors; anyone
+  holding the command secret; a re-created (strict) record cannot tell a token armed after loss from a token
+  the auditor crafts with a future deadline, because the server's signature, not the device, fixes arming time.
+- Cookies (finding 4): empty-name cookies ("=v", or "v" with no "=") and names with spaces are now stored as
+  Chromium stores them; Max-Age and Expires are clamped to 400 days so a huge value no longer makes
+  add_cookies throw. Still not implemented: public-suffix checks, size/count limits, Priority.

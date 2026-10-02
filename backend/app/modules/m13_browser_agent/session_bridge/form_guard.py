@@ -27,6 +27,14 @@ ALLOWED_ENCTYPES = (DEFAULT_ENCTYPE,)
 SUBMIT_OVERRIDES = ("formaction", "formmethod", "formenctype", "formtarget", "formnovalidate")
 # Seconds an approved submit stays armed with nobody clicking it.
 ARM_TTL_SECONDS = 120.0
+# Content-Security-Policy applied to the document a guarded click works on (as a <meta>) and to the
+# document a guarded click navigates to (as a response header). connect-src 'none' covers fetch, XHR,
+# WebSocket, EventSource, sendBeacon and a[ping]; default-src 'self' covers prefetch, images, frames.
+GUARD_CSP = ("default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; "
+             "connect-src 'none'; form-action 'none'; frame-src 'none'; object-src 'none'; base-uri 'self'")
+# Header-only addition (not valid in <meta>): no popups, no form submission, no top navigation by script.
+GUARD_CSP_HEADER = GUARD_CSP + "; sandbox allow-scripts allow-same-origin"
+MAX_COOKIE_LIFETIME = 400 * 86400.0
 TAINT_MIN_LEN = 4  # shorter form values are too common to treat as data in a URL
 QUIET_SECONDS = 2.5  # how long the baseline guard outlives the last page activity
 
@@ -131,10 +139,16 @@ GUARD_JS = """
 # Baseline page guard for daemon-driven clicks that are not the armed submit. Advisory
 # like GUARD_JS: it stops declarative and scripted submits from running at all. The
 # authoritative control is NetworkGuard (baseline mode) in the daemon process.
-NAV_GUARD_JS = """
+NAV_GUARD_JS_TEMPLATE = """
 (reporter) => {
   if (window.__atlasGuard) window.__atlasGuard.remove();
   const blocked = [];
+  try {
+    const meta = document.createElement('meta');
+    meta.httpEquiv = 'Content-Security-Policy';
+    meta.content = %CSP%;
+    (document.head || document.documentElement).appendChild(meta);
+  } catch (e) {}
   const note = (what) => {
     blocked.push(what);
     try { window[reporter](what); } catch (e) {}
@@ -146,6 +160,8 @@ NAV_GUARD_JS = """
     event.stopImmediatePropagation();
   };
   window.addEventListener('submit', handler, true);
+  const cspHandler = (e) => note('csp ' + e.violatedDirective + ' ' + String(e.blockedURI).slice(0, 60));
+  document.addEventListener('securitypolicyviolation', cspHandler, true);
   // Script-level wrappers. They exist because a keepalive request issued while the page unloads
   // is not visible to the network route. They only cover code that calls these globals after this
   // point; anything that cached the originals earlier, or borrows an iframe's, is not stopped here.
@@ -164,19 +180,33 @@ NAV_GUARD_JS = """
     return orig.send.apply(this, arguments);
   };
   navigator.sendBeacon = function() { note('script sendBeacon'); return false; };
+  const origOpen = window.open;
+  window.open = function() { note('script window.open'); return null; };
+  const OrigWS = window.WebSocket, OrigES = window.EventSource;
+  window.WebSocket = function() { note('script WebSocket'); throw new DOMException('blocked by Atlas guard', 'SecurityError'); };
+  if (OrigES) window.EventSource = function() { note('script EventSource'); throw new DOMException('blocked by Atlas guard', 'SecurityError'); };
   HTMLFormElement.prototype.submit = function() { note('script form.submit'); };
   HTMLFormElement.prototype.requestSubmit = function() { note('script form.requestSubmit'); };
   window.__atlasGuard = {blocked, remove: () => {
     window.removeEventListener('submit', handler, true);
+    document.removeEventListener('securitypolicyviolation', cspHandler, true);
     window.fetch = orig.fetch; XMLHttpRequest.prototype.send = orig.send; XMLHttpRequest.prototype.open = orig.open;
-    navigator.sendBeacon = orig.beacon; HTMLFormElement.prototype.submit = orig.submit;
+    navigator.sendBeacon = orig.beacon; window.open = origOpen; window.WebSocket = OrigWS; if (OrigES) window.EventSource = OrigES;
+    HTMLFormElement.prototype.submit = orig.submit;
     HTMLFormElement.prototype.requestSubmit = orig.requestSubmit;
   }};
   return true;
 }
 """
+NAV_GUARD_JS = NAV_GUARD_JS_TEMPLATE.replace("%CSP%", repr(GUARD_CSP))
 # Same-origin fallback for a report made while the document unloads (the binding call can be lost).
 NAV_RECALL_JS = "() => { try { const k='__atlasBlocked'; const l=JSON.parse(sessionStorage.getItem(k)||'[]'); sessionStorage.removeItem(k); return l; } catch (e) { return []; } }"
+KNOWN_URLS_JS = """
+() => [...new Set([
+  ...performance.getEntriesByType('resource').map(e => e.name),
+  ...[...document.querySelectorAll('[src],[href],[action]')].flatMap(e => [e.src, e.href, e.action]).filter(Boolean),
+])].slice(0, 2000)
+"""
 TAINT_JS = """
 () => [...new Set([...document.querySelectorAll('input,textarea,select')]
   .map(e => e.value).filter(v => v && v.length >= %d))].slice(0, 200)
@@ -272,8 +302,10 @@ def parse_set_cookie(url: str, raw: str, now: float | None = None, top_site: str
     host = (parts.hostname or "").lower()
     pieces = raw.split(";")
     name, sep, value = pieces[0].partition("=")
+    if not sep:  # RFC 6265bis: no "=" means an empty name and the whole string as the value
+        name, value = "", name
     name, value = name.strip(), value.strip()
-    if not sep or not name or any(ch in name for ch in ' \t"()<>@,:\\/[]?={}'):
+    if (not name and not value) or any(ord(ch) < 32 or ord(ch) == 127 for ch in name + value):
         return None
     attrs: dict[str, str | bool] = {}
     for piece in pieces[1:]:
@@ -310,6 +342,8 @@ def parse_set_cookie(url: str, raw: str, now: float | None = None, top_site: str
         except (TypeError, ValueError):
             expires = None
     domain = ("." + domain_attr) if domain_attr else host
+    if expires is not None and expires > now + MAX_COOKIE_LIFETIME:
+        expires = now + MAX_COOKIE_LIFETIME  # browsers cap lifetime (Chromium: 400 days); huge values break add_cookies
     if expires is not None and expires <= now:
         return {"delete": {"name": name, "domain": domain if domain_attr else host, "path": path}}
     cookie = {"name": name, "value": value, "domain": domain, "path": path,
@@ -340,7 +374,7 @@ class NetworkGuard:
     """
 
     def __init__(self, page, preview: dict | None = None, expected_values: dict[str, str] | None = None,
-                 *, taint=(), allowed_href: str = ""):
+                 *, taint=(), allowed_href: str = "", known_urls=()):
         """With a preview this is the armed-submit guard. With none it is the baseline guard
         for every other daemon-driven click: nothing is ever approved, so every non-GET/HEAD
         request and every navigation that carries a body is aborted and reported."""
@@ -348,6 +382,9 @@ class NetworkGuard:
         self.context = page.context
         self.taint = {v for v in (taint or ()) if len(v) >= TAINT_MIN_LEN}
         self.allowed_href = allowed_href
+        self.known_urls = set(known_urls)
+        self.nav_seen = False
+        self.window_open = False
         self.start_origin = _origin(page.url)
         self.popups: list = []
         self._known_pages: list = []
@@ -489,33 +526,125 @@ class NetworkGuard:
         decoded = unquote_plus(unquote_plus(url))
         return any(value in decoded or value in url for value in self.taint)
 
+    ASSET_TYPES = {"stylesheet", "script", "image", "font", "media"}
+    NEVER_TYPES = {"websocket", "eventsource", "ping", "beacon", "csp_report", "texttrack"}
+
+    def _guarded_pages(self) -> list:
+        return [self.page, *self.popups]
+
+    async def _owns(self, request) -> bool:
+        """Does this request belong to the guarded page, or to a page it opened? A popup's first
+        request can arrive before the popup event does, so the opener is asked directly. Other tabs
+        of the shared browser are not ours."""
+        try:
+            frame = request.frame
+            page = frame.page
+        except Exception:  # noqa: BLE001 - service-worker requests have no frame
+            return False
+        if page in self._guarded_pages():
+            return True
+        if self.window_open and page not in self._known_pages:
+            # A page that did not exist when the click started, seen during the click window: treat as
+            # a popup of this click (this also guards a tab the owner happens to open in those seconds).
+            await self._watch_popup(page)
+            return True
+        try:
+            opener = await page.opener()
+        except Exception:  # noqa: BLE001
+            return False
+        if opener is not None and opener in self._guarded_pages():
+            if page not in self.popups:
+                await self._watch_popup(page)
+            return True
+        return False
+
     async def _route(self, route, request) -> None:
         method = request.method.upper()
+        try:
+            from_worker = request.service_worker is not None
+        except Exception:  # noqa: BLE001
+            from_worker = False
+        if from_worker and self.action is None:
+            self.blocked.append(f"service worker request {method} {request.url[:100]}")
+            await route.abort("blockedbyclient")
+            return
+        if not from_worker:
+            try:
+                request.frame
+            except Exception:  # noqa: BLE001
+                # A navigation whose frame does not exist yet is the first request of a brand-new page
+                # (a popup). During the click window that is the click's popup: abort it. Afterwards it
+                # cannot be told apart from a tab the owner opened, so it is left alone (documented).
+                if self.window_open and request.is_navigation_request() and self.action is None:
+                    self.blocked.append(f"popup navigation {method} {request.url[:100]}")
+                    await route.abort("blockedbyclient")
+                else:
+                    await route.fallback()
+                return
+        if not from_worker and not await self._owns(request):
+            await route.fallback()  # another tab of the shared browser: not this guard's business
+            return
         if self._is_approved(request):
             self.approved_post_sent = True
             self._approved_request = request
             await self._send_approved(route, request)
             return
         if method in {"GET", "HEAD"}:
+            if request.resource_type in self.NEVER_TYPES:
+                self.blocked.append(f"{request.resource_type} {request.url[:120]}")
+                await route.abort("blockedbyclient")
+                return
             if self._tainted(request.url):
                 self.blocked.append(f"{method} carrying form data {request.url[:120]}")
                 await route.abort("blockedbyclient")
                 return
             if self.action is None:
-                # Baseline mode: bodyless GETs pass, but a cross-origin GET that carries a query
-                # (the beacon shape) passes only when it is exactly the clicked link.
-                cross = _origin(request.url) != self.start_origin
-                if cross and urlsplit(request.url).query and request.url != self.allowed_href:
-                    self.blocked.append(f"{method} cross-origin with query {request.url[:120]}")
+                if self._baseline_allows(request):
+                    if request.is_navigation_request() and request.frame == self.page.main_frame:
+                        await self._fulfill_with_csp(route)
+                    else:
+                        await route.continue_()
+                else:
+                    self.blocked.append(f"{method} not part of the click {request.url[:120]}")
                     await route.abort("blockedbyclient")
-                    return
-                await route.continue_()
                 return
             if not request.is_navigation_request():
                 await route.continue_()
                 return
         self.blocked.append(f"{method} {request.url[:200]}")
         await route.abort("blockedbyclient")
+
+    async def _fulfill_with_csp(self, route) -> None:
+        """Top-level document the click navigated to: deliver it with GUARD_CSP so its scripts cannot
+        open connections. Redirects are handed back unfollowed so every hop is judged again."""
+        response = await route.fetch(max_redirects=0)
+        if response.status in REDIRECT_STATUSES:
+            await route.fulfill(response=response)
+            return
+        headers = {k: v for k, v in response.headers.items() if k.lower() != "content-security-policy"}
+        if "html" in headers.get("content-type", "html").lower():
+            headers["content-security-policy"] = GUARD_CSP_HEADER
+        await route.fulfill(response=response, headers=headers)
+
+    def _baseline_allows(self, request) -> bool:
+        """Baseline (non-approved) GET policy. Cross-origin: only the exact clicked link as the page's
+        top-level navigation. Same-origin: the click's own top-level navigation, then plain assets of
+        the new document; before any navigation only URLs already present in the page."""
+        url = request.url
+        top_nav = request.is_navigation_request() and request.frame == self.page.main_frame
+        origin = _origin(url)
+        if top_nav:
+            if origin != self.start_origin and url != self.allowed_href:
+                return False
+            self.nav_seen = True
+            self.start_origin = origin
+            return True
+        if origin != self.start_origin:
+            return False
+        if url in self.known_urls:
+            return True
+        return (self.nav_seen and request.resource_type in self.ASSET_TYPES
+                and not urlsplit(url).query)
 
     async def expose_reporter(self) -> str:
         """A page binding that survives navigation, so a report made just before unload still arrives."""
@@ -525,13 +654,60 @@ class NetworkGuard:
         await self.page.expose_function(name, lambda what: self.page_reports.append(str(what)[:100]))
         return name
 
+    async def _watch_popup(self, popup) -> None:
+        self.popups.append(popup)
+        popup.on("popup", lambda p: __import__("asyncio").ensure_future(self._watch_popup(p)))
+        await self._block_websockets(popup)
+
+    async def _block_websockets(self, page) -> None:
+        async def refuse(ws):
+            self.blocked.append(f"websocket {ws.url[:100]}")
+            await ws.close(code=1008, reason="blocked by Atlas guard")
+        try:
+            await page.route_web_socket("**/*", refuse)
+        except Exception as error:  # noqa: BLE001 - reported, the HTTP guard still runs
+            self.blocked.append(f"websocket guard unavailable: {str(error)[:80]}")
+
+    async def _stop_service_workers(self) -> None:
+        """Unregister and stop service workers for the page: a worker is a second network client
+        that can be driven by postMessage. Best effort; requests a worker still sends are aborted
+        by the route when Playwright reports them with a service_worker."""
+        try:
+            await self.page.evaluate("() => navigator.serviceWorker ? navigator.serviceWorker.getRegistrations()"
+                                     ".then(rs => Promise.all(rs.map(r => r.unregister()))): 0")
+        except Exception:  # noqa: BLE001
+            pass
+        try:
+            cdp = await self.context.new_cdp_session(self.page)
+            await cdp.send("ServiceWorker.enable")
+            await cdp.send("ServiceWorker.stopAllWorkers")
+            await cdp.detach()
+        except Exception:  # noqa: BLE001 - not every browser exposes CDP
+            pass
+
     async def install(self) -> None:
-        """Route at CONTEXT level so popups and new tabs are guarded like the page itself."""
+        """Route at CONTEXT level so popups are guarded; foreign tabs fall through untouched."""
+        import asyncio
         self._handler = self._route
         self._known_pages = list(self.context.pages)
-        self._page_handler = lambda new_page: self.popups.append(new_page)
-        self.context.on("page", self._page_handler)
+        self.window_open = True
+        self._popup_listener = lambda p: asyncio.ensure_future(self._watch_popup(p))
+        self.page.on("popup", self._popup_listener)
         await self.context.route("**/*", self._handler)
+        await self._block_websockets(self.page)
+        if self.action is None:
+            await self._stop_service_workers()
+
+    async def close_popups(self) -> None:
+        """Close and report popups now, leaving the guard itself installed."""
+        self.window_open = False
+        for popup in self.popups:
+            try:
+                self.blocked.append(f"popup opened {popup.url[:100]}")
+                await popup.close()
+            except Exception:  # noqa: BLE001 - already closed
+                pass
+        self.popups = []
 
     async def settle(self, quiet: float = QUIET_SECONDS) -> None:
         """Keep the guard up until the page is idle plus a quiet period (late timers, keepalives)."""
@@ -542,19 +718,26 @@ class NetworkGuard:
             except Exception:  # noqa: BLE001 - best effort; the quiet period still runs
                 pass
         await asyncio.sleep(quiet)
+        self.window_open = False
 
     async def remove(self) -> None:
-        if self._page_handler is not None:
+        listener = getattr(self, "_popup_listener", None)
+        if listener is not None:
             try:
-                self.context.remove_listener("page", self._page_handler)
+                self.page.remove_listener("popup", listener)
             except Exception:  # noqa: BLE001
                 pass
-            self._page_handler = None
+            self._popup_listener = None
         if self._handler is not None:
             try:
                 await self.context.unroute("**/*", self._handler)
             finally:
                 self._handler = None
+        for page in self._guarded_pages():
+            try:
+                await page.unroute_all(behavior="ignoreErrors")
+            except Exception:  # noqa: BLE001
+                pass
         for popup in self.popups:
             try:
                 self.blocked.append(f"popup opened {popup.url[:100]}")
@@ -566,6 +749,12 @@ class NetworkGuard:
     def report(self) -> dict:
         return {"approved_post_sent": self.approved_post_sent,
                 "blocked": [*self.blocked, *[f"page-guard: {item}" for item in getattr(self, "page_reports", [])]]}
+
+    @staticmethod
+    async def collect_known_urls(page) -> list[str]:
+        """URLs already present in the page before the click (resources fetched, links, sources)."""
+        urls = await page.evaluate(KNOWN_URLS_JS)
+        return [u for u in urls if isinstance(u, str)] + [page.url]
 
     @staticmethod
     async def collect_taint(page) -> list[str]:

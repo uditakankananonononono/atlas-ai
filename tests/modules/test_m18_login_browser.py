@@ -729,12 +729,24 @@ async def test_n3_click_time_rewrites_never_reach_the_network(setup, name):
 
 
 @pytest.mark.asyncio
-async def test_n3_guard_is_removed_after_click_and_normal_flow_still_publishes(setup):
+async def test_n3_guard_rests_after_click_until_the_daemon_navigates_and_normal_flow_still_publishes(setup):
+    # Round 8 changed this on purpose: the guard no longer disappears after the click.
     r, run = await ready(setup)
     result = await r.execute('tenant', run['id'], 'owner')
     assert result['state'] == 'succeeded' and setup[6].post_paths == ['/publish']
     assert result['guard']['approved_post_sent'] is True and result['guard']['blocked'] == []
-    # After the approved click the page is no longer under the route guard.
+    # The resting guard blocks a stray POST from the document the approved submit produced ...
+    try:
+        await setup[5].evaluate("fetch('/after',{method:'POST',body:'x'})")
+    except Exception:
+        pass
+    await asyncio.sleep(0.3)
+    assert '/after' not in setup[6].post_paths
+    # ... and is lifted when the daemon itself replaces the document.
+    from app.modules.m13_browser_agent.session_bridge import protocol
+    daemon = setup_daemon(setup)
+    nav = await daemon.execute(protocol.make_command(protocol.CommandKind.NAVIGATE, {'session': 'experiment', 'url': setup[1].compose_url}))
+    assert nav['ok'] is True
     await setup[5].evaluate("fetch('/after',{method:'POST',body:'x'})")
     await asyncio.sleep(0.3)
     assert '/after' in setup[6].post_paths
