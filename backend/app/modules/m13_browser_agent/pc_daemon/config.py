@@ -19,6 +19,9 @@ class DaemonConfig:
     pacing_seconds: float = 5.0
     capabilities: list[str] = field(default_factory=lambda: ["navigate", "extract", "screenshot", "read_values"])
     command_timeout_seconds: float = 90.0
+    # Session pages run in their own browser context (see BrowserHandle._session_context).
+    isolate_session_context: bool = True
+    browser_args: list[str] = field(default_factory=list)
     # Consumed submit tokens/approvals survive a daemon restart here (audit finding F2).
     consumed_path: str = str(DEFAULT_STATE_DIR / "consumed_submit.json")
 

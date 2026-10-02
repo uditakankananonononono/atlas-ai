@@ -75,6 +75,7 @@ class BrowserHandle:
         self._playwright = None
         self._browser = None
         self._context = None
+        self._session_ctx = None
         self._pages: dict[str, Any] = {}
 
     async def start(self) -> None:
@@ -89,14 +90,39 @@ class BrowserHandle:
             profile = Path(self.config.profile_dir)
             profile.mkdir(parents=True, exist_ok=True)
             self._context = await self._playwright.chromium.launch_persistent_context(
-                str(profile), headless=False)
+                str(profile), headless=False, args=self.launch_args())
+
+    @property
+    def isolated(self) -> bool:
+        return self._session_ctx is not None
+
+    async def _session_context(self):
+        """Session pages live in their OWN browser context: no other tab of the site shares their
+        storage, BroadcastChannel or workers, and the owner's tabs cannot be reached from them.
+        Cookies and localStorage are copied once from the owner's context when the first session
+        page is made (so log in first). Not possible for a persistent-profile launch (that context has
+        no Browser object); then sessions share the owner's context and `isolated` stays False."""
+        if self._session_ctx is None and self.config.isolate_session_context:
+            browser = getattr(self._context, "browser", None)
+            if browser is not None:
+                state = await self._context.storage_state()
+                self._session_ctx = await browser.new_context(storage_state=state, service_workers="block")
+        return self._session_ctx or self._context
+
+    def launch_args(self) -> list[str]:
+        """Chromium flags for a browser this daemon launches itself. Not applied when attaching over
+        CDP to the owner's browser. --host-resolver-rules (MAP * ~NOTFOUND, EXCLUDE <site>) needs the site
+        host, which is not known at launch, so it is NOT applied here."""
+        return ["--disable-quic",
+                "--force-webrtc-ip-handling-policy=disable_non_proxied_udp",
+                "--webrtc-ip-handling-policy=disable_non_proxied_udp", *self.config.browser_args]
 
     async def page(self, name: str) -> Any:
         if self._context is None:
             raise RuntimeError("browser is not started")
         page = self._pages.get(name)
         if page is None or page.is_closed():
-            page = await self._context.new_page()
+            page = await (await self._session_context()).new_page()
             self._pages[name] = page
         return page
 
@@ -108,6 +134,12 @@ class BrowserHandle:
         return False
 
     async def stop(self) -> None:
+        if self._session_ctx is not None:
+            try:
+                await self._session_ctx.close()
+            except Exception:  # noqa: BLE001
+                pass
+            self._session_ctx = None
         if self._context is not None and not self.config.cdp_url:
             await self._context.close()
         if self._browser is not None and self.config.cdp_url:
@@ -288,9 +320,10 @@ class Daemon:
         """Raise ValueError unless the record agrees with the device anchors in both trees."""
         if raw["anchor_dirs"] != self._pins():
             raise ValueError("the record pins other anchor directories than the ones configured now")
-        anchors = [a for a in (self._read_anchor(path) for path in self.anchor_paths()) if a is not None]
-        if not anchors:
-            raise ValueError("every device anchor is missing")
+        loaded = [self._read_anchor(path) for path in self.anchor_paths()]
+        if any(a is None for a in loaded):
+            raise ValueError("a device anchor is missing (both anchors must exist for a record in use)")
+        anchors = loaded
         if any(a["epoch"] != raw["epoch"] for a in anchors):
             raise ValueError("the record is not the one the device anchor points to")
         if raw["seq"] < max(a["seq"] for a in anchors):
@@ -478,6 +511,7 @@ class Daemon:
             allowed_href = await locator.evaluate("el => (el.closest('a') || {}).href || ''")
             guard = form_guard.NetworkGuard(page, taint=taint, allowed_href=allowed_href,
                                             known_urls=await form_guard.NetworkGuard.collect_known_urls(page))
+            guard.isolated = self.browser.isolated
             await guard.install()
             page_blocked = []
             try:
@@ -518,6 +552,7 @@ class Daemon:
         from ..session_bridge import form_guard
         guard = form_guard.NetworkGuard(page, taint=(), known_urls=await form_guard.NetworkGuard.collect_known_urls(page))
         guard.nav_seen = True
+        guard.isolated = self.browser.isolated
         await guard.install()
         await self._rest(session, guard)
 
