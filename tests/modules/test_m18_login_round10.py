@@ -63,6 +63,8 @@ async def test_auditor_r9_vector(setup_mode, name):
     got = await other.evaluate('window.__got') if other else []
     shown = [h[0][:9] + h[2][:30] for h in site.hits if h[2] != '/compose'][:6]
     assert not leaked(site), (MODE, name, shown)
+    if 'prelist' in name:  # the draft there is SECRET+'2', which leaked() does not match: check the paths
+        assert not [h for h in site.hits if h[2].startswith('/pl')], (MODE, name, shown)
     assert not site.posts and not site.post_paths, (MODE, name, site.posts)
     assert udp == [], (MODE, name, 'UDP/ICE packet left the browser')
     assert not got, (MODE, name, got)

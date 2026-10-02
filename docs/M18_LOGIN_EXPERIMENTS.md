@@ -364,3 +364,51 @@ Limits that remain, plainly:
 
 All auditor vectors stay as permanent tests: test_zz_auditor_r8.py, test_zz_auditor_store.py,
 cookie_diff_chromium.py, and test_m18_login_round9.py.
+
+## Round 10 (audit of round 9 failed)
+
+Findings: (F1, both modes) "pre-listed markup": page script adds an anchor whose href encodes the draft
+on the input event; the click-time DOM read then listed it as known, and same-origin Image().src or
+location.href to it reached the server. (F2, CDP) RTCPeerConnection through an iframe's contentWindow, a
+srcdoc iframe, or a cached constructor reached UDP; an attached browser gets no launch flags.
+
+Corrections to round-9 claims: the round-9 docs implied the launch flags stop WebRTC. They do not
+reliably: the round-9 tests ran plain `chromium.launch` and never exercised `launch_args()`, and a live
+probe shows `--force-webrtc-ip-handling-policy=disable_non_proxied_udp` alone still lets STUN to a
+loopback socket out. What stopped the vectors was the page-script layer, which only covers script-created
+frames.
+
+What changed:
+
+- F1: the set of known URLs is now a SNAPSHOT of the URLs in the server's HTML response for the top
+  document, taken in the response handler at load, before anything was filled. The click-time DOM is not
+  read for it. The clicked link's href is kept only if the server shipped it. No snapshot (document not
+  seen as a response, e.g. after history.pushState to a new URL) means nothing is pre-approved.
+  Consequence: a link or asset a script adds after load is never allowed after a guarded click.
+- Taint matching now covers raw, percent-encoded twice, reversed, separator-chunked, base64 (standard and
+  urlsafe, any offset of the token) and hex forms of every filled value. This is defence in depth; a keyed
+  or compressed encoding passes it, which is why the snapshot, not the matcher, is the control.
+- F2: `FRAME_DENY_JS` is installed with `add_init_script` on every session page, so it runs in every frame
+  (iframes, srcdoc) before page script, and defines RTCPeerConnection, webkitRTCPeerConnection,
+  RTCDataChannel, WebTransport, BroadcastChannel and SharedWorker as non-configurable constructors that
+  throw. This replaces WebRTC for session pages (no video calls in a guarded session). It is a script
+  layer; a browser bug or a frame that runs before init scripts would bypass it.
+- CDP fails closed: a guarded CLICK_NAV or CLICK_SUBMIT on a CDP-attached browser is refused with a clear
+  error unless the owner set `cdp_containment_attested` AND a live probe passes. The probe opens a page
+  exactly like a session page and tries ICE directly, via iframe.contentWindow and via srcdoc against a
+  local UDP socket; any packet refuses. It probes the script layer only. DNS, proxy and QUIC settings of
+  an attached browser are attested, never verified (`Browser.getBrowserCommandLine` needs --enable-automation).
+  A negative control (deny script emptied) shows the probe does refuse.
+- Launch (browser the daemon starts): `--disable-quic`, `--no-proxy-server`, the WebRTC policy flags, and
+  with `site_hosts` set `--host-resolver-rules="MAP * ~NOTFOUND, EXCLUDE <hosts>"`, so a secret cannot
+  leave as a DNS name. A configured `--proxy-server` or `--proxy-pac-url` raises. With no `site_hosts`
+  no resolver rule is added and DNS exfiltration is not contained. Tests now start the browser through
+  `BrowserHandle.start()` and check that only the site resolves.
+
+Limits that remain: as round 9 (snapshot restore, delete-everything, same-OS-user writes, a persistent-
+profile launch shares the owner's context so cross-tab isolation is not in force there); plus: the
+snapshot is only as good as the server HTML (an XSS-free page is assumed); the page-script layer is not a
+network control; in CDP mode DNS and proxy containment are owner-attested.
+
+Auditor vectors kept as permanent tests: test_zz_my_r9.py (+ mymode_fixture.inc) driven by
+test_m18_login_round10.py in MODE=persistent, MODE=cdp, and MODE=cdp ATTEST=1.

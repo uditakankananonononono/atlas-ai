@@ -58,7 +58,13 @@ async def test_v1_context_level_guard_with_quiet_period(setup, name):
 @pytest.mark.asyncio
 async def test_v1_plain_links_still_work_and_new_pages_are_closed(setup):
     page, _ = await _compose_with_values(setup)
-    await page.evaluate("document.body.insertAdjacentHTML('beforeend','<a id=\"lnk\" href=\"/idea?page=2\">l</a>')")
+    # Round 10: only a link the server shipped is allowed after a guarded click (a script-added one is not).
+    site = setup[6]
+    site.html_hook = lambda html: html.replace('<body>', '<body><a id="lnk" href="/idea?page=2">l</a>')
+    try:
+        page, _ = await _compose_with_values(setup)
+    finally:
+        site.html_hook = None
     answer = await _nav_click(setup, '#lnk')
     assert answer['ok'] is True and answer['result']['guard']['blocked'] == [], answer
     assert len(page.context.pages) == 1
