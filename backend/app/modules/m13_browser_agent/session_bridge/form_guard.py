@@ -770,21 +770,24 @@ class NetworkGuard:
         if view(now) != view(self.cookie_baseline):
             # Put the jar back so nothing planted (by script, or by the server answering a script's
             # request) can ride this or a later request.
-            for key, old in self.cookie_baseline.items():
-                if key in now and view(now)[key] == view(self.cookie_baseline)[key]:
-                    continue
+            # clear_cookies() matches name+domain+path and ignores the partition key, so it also removes
+            # same-named cookies in other partitions. Work per (name, domain, path) group: clear the group,
+            # then re-add EVERY baseline cookie of that group.
+            nowv, basev = view(now), view(self.cookie_baseline)
+            touched = {k[:3] for k in set(now) | set(self.cookie_baseline) if nowv.get(k) != basev.get(k)}
+            fields = ("name", "value", "domain", "path", "expires", "httpOnly", "secure", "sameSite", "partitionKey")
+            for group in touched:
                 try:
-                    if key in now:
-                        await self.context.clear_cookies(name=key[0], domain=key[1], path=key[2])
-                    keep = {k: v for k, v in old.items() if k in ("name", "value", "domain", "path", "expires", "httpOnly", "secure", "sameSite", "partitionKey")}
-                    await self.context.add_cookies([keep])
+                    await self.context.clear_cookies(name=group[0], domain=group[1], path=group[2])
                 except Exception:  # noqa: BLE001
                     pass
-            for key in set(now) - set(self.cookie_baseline):
-                try:
-                    await self.context.clear_cookies(name=key[0], domain=key[1], path=key[2])
-                except Exception:  # noqa: BLE001
-                    pass
+                for key, old in self.cookie_baseline.items():
+                    if key[:3] != group:
+                        continue
+                    try:
+                        await self.context.add_cookies([{k: v for k, v in old.items() if k in fields}])
+                    except Exception:  # noqa: BLE001
+                        pass
             return "a cookie (value or any attribute: httpOnly, expires, sameSite, secure) differs from the load-time baseline (it would ride in Cookie)"
         return None
 
