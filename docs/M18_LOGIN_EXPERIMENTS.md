@@ -445,3 +445,33 @@ What changed:
 New permanent tests: test_m18_login_round11.py (12 selection vectors: per-character image, fetch and script
 tag over 256 anchors, binary two-URL, timing-selected single URL, navigation, anchor click, iframe,
 stylesheet, form GET; the clicked link still works; rule merge; refusal without site_hosts).
+
+## Round 12 (audit of round 11 failed)
+
+Finding: the one allowed navigation still carried data in headers and timing: (1) `document.cookie`
+written in the click handler rode in the Cookie header; (2, 3) `history.replaceState` put a base64 draft
+in the page URL, which is the Referer; (4) the delay the page put before the click's navigation carried
+about one byte per click (character code times 20 ms). My round-11 docs said "a few bits" for the timing
+channel; that was understated.
+
+What changed:
+
+- The page's own navigation is never sent. When the page asks for the clicked link, the guard aborts that
+  request and notes that it asked. After a FIXED wait (`NAV_WAIT_SECONDS`, 0.8 s, independent of what the
+  page does), the DAEMON sends the navigation itself with `page.goto(href, referer=<server-shipped URL>)`.
+  A page that delays beyond the window sends nothing. Arrival time no longer depends on the page.
+  Remaining timing channel: ONE bit per click, whether the page asked within the window.
+- Before the daemon sends it, `pre_nav_problem()` refuses if (a) the page URL when it asked is not the
+  URL of the server's response (replaceState or pushState would put data in Referer), or (b) any
+  script-writable (non-httpOnly) cookie differs from the baseline taken when the document loaded. On a
+  cookie difference the new cookies are removed from the jar. No load-time snapshot means refusal.
+- Cost and false positives: a click now takes at least 0.8 s. A page whose own script sets a cookie after
+  load (consent banner, analytics) makes the guarded click refuse; that is the fail-closed choice.
+  httpOnly cookies cannot be written by script and are not compared.
+- The tests assert the arrival time of the navigation is the same for a page delay of 0 and 500 ms and
+  that a 2.5 s delay sends nothing.
+
+Honest limits that remain: one bit per click through whether/within-window; anything a script learns
+and the owner later sends by hand; the window before the click; Cookie contents only for non-httpOnly
+cookies (a script cannot set httpOnly ones). A second guarded click is a second bit, so a script that
+survives many clicks can still move data one bit at a time: the guard bounds the rate, not the total.
