@@ -13,6 +13,7 @@ from .receipts import ReceiptChain  # same hash-chain format the server registry
 from ..session_bridge import protocol
 from ..session_bridge.protocol import BlockKind, CommandKind
 from .config import DaemonConfig
+from ..session_bridge import form_guard
 
 # Heuristics for "the site stopped us". Each is a reason to report blocked,
 # never to retry or evade.
@@ -76,6 +77,7 @@ class BrowserHandle:
         self._browser = None
         self._context = None
         self._session_ctx = None
+        self._probe_ok = None
         self._pages: dict[str, Any] = {}
 
     async def start(self) -> None:
@@ -113,9 +115,58 @@ class BrowserHandle:
         """Chromium flags for a browser this daemon launches itself. Not applied when attaching over
         CDP to the owner's browser. --host-resolver-rules (MAP * ~NOTFOUND, EXCLUDE <site>) needs the site
         host, which is not known at launch, so it is NOT applied here."""
-        return ["--disable-quic",
+        extra = list(self.config.browser_args)
+        if any(arg.startswith("--proxy-server") or arg.startswith("--proxy-pac-url") for arg in extra):
+            raise ValueError("a proxy is not allowed for a guarded browser (it would carry the site's traffic and DNS)")
+        args = ["--disable-quic", "--no-proxy-server",
                 "--force-webrtc-ip-handling-policy=disable_non_proxied_udp",
-                "--webrtc-ip-handling-policy=disable_non_proxied_udp", *self.config.browser_args]
+                "--webrtc-ip-handling-policy=disable_non_proxied_udp", *extra]
+        if self.config.site_hosts:
+            if not any(arg.startswith("--host-resolver-rules") for arg in extra):
+                args.append("--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE " + ", EXCLUDE ".join(self.config.site_hosts))
+        return args
+
+    async def verify_containment(self) -> str | None:
+        """None when guarded sessions may run, else the reason they may not. A browser we launched has
+        the flags. An attached (CDP) browser is refused unless the owner attested its launch flags AND a
+        live probe shows no UDP/ICE packet leaves it. DNS containment over CDP is attested, never probed."""
+        if not self.config.cdp_url:
+            return None
+        if not self.config.cdp_containment_attested:
+            return ("guarded sessions are refused on an attached browser: the daemon cannot set network "
+                    "containment flags over CDP (attest a browser started with launch_args() or let the daemon launch it)")
+        if self._probe_ok is None:
+            self._probe_ok = await self._udp_probe()
+        return None if self._probe_ok else "the attached browser let WebRTC/ICE UDP out in a live probe"
+
+    async def _udp_probe(self) -> bool:
+        """Open a page exactly as a session page is opened (same init script) and try to start ICE three
+        ways: directly, through an iframe's contentWindow and from a srcdoc iframe. Any packet at a local
+        UDP socket means the layer is not holding. This probes the page-script layer on the attached
+        browser; it cannot probe DNS, proxy settings or a flag-free browser's other UDP paths."""
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.bind(("127.0.0.1", 0)); sock.settimeout(0.2)
+        page = await (await self._session_context()).new_page()
+        try:
+            await page.add_init_script(form_guard.FRAME_DENY_JS)
+            await page.goto("about:blank")
+            await page.evaluate("""p => {
+                const start = (W) => { try { const pc = new W.RTCPeerConnection({iceServers:[{urls:'stun:127.0.0.1:'+p}]});
+                  pc.createDataChannel('x'); pc.createOffer().then(o => pc.setLocalDescription(o)); } catch (e) {} };
+                start(window);
+                const f = document.createElement('iframe'); document.body.appendChild(f); start(f.contentWindow);
+                const g = document.createElement('iframe');
+                g.srcdoc = '<script>try{const pc=new RTCPeerConnection({iceServers:[{urls:"stun:127.0.0.1:' + p + '"}]});pc.createDataChannel("x");pc.createOffer().then(o=>pc.setLocalDescription(o))}catch(e){}<\\/script>';
+                document.body.appendChild(g); }""", sock.getsockname()[1])
+            await page.wait_for_timeout(1500)
+            try:
+                sock.recvfrom(2000)
+                return False
+            except OSError:
+                return True
+        finally:
+            sock.close(); await page.close()
 
     async def page(self, name: str) -> Any:
         if self._context is None:
@@ -123,8 +174,22 @@ class BrowserHandle:
         page = self._pages.get(name)
         if page is None or page.is_closed():
             page = await (await self._session_context()).new_page()
+            await page.add_init_script(form_guard.FRAME_DENY_JS)  # every frame, before any page script
+            page.on("response", lambda response, page=page: asyncio.ensure_future(self._snapshot(page, response)))
             self._pages[name] = page
         return page
+
+    @staticmethod
+    async def _snapshot(page, response) -> None:
+        """Remember the URLs the server's own HTML for the top document refers to, before the page
+        script or the user's draft can change the DOM."""
+        try:
+            if response.request.is_navigation_request() and response.frame == page.main_frame \
+                    and "html" in (response.headers.get("content-type") or ""):
+                body = (await response.body()).decode("utf-8", "replace")
+                page._atlas_doc_urls = (response.url.split("#")[0], form_guard.markup_urls(body, response.url))
+        except Exception:  # noqa: BLE001 - no snapshot means nothing is pre-approved
+            pass
 
     async def close_page(self, name: str) -> bool:
         page = self._pages.pop(name, None)
@@ -179,6 +244,11 @@ class Daemon:
     # after the click window. It is lifted only when the daemon replaces the document itself
     # (NAVIGATE), closes the session, or starts the next guarded click. Pages the owner uses in
     # their own tabs are never touched (the guard ignores requests from other pages).
+
+    async def _require_containment(self) -> None:
+        reason = await self.browser.verify_containment()
+        if reason:
+            raise PermissionError(reason)
 
     async def _lift_resting(self, session: str) -> None:
         guard = self._resting.pop(session, None)
@@ -506,9 +576,11 @@ class Daemon:
             # Baseline guard for every daemon-driven click: nothing is approved here, so any
             # non-GET request or body-carrying navigation (including a JS-driven submit from a
             # button, label, or custom element) is aborted and reported.
+            await self._require_containment()
             await self._lift_resting(session)
             taint = await form_guard.NetworkGuard.collect_taint(page)
-            allowed_href = await locator.evaluate("el => (el.closest('a') || {}).href || ''")
+            allowed_href = await form_guard.NetworkGuard.shipped_href(
+                page, await locator.evaluate("el => (el.closest('a') || {}).href || ''"))
             guard = form_guard.NetworkGuard(page, taint=taint, allowed_href=allowed_href,
                                             known_urls=await form_guard.NetworkGuard.collect_known_urls(page))
             guard.isolated = self.browser.isolated
@@ -537,6 +609,7 @@ class Daemon:
                                       + "; ".join(report["blocked"])[:500])
             return {"url": page.url, "guard": report}
         if kind is CommandKind.CLICK_SUBMIT:
+            await self._require_containment()
             await self._lift_resting(session)
             result = await self._click_submit(page, args)
             await self._after_submit(page, session)
