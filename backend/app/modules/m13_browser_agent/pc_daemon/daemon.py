@@ -128,14 +128,34 @@ class Daemon:
         self._capabilities = set(config.capabilities)
         # One-shot submit tokens/approvals already used (audit findings 3 and F2). Kept on
         # disk so a restart cannot replay them; the deadline is also signed into the token.
-        self.consumed_path = config.consumed_path or ""
+        from .config import DEFAULT_STATE_DIR
+        safe_device = "".join(ch if ch.isalnum() or ch in "-_" else "_" for ch in config.device_id) or "device"
+        # Never an in-memory-only store: an unset path means the device's default file.
+        self.consumed_path = config.consumed_path or str(DEFAULT_STATE_DIR / f"consumed_{safe_device}.json")
         self._consumed_submit: dict[str, float] = {}
         self._store_epoch: str | None = None
         self._store_seq = 0
         self._store_strict = False
         self._store_created = time.time()
         self._store_error = ""
+        self._resting: dict[str, Any] = {}
         self._init_store()
+
+    # -- resting guard -----------------------------------------------------------------
+    # After a guarded click the guard is NOT removed: it stays on the session page for the life of
+    # that document, so a hostile timer, event source, worker or keepalive cannot fire unguarded
+    # after the click window. It is lifted only when the daemon replaces the document itself
+    # (NAVIGATE), closes the session, or starts the next guarded click. Pages the owner uses in
+    # their own tabs are never touched (the guard ignores requests from other pages).
+
+    async def _lift_resting(self, session: str) -> None:
+        guard = self._resting.pop(session, None)
+        if guard is not None:
+            await guard.remove()
+
+    async def _rest(self, session: str, guard: Any) -> None:
+        await guard.close_popups()
+        self._resting[session] = guard
 
     # -- consumed-submit store -------------------------------------------------------
     # Record: {"v":1,"device","epoch","created_at","seq","consumed":{key:expiry},"strict","mac"},
@@ -159,11 +179,20 @@ class Daemon:
         payload = json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
         return hmac.new(self.config.command_secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
 
-    @property
-    def anchor_path(self) -> Path:
-        base = os.environ.get("ATLAS_PC_ANCHOR_DIR") or str(Path.home() / ".atlas-pc" / "anchors")
+    def anchor_paths(self) -> list[Path]:
+        """Two anchors in two directory trees, each keyed by device id, resolved once per call.
+
+        Primary: ATLAS_PC_ANCHOR_DIR or ~/.atlas-pc/anchors. Secondary (a different tree):
+        ATLAS_PC_ANCHOR_DIR2 or /var/tmp/atlas-pc-anchors-<uid>. Both are pinned inside the record
+        and the anchors, so pointing the daemon at other directories is refused, not accepted."""
+        primary = os.environ.get("ATLAS_PC_ANCHOR_DIR") or str(Path.home() / ".atlas-pc" / "anchors")
+        secondary = os.environ.get("ATLAS_PC_ANCHOR_DIR2") or f"/var/tmp/atlas-pc-anchors-{os.getuid()}"
         safe = "".join(ch if ch.isalnum() or ch in "-_" else "_" for ch in self.config.device_id) or "device"
-        return Path(base) / f"{safe}.anchor.json"
+        return [Path(os.path.realpath(d)) / f"{safe}.anchor.json" for d in (primary, secondary)]
+
+    @property
+    def anchor_path(self) -> Path:  # primary, kept for callers and tests
+        return self.anchor_paths()[0]
 
     def _signed(self, body: dict[str, Any]) -> dict[str, Any]:
         return {**body, "mac": self._mac(body)}
@@ -204,6 +233,7 @@ class Daemon:
         if (raw.get("v") != 1 or raw.get("device") != self.config.device_id
                 or not isinstance(raw.get("epoch"), str) or not raw["epoch"]
                 or not isinstance(raw.get("strict"), bool)
+                or not isinstance(raw.get("anchor_dirs"), list)
                 or isinstance(raw.get("seq"), bool) or not isinstance(raw.get("seq"), int)
                 or isinstance(raw.get("created_at"), bool) or not isinstance(raw.get("created_at"), (int, float))
                 or not isinstance(consumed, dict)
@@ -212,15 +242,19 @@ class Daemon:
             raise ValueError("wrong shape or another device's record")
         return raw
 
-    def _read_anchor(self) -> dict[str, Any] | None:
+    def _read_anchor(self, path: Path) -> dict[str, Any] | None:
         try:
-            raw = self._verify(json.loads(self.anchor_path.read_text()))
+            raw = self._verify(json.loads(path.read_text()))
         except FileNotFoundError:
             return None
         if (raw.get("v") != 1 or raw.get("device") != self.config.device_id or not isinstance(raw.get("epoch"), str)
-                or isinstance(raw.get("seq"), bool) or not isinstance(raw.get("seq"), int)):
-            raise ValueError("anchor has the wrong shape")
+                or isinstance(raw.get("seq"), bool) or not isinstance(raw.get("seq"), int)
+                or raw.get("anchor_dirs") != self._pins()):
+            raise ValueError("anchor has the wrong shape or pins other anchor directories")
         return raw
+
+    def _pins(self) -> list[str]:
+        return [str(path) for path in self.anchor_paths()]
 
     def _atomic_write(self, path: Path, body: dict[str, Any]) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -233,13 +267,15 @@ class Daemon:
         os.replace(tmp, path)
 
     def _write_store(self) -> None:
-        """Record first, anchor second: a crash between them leaves the record ahead (safe)."""
+        """Record first, anchors second: a crash between them leaves the record ahead (safe)."""
         self._atomic_write(Path(self.consumed_path), self._signed({
             "v": 1, "device": self.config.device_id, "epoch": self._store_epoch,
             "created_at": self._store_created, "seq": self._store_seq,
-            "consumed": self._consumed_submit, "strict": self._store_strict}))
-        self._atomic_write(self.anchor_path, self._signed({
-            "v": 1, "device": self.config.device_id, "epoch": self._store_epoch, "seq": self._store_seq}))
+            "consumed": self._consumed_submit, "strict": self._store_strict, "anchor_dirs": self._pins()}))
+        anchor = self._signed({"v": 1, "device": self.config.device_id, "epoch": self._store_epoch,
+                               "seq": self._store_seq, "anchor_dirs": self._pins()})
+        for path in self.anchor_paths():
+            self._atomic_write(path, anchor)
 
     def _adopt(self, raw: dict[str, Any]) -> None:
         self._store_epoch = raw["epoch"]
@@ -249,21 +285,18 @@ class Daemon:
         self._consumed_submit = {k: float(v) for k, v in raw["consumed"].items()}
 
     def _check_against_anchor(self, raw: dict[str, Any]) -> None:
-        """Raise ValueError unless the record is consistent with the device anchor."""
-        anchor = self._read_anchor()
-        if anchor is None:
-            if raw["seq"] > 0:
-                raise ValueError("the device anchor is missing but the record has been used")
-            return
-        if anchor["epoch"] != raw["epoch"]:
+        """Raise ValueError unless the record agrees with the device anchors in both trees."""
+        if raw["anchor_dirs"] != self._pins():
+            raise ValueError("the record pins other anchor directories than the ones configured now")
+        anchors = [a for a in (self._read_anchor(path) for path in self.anchor_paths()) if a is not None]
+        if not anchors:
+            raise ValueError("every device anchor is missing")
+        if any(a["epoch"] != raw["epoch"] for a in anchors):
             raise ValueError("the record is not the one the device anchor points to")
-        if raw["seq"] < anchor["seq"]:
+        if raw["seq"] < max(a["seq"] for a in anchors):
             raise ValueError("the record went backwards (an older copy was restored)")
 
     def _init_store(self) -> None:
-        if not self.consumed_path:
-            self._store_epoch = "memory"
-            return
         try:
             lost = Path(self.consumed_path + ".lock").exists()
             with self._store_lock():
@@ -272,7 +305,7 @@ class Daemon:
                 except FileNotFoundError:
                     import secrets
                     # Missing record: strict when anything proves one existed (lock file or anchor).
-                    self._store_strict = lost or self._read_anchor() is not None
+                    self._store_strict = lost or any(path.exists() for path in self.anchor_paths())
                     self._store_epoch = secrets.token_hex(16)
                     self._store_created = time.time()
                     self._store_seq = 0
@@ -287,16 +320,6 @@ class Daemon:
     def _consume_submit(self, keys: tuple[str, ...], deadline: float) -> str | None:
         """Atomically record one-shot use. Returns an error string (refuse) or None (consumed)."""
         from ..session_bridge.form_guard import ARM_TTL_SECONDS
-        if not self.consumed_path:
-            now = time.time()
-            for key, expires in list(self._consumed_submit.items()):
-                if expires < now:
-                    del self._consumed_submit[key]
-            if any(key in self._consumed_submit for key in keys):
-                return "replay"
-            for key in keys:
-                self._consumed_submit[key] = deadline + 3600.0
-            return None
         hint = "Move the record file aside and restart the daemon to start a new one (older tokens are then refused)."
         if self._store_error:
             return f"{self._store_error}; refusing every submit. {hint}"
@@ -414,6 +437,7 @@ class Daemon:
             return await run_social_read(args)
         page = await self.browser.page(session)
         if kind is CommandKind.NAVIGATE:
+            await self._lift_resting(session)  # the document is about to be replaced by the daemon
             response = await page.goto(str(args["url"]), wait_until=str(args.get("wait_until", "domcontentloaded")))
             html_excerpt = (await page.content())[:4000]
             return {"url": page.url, "http_status": getattr(response, "status", None),
@@ -449,9 +473,11 @@ class Daemon:
             # Baseline guard for every daemon-driven click: nothing is approved here, so any
             # non-GET request or body-carrying navigation (including a JS-driven submit from a
             # button, label, or custom element) is aborted and reported.
+            await self._lift_resting(session)
             taint = await form_guard.NetworkGuard.collect_taint(page)
             allowed_href = await locator.evaluate("el => (el.closest('a') || {}).href || ''")
-            guard = form_guard.NetworkGuard(page, taint=taint, allowed_href=allowed_href)
+            guard = form_guard.NetworkGuard(page, taint=taint, allowed_href=allowed_href,
+                                            known_urls=await form_guard.NetworkGuard.collect_known_urls(page))
             await guard.install()
             page_blocked = []
             try:
@@ -467,22 +493,33 @@ class Daemon:
                 try:
                     recalled = await page.evaluate(form_guard.NAV_RECALL_JS) or []
                     guard.page_reports.extend(item for item in recalled if item not in guard.page_reports)
-                    await page.evaluate(form_guard.GUARD_REMOVE_JS)
                 except Exception:  # noqa: BLE001 - navigation destroyed the old document
                     pass
             finally:
-                await guard.remove()
+                await self._rest(session, guard)  # stays installed for the life of this document
             report = guard.report()
             if report["blocked"]:
                 raise PermissionError("navigation click attempted an unapproved request; blocked: "
                                       + "; ".join(report["blocked"])[:500])
             return {"url": page.url, "guard": report}
         if kind is CommandKind.CLICK_SUBMIT:
-            return await self._click_submit(page, args)
+            await self._lift_resting(session)
+            result = await self._click_submit(page, args)
+            await self._after_submit(page, session)
+            return result
         if kind is CommandKind.CLOSE:
+            await self._lift_resting(session)
             closed = await self.browser.close_page(session)
             return {"closed": closed}
         raise RuntimeError(f"unsupported command kind: {kind}")
+
+    async def _after_submit(self, page: Any, session: str) -> None:
+        """The approved POST is done: leave a baseline guard on the resulting document."""
+        from ..session_bridge import form_guard
+        guard = form_guard.NetworkGuard(page, taint=(), known_urls=await form_guard.NetworkGuard.collect_known_urls(page))
+        guard.nav_seen = True
+        await guard.install()
+        await self._rest(session, guard)
 
     async def _click_submit(self, page: Any, args: dict[str, Any]) -> dict[str, Any]:
         """The one approved click: verify in the real browser, guard it, then click."""
