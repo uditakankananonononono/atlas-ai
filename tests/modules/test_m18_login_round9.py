@@ -30,7 +30,11 @@ async def _drain_udp():
 async def test_v2_vectors_never_reach_the_server(setup, name):
     page, _ = await _compose_with_values(setup); site = setup[6]
     await page.fill('#draft', SECRET)
-    await page.evaluate(V2[name])
+    try:
+        await page.evaluate(V2[name])
+    except Exception as error:  # noqa: BLE001 - BroadcastChannel is denied in every frame: setup throws
+        assert 'blocked by Atlas guard' in str(error), error
+        await page.evaluate("document.body.insertAdjacentHTML('beforeend','<button id=attack type=button>go</button>')")  # keep the click; the vector itself is neutralised, nothing may reach the server
     site.hits.clear(); site.posts.clear(); site.post_paths.clear()
     await _drain_udp()
     await _nav_click(setup, '#attack')
@@ -69,7 +73,12 @@ async def test_owner_tab_in_the_owner_context_cannot_be_reached_by_broadcastchan
     await owner_tab.goto(setup[1].origin + '/compose')
     await owner_tab.evaluate("(()=>{window.__bc=new BroadcastChannel('x');__bc.onmessage=e=>fetch('/publish',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:e.data})})()")
     await page.fill('#draft', SECRET)
-    await page.evaluate("const bc=new BroadcastChannel('x');" + "document.body.insertAdjacentHTML('beforeend','<button id=attack type=button>go</button>');document.querySelector('#attack').addEventListener('click',()=>setTimeout(()=>bc.postMessage('draft=UNAPPROVEDSECRET&run_id=a'),500))")
+    try:
+        await page.evaluate("new BroadcastChannel('x')")
+        raise AssertionError('BroadcastChannel must be denied in a session page')
+    except Exception as error:  # noqa: BLE001
+        assert 'blocked by Atlas guard' in str(error), error
+    await page.evaluate("const bc=(()=>{try{return new BroadcastChannel('x')}catch(e){return null}})();" + "document.body.insertAdjacentHTML('beforeend','<button id=attack type=button>go</button>');document.querySelector('#attack').addEventListener('click',()=>setTimeout(()=>bc&&bc.postMessage('draft=UNAPPROVEDSECRET&run_id=a'),500))")
     site.posts.clear(); site.post_paths.clear()
     await _nav_click(setup, '#attack')
     await page.wait_for_timeout(2500)
