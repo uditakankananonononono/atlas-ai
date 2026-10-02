@@ -78,6 +78,7 @@ class BrowserHandle:
         self._context = None
         self._session_ctx = None
         self._probe_ok = None
+        self._launched = False
         self._pages: dict[str, Any] = {}
 
     async def start(self) -> None:
@@ -91,6 +92,7 @@ class BrowserHandle:
         else:
             profile = Path(self.config.profile_dir)
             profile.mkdir(parents=True, exist_ok=True)
+            self._launched = True
             self._context = await self._playwright.chromium.launch_persistent_context(
                 str(profile), headless=False, args=self.launch_args())
 
@@ -118,12 +120,16 @@ class BrowserHandle:
         extra = list(self.config.browser_args)
         if any(arg.startswith("--proxy-server") or arg.startswith("--proxy-pac-url") for arg in extra):
             raise ValueError("a proxy is not allowed for a guarded browser (it would carry the site's traffic and DNS)")
+        rules = [arg.split("=", 1)[1] for arg in extra if arg.startswith("--host-resolver-rules=")]
+        extra = [arg for arg in extra if not arg.startswith("--host-resolver-rules=")]
         args = ["--disable-quic", "--no-proxy-server",
                 "--force-webrtc-ip-handling-policy=disable_non_proxied_udp",
                 "--webrtc-ip-handling-policy=disable_non_proxied_udp", *extra]
         if self.config.site_hosts:
-            if not any(arg.startswith("--host-resolver-rules") for arg in extra):
-                args.append("--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE " + ", EXCLUDE ".join(self.config.site_hosts))
+            # Merge with any rules the caller passed (theirs first, so they keep precedence), then deny the rest.
+            rules.append("MAP * ~NOTFOUND, EXCLUDE " + ", EXCLUDE ".join(self.config.site_hosts))
+        if rules:
+            args.append("--host-resolver-rules=" + ", ".join(rules))
         return args
 
     async def verify_containment(self) -> str | None:
@@ -131,10 +137,16 @@ class BrowserHandle:
         the flags. An attached (CDP) browser is refused unless the owner attested its launch flags AND a
         live probe shows no UDP/ICE packet leaves it. DNS containment over CDP is attested, never probed."""
         if not self.config.cdp_url:
+            if self._launched and not self.config.site_hosts and not any(
+                    arg.startswith("--host-resolver-rules=") for arg in self.config.browser_args):
+                return ("guarded sessions are refused: this daemon launched the browser without site_hosts "
+                        "(or a --host-resolver-rules in browser_args), so a secret could leave as a DNS name")
             return None
         if not self.config.cdp_containment_attested:
             return ("guarded sessions are refused on an attached browser: the daemon cannot set network "
-                    "containment flags over CDP (attest a browser started with launch_args() or let the daemon launch it)")
+                    "containment flags over CDP. Attest (cdp_containment_attested) ONLY a browser you started with "
+                    "launch_args() including host-resolver-rules for the site; the daemon's live probe checks the "
+                    "page-script WebRTC layer only, not DNS, proxy or your flags")
         if self._probe_ok is None:
             self._probe_ok = await self._udp_probe()
         return None if self._probe_ok else "the attached browser let WebRTC/ICE UDP out in a live probe"
