@@ -475,3 +475,19 @@ Honest limits that remain: one bit per click through whether/within-window; anyt
 and the owner later sends by hand; the window before the click; Cookie contents only for non-httpOnly
 cookies (a script cannot set httpOnly ones). A second guarded click is a second bit, so a script that
 survives many clicks can still move data one bit at a time: the guard bounds the rate, not the total.
+
+## Round 13 (independent review of round 12: pass with limits, two items)
+
+- The cookie baseline now includes httpOnly cookies. A page script that talks to its own server before
+  the click (a fetch of `/setc?d=<base64 draft>` on the textarea's `input` event) lets the SERVER plant an
+  httpOnly cookie from the draft; round 12 compared only script-writable cookies, so that cookie would ride
+  the daemon-sent navigation. Now any cookie, httpOnly or not, that differs from the load-time baseline
+  makes the guarded click refuse, and the jar is put back (planted cookies removed, changed ones restored).
+  False positive: a server that legitimately sets or rotates any cookie after the page loaded (session
+  refresh, analytics) makes the guarded click refuse; that is the fail-closed choice.
+- The pre-click window is NOT contained, and no later fix can contain it: the guard is installed at
+  the click. A page script that fetches, beacons or posts the draft to its own origin as the owner types
+  has already sent it. The round-13 test asserts the planted cookie never rides the navigation; it does not
+  and cannot claim the earlier request was stopped. Cross-origin requests before the click are likewise not
+  stopped. What this system defends is the click and what follows it, not a malicious page that is already
+  reading the draft while the owner types it. Do not fill a draft on a page whose script you do not trust.

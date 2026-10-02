@@ -761,18 +761,28 @@ class NetworkGuard:
             return "no load-time snapshot of the page, so its URL and cookies cannot be vouched for"
         if getattr(self, "url_at_request", self.page.url).split("#")[0] != self.shipped_url:
             return "page URL changed after load (it would ride in Referer)"
-        now = {}
-        for cookie in await self.context.cookies():
-            if not cookie.get("httpOnly"):
-                now[(cookie["name"], cookie["domain"], cookie["path"])] = cookie["value"]
-        if now != self.cookie_baseline:
-            # Put the jar back so nothing a script wrote can ride a later request either.
+        now = {(c["name"], c["domain"], c["path"]): dict(c) for c in await self.context.cookies()}
+        def view(jar):
+            return {k: (v["value"], bool(v.get("httpOnly"))) for k, v in jar.items()}
+        if view(now) != view(self.cookie_baseline):
+            # Put the jar back so nothing planted (by script, or by the server answering a script's
+            # request) can ride this or a later request.
+            for key, old in self.cookie_baseline.items():
+                if key in now and view(now)[key] == view(self.cookie_baseline)[key]:
+                    continue
+                try:
+                    if key in now:
+                        await self.context.clear_cookies(name=key[0], domain=key[1], path=key[2])
+                    keep = {k: v for k, v in old.items() if k in ("name", "value", "domain", "path", "expires", "httpOnly", "secure", "sameSite")}
+                    await self.context.add_cookies([keep])
+                except Exception:  # noqa: BLE001
+                    pass
             for key in set(now) - set(self.cookie_baseline):
                 try:
                     await self.context.clear_cookies(name=key[0], domain=key[1], path=key[2])
                 except Exception:  # noqa: BLE001
                     pass
-            return "a script-writable cookie changed during the click (it would ride in Cookie)"
+            return "a cookie (including httpOnly) differs from the load-time baseline (it would ride in Cookie)"
         return None
 
     async def expose_reporter(self) -> str:
