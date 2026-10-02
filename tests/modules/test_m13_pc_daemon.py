@@ -66,6 +66,11 @@ class FakeBrowser:
     def __init__(self):
         self._page = FakePage()
 
+    isolated = False
+
+    async def verify_containment(self):
+        return None  # a fake browser has no network to contain
+
     async def page(self, name):
         return self._page
 
