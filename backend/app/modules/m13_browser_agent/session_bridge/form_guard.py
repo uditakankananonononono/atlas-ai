@@ -180,6 +180,15 @@ NAV_GUARD_JS_TEMPLATE = """
     return orig.send.apply(this, arguments);
   };
   navigator.sendBeacon = function() { note('script sendBeacon'); return false; };
+  const origRTC = window.RTCPeerConnection, origWRTC = window.webkitRTCPeerConnection;
+  const origBC = window.BroadcastChannel, origSW = window.SharedWorker;
+  const deny = (name) => function() { note('script ' + name); throw new DOMException('blocked by Atlas guard', 'SecurityError'); };
+  if (origRTC) window.RTCPeerConnection = deny('RTCPeerConnection');
+  if (origWRTC) window.webkitRTCPeerConnection = deny('webkitRTCPeerConnection');
+  const origBCpost = origBC ? origBC.prototype.postMessage : null;
+  if (origBC) origBC.prototype.postMessage = function() { note('script BroadcastChannel.postMessage'); };
+  if (origBC) window.BroadcastChannel = deny('BroadcastChannel');
+  if (origSW) window.SharedWorker = deny('SharedWorker');
   const origOpen = window.open;
   window.open = function() { note('script window.open'); return null; };
   const OrigWS = window.WebSocket, OrigES = window.EventSource;
@@ -191,7 +200,7 @@ NAV_GUARD_JS_TEMPLATE = """
     window.removeEventListener('submit', handler, true);
     document.removeEventListener('securitypolicyviolation', cspHandler, true);
     window.fetch = orig.fetch; XMLHttpRequest.prototype.send = orig.send; XMLHttpRequest.prototype.open = orig.open;
-    navigator.sendBeacon = orig.beacon; window.open = origOpen; window.WebSocket = OrigWS; if (OrigES) window.EventSource = OrigES;
+    navigator.sendBeacon = orig.beacon; window.open = origOpen; if (origRTC) window.RTCPeerConnection = origRTC; if (origWRTC) window.webkitRTCPeerConnection = origWRTC; if (origBC) { window.BroadcastChannel = origBC; origBC.prototype.postMessage = origBCpost; } if (origSW) window.SharedWorker = origSW; window.WebSocket = OrigWS; if (OrigES) window.EventSource = OrigES;
     HTMLFormElement.prototype.submit = orig.submit;
     HTMLFormElement.prototype.requestSubmit = orig.requestSubmit;
   }};
@@ -283,6 +292,21 @@ def _origin(url: str) -> tuple[str, str, int | None]:
     return (parts.scheme.lower(), (parts.hostname or "").lower(), parts.port or {"http": 80, "https": 443}.get(parts.scheme.lower()))
 
 
+def markup_urls(html: str, base: str) -> set[str]:
+    """Absolute URLs a document's own markup refers to (src, href, action, poster, srcset, url())."""
+    import re as _re
+    found = set()
+    for value in _re.findall(r"""(?:src|href|action|poster|data)\s*=\s*["']([^"']+)["']""", html, _re.I):
+        found.add(urljoin(base, value.strip()))
+    for value in _re.findall(r"""srcset\s*=\s*["']([^"']+)["']""", html, _re.I):
+        for part in value.split(","):
+            if part.strip():
+                found.add(urljoin(base, part.strip().split()[0]))
+    for value in _re.findall(r"url\(\s*['\"]?([^'\")]+)", html, _re.I):
+        found.add(urljoin(base, value.strip()))
+    return found
+
+
 def _is_secure_context(url: str) -> bool:
     parts = urlsplit(url)
     return parts.scheme == "https" or (parts.hostname or "") in {"localhost", "127.0.0.1", "::1"}
@@ -331,11 +355,10 @@ def parse_set_cookie(url: str, raw: str, now: float | None = None, top_site: str
         return None
     expires = None
     if isinstance(attrs.get("max-age"), str):
-        try:
+        import re as _re
+        if _re.fullmatch(r"[+-]?[0-9]+", str(attrs["max-age"])):  # ASCII digits only, like Chromium
             seconds = int(str(attrs["max-age"]))
             expires = now + seconds if seconds > 0 else 0.0
-        except ValueError:
-            pass
     if expires is None and isinstance(attrs.get("expires"), str):
         try:
             expires = parsedate_to_datetime(str(attrs["expires"])).timestamp()
@@ -384,6 +407,8 @@ class NetworkGuard:
         self.allowed_href = allowed_href
         self.known_urls = set(known_urls)
         self.nav_seen = False
+        self.doc_urls: set[str] = set()
+        self.isolated = False
         self.window_open = False
         self.start_origin = _origin(page.url)
         self.popups: list = []
@@ -574,8 +599,9 @@ class NetworkGuard:
             except Exception:  # noqa: BLE001
                 # A navigation whose frame does not exist yet is the first request of a brand-new page
                 # (a popup). During the click window that is the click's popup: abort it. Afterwards it
-                # cannot be told apart from a tab the owner opened, so it is left alone (documented).
-                if self.window_open and request.is_navigation_request() and self.action is None:
+                # cannot be told apart from a tab the owner opened, so it is left alone unless the session runs in
+                # its own isolated context (then there are no owner tabs and it is always aborted).
+                if (self.window_open or self.isolated) and request.is_navigation_request() and self.action is None:
                     self.blocked.append(f"popup navigation {method} {request.url[:100]}")
                     await route.abort("blockedbyclient")
                 else:
@@ -601,7 +627,7 @@ class NetworkGuard:
             if self.action is None:
                 if self._baseline_allows(request):
                     if request.is_navigation_request() and request.frame == self.page.main_frame:
-                        await self._fulfill_with_csp(route)
+                        await self._fulfill_with_csp(route, request.url)
                     else:
                         await route.continue_()
                 else:
@@ -614,13 +640,18 @@ class NetworkGuard:
         self.blocked.append(f"{method} {request.url[:200]}")
         await route.abort("blockedbyclient")
 
-    async def _fulfill_with_csp(self, route) -> None:
+    async def _fulfill_with_csp(self, route, request_url: str) -> None:
         """Top-level document the click navigated to: deliver it with GUARD_CSP so its scripts cannot
         open connections. Redirects are handed back unfollowed so every hop is judged again."""
         response = await route.fetch(max_redirects=0)
         if response.status in REDIRECT_STATUSES:
             await route.fulfill(response=response)
             return
+        try:
+            body = (await response.body()).decode("utf-8", "replace")
+            self.doc_urls = markup_urls(body, request_url)
+        except Exception:  # noqa: BLE001 - no markup, so no subresource is pre-approved
+            self.doc_urls = set()
         headers = {k: v for k, v in response.headers.items() if k.lower() != "content-security-policy"}
         if "html" in headers.get("content-type", "html").lower():
             headers["content-security-policy"] = GUARD_CSP_HEADER
@@ -634,17 +665,17 @@ class NetworkGuard:
         top_nav = request.is_navigation_request() and request.frame == self.page.main_frame
         origin = _origin(url)
         if top_nav:
-            if origin != self.start_origin and url != self.allowed_href:
+            # One top-level navigation only, and only to the clicked link or a URL the page's own
+            # markup already referenced. A script-built URL (path or query carrying data) is neither.
+            if self.nav_seen or not (url == self.allowed_href or url in self.known_urls):
                 return False
             self.nav_seen = True
             self.start_origin = origin
+            self.known_urls = set()  # the new document is judged by its own markup, not the old one's
             return True
         if origin != self.start_origin:
             return False
-        if url in self.known_urls:
-            return True
-        return (self.nav_seen and request.resource_type in self.ASSET_TYPES
-                and not urlsplit(url).query)
+        return url in self.known_urls or url in self.doc_urls
 
     async def expose_reporter(self) -> str:
         """A page binding that survives navigation, so a report made just before unload still arrives."""

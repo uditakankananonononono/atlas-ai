@@ -323,3 +323,44 @@ below marked "open" is open.
 - Cookies (finding 4): empty-name cookies ("=v", or "v" with no "=") and names with spaces are now stored as
   Chromium stores them; Max-Age and Expires are clamped to 400 days so a huge value no longer makes
   add_cookies throw. Still not implemented: public-suffix checks, size/count limits, Priority.
+
+## Round 9 (audit of round 8 failed)
+
+The round-8 audit found: another same-origin tab can be handed the secret over BroadcastChannel and POST
+it unguarded (A); WebRTC/ICE reaches UDP and DNS (B); a same-origin top-level navigation or asset path
+can carry data (C, C2); a cached `window.open` after the click window opens a cross-origin popup (D);
+an old store record plus the old primary anchor with the secondary deleted was accepted; Max-Age with
+underscores or non-ASCII digits gave an expiring cookie where Chromium gives a session cookie.
+
+What changed:
+
+- A: session pages run in their own browser context (`BrowserHandle._session_context`), seeded once with a
+  copy of the owner's storage state. No other tab of the site shares its storage, BroadcastChannel or
+  workers. `BroadcastChannel`, `SharedWorker`, `RTCPeerConnection` are also blocked in the page script.
+  Limits: this needs a Browser object. A persistent-profile launch has none, so there the session shares the
+  owner's context and the isolation is NOT in force (`BrowserHandle.isolated` is False). Logins the owner
+  makes after the first session page are not copied. Page script wrappers are a backup layer only.
+- B: launch flags `--disable-quic` and `--force-webrtc-ip-handling-policy=disable_non_proxied_udp` for a
+  browser the daemon launches. They are NOT applied when attaching over CDP. `--host-resolver-rules` is not
+  applied: the site host is unknown at launch, so DNS exfiltration from a CDP-attached browser stays open.
+- C: after a guarded click, exactly one top-level navigation is allowed, and only to the clicked link or a
+  URL already in the previous document's markup. Anything else (`/idea/<b64>`, `/idea?d=...`, timers) is aborted.
+- C2: subresources of the new document are allowed only if the URL appears in the old or new document's
+  markup. Side effect: assets referenced only from scripts will not load on the page after a click.
+- D: in an isolated context any unframed navigation (a popup's first request) is aborted at all times.
+  In a shared context the old behaviour (abort during the click window only) remains.
+- Store: for a record in use BOTH anchors must exist; one missing means refuse.
+- Cookie: Max-Age is honoured only when it matches `[+-]?[0-9]+` in ASCII. Chromium is the oracle
+  (tests/modules/cookie_diff_chromium.py, run as a test).
+
+Limits that remain, plainly:
+
+- A full snapshot restore of the record and both anchors is not detectable. Neither is deleting
+  everything (record, both anchors, lock file): the store then looks like a first run.
+- A process running as the same OS user can write all device state.
+- The Playwright route cannot see keepalive requests during unload, prefetch, or a popup's first request in a
+  shared context. CSP and script wrappers are layers, not controls.
+- Network containment (host-resolver rules, proxy refusal) is not enforced for a CDP-attached browser.
+
+All auditor vectors stay as permanent tests: test_zz_auditor_r8.py, test_zz_auditor_store.py,
+cookie_diff_chromium.py, and test_m18_login_round9.py.
