@@ -723,26 +723,22 @@ class NetworkGuard:
         await route.fulfill(response=response, headers=headers)
 
     def _baseline_allows(self, request) -> bool:
-        """Baseline (non-approved) GET policy. Cross-origin: only the exact clicked link as the page's
-        top-level navigation. Same-origin: the click's own top-level navigation, then plain assets of
-        the new document; before any navigation only URLs already present in the page."""
+        """Baseline (non-approved) policy after a guarded click: exactly ONE request may leave, the
+        clicked link's own top-level navigation, to the exact href the click targets (and that the
+        server shipped). Nothing else, known or not: no subresource, fetch, image or other navigation.
+        Why not "known URLs": which of N shipped URLs a script requests is itself a channel (256 anchors
+        /k/0../k/255 and Image().src='/k/'+charCode leaks the draft one character at a time). With one
+        allowed request there is no selection left except whether and when that single navigation
+        happens (see the docs: a timing/1-bit channel remains)."""
         url = request.url
         top_nav = request.is_navigation_request() and request.frame == self.page.main_frame
-        origin = _origin(url)
-        if top_nav:
-            # One top-level navigation only, and only to the clicked link or a URL the page's own
-            # markup already referenced. A script-built URL (path or query carrying data) is neither.
-            if self.nav_seen or self._tainted(url) or not (url == self.allowed_href or url in self.known_urls):
-                return False
-            self.nav_seen = True
-            self.start_origin = origin
-            self.known_urls = set()  # the new document is judged by its own markup, not the old one's
-            return True
-        if origin != self.start_origin:
+        if not top_nav or self.nav_seen or not self.allowed_href:
             return False
-        if self._tainted(url):
+        if url != self.allowed_href or self._tainted(url):
             return False
-        return url in self.known_urls or url in self.doc_urls
+        self.nav_seen = True
+        self.start_origin = _origin(url)
+        return True
 
     async def expose_reporter(self) -> str:
         """A page binding that survives navigation, so a report made just before unload still arrives."""

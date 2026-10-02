@@ -30,6 +30,12 @@ def main(argv: list[str] | None = None) -> int:
     run = sub.add_parser("run", help="connect to Atlas and serve commands")
     run.add_argument("--cdp-url", default=None,
                      help="attach to an already-running browser, e.g. http://127.0.0.1:9222")
+    run.add_argument("--site-host", action="append", default=None,
+                     help="host the guarded session may resolve (repeatable); required for guarded submits on a "
+                          "browser this daemon launches")
+    run.add_argument("--cdp-containment-attested", action="store_true",
+                     help="you started the attached browser with the launch_args() flags; the daemon only "
+                          "probes the page-script WebRTC layer, not DNS, proxy or the flags themselves")
     run.add_argument("--config", default=str(DEFAULT_STATE_DIR / "config.json"))
 
     args = parser.parse_args(argv)
@@ -43,6 +49,10 @@ def main(argv: list[str] | None = None) -> int:
     config = DaemonConfig.load(Path(args.config))
     if args.cdp_url:
         config.cdp_url = args.cdp_url
+    if args.site_host:
+        config.site_hosts = list(args.site_host)
+    if args.cdp_containment_attested:
+        config.cdp_containment_attested = True
     if not config.device_id or not config.command_secret:
         print("This PC is not paired yet; run the 'pair' command first.", file=sys.stderr)
         return 2
