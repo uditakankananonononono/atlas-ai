@@ -68,6 +68,9 @@ class DeviceIdentity:
         return self._private.sign(message)
 
 
+NAV_WAIT_SECONDS = 0.8  # fixed delay before the daemon sends a guarded click's navigation
+
+
 class BrowserHandle:
     """Playwright lifecycle: attach over CDP or launch a persistent profile."""
 
@@ -200,6 +203,8 @@ class BrowserHandle:
                     and "html" in (response.headers.get("content-type") or ""):
                 body = (await response.body()).decode("utf-8", "replace")
                 page._atlas_doc_urls = (response.url.split("#")[0], form_guard.markup_urls(body, response.url))
+                page._atlas_cookies = {(c["name"], c["domain"], c["path"]): c["value"]
+                                       for c in await page.context.cookies() if not c.get("httpOnly")}
         except Exception:  # noqa: BLE001 - no snapshot means nothing is pre-approved
             pass
 
@@ -596,11 +601,29 @@ class Daemon:
             guard = form_guard.NetworkGuard(page, taint=taint, allowed_href=allowed_href,
                                             known_urls=await form_guard.NetworkGuard.collect_known_urls(page))
             guard.isolated = self.browser.isolated
+            snap = getattr(page, "_atlas_doc_urls", None)
+            guard.shipped_url = snap[0] if snap else None
+            guard.cookie_baseline = getattr(page, "_atlas_cookies", None)
             await guard.install()
             page_blocked = []
             try:
                 await page.evaluate(form_guard.NAV_GUARD_JS, await guard.expose_reporter())
                 await locator.click()
+                # Constant wait, then the DAEMON sends the one allowed navigation (if the page asked for it).
+                # A script that delays or withholds the click's navigation cannot move its arrival time:
+                # only whether it asked within this window can reach the server (1 bit).
+                await asyncio.sleep(NAV_WAIT_SECONDS)
+                if guard.nav_requested:
+                    problem = await guard.pre_nav_problem()
+                    if problem:
+                        guard.blocked.append(problem)
+                    else:
+                        guard.daemon_nav_ok = True
+                        try:
+                            await page.goto(allowed_href, referer=guard.shipped_url, wait_until="domcontentloaded")
+                        except Exception:  # noqa: BLE001 - the guard report decides
+                            pass
+                        guard.daemon_nav_ok = False
                 try:
                     await page.wait_for_load_state("domcontentloaded", timeout=5000)
                 except Exception:  # noqa: BLE001 - best effort; the guard report decides

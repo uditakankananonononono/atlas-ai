@@ -474,6 +474,10 @@ class NetworkGuard:
         self.allowed_href = allowed_href
         self.known_urls = set(known_urls)
         self.nav_seen = False
+        self.nav_requested = False   # the page asked for the allowed link; the daemon issues it, not the page
+        self.daemon_nav_ok = False
+        self.shipped_url = None
+        self.cookie_baseline = None
         self.doc_urls: set[str] = set()
         self.isolated = False
         self.window_open = False
@@ -690,6 +694,15 @@ class NetworkGuard:
                 await route.abort("blockedbyclient")
                 return
             if self.action is None:
+                top = request.is_navigation_request() and request.frame == self.page.main_frame
+                if top and not self.daemon_nav_ok and not self.nav_seen and self.allowed_href \
+                        and request.url == self.allowed_href:
+                    # The page's own navigation is never sent. Remember that it asked; the daemon sends
+                    # the request itself at a fixed time (no timing channel beyond whether it asked).
+                    self.nav_requested = True
+                    self.url_at_request = self.page.url
+                    await route.abort("blockedbyclient")
+                    return
                 if self._baseline_allows(request):
                     if request.is_navigation_request() and request.frame == self.page.main_frame:
                         await self._fulfill_with_csp(route, request.url)
@@ -739,6 +752,28 @@ class NetworkGuard:
         self.nav_seen = True
         self.start_origin = _origin(url)
         return True
+
+    async def pre_nav_problem(self) -> str | None:
+        """Why the daemon must NOT send the allowed navigation: the URL the Referer would carry is not
+        the server's, or a script-writable cookie differs from the load-time baseline (the Cookie header
+        would carry it). None means it is clean. Fails closed when there is no baseline."""
+        if self.shipped_url is None or self.cookie_baseline is None:
+            return "no load-time snapshot of the page, so its URL and cookies cannot be vouched for"
+        if getattr(self, "url_at_request", self.page.url).split("#")[0] != self.shipped_url:
+            return "page URL changed after load (it would ride in Referer)"
+        now = {}
+        for cookie in await self.context.cookies():
+            if not cookie.get("httpOnly"):
+                now[(cookie["name"], cookie["domain"], cookie["path"])] = cookie["value"]
+        if now != self.cookie_baseline:
+            # Put the jar back so nothing a script wrote can ride a later request either.
+            for key in set(now) - set(self.cookie_baseline):
+                try:
+                    await self.context.clear_cookies(name=key[0], domain=key[1], path=key[2])
+                except Exception:  # noqa: BLE001
+                    pass
+            return "a script-writable cookie changed during the click (it would ride in Cookie)"
+        return None
 
     async def expose_reporter(self) -> str:
         """A page binding that survives navigation, so a report made just before unload still arrives."""
