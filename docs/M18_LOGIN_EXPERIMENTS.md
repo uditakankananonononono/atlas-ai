@@ -412,3 +412,36 @@ network control; in CDP mode DNS and proxy containment are owner-attested.
 
 Auditor vectors kept as permanent tests: test_zz_my_r9.py (+ mymode_fixture.inc) driven by
 test_m18_login_round10.py in MODE=persistent, MODE=cdp, and MODE=cdp ATTEST=1.
+
+## Round 11 (audit of round 10 failed)
+
+Finding: a covert SELECTION channel over server-shipped URLs. The page ships 256 anchors /k/0../k/255
+and a script requests `/k/<charCode>` per draft character. Every URL is "known", so every request passed
+and the server reads the draft from which URLs were asked for. Taint matching cannot see data that is
+carried by the choice of URL.
+
+What changed:
+
+- After a guarded click exactly ONE request may leave: the clicked link's own top-level navigation, to the
+  exact href the server shipped for that link. Every other request is aborted, known URL or not: no
+  subresource, fetch, image, script, stylesheet, iframe, form GET or second navigation. There is no
+  initiator classification (Playwright routes do not expose the initiator and I did not add a CDP
+  Network session): whatever is not that single navigation is aborted, which is the fail-closed choice.
+  Cost: the page the click lands on gets no subresources (no CSS, images, scripts) while the guard rests.
+- Remaining selection channels, stated plainly: whether the one allowed navigation happens at all, and
+  when (a click handler that delays or prevents it) is observable by the server as at most a few bits of
+  timing/presence; anything the owner does after the guard is lifted is outside it; the window before the
+  click, when the page loaded normally, is outside it.
+- `launch_args()` now MERGES an existing `--host-resolver-rules` with the site rule (caller's rules first)
+  instead of dropping ours. `site_hosts` is set from `--site-host` on the daemon CLI; a browser this
+  daemon launched WITHOUT `site_hosts` (and without a caller resolver rule) now refuses guarded sessions.
+  With a caller-supplied resolver rule and no `site_hosts` the daemon cannot judge the rule and accepts
+  it: that is a gap, the owner's rule is trusted.
+- The CDP live UDP probe runs with FRAME_DENY_JS installed, as session pages do, so it tests ONLY the
+  page-script WebRTC layer. It says nothing about DNS, proxy, QUIC or whether the attached browser has
+  the launch flags; those are attested by the owner, and the refusal message and `--cdp-containment-attested`
+  help now say so.
+
+New permanent tests: test_m18_login_round11.py (12 selection vectors: per-character image, fetch and script
+tag over 256 anchors, binary two-URL, timing-selected single URL, navigation, anchor click, iframe,
+stylesheet, form GET; the clicked link still works; rule merge; refusal without site_hosts).
