@@ -763,7 +763,9 @@ class NetworkGuard:
             return "page URL changed after load (it would ride in Referer)"
         now = {(c["name"], c["domain"], c["path"]): dict(c) for c in await self.context.cookies()}
         def view(jar):
-            return {k: (v["value"], bool(v.get("httpOnly"))) for k, v in jar.items()}
+            # EVERY attribute the browser reports, so an expiry-, SameSite- or Secure-only change counts.
+            return {k: (v.get("value"), bool(v.get("httpOnly")), v.get("expires", -1),
+                        v.get("sameSite"), bool(v.get("secure"))) for k, v in jar.items()}
         if view(now) != view(self.cookie_baseline):
             # Put the jar back so nothing planted (by script, or by the server answering a script's
             # request) can ride this or a later request.
@@ -782,7 +784,7 @@ class NetworkGuard:
                     await self.context.clear_cookies(name=key[0], domain=key[1], path=key[2])
                 except Exception:  # noqa: BLE001
                     pass
-            return "a cookie (including httpOnly) differs from the load-time baseline (it would ride in Cookie)"
+            return "a cookie (value or any attribute: httpOnly, expires, sameSite, secure) differs from the load-time baseline (it would ride in Cookie)"
         return None
 
     async def expose_reporter(self) -> str:

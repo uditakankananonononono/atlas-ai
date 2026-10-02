@@ -35,6 +35,7 @@ async def test_two_doc(setup, name):
     finally:
         site.html_hook = None
     print(f"RESULT {name}: ok={answer['ok']} err={str(answer.get('error'))[:80]!r} leaked={leaked(site)} hits={[h[0][:9]+h[2][:40] for h in site.hits if h[2] != '/compose'][:6]}")
+    assert not leaked(site) and not site.posts, (name, leaked(site), site.posts)
 
 V2 = {
  'same_origin_top_nav_path_b64': on_click(f"location.href='/idea/'+btoa({D})"),

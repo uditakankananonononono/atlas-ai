@@ -491,3 +491,18 @@ survives many clicks can still move data one bit at a time: the guard bounds the
   and cannot claim the earlier request was stopped. Cross-origin requests before the click are likewise not
   stopped. What this system defends is the click and what follows it, not a malicious page that is already
   reading the draft while the owner types it. Do not fill a draft on a page whose script you do not trust.
+
+## Round 14 (independent review of round 13: cookie attributes)
+
+- Round 13 said any cookie that differs is refused and restored, but `pre_nav_problem()` compared only
+  (value, httpOnly) per name/domain/path. An expiry-only, SameSite-only or Secure-only change to an
+  existing baseline cookie let the guarded click proceed and the changed attribute stayed. Now the
+  comparison covers value, httpOnly, expires, sameSite and secure, and the restore puts all of them back
+  (clear the cookie, re-add the baseline copy). Tests: `test_zz_indep_r13_new.py`
+  `test_any_cookie_attribute_difference_refuses_and_restores[expires|sameSite|secure]` failed before the
+  change (click ok, attribute kept) and pass after.
+- Limits: the comparison uses what Chromium reports through `context.cookies()`. A cookie whose expiry
+  moves because the browser itself clamps or rounds it would count as a difference and refuse (fail
+  closed). Cookies for other domains or paths the context holds are compared too.
+- The nine `test_two_doc` cases in `test_zz_auditor_r8.py` used to only print what the server saw; each
+  now also asserts no leaked marker and no POST reached the server.
