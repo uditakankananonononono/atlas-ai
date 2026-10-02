@@ -14,13 +14,13 @@ async def test_sw(setup, mode):
     site.do_GET = do_GET
     await page.fill('#draft','UNAPPROVEDSECRET')
     # register SW BEFORE the daemon click (page-level script that runs on its own)
-    await page.evaluate("navigator.serviceWorker.register('/sw.js').then(()=>navigator.serviceWorker.ready)")
+    await page.evaluate("Promise.race([navigator.serviceWorker.register('/sw.js').then(()=>navigator.serviceWorker.ready),new Promise(r=>setTimeout(r,1500))]).catch(()=>0)")  # isolated context blocks SWs
     await page.wait_for_timeout(1500)
     BTN="document.body.insertAdjacentHTML('beforeend','<button id=attack type=button>go</button>');"
     if mode=='sw_post_during_click':
-        code="navigator.serviceWorker.controller.postMessage('draft=UNAPPROVEDSECRET&run_id=attack')"
+        code="(navigator.serviceWorker.controller||{postMessage(){}}).postMessage('draft=UNAPPROVEDSECRET&run_id=attack')"
     elif mode=='sw_post_after_quiet':
-        code="setTimeout(()=>navigator.serviceWorker.controller.postMessage('draft=UNAPPROVEDSECRET&run_id=attack'),6000)"
+        code="setTimeout(()=>(navigator.serviceWorker.controller||{postMessage(){}}).postMessage('draft=UNAPPROVEDSECRET&run_id=attack'),6000)"
     else:
         code="new Image().src='http://'+document.querySelector('#draft').value.toLowerCase()+'.localhost:'+location.port+'/'"
     await page.evaluate(BTN+f"document.querySelector('#attack').addEventListener('click',()=>{{{code}}});")
@@ -29,3 +29,4 @@ async def test_sw(setup, mode):
     ans = await _nav_click(setup,'#attack')
     for _ in range(9): await page.wait_for_timeout(700)
     print(f"RESULT {mode}: answer_ok={ans['ok']} err={str(ans.get('error'))[:80]!r} posts={site.posts} hits={[(h[0],h[1],h[2]) for h in site.hits if h[2]!='/sw.js'][:5]}")
+    assert not site.posts and not [h for h in site.hits if h[2] != '/sw.js' and ('unapproved' in h[0].lower() or h[0].split(':')[0] != '127.0.0.1')], site.hits
