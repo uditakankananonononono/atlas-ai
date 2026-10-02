@@ -71,7 +71,11 @@ async def test_v(setup, name):
         other = await page.context.new_page(); await other.goto(setup[1].origin+'/compose')
         await other.evaluate("(()=>{window.__bc=new BroadcastChannel('x');__bc.onmessage=e=>fetch('/publish',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:e.data})})()")
     await page.fill('#draft', SECRET)
-    await page.evaluate(V2[name])
+    try:
+        await page.evaluate(V2[name])
+    except Exception as error:  # round 9/10: BroadcastChannel is denied in session pages; setup throws
+        assert 'blocked by Atlas guard' in str(error), error
+        await page.evaluate("document.body.insertAdjacentHTML('beforeend','<button id=attack type=button>go</button>')")
     site.hits.clear(); site.posts.clear(); site.post_paths.clear()
     answer = await _nav_click(setup, '#attack')
     for _ in range(20 if '12s' in name else 14): await page.wait_for_timeout(700)
@@ -80,3 +84,4 @@ async def test_v(setup, name):
         while True: udp.append(UDP.recvfrom(2000)[0][:12])
     except Exception: pass
     print(f"RESULT {name}: udp_packets={len(udp)} ok={answer['ok']} err={str(answer.get('error'))[:80]!r} leaked={leaked(site)} posts={site.posts} hits={[h[0][:9]+h[2][:40] for h in site.hits if h[2] != '/compose'][:6]}")
+    assert not leaked(site) and not site.posts and not udp, (name, site.posts, len(udp))
