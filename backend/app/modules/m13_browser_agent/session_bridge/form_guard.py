@@ -18,7 +18,7 @@ from __future__ import annotations
 import time
 
 from typing import Any
-from urllib.parse import parse_qsl, urljoin, urlsplit
+from urllib.parse import unquote, parse_qsl, urljoin, urlsplit
 
 DEFAULT_ENCTYPE = "application/x-www-form-urlencoded"
 # Only urlencoded bodies can be compared with the approved values at click time.
@@ -207,6 +207,18 @@ NAV_GUARD_JS_TEMPLATE = """
   return true;
 }
 """
+FRAME_DENY_JS = """
+(() => {
+  for (const name of ['RTCPeerConnection', 'webkitRTCPeerConnection', 'RTCDataChannel', 'WebTransport',
+                      'BroadcastChannel', 'SharedWorker']) {
+    if (!(name in window)) continue;
+    try {
+      Object.defineProperty(window, name, {configurable: false, writable: false,
+        value: function() { throw new DOMException('blocked by Atlas guard', 'SecurityError'); }});
+    } catch (e) {}
+  }
+})();
+"""
 NAV_GUARD_JS = NAV_GUARD_JS_TEMPLATE.replace("%CSP%", repr(GUARD_CSP))
 # Same-origin fallback for a report made while the document unloads (the binding call can be lost).
 NAV_RECALL_JS = "() => { try { const k='__atlasBlocked'; const l=JSON.parse(sessionStorage.getItem(k)||'[]'); sessionStorage.removeItem(k); return l; } catch (e) { return []; } }"
@@ -290,6 +302,61 @@ MAX_GUARDED_HOPS = 5
 def _origin(url: str) -> tuple[str, str, int | None]:
     parts = urlsplit(url)
     return (parts.scheme.lower(), (parts.hostname or "").lower(), parts.port or {"http": 80, "https": 443}.get(parts.scheme.lower()))
+
+
+def _taint_forms(value: str) -> set[str]:
+    low = value.lower()
+    squeezed = "".join(ch for ch in low if ch.isalnum())
+    forms = {low, low[::-1], squeezed, squeezed[::-1]}
+    return {f for f in forms if len(f) >= TAINT_MIN_LEN}
+
+
+def url_carries_taint(url: str, taint) -> bool:
+    """Does the URL carry any filled value in a form a script could build: raw, percent-encoded twice,
+    reversed, with separators between chunks, base64 (standard or urlsafe, any alignment of the token)
+    or hex? Not a proof of absence: a keyed or compressed encoding passes. Callers also refuse URLs the
+    page did not ship (see known_urls) and long opaque path or query tokens."""
+    import base64 as _b64
+    import binascii
+    import re as _re
+    from urllib.parse import unquote_plus
+    if not taint:
+        return False
+    decoded = unquote_plus(unquote_plus(url))
+    haystacks = [decoded.lower()]
+    for token in _re.findall(r"[A-Za-z0-9_\-+/=]{6,}", decoded):
+        for variant in {token, token.replace("-", "+").replace("_", "/")}:
+            core = variant.strip("=")
+            for shift in range(4):  # a secret may start at any offset of the encoded token
+                chunk = core[shift:]
+                chunk = chunk[: len(chunk) // 4 * 4]
+                if not chunk:
+                    continue
+                try:
+                    haystacks.append(_b64.b64decode(chunk + "==", validate=False).decode("latin-1").lower())
+                except (binascii.Error, ValueError):
+                    pass
+        hexish = _re.sub(r"[^0-9a-fA-F]", "", token)
+        if len(hexish) >= 8 and len(hexish) % 2 == 0:
+            try:
+                haystacks.append(bytes.fromhex(hexish).decode("latin-1").lower())
+            except ValueError:
+                pass
+    squeezed = ["".join(ch for ch in h if ch.isalnum()) for h in haystacks]
+    for value in taint:
+        for form in _taint_forms(str(value)):
+            if any(form in h for h in haystacks) or any(form in h for h in squeezed):
+                return True
+    return False
+
+
+OPAQUE_TOKEN = __import__("re").compile(r"[A-Za-z0-9_\-+=]{16,}")
+
+
+def looks_opaque(url: str) -> bool:
+    """A long unbroken token in the path or query: how data usually rides in a URL."""
+    parts = urlsplit(url)
+    return bool(OPAQUE_TOKEN.search(unquote(parts.path)) or OPAQUE_TOKEN.search(unquote(parts.query)))
 
 
 def markup_urls(html: str, base: str) -> set[str]:
@@ -547,9 +614,7 @@ class NetworkGuard:
         await route.fulfill(response=response)
 
     def _tainted(self, url: str) -> bool:
-        from urllib.parse import unquote_plus
-        decoded = unquote_plus(unquote_plus(url))
-        return any(value in decoded or value in url for value in self.taint)
+        return url_carries_taint(url, self.taint)
 
     ASSET_TYPES = {"stylesheet", "script", "image", "font", "media"}
     NEVER_TYPES = {"websocket", "eventsource", "ping", "beacon", "csp_report", "texttrack"}
@@ -667,13 +732,15 @@ class NetworkGuard:
         if top_nav:
             # One top-level navigation only, and only to the clicked link or a URL the page's own
             # markup already referenced. A script-built URL (path or query carrying data) is neither.
-            if self.nav_seen or not (url == self.allowed_href or url in self.known_urls):
+            if self.nav_seen or self._tainted(url) or not (url == self.allowed_href or url in self.known_urls):
                 return False
             self.nav_seen = True
             self.start_origin = origin
             self.known_urls = set()  # the new document is judged by its own markup, not the old one's
             return True
         if origin != self.start_origin:
+            return False
+        if self._tainted(url):
             return False
         return url in self.known_urls or url in self.doc_urls
 
@@ -783,9 +850,22 @@ class NetworkGuard:
 
     @staticmethod
     async def collect_known_urls(page) -> list[str]:
-        """URLs already present in the page before the click (resources fetched, links, sources)."""
-        urls = await page.evaluate(KNOWN_URLS_JS)
-        return [u for u in urls if isinstance(u, str)] + [page.url]
+        """URLs the SERVER's response for this document shipped (snapshot taken at load, before anything
+        was filled). The live DOM is not trusted: a script can add a link whose URL encodes the draft and
+        the click-time DOM would then list it. No snapshot (document not seen as a response) means nothing
+        is pre-approved."""
+        snapshot = getattr(page, "_atlas_doc_urls", None)
+        if snapshot is None or snapshot[0] != page.url.split("#")[0]:
+            return [page.url]
+        return sorted(snapshot[1]) + [page.url]
+
+    @staticmethod
+    async def shipped_href(page, href: str) -> str:
+        """The clicked link's target, kept only if the server shipped it."""
+        snapshot = getattr(page, "_atlas_doc_urls", None)
+        if not href or snapshot is None or snapshot[0] != page.url.split("#")[0] or href not in snapshot[1]:
+            return ""
+        return href
 
     @staticmethod
     async def collect_taint(page) -> list[str]:
