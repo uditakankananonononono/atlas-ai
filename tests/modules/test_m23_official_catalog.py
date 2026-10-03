@@ -47,7 +47,9 @@ def test_coverage_counts_and_skips_are_exact(fx):
     assert cov["skipped"]["program_rows_aggregate_or_total"] == 2 and cov["skipped"]["program_rows_unknown_unitid"] == 1
     assert "scholarships" in " ".join(cov["not_covered"]) and "not a global database" in cov["scope"]
     assert all(len(s["sha256"]) == 64 for s in cov["sources"])
-    assert cov["licence"]["url"].startswith("https://nces.ed.gov/")
+    assert cov["licence"]["url"] == "https://nces.ed.gov/about/public-access-research"
+    assert cov["licence"]["status"] == "UNCONFIRMED for these files" and "expressly excludes" in cov["licence"]["caveat"]
+    assert "does not pertain to information at websites other than" in cov["licence"]["statement"]
 
 
 def test_major_numbers_are_summed_and_titles_attached(fx):
@@ -81,7 +83,7 @@ def test_every_result_carries_file_hash_provenance(fx):
     c = oc.Catalog(fx[1])
     prov = c.search_institutions()["provenance"]
     assert set(prov["files"]) == {"hd", "completions", "cip"} and all(len(v["sha256"]) == 64 for v in prov["files"].values())
-    assert c.institution("1")["provenance"]["terms_url"] == oc.TERMS["url"]
+    assert c.institution("1")["provenance"]["terms_url"] == oc.TERMS["url"] and c.institution("1")["provenance"]["terms_status"].startswith("UNCONFIRMED")
 
 
 def test_url_normalisation_and_missing_url(fx):

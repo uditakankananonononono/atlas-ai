@@ -12,6 +12,7 @@ HONEST LIMITS (also returned by `coverage`):
 - No tuition/net-price/admission data (IPEDS HD has none; College Scorecard
   bulk files were not reachable from this environment). Budget fit stays None.
 - No scholarship source was verified, so scholarships are NOT covered.
+- Redistribution/licence status of the files is UNCONFIRMED (see TERMS); private local use only.
 - Website/URL fields are institution-reported in IPEDS; they are not re-verified live.
 """
 from __future__ import annotations
@@ -39,16 +40,19 @@ SOURCES = {
             "sha256": "6cf0882c1f5beb94981d0a1a72285ab5cf633759f45433fb909afbfb6d6b2657", "max_bytes": 5_000_000},
 }
 TERMS = {
-    "url": "https://nces.ed.gov/help/disclaimer.asp",
+    "url": "https://nces.ed.gov/about/public-access-research",
+    "requested_url": "https://nces.ed.gov/help/disclaimer.asp (HTTP 301 to the url above)",
     "statement": ("Verbatim: \"Unless stated otherwise, all information on the U.S. Department of Education's IES website at "
                   "http://ies.ed.gov is in the public domain and may be reproduced, published, linked to, or otherwise used "
                   "without IES' permission. This statement does not pertain to information at websites other than "
                   "http://ies.ed.gov, whether funded by or linked to from IES.\" Cite: U.S. Department of Education. "
                   "Institute of Education Sciences."),
     "checked_on": "2026-10-03",
-    "caveat": ("Site-level statement. It names ies.ed.gov; these files are served from nces.ed.gov (an IES center, page "
-               "titled '| IES'), so applying it to the data files is my reading, not a file-specific licence or legal "
-               "guarantee. Re-check before any redistribution."),
+    "status": "UNCONFIRMED for these files",
+    "caveat": ("The statement names ies.ed.gov and expressly excludes other websites; it does not name nces.ed.gov, "
+               "where these files are hosted. Whether the files are public domain / freely redistributable is NOT "
+               "settled and no file-specific grant was found. Treat as private/local use of public downloads with "
+               "attribution; do not redistribute the data or claim a licence until NCES clarifies the terms."),
 }
 SECTOR = {"0": "Administrative unit", "1": "Public, 4-year or above", "2": "Private not-for-profit, 4-year or above",
           "3": "Private for-profit, 4-year or above", "4": "Public, 2-year", "5": "Private not-for-profit, 2-year",
@@ -278,7 +282,7 @@ class Catalog:
         return "%" + s.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
 
     def _prov(self) -> dict:
-        return {"source": "NCES IPEDS 2024 (public bulk files)", "terms_url": TERMS["url"],
+        return {"source": "NCES IPEDS 2024 (public bulk files)", "terms_url": TERMS["url"], "terms_status": TERMS["status"],
                 "files": {k: {"url": u, "sha256": h, "retrieved_at": t}
                           for k, u, h, t in self.db.execute("SELECT key,url,sha256,retrieved_at FROM sources")}}
 

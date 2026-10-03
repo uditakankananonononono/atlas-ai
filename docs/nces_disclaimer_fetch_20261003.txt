@@ -1,5 +1,6 @@
-url: https://nces.ed.gov/help/disclaimer.asp
-fetched: 2026-10-03 18:09 IST via web_fetch; full page text sha256 874c726e5ccc25904217b67a88c56cf5716b0ee995207fa5ac2eebc64a0002d8
+requested: https://nces.ed.gov/help/disclaimer.asp -> HTTP 301 Location /about/public-access-research (curl -I, 2026-10-03)
+final URL: https://nces.ed.gov/about/public-access-research (HTTP 200); page title 'Public Access to Research Policy | IES'
+fetched 2026-10-03 18:10 IST via web_fetch; page text sha256 adf93f16463cfc9a31c32c1219f4df919b2b9270dec2abc536944b779791e2bf
 ---
 ## Permission to Replicate Information
 
