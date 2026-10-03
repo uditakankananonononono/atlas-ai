@@ -13,7 +13,7 @@ from app.modules.m13_browser_agent.pc_daemon.daemon import BrowserHandle, Daemon
 from app.modules.m13_browser_agent.session_bridge import protocol
 from app.modules.m13_browser_agent.session_bridge.protocol import CommandKind
 
-STATUS_PAGES = {"/bare403": 403, "/bare503": 503, "/bare429": 429, "/ok": 200, "/ok-accepted-jobs": 200}
+STATUS_PAGES = {"/ok-q": 200, "/bare403": 403, "/bare503": 503, "/bare429": 429, "/ok": 200, "/ok-accepted-jobs": 200}
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -30,6 +30,11 @@ class _Handler(BaseHTTPRequestHandler):
         elif path.startswith("/delayed/"):
             target = "/" + path[len("/delayed/"):]
             body = (f'<html><body><button id="sub" onclick="setTimeout(()=>{{location.href=\'{target}?token=SECRETQ\'}},400)">s'
+                    '</button></body></html>')
+            status = 200
+        elif path.startswith("/late/"):
+            target = "/" + path[len("/late/"):]
+            body = (f'<html><body><button id="sub" onclick="setTimeout(()=>{{location.href=\'{target}\'}},1600)">s'
                     '</button></body></html>')
             status = 200
         elif path == "/secrets":
@@ -217,3 +222,40 @@ async def test_read_values_refuses_unmarked_secret_looking_fields(daemon, server
     ok = await daemon.execute(protocol.make_command(
         CommandKind.READ_VALUES, {"session": "s", "selectors": ["#plain", "#note"]}, command_id=_id()))
     assert ok["ok"] is True and ok["result"]["values"] == {"#plain": "ok1", "#note": "fine"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("kind", [CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT])
+@pytest.mark.parametrize("query", ["next=/login", "challenge=1"])
+async def test_url_markers_in_query_are_classified_but_not_returned(daemon, server, kind, query):
+    STATUS_PAGES["/ok-q"] = 200
+    answer = await daemon.execute(protocol.make_command(
+        CommandKind.NAVIGATE, {"session": "s", "url": f"{server}/start/ok-q?{query}"}, command_id=_id()))
+    # the form posts GET to /ok-q without query, so go through a redirecting start page instead
+    args = _submit_args("ap-qm") if kind is CommandKind.CLICK_SUBMIT else {"session": "s", "selector": "#go"}
+    page = await daemon.browser.page("s")
+    await page.goto(f"{server}/ok-q?{query}")
+    await page.set_content(f'<a id="go" href="{server}/ok-q?{query}">go</a><button id="sub" onclick="location.href=\'{server}/ok-q?{query}\'">s</button>')
+    args["selector"] = "#go" if kind is CommandKind.CLICK_NAV else "#sub"
+    answer = await daemon.execute(protocol.make_command(kind, args, command_id=_id()))
+    assert answer["ok"] is False and answer["blocked"] in ("login_wall", "challenge"), answer
+    assert query.split("=")[0] not in str(answer.get("error", "")) or "login" not in str(answer.get("error", "")).split("at")[-1]
+    assert "next=" not in str(answer) and "challenge=1" not in str(answer)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("kind", [CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT])
+async def test_late_navigation_beyond_window_is_never_reported_as_accepted(daemon, server, kind):
+    answer = await daemon.execute(protocol.make_command(
+        CommandKind.NAVIGATE, {"session": "s", "url": f"{server}/late/bare403"}, command_id=_id()))
+    args = _submit_args("ap-late") if kind is CommandKind.CLICK_SUBMIT else {"session": "s", "selector": "#sub"}
+    answer = await daemon.execute(protocol.make_command(kind, args, command_id=_id()))
+    # the window cannot see a 1.6s-late navigation: ok is allowed, acceptance is not claimed
+    assert answer["ok"] is True
+    assert answer["result"]["site_acceptance"] == "unconfirmed"
+    assert answer["receipt"]["payload"]["site_acceptance"] == "unconfirmed"
+    if kind is CommandKind.CLICK_SUBMIT:
+        import sqlite3
+        db = sqlite3.connect(daemon.effects.path)
+        state = db.execute("SELECT state FROM submit_effects WHERE approval_id='ap-late'").fetchone()[0]
+        assert state == "click_observed_unconfirmed"
