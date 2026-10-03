@@ -803,7 +803,7 @@ async def test_n4_daemon_refuses_click_past_its_deadline(setup):
     recipe = setup[1]
     await sessions.authorize_submit('tenant', sid, approval_id=aid, capture_sha256=run['preview_sha256'],
                                     selector=recipe.submit_selector, values=run['preview']['values'], preview=run['preview'])
-    sessions._armed[('tenant', sid)]['deadline'] = 1.0  # epoch seconds in the distant past
+    sessions._armed[('tenant', sid)]['expires_at'] = 1  # epoch seconds in the distant past
     from app.modules.m13_browser_agent.session_bridge.protocol import BridgeError
     with pytest.raises(BridgeError):
         await (await sessions.page('tenant', sid)).locator(recipe.submit_selector).click()
@@ -845,11 +845,12 @@ def _token_args(paired, selector, values, **extra):
     approval, capture = 'appr-1', 'c' * 64
     digest_ = values_digest(values)
     import time as _time
-    deadline = extra.pop('deadline', _time.time() + 60)
+    expires_at = int(extra.pop('expires_at', _time.time() + 60))  # unified v3 token: device/session/expiry signed
     token = protocol.submit_token(paired['command_secret'], approval_id=approval, capture_sha256=capture,
-                                  selector=selector, values_digest=digest_, deadline=deadline)
+                                  selector=selector, values_digest=digest_, device_id=paired['device_id'],
+                                  session='experiment', expires_at=expires_at)
     return {'session': 'experiment', 'selector': selector, 'approval_id': approval, 'capture_sha256': capture,
-            'values_digest': digest_, 'values': values, 'token': token, 'deadline': deadline, **extra}
+            'values_digest': digest_, 'values': values, 'token': token, 'expires_at': expires_at, **extra}
 
 
 @pytest.mark.asyncio
@@ -917,7 +918,8 @@ async def test_f1_m13_capture_bound_submit_still_works_with_binding_and_blocks_r
     staged = await request_capture_bound_submit(service, 'tenant', 'owner', sid, '#publish', values, cap)
     service.approvals.rows[staged['approval_id']]['status'] = ApprovalStatus.APPROVED
     result = await execute_capture_bound_submit(service, sf, 'tenant', sid, '#publish', values, staged['approval_id'], cap)
-    assert result['status'] == 'submitted'
+    # unified with postclick: a dispatched click is never reported as 'submitted'; site acceptance is unconfirmed
+    assert result['status'] == 'click_dispatched_unconfirmed'
     assert setup[6].posts == ['Tutoring pilot']
     cmds = [c for c in setup[6].commands if c['kind'] == 'click_submit']
     assert len(cmds) == 1 and cmds[0]['args']['preview']['form_facts']['action'].endswith('/publish')
@@ -984,7 +986,8 @@ async def test_f3_daemon_rejects_replayed_click_submit(setup):
         await page.fill(selector, value)
     replay = protocol.make_command(protocol.CommandKind.CLICK_SUBMIT, dict(command['args']))
     answer = await setup_daemon(setup).execute(replay)
-    assert answer['ok'] is False and 'replay' in answer['error'].lower(), answer
+    assert answer['ok'] is False and ('replay' in answer['error'].lower() or 'already reserved' in answer['error'].lower()), answer  # unified: the durable reservation refuses first
+    assert answer.get('effect_uncertain') is True
     assert len(setup[6].posts) == 1
 
 
