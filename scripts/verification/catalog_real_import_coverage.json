@@ -1,0 +1,58 @@
+{
+ "scope": "US institutions in the NCES IPEDS 2024 directory only; not a global database",
+ "data_vintage": "IPEDS HD collection year 2024; completions = 2023-24 awards; CIP 2020 titles (files on nces.ed.gov dated 2025-09-21)",
+ "institutions": 6072,
+ "institutions_active": 5994,
+ "institutions_degree_granting": 4090,
+ "institutions_with_official_url": 6001,
+ "institutions_with_any_program": 5827,
+ "program_rows": 200947,
+ "cip_titles": 2325,
+ "program_rows_without_cip_title": 0,
+ "skipped": {
+  "institutions_no_unitid": 0,
+  "program_rows_unknown_unitid": 0,
+  "program_rows_aggregate_or_total": 20679,
+  "program_rows_bad_number": 0
+ },
+ "not_covered": [
+  "non-US institutions",
+  "tuition / net price / admission data",
+  "scholarships (no official bulk source verified)",
+  "programs with zero 2023-24 completions",
+  "live re-verification of websites"
+ ],
+ "program_basis": "derived from 2023-24 completions, not an offered-majors list",
+ "licence": {
+  "url": "https://nces.ed.gov/help/disclaimer.asp",
+  "statement": "Unless stated otherwise, all information on the U.S. Department of Education's IES website is in the public domain and may be reproduced, published, linked to, or otherwise used without IES' permission. Cite: U.S. Department of Education, Institute of Education Sciences.",
+  "checked_on": "2026-10-03",
+  "caveat": "Statement read from the NCES disclaimer page; not legal advice. Re-check before commercial redistribution."
+ },
+ "sources": [
+  {
+   "key": "cip",
+   "url": "https://nces.ed.gov/ipeds/cipcode/Files/CIPCode2020.csv",
+   "sha256": "6cf0882c1f5beb94981d0a1a72285ab5cf633759f45433fb909afbfb6d6b2657",
+   "bytes": 1099448,
+   "retrieved_at": "2026-10-03T12:34:48+00:00",
+   "what": "NCES CIP 2020 program titles"
+  },
+  {
+   "key": "completions",
+   "url": "https://nces.ed.gov/ipeds/datacenter/data/C2024_A.zip",
+   "sha256": "03234cc27fe4e7eb835a66d4f37aaec11bdac8dfa278f971584e1b20d03e1159",
+   "bytes": 4680679,
+   "retrieved_at": "2026-10-03T12:34:48+00:00",
+   "what": "IPEDS Completions by CIP code and award level, 2023-24 awards"
+  },
+  {
+   "key": "hd",
+   "url": "https://nces.ed.gov/ipeds/datacenter/data/HD2024.zip",
+   "sha256": "d98425c123d7c0e872aec6e83960dfb501884818bf17385c340790f3d1f28345",
+   "bytes": 1088372,
+   "retrieved_at": "2026-10-03T12:34:48+00:00",
+   "what": "IPEDS Institutional Characteristics directory, collection year 2024"
+  }
+ ]
+}

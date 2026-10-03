@@ -1,0 +1,42 @@
+  from starlette.testclient import TestClient as TestClient  # noqa
+## search Stanford CA 200
+[
+ {
+  "unitid": "243744",
+  "name": "Stanford University",
+  "city": "Stanford",
+  "state": "CA",
+  "sector_label": "Private not-for-profit, 4-year or above",
+  "control": "private_nonprofit",
+  "level": "4-year+",
+  "official_url": "https://www.stanford.edu/",
+  "id": "243744"
+ }
+] 1
+## economics bachelor, public, NY 200
+['Binghamton University', 'CUNY Bernard M Baruch College', 'CUNY Brooklyn College', 'CUNY City College', 'CUNY Hunter College'] 25
+## programs 'computer science' 200
+[
+ {
+  "cip": "11.0701",
+  "title": "Computer Science",
+  "institutions_with_2023_24_completions": 1001,
+  "completions_2023_24": 79857
+ },
+ {
+  "cip": "30.0801",
+  "title": "Mathematics and Computer Science",
+  "institutions_with_2023_24_completions": 76,
+  "completions_2023_24": 1604
+ },
+ {
+  "cip": "30.3901",
+  "title": "Economics and Computer Science",
+  "institutions_with_2023_24_completions": 8,
+  "completions_2023_24": 128
+ }
+]
+## match 200
+[('Barnard College', 0.75, None, 'https://www.barnard.edu/'), ('Binghamton University', 0.75, None, 'https://www.binghamton.edu/'), ('Adelphi University', 0.375, None, 'https://www.adelphi.edu/'), ('CUNY Bernard M Baruch College', 0.375, None, 'https://www.baruch.cuny.edu/'), ('CUNY Brooklyn College', 0.375, None, 'https://www.brooklyn.edu/'), ('CUNY City College', 0.375, None, 'https://www.ccny.cuny.edu/')]
+Schools and programs from the NCES IPEDS 2024 catalog (programs derived from 2023-24 completions). No cost data: budget fit is null. Not an admission prediction.
+## unknown 404
