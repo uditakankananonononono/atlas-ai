@@ -130,9 +130,12 @@ async def test_unusable_consumed_record_refuses_every_submit_but_keeps_reservati
     make, browser, config = env
     Path(config.consumed_path).write_text("{not json")
     d = make()
-    answer = await d.execute(cmd(config))
+    answer = await d.execute(cmd(config))  # a FRESH approval (nothing reserved yet)
     assert answer["ok"] is False and answer["effect_uncertain"] is True and browser.clicks == 0
+    assert "consumed-submit record" in answer["error"] and "unusable" in answer["error"]  # the clear store refusal, not "already reserved"
     assert reservations(d) == 1  # never silently retried later
+    again = await make().execute(cmd(config, cid="c9"))  # same approval afterwards: reservation refuses, still no click
+    assert again["ok"] is False and "already reserved" in again["error"] and browser.clicks == 0
 
 
 @pytest.mark.parametrize("raw", [
