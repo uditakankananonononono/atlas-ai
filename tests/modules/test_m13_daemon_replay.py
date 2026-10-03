@@ -52,7 +52,7 @@ class Browser:
 @pytest.fixture
 def setup(tmp_path):
     config = DaemonConfig(device_id="test-device", command_secret="test-only-secret",
-                          key_path=str(tmp_path / "key.pem"), pacing_seconds=0,
+                          key_path=str(tmp_path / "key.pem"), pacing_seconds=0, click_settle_seconds=0,
                           capabilities=["click_submit", "click_nav"])
     identity = DeviceIdentity.load_or_create(tmp_path / "key.pem")
     browser = Browser()
