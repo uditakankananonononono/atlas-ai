@@ -19,7 +19,7 @@ class GmailInbox:
                 raise ValueError('Gmail endpoint is fixed outside local testing')
         self.vault, self.token_ref, self.base = vault, token_ref, base
         self.token_provider = token_provider   # e.g. GmailOAuth.access_token; else a vault-held bearer token
-        self.client = client or httpx.Client(timeout=5, follow_redirects=False)
+        self.client = client or httpx.Client(timeout=5, follow_redirects=False, trust_env=False)
         self.used = set()
 
     def proof(self, scope):
