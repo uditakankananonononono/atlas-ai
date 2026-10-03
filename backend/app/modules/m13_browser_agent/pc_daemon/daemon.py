@@ -258,7 +258,8 @@ class Daemon:
             # ok means "click dispatched, no block seen in the bounded window". Never "site accepted".
             result["site_acceptance"] = "unconfirmed"
             payload["site_acceptance"] = "unconfirmed"
-        event = self._receipt_event(command_id, "completed", payload)
+        # A click is never "completed": the click was dispatched, the site's answer is unconfirmed.
+        event = self._receipt_event(command_id, "dispatched_unconfirmed" if is_click else "completed", payload)
         return protocol.make_result(command_id, ok=True, result=result, receipt=event)
 
     async def _run(self, kind: CommandKind, session: str, args: dict[str, Any]) -> dict[str, Any]:

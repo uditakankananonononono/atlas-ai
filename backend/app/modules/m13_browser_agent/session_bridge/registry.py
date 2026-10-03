@@ -192,4 +192,8 @@ class BridgeRegistry:
         return {"device_id": device_id, "fingerprint": device.fingerprint,
                 "events_verified": len(events), "chain_head": previous,
                 "terminal_phase": phases[-1] if phases else None,
-                "receipt_complete": bool(events and phases[-1] in {"completed", "failed", "blocked"})}
+                "receipt_complete": bool(events and phases[-1] in {
+                    "completed", "failed", "blocked", "dispatched_unconfirmed"}),
+                # receipt_complete means the chain ended, not that the site accepted anything.
+                "outcome": ({"dispatched_unconfirmed": "click_dispatched_site_acceptance_unconfirmed"}
+                            .get(phases[-1], phases[-1]) if phases else None)}

@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
+from pydantic import BaseModel
 from fastapi import Depends, HTTPException
 
 from app.auth.context import TenantContext, require_tenant
@@ -227,23 +228,34 @@ async def execute_submit(
     except Exception as error:
         raise _flow_errors(error) from error
 
-    record = flow.status(tenant.tenant_id, tenant.actor_id, session_id)
-    if record.get("opportunity_kind") == "competition" and record.get("opportunity_id"):
-        confirmation = result["confirmation"]
-        evidence = StatusEvidence(
-            source="browser_readback",
-            reference=(
-                f"paired browser session {session_id} submitted and read back at "
-                f"{confirmation['final_url']} (approval {body.approval_id})"
-            ),
-            observed_at=datetime.fromtimestamp(confirmation["observed_at"], timezone.utc),
-            status=SubmissionStatus.SUBMITTED,
-        )
-        try:
-            service.update_status(record["opportunity_id"], evidence)
-        except Exception as error:
-            raise _flow_errors(error) from error
+    # Competition status is NOT advanced here: a dispatched click is not source evidence of acceptance.
     return result
+
+
+class ConfirmSubmittedIn(BaseModel):
+    owner_confirmed: bool
+
+
+@router.post(_BASE + "/sessions/{session_id}/confirm-submitted")
+async def confirm_submitted(
+    session_id: str,
+    body: ConfirmSubmittedIn,
+    tenant: TenantContext = Depends(require_tenant),
+    flow: ApplicationFlow = Depends(get_application_flow),
+):
+    """The owner confirms, after checking the site, that it accepted the submit.
+
+    Dispatch alone never reaches "submitted". This records the owner's confirmation
+    in the workflow only; it does not write competition status evidence.
+    """
+    try:
+        return await flow.confirm_submission(tenant.tenant_id, tenant.actor_id, session_id, body.owner_confirmed)
+    except ActorMismatchError as error:
+        raise HTTPException(status_code=403, detail=str(error)) from error
+    except PermissionError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
+    except Exception as error:
+        raise _flow_errors(error) from error
 
 
 @router.get(_BASE + "/sessions/{session_id}")
