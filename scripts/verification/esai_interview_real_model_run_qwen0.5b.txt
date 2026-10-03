@@ -1,0 +1,36 @@
+OPENING (fixed script): What experience has shaped how you see yourself?
+
+--- turn 1 (6.0s) ---
+STUDENT: When my family moved to a new town in eighth grade I didn't know anyone, so I started a robotics club at my school because nobody else would, and I taught twelve younger kids to solder.
+NEXT QUESTION: How did your experience with a new town and the success of the robotics club at school inspire you to pursue a career in technology? [adaptive_local_model]
+extraction: adaptive_local_model grounded 0 rejected 2 | 
+
+--- turn 2 (6.2s) ---
+STUDENT: I stayed after school every day even when only two people came, because I promised the younger kids that the club would still be there next week.
+NEXT QUESTION: What were some specific ways that the robotics club at your school inspired you to pursue a career in technology, and how have these experiences impacted your decision to stay after school every day? [adaptive_local_model]
+extraction: adaptive_local_model grounded 0 rejected 1 | 
+
+--- turn 3 (8.0s) ---
+STUDENT: I get the most energy when I take something broken and make it work again, like repairing the old radio my grandfather left and hearing it play.
+NEXT QUESTION: How did your experience with the radio and its repair project inspire you to consider a career in technology, and what specific skills or traits have you developed since that project? [adaptive_local_model]
+extraction: adaptive_local_model grounded 1 rejected 1 | 
+
+--- turn 4 (8.1s) ---
+STUDENT: My teachers say I'm patient. Last spring a sophomore couldn't get her circuit to work and I sat with her for two hours until she found the loose wire herself.
+NEXT QUESTION: How did the experience of helping a fellow student fix their radio project inspire you to become more patient and develop strong problem-solving skills? [adaptive_local_model]
+extraction: adaptive_local_model grounded 0 rejected 2 | 
+
+--- turn 5 (1.7s) ---
+STUDENT: I want to study mechanical engineering and build low cost medical devices, because my grandfather's hearing aid cost more than our rent.
+NEXT QUESTION: None [None]
+extraction: adaptive_local_model grounded 2 rejected 0 | 
+
+BRANDID values: ["benefiting from my grandfather's experience"] 
+strengths: ['making it work again'] 
+patterns(beyond raw answers): ['finding a passion for engineering']
+grounded evidence items:
+  strength | making it work again | quote: 'energy when I take something broken' | turn 3
+  pattern | finding a passion for engineering | quote: 'build low cost medical devices' | turn 5
+  value | benefiting from my grandfather's experience | quote: "because my grandfather's hearing aid cost more than our rent" | turn 5
+
+SUMMARY {"turns": 5, "model_backed_question_turns": 4, "fallback_question_turns": 0, "grounded_items": 3, "rejected_items": 6}

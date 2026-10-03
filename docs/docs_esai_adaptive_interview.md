@@ -1,0 +1,3 @@
+# Adaptive interviewer (scoped)
+Local-model (loopback only, Router private=True) follow-up questions and quote-grounded BrandID items. Labels: ADAPTIVE / FALLBACK (fixed 5-question script). Items are kept only if the quote is a verbatim substring of the student's answer. Coaching only, no essay writing.
+Verified: fake-provider tests plus a real Qwen2.5-0.5B Q4 5-turn run (see esai_interview_real_model_run_qwen0.5b.txt): 4/4 questions model-made, 3 grounded items, 6 rejected. Quality is weak at 0.5B (labels sometimes off). 1.5B Q4 ran at ~1 tok/s in a 2GB sandbox, unusable here. Dell i5 hardware unknown. Not pushed. Separate from f952af2.
