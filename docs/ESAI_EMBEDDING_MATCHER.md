@@ -1,0 +1,10 @@
+# Local embedding matcher for essay-topic discovery (scoped, unaudited)
+- embedding_matcher.py: loopback-only OpenAI-compatible /v1/embeddings client (llama.cpp --embedding). No redirects, 10s total deadline, dimension checks. Orders the student's own evidence by cosine similarity to the prompt; writes no prose.
+- topic_finder returns match_mode: "embedding_local_model" (with embedding_similarity per candidate) or "token_overlap_fallback" (old behaviour, original order) when no real embedding is available. No hashing/token trick is ever labeled embedding.
+- Enabled per request through INSTINCT_EMBED_URL + INSTINCT_EMBED_MODEL (loopback only). The essay-tools topics route had no tenant auth on main and still does not (pre-existing, not changed).
+- Real models run here: all-MiniLM-L6-v2 Q8_0 GGUF and bge-small-en-v1.5 Q8_0 GGUF through llama-cpp-python, also through the real HTTP route (esai_embedding_http_check_run.txt).
+
+## Evidence about quality: no improvement claim
+My two first authored sets were length-confounded: the longest description was always the gold item (control "longest_description" scores 100% on dev20 and test38), so their numbers (dev: embedding 12/20 vs token 13/20; test: embedding 27/38 vs token 12/38) prove nothing about matching. They are kept only as raw data, marked confounded.
+A third set (balanced17) mostly controls length but the control still gets 13/17, and its distractors were authored as lexical traps. On it: token 1/17 (MRR .363), MiniLM 2/17 (.515), bge-small 5/17 (.598); chance is about 25% top-1 / MRR .52. So neither model shows a reliable advantage over chance on these hand-authored cases, and hybrid weighting did not help. The sets are small and written by me, not user data; no benchmark of real student prompts was available.
+Conclusion: real local embedding functionality and fallback labeling are verified; matching quality is NOT demonstrated.
