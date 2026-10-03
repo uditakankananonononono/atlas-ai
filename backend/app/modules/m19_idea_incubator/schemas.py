@@ -12,10 +12,24 @@ class LeanCanvasOut(BaseModel):
     problem:list[str];customer_segments:list[str];unique_value_proposition:str;solution:list[str];channels:list[str];revenue_streams:list[str];cost_structure:list[str];key_metrics:list[str];unfair_advantage:str|None=None;riskiest_assumptions:list[str]
 class GateOut(BaseModel):
     stage:Stage;proceed:bool;reasons:list[str];missing_evidence:list[str];expected_cost:float=Field(ge=0);requires_approval:bool=False
-class RunOut(BaseModel): id:str;state:str;stage:Stage;canvas:LeanCanvasOut;gates:list[GateOut];spent:float=0;budget_cap:float
+class RunOut(BaseModel):
+    id:str;state:str;stage:Stage;canvas:LeanCanvasOut|None;gates:list[GateOut];spent:float=0;budget_cap:float
+    version:int=1
+    error:str|None=None
+    lease_expires_at:datetime|None=None
+    execution_status:str="not_executed"
+    unavailable_stages:list[Stage]=Field(default_factory=lambda:[s for s in Stage if s!=Stage.INTAKE])
+    package:dict|None=None
+    package_request_hash:str|None=None
+    approval:dict|None=None
+    preview_request_hash:str|None=None
 class PreviewIn(BaseModel): artifacts:list[str];estimated_cost:float=Field(ge=0)
 class PackageIn(BaseModel): run_id:str;evidence:list[dict]=Field(default_factory=list);artifacts:list[str]=Field(default_factory=list)
-class PackageOut(BaseModel): executive_summary:str;recommendation:str;recommendation_confidence:float=Field(ge=0,le=1);market_claims:list[dict];technical_feasibility:list[str];prototype_artifacts:list[str];prototype_preview:HttpUrl|None=None;unresolved_risks:list[str];next_experiments:list[str]
+class PackageOut(BaseModel):
+ execution_status:str="draft_unverified"
+ format:str="json"
+ pdf_rendered:bool=False
+ executive_summary:str;recommendation:str;recommendation_confidence:float=Field(ge=0,le=1);market_claims:list[dict];technical_feasibility:list[str];prototype_artifacts:list[str];prototype_preview:HttpUrl|None=None;unresolved_risks:list[str];next_experiments:list[str]
 
 # Durable evidence, feasibility, experiment and decision ledger.
 class IdeaStage(str,Enum): CAPTURED="captured";DISCOVERY="discovery";VALIDATION="validation";EXPERIMENTING="experimenting";APPROVED="approved";PARKED="parked";REJECTED="rejected"

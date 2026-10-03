@@ -159,7 +159,7 @@ def semantic_behavior(row:int,payload:dict[str,Any],retrospectives:Retrospective
     if row==204:
         streams=("market_analysis","pitch_deck","mvp"); supplied=set(payload.get("streams",streams))
         if supplied!=set(streams): raise ValueError("acceptance test requires exactly the three specified streams")
-        return Result(m,"implemented",{"streams":[{"name":s,"state":"planned","acceptance_test":True} for s in streams],"parallel":True})
+        return Result(m,"planned",{"streams":[{"name":s,"state":"planned","acceptance_test":False} for s in streams],"parallel":False,"executed":False,"end_to_end_verified":False})
     if row==205:
         cadence=payload.get("cadence"); timezone_name=payload.get("timezone")
         if not cadence or not timezone_name: raise ValueError("user-controlled cadence and timezone are required")
