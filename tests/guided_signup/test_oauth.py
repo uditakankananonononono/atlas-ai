@@ -110,3 +110,47 @@ def test_inbox_uses_oauth_token_provider(parts):
     inbox = GmailInbox(vault, 'unused', client=C(), token_provider=oauth.access_token)
     inbox.proof({'sender': 'a@b.example', 'recipient': 'o@x.example', 'since': 0, 'until': 9e9})
     assert seen and seen[0].startswith('Bearer A')
+
+
+def test_connect_listener_flow_and_guards(parts):
+    import http.client
+    from app.guided_signup.connect import run_callback
+    stub, vault, oauth = parts
+    out = {}
+
+    def announce(url):
+        q = {k: v[0] for k, v in parse_qs(urlsplit(url).query).items()}
+        stub.challenge = q['code_challenge']
+        port = urlsplit(q['redirect_uri']).port
+        def get(path, host=None):
+            c = http.client.HTTPConnection('127.0.0.1', port, timeout=5)
+            c.putrequest('GET', path, skip_host=True)
+            c.putheader('Host', host or f'127.0.0.1:{port}')
+            c.endheaders()
+            r = c.getresponse(); r.read(); return r.status
+        out['rebind'] = get('/callback?state=%s&code=good' % q['state'], 'evil.example.net')
+        out['wrong_state'] = get('/callback?state=nope&code=good')
+        out['wrong_path'] = get('/other?state=%s&code=good' % q['state'])
+        out['ok'] = get('/callback?state=%s&code=good' % q['state'])
+    result = run_callback(oauth, announce, timeout=10)
+    assert out == {'rebind': 404, 'wrong_state': 400, 'wrong_path': 404, 'ok': 200}
+    assert result['done'] and vault.get('gmail-refresh') == 'R1'
+
+
+def test_client_ignores_env_proxy_and_does_not_follow_redirects(parts, monkeypatch):
+    monkeypatch.setenv('HTTPS_PROXY', 'http://127.0.0.1:1')
+    monkeypatch.setenv('HTTP_PROXY', 'http://127.0.0.1:1')
+    stub, vault, _ = parts
+    o = GmailOAuth(vault, 'client-1', token_endpoint=stub.url, auth_endpoint='http://127.0.0.1:1/auth', local_test=True)
+    o.finish(begin(stub, o), 'good')          # would fail if the proxy env were honored
+    assert o.client.follow_redirects is False
+
+
+def test_concurrent_refresh_makes_one_call(parts):
+    stub, vault, oauth = parts
+    oauth.finish(begin(stub, oauth), 'good')
+    oauth._expires = 0
+    before = len(stub.calls)
+    ts = [threading.Thread(target=oauth.access_token) for _ in range(8)]
+    [t.start() for t in ts]; [t.join() for t in ts]
+    assert len(stub.calls) - before == 1

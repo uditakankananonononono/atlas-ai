@@ -7,6 +7,7 @@ Cloud project; nothing here ships a shared client. Not exercised against real Go
 import base64
 import hashlib
 import secrets
+import threading
 import time
 from urllib.parse import urlencode, urlsplit
 
@@ -32,8 +33,9 @@ class GmailOAuth:
         self.vault, self.client_id = vault, client_id
         self.refresh_ref, self.client_secret_ref = refresh_ref, client_secret_ref
         self.token_endpoint, self.auth_endpoint = token_endpoint, auth_endpoint
-        self.client = client or httpx.Client(timeout=10, follow_redirects=False)
+        self.client = client or httpx.Client(timeout=10, follow_redirects=False, trust_env=False)   # no env proxies, no redirects
         self._pending = {}
+        self._lock = threading.Lock()      # one refresh/exchange at a time; no double refresh races
         self._access, self._expires = '', 0.0
 
     def begin(self, redirect_uri):
@@ -50,7 +52,8 @@ class GmailOAuth:
         return self.auth_endpoint + '?' + query, state
 
     def finish(self, state, code):
-        entry = self._pending.pop(state, None)      # one use; unknown/replayed state is refused
+        with self._lock:
+            entry = self._pending.pop(state, None)      # one use; unknown/replayed state is refused
         if not entry or time.time() > entry[2]:
             raise OAuthError('unknown or expired state')
         verifier, redirect_uri, _ = entry
@@ -63,15 +66,16 @@ class GmailOAuth:
         self.vault.put(self.refresh_ref, body['refresh_token'])
 
     def access_token(self):
-        if self._access and time.time() < self._expires - 30:
+        with self._lock:
+            if self._access and time.time() < self._expires - 30:
+                return self._access
+            try:
+                refresh = self.vault.get(self.refresh_ref)
+            except KeyError:
+                raise OAuthError('Gmail is not connected')
+            self._remember(self._post({'client_id': self.client_id, 'refresh_token': refresh,
+                                       'grant_type': 'refresh_token'}))
             return self._access
-        try:
-            refresh = self.vault.get(self.refresh_ref)
-        except KeyError:
-            raise OAuthError('Gmail is not connected')
-        self._remember(self._post({'client_id': self.client_id, 'refresh_token': refresh,
-                                   'grant_type': 'refresh_token'}))
-        return self._access
 
     def _post(self, data):
         if self.client_secret_ref:
