@@ -233,6 +233,10 @@ class ApplicationSession:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "ApplicationSession":
+        if "rev" in data:
+            rev = data["rev"]
+            if isinstance(rev, bool) or not isinstance(rev, int) or rev < 0:
+                raise UnsupportedSessionRecordError(f"stored session has an unsupported revision value: {rev!r}")
         return cls(**data).normalize_legacy()
 
     def public_view(self) -> dict[str, Any]:
@@ -243,7 +247,11 @@ class ApplicationSession:
         return view
 
 
-class StaleSessionError(RuntimeError):
+class UnsupportedSessionRecordError(WorkflowStateError):
+    """A stored session record has a shape this code refuses to interpret (e.g. malformed rev)."""
+
+
+class StaleSessionError(WorkflowStateError):
     """The persisted session changed since this copy was read; the write was refused."""
 
 
@@ -316,9 +324,23 @@ class ApplicationFlow:
         html = await self.browser.extract(record.tenant_id, record.session_id)
         return page, final_url, probe_auth(final_url, html), probe_captcha(html)
 
+    _STALE_AFTER_EFFECT = ("submit outcome unknown; the session record was changed by another writer, so this "
+                           "attempt's result was not recorded and the newer record was left as is; do not retry; "
+                           "check the site manually")
+
     def _blocked_after_click(self, record: ApplicationSession, reason: str, evidence: list[str]) -> ApplicationSession:
         record.outcome_uncertain = True  # typed marker; recovery never depends on the message text
-        return self._blocked(record, reason, evidence)
+        try:
+            return self._blocked(record, reason, evidence)
+        except StaleSessionError as error:
+            raise BlockedError(self._STALE_AFTER_EFFECT) from error
+
+    def _save_after_effect(self, record: ApplicationSession) -> ApplicationSession:
+        """Save after the click may have been sent. A stale write is refused, never forced over the newer row."""
+        try:
+            return self._save(record)
+        except StaleSessionError as error:
+            raise BlockedError(self._STALE_AFTER_EFFECT) from error
 
     def _blocked(self, record: ApplicationSession, reason: str, evidence: list[str]) -> ApplicationSession:
         record.status = WorkflowStatus.BLOCKED.value
@@ -649,8 +671,11 @@ class ApplicationFlow:
             else:
                 # Cancellation (or interpreter exit) after the click began: the approval is consumed and
                 # the site may have received the submit. Make that durable before unwinding.
-                self._blocked_after_click(record, "request ended after the submit click began; outcome unknown; "
-                                      "do not retry; check the site manually", [])
+                try:
+                    self._blocked_after_click(record, "request ended after the submit click began; outcome unknown; "
+                                          "do not retry; check the site manually", [])
+                except BlockedError:
+                    pass  # stale: leave the newer record; the cancellation must still propagate
                 try:
                     await self._audit(record, ActionType.SUBMIT, {
                         "phase": "interrupted_after_click", "approval_id": approval_id,
@@ -672,7 +697,7 @@ class ApplicationFlow:
             record.outcome_uncertain = False  # provably before dispatch
             record.attempt_id = ""
             record.error = f"submit click failed: {error}"
-            self._save(record)
+            self._save_after_effect(record)
             await self._audit(record, ActionType.SUBMIT, {
                 "phase": "failed", "approval_id": approval_id, "selector": payload["selector"], "error": str(error),
             })
@@ -706,7 +731,7 @@ class ApplicationFlow:
         record.status = WorkflowStatus.SUBMIT_DISPATCHED.value
         record.outcome_uncertain = True  # dispatched, acceptance unconfirmed
         record.error = ""
-        self._save(record)
+        self._save_after_effect(record)
         await self._audit(record, ActionType.SUBMIT, {
             "phase": "click_dispatched_unconfirmed",
             "approval_id": approval_id,

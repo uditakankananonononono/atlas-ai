@@ -938,7 +938,7 @@ def test_stale_save_on_typed_uncertain_click_failure_is_honest_uncertain(rig):
 
 @pytest.mark.parametrize("bad", ["x", -1, True, 1.5, None, [1]])
 def test_malformed_rev_is_refused_explicitly_not_coerced(bad):
-    from app.modules.m13_browser_agent.application_flow import ApplicationFlowError, UnsupportedSessionRecordError
+    from app.modules.m13_browser_agent.application_flow import ApplicationFlowError, ApplicationSession, UnsupportedSessionRecordError
     data = ApplicationSession(tenant_id="t", session_id="s", actor_id="a", url="https://example.com/").to_dict()
     data["rev"] = bad
     with pytest.raises(UnsupportedSessionRecordError):
