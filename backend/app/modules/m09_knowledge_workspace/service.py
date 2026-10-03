@@ -41,10 +41,14 @@ class Service:
         if n.version!=data.expected_version:raise ConflictError("node changed; refresh before editing")
         changes=data.model_dump(exclude_none=True,exclude={"expected_version"});updated=n.model_copy(update={**changes,"version":n.version+1,"updated_at":datetime.now(timezone.utc)});suggestions=self._prepare(updated);return self._persist(updated,"node.updated",suggestions)
     def create_edge(self,data:EdgeCreate,confidence=1):
-        self._node(data.source_id);self._node(data.target_id)
+        source=self._node(data.source_id);target=self._node(data.target_id)
         if data.source_id==data.target_id:raise ConflictError("self edge")
         if data.relationship in {Relationship.CHILD_OF,Relationship.BLOCKS,Relationship.DEPENDS_ON} and self._reachable(data.target_id,data.source_id,data.relationship):raise ConflictError("edge would create a cycle")
-        return self.repository.save_edge(Edge(id=str(uuid4()),confidence=confidence,created_at=datetime.now(timezone.utc),**data.model_dump()))
+        edge=Edge(id=str(uuid4()),confidence=confidence,created_at=datetime.now(timezone.utc),**data.model_dump())
+        if hasattr(self.repository,"save_node_with_suggestions"):
+            try:return self.repository.save_edge(edge,expected_versions=(source.version,target.version))
+            except GraphWriteConflict as e:raise ConflictError(str(e)) from e
+        return self.repository.save_edge(edge)
     def neighborhood(self,node_id,depth=1,limit=250):
         self._node(node_id);ids={node_id};edges=[];frontier={node_id};truncated=False
         for _ in range(min(depth,5)):
