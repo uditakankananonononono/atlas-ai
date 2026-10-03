@@ -67,6 +67,10 @@ class EpisodicMemory:
             if ep.outcome == EpisodeOutcome.SUCCEEDED and len(ep.actions) >= min_actions
         ]
 
+    def episodes(self) -> list[Episode]:
+        """All recorded episodes (the evidence base for outcome estimates)."""
+        return list(self._episodes.values())
+
     def get(self, episode_id: str) -> Episode | None:
         return self._episodes.get(episode_id)
 
