@@ -306,7 +306,7 @@ def test_full_mounted_workflow_with_owner_login_pause(rig):
     assert status["status"] == "submit_dispatched_unconfirmed"
 
     status = rig.client.get(f"/api/v1/competition-manager/applications/sessions/{sid}")
-    assert status.json()["status"] == "submitted"
+    assert status.json()["status"] == "submit_dispatched_unconfirmed"
 
     actions = [e.action.value for e in rig.audit.events]
     for expected in ("navigate", "login", "extract", "fill", "readback", "screenshot", "submit"):

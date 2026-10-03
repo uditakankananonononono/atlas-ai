@@ -133,6 +133,7 @@ class BridgedPage:
         self.device_id = device_id
         self.local_name = local_name
         self.url = sessions._urls.get((tenant_id, self.session_id), "about:blank")
+        self.last_click_observation: dict[str, Any] | None = None
 
     @property
     def session_id(self) -> str:
@@ -148,7 +149,8 @@ class BridgedPage:
 
     async def _click(self, selector: str) -> None:
         kind, extra = self._sessions._click_class(self.tenant_id, self.device_id, self.local_name, selector)
-        await self._execute(kind, {"selector": selector, **extra})
+        # Keep what the daemon observed; consumers must read it, "no exception" is not acceptance.
+        self.last_click_observation = await self._execute(kind, {"selector": selector, **extra})
 
     async def goto(self, url: str, wait_until: str = "domcontentloaded") -> Any:
         result = await self._execute(CommandKind.NAVIGATE, {"url": url, "wait_until": wait_until}, timeout=90.0)

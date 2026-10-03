@@ -39,7 +39,8 @@ class WorkflowStatus(str, Enum):
     READY = "ready"
     STAGED = "staged"
     AWAITING_SUBMIT_APPROVAL = "awaiting_submit_approval"
-    SUBMITTED = "submitted"
+    SUBMIT_DISPATCHED = "submit_dispatched_unconfirmed"  # approved click sent; site acceptance NOT confirmed
+    SUBMITTED = "submitted"                              # only after the owner confirms what the site showed
     BLOCKED = "blocked"
     FAILED = "failed"
 
@@ -578,6 +579,15 @@ class ApplicationFlow:
         try:
             await page.locator(payload["selector"]).click()
         except Exception as error:
+            text = str(error)
+            if "effect may have occurred" in text:
+                # The click was sent and the site then stopped us. Do not say "not submitted".
+                reason = f"platform blocked after the submit click; effect may have occurred; do not retry: {text}"
+                await self._audit(record, ActionType.SUBMIT, {
+                    "phase": "blocked_after_click", "approval_id": approval_id, "selector": payload["selector"],
+                    "error": text[:500]})
+                self._blocked(record, reason, [])
+                raise BlockedError(record.error) from error
             record.status = WorkflowStatus.FAILED.value
             record.error = f"submit click failed: {error}"
             self._save(record)
@@ -586,31 +596,64 @@ class ApplicationFlow:
             })
             raise BlockedError(f"submit click failed; the approval is consumed and the application was not submitted: {error}") from error
 
-        # Source readback: only what the site itself shows afterwards counts.
+        # What the paired browser saw after the click. Bounded: later navigations are not observed.
+        observation = dict(getattr(page, "last_click_observation", None) or {})
+        http_status = observation.get("http_status")
         final_url = validate_public_url(page.url, self.browser.allowed_hosts)
+        if isinstance(http_status, int) and http_status >= 400:
+            await self._audit(record, ActionType.SUBMIT, {"phase": "blocked_after_click", "approval_id": approval_id,
+                                                          "http_status": http_status})
+            self._blocked(record, f"site answered HTTP {http_status} after the submit click; "
+                                  "effect may have occurred; do not retry; confirm the outcome manually", [])
+            raise BlockedError(record.error)
         html = await self.browser.extract(tenant_id, session_id)
         captcha = probe_captcha(html)
         if captcha:
             await self._audit(record, ActionType.SUBMIT, {"phase": "blocked_after_click", "evidence": captcha, "approval_id": approval_id})
-            self._blocked(record, "site presented a CAPTCHA after the submit click; confirm the outcome manually", captcha)
+            self._blocked(record, "site presented a CAPTCHA after the submit click; effect may have occurred; do not retry; confirm the outcome manually", captcha)
             raise BlockedError(record.error)
         record.confirmation = {
             "final_url": final_url,
             "page_excerpt": re.sub(r"\s+", " ", html)[:500],
             "observed_at": time.time(),
             "approval_id": approval_id,
+            "http_status": http_status,
+            "post_click_observation": observation.get("post_click_observation"),
+            "site_acceptance": "unconfirmed",
         }
-        record.status = WorkflowStatus.SUBMITTED.value
+        record.status = WorkflowStatus.SUBMIT_DISPATCHED.value
         record.error = ""
         self._save(record)
         await self._audit(record, ActionType.SUBMIT, {
-            "phase": "executed",
+            "phase": "click_dispatched_unconfirmed",
             "approval_id": approval_id,
             "selector": payload["selector"],
             "values_digest": current["values_digest"],
             "final_url": final_url,
         })
-        return {"session_id": session_id, "status": record.status, "submitted": True, "confirmation": dict(record.confirmation)}
+        return {"session_id": session_id, "status": record.status, "submitted": False,
+                "click_dispatched": True, "site_acceptance": "unconfirmed",
+                "observation": dict(record.confirmation),
+                "note": "The approved click was sent. The site's acceptance is not confirmed; "
+                        "check what the site shows, then confirm."}
+
+    async def confirm_submission(self, tenant_id: str, actor_id: str, session_id: str,
+                                 owner_confirmed: bool) -> dict[str, Any]:
+        """Only the owner, having checked the site, moves a dispatched submit to SUBMITTED."""
+        record = self._record(tenant_id, session_id)
+        self._require_actor(record, actor_id)
+        if record.status != WorkflowStatus.SUBMIT_DISPATCHED.value:
+            raise PermissionError("no dispatched submit awaiting confirmation")
+        if owner_confirmed is not True:
+            raise PermissionError("explicit owner confirmation is required")
+        record.status = WorkflowStatus.SUBMITTED.value
+        record.confirmation = {**record.confirmation, "site_acceptance": "owner_confirmed",
+                               "owner_confirmed_at": time.time()}
+        self._save(record)
+        await self._audit(record, ActionType.SUBMIT, {"phase": "owner_confirmed_submission",
+                                                      "approval_id": record.confirmation.get("approval_id")})
+        return {"session_id": session_id, "status": record.status, "submitted": True,
+                "site_acceptance": "owner_confirmed", "confirmation": dict(record.confirmation)}
 
     def status(self, tenant_id: str, actor_id: str, session_id: str) -> dict[str, Any]:
         record = self._record(tenant_id, session_id)
