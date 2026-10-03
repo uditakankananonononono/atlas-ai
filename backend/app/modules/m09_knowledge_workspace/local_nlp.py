@@ -29,6 +29,9 @@ class LocalNLP:
                 'dimension': self.encoder.model.model_description.dim,
                 'onnx_sha256': _sha(artifact),
                 'tokenizer_sha256': _sha(model_dir / 'tokenizer.json'),
+                'config_sha256': _sha(model_dir / 'config.json'),
+                'tokenizer_config_sha256': _sha(model_dir / 'tokenizer_config.json'),
+                'special_tokens_sha256': _sha(model_dir / 'special_tokens_map.json'),
                 'fastembed_version': version('fastembed'),
             }
             self.entity_identity = {'provider': 'spacy', 'model': ner_model,

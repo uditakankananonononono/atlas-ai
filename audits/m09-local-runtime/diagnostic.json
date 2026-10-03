@@ -1,0 +1,65 @@
+{
+  "embedding": {
+    "provider": "fastembed-cpu",
+    "model": "BAAI/bge-small-en-v1.5",
+    "dimension": 384,
+    "onnx_sha256": "51f1bd0addd6e859e42c2c8021a5e5461385bb676a649f4b269aa445449f2431",
+    "tokenizer_sha256": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66",
+    "config_sha256": "13582bcf2effc85b7bf3d3f5532e686bc1c9ce86bb009d10f0ec33cbe92299dd",
+    "tokenizer_config_sha256": "0b29c7bfc889e53b36d9dd3e686dd4300f6525110eaa98c76a5dafceb2029f53",
+    "special_tokens_sha256": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+    "fastembed_version": "0.7.4"
+  },
+  "entities": {
+    "provider": "spacy",
+    "model": "en_core_web_sm",
+    "version": "3.8.0",
+    "language": "en"
+  },
+  "load_seconds": 1.3051736479999931,
+  "peak_rss_kib_linux": 354168,
+  "pairs": [
+    {
+      "a": "The cat sits on the mat.",
+      "b": "The cat sits on the mat.",
+      "cosine": 1.0,
+      "passes_existing_0_78_threshold": true,
+      "inference_seconds": 0.016605926000011095
+    },
+    {
+      "a": "The cat sits on the mat.",
+      "b": "A kitten rests on a rug.",
+      "cosine": 0.7809932199002518,
+      "passes_existing_0_78_threshold": true,
+      "inference_seconds": 0.014640573999997741
+    },
+    {
+      "a": "The cat sits on the mat.",
+      "b": "Database backups are scheduled every Sunday.",
+      "cosine": 0.33735504219229145,
+      "passes_existing_0_78_threshold": false,
+      "inference_seconds": 0.014846636000015678
+    }
+  ],
+  "extraction": [
+    {
+      "text": "Paris",
+      "type": "GPE",
+      "start": 10,
+      "end": 15
+    },
+    {
+      "text": "Alice",
+      "type": "ORG",
+      "start": 21,
+      "end": 26
+    },
+    {
+      "text": "last summer",
+      "type": "DATE",
+      "start": 27,
+      "end": 38
+    }
+  ],
+  "quality_claim": "No paraphrase accuracy claim; existing threshold unchanged."
+}
