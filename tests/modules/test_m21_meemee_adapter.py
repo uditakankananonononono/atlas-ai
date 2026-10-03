@@ -19,7 +19,7 @@ def rig(tmp_path, owner="tenant-a"):
  def wf(state,path,text):calls.append(path);state[path]=text;return {"bytes":len(text)}
  def rc(state,cmd):calls.append(cmd);return {"ran":cmd}
  sim=StatefulDeviceSimulator("dev1",paired["secret"],{"write_file":wf,"run_command":rc})
- ap=ApprovalStore();cl=MeemeeLocalClient(reg,owner,"dev1",sim.execute,ap)
+ ap=ApprovalStore();cl=MeemeeLocalClient(reg,owner,"dev1",sim.execute,ap,str(tmp_path/"d.db"))
  s=Service(Cognitive(ap,Model()),ap,local_client=cl);g=s.intake("organize",[],{})
  return reg,sim,ap,cl,s,g,calls
 
@@ -47,8 +47,30 @@ async def test_high_risk_needs_matching_approval_once(tmp_path):
 @pytest.mark.asyncio
 async def test_owner_scope_revoke_undeclared(tmp_path):
  reg,sim,ap,cl,s,g,calls=rig(tmp_path)
- bad=MeemeeLocalClient(reg,"tenant-b","dev1",sim.execute,ap)
+ bad=MeemeeLocalClient(reg,"tenant-b","dev1",sim.execute,ap,str(tmp_path/"d.db"))
  with pytest.raises(AdapterError):await bad.capabilities()
  with pytest.raises(ValueError):await s.local_action(g.id,{"kind":"click","idempotency_key":"z"})  # not granted
  reg.revoke("tenant-a","dev1")
  with pytest.raises(AdapterError):await s.local_action(g.id,{"kind":"write_file","arguments":{"path":"p","text":"t"},"idempotency_key":"k9"})
+
+@pytest.mark.asyncio
+async def test_changed_action_same_key_refused_and_audit_chain_persisted(tmp_path):
+ reg,sim,ap,cl,s,g,calls=rig(tmp_path)
+ a={"id":"a1","kind":"write_file","arguments":{"path":"n","text":"1"},"idempotency_key":"k"}
+ await cl.execute(a)
+ with pytest.raises(AdapterError):await cl.execute(dict(a,arguments={"path":"n","text":"2"}))
+ assert calls==["n"]
+ cl2=MeemeeLocalClient(reg,"tenant-a","dev1",sim.execute,ap,str(tmp_path/"d.db"))
+ assert [e.event_hash for e in cl2.chain.events]==[e.event_hash for e in cl.chain.events]
+ await cl2.execute(dict(a,id="a9",idempotency_key="k2"))
+ assert cl2.chain.events[-1].sequence==4 and cl2.chain.events[-1].previous_hash==cl2.chain.events[-2].event_hash
+ assert PairingService  # protocol module still importable
+
+@pytest.mark.asyncio
+async def test_claim_without_command_fails_closed(tmp_path):
+ import sqlite3
+ reg,sim,ap,cl,s,g,calls=rig(tmp_path)
+ a={"id":"a1","kind":"write_file","arguments":{"path":"n","text":"1"},"idempotency_key":"k"}
+ d=(await cl.preview(a))["digest"]
+ c=sqlite3.connect(tmp_path/"d.db");c.execute("INSERT INTO claire_adapter_claims VALUES('tenant-a','dev1','k',?,NULL,NULL,'claimed','x')",(d,));c.commit()
+ r=await cl.execute(a);assert r["status"]=="indeterminate" and calls==[]
