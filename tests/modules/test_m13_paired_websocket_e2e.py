@@ -18,18 +18,28 @@ from app.modules.m13_browser_agent.pc_daemon.daemon import (
     BrowserHandle, Daemon, DeviceIdentity, pair_with_server)
 from app.modules.m13_browser_agent.session_bridge import dispatch, routes
 
-FORM = """<html><body><form method="get" action="/thanks">
+FORM = """<html><body><form method="post" action="/thanks">
 <input id="name" name="name" value=""><input id="email" name="email" value=""><input id="pw" type="password" value="hunter2-canary">
 <button id="send">Send</button></form></body></html>"""
+
+
+FORM_SUBMIT = """<html><body><form method="post" action="/thanks">
+<input id="name" name="name" value=""><input id="email" name="email" value=""><button id="send">Send</button></form></body></html>"""
 
 
 class _Site(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
 
+    def do_POST(self):
+        n = int(self.headers.get("Content-Length") or 0)
+        if n:
+            self.rfile.read(n)
+        self.do_GET()
+
     def do_GET(self):
         path = self.path.split("?")[0]
-        body = FORM if path == "/form" else "<html><body>Thanks, received</body></html>"
+        body = FORM if path == "/form" else FORM_SUBMIT if path == "/form-submit" else "<html><body>Thanks, received</body></html>"
         data = body.encode()
         self.send_response(200)
         self.send_header("Content-Type", "text/html")
@@ -78,6 +88,7 @@ async def paired(tmp_path):
         pair_with_server, server_url, challenge["server_nonce"], challenge["code"], name="e2e-pc",
         capabilities=caps, pacing_seconds=dispatch.protocol.MIN_PACING_SECONDS, key_path=tmp_path / "key.pem", config_path=tmp_path / "cfg.json")
     config.pacing_seconds = 0
+    config.consumed_path = str(tmp_path / "consumed.json")  # isolated store, never the real ~/.atlas-pc
     daemon = Daemon(config, DeviceIdentity.load_or_create(tmp_path / "key.pem"))
     daemon.browser = HeadlessHandle(config)
     daemon_task = asyncio.create_task(daemon.run())
@@ -99,17 +110,21 @@ async def test_end_to_end_over_real_websocket(paired):
     sessions, config, site = paired
     sid = f"{dispatch.protocol.PC_SESSION_PREFIX}{config.device_id}.main"
     page = await sessions.page("tenant-e2e", sid)
-    await page.goto(f"{site}/form")
+    await page.goto(f"{site}/form-submit")
     await page.locator("#name").fill("Udita Phookan")
     assert await page.locator("#name").input_value() == "Udita Phookan"
     html = await sessions.extract("tenant-e2e", sid)
     assert 'id="name"' in html
     shot = await sessions.screenshot("tenant-e2e", sid)
     assert open(shot, "rb").read(4) == b"\x89PNG"
-    values = await sessions.read_values("tenant-e2e", sid, ["#name"])
-    assert values == {"#name": "Udita Phookan"}
-    await sessions.authorize_submit("tenant-e2e", sid, approval_id="ap-e2e", capture_sha256="c" * 64,
-                                    selector="#send", values=values)
+    await page.locator("#email").fill("udita@example.test")
+    values = await sessions.read_values("tenant-e2e", sid, ["#name", "#email"])
+    assert values == {"#name": "Udita Phookan", "#email": "udita@example.test"}
+    # REAL preview-bound path: the reviewed preview is built from the live paired page over the websocket.
+    from app.modules.m13_browser_agent.submit_binding import build_binding_preview, preview_digest
+    preview = await build_binding_preview(sessions, "tenant-e2e", sid, "#send", values)
+    await sessions.authorize_submit("tenant-e2e", sid, approval_id="ap-e2e", capture_sha256=preview_digest(preview),
+                                    selector="#send", values=values, preview=preview)
     await page.locator("#send").click()
     assert "thanks" in (await sessions.page("tenant-e2e", sid)).url
     obs = page.last_click_observation
