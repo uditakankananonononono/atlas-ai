@@ -13,6 +13,7 @@ import hmac
 import json
 import re
 import secrets
+import time
 from enum import Enum
 from typing import Any
 
@@ -62,12 +63,30 @@ class BridgeError(RuntimeError):
     """Base error for bridge transport and protocol failures."""
 
 
-class DeviceOffline(BridgeError):
+class PreDispatchError(BridgeError):
+    """Positive assurance: this failure happened before anything was sent to the daemon,
+    or the daemon said explicitly (effect_uncertain=false) that no click was attempted.
+    Absence of this marker never means "safe to retry"."""
+
+
+class DeviceOffline(PreDispatchError):
     """The paired device has no live connection."""
 
 
 class CommandRejected(BridgeError):
     """The daemon refused the command (capability, pacing, or token)."""
+
+
+class EffectUncertain(BridgeError):
+    """A command that may cause an external effect failed AFTER it was sent.
+
+    The effect may or may not have happened. Callers must not retry and must not say
+    "not submitted". Typed on purpose: never decide this from error text.
+    """
+
+
+class DispatchUncertain(EffectUncertain):
+    """Sent, then no answer (timeout) or the connection dropped."""
 
 
 class PlatformBlocked(BridgeError):
@@ -140,7 +159,7 @@ def parse_command(raw: dict[str, Any]) -> tuple[str, CommandKind, dict[str, Any]
 
 def make_result(command_id: str, *, ok: bool, result: dict[str, Any] | None = None,
                 error: str | None = None, blocked: str | None = None,
-                receipt: dict[str, Any] | None = None) -> dict[str, Any]:
+                receipt: dict[str, Any] | None = None, effect_uncertain: bool | None = None) -> dict[str, Any]:
     body: dict[str, Any] = {"v": PROTOCOL_VERSION, "id": command_id, "ok": bool(ok)}
     if result is not None:
         body["result"] = result
@@ -150,16 +169,63 @@ def make_result(command_id: str, *, ok: bool, result: dict[str, Any] | None = No
         body["blocked"] = BlockKind(blocked).value
     if receipt is not None:
         body["receipt"] = receipt
+    if effect_uncertain is not None:
+        # True: the click may have happened. False: positively refused before any click.
+        # Omitted: not a click_submit answer (or an older daemon): receivers must assume uncertain.
+        body["effect_uncertain"] = bool(effect_uncertain)
     return body
 
 
-def parse_result(raw: dict[str, Any]) -> dict[str, Any]:
+class PlatformBlockedPreDispatch(PlatformBlocked, PreDispatchError):
+    """The daemon refused before any click (explicit effect_uncertain=false)."""
+
+
+class CommandRejectedPreDispatch(CommandRejected, PreDispatchError):
+    """The daemon rejected before any click (explicit effect_uncertain=false)."""
+
+
+class PlatformBlockedAfterEffect(PlatformBlocked, EffectUncertain):
+    """The site stopped us after the click was sent; the effect may have happened."""
+
+
+class CommandRejectedAfterEffect(CommandRejected, EffectUncertain):
+    """The daemon failed after reserving/sending the effect; outcome unknown."""
+
+
+def is_provably_pre_dispatch(error: BaseException) -> bool:
+    """True only when a click failure is known to have happened before anything reached the site.
+
+    Only errors carrying positive assurance (PreDispatchError: raised before anything was written,
+    or an explicit effect_uncertain=false from the daemon) qualify; a plain BridgeError, or a daemon
+    answer without the flag (older daemon, same protocol version), does not. Everything else, notably direct
+    Playwright errors such as a 30s click timeout waiting on the navigation the click started,
+    cannot be placed before the effect and is treated as uncertain.
+    """
+    return isinstance(error, PreDispatchError) and not isinstance(error, EffectUncertain)
+
+
+def parse_result(raw: dict[str, Any], kind: "CommandKind | None" = None) -> dict[str, Any]:
     if raw.get("v") != PROTOCOL_VERSION:
         raise BridgeError(f"unsupported protocol version: {raw.get('v')!r}")
+    flag = raw.get("effect_uncertain")
+    if kind is CommandKind.CLICK_SUBMIT and flag is not False:
+        uncertain, assured = True, False  # True, or absent (older daemon): assume the click may have run
+    else:
+        uncertain, assured = flag is True, flag is False and kind is CommandKind.CLICK_SUBMIT
     if raw.get("blocked"):
-        raise PlatformBlocked(raw["blocked"], str(raw.get("error", "no detail")))
+        detail = str(raw.get("error", "no detail"))
+        if uncertain:
+            raise PlatformBlockedAfterEffect(raw["blocked"], detail)
+        if assured:
+            raise PlatformBlockedPreDispatch(raw["blocked"], detail)
+        raise PlatformBlocked(raw["blocked"], detail)
     if not raw.get("ok"):
-        raise CommandRejected(str(raw.get("error", "command failed"))[:2000])
+        message = str(raw.get("error", "command failed"))[:2000]
+        if uncertain:
+            raise CommandRejectedAfterEffect(message)
+        if assured:
+            raise CommandRejectedPreDispatch(message)
+        raise CommandRejected(message)
     result = raw.get("result")
     return result if isinstance(result, dict) else {}
 
@@ -170,38 +236,59 @@ def clamp_pacing(value: float | int | None) -> float:
     return max(MIN_PACING_SECONDS, min(MAX_PACING_SECONDS, float(value)))
 
 
-def deadline_text(deadline: float | int | None) -> str:
-    if isinstance(deadline, bool) or not isinstance(deadline, (int, float)):
-        return "none"
-    return f"{float(deadline):.3f}"
+SUBMIT_TOKEN_TTL_SECONDS = 120
+SUBMIT_TOKEN_VERSION = 3  # v1 (preview+deadline, no device/session) and v2 (device/session, no preview) are refused
+
+
+def _submit_claims(*, approval_id: str, capture_sha256: str, selector: str,
+                   values_digest: str, device_id: str, session: str,
+                   expires_at: int, action: str, preview_sha256: str = "") -> dict[str, Any]:
+    """Every claim a click must match: what was approved (approval, capture, selector, values,
+    reviewed destination preview) AND where/when it may run (device, session, action, expiry)."""
+    claims = dict(approval_id=approval_id, capture_sha256=capture_sha256,
+                  selector=selector, values_digest=values_digest, preview_sha256=preview_sha256,
+                  device_id=device_id, session=session, expires_at=expires_at, action=action,
+                  token_version=SUBMIT_TOKEN_VERSION)
+    if any(not isinstance(value, str) or not value for value in
+           (approval_id, capture_sha256, selector, values_digest, device_id, session)):
+        raise ValueError("submit claims require nonempty strings")
+    if not isinstance(preview_sha256, str):
+        raise ValueError("preview_sha256 must be a string (empty only when it equals the capture digest)")
+    if type(expires_at) is not int or expires_at <= 0 or action != CommandKind.CLICK_SUBMIT.value:
+        raise ValueError("invalid submit expiry or action")
+    return claims
 
 
 def submit_token(command_secret: str, *, approval_id: str, capture_sha256: str,
-                 selector: str, values_digest: str, preview_sha256: str = "",
-                 deadline: float | int | None = None) -> str:
-    """Proof that this exact approved click may run on the device.
-
-    ``preview_sha256`` binds the reviewed destination preview when its digest is
-    not already the capture digest (the M13 capture-bound flow). The device keeps
-    a consumed-token cache, so each token works once per device process.
-    """
-    parts = [approval_id, capture_sha256, selector, values_digest]
-    if preview_sha256:
-        parts.append(preview_sha256)
-    # The deadline is signed into the token: editing it invalidates the token, so an
-    # old command cannot be re-dated to outlive the arming window (audit finding F2).
-    parts.append(f"deadline={deadline_text(deadline)}")
-    body = "|".join(parts)
-    return hmac.new(command_secret.encode("utf-8"), body.encode("utf-8"), hashlib.sha256).hexdigest()
+                 selector: str, values_digest: str, device_id: str, session: str,
+                 expires_at: int, preview_sha256: str = "",
+                 action: str = CommandKind.CLICK_SUBMIT.value) -> str:
+    """Bound, expiring proof for one approved click. One-shot enforcement lives on the device
+    (durable effect ledger plus the consumed-submit record). Canonical JSON avoids delimiter ambiguity.
+    ``preview_sha256`` binds the reviewed destination preview when its digest is not already the
+    capture digest (the M13 capture-bound flow)."""
+    claims = _submit_claims(approval_id=approval_id, capture_sha256=capture_sha256,
+                           selector=selector, values_digest=values_digest,
+                           device_id=device_id, session=session, expires_at=expires_at,
+                           action=action, preview_sha256=preview_sha256)
+    return hmac.new(command_secret.encode("utf-8"), canonical_json(claims).encode("utf-8"),
+                    hashlib.sha256).hexdigest()
 
 
 def verify_submit_token(command_secret: str, *, approval_id: str, capture_sha256: str,
-                        selector: str, values_digest: str, token: str, preview_sha256: str = "",
-                        deadline: float | int | None = None) -> bool:
-    expected = submit_token(command_secret, approval_id=approval_id, capture_sha256=capture_sha256,
-                            selector=selector, values_digest=values_digest, preview_sha256=preview_sha256,
-                            deadline=deadline)
-    return hmac.compare_digest(expected, token)
+                        selector: str, values_digest: str, device_id: str, session: str,
+                        expires_at: int, token: str, preview_sha256: str = "",
+                        action: str = CommandKind.CLICK_SUBMIT.value) -> bool:
+    try:
+        expected = submit_token(command_secret, approval_id=approval_id,
+                                capture_sha256=capture_sha256, selector=selector,
+                                values_digest=values_digest, device_id=device_id,
+                                session=session, expires_at=expires_at,
+                                preview_sha256=preview_sha256, action=action)
+        return (isinstance(token, str) and time.time() < expires_at
+                and hmac.compare_digest(expected, token))
+    except (ValueError, TypeError):
+        return False
 
 
 def canonical_json(data: dict[str, Any]) -> str:

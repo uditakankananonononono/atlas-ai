@@ -128,7 +128,7 @@ async def test_capture_bound_submit_over_bridge(env, tmp_path):
 
     result = await execute_capture_bound_submit(service, sf, "t", SESSION_ID, "#go", V,
                                                 staged["approval_id"], CAP)
-    assert result["status"] == "submitted"
+    assert result["status"] == "click_dispatched_unconfirmed"
 
     submit_commands = [c for c in connection.commands if c["kind"] is CommandKind.CLICK_SUBMIT]
     assert len(submit_commands) == 1
@@ -136,7 +136,9 @@ async def test_capture_bound_submit_over_bridge(env, tmp_path):
     assert protocol.verify_submit_token(
         device["command_secret"], approval_id=staged["approval_id"], capture_sha256=CAP,
         selector="#go", values_digest=values_digest(V), token=token,
-        preview_sha256=submit_commands[0]["args"]["preview_sha256"], deadline=submit_commands[0]["args"]["deadline"])
+        preview_sha256=submit_commands[0]["args"]["preview_sha256"],
+        device_id=device["device_id"], session=submit_commands[0]["args"]["session"],
+        expires_at=submit_commands[0]["args"]["expires_at"])
     preview = submit_commands[0]["args"]["preview"]
     assert preview["form_action"] == "https://example.com/submit" and preview["field_names"] == {"#name": "name", "#email": "email"}
 

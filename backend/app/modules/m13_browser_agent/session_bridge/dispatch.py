@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from . import protocol
-from .protocol import (BlockKind, BridgeError, CommandKind, DeviceOffline,
+from .protocol import (BlockKind, BridgeError, CommandKind, DeviceOffline, DispatchUncertain, EffectUncertain, PreDispatchError,
                        PlatformBlocked, clamp_pacing, is_pc_session, split_pc_session)
 from . import form_guard
 from .form_guard import ARM_TTL_SECONDS
@@ -66,16 +66,35 @@ class DaemonConnection:
         loop = asyncio.get_running_loop()
         future = loop.create_future()
         self._pending[command["id"]] = future
+        sent = False
         try:
             await self._pace()
             async with self._send_lock:
+                sent = True  # from here a partial write cannot be ruled out, so failures are uncertain
                 await self.websocket.send_json(command)
             raw = await asyncio.wait_for(future, timeout=timeout)
         except asyncio.TimeoutError as error:
+            if sent:
+                raise DispatchUncertain(f"daemon did not answer within {timeout:.0f}s; "
+                                        "the command was sent and may have run") from error
             raise BridgeError(f"daemon did not answer within {timeout:.0f}s") from error
+        except EffectUncertain:
+            raise
+        except DeviceOffline as error:
+            if sent:
+                raise DispatchUncertain(f"connection lost after the command was sent ({error}); "
+                                        "it may have run") from error
+            raise
+        except Exception as error:
+            if sent and not isinstance(error, BridgeError):
+                raise DispatchUncertain(f"sending the command failed part-way ({type(error).__name__}); "
+                                        "it may have been delivered") from error
+            if not sent and not isinstance(error, BridgeError):
+                raise PreDispatchError(f"command was not sent ({type(error).__name__})") from error
+            raise
         finally:
             self._pending.pop(command["id"], None)
-        return protocol.parse_result(raw)
+        return protocol.parse_result(raw, kind)
 
     async def handle_message(self, raw: dict[str, Any]) -> None:
         command_id = str(raw.get("id", ""))
@@ -150,6 +169,7 @@ class BridgedPage:
         self.device_id = device_id
         self.local_name = local_name
         self.url = sessions._urls.get((tenant_id, self.session_id), "about:blank")
+        self.last_click_observation: dict[str, Any] | None = None
 
     @property
     def session_id(self) -> str:
@@ -165,7 +185,9 @@ class BridgedPage:
 
     async def _click(self, selector: str) -> None:
         kind, extra = self._sessions._click_class(self.tenant_id, self.device_id, self.local_name, selector)
+        # Keep what the daemon observed; consumers must read it, "no exception" is not acceptance.
         result = await self._execute(kind, {"selector": selector, **extra})
+        self.last_click_observation = result
         if kind is CommandKind.CLICK_SUBMIT and isinstance(result, dict):
             # Record what the device says it dispatched so the caller can verify it.
             self._sessions._dispatched[(self.tenant_id, self.session_id)] = result.get("approval_id")
@@ -212,7 +234,7 @@ class BridgedSessions:
         self._guard: dict[tuple[str, str], Any] = {}
         self._expired_selector: dict[tuple[str, str], str] = {}
         # One armed submit per (tenant, session); consumed by the next click.
-        self._armed: dict[tuple[str, str], dict[str, str]] = {}
+        self._armed: dict[tuple[str, str], dict[str, Any]] = {}
         self._consumed_selector: dict[tuple[str, str], str] = {}
         self._dispatched: dict[tuple[str, str], Any] = {}
         # Last URL reported by the daemon per (tenant, session); lets a fresh
@@ -293,29 +315,31 @@ class BridgedSessions:
             raise PermissionError("only urlencoded forms can be approved; multipart and text/plain are refused")
         pdigest = preview_digest(preview)
         extra_binding = "" if pdigest == capture_sha256 else pdigest
-        device_id, _ = split_pc_session(session_id)
+        device_id, local_name = split_pc_session(session_id)
         device = self.registry.get_device(device_id)
         if device is None or device.tenant_id != tenant_id:
             raise DeviceOffline("no paired device for this session")
-        deadline = round(time.time() + self.arm_ttl_seconds, 3)
+        # Integer expiry (signed into the token); never later than the server-side arming TTL.
+        expires_at = int(time.time() + self.arm_ttl_seconds)
+        digest = values_digest(values)
         token = protocol.submit_token(device.command_secret, approval_id=approval_id,
                                       capture_sha256=capture_sha256, selector=selector,
-                                      values_digest=values_digest(values), preview_sha256=extra_binding,
-                                      deadline=deadline)
+                                      values_digest=digest, preview_sha256=extra_binding,
+                                      device_id=device_id, session=local_name, expires_at=expires_at)
         self._dispatched.pop((tenant_id, session_id), None)
         self._guard.pop((tenant_id, session_id), None)
         self._expired_selector.pop((tenant_id, session_id), None)
         self._consumed_selector.pop((tenant_id, session_id), None)
         self._armed[(tenant_id, session_id)] = {
             "approval_id": approval_id, "capture_sha256": capture_sha256, "token": token, "selector": selector,
-            "values_digest": values_digest(values), "values": values,
-            "armed_at": self.clock(), "deadline": deadline,
+            "values_digest": digest, "values": values,
+            "armed_at": self.clock(), "expires_at": expires_at,
             "preview": preview, "readback_selectors": readback_selectors or {}}
         if extra_binding:
             self._armed[(tenant_id, session_id)]["preview_sha256"] = extra_binding
 
     def _click_class(self, tenant_id: str, device_id: str, local_name: str,
-                     selector: str) -> tuple[CommandKind, dict[str, str]]:
+                     selector: str) -> tuple[CommandKind, dict[str, Any]]:
         key = (tenant_id, f"{protocol.PC_SESSION_PREFIX}{device_id}.{local_name}")
         armed = self._live_armed(key)
         if armed is None:
@@ -379,7 +403,7 @@ class BridgedSessions:
             raise DeviceOffline("paired device is not connected")
         capability = protocol.capability_for(kind)
         if capability not in set(device.capabilities):
-            raise BridgeError(f"paired device was not granted the '{capability}' capability")
+            raise PreDispatchError(f"paired device was not granted the '{capability}' capability")
         return await connection.execute(kind, {"session": local_name, **args}, timeout=timeout)
 
 

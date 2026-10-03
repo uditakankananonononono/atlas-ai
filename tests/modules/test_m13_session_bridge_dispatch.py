@@ -126,7 +126,9 @@ async def test_click_defaults_to_nav_and_armed_click_becomes_submit(env):
     assert protocol.verify_submit_token(
         device["command_secret"], approval_id="a1", capture_sha256="c" * 64,
         selector="#go", values_digest=values_digest(values), token=command["args"]["token"],
-        preview_sha256=command["args"]["preview_sha256"], deadline=command["args"]["deadline"])
+        preview_sha256=command["args"].get("preview_sha256", ""),
+        device_id=device["device_id"], session=command["args"]["session"],
+        expires_at=command["args"]["expires_at"])
     assert command["args"]["preview"] == preview
 
     # The armed token is one-shot: a consumed arming refuses the next click of the same

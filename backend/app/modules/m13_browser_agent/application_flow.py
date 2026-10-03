@@ -30,6 +30,7 @@ from bs4 import BeautifulSoup
 
 from .domain import ActionType, AuditEvent
 from .forms import FieldDescriptor, match_fields_detailed
+from .session_bridge.protocol import is_provably_pre_dispatch
 from .security import NavigationBlocked, file_digest, validate_public_url, values_digest
 
 
@@ -39,7 +40,10 @@ class WorkflowStatus(str, Enum):
     READY = "ready"
     STAGED = "staged"
     AWAITING_SUBMIT_APPROVAL = "awaiting_submit_approval"
-    SUBMITTED = "submitted"
+    SUBMIT_ATTEMPTING = "submit_attempting_outcome_unconfirmed"  # persisted BEFORE the approval is consumed/click sent
+    SUBMIT_DISPATCHED = "submit_dispatched_unconfirmed"  # approved click sent; site acceptance NOT confirmed
+    SUBMIT_OWNER_ASSERTED = "submit_owner_asserted_accepted"  # authenticated actor SAID the site accepted; unverified
+    SUBMITTED = "submitted"                              # legacy value only; this build never sets it
     BLOCKED = "blocked"
     FAILED = "failed"
 
@@ -196,13 +200,44 @@ class ApplicationSession:
     error: str = ""
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
+    legacy_status_reinterpreted: str = ""
+    rev: int = 0  # optimistic-concurrency revision; every store write is guarded by it
+    attempt_id: str = ""  # owner token of the in-flight submit attempt (the approval id)
+    outcome_uncertain: bool = False  # True once a submit click may have reached the site
+
+    def normalize_legacy(self) -> "ApplicationSession":
+        """Earlier builds stored "submitted" right after the click. That never meant accepted."""
+        if self.status != WorkflowStatus.SUBMITTED.value:
+            return self
+        acceptance = self.confirmation.get("site_acceptance")
+        if acceptance is None:
+            self.legacy_status_reinterpreted = self.status
+            self.status = WorkflowStatus.SUBMIT_DISPATCHED.value
+            self.confirmation = {**self.confirmation, "site_acceptance": "unconfirmed_legacy"}
+        elif acceptance == "owner_confirmed":
+            # An interim build stored a boolean "owner confirmed" as status submitted. It was an
+            # authenticated actor's assertion, never verified acceptance.
+            self.legacy_status_reinterpreted = self.status
+            self.status = WorkflowStatus.SUBMIT_OWNER_ASSERTED.value
+            self.confirmation = {
+                **self.confirmation, "site_acceptance": "owner_asserted_unverified",
+                "owner_assertion": {"actor_id": self.actor_id,
+                                    "asserted_at": self.confirmation.get("owner_confirmed_at"),
+                                    "basis": "legacy owner_confirmed boolean; authenticated actor assertion; "
+                                             "not independently verified"}}
+        return self
 
     def to_dict(self) -> dict[str, Any]:
+        self.normalize_legacy()
         return asdict(self)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "ApplicationSession":
-        return cls(**data)
+        if "rev" in data:
+            rev = data["rev"]
+            if isinstance(rev, bool) or not isinstance(rev, int) or rev < 0:
+                raise UnsupportedSessionRecordError(f"stored session has an unsupported revision value: {rev!r}")
+        return cls(**data).normalize_legacy()
 
     def public_view(self) -> dict[str, Any]:
         """Owner-facing record: every state, digests, evidence - never staged raw values."""
@@ -212,10 +247,19 @@ class ApplicationSession:
         return view
 
 
+class UnsupportedSessionRecordError(WorkflowStateError):
+    """A stored session record has a shape this code refuses to interpret (e.g. malformed rev)."""
+
+
+class StaleSessionError(WorkflowStateError):
+    """The persisted session changed since this copy was read; the write was refused."""
+
+
 class ApplicationSessionStore(Protocol):
     def create(self, record: ApplicationSession) -> ApplicationSession: ...
     def get(self, tenant_id: str, session_id: str) -> ApplicationSession | None: ...
     def save(self, record: ApplicationSession) -> ApplicationSession: ...
+    def compare_and_save(self, record: ApplicationSession, expected_status: str, expected_attempt_id: str) -> bool: ...
 
 
 class BrowserSurface(Protocol):
@@ -255,7 +299,7 @@ class ApplicationFlow:
         record = self.store.get(tenant_id, session_id)
         if record is None:
             raise SessionNotFoundError(session_id)
-        return record
+        return record.normalize_legacy()
 
     @staticmethod
     def _require_actor(record: ApplicationSession, actor_id: str) -> None:
@@ -279,6 +323,24 @@ class ApplicationFlow:
         final_url = validate_public_url(page.url, self.browser.allowed_hosts)
         html = await self.browser.extract(record.tenant_id, record.session_id)
         return page, final_url, probe_auth(final_url, html), probe_captcha(html)
+
+    _STALE_AFTER_EFFECT = ("submit outcome unknown; the session record was changed by another writer, so this "
+                           "attempt's result was not recorded and the newer record was left as is; do not retry; "
+                           "check the site manually")
+
+    def _blocked_after_click(self, record: ApplicationSession, reason: str, evidence: list[str]) -> ApplicationSession:
+        record.outcome_uncertain = True  # typed marker; recovery never depends on the message text
+        try:
+            return self._blocked(record, reason, evidence)
+        except StaleSessionError as error:
+            raise BlockedError(self._STALE_AFTER_EFFECT) from error
+
+    def _save_after_effect(self, record: ApplicationSession) -> ApplicationSession:
+        """Save after the click may have been sent. A stale write is refused, never forced over the newer row."""
+        try:
+            return self._save(record)
+        except StaleSessionError as error:
+            raise BlockedError(self._STALE_AFTER_EFFECT) from error
 
     def _blocked(self, record: ApplicationSession, reason: str, evidence: list[str]) -> ApplicationSession:
         record.status = WorkflowStatus.BLOCKED.value
@@ -582,47 +644,150 @@ class ApplicationFlow:
         preview = await bind_for_submit(self.browser, tenant_id, session_id, payload["selector"], readback)
         check_reviewed_destination(payload, preview)
         # Consume before the external effect: a failed click cannot replay.
-        await self.browser.store.consume(approval_id, tenant_id)
+        # Persist an honest "attempting, outcome unconfirmed" marker FIRST. If the process is
+        # interrupted or killed anywhere from here on, the record never claims success or failure.
+        # Claim by compare-and-set against the PERSISTED row: only one worker can move the session
+        # from awaiting_submit_approval to attempting. A loser writes nothing and never clicks.
+        record.status = WorkflowStatus.SUBMIT_ATTEMPTING.value
+        record.outcome_uncertain = True
+        record.attempt_id = approval_id
+        record.error = ""
+        record.updated_at = time.time()
+        if not self.store.compare_and_save(record, WorkflowStatus.AWAITING_SUBMIT_APPROVAL.value, ""):
+            raise PermissionError("another submit attempt already owns this session; outcome unconfirmed, do not retry")
+        try:
+            await self.browser.store.consume(approval_id, tenant_id)
+        except Exception:
+            # Withdraw only if we can prove nothing was consumed AND we still own the marker (CAS).
+            # If the approval is consumed (by anyone) or the proof itself fails, keep the marker.
+            try:
+                consumed = await self.browser.store.was_consumed(approval_id)
+            except Exception:
+                consumed = True
+            if not consumed:
+                record.status = WorkflowStatus.AWAITING_SUBMIT_APPROVAL.value
+                record.outcome_uncertain = False
+                record.attempt_id = ""
+                record.updated_at = time.time()
+                self.store.compare_and_save(record, WorkflowStatus.SUBMIT_ATTEMPTING.value, approval_id)
+            raise
         try:
             if preview is not None:
                 await self.browser.sessions.authorize_submit(
                     tenant_id, session_id, approval_id=approval_id, capture_sha256=preview_digest(preview),
                     selector=payload["selector"], values=readback, preview=preview)
             await page.locator(payload["selector"]).click()
-        except Exception as error:
+        except BaseException as error:
+            if isinstance(error, Exception):
+                pass  # handled below
+            else:
+                # Cancellation (or interpreter exit) after the click began: the approval is consumed and
+                # the site may have received the submit. Make that durable before unwinding.
+                try:
+                    self._blocked_after_click(record, "request ended after the submit click began; outcome unknown; "
+                                          "do not retry; check the site manually", [])
+                except BlockedError:
+                    pass  # stale: leave the newer record; the cancellation must still propagate
+                try:
+                    await self._audit(record, ActionType.SUBMIT, {
+                        "phase": "interrupted_after_click", "approval_id": approval_id,
+                        "selector": payload["selector"], "error": type(error).__name__})
+                except BaseException:  # noqa: BLE001 - best effort while unwinding
+                    pass
+                raise
+            text = str(error)
+            if not is_provably_pre_dispatch(error):
+                # Not provably before dispatch (typed bridge uncertainty, or a direct Playwright error that
+                # may have followed the send): never "not submitted", never retryable.
+                reason = f"submit outcome unknown after the click was sent; do not retry; check the site manually: {text}"
+                await self._audit(record, ActionType.SUBMIT, {
+                    "phase": "blocked_after_click", "approval_id": approval_id, "selector": payload["selector"],
+                    "error": text[:500]})
+                self._blocked_after_click(record, reason, [])
+                raise BlockedError(record.error) from error
             record.status = WorkflowStatus.FAILED.value
+            record.outcome_uncertain = False  # provably before dispatch
+            record.attempt_id = ""
             record.error = f"submit click failed: {error}"
-            self._save(record)
+            self._save_after_effect(record)
             await self._audit(record, ActionType.SUBMIT, {
                 "phase": "failed", "approval_id": approval_id, "selector": payload["selector"], "error": str(error),
             })
             raise BlockedError(f"submit click failed; the approval is consumed and the application was not submitted: {error}") from error
 
-        # Source readback: only what the site itself shows afterwards counts.
+        # What the paired browser saw after the click. Bounded: later navigations are not observed.
+        observation = dict(getattr(page, "last_click_observation", None) or {})
+        http_status = observation.get("http_status")
         final_url = validate_public_url(page.url, self.browser.allowed_hosts)
+        if isinstance(http_status, int) and http_status >= 400:
+            await self._audit(record, ActionType.SUBMIT, {"phase": "blocked_after_click", "approval_id": approval_id,
+                                                          "http_status": http_status})
+            self._blocked_after_click(record, f"site answered HTTP {http_status} after the submit click; "
+                                  "effect may have occurred; do not retry; confirm the outcome manually", [])
+            raise BlockedError(record.error)
         html = await self.browser.extract(tenant_id, session_id)
         captcha = probe_captcha(html)
         if captcha:
             await self._audit(record, ActionType.SUBMIT, {"phase": "blocked_after_click", "evidence": captcha, "approval_id": approval_id})
-            self._blocked(record, "site presented a CAPTCHA after the submit click; confirm the outcome manually", captcha)
+            self._blocked_after_click(record, "site presented a CAPTCHA after the submit click; effect may have occurred; do not retry; confirm the outcome manually", captcha)
             raise BlockedError(record.error)
         record.confirmation = {
             "final_url": final_url,
             "page_excerpt": re.sub(r"\s+", " ", html)[:500],
             "observed_at": time.time(),
             "approval_id": approval_id,
+            "http_status": http_status,
+            "post_click_observation": observation.get("post_click_observation"),
+            "site_acceptance": "unconfirmed",
         }
-        record.status = WorkflowStatus.SUBMITTED.value
+        record.status = WorkflowStatus.SUBMIT_DISPATCHED.value
+        record.outcome_uncertain = True  # dispatched, acceptance unconfirmed
         record.error = ""
-        self._save(record)
+        self._save_after_effect(record)
         await self._audit(record, ActionType.SUBMIT, {
-            "phase": "executed",
+            "phase": "click_dispatched_unconfirmed",
             "approval_id": approval_id,
             "selector": payload["selector"],
             "values_digest": current["values_digest"],
             "final_url": final_url,
         })
-        return {"session_id": session_id, "status": record.status, "submitted": True, "confirmation": dict(record.confirmation)}
+        return {"session_id": session_id, "status": record.status, "submitted": False,
+                "click_dispatched": True, "site_acceptance": "unconfirmed",
+                "observation": dict(record.confirmation),
+                "note": "The approved click was sent. The site's acceptance is not confirmed; "
+                        "check what the site shows, then confirm."}
+
+    async def assert_site_accepted(self, tenant_id: str, actor_id: str, session_id: str,
+                                   owner_asserts_site_accepted: bool) -> dict[str, Any]:
+        """Record that the authenticated actor SAYS the site accepted the submit.
+
+        This is an assertion by whoever the auth layer says the actor is (OIDC in production,
+        weaker in dev). It is not verified human confirmation and not site evidence, and it
+        never writes competition status.
+        """
+        record = self._record(tenant_id, session_id)
+        self._require_actor(record, actor_id)
+        # Not from SUBMIT_ATTEMPTING: the owning worker may still be mid-click and an assertion
+        # would race its outcome write. An attempt that never finished needs manual site checking.
+        recoverable = (record.status == WorkflowStatus.SUBMIT_DISPATCHED.value
+                       or (record.status == WorkflowStatus.BLOCKED.value and record.outcome_uncertain))
+        if not recoverable:
+            raise PermissionError("no submit with an unconfirmed outcome awaiting an assertion")
+        if owner_asserts_site_accepted is not True:
+            raise PermissionError("an explicit assertion is required")
+        record.status = WorkflowStatus.SUBMIT_OWNER_ASSERTED.value
+        record.confirmation = {
+            **record.confirmation, "site_acceptance": "owner_asserted_unverified",
+            "owner_assertion": {"actor_id": actor_id, "asserted_at": time.time(),
+                                "basis": "authenticated actor assertion; not independently verified"}}
+        self._save(record)
+        await self._audit(record, ActionType.SUBMIT, {"phase": "actor_asserted_site_accepted",
+                                                      "actor_id": actor_id,
+                                                      "approval_id": record.confirmation.get("approval_id")})
+        return {"session_id": session_id, "status": record.status, "submitted": False,
+                "site_acceptance": "owner_asserted_unverified",
+                "owner_assertion": dict(record.confirmation["owner_assertion"]),
+                "confirmation": dict(record.confirmation)}
 
     def status(self, tenant_id: str, actor_id: str, session_id: str) -> dict[str, Any]:
         record = self._record(tenant_id, session_id)

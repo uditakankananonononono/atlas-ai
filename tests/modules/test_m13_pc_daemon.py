@@ -34,6 +34,9 @@ class FakeLocator:
         self.page.values[self.selector] = value
         self.page.filled.append((self.selector, value))
 
+    async def evaluate(self, script):
+        return {"type": "text", "ac": ""}
+
     async def click(self):
         self.page.clicked.append(self.selector)
 
@@ -47,6 +50,17 @@ class FakePage:
 
     def locator(self, selector):
         return FakeLocator(self, selector)
+
+    main_frame = object()
+
+    def on(self, event, handler):
+        pass
+
+    def remove_listener(self, event, handler):
+        pass
+
+    async def wait_for_load_state(self, state, timeout=None):
+        pass
 
     async def goto(self, url, wait_until="domcontentloaded"):
         self.url = url
@@ -81,7 +95,7 @@ class FakeBrowser:
 @pytest.fixture
 def daemon(tmp_path):
     config = DaemonConfig(server_url="https://atlas.test", device_id="dev1",
-                          command_secret="topsecret", pacing_seconds=0,
+                          command_secret="topsecret", key_path=str(tmp_path / "key.pem"), pacing_seconds=0, click_settle_seconds=0,
                           consumed_path=str(tmp_path / "consumed.json"),
                           capabilities=["navigate", "extract", "read_values", "fill",
                                         "click_nav", "click_submit"])
@@ -98,7 +112,7 @@ def _command(kind, args, command_id="cmd-1"):
 @pytest.mark.asyncio
 async def test_capability_not_granted_is_blocked(tmp_path):
     config = DaemonConfig(server_url="https://atlas.test", device_id="dev1",
-                          command_secret="topsecret", pacing_seconds=0,
+                          command_secret="topsecret", key_path=str(tmp_path / "key.pem"), pacing_seconds=0, click_settle_seconds=0,
                           consumed_path=str(tmp_path / "consumed.json"), capabilities=["extract"])
     daemon = Daemon(config, DeviceIdentity.load_or_create(tmp_path / "key.pem"))
     daemon.browser = FakeBrowser()
@@ -137,18 +151,16 @@ async def test_submit_click_without_preview_is_refused_even_with_valid_token(dae
 async def test_submit_click_without_deadline_is_refused_and_token_is_one_shot(daemon):
     import time
     token = protocol.submit_token("topsecret", approval_id="a1", capture_sha256="c" * 64,
-                                  selector="#go", values_digest="d" * 64)
+                                  selector="#go", values_digest="d" * 64, device_id="dev1", session="s",
+                                  expires_at=2000000000)
     args = {"session": "s", "selector": "#go", "approval_id": "a1", "capture_sha256": "c" * 64,
-            "values_digest": "d" * 64, "token": token}
-    answer = await daemon.execute(_command(CommandKind.CLICK_SUBMIT, args))
-    assert answer["ok"] is False and "armed" in answer["error"]
-    args["deadline"] = time.time() + 60
-    args["token"] = protocol.submit_token("topsecret", approval_id="a1", capture_sha256="c" * 64,
-                                          selector="#go", values_digest="d" * 64, deadline=args["deadline"])
+            "values_digest": "d" * 64, "token": token, "expires_at": 2000000000}
+    # No reviewed preview on the device: the click is refused before it happens, and the approval is spent.
     first = await daemon.execute(_command(CommandKind.CLICK_SUBMIT, args, command_id="c1"))
-    assert first["ok"] is False and "replay" not in first["error"]
+    assert first["ok"] is False and "replay" not in first["error"] and "already reserved" not in first["error"]
+    assert first["effect_uncertain"] is True and "do not retry" in first["error"]
     again = await daemon.execute(_command(CommandKind.CLICK_SUBMIT, args, command_id="c2"))
-    assert again["ok"] is False and "replay" in again["error"]
+    assert again["ok"] is False and again["effect_uncertain"] is True and "already reserved" in again["error"]
     assert daemon.browser._page.clicked == []
 
 

@@ -89,8 +89,15 @@ class FakeLocator:
 
     async def click(self):
         if self.page.fail_click:
-            raise RuntimeError("click did not land")
+            from app.modules.m13_browser_agent.session_bridge.protocol import DeviceOffline
+            raise DeviceOffline("paired device is not connected")  # provably before dispatch
+        if getattr(self.page, "click_hook", None) is not None:
+            await self.page.click_hook()
+        if self.page.click_error is not None:
+            self.page.clicked.append(self.selector)
+            raise self.page.click_error
         self.page.clicked.append(self.selector)
+        self.page.last_click_observation = self.page.next_observation
         self.page.url = self.page.after_submit_url
         self.page.html = self.page.after_submit_html
 
@@ -104,6 +111,9 @@ class FakePage:
         self.filled: dict[str, str] = {}
         self.clicked: list[str] = []
         self.fail_click = False
+        self.click_error = None
+        self.next_observation = None
+        self.last_click_observation = None
         self.shot_bytes = b"redacted-png-v1"
         self.mouse = self
 
@@ -287,20 +297,20 @@ def test_full_mounted_workflow_with_owner_login_pause(rig):
     )
     assert submitted.status_code == 200, submitted.text
     outcome = submitted.json()
-    assert outcome["submitted"] is True
-    assert outcome["confirmation"]["final_url"] == DONE_URL
-    assert "application was received" in outcome["confirmation"]["page_excerpt"]
+    # A dispatched click plus a page that looks fine is NOT proof the site accepted the application.
+    assert outcome["submitted"] is False
+    assert outcome["status"] == "submit_dispatched_unconfirmed"
+    assert outcome["click_dispatched"] is True and outcome["site_acceptance"] == "unconfirmed"
+    assert outcome["observation"]["final_url"] == DONE_URL
+    assert "application was received" in outcome["observation"]["page_excerpt"]
     assert rig.page.clicked == ["#submit-btn"]
-
-    # M2 status evidence lands only after the site's own readback.
     competition = rig.competitions.get_competition("comp-1")
-    assert competition.status == SubmissionStatus.SUBMITTED
-    evidence = competition.status_evidence[-1]
-    assert evidence.source == "browser_readback"
-    assert sid in evidence.reference
+    assert competition.status != SubmissionStatus.SUBMITTED
+    status = rig.client.get(f"/api/v1/competition-manager/applications/sessions/{sid}").json()
+    assert status["status"] == "submit_dispatched_unconfirmed"
 
     status = rig.client.get(f"/api/v1/competition-manager/applications/sessions/{sid}")
-    assert status.json()["status"] == "submitted"
+    assert status.json()["status"] == "submit_dispatched_unconfirmed"
 
     actions = [e.action.value for e in rig.audit.events]
     for expected in ("navigate", "login", "extract", "fill", "readback", "screenshot", "submit"):
@@ -536,3 +546,402 @@ def test_descriptors_are_grounded_in_page_html():
     assert by_selector["#f-name"].required is True
     assert by_selector["#f-essay"].placeholder == "Your essay"
     assert by_selector["#f-pass"].input_type == "password"
+
+
+def _approved_submit(rig):
+    sid, _ = reach_staged(rig)
+    base = f"/api/v1/competition-manager/applications/sessions/{sid}"
+    approval = rig.client.post(f"{base}/submit-approval").json()
+    approve(rig, approval["approval_id"])
+    return base, approval["approval_id"]
+
+
+def test_error_status_after_click_is_blocked_with_uncertain_outcome(rig):
+    base, approval_id = _approved_submit(rig)
+    rig.page.next_observation = {"url": DONE_URL, "http_status": 403, "site_acceptance": "unconfirmed"}
+    response = rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    assert response.status_code == 502
+    status = rig.client.get(base).json()
+    assert status["status"] == "blocked"
+    assert "effect may have occurred" in status["error"] and "do not retry" in status["error"]
+    assert rig.competitions.get_competition("comp-1").status != SubmissionStatus.SUBMITTED
+
+
+def test_platform_block_after_click_is_not_reported_as_not_submitted(rig):
+    from app.modules.m13_browser_agent.session_bridge.protocol import PlatformBlockedAfterEffect
+    base, approval_id = _approved_submit(rig)
+    rig.page.click_error = PlatformBlockedAfterEffect(
+        "policy", "platform blocked after click (policy); effect may have occurred; do not retry")
+    response = rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    assert response.status_code == 502
+    status = rig.client.get(base).json()
+    assert status["status"] == "blocked"
+    assert "effect may have occurred" in status["error"]
+    assert "was not submitted" not in status["error"] and "was not submitted" not in response.text
+
+
+def test_typed_post_dispatch_uncertainty_is_blocked_not_failed(rig):
+    from app.modules.m13_browser_agent.session_bridge.protocol import DispatchUncertain
+    base, approval_id = _approved_submit(rig)
+    rig.page.click_error = DispatchUncertain("daemon did not answer within 60s")
+    response = rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    assert response.status_code == 502
+    status = rig.client.get(base).json()
+    assert status["status"] == "blocked" and status["status"] != "failed"
+    assert "outcome unknown" in status["error"] and "do not retry" in status["error"]
+    assert "was not submitted" not in status["error"] and "was not submitted" not in response.text
+
+
+def test_direct_playwright_timeout_is_uncertain_not_failed(rig):
+    from playwright.async_api import TimeoutError as PlaywrightTimeout
+    base, approval_id = _approved_submit(rig)
+    rig.page.click_error = PlaywrightTimeout("Locator.click: Timeout 30000ms exceeded.")
+    response = rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    assert response.status_code == 502
+    status = rig.client.get(base).json()
+    assert status["status"] == "blocked" and "outcome unknown" in status["error"]
+    assert "was not submitted" not in status["error"] and "was not submitted" not in response.text
+
+
+def test_unknown_click_error_is_uncertain_only_a_provable_pre_dispatch_error_is_failed(rig):
+    base, approval_id = _approved_submit(rig)
+    rig.page.click_error = RuntimeError("anything we cannot place before the send")
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    assert rig.client.get(base).json()["status"] == "blocked"
+
+
+def test_owner_assertion_is_recorded_as_an_assertion_only(rig):
+    base, approval_id = _approved_submit(rig)
+    assert rig.client.post(f"{base}/submit", json={"approval_id": approval_id}).status_code == 200
+    refused = rig.client.post(f"{base}/assert-site-accepted", json={"owner_asserts_site_accepted": False})
+    assert refused.status_code in (409, 422)
+    done = rig.client.post(f"{base}/assert-site-accepted", json={"owner_asserts_site_accepted": True})
+    assert done.status_code == 200, done.text
+    body = done.json()
+    assert body["status"] == "submit_owner_asserted_accepted" and body["submitted"] is False
+    assert body["site_acceptance"] == "owner_asserted_unverified"
+    assert body["owner_assertion"]["actor_id"] == "local-user"
+    assert "not independently verified" in body["owner_assertion"]["basis"]
+    assert rig.competitions.get_competition("comp-1").status != SubmissionStatus.SUBMITTED
+    again = rig.client.post(f"{base}/assert-site-accepted", json={"owner_asserts_site_accepted": True})
+    assert again.status_code == 409  # no double assertion
+
+
+def test_assertion_requires_dispatched_state_and_same_actor(rig):
+    sid, _ = reach_staged(rig)
+    base = f"/api/v1/competition-manager/applications/sessions/{sid}"
+    early = rig.client.post(f"{base}/assert-site-accepted", json={"owner_asserts_site_accepted": True})
+    assert early.status_code == 409
+    approval = rig.client.post(f"{base}/submit-approval").json()
+    approve(rig, approval["approval_id"])
+    rig.client.post(f"{base}/submit", json={"approval_id": approval["approval_id"]})
+    import asyncio as _a
+    from app.modules.m13_browser_agent.application_flow import ActorMismatchError
+    flow = rig.flow
+    with pytest.raises(ActorMismatchError):
+        _a.run(flow.assert_site_accepted("local", "someone-else", sid, True))
+    assert rig.client.get(base).json()["status"] == "submit_dispatched_unconfirmed"
+    missing = rig.client.post(f"/api/v1/competition-manager/applications/sessions/nope/assert-site-accepted",
+                              json={"owner_asserts_site_accepted": True})
+    assert missing.status_code in (404, 409)
+
+
+def test_legacy_dispatch_only_submitted_sessions_are_not_shown_as_accepted(rig):
+    base, approval_id = _approved_submit(rig)
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    sid = base.rsplit("/", 1)[1]
+    record = rig.flow.store.get("local", sid)
+    record.status = "submitted"  # shape persisted by earlier builds: dispatch + readback, no acceptance field
+    record.confirmation = {k: v for k, v in record.confirmation.items()
+                           if k not in ("site_acceptance", "http_status", "post_click_observation")}
+    rig.flow.store.save(record)
+    view = rig.client.get(base).json()
+    assert view["status"] == "submit_dispatched_unconfirmed"
+    assert view["legacy_status_reinterpreted"] == "submitted"
+    assert view["confirmation"]["site_acceptance"] == "unconfirmed_legacy"
+
+
+def test_legacy_normalization_holds_on_every_path_not_only_public_view(rig):
+    from app.modules.m13_browser_agent.application_flow import ApplicationSession
+    base, approval_id = _approved_submit(rig)
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    sid = base.rsplit("/", 1)[1]
+    record = rig.flow.store.get("local", sid)
+    record.status = "submitted"
+    record.confirmation = {k: v for k, v in record.confirmation.items() if k != "site_acceptance"}
+    raw = record.to_dict()
+    assert raw["status"] == "submit_dispatched_unconfirmed"
+    assert raw["legacy_status_reinterpreted"] == "submitted"
+    assert raw["confirmation"]["site_acceptance"] == "unconfirmed_legacy"
+    loaded = ApplicationSession.from_dict({**raw, "status": "submitted",
+                                           "confirmation": {k: v for k, v in raw["confirmation"].items() if k != "site_acceptance"}})
+    assert loaded.status == "submit_dispatched_unconfirmed"
+    assert loaded.confirmation["site_acceptance"] == "unconfirmed_legacy"
+
+
+def test_cancellation_after_dispatch_leaves_the_session_blocked_not_awaiting_approval(rig):
+    import asyncio as _a
+    base, approval_id = _approved_submit(rig)
+    sid = base.rsplit("/", 1)[1]
+    started = []
+
+    async def hang():
+        started.append(1)
+        await _a.sleep(30)
+    rig.page.click_hook = hang
+
+    async def go():
+        task = _a.ensure_future(rig.flow.execute_submit("local", "local-user", sid, approval_id))
+        for _ in range(100):
+            if started:
+                break
+            await _a.sleep(0.05)
+        assert started
+        task.cancel()
+        try:
+            await task
+        except _a.CancelledError:
+            pass
+    _a.run(go())
+    status = rig.client.get(base).json()
+    assert status["status"] == "blocked", status["status"]
+    assert "outcome unknown" in status["error"] and "do not retry" in status["error"]
+
+
+def test_v4_owner_confirmed_legacy_is_an_unverified_assertion_not_acceptance(rig):
+    from app.modules.m13_browser_agent.application_flow import ApplicationSession
+    base, approval_id = _approved_submit(rig)
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    sid = base.rsplit("/", 1)[1]
+    record = rig.flow.store.get("local", sid)
+    record.status = "submitted"
+    record.confirmation = {**record.confirmation, "site_acceptance": "owner_confirmed", "owner_confirmed_at": 1.0}
+    raw = record.to_dict()
+    assert raw["status"] == "submit_owner_asserted_accepted"
+    assert raw["confirmation"]["site_acceptance"] == "owner_asserted_unverified"
+    assert raw["confirmation"]["owner_assertion"]["actor_id"] == "local-user"
+    assert "not independently verified" in raw["confirmation"]["owner_assertion"]["basis"]
+    assert raw["legacy_status_reinterpreted"] == "submitted"
+
+
+def test_attempt_marker_is_durable_before_the_click_starts(rig):
+    base, approval_id = _approved_submit(rig)
+    sid = base.rsplit("/", 1)[1]
+    seen = []
+
+    async def peek():
+        seen.append(rig.flow.store.get("local", sid).status)
+    rig.page.click_hook = peek
+    assert rig.client.post(f"{base}/submit", json={"approval_id": approval_id}).status_code == 200
+    assert seen == ["submit_attempting_outcome_unconfirmed"], seen
+
+
+def test_interruption_after_consume_before_click_leaves_unconfirmed_not_awaiting_approval(rig):
+    import asyncio as _a
+    base, approval_id = _approved_submit(rig)
+    sid = base.rsplit("/", 1)[1]
+    store = rig.flow.browser.store
+    original = store.consume
+
+    async def consume_then_die(*args, **kwargs):
+        await original(*args, **kwargs)
+        raise _a.CancelledError()
+    store.consume = consume_then_die
+
+    async def go():
+        try:
+            await rig.flow.execute_submit("local", "local-user", sid, approval_id)
+        except _a.CancelledError:
+            pass
+    _a.run(go())
+    store.consume = original
+    status = rig.client.get(base).json()
+    assert status["status"] == "submit_attempting_outcome_unconfirmed"
+    assert rig.page.clicked == []  # the click never ran, but the record must not claim that either way
+    assert "success" not in status["status"] and status["status"] != "failed"
+    retry = rig.client.post(f"{base}/submit-approval")
+    assert retry.status_code in (409, 422)  # no retry path from an unconfirmed attempt
+
+
+def test_failure_before_consume_does_not_leave_an_attempt_marker(rig):
+    base, approval_id = _approved_submit(rig)
+    store = rig.flow.browser.store
+    original = store.consume
+
+    async def refuse(*args, **kwargs):
+        raise PermissionError("approval was already consumed")
+    store.consume = refuse
+    response = rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    store.consume = original
+    assert response.status_code == 409
+    assert rig.client.get(base).json()["status"] == "awaiting_submit_approval"
+
+
+def test_actor_may_assert_from_an_uncertain_block_but_not_from_an_ordinary_block_and_cannot_retry(rig):
+    from app.modules.m13_browser_agent.session_bridge.protocol import DispatchUncertain
+    base, approval_id = _approved_submit(rig)
+    rig.page.click_error = DispatchUncertain("daemon did not answer within 60s")
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    status = rig.client.get(base).json()
+    assert status["status"] == "blocked" and status["outcome_uncertain"] is True
+    assert rig.client.post(f"{base}/submit-approval").status_code in (409, 422)  # no retry
+    done = rig.client.post(f"{base}/assert-site-accepted", json={"owner_asserts_site_accepted": True})
+    assert done.status_code == 200, done.text
+    assert done.json()["status"] == "submit_owner_asserted_accepted"
+    assert done.json()["site_acceptance"] == "owner_asserted_unverified" and done.json()["submitted"] is False
+    assert rig.client.post(f"{base}/submit-approval").status_code in (409, 422)  # still no retry
+    assert rig.competitions.get_competition("comp-1").status != SubmissionStatus.SUBMITTED
+
+
+def test_ordinary_block_cannot_be_asserted_into_acceptance(rig):
+    rig.page.url, rig.page.html = FORM_URL, FORM_HTML
+    sid = create_session(rig)["session_id"]
+    rig.client.post(f"/api/v1/competition-manager/applications/sessions/{sid}/inspect")
+    rig.page.html = "<html><body><h1>We redesigned our portal</h1></body></html>"
+    rig.client.post(f"/api/v1/competition-manager/applications/sessions/{sid}/stage",
+                    json={"fields": {"full name": "Ada"}, "submit_selector": "#submit-btn"})
+    view = rig.client.get(f"/api/v1/competition-manager/applications/sessions/{sid}").json()
+    assert view["status"] == "blocked" and view["outcome_uncertain"] is False
+    refused = rig.client.post(f"/api/v1/competition-manager/applications/sessions/{sid}/assert-site-accepted",
+                              json={"owner_asserts_site_accepted": True})
+    assert refused.status_code == 409
+
+
+def _interleave_two_workers(rig, base, approval_id):
+    """Worker A and B both pass the pre-click checks; A clicks; B's consume then refuses."""
+    import asyncio as _a
+    sid = base.rsplit("/", 1)[1]
+    store = rig.flow.browser.store
+    original = store.was_consumed
+    arrived = []
+    gate = _a.Event()
+    b_done = _a.Event()
+    persisted_during_a_click = []
+
+    async def gated(approval):
+        result = await original(approval)  # both workers read "not consumed" ...
+        arrived.append(1)
+        if len(arrived) >= 2:
+            gate.set()
+        await gate.wait()  # ... before either one consumes
+        return result
+    store.was_consumed = gated
+
+    async def a_click():
+        await b_done.wait()
+        persisted_during_a_click.append(rig.flow.store.get("local", sid))
+    rig.page.click_hook = a_click
+
+    async def worker():
+        try:
+            return await rig.flow.execute_submit("local", "local-user", sid, approval_id)
+        except Exception as error:  # whichever worker loses the consume race is refused
+            return error
+        finally:
+            if not rig.page.clicked or len(rig.page.clicked) == 0:
+                pass
+
+    async def loser_wrapper():
+        result = await worker()
+        if isinstance(result, Exception):
+            b_done.set()
+        return result
+
+    async def go():
+        return await _a.gather(loser_wrapper(), loser_wrapper())
+    results = _a.run(go())
+    store.was_consumed = original
+    return results, persisted_during_a_click
+
+
+def test_losing_worker_cannot_erase_the_winners_attempt_marker(rig):
+    base, approval_id = _approved_submit(rig)
+    results, during = _interleave_two_workers(rig, base, approval_id)
+    assert during, "winner click never observed"
+    seen = during[0]
+    assert seen.status == "submit_attempting_outcome_unconfirmed" and seen.outcome_uncertain is True, (seen.status, seen.outcome_uncertain)
+    assert sum(isinstance(r, Exception) for r in results) == 1
+    assert rig.page.clicked == ["#submit-btn"] or len(rig.page.clicked) == 1
+    final = rig.client.get(base).json()
+    assert final["status"] == "submit_dispatched_unconfirmed" and final["outcome_uncertain"] is True
+
+
+def test_consume_refusal_is_not_withdrawn_when_ownership_or_non_consumption_cannot_be_proved(rig):
+    base, approval_id = _approved_submit(rig)
+    sid = base.rsplit("/", 1)[1]
+    store = rig.flow.browser.store
+    original_consume = store.consume
+
+    async def consumed_elsewhere_then_raise(*a, **k):
+        await original_consume(*a, **k)  # someone else consumed it, then ours refuses
+        raise PermissionError("approval was already consumed")
+    store.consume = consumed_elsewhere_then_raise
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    store.consume = original_consume
+    view = rig.client.get(base).json()
+    assert view["status"] == "submit_attempting_outcome_unconfirmed" and view["outcome_uncertain"] is True
+
+
+def test_assertion_is_refused_while_an_attempt_is_in_flight_or_unfinished(rig):
+    base, approval_id = _approved_submit(rig)
+    sid = base.rsplit("/", 1)[1]
+    codes = []
+
+    async def peek():
+        codes.append(rig.client.post(f"{base}/assert-site-accepted",
+                                     json={"owner_asserts_site_accepted": True}).status_code)
+    rig.page.click_hook = peek
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    assert codes == [409]  # no in-flight assertion; the owner's outcome write is not raced
+    view = rig.client.get(base).json()
+    assert view["status"] == "submit_dispatched_unconfirmed" and view.get("owner_assertion") in (None, {}, "")
+
+
+def _competing_writer(rig, sid):
+    async def hook():
+        other = rig.flow.store.get("local", sid)
+        other.error = "competing writer note"
+        rig.flow.store.save(other)
+    rig.page.click_hook = hook
+
+
+def _assert_honest_stale_response(rig, base, response):
+    assert response.status_code == 502, (response.status_code, response.text)
+    text = response.text
+    assert "do not retry" in text and "application workflow failed" not in text
+    assert "was not submitted" not in text
+    stored = rig.client.get(base).json()
+    assert stored["status"] == "submit_attempting_outcome_unconfirmed"  # newer record not overwritten
+    assert stored["outcome_uncertain"] is True and stored["error"] == "competing writer note"
+    assert rig.client.post(f"{base}/submit-approval").status_code in (409, 422)
+
+
+def test_stale_post_dispatch_save_is_honest_uncertain_not_http_500(rig):
+    base, approval_id = _approved_submit(rig)
+    _competing_writer(rig, base.rsplit("/", 1)[1])
+    _assert_honest_stale_response(rig, base, rig.client.post(f"{base}/submit", json={"approval_id": approval_id}))
+
+
+def test_stale_save_on_post_click_http_block_is_honest_uncertain(rig):
+    base, approval_id = _approved_submit(rig)
+    rig.page.next_observation = {"url": DONE_URL, "http_status": 403, "site_acceptance": "unconfirmed"}
+    _competing_writer(rig, base.rsplit("/", 1)[1])
+    _assert_honest_stale_response(rig, base, rig.client.post(f"{base}/submit", json={"approval_id": approval_id}))
+
+
+def test_stale_save_on_typed_uncertain_click_failure_is_honest_uncertain(rig):
+    from app.modules.m13_browser_agent.session_bridge.protocol import DispatchUncertain
+    base, approval_id = _approved_submit(rig)
+    rig.page.click_error = DispatchUncertain("daemon did not answer within 60s")
+    _competing_writer(rig, base.rsplit("/", 1)[1])
+    _assert_honest_stale_response(rig, base, rig.client.post(f"{base}/submit", json={"approval_id": approval_id}))
+
+
+@pytest.mark.parametrize("bad", ["x", -1, True, 1.5, None, [1]])
+def test_malformed_rev_is_refused_explicitly_not_coerced(bad):
+    from app.modules.m13_browser_agent.application_flow import ApplicationFlowError, ApplicationSession, UnsupportedSessionRecordError
+    data = ApplicationSession(tenant_id="t", session_id="s", actor_id="a", url="https://example.com/").to_dict()
+    data["rev"] = bad
+    with pytest.raises(UnsupportedSessionRecordError):
+        ApplicationSession.from_dict(data)
+    assert issubclass(UnsupportedSessionRecordError, ApplicationFlowError)

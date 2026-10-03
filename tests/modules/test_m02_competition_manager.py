@@ -81,10 +81,57 @@ class WorkflowTests(unittest.TestCase):
         approved = self.manager.approve_action(staged.id, "approval-1", Verifier())
         self.assertEqual(approved.state, ActionState.APPROVED)
         browser = Browser(); finished = self.manager.execute_action(staged.id, browser)
-        self.assertEqual(finished.state, ActionState.SUCCEEDED)
+        # an executor returning is a dispatched click, not site acceptance
+        self.assertEqual(finished.state, ActionState.DISPATCHED_UNCONFIRMED)
         self.assertEqual(finished.result["receipt"], "ABC123")
-        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.SUBMITTED)
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
         self.assertEqual(len(browser.calls), 1)
+
+    def test_executor_self_reported_acceptance_never_promotes_the_workspace(self):
+        self.make_ready()
+        staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {"confirm":True})
+        self.manager.approve_action(staged.id, "approval-1", Verifier())
+        class Claiming(Browser):
+            def execute(self, action, target_url, payload):
+                return {"receipt": "R1", "site_acceptance": "confirmed", "acceptance_evidence": "page text: received #R1"}
+        finished = self.manager.execute_action(staged.id, Claiming())
+        self.assertEqual(finished.state, ActionState.DISPATCHED_UNCONFIRMED)
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
+
+    def _approved_submit(self):
+        self.make_ready()
+        staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {"confirm":True})
+        self.manager.approve_action(staged.id, "approval-1", Verifier())
+        return staged
+
+    def test_unknown_submit_executor_error_is_uncertain(self):
+        staged = self._approved_submit()
+        class Odd(Browser):
+            def execute(self, action, target_url, payload): raise TimeoutError("30s")
+        finished = self.manager.execute_action(staged.id, Odd())
+        self.assertEqual(finished.state, ActionState.DISPATCHED_UNCONFIRMED)
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
+
+    def test_provable_pre_dispatch_submit_error_is_failed(self):
+        from app.modules.m13_browser_agent.session_bridge.protocol import DeviceOffline
+        staged = self._approved_submit()
+        class Offline(Browser):
+            def execute(self, action, target_url, payload): raise DeviceOffline("paired device is not connected")
+        with self.assertRaises(DeviceOffline): self.manager.execute_action(staged.id, Offline())
+        self.assertEqual(self.repo.get_action(staged.id).state, ActionState.FAILED)
+
+    def test_uncertain_executor_failure_is_not_a_plain_failure_or_retryable(self):
+        from app.modules.m13_browser_agent.session_bridge.protocol import DispatchUncertain
+        self.make_ready()
+        staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {"confirm":True})
+        self.manager.approve_action(staged.id, "approval-1", Verifier())
+        class Timeout(Browser):
+            def execute(self, action, target_url, payload): raise DispatchUncertain("daemon did not answer within 60s")
+        finished = self.manager.execute_action(staged.id, Timeout())
+        self.assertEqual(finished.state, ActionState.DISPATCHED_UNCONFIRMED)
+        self.assertIn("outcome unknown", finished.error)
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
+        with self.assertRaises(PermissionError): self.manager.execute_action(staged.id, Browser())
 
     def test_tampering_after_approval_is_rejected(self):
         self.make_ready(); staged = self.manager.stage_browser_action(self.ws.id, "fill_form", "https://example.test/apply", {"name":"U"})
@@ -103,9 +150,13 @@ class WorkflowTests(unittest.TestCase):
     def test_status_monitor_history_and_terminal_guard(self):
         self.make_ready(); staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {})
         self.manager.approve_action(staged.id, "approval-1", Verifier()); self.manager.execute_action(staged.id, Browser())
+        # the executor only dispatched the click; these are caller-reported observations (free-text source/evidence, unverified)
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
+        received = StatusObservation(self.ws.id, ApplicationStatus.SUBMITTED, "portal", datetime(2026,11,1,tzinfo=timezone.utc), "Portal lists the application as received", "ABC")
+        self.manager.record_status_observation(received)
         accepted = StatusObservation(self.ws.id, ApplicationStatus.ACCEPTED, "portal", datetime(2026,11,2,tzinfo=timezone.utc), "Portal says accepted", "ABC")
         ws = self.manager.record_status_observation(accepted)
-        self.assertEqual(ws.status, ApplicationStatus.ACCEPTED); self.assertEqual(self.manager.status_history(ws.id), [accepted])
+        self.assertEqual(ws.status, ApplicationStatus.ACCEPTED); self.assertEqual(self.manager.status_history(ws.id), [received, accepted])
         with self.assertRaisesRegex(ValueError, "terminal"):
             self.manager.record_status_observation(StatusObservation(ws.id, ApplicationStatus.REJECTED, "email", datetime(2026,11,3,tzinfo=timezone.utc), "Rejected"))
 

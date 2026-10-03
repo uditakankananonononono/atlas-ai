@@ -17,7 +17,10 @@ URL = "https://example.com/form"
 class Locator:
     def __init__(self, page, sel): self.page, self.sel = page, sel
     async def click(self):
-        if self.page.fail_click: raise RuntimeError("detached")
+        if self.page.fail_click:
+            from app.modules.m13_browser_agent.session_bridge.protocol import DeviceOffline
+            # True = a provably pre-dispatch failure (device offline). Anything else is not provable.
+            raise self.page.fail_click if isinstance(self.page.fail_click, Exception) else DeviceOffline("detached")
         self.page.clicked.append(self.sel)
     async def input_value(self): return self.page.values[self.sel]
 
@@ -99,7 +102,8 @@ async def test_execute_is_single_use_and_rechecks_live_page(env):
     with pytest.raises(PermissionError, match="different capture"):
         await execute_capture_bound_submit(svc, sf, "t", "s1", "#go", V, a, "f" * 64)
     out = await execute_capture_bound_submit(svc, sf, "t", "s1", "#go", V, a, CAP)
-    assert out["status"] == "submitted" and svc.sessions.p.clicked == ["#go"]
+    assert out["status"] == "click_dispatched_unconfirmed" and svc.sessions.p.clicked == ["#go"]
+    assert out["site_acceptance"] == "unconfirmed" and out["click_dispatched"] is True
     with pytest.raises(PermissionError, match="already consumed"):
         await execute_capture_bound_submit(svc, sf, "t", "s1", "#go", V, a, CAP)
     req2 = await request_capture_bound_submit(svc, "t", "u", "s1", "#go", V, CAP)
@@ -131,3 +135,31 @@ def _allow_fake_server_side_submit(monkeypatch):
     # These tests drive fake in-process pages. The default refuses server-side submits
     # (no click-time guard); see test_m13_server_side_refusal.py.
     monkeypatch.setattr(Service, "allow_unguarded_server_submit", True, raising=False)
+
+
+@pytest.mark.asyncio
+async def test_uncertain_click_failure_is_not_reported_as_retryable(env):
+    from app.modules.m13_browser_agent.session_bridge.protocol import DispatchUncertain
+    svc, sf = env
+    req = await request_capture_bound_submit(svc, "t", "u", "s1", "#go", V, CAP)
+    a = req["approval_id"]
+    svc.approvals.rows[a]["status"] = ApprovalStatus.APPROVED
+    svc.sessions.p.fail_click = DispatchUncertain("daemon did not answer within 60s")
+    with pytest.raises(Exception) as caught:
+        await execute_capture_bound_submit(svc, sf, "t", "s1", "#go", V, a, CAP)
+    assert "approve again" not in str(caught.value)
+    assert "outcome unknown" in str(caught.value) and "do not retry" in str(caught.value)
+    with sf() as db:
+        row = db.scalar(select(SubmitAttemptRow).where(SubmitAttemptRow.approval_id == a))
+    assert row.state == "click_uncertain"
+
+
+@pytest.mark.asyncio
+async def test_plain_pre_dispatch_click_failure_still_says_approve_again(env):
+    svc, sf = env
+    req = await request_capture_bound_submit(svc, "t", "u", "s1", "#go", V, CAP)
+    a = req["approval_id"]
+    svc.approvals.rows[a]["status"] = ApprovalStatus.APPROVED
+    svc.sessions.p.fail_click = True
+    with pytest.raises(RuntimeError, match="approve again"):
+        await execute_capture_bound_submit(svc, sf, "t", "s1", "#go", V, a, CAP)
