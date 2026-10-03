@@ -171,3 +171,23 @@ async def test_real_loopback_unavailable_no_model_inference(monkeypatch):
  monkeypatch.setenv('ATLAS_M19_OLLAMA_URL',f'http://127.0.0.1:{port}')
  monkeypatch.setenv('ATLAS_M19_MODEL','test-not-installed')
  with pytest.raises(ProviderError,match='no fallback used'):await local_provider.generate_local('this is a transport failure test, not inference')
+@pytest.mark.parametrize('url',['http://localhost:bad','http://localhost:99999','http://[invalid'])
+def test_invalid_local_url_mounted_fails_and_persists(repo,monkeypatch,url):
+ monkeypatch.setenv('ATLAS_M19_MODEL','test-model');monkeypatch.setenv('ATLAS_M19_OLLAMA_URL',url)
+ monkeypatch.setattr(routes,'RunRepository',lambda tenant:RunRepository(tenant,repo.sessions))
+ app=FastAPI();app.include_router(routes.router);c=TestClient(app,raise_server_exceptions=False)
+ response=c.post('/idea-incubator/ideas',json={'one_liner':'new idea'},headers={'X-Atlas-Tenant':'tenant-a'})
+ assert response.status_code==503
+ rid=response.json()['detail'].split('run_id=')[1]
+ run=repo.get(rid);assert run.state=='unavailable' and run.canvas is None and run.lease_expires_at is None
+
+def test_302_json_is_not_success_mounted(repo,monkeypatch):
+ monkeypatch.setenv('ATLAS_M19_MODEL','test-model');monkeypatch.setenv('ATLAS_M19_OLLAMA_URL','http://localhost:11434')
+ real=httpx.AsyncClient
+ monkeypatch.setattr(local_provider.httpx,'AsyncClient',lambda **kw:real(transport=httpx.MockTransport(lambda req:httpx.Response(302,json={'message':{'content':json.dumps(CANVAS)}})),**kw))
+ monkeypatch.setattr(routes,'RunRepository',lambda tenant:RunRepository(tenant,repo.sessions))
+ app=FastAPI();app.include_router(routes.router);c=TestClient(app,raise_server_exceptions=False)
+ response=c.post('/idea-incubator/ideas',json={'one_liner':'new idea'},headers={'X-Atlas-Tenant':'tenant-a'})
+ assert response.status_code==503
+ rid=response.json()['detail'].split('run_id=')[1]
+ assert repo.get(rid).state=='unavailable' and repo.get(rid).canvas is None

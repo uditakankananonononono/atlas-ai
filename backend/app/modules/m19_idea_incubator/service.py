@@ -29,7 +29,7 @@ class Service:
    run.canvas=LeanCanvasOut.model_validate_json(answer)
   except (ProviderError,ValidationError) as exc:
    run.state='unavailable' if isinstance(exc,ProviderError) else 'invalid_model_output'
-   run.error='local model unavailable or not configured' if isinstance(exc,ProviderError) else 'model returned invalid canvas JSON'
+   run.error=str(exc) if isinstance(exc,ProviderError) else 'model returned invalid canvas JSON'
    run.lease_expires_at=None;self.repository.save(run,run.version,'intake_failed',{'error':run.error})
    raise ProviderError(run.error+'; no canvas fabricated; run_id='+run.id) from exc
   run.state='awaiting_evidence';run.lease_expires_at=None

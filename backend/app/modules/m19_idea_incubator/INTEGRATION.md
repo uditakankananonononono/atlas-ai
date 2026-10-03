@@ -11,7 +11,8 @@ Install and run Ollama separately on the owner's PC. Set `ATLAS_M19_MODEL` to an
 already installed model identifier. No model is selected or downloaded here.
 `ATLAS_M19_OLLAMA_URL` defaults to `http://127.0.0.1:11434`; a local Docker Compose
 setup can use `http://ollama:11434`. Loopback or the compose `ollama` hostname is
-required. No hosted provider, paid fallback, proxy environment or redirect is used.
+required. This is a hostname allowlist, not DNS-pinned address enforcement;
+resolution depends on the operating system/container network. No hosted provider, paid fallback, proxy environment or redirect is used.
 This does not prove any model fits the owner's RAM or is installed on her PC.
 
 Missing configuration, an unavailable server, and malformed output fail visibly.
