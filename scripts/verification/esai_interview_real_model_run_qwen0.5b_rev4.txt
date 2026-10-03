@@ -1,0 +1,33 @@
+OPENING (fixed script): What experience has shaped how you see yourself?
+
+--- turn 1 (6.8s) ---
+STUDENT: When my family moved to a new town in eighth grade I didn't know anyone, so I started a robotics club at my school because nobody else would, and I taught twelve younger kids to solder.
+NEXT QUESTION: You mentioned "nobody else would". Why did that matter to you? [adaptive_span_anchored]
+extraction: adaptive_local_model proposed 0 rejected 2 | 
+
+--- turn 2 (5.1s) ---
+STUDENT: I stayed after school every day even when only two people came, because I promised the younger kids that the club would still be there next week.
+NEXT QUESTION: What work or activity gives you energy, and why? [fixed_script_fallback]
+extraction: adaptive_local_model proposed 0 rejected 1 | model span was not an exact copy / allowed type; fixed script question used
+
+--- turn 3 (6.3s) ---
+STUDENT: I get the most energy when I take something broken and make it work again, like repairing the old radio my grandfather left and hearing it play.
+NEXT QUESTION: You mentioned "repairing the old radio my grandfather left and hearing it play". Why did that matter to you? [adaptive_span_anchored]
+extraction: adaptive_local_model proposed 0 rejected 2 | 
+
+--- turn 4 (6.5s) ---
+STUDENT: My teachers say I'm patient. Last spring a sophomore couldn't get her circuit to work and I sat with her for two hours until she found the loose wire herself.
+NEXT QUESTION: What do you want to explore next in college or your career? [fixed_script_fallback]
+extraction: adaptive_local_model proposed 0 rejected 2 | model span was not an exact copy / allowed type; fixed script question used
+
+--- turn 5 (1.7s) ---
+STUDENT: I want to study mechanical engineering and build low cost medical devices, because my grandfather's hearing aid cost more than our rent.
+NEXT QUESTION: None [None]
+extraction: adaptive_local_model proposed 0 rejected 2 | 
+
+BRANDID values: [] 
+strengths: [] 
+patterns(beyond raw answers): []
+proposed (UNCONFIRMED) evidence items:
+
+SUMMARY (computed from the per-turn records above) {"turns": 5, "next_question_source_counts_turns_1_to_4": {"adaptive_span_anchored": 2, "fixed_script_fallback": 2}, "extraction_mode_counts_all_turns": {"adaptive_local_model": 5}, "proposed_items": 0, "rejected_items": 9, "unconfirmed_items_in_brandid_evidence": 0}

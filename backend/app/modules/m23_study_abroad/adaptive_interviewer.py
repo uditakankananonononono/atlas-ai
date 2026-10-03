@@ -16,6 +16,7 @@ Routing is private=True, so no hosted route is ever used.
 from __future__ import annotations
 
 import dataclasses
+import time
 import json
 import re
 import threading
@@ -25,10 +26,12 @@ from dataclasses import dataclass, field
 from urllib.parse import urlparse
 
 from instinct_models import ProductConfig, ProviderError, ProviderUnavailable, Router, Task, load_config
+from instinct_models.router import RouteAttempt, RoutedResult
 
 import os as _os
 CALL_TIMEOUT_S = float(_os.environ.get("INSTINCT_INTERVIEW_CALL_TIMEOUT", "20"))  # per model call; an answer makes at most 2 calls
-_SLOTS = threading.BoundedSemaphore(2)  # at most 2 concurrent model calls; extra requests fall back instead of queueing
+_SLOTS = threading.BoundedSemaphore(2)  # at most 2 model calls in flight (held until the call thread really ends)
+STEP_BUDGET_S = float(_os.environ.get("INSTINCT_INTERVIEW_STEP_BUDGET", "12"))  # wall-clock cap for ALL model work in one answer
 
 ADAPTIVE = "adaptive_local_model"          # model wrote the whole question (strict lexical guards)
 ANCHORED = "adaptive_span_anchored"        # model chose a span + type; WE wrote the question around the exact span
@@ -191,8 +194,18 @@ def _post_loopback(url: str, body: dict, headers: dict, timeout: float) -> dict:
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
                                  headers={"Content-Type": "application/json", **headers})
     try:
-        with urllib.request.build_opener(_NoRedirect()).open(req, timeout=min(timeout, CALL_TIMEOUT_S)) as resp:
-            return json.loads(resp.read(2_000_000).decode())
+        limit = min(timeout, CALL_TIMEOUT_S)
+        deadline = time.monotonic() + limit
+        with urllib.request.build_opener(_NoRedirect()).open(req, timeout=limit) as resp:
+            buf = b""
+            while True:  # total wall-clock deadline, so a trickling server cannot hold the call open
+                chunk = resp.read1(16384)
+                if not chunk:
+                    break
+                buf += chunk
+                if len(buf) > 2_000_000 or time.monotonic() > deadline:
+                    raise ProviderUnavailable("local model response too large or too slow")
+            return json.loads(buf.decode())
     except urllib.error.HTTPError as exc:
         raise ProviderError(f"HTTP {exc.code} from local model") from exc
     except (urllib.error.URLError, TimeoutError, ConnectionError, ValueError, OSError) as exc:
@@ -211,29 +224,50 @@ class AdaptiveInterviewer:
         # freeform=True additionally tries a model-written question (strict lexical guards); off by default because
         # real small-model runs failed those guards on every turn (see docs).
         self.router, self.question_tokens, self.extract_tokens, self.freeform = router, question_tokens, extract_tokens, freeform
+        self._tl = threading.local()
 
     def _ask(self, system: str, user: str, max_tokens: int, example: tuple[str, str] | None = None):
+        """One model call under the step's wall-clock budget, in a daemon thread (hard cap on request latency).
+        A call that outlives the budget is abandoned for this request; it keeps its slot until it really ends."""
         shots = ([{"role": "user", "content": example[0]}, {"role": "assistant", "content": example[1]}]
                  if example else [])
-        return self.router.run(Task(messages=[{"role": "system", "content": system}, *shots,
-                                              {"role": "user", "content": user}],
-                                    private=True, max_tokens=max_tokens))
+        task = Task(messages=[{"role": "system", "content": system}, *shots, {"role": "user", "content": user}],
+                    private=True, max_tokens=max_tokens)
+        remaining = getattr(self._tl, "deadline", time.monotonic() + STEP_BUDGET_S) - time.monotonic()
+        if remaining < 1.0:
+            return RoutedResult(None, [RouteAttempt("local", "budget_exhausted", f"{STEP_BUDGET_S:g}s step budget used")])
+        if not _SLOTS.acquire(blocking=False):
+            return RoutedResult(None, [RouteAttempt("local", "busy", "2 model calls already in flight")])
+        box: dict = {}
+
+        def work():
+            try:
+                box["r"] = self.router.run(task)
+            except Exception as exc:  # noqa: BLE001
+                box["e"] = exc
+            finally:
+                _SLOTS.release()
+        t = threading.Thread(target=work, daemon=True)
+        t.start()
+        t.join(remaining)
+        if t.is_alive():
+            return RoutedResult(None, [RouteAttempt("local", "timeout", f"abandoned after {remaining:.1f}s; generation may continue locally")])
+        if "e" in box:
+            raise box["e"]
+        return box["r"]
 
     def step(self, *, track: str, turns: list[dict], fixed_next: str | None, want_question: bool) -> InterviewStep:
         """turns: [{question, student_response}] so far, newest last. Never raises: any failure is a labeled fallback."""
         step = InterviewStep(question=fixed_next, question_source=FALLBACK)
-        if not _SLOTS.acquire(blocking=False):
-            step.detail = "local model busy; fixed script question used, no extraction"
-            return step
+        self._tl.deadline = time.monotonic() + STEP_BUDGET_S  # thread-local: safe if one interviewer serves several threads
         try:
             return self._step(step, track, turns, want_question)
         except Exception as exc:  # noqa: BLE001 - provider/JSON/shape errors must not 500 a saved turn
-            step.question, step.extraction, step.rejected = step.question, [], []
+            step.question, step.extraction, step.rejected = fixed_next, [], []
             step.question_source, step.extraction_mode, step.provider, step.model = FALLBACK, "none_no_model", None, None
+            step.anchor = None
             step.detail = f"interviewer error ({type(exc).__name__}); fixed script question used, no extraction"
             return step
-        finally:
-            _SLOTS.release()
 
     def _step(self, step: InterviewStep, track: str, turns: list[dict], want_question: bool) -> InterviewStep:
         transcript = "\n".join(f"Coach: {t['question']}\nStudent: {t['student_response']}" for t in turns)
