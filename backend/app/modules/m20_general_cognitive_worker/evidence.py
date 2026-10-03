@@ -8,9 +8,12 @@ counts it was computed from and a Wilson 95% interval. When fewer than
 (``value is None``) rather than filled with a default prior.
 
 Scope, stated plainly: evidence is keyed by tool name. It does not look at
-free-text meaning, arguments or risk tier, so two different tools with
-different histories get different estimates, and two actions through the same
-tool share one.
+free-text meaning, arguments, goal, context or risk tier, so two different tools
+with different histories get different estimates, and two actions through the
+same tool share one. Counts are only as true as the episode recorder (an
+action is a success if ActionRecord.succeeded says so). Per-step estimates are
+combined elsewhere assuming independence. This is a frequency count, not
+learning or a causal model.
 """
 from __future__ import annotations
 
@@ -106,24 +109,26 @@ class ToolEvidence:
         return self._build(tool, successes, samples)
 
     def for_action_text(self, text: str, *, tool: str | None = None) -> OutcomeEstimate:
-        """Resolve free text to a known tool by exact tool-name token match.
+        """Attribute an action to a recorded tool only when that is explicit.
 
-        Only literal matches count (explicit ``tool`` or a known tool name
-        appearing as a word/identifier in the text). Anything else is
-        reported as unmatched, not guessed.
+        Accepted: an explicit ``tool`` argument, or text that is exactly a
+        recorded tool name, or written ``tool:<name>`` / ``tool=<name>``.
+        Words that merely appear in free text are NOT matched (a tool named
+        "read" must not claim "read the report"). Anything else is reported as
+        not attributable, not guessed.
         """
         counts = self.counts()
         if tool:
             return self._build(tool, *counts.get(tool, (0, 0)))
-        words = set(re.findall(r"[A-Za-z0-9_\-.]+", text.lower()))
-        hits = sorted(t for t in counts if t.lower() in words)
-        if len(hits) == 1:
-            return self._build(hits[0], *counts[hits[0]])
-        why = "no recorded tool is named in the action text" if not hits else (
-            f"action text names several recorded tools {hits}; not guessing"
-        )
+        cleaned = text.strip().lower()
+        cleaned = re.sub(r"^tool\s*[:=]\s*", "", cleaned)
+        for known in counts:
+            if known.lower() == cleaned:
+                return self._build(known, *counts[known])
         return OutcomeEstimate(
-            None, 0, 0, self.min_samples, None, None, None, f"not estimated: {why}",
+            None, 0, 0, self.min_samples, None, None, None,
+            "not estimated: action text is not an explicit recorded tool "
+            "(pass tool=<name> or use 'tool:<name>'); free-text words are not matched",
         )
 
     def _build(self, key: str, successes: int, samples: int) -> OutcomeEstimate:

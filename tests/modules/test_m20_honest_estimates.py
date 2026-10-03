@@ -51,8 +51,8 @@ def test_counterfactual_same_risk_different_actions_get_different_evidence():
     engine = CounterfactualEngine(EvidenceOutcomeModel(ev))
     ep = episodes_for(deploy=[False])[0]
     out = engine.simulate(ep, [
-        {"action": "send_email to ceo", "risk": "external"},
-        {"action": "post_tweet about launch", "risk": "external"},
+        {"action": "send_email to ceo", "tool": "send_email", "risk": "external"},
+        {"action": "post_tweet about launch", "tool": "post_tweet", "risk": "external"},
         {"action": "paste a dog photo", "risk": "external"},
         {"action": "do nothing", "risk": "external"},
     ])
@@ -74,7 +74,7 @@ def test_counterfactual_estimate_changes_when_history_changes():
         eps.record(e)
     engine = CounterfactualEngine(EvidenceOutcomeModel(ToolEvidence(eps.episodes)))
     ep = episodes_for(x=[False])[0]
-    alt = [{"action": "send_email", "risk": "external"}]
+    alt = [{"action": "tool:send_email", "risk": "external"}]
     assert engine.simulate(ep, alt)["alternatives"][0]["estimated_success_probability"] == 1.0
     for e in episodes_for(send_email=[False, False, False, False, False, False, False]):
         eps.record(e)
@@ -88,10 +88,14 @@ def test_counterfactual_below_minimum_samples_is_unavailable_with_counts():
     assert "need at least 3" in est.basis
 
 
-def test_counterfactual_does_not_guess_when_text_names_several_tools():
-    ev = ToolEvidence(episodes_for(a_tool=[True] * 3, b_tool=[False] * 3))
-    est = ev.for_action_text("run a_tool then b_tool")
-    assert not est.available and "several recorded tools" in est.basis
+def test_free_text_common_words_are_not_attributed_to_tools():
+    ev = ToolEvidence(episodes_for(read=[True] * 3, send=[False] * 3))
+    for text in ("read the report then send it", "please read this", "a_tool or b_tool"):
+        est = ev.for_action_text(text)
+        assert not est.available and "free-text words are not matched" in est.basis
+    assert ev.for_action_text("read").value == 1.0
+    assert ev.for_action_text("tool:send").value == 0.0
+    assert ev.for_action_text("anything", tool="read").value == 1.0
 
 
 def test_custom_float_model_is_labelled_unverified():
@@ -218,3 +222,35 @@ def test_rumination_executes_nothing_and_loop_uses_episode_evidence():
     assert all(n.state == TaskState.PENDING for n in ctx.plan)
     assert out["mode"] == "simulated_search"
     assert loop.ruminator.evidence.counts() == {}  # nothing recorded yet -> honest
+
+
+# -- dependency order inside rollouts (independent-review regression) -----------------
+
+def test_mcts_failed_ancestor_blocks_dependents_in_tree_and_rollout():
+    ev = ToolEvidence(episodes_for(always_fails=[False] * 5))
+    s1 = PlanNode(title="s1", tool="always_fails")
+    s2 = PlanNode(title="s2", tool="unknown_tool", depends_on=[s1.id])
+    res = BoundedMCTS(max_simulations=200, max_seconds=5, seed=1, evidence=ev).search([s1, s2])
+    assert res.root_value == 0.0  # s1 never succeeds, s2 must never count (was ~.499)
+    assert res.best_action_id == s1.id and res.principal_variation == ["s1", "s2"]
+    assert all(st.mean_value == 0.0 for st in res.action_stats)
+
+
+def test_mcts_two_step_chain_value_is_product_not_independent_draws():
+    ev = ToolEvidence(episodes_for(half=[True, False] * 2))  # 2/4 = .5 each
+    a = PlanNode(title="a", tool="half")
+    b = PlanNode(title="b", tool="half", depends_on=[a.id])
+    res = BoundedMCTS(max_simulations=4000, max_seconds=20, seed=2, evidence=ev).search([a, b])
+    # fraction complete: P(a)*(1/2 + P(b)/2) = .5*(.5+.25) = .375 (was .4988)
+    assert res.root_value == pytest.approx(0.375, abs=0.03)
+
+
+def test_mcts_dependent_step_not_counted_when_dependency_unfinished_in_path():
+    a = PlanNode(title="a", tool="t")
+    b = PlanNode(title="b", tool="t", depends_on=[a.id])
+    ev = ToolEvidence(episodes_for(t=[False] * 4))
+    rollout = BoundedMCTS(max_simulations=1, seed=0, evidence=ev)
+    rollout._estimates = {n.id: ev.for_tool("t") for n in (a, b)}
+    rollout._assumed = set()
+    # a hostile path that lists the dependent first must still be blocked
+    assert rollout._rollout([a, b], (b.id, a.id), 0) == 0.0
