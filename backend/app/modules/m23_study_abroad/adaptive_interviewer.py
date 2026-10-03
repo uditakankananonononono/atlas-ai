@@ -182,6 +182,19 @@ def parse_span(text: str, answer: str, asked: list[str]) -> tuple[str, str] | No
     return None if _norm(q) in {_norm(a) for a in asked} else (parts[0].lower(), span)
 
 
+_REASONS = {"budget_exhausted": "step time budget used up", "timeout": "model call timed out and was abandoned",
+            "busy": "2 model calls already in flight"}
+
+
+def _why(routed: RoutedResult, consequence: str) -> str:
+    """Reason-specific detail: budget/timeout/busy are NOT 'unreachable'."""
+    for a in routed.attempts:
+        if a.outcome in _REASONS:
+            return f"{_REASONS[a.outcome]}; {consequence}"
+    return ("no local model reachable (" + "; ".join(f"{a.provider}:{a.outcome}" for a in routed.attempts)
+            + f"); {consequence}")
+
+
 def _post_loopback(url: str, body: dict, headers: dict, timeout: float) -> dict:
     """Loopback-only JSON POST with NO redirects and a hard timeout."""
     u = urlparse(url)
@@ -288,8 +301,7 @@ class AdaptiveInterviewer:
                 else:
                     details.append("model span was not an exact copy / allowed type; fixed script question used")
             else:
-                details.append("no local model reachable; fixed script question used: "
-                               + "; ".join(f"{a.provider}:{a.outcome}" for a in routed.attempts))
+                details.append(_why(routed, "fixed script question used"))
             if step.question_source == FALLBACK and self.freeform:
                 routed = self._ask(QUESTION_SYSTEM, f"Track: {track}.\n{transcript}\nCoach:", self.question_tokens)
                 if routed.ok:
@@ -306,7 +318,7 @@ class AdaptiveInterviewer:
             step.extraction_mode = ADAPTIVE
             step.provider, step.model = step.provider or routed.result.provider, step.model or routed.result.model
         else:
-            details.append("no local model reachable; no quote extraction")
+            details.append(_why(routed, "no quote extraction"))
         step.detail = " | ".join(details)
         return step
 

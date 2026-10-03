@@ -326,3 +326,23 @@ def test_trickling_response_hits_total_deadline(monkeypatch):
         ai._post_loopback(f"http://127.0.0.1:{srv.server_port}/v1/x", {}, {}, 120)
     assert time.time() - t0 < 3.5
     srv.shutdown()
+
+
+def test_detail_distinguishes_budget_timeout_busy_from_unreachable(monkeypatch):
+    import time
+    from app.modules.m23_study_abroad import adaptive_interviewer as ai
+    from instinct_models.router import RouteAttempt, RoutedResult
+    mk = lambda o: RoutedResult(None, [RouteAttempt("local", o)])
+    assert "budget used up" in ai._why(mk("budget_exhausted"), "no quote extraction")
+    assert "no local model reachable" not in ai._why(mk("budget_exhausted"), "x")
+    assert "timed out" in ai._why(mk("timeout"), "x") and "in flight" in ai._why(mk("busy"), "x")
+    assert "no local model reachable" in ai._why(mk("unavailable"), "x")
+    # end to end: span call eats the whole budget, extraction must report budget, not unreachable
+    class Hog(Fake):
+        def chat(self, messages, *, tools=None, max_tokens=1024):
+            time.sleep(1.6); return ChatResult(self.name, "m", "scene | bad span not copied", [], {})
+    monkeypatch.setattr(ai, "STEP_BUDGET_S", 2.0)
+    iv = AdaptiveInterviewer(Router([Hog("", "")]))
+    step = iv.step(track="college", turns=[{"question": QUESTIONS[0], "student_response": ANSWER}],
+                   fixed_next=QUESTIONS[1], want_question=True)
+    assert "budget" in step.detail and "no local model reachable" not in step.detail, step.detail
