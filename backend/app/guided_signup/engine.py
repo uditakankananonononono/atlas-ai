@@ -126,10 +126,14 @@ class Engine:
     Credentials are resolved only at the fill boundary; never returned or persisted.
     Exceptions from pages, vaults and mail are replaced by fixed redacted outcomes.
     """
-    def __init__(self, store, vault, inbox, profiles, executable='/usr/bin/google-chrome'):
+    def __init__(self, store, vault, inbox, profiles, executable='/usr/bin/google-chrome', test_origin_map=None):
         from playwright.sync_api import sync_playwright
         self.store, self.vault, self.inbox = store, vault, inbox
         self.profiles = {p.site: p for p in profiles}
+        # TEST ONLY seam: {'https://reviewed.host': 'https://127.0.0.1:PORT'}. The route handler
+        # fetches the mapped backend (TLS still verified, against a test CA given to the driver via
+        # NODE_EXTRA_CA_CERTS) with the reviewed Host header. Production leaves this empty.
+        self.test_origin_map = dict(test_origin_map or {})
         self.thread = threading.get_ident()
         self.pw = sync_playwright().start()
         self.browser = self.pw.chromium.launch(executable_path=executable, headless=True,
@@ -190,7 +194,8 @@ class Engine:
         aborted and the gate is marked; the actor then reports an unknown outcome. A 3xx answer to
         GET/HEAD is passed on only if its Location resolves to an allowed same-origin URL, which is
         then re-checked by the route guard like any other request."""
-        response = route.fetch(max_redirects=0)
+        mapped = self._mapped_fetch(route)
+        response = route.fetch(max_redirects=0, **mapped)
         if 300 <= response.status < 400:
             if route.request.method not in ('GET', 'HEAD'):
                 if gate is not None:
@@ -208,6 +213,16 @@ class Engine:
         if self.CSP:
             headers['Content-Security-Policy'] = self.CSP
         route.fulfill(response=response, headers=headers)
+
+    def _mapped_fetch(self, route):
+        if not self.test_origin_map:
+            return {}
+        u = urlsplit(route.request.url)
+        backend = self.test_origin_map.get(f'{u.scheme}://{u.netloc}')
+        if not backend:
+            return {}
+        url = backend + u.path + ('?' + u.query if u.query else '')
+        return {'url': url, 'headers': {**route.request.headers, 'host': u.netloc}}
 
     @staticmethod
     def _location_allowed(gate, p, base, location):
