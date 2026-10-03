@@ -133,3 +133,37 @@ def planning_tool(tool:str,body:EnhancedParityIn):
  if tool not in planning_tools:raise HTTPException(404,'unknown planning tool')
  try:return planning_tools[tool](body.data)
  except (ValueError,TypeError,KeyError,OverflowError) as error:raise HTTPException(422,str(error)) from error
+
+# Official public catalog (NCES IPEDS bulk files). Reference data, read-only; US scope only, see official_catalog.py.
+import os as _os
+from pathlib import Path as _Path
+from .official_catalog import Catalog, CatalogError, SCHEMA as _CAT_SCHEMA  # noqa: F401
+class CatalogMatchIn(BaseModel):
+ profile:dict;unitids:list[str]=Field(min_length=1,max_length=200)
+def _catalog_path():return _Path(_os.environ.get('ATLAS_CATALOG_DB','backend/data/official_catalog.sqlite'))
+def _catalog():
+ try:return Catalog(_catalog_path())
+ except CatalogError as e:raise HTTPException(503,'official catalog not imported; run python -m app.modules.m23_study_abroad.official_catalog_cli import') from e
+@router.get('/catalog/coverage')
+def catalog_coverage(tenant:TenantContext=Depends(require_tenant)):return _catalog().coverage()
+@router.get('/catalog/schools')
+def catalog_schools(q:str|None=None,state:str|None=None,control:str|None=None,program:str|None=None,award:str|None=None,limit:int=25,tenant:TenantContext=Depends(require_tenant)):
+ try:return _catalog().search_institutions(q=q,state=state,control=control,cip_keyword=program,award=award,limit=limit)
+ except CatalogError as e:raise HTTPException(422,str(e)) from e
+@router.get('/catalog/schools/{unitid}')
+def catalog_school(unitid:str,tenant:TenantContext=Depends(require_tenant)):
+ r=_catalog().institution(unitid)
+ if not r:raise HTTPException(404,'unknown unitid')
+ return r
+@router.get('/catalog/programs')
+def catalog_programs(q:str,limit:int=25,tenant:TenantContext=Depends(require_tenant)):
+ try:return _catalog().search_programs(q,limit)
+ except CatalogError as e:raise HTTPException(422,str(e)) from e
+@router.post('/school-match-from-catalog')
+def school_match_from_catalog(x:CatalogMatchIn,s:AdvisingService=Depends(advising_service)):
+ schools=_catalog().schools_for_match(x.unitids)
+ if not schools:raise HTTPException(404,'none of the unitids resolved to a catalog school with an official URL')
+ r=s.school_match(x.profile,schools)
+ r['catalog_note']='Schools and programs from the NCES IPEDS 2024 catalog (programs derived from 2023-24 completions). No cost data: budget fit is null. Not an admission prediction.'
+ r['unresolved_unitids']=sorted(set(x.unitids)-{y['id'] for y in schools})
+ return r
