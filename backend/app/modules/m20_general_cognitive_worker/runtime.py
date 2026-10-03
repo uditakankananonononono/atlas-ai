@@ -47,10 +47,17 @@ class AlternativeEvaluated:
 
     node_id: str
     title: str
-    information_gain: float
-    cost: float
-    progress_probability: float
-    score: float
+    # Observed success rate of the step's tool in recorded episodes; None when
+    # there is not enough evidence (never a made-up prior).
+    progress_probability: float | None
+    # Not estimated: no recorded measurement exists for information gain.
+    information_gain: float | None
+    # Safety-ordering rank of the risk tier (0 safest). Policy rank, not a cost.
+    cost: int
+    score: float | None
+    risk: str = ""
+    ranking_basis: str = ""
+    evidence: dict | None = None
 
 
 @dataclass
@@ -134,9 +141,10 @@ class GCWRuntime:
         )
         self.scheduler = FairContextScheduler()
         self.selector = ToolSelector(self.tools, embedder=embedder)
-        self.mcts = BoundedMCTS(seed=seed)
+        self.evidence = self.loop.evidence
+        self.mcts = BoundedMCTS(seed=seed, evidence=self.evidence)
         self.sandbox = SandboxRunner(policy=sandbox_policy)
-        self.meta = MetaReasoner()
+        self.meta = MetaReasoner(self.evidence)
         self.loop.before_run = self._register_expectations
         self._persisted_traces = 0
         if _hydrate:
@@ -253,10 +261,12 @@ class GCWRuntime:
         wm_context = self.working_memory.context(partition=context.id)
         ltm_hits = len(self.semantic.query(context.goal, limit=3))
         for candidate in self.meta.score_candidates(ready, wm_context=wm_context, ltm_hits=ltm_hits):
+            if candidate.progress_probability is None:
+                continue  # no evidence-based prediction exists, so nothing to calibrate
             claim = self.calibration.assess_claim(
                 f"step succeeds: {candidate.node.title}",
                 candidate.progress_probability,
-                evidence_count=ltm_hits,
+                evidence_count=candidate.estimate.samples,
             )
             candidate.node.arguments.setdefault("_expectation_claim_id", claim.id)
 
@@ -307,10 +317,16 @@ class GCWRuntime:
         alternatives = [
             AlternativeEvaluated(
                 node_id=c.node.id, title=c.node.title,
-                information_gain=round(c.information_gain, 4),
-                cost=c.cost,
-                progress_probability=round(c.progress_probability, 4),
-                score=round(c.score, 4),
+                information_gain=None,
+                cost=c.risk_rank,
+                progress_probability=(
+                    round(c.progress_probability, 4)
+                    if c.progress_probability is not None else None
+                ),
+                score=round(c.score, 4) if c.score is not None else None,
+                risk=c.node.risk.value,
+                ranking_basis=c.ranking_basis,
+                evidence=c.estimate.as_dict(),
             )
             for c in candidates
         ]
@@ -328,7 +344,7 @@ class GCWRuntime:
         if context is None:
             return None
         if kwargs:
-            self.mcts = BoundedMCTS(**kwargs)
+            self.mcts = BoundedMCTS(evidence=self.evidence, **kwargs)
         return self.mcts.search(context.plan)
 
     def select_tool(self, description: str, *, context: dict[str, Any] | None = None) -> ToolSelection:

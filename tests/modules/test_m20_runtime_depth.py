@@ -282,7 +282,11 @@ def test_m20_13_26_decision_artifact_lists_alternatives_no_cot(mounted):
     body = artifact.json()
     assert body["alternatives"], "expected evaluated alternatives"
     top = body["chosen"]
-    assert {"information_gain", "cost", "progress_probability", "score"} <= set(top)
+    assert {"information_gain", "cost", "progress_probability", "score",
+            "risk", "ranking_basis", "evidence"} <= set(top)
+    # fresh runtime: no recorded episodes, so nothing is scored
+    assert top["information_gain"] is None and top["progress_probability"] is None
+    assert top["score"] is None and top["evidence"]["available"] is False
     assert "chain_of_thought" not in body and "chain" not in body["basis"]
 
 
@@ -488,12 +492,18 @@ def test_m20_28_close_generates_persisted_idempotent_retrospective(mounted):
 
 def test_m20_30_expectations_resolve_and_calibration_persists(mounted):
     client, runtime, repo, _ = mounted
+    # An expectation is only registered when recorded episodes give an estimate
+    # for the step's tool. Build that history by running prior tasks first.
+    for _ in range(4):
+        client.post("/api/modules/20/runtime/tasks",
+                    json={"goal": "scan competitor market and summarise"})
     created = client.post("/api/modules/20/runtime/tasks",
                           json={"goal": "scan competitor market and summarise"})
     task_id = created.json()["task_id"]
     runtime.close(task_id)
     resolved = [c for c in runtime.calibration.claims.values() if c.resolved]
     assert resolved, "expectations should resolve at close"
+    assert all(c.evidence_count >= 3 for c in resolved)
     report = client.get("/api/modules/20/runtime/calibration").json()
     assert report["resolved"] == len(resolved)
     restored = GCWRuntime(repo)
@@ -514,7 +524,12 @@ def test_m20_30_calibration_curve_and_shrinkage():
 def test_m20_14_surprise_triggers_reflection(mounted):
     client, runtime, repo, _ = mounted
 
+    calls = {"n": 0}
+
     async def failing(args):
+        calls["n"] += 1
+        if calls["n"] <= 3:  # three recorded successes build the evidence
+            return {"ok": True}
         raise RuntimeError("tool exploded")
 
     runtime.tools.register(ToolSpec(
@@ -525,6 +540,11 @@ def test_m20_14_surprise_triggers_reflection(mounted):
         subtasks=[PlanNode(title="flaky step", tool="flaky", risk=Risk.READ,
                            max_attempts=1)],
     ))
+    for _ in range(3):
+        assert client.post("/api/modules/20/runtime/tasks",
+                           json={"goal": "run the flaky step"}).json()["state"] == "succeeded"
+    # A prediction exists only because 3/3 recorded runs succeeded; the 4th
+    # failure contradicts it, which is the surprise.
     created = client.post("/api/modules/20/runtime/tasks",
                           json={"goal": "run the flaky step"})
     assert created.json()["state"] == "failed"

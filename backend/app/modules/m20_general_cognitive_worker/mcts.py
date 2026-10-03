@@ -16,14 +16,20 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
+from .evidence import OutcomeEstimate, ToolEvidence
 from .schemas import PlanNode, Risk, TaskState
 
-RISK_COST = {Risk.READ: 0.05, Risk.REVERSIBLE: 0.15, Risk.EXTERNAL: 0.35, Risk.IRREVERSIBLE: 0.6}
+# Tie-break order only (safer first). This is a policy ordering, not a
+# probability or a cost, and it never changes a computed value.
+RISK_RANK = {Risk.READ: 0, Risk.REVERSIBLE: 1, Risk.EXTERNAL: 2, Risk.IRREVERSIBLE: 3}
 
-
-def _success_probability(node: PlanNode) -> float:
-    """Prior completion probability: degraded by past failed attempts."""
-    return max(0.05, 0.9 - 0.1 * node.attempts)
+VALUE_SEMANTICS = (
+    "mean fraction of the plan completed across SIMULATED rollouts (nothing is "
+    "executed). A step is failed in a rollout with probability 1 - observed "
+    "success rate of its tool, but only when enough recorded episodes exist; "
+    "steps without enough evidence are assumed to complete, so the value is "
+    "conditional on them (see assumed_success_steps), not a success probability."
+)
 
 
 @dataclass
@@ -49,6 +55,13 @@ class MCTSResult:
     action_stats: list[ActionStat]
     root_value: float
     root_standard_error: float
+    principal_variation_ids: list[str] = field(default_factory=list)
+    mode: str = "simulated_search"  # never real execution
+    value_semantics: str = VALUE_SEMANTICS
+    # Steps rollouts treated as certain because evidence was insufficient.
+    assumed_success_steps: list[str] = field(default_factory=list)
+    # node id -> evidence behind that step's failure model (counts, interval, basis)
+    evidence: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -57,9 +70,15 @@ class MCTSResult:
             "simulations_run": self.simulations_run,
             "stopped_by": self.stopped_by,
             "principal_variation": list(self.principal_variation),
+            "principal_variation_ids": list(self.principal_variation_ids),
             "action_stats": [vars(s) for s in self.action_stats],
             "root_value": self.root_value,
             "root_standard_error": self.root_standard_error,
+            "mode": self.mode,
+            "value_semantics": self.value_semantics,
+            "value_is_conditional": bool(self.assumed_success_steps),
+            "assumed_success_steps": list(self.assumed_success_steps),
+            "evidence": dict(self.evidence),
         }
 
 
@@ -70,6 +89,7 @@ class _TreeNode:
     completed: frozenset[str]
     parent: "_TreeNode | None" = None
     action_taken: str | None = None  # plan-node id executed to reach here
+    path: tuple[str, ...] = ()  # action order from the root (dependency-valid)
     visits: int = 0
     total_value: float = 0.0
     total_value_sq: float = 0.0
@@ -98,6 +118,7 @@ class BoundedMCTS:
         max_depth: int = 12,
         exploration: float = math.sqrt(2.0),
         seed: int | None = None,
+        evidence: ToolEvidence | None = None,
     ) -> None:
         if max_simulations < 1:
             raise ValueError("max_simulations must be >= 1")
@@ -109,6 +130,9 @@ class BoundedMCTS:
         self.max_seconds = max_seconds
         self.max_depth = max_depth
         self.exploration = exploration
+        # No evidence supplied means every step is "not estimated" (assumed to
+        # complete, and reported as such), never a built-in prior.
+        self.evidence = evidence or ToolEvidence(())
         import random
 
         self.random = random.Random(seed)
@@ -146,6 +170,11 @@ class BoundedMCTS:
             )
         root = _TreeNode(completed=frozenset(), untried=[n.id for n in ready])
         by_id = {n.id: n for n in plan}
+        self._estimates = {
+            n.id: self.evidence.for_tool(n.tool)
+            for n in plan if n.state in (TaskState.PENDING, TaskState.RUNNING)
+        }
+        self._assumed: set[str] = set()
         stopped_by = "simulation_budget"
         simulations = 0
         for _ in range(self.max_simulations):
@@ -161,7 +190,7 @@ class BoundedMCTS:
                     action = node.untried.pop(self.random.randrange(len(node.untried)))
                     child = _TreeNode(
                         completed=frozenset(completed | {action}),
-                        parent=node, action_taken=action,
+                        parent=node, action_taken=action, path=node.path + (action,),
                     )
                     child_ready = self._ready(plan, child.completed)
                     child.untried = [n.id for n in child_ready]
@@ -176,7 +205,7 @@ class BoundedMCTS:
                 completed = set(node.completed)
                 depth += 1
             # rollout from the frontier
-            reward = self._rollout(plan, completed, depth)
+            reward = self._rollout(plan, node.path, depth)
             # backpropagate
             while node is not None:
                 node.visits += 1
@@ -195,7 +224,8 @@ class BoundedMCTS:
             )
             for child in root.children.values()
         ]
-        stats.sort(key=lambda s: (s.visits, s.mean_value), reverse=True)
+        stats.sort(key=lambda s: (-s.visits, -s.mean_value,
+                                  RISK_RANK.get(by_id[s.node_id].risk, 9) if s.node_id in by_id else 9))
         best = stats[0] if stats else None
         return MCTSResult(
             best_action_id=best.node_id if best else None,
@@ -203,9 +233,12 @@ class BoundedMCTS:
             simulations_run=simulations,
             stopped_by=stopped_by if simulations else "terminal",
             principal_variation=self._principal_variation(root, by_id),
+            principal_variation_ids=self._principal_variation_ids(root),
             action_stats=stats,
             root_value=round(root.mean_value, 4),
             root_standard_error=round(root.standard_error(), 4),
+            assumed_success_steps=sorted(self._assumed),
+            evidence={nid: est.as_dict() for nid, est in self._estimates.items()},
         )
 
     def _uct_select(self, node: _TreeNode) -> _TreeNode:
@@ -218,25 +251,56 @@ class BoundedMCTS:
 
         return max(node.children.values(), key=score)
 
-    def _rollout(self, plan: list[PlanNode], completed: set[str], depth: int) -> float:
-        """Simulate one plausible completion; reward blends progress and risk."""
-        done = set(completed)
-        risk_paid = 0.0
+    def _attempt(self, node_id: str) -> bool:
+        """One simulated attempt: evidence-based draw, or assumed success."""
+        est = self._estimates.get(node_id)
+        if est is None or not est.available:
+            self._assumed.add(node_id)
+            return True
+        return self.random.random() < est.value
+
+    def _rollout(self, plan: list[PlanNode], path: tuple[str, ...], depth: int) -> float:
+        """Simulate one completion; reward is the fraction of the plan finished.
+
+        Tree-chosen steps replay in their chosen order, then random ready steps
+        follow. Every step, tree-chosen or rolled out, runs only if all its
+        dependencies actually succeeded in this rollout (or in the plan already);
+        otherwise it is blocked: no draw, not done, and its dependents are
+        blocked in turn. A failed step is not retried within one rollout.
+        """
+        by_id = {n.id: n for n in plan}
+        base_done = {n.id for n in plan if n.state == TaskState.SUCCEEDED}
+        done: set[str] = set()
+        failed: set[str] = set()  # failed or blocked in this rollout
+        for nid in path:
+            node = by_id.get(nid)
+            if node is None:
+                continue
+            if all(d in base_done or d in done for d in node.depends_on):
+                (done if self._attempt(nid) else failed).add(nid)
+            else:
+                failed.add(nid)  # blocked by a failed/unfinished ancestor
         steps = 0
         while depth + steps < self.max_depth:
-            ready = self._ready(plan, frozenset(done))
+            ready = [n for n in self._ready(plan, frozenset(done)) if n.id not in failed]
             if not ready:
                 break
             node = self.random.choice(ready)
-            risk_paid += RISK_COST.get(node.risk, 0.1)
-            if self.random.random() < _success_probability(node):
-                done.add(node.id)
-            # a failed step blocks its descendants but not its siblings
+            (done if self._attempt(node.id) else failed).add(node.id)
             steps += 1
         total = len([n for n in plan if n.state != TaskState.CANCELLED]) or 1
-        finished = len([n for n in plan if n.state == TaskState.SUCCEEDED]) + len(done - {n.id for n in plan if n.state == TaskState.SUCCEEDED})
-        progress = min(1.0, finished / total)
-        return max(0.0, min(1.0, progress - 0.1 * risk_paid))
+        finished = len(base_done) + len(done - base_done)
+        return max(0.0, min(1.0, finished / total))
+
+    @staticmethod
+    def _principal_variation_ids(root: _TreeNode) -> list[str]:
+        ids: list[str] = []
+        node = root
+        while node.children:
+            node = max(node.children.values(), key=lambda c: c.visits)
+            if node.action_taken:
+                ids.append(node.action_taken)
+        return ids
 
     def _principal_variation(self, root: _TreeNode, by_id: dict[str, PlanNode]) -> list[str]:
         variation: list[str] = []
