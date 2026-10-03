@@ -8,7 +8,9 @@ def identity(x:StudentProfileIn):return service.identity_vector(x)
 def essay(x:EssayCoachingIn):return service.coach_essay(x)
 class FitIn(BaseModel):profile:StudentProfileIn;universities:list[UniversityIn]
 @router.post('/fit')
-def fit(x:FitIn):return service.fit(x.profile,x.universities)
+def fit(x:FitIn):
+ try:return service.fit(x.profile,x.universities)
+ except ValueError as e:raise HTTPException(422,str(e))
 
 from fastapi import Depends,HTTPException
 from app.auth.context import TenantContext,require_tenant

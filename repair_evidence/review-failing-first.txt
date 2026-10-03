@@ -1,0 +1,670 @@
+................................FFFFFFFFFFFFFFF                          [100%]
+=================================== FAILURES ===================================
+_ test_invalid_url_port_is_not_valid_source_metadata[https://u.example:bogus/a] _
+
+url = 'https://u.example:bogus/a'
+
+    @pytest.mark.parametrize('url', ['https://u.example:bogus/a','https://u.example:99999/a','https://u.example:0/a'])
+    def test_invalid_url_port_is_not_valid_source_metadata(url):
+        x=output('official_monitoring',{'records':[{'official_url':url,'checked_at':'2026-01-01'}]})
+>       assert x['metadata_coverage']==0
+E       assert 1.0 == 0
+
+tests/modules/test_m23_truth_repair.py:104: AssertionError
+_ test_invalid_url_port_is_not_valid_source_metadata[https://u.example:99999/a] _
+
+url = 'https://u.example:99999/a'
+
+    @pytest.mark.parametrize('url', ['https://u.example:bogus/a','https://u.example:99999/a','https://u.example:0/a'])
+    def test_invalid_url_port_is_not_valid_source_metadata(url):
+        x=output('official_monitoring',{'records':[{'official_url':url,'checked_at':'2026-01-01'}]})
+>       assert x['metadata_coverage']==0
+E       assert 1.0 == 0
+
+tests/modules/test_m23_truth_repair.py:104: AssertionError
+__ test_invalid_url_port_is_not_valid_source_metadata[https://u.example:0/a] ___
+
+url = 'https://u.example:0/a'
+
+    @pytest.mark.parametrize('url', ['https://u.example:bogus/a','https://u.example:99999/a','https://u.example:0/a'])
+    def test_invalid_url_port_is_not_valid_source_metadata(url):
+        x=output('official_monitoring',{'records':[{'official_url':url,'checked_at':'2026-01-01'}]})
+>       assert x['metadata_coverage']==0
+E       assert 1.0 == 0
+
+tests/modules/test_m23_truth_repair.py:104: AssertionError
+_______________ test_mounted_bad_record_types_are_422[records0] ________________
+
+records = [None]
+
+    @pytest.mark.parametrize('records', [[None],[1],['bad'],[{} ,None]])
+    def test_mounted_bad_record_types_are_422(records):
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+        from app.modules.m23_study_abroad.lifecycle_routes_01_62 import router
+        app=FastAPI();app.include_router(router);client=TestClient(app)
+>       r=client.post('/lifecycle-workbench/analyze',json={'method':'official_monitoring','data':{'records':records}})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m23_truth_repair.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:546: in post
+    return super().post(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:445: in request
+    return super().request(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:348: in handle_request
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:345: in handle_request
+    portal.call(self.app, scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../m23-venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/fastapi/applications.py:1215: in __call__
+    await super().__call__(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../m23-venv/lib/python3.12/site-packages/fastapi/telemetry/_asgi.py:151: in __call__
+    await self.app(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../m23-venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:2786: in app
+    await route.handle(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:1817: in handle
+    await self.original_router.handle(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:2869: in handle
+    await included_router._handle_selected(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:1843: in _handle_selected
+    await original_route.handle(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:1308: in handle
+    await effective_context.app(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:165: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:151: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:727: in app
+    raw_response = await run_endpoint_function(
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:362: in run_endpoint_function
+    return await run_in_threadpool(
+../m23-venv/lib/python3.12/site-packages/starlette/concurrency.py:32: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+../m23-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/fastapi/telemetry/_api.py:240: in _run_sync_endpoint
+    return function(**arguments)
+           ^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m23_study_abroad/lifecycle_routes_01_62.py:11: in analyze
+    try:return run(req.method,req.data)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py:56: in run
+    records=data.get('records');_require(isinstance(records,list) and records,'records required');valid=[r for r in records if _source_metadata_valid(r)];out={'verified_records':[],'unverified_records':records,'invalid_source_metadata':[r for r in records if not _source_metadata_valid(r)],'metadata_valid_records':valid,'metadata_coverage':len(valid)/len(records),'coverage':0.0,'verification_performed':False,'program_level':row==25};limits+=['No login scraping; official public sources must be rechecked for current facts.']
+                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = None
+
+    def _source_metadata_valid(record):
+     try:
+>     url=urlparse(str(record.get('official_url','')))
+                       ^^^^^^^^^^
+E     AttributeError: 'NoneType' object has no attribute 'get'
+
+backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py:17: AttributeError
+_______________ test_mounted_bad_record_types_are_422[records1] ________________
+
+records = [1]
+
+    @pytest.mark.parametrize('records', [[None],[1],['bad'],[{} ,None]])
+    def test_mounted_bad_record_types_are_422(records):
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+        from app.modules.m23_study_abroad.lifecycle_routes_01_62 import router
+        app=FastAPI();app.include_router(router);client=TestClient(app)
+>       r=client.post('/lifecycle-workbench/analyze',json={'method':'official_monitoring','data':{'records':records}})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m23_truth_repair.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:546: in post
+    return super().post(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:445: in request
+    return super().request(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:348: in handle_request
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:345: in handle_request
+    portal.call(self.app, scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../m23-venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/fastapi/applications.py:1215: in __call__
+    await super().__call__(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../m23-venv/lib/python3.12/site-packages/fastapi/telemetry/_asgi.py:151: in __call__
+    await self.app(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../m23-venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:2786: in app
+    await route.handle(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:1817: in handle
+    await self.original_router.handle(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:2869: in handle
+    await included_router._handle_selected(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:1843: in _handle_selected
+    await original_route.handle(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:1308: in handle
+    await effective_context.app(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:165: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:151: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:727: in app
+    raw_response = await run_endpoint_function(
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:362: in run_endpoint_function
+    return await run_in_threadpool(
+../m23-venv/lib/python3.12/site-packages/starlette/concurrency.py:32: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+../m23-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/fastapi/telemetry/_api.py:240: in _run_sync_endpoint
+    return function(**arguments)
+           ^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m23_study_abroad/lifecycle_routes_01_62.py:11: in analyze
+    try:return run(req.method,req.data)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py:56: in run
+    records=data.get('records');_require(isinstance(records,list) and records,'records required');valid=[r for r in records if _source_metadata_valid(r)];out={'verified_records':[],'unverified_records':records,'invalid_source_metadata':[r for r in records if not _source_metadata_valid(r)],'metadata_valid_records':valid,'metadata_coverage':len(valid)/len(records),'coverage':0.0,'verification_performed':False,'program_level':row==25};limits+=['No login scraping; official public sources must be rechecked for current facts.']
+                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = 1
+
+    def _source_metadata_valid(record):
+     try:
+>     url=urlparse(str(record.get('official_url','')))
+                       ^^^^^^^^^^
+E     AttributeError: 'int' object has no attribute 'get'
+
+backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py:17: AttributeError
+_______________ test_mounted_bad_record_types_are_422[records2] ________________
+
+records = ['bad']
+
+    @pytest.mark.parametrize('records', [[None],[1],['bad'],[{} ,None]])
+    def test_mounted_bad_record_types_are_422(records):
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+        from app.modules.m23_study_abroad.lifecycle_routes_01_62 import router
+        app=FastAPI();app.include_router(router);client=TestClient(app)
+>       r=client.post('/lifecycle-workbench/analyze',json={'method':'official_monitoring','data':{'records':records}})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m23_truth_repair.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:546: in post
+    return super().post(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:445: in request
+    return super().request(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:348: in handle_request
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:345: in handle_request
+    portal.call(self.app, scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../m23-venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/fastapi/applications.py:1215: in __call__
+    await super().__call__(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../m23-venv/lib/python3.12/site-packages/fastapi/telemetry/_asgi.py:151: in __call__
+    await self.app(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../m23-venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:2786: in app
+    await route.handle(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:1817: in handle
+    await self.original_router.handle(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:2869: in handle
+    await included_router._handle_selected(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:1843: in _handle_selected
+    await original_route.handle(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:1308: in handle
+    await effective_context.app(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:165: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:151: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:727: in app
+    raw_response = await run_endpoint_function(
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:362: in run_endpoint_function
+    return await run_in_threadpool(
+../m23-venv/lib/python3.12/site-packages/starlette/concurrency.py:32: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+../m23-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/fastapi/telemetry/_api.py:240: in _run_sync_endpoint
+    return function(**arguments)
+           ^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m23_study_abroad/lifecycle_routes_01_62.py:11: in analyze
+    try:return run(req.method,req.data)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py:56: in run
+    records=data.get('records');_require(isinstance(records,list) and records,'records required');valid=[r for r in records if _source_metadata_valid(r)];out={'verified_records':[],'unverified_records':records,'invalid_source_metadata':[r for r in records if not _source_metadata_valid(r)],'metadata_valid_records':valid,'metadata_coverage':len(valid)/len(records),'coverage':0.0,'verification_performed':False,'program_level':row==25};limits+=['No login scraping; official public sources must be rechecked for current facts.']
+                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = 'bad'
+
+    def _source_metadata_valid(record):
+     try:
+>     url=urlparse(str(record.get('official_url','')))
+                       ^^^^^^^^^^
+E     AttributeError: 'str' object has no attribute 'get'
+
+backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py:17: AttributeError
+_______________ test_mounted_bad_record_types_are_422[records3] ________________
+
+records = [{}, None]
+
+    @pytest.mark.parametrize('records', [[None],[1],['bad'],[{} ,None]])
+    def test_mounted_bad_record_types_are_422(records):
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+        from app.modules.m23_study_abroad.lifecycle_routes_01_62 import router
+        app=FastAPI();app.include_router(router);client=TestClient(app)
+>       r=client.post('/lifecycle-workbench/analyze',json={'method':'official_monitoring','data':{'records':records}})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m23_truth_repair.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:546: in post
+    return super().post(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:445: in request
+    return super().request(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:348: in handle_request
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/testclient.py:345: in handle_request
+    portal.call(self.app, scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../m23-venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/fastapi/applications.py:1215: in __call__
+    await super().__call__(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../m23-venv/lib/python3.12/site-packages/fastapi/telemetry/_asgi.py:151: in __call__
+    await self.app(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../m23-venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:2786: in app
+    await route.handle(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:1817: in handle
+    await self.original_router.handle(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:2869: in handle
+    await included_router._handle_selected(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:1843: in _handle_selected
+    await original_route.handle(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:1308: in handle
+    await effective_context.app(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:165: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../m23-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:151: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:727: in app
+    raw_response = await run_endpoint_function(
+../m23-venv/lib/python3.12/site-packages/fastapi/routing.py:362: in run_endpoint_function
+    return await run_in_threadpool(
+../m23-venv/lib/python3.12/site-packages/starlette/concurrency.py:32: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+../m23-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+../m23-venv/lib/python3.12/site-packages/fastapi/telemetry/_api.py:240: in _run_sync_endpoint
+    return function(**arguments)
+           ^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m23_study_abroad/lifecycle_routes_01_62.py:11: in analyze
+    try:return run(req.method,req.data)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py:56: in run
+    records=data.get('records');_require(isinstance(records,list) and records,'records required');valid=[r for r in records if _source_metadata_valid(r)];out={'verified_records':[],'unverified_records':records,'invalid_source_metadata':[r for r in records if not _source_metadata_valid(r)],'metadata_valid_records':valid,'metadata_coverage':len(valid)/len(records),'coverage':0.0,'verification_performed':False,'program_level':row==25};limits+=['No login scraping; official public sources must be rechecked for current facts.']
+                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = None
+
+    def _source_metadata_valid(record):
+     try:
+>     url=urlparse(str(record.get('official_url','')))
+                       ^^^^^^^^^^
+E     AttributeError: 'NoneType' object has no attribute 'get'
+
+backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py:17: AttributeError
+_______________ test_credential_contents_are_not_echoed_anywhere _______________
+
+    def test_credential_contents_are_not_echoed_anywhere():
+        import json
+        r=run('encrypted_credentials_audit',{'credentials':[{'id':'record','encrypted':True,'password':'FAKE_SECRET_SENTINEL'}],'audit_events':[{'id':'a','contents':'FAKE_SECRET_SENTINEL'}],'other':'FAKE_SECRET_SENTINEL'})
+>       assert 'FAKE_SECRET_SENTINEL' not in json.dumps(r)
+E       assert 'FAKE_SECRET_SENTINEL' not in '{"row": 58,...ed here."]}}'
+E         
+E         'FAKE_SECRET_SENTINEL' is contained here:
+E         ?         -----------------------------------------------                            ^^^^^^^                        ^^^^^^^^^^^
+E           ssword": "FAKE_SECRET_SENTINEL"}], "audit_events": [{"id": "a", "contents": "FAKE_SECRET_SENTINEL"}], "other": "FAKE_SECRET_SENTINEL"}, "output": {"claimed_encrypted_count": 1, "encryption_verified": false, "unencrypted_ids": [], "audit_event_count": 1, "rotation_due": [], "execution_performed": false, "local_computation_performed": true, "input_provenance": "caller_supplied_unverified", "method_limits": ["Pl...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/modules/test_m23_truth_repair.py:118: AssertionError
+____________ test_fit_rejects_invalid_financial_values[budget-True] ____________
+
+field = 'budget', value = True
+
+    @pytest.mark.parametrize('field,value', [('budget',True),('budget',float('nan')),('budget',float('inf')),('budget',-1),('tuition',True),('tuition',float('nan')),('tuition',-1)])
+    def test_fit_rejects_invalid_financial_values(field,value):
+        data={'values':[],'turning_points':[],'strengths':[],'goals':['science'],'finances':{'annual_budget_usd':200}}
+        u={'id':'u','name':'U','country':'US','programs':['Science'],'official_url':'https://u.example','annual_tuition_usd':100}
+        if field=='budget':data['finances']['annual_budget_usd']=value
+        else:u['annual_tuition_usd']=value
+>       with pytest.raises(ValueError):Service().fit(StudentProfileIn(**data),[UniversityIn(**u)])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modules/test_m23_truth_repair.py:127: Failed
+____________ test_fit_rejects_invalid_financial_values[budget-nan] _____________
+
+field = 'budget', value = nan
+
+    @pytest.mark.parametrize('field,value', [('budget',True),('budget',float('nan')),('budget',float('inf')),('budget',-1),('tuition',True),('tuition',float('nan')),('tuition',-1)])
+    def test_fit_rejects_invalid_financial_values(field,value):
+        data={'values':[],'turning_points':[],'strengths':[],'goals':['science'],'finances':{'annual_budget_usd':200}}
+        u={'id':'u','name':'U','country':'US','programs':['Science'],'official_url':'https://u.example','annual_tuition_usd':100}
+        if field=='budget':data['finances']['annual_budget_usd']=value
+        else:u['annual_tuition_usd']=value
+>       with pytest.raises(ValueError):Service().fit(StudentProfileIn(**data),[UniversityIn(**u)])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modules/test_m23_truth_repair.py:127: Failed
+____________ test_fit_rejects_invalid_financial_values[budget-inf] _____________
+
+field = 'budget', value = inf
+
+    @pytest.mark.parametrize('field,value', [('budget',True),('budget',float('nan')),('budget',float('inf')),('budget',-1),('tuition',True),('tuition',float('nan')),('tuition',-1)])
+    def test_fit_rejects_invalid_financial_values(field,value):
+        data={'values':[],'turning_points':[],'strengths':[],'goals':['science'],'finances':{'annual_budget_usd':200}}
+        u={'id':'u','name':'U','country':'US','programs':['Science'],'official_url':'https://u.example','annual_tuition_usd':100}
+        if field=='budget':data['finances']['annual_budget_usd']=value
+        else:u['annual_tuition_usd']=value
+>       with pytest.raises(ValueError):Service().fit(StudentProfileIn(**data),[UniversityIn(**u)])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modules/test_m23_truth_repair.py:127: Failed
+_____________ test_fit_rejects_invalid_financial_values[budget--1] _____________
+
+field = 'budget', value = -1
+
+    @pytest.mark.parametrize('field,value', [('budget',True),('budget',float('nan')),('budget',float('inf')),('budget',-1),('tuition',True),('tuition',float('nan')),('tuition',-1)])
+    def test_fit_rejects_invalid_financial_values(field,value):
+        data={'values':[],'turning_points':[],'strengths':[],'goals':['science'],'finances':{'annual_budget_usd':200}}
+        u={'id':'u','name':'U','country':'US','programs':['Science'],'official_url':'https://u.example','annual_tuition_usd':100}
+        if field=='budget':data['finances']['annual_budget_usd']=value
+        else:u['annual_tuition_usd']=value
+>       with pytest.raises(ValueError):Service().fit(StudentProfileIn(**data),[UniversityIn(**u)])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modules/test_m23_truth_repair.py:127: Failed
+___________ test_fit_rejects_invalid_financial_values[tuition-True] ____________
+
+field = 'tuition', value = True
+
+    @pytest.mark.parametrize('field,value', [('budget',True),('budget',float('nan')),('budget',float('inf')),('budget',-1),('tuition',True),('tuition',float('nan')),('tuition',-1)])
+    def test_fit_rejects_invalid_financial_values(field,value):
+        data={'values':[],'turning_points':[],'strengths':[],'goals':['science'],'finances':{'annual_budget_usd':200}}
+        u={'id':'u','name':'U','country':'US','programs':['Science'],'official_url':'https://u.example','annual_tuition_usd':100}
+        if field=='budget':data['finances']['annual_budget_usd']=value
+        else:u['annual_tuition_usd']=value
+>       with pytest.raises(ValueError):Service().fit(StudentProfileIn(**data),[UniversityIn(**u)])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modules/test_m23_truth_repair.py:127: Failed
+____________ test_fit_rejects_invalid_financial_values[tuition-nan] ____________
+
+field = 'tuition', value = nan
+
+    @pytest.mark.parametrize('field,value', [('budget',True),('budget',float('nan')),('budget',float('inf')),('budget',-1),('tuition',True),('tuition',float('nan')),('tuition',-1)])
+    def test_fit_rejects_invalid_financial_values(field,value):
+        data={'values':[],'turning_points':[],'strengths':[],'goals':['science'],'finances':{'annual_budget_usd':200}}
+        u={'id':'u','name':'U','country':'US','programs':['Science'],'official_url':'https://u.example','annual_tuition_usd':100}
+        if field=='budget':data['finances']['annual_budget_usd']=value
+        else:u['annual_tuition_usd']=value
+>       with pytest.raises(ValueError):Service().fit(StudentProfileIn(**data),[UniversityIn(**u)])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modules/test_m23_truth_repair.py:127: Failed
+____________ test_fit_rejects_invalid_financial_values[tuition--1] _____________
+
+field = 'tuition', value = -1
+
+    @pytest.mark.parametrize('field,value', [('budget',True),('budget',float('nan')),('budget',float('inf')),('budget',-1),('tuition',True),('tuition',float('nan')),('tuition',-1)])
+    def test_fit_rejects_invalid_financial_values(field,value):
+        data={'values':[],'turning_points':[],'strengths':[],'goals':['science'],'finances':{'annual_budget_usd':200}}
+        u={'id':'u','name':'U','country':'US','programs':['Science'],'official_url':'https://u.example','annual_tuition_usd':100}
+        if field=='budget':data['finances']['annual_budget_usd']=value
+        else:u['annual_tuition_usd']=value
+>       with pytest.raises(ValueError):Service().fit(StudentProfileIn(**data),[UniversityIn(**u)])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modules/test_m23_truth_repair.py:127: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m23_truth_repair.py::test_mounted_boolean_approval_and_invalid_probability
+  /tmp/m23-venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m23_truth_repair.py::test_invalid_url_port_is_not_valid_source_metadata[https://u.example:bogus/a]
+FAILED tests/modules/test_m23_truth_repair.py::test_invalid_url_port_is_not_valid_source_metadata[https://u.example:99999/a]
+FAILED tests/modules/test_m23_truth_repair.py::test_invalid_url_port_is_not_valid_source_metadata[https://u.example:0/a]
+FAILED tests/modules/test_m23_truth_repair.py::test_mounted_bad_record_types_are_422[records0]
+FAILED tests/modules/test_m23_truth_repair.py::test_mounted_bad_record_types_are_422[records1]
+FAILED tests/modules/test_m23_truth_repair.py::test_mounted_bad_record_types_are_422[records2]
+FAILED tests/modules/test_m23_truth_repair.py::test_mounted_bad_record_types_are_422[records3]
+FAILED tests/modules/test_m23_truth_repair.py::test_credential_contents_are_not_echoed_anywhere
+FAILED tests/modules/test_m23_truth_repair.py::test_fit_rejects_invalid_financial_values[budget-True]
+FAILED tests/modules/test_m23_truth_repair.py::test_fit_rejects_invalid_financial_values[budget-nan]
+FAILED tests/modules/test_m23_truth_repair.py::test_fit_rejects_invalid_financial_values[budget-inf]
+FAILED tests/modules/test_m23_truth_repair.py::test_fit_rejects_invalid_financial_values[budget--1]
+FAILED tests/modules/test_m23_truth_repair.py::test_fit_rejects_invalid_financial_values[tuition-True]
+FAILED tests/modules/test_m23_truth_repair.py::test_fit_rejects_invalid_financial_values[tuition-nan]
+FAILED tests/modules/test_m23_truth_repair.py::test_fit_rejects_invalid_financial_values[tuition--1]
+15 failed, 32 passed, 1 warning in 1.59s

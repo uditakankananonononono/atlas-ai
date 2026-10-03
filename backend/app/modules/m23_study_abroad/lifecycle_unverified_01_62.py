@@ -15,6 +15,8 @@ def _require(cond,msg):
 def _source_metadata_valid(record):
  try:
   url=urlparse(str(record.get('official_url','')))
+  port=url.port
+  if port is not None and not 1<=port<=65535:return False
   stamp=str(record.get('checked_at',''))
   if len(stamp)==10:checked=date.fromisoformat(stamp)
   else:
@@ -53,7 +55,7 @@ def run(method,data):
  elif row==22:
   versions=data.get('versions');_require(isinstance(versions,list) and versions,'versions required');ids=[v.get('version') for v in versions];_require(len(ids)==len(set(ids)),'duplicate versions');out={'latest':max(versions,key=lambda v:v.get('version',0)),'history':sorted(versions,key=lambda v:v.get('version',0)),'rollback_supported':len(versions)>1}
  elif row in {23,24,25}:
-  records=data.get('records');_require(isinstance(records,list) and records,'records required');valid=[r for r in records if _source_metadata_valid(r)];out={'verified_records':[],'unverified_records':records,'invalid_source_metadata':[r for r in records if not _source_metadata_valid(r)],'metadata_valid_records':valid,'metadata_coverage':len(valid)/len(records),'coverage':0.0,'verification_performed':False,'program_level':row==25};limits+=['No login scraping; official public sources must be rechecked for current facts.']
+  records=data.get('records');_require(isinstance(records,list) and records and all(isinstance(r,dict) for r in records),'records must be a nonempty list of objects');valid=[r for r in records if _source_metadata_valid(r)];out={'verified_records':[],'unverified_records':records,'invalid_source_metadata':[r for r in records if not _source_metadata_valid(r)],'metadata_valid_records':valid,'metadata_coverage':len(valid)/len(records),'coverage':0.0,'verification_performed':False,'program_level':row==25};limits+=['No login scraping; official public sources must be rechecked for current facts.']
  elif row==26:
   schools=data.get('schools');_require(isinstance(schools,list) and schools,'schools required');res=[]
   for s in schools:
@@ -107,7 +109,7 @@ def run(method,data):
    except ValueError:pass
   entities=re.findall(r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*',text);out={'tokens':re.findall(r"\w+",text),'dates':dates,'entity_candidates':entities,'bert_ready':False,'pipeline':['python_regex'],'semantic_model_loaded':False,'extraction_method':'regex_candidates_only'}
  elif row==58:
-  credentials=data.get('credentials');audits=data.get('audit_events');_require(isinstance(credentials,list) and isinstance(audits,list),'credentials/audit_events required');out={'claimed_encrypted_count':sum(bool(x.get('encrypted')) for x in credentials),'encryption_verified':False,'unencrypted_ids':[x.get('id') for x in credentials if not x.get('encrypted')],'audit_event_count':len(audits),'rotation_due':[x.get('id') for x in credentials if x.get('rotation_due')]}
+  credentials=data.get('credentials');audits=data.get('audit_events');_require(isinstance(credentials,list) and isinstance(audits,list) and all(isinstance(x,dict) for x in credentials+audits),'credentials/audit_events must be lists of objects');out={'claimed_encrypted_count':sum(bool(x.get('encrypted')) for x in credentials),'encryption_verified':False,'claimed_unencrypted_indices':[i for i,x in enumerate(credentials) if not x.get('encrypted')],'audit_event_count':len(audits),'claimed_rotation_due_indices':[i for i,x in enumerate(credentials) if x.get('rotation_due')]}
  elif row==59:
   achievements=data.get('achievements');_require(isinstance(achievements,list),'achievements required');out={'evidence_packets':[{'id':x['id'],'fact':x.get('fact'),'source_module':x.get('source_module'),'usable':bool(x.get('fact') and x.get('evidence'))} for x in achievements],'cross_module_sources':sorted({x.get('source_module') for x in achievements})}
  elif row==60:
@@ -120,4 +122,4 @@ def run(method,data):
  limits+=['Caller-supplied inputs are not independently verified. Counts describe local computation, not full specification acceptance.']
  if row in {8,9,10,11,12,13,14,15,16,17,18,19,20,26,34,35,41}:limits+=['Heuristic or caller-label computation only; no trained semantic model is used.']
  if row in {46,47,48,49,50,52,53,54,55,56,58,60}:limits+=['Lists/configuration and supplied-data calculations only; no worker, database, collector, provider, encryption or translation backend is executed here.']
- out['execution_performed']=False;out['local_computation_performed']=True;out['input_provenance']='caller_supplied_unverified';out['method_limits']=limits;return {'row':row,'method':method,'inputs':data,'output':out}
+ out['execution_performed']=False;out['local_computation_performed']=True;out['input_provenance']='caller_supplied_unverified';out['method_limits']=limits;return {'row':row,'method':method,'inputs':{'redacted':True} if row==58 else data,'output':out}
