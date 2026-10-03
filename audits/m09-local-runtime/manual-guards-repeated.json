@@ -1,0 +1,35 @@
+{
+  "full_api_race": [
+    201,
+    409
+  ],
+  "race_edge_count": 1,
+  "self": "GraphWriteConflict",
+  "cross_tenant": "LookupError",
+  "duplicate": "GraphWriteConflict",
+  "rollback_error": "RuntimeError",
+  "edge_audit_rollback": {
+    "before": [
+      2,
+      5
+    ],
+    "after": [
+      2,
+      5
+    ]
+  },
+  "valid_long_path_api": {
+    "status": 201,
+    "response": {
+      "source_id": "0c487f1f-8ef5-44ad-94d4-9e4eafa03077",
+      "target_id": "ea8e957f-2135-497d-85d8-03e025c0513d",
+      "relationship": "depends_on",
+      "rationale": null,
+      "evidence": {},
+      "id": "8265d4aa-288d-4ce6-b2f1-66139aee581b",
+      "confidence": 1.0,
+      "created_at": "2026-10-03T10:34:10.216693Z"
+    }
+  },
+  "same_valid_long_path_direct_repo": "GraphWriteConflict"
+}
