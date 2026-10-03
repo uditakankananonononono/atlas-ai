@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import threading
 import time
 import urllib.request
 from urllib.parse import urlparse
@@ -33,8 +34,7 @@ class LocalEmbeddingMatcher:
             raise ValueError("embedding server must be on loopback (local, free, private)")
         self.base_url, self.model, self.timeout = base_url.rstrip("/"), model, timeout
 
-    def embed(self, texts: list[str]) -> list[list[float]] | None:
-        """Loopback only, NO redirects, hard total deadline (self.timeout seconds for the whole response)."""
+    def _fetch(self, texts: list[str]) -> bytes:
         body = json.dumps({"model": self.model, "input": texts}).encode()
         req = urllib.request.Request(self.base_url + "/embeddings", data=body,
                                      headers={"content-type": "application/json"})
@@ -42,29 +42,65 @@ class LocalEmbeddingMatcher:
         class _NoRedirect(urllib.request.HTTPRedirectHandler):
             def redirect_request(self, req, fp, code, msg, hdrs, newurl):
                 raise OSError("embedding endpoint redirected; refusing to follow")
+        # ProxyHandler({}) = no env proxies (HTTP_PROXY must never carry the prompt/evidence off-box)
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), _NoRedirect())
+        deadline = time.monotonic() + self.timeout
+        with opener.open(req, timeout=self.timeout) as r:  # noqa: S310 loopback only
+            buf = b""
+            while chunk := r.read1(16384):
+                buf += chunk
+                if len(buf) > 8_000_000 or time.monotonic() > deadline:
+                    raise OSError("embedding response too large or too slow")
+        return buf
+
+    @staticmethod
+    def _valid(data, n: int) -> list[list[float]] | None:
+        """Exactly n items, indices a permutation of 0..n-1, equal-length non-empty vectors of finite real numbers."""
+        if not isinstance(data, list) or len(data) != n:
+            return None
+        by_index: dict[int, list] = {}
+        for d in data:
+            i, v = d.get("index") if isinstance(d, dict) else None, d.get("embedding") if isinstance(d, dict) else None
+            if type(i) is not int or not 0 <= i < n or i in by_index or not isinstance(v, list) or not v:
+                return None
+            if any(type(x) not in (int, float) or not math.isfinite(x) or abs(x) > 1e6 for x in v):
+                return None
+            by_index[i] = v
+        vecs = [by_index[i] for i in range(n)]
+        return vecs if len({len(v) for v in vecs}) == 1 else None
+
+    def embed(self, texts: list[str]) -> list[list[float]] | None:
+        """Loopback only, no redirects, no env proxy; the whole call (connect, headers, body) is capped at
+        self.timeout seconds by a worker thread. Anything malformed returns None so callers label the fallback."""
+        box: dict = {}
+
+        def work():
+            try:
+                box["raw"] = self._fetch(texts)
+            except Exception:  # noqa: BLE001
+                pass
+        t = threading.Thread(target=work, daemon=True)
+        t.start()
+        t.join(self.timeout)
+        if t.is_alive() or "raw" not in box:
+            return None
         try:
-            deadline = time.monotonic() + self.timeout
-            with urllib.request.build_opener(_NoRedirect()).open(req, timeout=self.timeout) as r:  # noqa: S310 loopback only
-                buf = b""
-                while chunk := r.read1(16384):
-                    buf += chunk
-                    if len(buf) > 8_000_000 or time.monotonic() > deadline:
-                        return None
-            data = json.loads(buf.decode())["data"]
-            vecs = [d["embedding"] for d in sorted(data, key=lambda d: d["index"])]
-            dims = {len(v) for v in vecs}
-            return vecs if len(vecs) == len(texts) and len(dims) == 1 and 0 not in dims else None
-        except Exception:  # unreachable / malformed / slow -> caller labels the token-overlap fallback
+            return self._valid(json.loads(box["raw"].decode()).get("data"), len(texts))
+        except Exception:  # noqa: BLE001
             return None
 
     def rank(self, query: str, docs: list[str]) -> list[float] | None:
-        """Cosine score of each doc against query, or None when no real embedding was obtained."""
+        """Cosine score of each doc against query, or None when no real, well-formed embedding was obtained."""
         if not docs:
             return []
         vecs = self.embed([query, *docs])
         if vecs is None:
             return None
-        return [round(cosine(vecs[0], v), 4) for v in vecs[1:]]
+        try:
+            scores = [round(cosine(vecs[0], v), 4) for v in vecs[1:]]
+        except Exception:  # noqa: BLE001
+            return None
+        return scores if all(math.isfinite(x) for x in scores) else None
 
 
 def matcher_from_env(env: dict | None = None) -> LocalEmbeddingMatcher | None:

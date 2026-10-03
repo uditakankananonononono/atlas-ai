@@ -1,7 +1,7 @@
 # Local embedding matcher for essay-topic discovery (scoped, unaudited)
-- embedding_matcher.py: loopback-only OpenAI-compatible /v1/embeddings client (llama.cpp --embedding). No redirects, 10s total deadline, dimension checks. Orders the student's own evidence by cosine similarity to the prompt; writes no prose.
+- embedding_matcher.py: loopback-only OpenAI-compatible /v1/embeddings client (llama.cpp --embedding). No redirects, no environment proxy (HTTP_PROXY ignored), 10s hard cap on the whole call via a worker thread, strict response validation (indices a permutation, equal-length finite real vectors; NaN/inf/strings/bools/duplicates rejected -> labeled fallback). Orders the student's own evidence by cosine similarity to the prompt; writes no prose.
 - topic_finder returns match_mode: "embedding_local_model" (with embedding_similarity per candidate) or "token_overlap_fallback" (old behaviour, original order) when no real embedding is available. No hashing/token trick is ever labeled embedding.
-- Enabled per request through INSTINCT_EMBED_URL + INSTINCT_EMBED_MODEL (loopback only). The essay-tools topics route had no tenant auth on main and still does not (pre-existing, not changed).
+- Enabled per request through INSTINCT_EMBED_URL + INSTINCT_EMBED_MODEL (loopback only). (Correction: an earlier note here said the topics route is unauthenticated; that was wrong. The bare router is not the mounted app, and the full app enforces require_tenant in production. My dev TestClient run does not show production auth.)
 - Real models run here: all-MiniLM-L6-v2 Q8_0 GGUF and bge-small-en-v1.5 Q8_0 GGUF through llama-cpp-python, also through the real HTTP route (esai_embedding_http_check_run.txt).
 
 ## Evidence about quality: no improvement claim
