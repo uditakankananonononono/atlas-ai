@@ -14,6 +14,9 @@ from fastapi import Depends,HTTPException
 from app.auth.context import TenantContext,require_tenant
 from .interview import IdentityInterviewRepository
 from .adaptive_interviewer import interviewer_from_env
+from pydantic import BaseModel
+class InsightConfirmIn(BaseModel):
+ confirmed:bool=True
 
 def interview_repository(tenant:TenantContext=Depends(require_tenant)):
  return IdentityInterviewRepository(tenant.tenant_id, interviewer=interviewer_from_env())
@@ -32,6 +35,11 @@ def answer_identity_interview(session_id:str,x:IdentityInterviewTurnIn,repo:Iden
  try:return repo.answer(session_id,x.student_response,x.modality,x.evidence_tags)
  except LookupError:raise HTTPException(404,'identity interview not found')
  except ValueError as e:raise HTTPException(409,str(e))
+
+@router.post('/identity-interviews/{session_id}/insights/{ordinal}/{index}/confirm')
+def confirm_identity_insight(session_id:str,ordinal:int,index:int,x:InsightConfirmIn,repo:IdentityInterviewRepository=Depends(interview_repository)):
+ try:return repo.confirm_insight(session_id,ordinal,index,x.confirmed)
+ except LookupError:raise HTTPException(404,'identity interview or proposed item not found')
 
 from .advising import AdvisingService
 def advising_service(tenant:TenantContext=Depends(require_tenant)):return AdvisingService(tenant.tenant_id)

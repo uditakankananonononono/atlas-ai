@@ -2,7 +2,8 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from sqlalchemy import JSON, DateTime, Integer, String, Text, select
+from sqlalchemy import JSON, DateTime, Integer, String, Text, UniqueConstraint, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 
 from app.core.database import Base, SessionLocal, engine
@@ -44,11 +45,16 @@ class IdentityTurnRow(Base):
 class IdentityInsightRow(Base):
     """Per-turn adaptive-interviewer output with its truth labels (model-backed or fallback)."""
     __tablename__ = "m23_identity_interview_insights"
+    __table_args__ = (UniqueConstraint("session_id", "ordinal", name="uq_m23_insight_session_ordinal"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     session_id: Mapped[str] = mapped_column(String(36), index=True)
     ordinal: Mapped[int] = mapped_column(Integer)
     step: Mapped[dict] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class ConcurrentAnswerError(ValueError):
+    """Another answer for the same question was committed first (maps to HTTP 409)."""
 
 
 class IdentityInterviewRepository:
@@ -83,16 +89,20 @@ class IdentityInterviewRepository:
                 raise LookupError(session_id)
             if row.status != "active":
                 raise ValueError("interview is already complete")
-            question = self._question_for(db, session_id, row.question_index)
-            db.add(IdentityTurnRow(session_id=session_id, ordinal=row.question_index + 1,
-                                   modality=modality, question=question,
-                                   student_response=response,
-                                   evidence_tags=evidence_tags or [],
-                                   created_at=datetime.now(timezone.utc)))
-            row.question_index += 1
-            row.status = "complete" if row.question_index == len(QUESTIONS) else "active"
-            row.updated_at = datetime.now(timezone.utc)
-        self._run_interviewer(session_id)
+            expected = row.question_index
+            question = self._question_for(db, session_id, expected)
+            now = datetime.now(timezone.utc)
+            won = db.execute(update(IdentityInterviewRow).where(
+                IdentityInterviewRow.id == session_id, IdentityInterviewRow.tenant_id == self.tenant_id,
+                IdentityInterviewRow.question_index == expected, IdentityInterviewRow.status == "active").values(
+                question_index=expected + 1, status="complete" if expected + 1 == len(QUESTIONS) else "active",
+                updated_at=now)).rowcount
+            if won != 1:
+                raise ConcurrentAnswerError("another answer to this question was already recorded; reload the interview")
+            ordinal = expected + 1
+            db.add(IdentityTurnRow(session_id=session_id, ordinal=ordinal, modality=modality, question=question,
+                                   student_response=response, evidence_tags=evidence_tags or [], created_at=now))
+        self._run_interviewer(session_id, ordinal)
         self._refresh_brand(session_id)
         return self.get(session_id)
 
@@ -119,7 +129,7 @@ class IdentityInterviewRepository:
                     "model_backed_turns": sorted(o for o, st in insights.items() if st.get("model_backed")),
                     "turns": [{"ordinal": o, "question_source": st.get("question_source"),
                                "extraction_mode": st.get("extraction_mode"), "provider": st.get("provider"),
-                               "model": st.get("model"), "grounded_items": len(st.get("extraction", [])),
+                               "model": st.get("model"), "proposed_items": len(st.get("extraction", [])),
                                "rejected_items": len(st.get("rejected", [])), "detail": st.get("detail", "")}
                               for o, st in sorted(insights.items())],
                     "label": ("adaptive local-model interviewer; fixed-script entries are fallbacks"
@@ -140,26 +150,53 @@ class IdentityInterviewRepository:
                 return row.step["question"]
         return QUESTIONS[index]
 
-    def _run_interviewer(self, session_id: str) -> None:
+    def _run_interviewer(self, session_id: str, ordinal: int) -> None:
+        """Model work happens after the answer is committed and can never fail the request."""
         if self.interviewer is None:
             return
-        interview = self.get(session_id)
-        turns = interview["turns"]
-        ordinal = len(turns)
-        want_question = interview["status"] == "active"
-        fixed = QUESTIONS[ordinal] if want_question else None
-        step = self.interviewer.step(track=interview["track"], turns=turns, fixed_next=fixed,
-                                     want_question=want_question)
+        try:
+            interview = self.get(session_id)
+            turns = [t for t in interview["turns"] if t["ordinal"] <= ordinal]
+            want_question = ordinal < len(QUESTIONS)
+            fixed = QUESTIONS[ordinal] if want_question else None
+            step = self.interviewer.step(track=interview["track"], turns=turns, fixed_next=fixed,
+                                         want_question=want_question).as_dict()
+        except Exception as exc:  # noqa: BLE001
+            step = {"question": QUESTIONS[ordinal] if ordinal < len(QUESTIONS) else None, "question_source": FALLBACK,
+                    "extraction": [], "rejected": [], "extraction_mode": "none_no_model", "provider": None,
+                    "model": None, "detail": f"interviewer error ({type(exc).__name__})", "model_backed": False}
+        try:
+            with self.sessions.begin() as db:
+                db.add(IdentityInsightRow(session_id=session_id, ordinal=ordinal, step=step,
+                                          created_at=datetime.now(timezone.utc)))
+        except IntegrityError:
+            pass  # a concurrent writer already stored this ordinal's step
+
+    def confirm_insight(self, session_id: str, ordinal: int, index: int, confirmed: bool = True) -> dict:
+        """The student accepts or rejects one proposed item; only confirmed items feed BrandID labels."""
         with self.sessions.begin() as db:
-            db.add(IdentityInsightRow(session_id=session_id, ordinal=ordinal, step=step.as_dict(),
-                                      created_at=datetime.now(timezone.utc)))
+            if db.scalar(select(IdentityInterviewRow.id).where(IdentityInterviewRow.id == session_id,
+                         IdentityInterviewRow.tenant_id == self.tenant_id)) is None:
+                raise LookupError(session_id)
+            row = db.scalar(select(IdentityInsightRow).where(IdentityInsightRow.session_id == session_id,
+                                                              IdentityInsightRow.ordinal == ordinal))
+            items = list((row.step if row else {}).get("extraction", []))
+            if row is None or not 0 <= index < len(items):
+                raise LookupError("no such proposed item")
+            items[index] = {**items[index], "student_confirmed": bool(confirmed),
+                            "status": "student_confirmed" if confirmed else "student_rejected"}
+            row.step = {**row.step, "extraction": items}
+        self._refresh_brand(session_id)
+        return self.get(session_id)
 
     def _grounded_items(self, session_id: str) -> list[dict]:
         with self.sessions() as db:
             rows = list(db.scalars(select(IdentityInsightRow).where(
                 IdentityInsightRow.session_id == session_id).order_by(IdentityInsightRow.ordinal)))
         return [{"session_id": session_id, "turn": r.ordinal, **item, "model": r.step.get("model"),
-                 "provenance": "model-extracted; quote verified verbatim in the student's answer"}
+                 "provenance": "model-PROPOSED label; quote is an exact copy from the student's answer; label not "
+                               "semantically verified; " + ("confirmed by the student" if item.get("student_confirmed")
+                                                           else "NOT yet confirmed by the student")}
                 for r in rows if r.step.get("extraction_mode") == ADAPTIVE for item in r.step.get("extraction", [])]
 
     def _refresh_brand(self, session_id: str) -> None:
@@ -172,7 +209,8 @@ class IdentityInterviewRepository:
         patterns = [t["student_response"] for t in turns[:3]]
         strengths = [tag.removeprefix("strength:") for tag in values if tag.startswith("strength:")]
         grounded = self._grounded_items(session_id)
-        values = sorted(set(values) | {g["label"] for g in grounded if g["kind"] == "value"})
-        strengths = sorted(set(strengths) | {g["label"] for g in grounded if g["kind"] == "strength"})
-        patterns = patterns + [g["label"] for g in grounded if g["kind"] == "pattern"]
+        ok = [g for g in grounded if g.get("student_confirmed")]  # unconfirmed proposals stay evidence only
+        values = sorted(set(values) | {g["label"] for g in ok if g["kind"] == "value"})
+        strengths = sorted(set(strengths) | {g["label"] for g in ok if g["kind"] == "strength"})
+        patterns = patterns + [g["label"] for g in ok if g["kind"] == "pattern"]
         StoryRepository(self.tenant_id, self.sessions).evolve_brand(values, patterns, strengths, evidence + grounded)
