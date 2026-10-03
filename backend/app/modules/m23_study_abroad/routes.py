@@ -37,8 +37,8 @@ def answer_identity_interview(session_id:str,x:IdentityInterviewTurnIn,repo:Iden
  except ValueError as e:raise HTTPException(409,str(e))
 
 @router.post('/identity-interviews/{session_id}/insights/{ordinal}/{index}/confirm')
-def confirm_identity_insight(session_id:str,ordinal:int,index:int,x:InsightConfirmIn,repo:IdentityInterviewRepository=Depends(interview_repository)):
- try:return repo.confirm_insight(session_id,ordinal,index,x.confirmed)
+def confirm_identity_insight(session_id:str,ordinal:int,index:int,x:InsightConfirmIn,repo:IdentityInterviewRepository=Depends(interview_repository),tenant:TenantContext=Depends(require_tenant)):
+ try:return repo.confirm_insight(session_id,ordinal,index,x.confirmed,tenant.actor_id)
  except LookupError:raise HTTPException(404,'identity interview or proposed item not found')
 
 from .advising import AdvisingService

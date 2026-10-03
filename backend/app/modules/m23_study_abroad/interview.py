@@ -172,7 +172,8 @@ class IdentityInterviewRepository:
         except IntegrityError:
             pass  # a concurrent writer already stored this ordinal's step
 
-    def confirm_insight(self, session_id: str, ordinal: int, index: int, confirmed: bool = True) -> dict:
+    def confirm_insight(self, session_id: str, ordinal: int, index: int, confirmed: bool = True,
+                        actor_id: str | None = None) -> dict:
         """The student accepts or rejects one proposed item; only confirmed items feed BrandID labels."""
         with self.sessions.begin() as db:
             if db.scalar(select(IdentityInterviewRow.id).where(IdentityInterviewRow.id == session_id,
@@ -184,7 +185,8 @@ class IdentityInterviewRepository:
             if row is None or not 0 <= index < len(items):
                 raise LookupError("no such proposed item")
             items[index] = {**items[index], "student_confirmed": bool(confirmed),
-                            "status": "student_confirmed" if confirmed else "student_rejected"}
+                            "status": "student_confirmed" if confirmed else "student_rejected",
+                            "decided_by_actor": actor_id}  # no student-only role exists in auth; actor is recorded, not enforced
             row.step = {**row.step, "extraction": items}
         self._refresh_brand(session_id)
         return self.get(session_id)
