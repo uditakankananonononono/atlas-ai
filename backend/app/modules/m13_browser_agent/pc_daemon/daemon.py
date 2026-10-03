@@ -25,6 +25,8 @@ def detect_block(url: str, http_status: int | None, html_excerpt: str = "") -> B
     lowered_url = (url or "").lower()
     if http_status == 429:
         return BlockKind.RATE_LIMIT
+    if http_status in (401, 403, 503):
+        return BlockKind.POLICY
     if any(marker in lowered_url for marker in _CHALLENGE_MARKERS):
         return BlockKind.CHALLENGE
     if any(marker in lowered_url for marker in _LOGIN_URL_MARKERS):
@@ -190,19 +192,30 @@ class Daemon:
                 detail = f"effect outcome uncertain; reservation retained; do not retry: {error}"
             event = self._receipt_event(command_id, "failed", {"error": detail[:1000]})
             return protocol.make_result(command_id, ok=False, error=detail[:2000], receipt=event)
+        block = detect_block(result.get("url", ""), result.get("http_status"),
+                             result.get("html_excerpt", ""))
+        if kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT):
+            result.pop("html_excerpt", None)  # used for classification only; never returned
+        if block is not None:
+            if submit_claims is not None:
+                # The click happened; the site then stopped us. Keep the reservation so
+                # the submit is never retried, and say the outcome is unknown.
+                error = (f"platform blocked after click ({block.value}); "
+                         "effect may have occurred; do not retry")
+            elif kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT):
+                error = f"platform blocked after click ({block.value}) at {result.get('url', 'unknown page')}"
+            else:
+                error = f"site stopped the read at {result.get('url', 'unknown page')}"
+            event = self._receipt_event(command_id, "blocked", {"block": block.value, "url": result.get("url"),
+                                                              "http_status": result.get("http_status")})
+            return protocol.make_result(command_id, ok=False, error=error,
+                                        blocked=block.value, receipt=event)
         if submit_claims is not None:
             try:
                 self.effects.completed(self.config.device_id, args["approval_id"])
             except Exception as error:
                 return protocol.make_result(command_id, ok=False,
                                             error=f"effect outcome uncertain; do not retry: {error}")
-        block = detect_block(result.get("url", ""), result.get("http_status"),
-                             result.get("html_excerpt", ""))
-        if block is not None:
-            event = self._receipt_event(command_id, "blocked", {"block": block.value, "url": result.get("url")})
-            return protocol.make_result(command_id, ok=False,
-                                        error=f"site stopped the read at {result.get('url', 'unknown page')}",
-                                        blocked=block.value, receipt=event)
         event = self._receipt_event(command_id, "completed", {"kind": kind.value, "url": result.get("url")})
         return protocol.make_result(command_id, ok=True, result=result, receipt=event)
 
@@ -244,8 +257,30 @@ class Daemon:
                         action=kind.value):
                     raise RuntimeError("submit token expired before click; reservation retained")
                 extra = {"approval_id": args.get("approval_id"), "capture_sha256": args.get("capture_sha256")}
-            await page.locator(str(args["selector"])).click()
-            return {"url": page.url, **extra}
+            # Capture the main-frame document response a click causes (if any) so the
+            # landing page's HTTP status is classified exactly like NAVIGATE's.
+            statuses: list[int] = []
+
+            def _on_response(response: Any) -> None:
+                try:
+                    if (response.request.is_navigation_request()
+                            and response.request.frame == page.main_frame):
+                        statuses.append(int(response.status))
+                except Exception:  # noqa: BLE001 - observation only, never alter the click
+                    pass
+
+            page.on("response", _on_response)
+            try:
+                await page.locator(str(args["selector"])).click()
+                try:
+                    await page.wait_for_load_state("domcontentloaded", timeout=5000)
+                except Exception:  # noqa: BLE001 - no navigation / slow page: classify what we have
+                    pass
+                html_excerpt = (await page.content())[:4000]
+            finally:
+                page.remove_listener("response", _on_response)
+            return {"url": page.url, "http_status": statuses[-1] if statuses else None,
+                    "html_excerpt": html_excerpt, **extra}
         if kind is CommandKind.CLOSE:
             closed = await self.browser.close_page(session)
             return {"closed": closed}
