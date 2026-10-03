@@ -72,21 +72,51 @@ class DeviceIdentity:
 
 
 NAV_WAIT_SECONDS = 0.8  # fixed delay before the daemon sends a guarded click's navigation
-def redact_urls(text: str) -> str:
-    """Strip query strings, fragments and userinfo from every URL inside an error message (guard reports quote
-    full URLs, which can carry tokens; nothing past the path may leave the PC). Also handles upper-case
-    schemes, percent-encoded and JSON-escaped URLs, bare secret-named key=value pairs and Bearer/Basic values.
-    Operational non-secret information (scheme, host, path) is kept."""
+_URL_SCHEME = r"(?:https?|wss?|ftps?|sftp)"
+_PATH_SECRET_WORDS = ("reset", "verify", "confirm", "activate", "invite", "token", "magic", "unsubscribe",
+                      "recover", "claim", "redeem", "otp", "session", "sessions", "key", "secret", "auth")
+
+
+def _scrub_path(path: str) -> str:
+    """Heuristic only: drop ;matrix params (;jsessionid=...), the segment after a secret-looking word
+    (/reset/<x>), and long mixed or hex segments. A secret in an ordinary-looking path segment cannot be
+    recognised in general; that bound is documented in docs, not claimed away."""
     import re
-    from urllib.parse import unquote
+    segments = path.split("/")
+    out, previous = [], ""
+    for segment in segments:
+        segment = segment.split(";", 1)[0]
+        looks_secret = (len(segment) >= 16 and re.search(r"[0-9]", segment) and re.search(r"[A-Za-z]", segment)
+                        ) or re.fullmatch(r"[0-9a-fA-F]{20,}", segment) is not None
+        if segment and (previous in _PATH_SECRET_WORDS or looks_secret):
+            segment = "[redacted]"
+        out.append(segment)
+        previous = segment.lower() if segment != "[redacted]" else ""
+    return "/".join(out)
+
+
+def redact_urls(text: str) -> str:
+    """Strip query strings, fragments, userinfo, matrix params and secret-looking path segments from every URL
+    inside an error message (guard reports quote full URLs, which can carry tokens; nothing past the path may
+    leave the PC). Also handles upper-case schemes, http/https/ws/wss/ftp(s), percent-encoded and JSON-escaped
+    URLs, bare secret-named key=value pairs (plain or percent-encoded `=`) and Bearer/Basic values.
+    Scheme, host and non-secret path are kept. PARTIAL by design: pattern and heuristic based."""
+    import re
+    from urllib.parse import unquote, urlsplit
 
     def _url(match: "re.Match[str]") -> str:
         raw = unquote(match.group(0)).replace("\\/", "/")
-        return safe_url(raw.replace("HTTP", "http", 1) if raw[:4] == "HTTP" else raw)
+        try:
+            parts = urlsplit(raw)
+        except ValueError:
+            return "unknown page"
+        return f"{parts.scheme.lower()}://{parts.netloc.rsplit('@', 1)[-1]}{_scrub_path(parts.path)}"[:500]
 
-    text = re.sub(r"(?i)https?(?::|%3A)(?:\\?/|%2F){2}[^\s'\"<>)]+", _url, text)
-    text = re.sub(r"(?i)\b(access_token|id_token|refresh_token|token|secret|password|passwd|api[_-]?key|"
-                  r"session(?:id)?|sid|auth|code|key)=[^\s&'\")]+", r"\1=[redacted]", text)
+    text = re.sub(rf"(?i){_URL_SCHEME}(?::|%3A)(?:\\?/|%2F){{2}}[^\s'\"<>)]+", _url, text)
+    names = (r"access_token|id_token|refresh_token|token|secret|password|passwd|api[_-]?key|"
+             r"session(?:id)?|jsessionid|sid|auth|code|key")
+    text = re.sub(rf"(?i)\b({names})(=|%3D)[^\s&'\")]+", r"\1\2[redacted]", text)
+    text = re.sub(rf"(?i)(;)({names})=[^\s;/?&'\")]+", r"\1\2=[redacted]", text)
     return re.sub(r"(?i)\b(bearer|basic)\s+[A-Za-z0-9._~+/=-]+", r"\1 [redacted]", text)
 
 

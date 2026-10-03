@@ -55,7 +55,7 @@ def reservations(daemon):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("what", ["wrong_device", "wrong_session_in_args", "wrong_preview_digest", "v2_style_token_without_binding"])
+@pytest.mark.parametrize("what", ["wrong_device", "wrong_session_in_args", "wrong_preview_digest", "one_char_tampered_token"])
 async def test_wrong_binding_refused_before_any_reservation_or_click(env, what):
     make, browser, config = env
     if what == "wrong_device":
@@ -68,7 +68,8 @@ async def test_wrong_binding_refused_before_any_reservation_or_click(env, what):
         c["args"]["preview_sha256"] = "b" * 64
     else:
         c = cmd(config)
-        c["args"]["token"] = c["args"]["token"].replace("3", "2", 1)
+        t = c["args"]["token"]
+        c["args"]["token"] = ("0" if t[0] != "0" else "1") + t[1:]  # always a real one-character change
     d = make()
     answer = await d.execute(c)
     assert answer["ok"] is False and answer["effect_uncertain"] is False
@@ -155,3 +156,108 @@ def test_redaction_strips_query_fragment_and_userinfo_in_plain_urls(raw):
 def test_redaction_of_encoded_and_bare_token_forms(raw):
     out = redact_urls(raw)
     assert "SECRETQ" not in out, out
+
+
+@pytest.mark.parametrize("raw,leaks", [
+    ("blocked ws://h/socket?token=SECRETQ&x=1", ["SECRETQ"]),
+    ("blocked wss://h/s?sid=SECRETQ#f", ["SECRETQ"]),
+    ("GET https://h.example/reset/SECRETPATHTOKEN123/confirm failed", ["SECRETPATHTOKEN123"]),
+    ("GET https://h.example/app;jsessionid=ABCSECRET99/page failed", ["ABCSECRET99"]),
+    ("GET https://h.example/verify/aGVsbG8 failed", ["aGVsbG8"]),
+    ("failed token%3Dabc123 here", ["abc123"]),
+    ("GET https://h.example/x/0123456789abcdef0123456789abcdef/y", ["0123456789abcdef0123456789abcdef"]),
+])
+def test_redaction_review_findings(raw, leaks):
+    out = redact_urls(raw)
+    for leak in leaks:
+        assert leak not in out, out
+
+
+def test_redaction_keeps_operational_non_secret_links():
+    assert redact_urls("blocked at https://example.com/apply/form?x=1") == "blocked at https://example.com/apply/form"
+
+
+@pytest.mark.xfail(strict=True, reason="DOCUMENTED BOUND: a secret in an ordinary-looking path segment cannot be recognised")
+def test_redaction_bound_secret_in_plain_looking_path_segment_survives():
+    assert "hunter" not in redact_urls("GET https://h.example/profile/hunter/page")
+
+
+def _legacy_v1_token(secret, c):  # real M18 pre-unification format: pipe-delimited + deadline, no device/session
+    import hashlib, hmac
+    body = "|".join([c["approval_id"], c["capture_sha256"], c["selector"], c["values_digest"], f"deadline={c['expires_at']}"])
+    return hmac.new(secret.encode(), body.encode(), hashlib.sha256).hexdigest()
+
+
+def _legacy_v2_token(secret, c, device):  # real postclick format: canonical JSON, device/session, token_version 2, no preview
+    import hashlib, hmac
+    claims = dict(approval_id=c["approval_id"], capture_sha256=c["capture_sha256"], selector=c["selector"],
+                  values_digest=c["values_digest"], device_id=device, session=c["session"],
+                  expires_at=c["expires_at"], action="click_submit", token_version=2)
+    return hmac.new(secret.encode(), p.canonical_json(claims).encode(), hashlib.sha256).hexdigest()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("legacy", ["v1_m18_pipe_format", "v2_postclick_json_format"])
+async def test_real_legacy_token_formats_are_refused(env, legacy):
+    make, browser, config = env
+    c = cmd(config)
+    a = c["args"]
+    a["token"] = (_legacy_v1_token(config.command_secret, a) if legacy.startswith("v1")
+                  else _legacy_v2_token(config.command_secret, a, config.device_id))
+    d = make()
+    answer = await d.execute(c)
+    assert answer["ok"] is False and answer["effect_uncertain"] is False
+    assert browser.clicks == 0 and reservations(d) == 0
+
+
+_KILL_SCRIPT = r'''
+import asyncio, os, signal, sys, time
+sys.path.insert(0, "backend")
+from app.modules.m13_browser_agent.pc_daemon.config import DaemonConfig
+from app.modules.m13_browser_agent.pc_daemon.daemon import Daemon, DeviceIdentity
+from app.modules.m13_browser_agent.session_bridge import protocol as p
+mode, tmp = sys.argv[1], sys.argv[2]
+cfg = DaemonConfig(device_id="dev", command_secret="secret", key_path=tmp + "/key.pem", pacing_seconds=0,
+                   click_settle_seconds=0, consumed_path=tmp + "/consumed.json", capabilities=["click_submit"])
+d = Daemon(cfg, DeviceIdentity.load_or_create(__import__("pathlib").Path(tmp) / "key.pem"))
+class B:
+    clicks = 0
+d.browser = B()
+from app.modules.m13_browser_agent.session_bridge.form_guard import ARM_TTL_SECONDS
+args = dict(session="main", approval_id="ap", selector="#go", capture_sha256="c" * 64, values_digest="d" * 64,
+            expires_at=int(time.time()) + int(ARM_TTL_SECONDS) + 10)  # armed after the strict store was created
+args["token"] = p.submit_token("secret", device_id="dev", **args)
+kill = lambda *a, **k: os.kill(os.getpid(), signal.SIGKILL)
+if mode == "after_reserve":
+    d._consume_submit = kill            # SIGKILL after the durable reservation, before the consumed record
+elif mode == "mid_store_write":
+    os.replace = kill                   # SIGKILL after the temp file is written, before the atomic rename
+print(asyncio.run(d.execute(p.make_command(p.CommandKind.CLICK_SUBMIT, args, command_id="k1"))))
+print("SURVIVED")
+'''
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("mode", ["after_reserve", "mid_store_write"])
+async def test_real_sigkill_subprocess_then_restart_fails_closed(env, tmp_path, mode):
+    """REAL SIGKILL of a separate process (not an exception). Proven: no click in the child (it has no
+    click path), the reservation survives on disk, and a restarted daemon on the same stores refuses.
+    NOT proven: power loss / fsync behaviour of the filesystem."""
+    import subprocess, sys, signal
+    make, browser, config = env
+    child_dir = tmp_path / "child"
+    child_dir.mkdir()
+    proc = subprocess.run([sys.executable, "-c", _KILL_SCRIPT, mode, str(child_dir)], capture_output=True, text=True,
+                          cwd=str(Path(__file__).resolve().parents[2]), env={"PYTHONPATH": "backend", "PATH": "/usr/bin"})
+    assert proc.returncode == -signal.SIGKILL, (proc.returncode, proc.stdout, proc.stderr[-500:])
+    cfg2 = replace(config, key_path=str(child_dir / "key.pem"), consumed_path=str(child_dir / "consumed.json"))
+    restarted = Daemon(cfg2, DeviceIdentity.load_or_create(child_dir / "key.pem"))
+    restarted.browser = browser
+    from app.modules.m13_browser_agent.session_bridge.form_guard import ARM_TTL_SECONDS
+    args = dict(session="main", approval_id="ap", selector="#go", capture_sha256="c" * 64, values_digest="d" * 64,
+                expires_at=int(time.time()) + int(ARM_TTL_SECONDS) + 10)
+    args["token"] = p.submit_token(cfg2.command_secret, device_id="dev", **args)
+    assert reservations(restarted) == 1
+    answer = await restarted.execute(p.make_command(p.CommandKind.CLICK_SUBMIT, args, command_id="k2"))
+    assert answer["ok"] is False and "already reserved" in answer["error"] and answer["effect_uncertain"] is True
+    assert browser.clicks == 0
