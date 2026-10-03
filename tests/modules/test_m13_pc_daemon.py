@@ -34,6 +34,9 @@ class FakeLocator:
         self.page.values[self.selector] = value
         self.page.filled.append((self.selector, value))
 
+    async def evaluate(self, script):
+        return {"type": "text", "ac": ""}
+
     async def click(self):
         self.page.clicked.append(self.selector)
 
