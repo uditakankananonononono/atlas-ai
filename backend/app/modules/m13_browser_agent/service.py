@@ -123,4 +123,4 @@ class Service:
         await _arm(self, tenant_id, session_id, approval_id, str(payload.get("capture_sha256", "")), selector, values, preview)
         await page.locator(selector).click()
         await self.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.SUBMIT, {"phase": "executed", "selector": selector, "approval_id": approval_id, "digest": expected["values_digest"], "page_url": current_url}))
-        return {"status": "submitted"}
+        return {"status": "click_dispatched_unconfirmed", "click_dispatched": True, "site_acceptance": "unconfirmed"}

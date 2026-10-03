@@ -14,6 +14,7 @@ from ..session_bridge import protocol
 from ..session_bridge.protocol import BlockKind, CommandKind
 from .config import DaemonConfig
 from ..session_bridge import form_guard
+from .effects import EffectLedger
 
 # Heuristics for "the site stopped us". Each is a reason to report blocked,
 # never to retry or evade.
@@ -26,6 +27,8 @@ def detect_block(url: str, http_status: int | None, html_excerpt: str = "") -> B
     lowered_url = (url or "").lower()
     if http_status == 429:
         return BlockKind.RATE_LIMIT
+    if http_status in (401, 403, 503):
+        return BlockKind.POLICY
     if any(marker in lowered_url for marker in _CHALLENGE_MARKERS):
         return BlockKind.CHALLENGE
     if any(marker in lowered_url for marker in _LOGIN_URL_MARKERS):
@@ -69,6 +72,39 @@ class DeviceIdentity:
 
 
 NAV_WAIT_SECONDS = 0.8  # fixed delay before the daemon sends a guarded click's navigation
+def safe_url(url: str | None) -> str:
+    """scheme://host/path only: queries and fragments often carry tokens and never leave the PC."""
+    from urllib.parse import urlsplit
+    try:
+        parts = urlsplit(url or "")
+    except ValueError:
+        return "unknown page"
+    if not parts.scheme:
+        return (url or "")[:200]
+    return f"{parts.scheme}://{parts.netloc.rsplit('@', 1)[-1]}{parts.path}"[:500]
+
+
+_SENSITIVE_NAME = ("password", "passwd", "passcode", "otp", "2fa", "mfa", "token", "secret",
+                   "cvv", "cvc", "card", "ssn", "pin")
+_SENSITIVE_AUTOCOMPLETE = ("password", "one-time-code", "cc-number", "cc-csc", "cc-exp")
+
+
+async def _is_credential_field(locator: Any) -> bool:
+    """True for password, one-time-code and card fields; their values are never read out."""
+    info = await locator.evaluate(
+        "e => ({type: (e.type || '').toLowerCase(), ac: (e.autocomplete || '').toLowerCase(),"
+        " names: [e.name, e.id, e.placeholder, e.getAttribute('aria-label'), e.getAttribute('data-testid')]"
+        ".filter(Boolean).join(' ').toLowerCase(),"
+        " masked: (getComputedStyle(e).webkitTextSecurity || 'none') !== 'none'})")
+    if info.get("type") == "password" or info.get("masked"):
+        return True
+    if any(m in info.get("ac", "") for m in _SENSITIVE_AUTOCOMPLETE):
+        return True
+    import re
+    return any(re.search(rf"(?<![a-z]){re.escape(m)}(?![a-z])|{re.escape(m)}", info.get("names", ""))
+               for m in _SENSITIVE_NAME if len(m) > 3) or any(
+        re.search(rf"(?<![a-z0-9]){re.escape(m)}(?![a-z0-9])", info.get("names", ""))
+        for m in _SENSITIVE_NAME if len(m) <= 3)
 
 
 class BrowserHandle:
@@ -232,12 +268,53 @@ class BrowserHandle:
         self._pages.clear()
 
 
+class _ClickWatch:
+    """Observation only: the main-frame document responses a click causes, so the landing page's HTTP
+    status is classified exactly like NAVIGATE's. It never alters the click."""
+
+    def __init__(self, page: Any):
+        self.page = page
+        self.statuses: list[int] = []
+        self.started = time.monotonic()
+
+    def _on_response(self, response: Any) -> None:
+        try:
+            if response.request.is_navigation_request() and response.request.frame == self.page.main_frame:
+                self.statuses.append(int(response.status))
+        except Exception:  # noqa: BLE001 - observation only
+            pass
+
+    def start(self) -> None:
+        self.started = time.monotonic()
+        self.page.on("response", self._on_response)
+
+    def stop(self) -> None:
+        try:
+            self.page.remove_listener("response", self._on_response)
+        except Exception:  # noqa: BLE001
+            pass
+
+    async def observation(self, page: Any) -> dict[str, Any]:
+        try:
+            excerpt = (await page.content())[:4000]
+        except Exception:  # noqa: BLE001 - navigation may be in flight
+            excerpt = ""
+        return {"http_status": self.statuses[-1] if self.statuses else None, "html_excerpt": excerpt,
+                "post_click_observation": {
+                    "bounded": True, "window_seconds": round(time.monotonic() - self.started, 2),
+                    "main_frame_navigations_seen": len(self.statuses),
+                    "note": ("later navigations after this window are not observed; "
+                             "ok means no block was seen in the window, not that the site accepted it")}}
+
+
 class Daemon:
     def __init__(self, config: DaemonConfig, identity: DeviceIdentity):
         self.config = config
         self.identity = identity
         self.browser = BrowserHandle(config)
         self.receipts = ReceiptChain(config.device_id)
+        self.effects = EffectLedger(Path(config.effect_ledger_path) if config.effect_ledger_path
+                                    else Path(config.key_path).parent / "submit-effects.sqlite3")
         self._last_action_at = 0.0
         self._capabilities = set(config.capabilities)
         # One-shot submit tokens/approvals already used (audit findings 3 and F2). Kept on
@@ -491,6 +568,7 @@ class Daemon:
 
     async def execute(self, command: dict[str, Any]) -> dict[str, Any]:
         command_id, kind, args = protocol.parse_command(command)
+        args = dict(args)  # freeze wire fields before any await
         session = str(args.get("session", "default"))[:120]
         capability = protocol.capability_for(kind)
         if capability not in self._capabilities:
@@ -498,57 +576,102 @@ class Daemon:
                                                               "capability": capability})
             return protocol.make_result(command_id, ok=False,
                                         error=f"capability '{capability}' was not granted at pairing",
-                                        blocked=BlockKind.POLICY.value, receipt=event)
+                                        blocked=BlockKind.POLICY.value, receipt=event,
+                                        effect_uncertain=False if kind is CommandKind.CLICK_SUBMIT else None)
+        submit_claims = None
         if kind is CommandKind.CLICK_SUBMIT:
-            token = str(args.get("token", ""))
-            if not protocol.verify_submit_token(
-                    self.config.command_secret,
-                    approval_id=str(args.get("approval_id", "")),
-                    capture_sha256=str(args.get("capture_sha256", "")),
-                    selector=str(args.get("selector", "")),
-                    values_digest=str(args.get("values_digest", "")),
-                    preview_sha256=str(args.get("preview_sha256", "")),
-                    deadline=args.get("deadline"),
-                    token=token):
+            # Do not coerce/truncate signed claims. A token for another device, session, action,
+            # reviewed preview or an expired approval must never reach the browser.
+            submit_claims = dict(
+                approval_id=args.get("approval_id"), capture_sha256=args.get("capture_sha256"),
+                selector=args.get("selector"), values_digest=args.get("values_digest"),
+                preview_sha256=args.get("preview_sha256", ""),
+                device_id=self.config.device_id, session=args.get("session"),
+                expires_at=args.get("expires_at"), token=args.get("token"), action=kind.value)
+            if not protocol.verify_submit_token(self.config.command_secret, **submit_claims):
                 event = self._receipt_event(command_id, "blocked", {"reason": "submit token invalid"})
                 return protocol.make_result(command_id, ok=False,
-                                            error="submit token missing or invalid; the click was not approved",
-                                            blocked=BlockKind.POLICY.value, receipt=event)
-            deadline = args.get("deadline")
-            # Arming TTL enforced on the device too. A deadline is mandatory so a replay
-            # after a daemon restart cannot outlive the arming window.
-            if (isinstance(deadline, bool) or not isinstance(deadline, (int, float))
-                    or time.time() > float(deadline)):
-                event = self._receipt_event(command_id, "blocked", {"reason": "arming expired"})
+                                            error="submit token missing, expired or invalid; the click was not approved",
+                                            blocked=BlockKind.POLICY.value, receipt=event, effect_uncertain=False)
+            session = args["session"]
+            expires_at = submit_claims["expires_at"]
+            # Durable compare-and-set reservation BEFORE any browser effect: a second claimant
+            # (another process, a retry, a restart) is refused and the outcome is reported uncertain.
+            try:
+                reserved = self.effects.reserve(self.config.device_id, args["approval_id"],
+                                                command_id, session)
+            except Exception as error:
                 return protocol.make_result(command_id, ok=False,
-                                            error="the approved submit was armed too long ago; approve again",
-                                            blocked=BlockKind.POLICY.value, receipt=event)
-            keys = (f"token:{token}", f"approval:{args.get('approval_id', '')}")
-            # Consume before any browser effect: a failed or ambiguous click never replays.
-            problem = self._consume_submit(keys, float(deadline))
+                                            error=f"effect reservation unavailable; no click: {error}",
+                                            blocked=BlockKind.POLICY.value, effect_uncertain=False)
+            if not reserved:
+                event = self._receipt_event(command_id, "blocked", {"reason": "effect already reserved"})
+                return protocol.make_result(command_id, ok=False,
+                                            error="effect already reserved; outcome may be uncertain; do not retry",
+                                            blocked=BlockKind.POLICY.value, receipt=event, effect_uncertain=True)
+            keys = (f"token:{submit_claims['token']}", f"approval:{args.get('approval_id', '')}")
+            # Second, independent one-shot record (tamper-anchored consumed store). The reservation is
+            # kept either way, so a refusal here is reported as uncertain-and-no-retry.
+            problem = self._consume_submit(keys, float(expires_at))
             if problem == "replay":
                 event = self._receipt_event(command_id, "blocked", {"reason": "submit token replayed"})
                 return protocol.make_result(command_id, ok=False,
                                             error="submit token already used (replay refused); approve again",
-                                            blocked=BlockKind.POLICY.value, receipt=event)
+                                            blocked=BlockKind.POLICY.value, receipt=event, effect_uncertain=True)
             if problem:
                 event = self._receipt_event(command_id, "blocked", {"reason": "consumed record refused"})
                 return protocol.make_result(command_id, ok=False, error=problem,
-                                            blocked=BlockKind.POLICY.value, receipt=event)
-        await self._pace()
+                                            blocked=BlockKind.POLICY.value, receipt=event, effect_uncertain=True)
+            await self._pace()
         try:
+            await self._pace()
+            if submit_claims is not None and not protocol.verify_submit_token(
+                    self.config.command_secret, **submit_claims):
+                return protocol.make_result(command_id, ok=False,
+                                            error="submit token expired before effect; reservation retained",
+                                            blocked=BlockKind.POLICY.value, effect_uncertain=False)
             result = await self._run(kind, session, args)
         except Exception as error:  # noqa: BLE001 - report, never retry blindly
-            event = self._receipt_event(command_id, "failed", {"error": str(error)[:1000]})
-            return protocol.make_result(command_id, ok=False, error=str(error)[:2000], receipt=event)
+            detail = str(error)
+            if submit_claims is not None:
+                detail = f"effect outcome uncertain; reservation retained; do not retry: {error}"
+            event = self._receipt_event(command_id, "failed", {"error": detail[:1000]})
+            return protocol.make_result(command_id, ok=False, error=detail[:2000], receipt=event,
+                                        effect_uncertain=True if submit_claims is not None else None)
         block = detect_block(result.get("url", ""), result.get("http_status"),
                              result.get("html_excerpt", ""))
+        is_click = kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT)
+        if is_click:
+            result.pop("html_excerpt", None)  # used for classification only; never returned
+            result["url"] = safe_url(result.get("url"))  # classified on the raw URL above
         if block is not None:
-            event = self._receipt_event(command_id, "blocked", {"block": block.value, "url": result.get("url")})
-            return protocol.make_result(command_id, ok=False,
-                                        error=f"site stopped the read at {result.get('url', 'unknown page')}",
-                                        blocked=block.value, receipt=event)
-        event = self._receipt_event(command_id, "completed", {"kind": kind.value, "url": result.get("url")})
+            if submit_claims is not None:
+                # The click happened; the site then stopped us. Keep the reservation so
+                # the submit is never retried, and say the outcome is unknown.
+                error = (f"platform blocked after click ({block.value}); "
+                         "effect may have occurred; do not retry")
+            elif kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT):
+                error = f"platform blocked after click ({block.value}) at {safe_url(result.get('url'))}"
+            else:
+                error = f"site stopped the read at {safe_url(result.get('url'))}"
+            event = self._receipt_event(command_id, "blocked", {"block": block.value, "url": safe_url(result.get("url")),
+                                                              "http_status": result.get("http_status")})
+            return protocol.make_result(command_id, ok=False, error=error,
+                                        blocked=block.value, receipt=event,
+                                        effect_uncertain=True if submit_claims is not None else None)
+        if submit_claims is not None:
+            try:
+                self.effects.click_observed(self.config.device_id, args["approval_id"])
+            except Exception as error:
+                return protocol.make_result(command_id, ok=False, effect_uncertain=True,
+                                            error=f"effect outcome uncertain; do not retry: {error}")
+        payload = {"kind": kind.value, "url": safe_url(result.get("url"))}
+        if is_click:
+            # ok means "click dispatched, no block seen in the bounded window". Never "site accepted".
+            result["site_acceptance"] = "unconfirmed"
+            payload["site_acceptance"] = "unconfirmed"
+        # A click is never "completed": the click was dispatched, the site's answer is unconfirmed.
+        event = self._receipt_event(command_id, "dispatched_unconfirmed" if is_click else "completed", payload)
         return protocol.make_result(command_id, ok=True, result=result, receipt=event)
 
     async def _run(self, kind: CommandKind, session: str, args: dict[str, Any]) -> dict[str, Any]:
@@ -574,6 +697,8 @@ class Daemon:
             for selector in args.get("selectors", [])[:200]:
                 locator = page.locator(str(selector))
                 if await locator.count():
+                    if await _is_credential_field(locator.first):
+                        raise PermissionError("read refused: credential field values never leave the PC")
                     values[str(selector)] = await locator.first.input_value()
             return {"values": values, "url": page.url}
         if kind is CommandKind.FORM_FACTS:
@@ -582,72 +707,30 @@ class Daemon:
         if kind is CommandKind.FILL:
             await page.locator(str(args["selector"])).fill(str(args["value"]))
             return {"url": page.url}
-        if kind is CommandKind.CLICK_NAV:
-            from ..session_bridge import form_guard
-            from ..session_bridge.form_guard import SUBMIT_CONTROL_JS
-            locator = page.locator(str(args["selector"]))
-            # Navigation clicks never submit. Submit-type controls go through the armed,
-            # previewed CLICK_SUBMIT path only (audit finding F3).
-            if await locator.evaluate(SUBMIT_CONTROL_JS):
-                raise PermissionError("this control would submit a form; submits need an approved, previewed CLICK_SUBMIT")
-            # Baseline guard for every daemon-driven click: nothing is approved here, so any
-            # non-GET request or body-carrying navigation (including a JS-driven submit from a
-            # button, label, or custom element) is aborted and reported.
-            await self._require_containment()
-            await self._lift_resting(session)
-            taint = await form_guard.NetworkGuard.collect_taint(page)
-            allowed_href = await form_guard.NetworkGuard.shipped_href(
-                page, await locator.evaluate("el => (el.closest('a') || {}).href || ''"))
-            guard = form_guard.NetworkGuard(page, taint=taint, allowed_href=allowed_href,
-                                            known_urls=await form_guard.NetworkGuard.collect_known_urls(page))
-            guard.isolated = self.browser.isolated
-            snap = getattr(page, "_atlas_doc_urls", None)
-            guard.shipped_url = snap[0] if snap else None
-            guard.cookie_baseline = getattr(page, "_atlas_cookies", None)
-            await guard.install()
-            page_blocked = []
+        if kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT):
+            watch = _ClickWatch(page)
+            watch.start()
             try:
-                await page.evaluate(form_guard.NAV_GUARD_JS, await guard.expose_reporter())
-                await locator.click()
-                # Constant wait, then the DAEMON sends the one allowed navigation (if the page asked for it).
-                # A script that delays or withholds the click's navigation cannot move its arrival time:
-                # only whether it asked within this window can reach the server (1 bit).
-                await asyncio.sleep(NAV_WAIT_SECONDS)
-                if guard.nav_requested:
-                    problem = await guard.pre_nav_problem()
-                    if problem:
-                        guard.blocked.append(problem)
-                    else:
-                        guard.daemon_nav_ok = True
-                        try:
-                            await page.goto(allowed_href, referer=guard.shipped_url, wait_until="domcontentloaded")
-                        except Exception:  # noqa: BLE001 - the guard report decides
-                            pass
-                        guard.daemon_nav_ok = False
-                try:
-                    await page.wait_for_load_state("domcontentloaded", timeout=5000)
-                except Exception:  # noqa: BLE001 - best effort; the guard report decides
-                    pass
-                # Context-level guard stays up until the page (and any popup) is idle plus a
-                # quiet period, so timer-driven and pagehide requests are still judged.
-                await guard.settle()
-                try:
-                    recalled = await page.evaluate(form_guard.NAV_RECALL_JS) or []
-                    guard.page_reports.extend(item for item in recalled if item not in guard.page_reports)
-                except Exception:  # noqa: BLE001 - navigation destroyed the old document
-                    pass
+                if kind is CommandKind.CLICK_NAV:
+                    result = await self._click_nav(page, session, args)
+                else:
+                    # Same claims as at dispatch (approval, capture, selector, values, reviewed preview,
+                    # device, session, action, expiry): an expired or altered token never reaches the click.
+                    if not protocol.verify_submit_token(
+                            self.config.command_secret, approval_id=args.get("approval_id"),
+                            capture_sha256=args.get("capture_sha256"), selector=args.get("selector"),
+                            values_digest=args.get("values_digest"), preview_sha256=args.get("preview_sha256", ""),
+                            device_id=self.config.device_id, session=session,
+                            expires_at=args.get("expires_at"), token=args.get("token"), action=kind.value):
+                        raise RuntimeError("submit token expired before click; reservation retained")
+                    await self._require_containment()
+                    await self._lift_resting(session)
+                    result = await self._click_submit(page, args)
+                    await self._after_submit(page, session)
             finally:
-                await self._rest(session, guard)  # stays installed for the life of this document
-            report = guard.report()
-            if report["blocked"]:
-                raise PermissionError("navigation click attempted an unapproved request; blocked: "
-                                      + "; ".join(report["blocked"])[:500])
-            return {"url": page.url, "guard": report}
-        if kind is CommandKind.CLICK_SUBMIT:
-            await self._require_containment()
-            await self._lift_resting(session)
-            result = await self._click_submit(page, args)
-            await self._after_submit(page, session)
+                watch.stop()
+            # Raw landing facts, classified then sanitized in execute(); never "site accepted".
+            result.update(await watch.observation(page))
             return result
         if kind is CommandKind.CLOSE:
             await self._lift_resting(session)
@@ -663,6 +746,69 @@ class Daemon:
         guard.isolated = self.browser.isolated
         await guard.install()
         await self._rest(session, guard)
+
+    async def _click_nav(self, page: Any, session: str, args: dict[str, Any]) -> dict[str, Any]:
+        """Guarded navigation click (M18). Never submits; every non-GET or body-carrying request is blocked."""
+        from ..session_bridge import form_guard
+        from ..session_bridge.form_guard import SUBMIT_CONTROL_JS
+        locator = page.locator(str(args["selector"]))
+        # Navigation clicks never submit. Submit-type controls go through the armed,
+        # previewed CLICK_SUBMIT path only (audit finding F3).
+        if await locator.evaluate(SUBMIT_CONTROL_JS):
+            raise PermissionError("this control would submit a form; submits need an approved, previewed CLICK_SUBMIT")
+        # Baseline guard for every daemon-driven click: nothing is approved here, so any
+        # non-GET request or body-carrying navigation (including a JS-driven submit from a
+        # button, label, or custom element) is aborted and reported.
+        await self._require_containment()
+        await self._lift_resting(session)
+        taint = await form_guard.NetworkGuard.collect_taint(page)
+        allowed_href = await form_guard.NetworkGuard.shipped_href(
+            page, await locator.evaluate("el => (el.closest('a') || {}).href || ''"))
+        guard = form_guard.NetworkGuard(page, taint=taint, allowed_href=allowed_href,
+                                        known_urls=await form_guard.NetworkGuard.collect_known_urls(page))
+        guard.isolated = self.browser.isolated
+        snap = getattr(page, "_atlas_doc_urls", None)
+        guard.shipped_url = snap[0] if snap else None
+        guard.cookie_baseline = getattr(page, "_atlas_cookies", None)
+        await guard.install()
+        page_blocked = []
+        try:
+            await page.evaluate(form_guard.NAV_GUARD_JS, await guard.expose_reporter())
+            await locator.click()
+            # Constant wait, then the DAEMON sends the one allowed navigation (if the page asked for it).
+            # A script that delays or withholds the click's navigation cannot move its arrival time:
+            # only whether it asked within this window can reach the server (1 bit).
+            await asyncio.sleep(NAV_WAIT_SECONDS)
+            if guard.nav_requested:
+                problem = await guard.pre_nav_problem()
+                if problem:
+                    guard.blocked.append(problem)
+                else:
+                    guard.daemon_nav_ok = True
+                    try:
+                        await page.goto(allowed_href, referer=guard.shipped_url, wait_until="domcontentloaded")
+                    except Exception:  # noqa: BLE001 - the guard report decides
+                        pass
+                    guard.daemon_nav_ok = False
+            try:
+                await page.wait_for_load_state("domcontentloaded", timeout=5000)
+            except Exception:  # noqa: BLE001 - best effort; the guard report decides
+                pass
+            # Context-level guard stays up until the page (and any popup) is idle plus a
+            # quiet period, so timer-driven and pagehide requests are still judged.
+            await guard.settle()
+            try:
+                recalled = await page.evaluate(form_guard.NAV_RECALL_JS) or []
+                guard.page_reports.extend(item for item in recalled if item not in guard.page_reports)
+            except Exception:  # noqa: BLE001 - navigation destroyed the old document
+                pass
+        finally:
+            await self._rest(session, guard)  # stays installed for the life of this document
+        report = guard.report()
+        if report["blocked"]:
+            raise PermissionError("navigation click attempted an unapproved request; blocked: "
+                                  + "; ".join(report["blocked"])[:500])
+        return {"url": page.url, "guard": report}
 
     async def _click_submit(self, page: Any, args: dict[str, Any]) -> dict[str, Any]:
         """The one approved click: verify in the real browser, guard it, then click."""

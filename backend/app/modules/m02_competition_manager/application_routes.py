@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
+from pydantic import BaseModel
 from fastapi import Depends, HTTPException
 
 from app.auth.context import TenantContext, require_tenant
@@ -211,10 +212,11 @@ async def execute_submit(
     service: Service = Depends(get_service),
     flow: ApplicationFlow = Depends(get_application_flow),
 ):
-    """Execute the approved submit exactly once, then read back the site's response.
+    """Execute the approved submit exactly once and report what was observed.
 
-    Competition status is updated only from the post-submit source readback;
-    a failed or blocked click leaves the competition unsubmitted.
+    The result is "click dispatched, site acceptance unconfirmed". Competition status is
+    not changed here; a blocked, errored or unknown-outcome click is reported as such and
+    must not be retried.
     """
     try:
         result = await flow.execute_submit(tenant.tenant_id, tenant.actor_id, session_id, body.approval_id)
@@ -227,23 +229,35 @@ async def execute_submit(
     except Exception as error:
         raise _flow_errors(error) from error
 
-    record = flow.status(tenant.tenant_id, tenant.actor_id, session_id)
-    if record.get("opportunity_kind") == "competition" and record.get("opportunity_id"):
-        confirmation = result["confirmation"]
-        evidence = StatusEvidence(
-            source="browser_readback",
-            reference=(
-                f"paired browser session {session_id} submitted and read back at "
-                f"{confirmation['final_url']} (approval {body.approval_id})"
-            ),
-            observed_at=datetime.fromtimestamp(confirmation["observed_at"], timezone.utc),
-            status=SubmissionStatus.SUBMITTED,
-        )
-        try:
-            service.update_status(record["opportunity_id"], evidence)
-        except Exception as error:
-            raise _flow_errors(error) from error
+    # Competition status is NOT advanced here: a dispatched click is not source evidence of acceptance.
     return result
+
+
+class AssertSiteAcceptedIn(BaseModel):
+    owner_asserts_site_accepted: bool
+
+
+@router.post(_BASE + "/sessions/{session_id}/assert-site-accepted")
+async def assert_site_accepted(
+    session_id: str,
+    body: AssertSiteAcceptedIn,
+    tenant: TenantContext = Depends(require_tenant),
+    flow: ApplicationFlow = Depends(get_application_flow),
+):
+    """Record the authenticated actor's assertion that the site accepted the submit.
+
+    An assertion, not verification: it is only as strong as the auth behind the request,
+    and it is not site evidence. It never writes competition status.
+    """
+    try:
+        return await flow.assert_site_accepted(tenant.tenant_id, tenant.actor_id, session_id,
+                                               body.owner_asserts_site_accepted)
+    except ActorMismatchError as error:
+        raise HTTPException(status_code=403, detail=str(error)) from error
+    except PermissionError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
+    except Exception as error:
+        raise _flow_errors(error) from error
 
 
 @router.get(_BASE + "/sessions/{session_id}")

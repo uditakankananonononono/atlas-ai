@@ -132,14 +132,31 @@ async def execute_capture_bound_submit(service, sessions_factory, tenant_id: str
     state, error = "clicked", None
     try:
         await page.locator(selector).click()
-    except Exception as exc:  # noqa: BLE001 - record, never retry
-        state, error = "click_failed", str(exc)[:1000]
+    except BaseException as exc:  # noqa: BLE001 - record, never retry
+        if not isinstance(exc, Exception):
+            # Cancelled/interrupted after the click began: the approval is consumed and the site may
+            # have received it. Record that durably before unwinding.
+            with sessions_factory.begin() as db:
+                row = db.scalar(select(SubmitAttemptRow).where(SubmitAttemptRow.tenant_id == tenant_id,
+                                                               SubmitAttemptRow.approval_id == approval_id))
+                row.state, row.error = "click_uncertain", f"request ended after the click began ({type(exc).__name__})"
+                row.finished_at = datetime.now(timezone.utc)
+            raise
+        from .session_bridge.protocol import is_provably_pre_dispatch
+        # Only a provable pre-dispatch failure may invite a fresh approval. A direct Playwright
+        # timeout can follow a form the server already received.
+        state = "click_failed" if is_provably_pre_dispatch(exc) else "click_uncertain"
+        error = str(exc)[:1000]
     with sessions_factory.begin() as db:
         row = db.scalar(select(SubmitAttemptRow).where(SubmitAttemptRow.tenant_id == tenant_id,
                                                        SubmitAttemptRow.approval_id == approval_id))
         row.state, row.error, row.finished_at = state, error, datetime.now(timezone.utc)
     await service.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.SUBMIT, {
         "phase": "executed_capture_bound", "approval_id": approval_id, "capture_sha256": capture_sha256, "state": state}))
+    if state == "click_uncertain":
+        raise RuntimeError(f"submit outcome unknown after the click was sent; do not retry; check the site manually ({error})")
     if state != "clicked":
         raise RuntimeError(f"click failed after the approval was consumed; capture and approve again ({error})")
-    return {"status": "submitted", "approval_id": approval_id, "capture_sha256": capture_sha256}
+    # The approved click was dispatched. That is not proof the site accepted it.
+    return {"status": "click_dispatched_unconfirmed", "click_dispatched": True, "site_acceptance": "unconfirmed",
+            "approval_id": approval_id, "capture_sha256": capture_sha256}
