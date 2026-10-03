@@ -158,6 +158,17 @@ class CommandRejectedAfterEffect(CommandRejected, EffectUncertain):
     """The daemon failed after reserving/sending the effect; outcome unknown."""
 
 
+def is_provably_pre_dispatch(error: BaseException) -> bool:
+    """True only when a click failure is known to have happened before anything reached the site.
+
+    Our own bridge errors that are NOT typed EffectUncertain were raised before the command was
+    sent (offline device, daemon refusal before any click). Everything else, notably direct
+    Playwright errors such as a 30s click timeout waiting on the navigation the click started,
+    cannot be placed before the effect and is treated as uncertain.
+    """
+    return isinstance(error, BridgeError) and not isinstance(error, EffectUncertain)
+
+
 def parse_result(raw: dict[str, Any]) -> dict[str, Any]:
     if raw.get("v") != PROTOCOL_VERSION:
         raise BridgeError(f"unsupported protocol version: {raw.get('v')!r}")

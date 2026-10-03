@@ -117,9 +117,10 @@ async def execute_capture_bound_submit(service, sessions_factory, tenant_id: str
     try:
         await page.locator(selector).click()
     except Exception as exc:  # noqa: BLE001 - record, never retry
-        from .session_bridge.protocol import EffectUncertain
-        # Typed: an uncertain failure may have submitted. Anything else never reached the site.
-        state = "click_uncertain" if isinstance(exc, EffectUncertain) else "click_failed"
+        from .session_bridge.protocol import is_provably_pre_dispatch
+        # Only a provable pre-dispatch failure may invite a fresh approval. A direct Playwright
+        # timeout can follow a form the server already received.
+        state = "click_failed" if is_provably_pre_dispatch(exc) else "click_uncertain"
         error = str(exc)[:1000]
     with sessions_factory.begin() as db:
         row = db.scalar(select(SubmitAttemptRow).where(SubmitAttemptRow.tenant_id == tenant_id,
