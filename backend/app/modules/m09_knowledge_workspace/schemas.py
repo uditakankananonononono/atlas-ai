@@ -7,7 +7,7 @@ class NodeType(str,Enum):
     PROJECT="project";RESEARCH="research";COMPETITION="competition";APPLICATION="application";EMAIL="email";CONTACT="contact";FILE="file";DEADLINE="deadline";TASK="task";NOTE="note"
 class Relationship(str,Enum):
     CHILD_OF="child_of";REFERENCES="references";SUPPORTS="supports";BLOCKS="blocks";MENTIONS="mentions";RELATED_TO="related_to";DEPENDS_ON="depends_on"
-class SuggestionStatus(str,Enum): PENDING="pending";ACCEPTED="accepted";REJECTED="rejected"
+class SuggestionStatus(str,Enum): PENDING="pending";ACCEPTED="accepted";REJECTED="rejected";INVALIDATED="invalidated"
 class NodeCreate(BaseModel):
     node_type:NodeType;title:str=Field(min_length=1,max_length=500);body:str|None=None;source_uri:str|None=None;source_module:str|None=None;external_id:str|None=None;metadata:dict[str,Any]=Field(default_factory=dict)
 class Node(NodeCreate):

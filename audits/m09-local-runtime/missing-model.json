@@ -1,0 +1,7 @@
+{
+  "http_status": 503,
+  "response": {
+    "detail": "M09 local NLP unavailable (OSError). Install the m09-local extra and provision the configured FastEmbed and spaCy models; no node write was performed."
+  },
+  "persisted_node_count": 0
+}

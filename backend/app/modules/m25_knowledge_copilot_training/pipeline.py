@@ -18,6 +18,12 @@ class Embedder(Protocol):
     dimension:int
     def embed(self,text:str)->list[float]:...
 class DeterministicEmbedder:
+    """16-bin SHA-256 token hashing, not trained or semantic embeddings.
+
+    Collisions are common. Retrieval combines this heuristic with lexical overlap;
+    this default does not train a model or verify semantic equivalence.
+    """
+    identity = "sha256-token-hash-16-not-learned"
     dimension=16
     def embed(self,text:str)->list[float]:
         out=[0.0]*self.dimension
@@ -102,7 +108,7 @@ class LocalKnowledgePipeline:
         terms=set(re.findall(r'[a-z0-9]+',query.lower()))
         def score(c):
             lexical=len(terms & set(re.findall(r'[a-z0-9]+',c.text.lower())))/max(1,len(terms)); vector=sum(a*b for a,b in zip(qv,c.vector)); return .5*lexical+.5*vector
-        return [{'source_id':c.source_id,'version':c.version,'chunk_id':c.chunk_id,'text':c.text,'anchor_ids':c.anchors,'score':score(c)} for c in sorted(self.chunks,key=score,reverse=True)[:limit] if score(c)>0]
+        return [{'source_id':c.source_id,'version':c.version,'chunk_id':c.chunk_id,'text':c.text,'anchor_ids':c.anchors,'score':score(c),'retrieval_engine':getattr(self.embedder,'identity','injected-embedder'),'score_is_probability':False} for c in sorted(self.chunks,key=score,reverse=True)[:limit] if score(c)>0]
     def substantiate(self,claims:list[Claim])->list[Claim]:
         anchors={(c.source_id,c.version,a) for c in self.chunks for a in c.anchors}
         for claim in claims:

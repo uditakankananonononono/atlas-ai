@@ -24,4 +24,4 @@ def test_graph_suggest_review_cycle_and_version():
  except ConflictError:pass
  else:raise AssertionError("stale write accepted")
 def test_graph_is_tenant_repository_boundary_and_planner_export():
- r=Repo();svc=Service(r);n=svc.create_node(NodeCreate(node_type="note",title="Evidence",body="Grounded note"));ctx=svc.planner_context([n.id]);assert ctx["nodes"][0]["summary"]=="Grounded note"
+ r=Repo();svc=Service(r,embed=lambda text:[1,0],extract_entities=lambda text:[]);n=svc.create_node(NodeCreate(node_type="note",title="Evidence",body="Grounded note"));ctx=svc.planner_context([n.id]);assert ctx["nodes"][0]["summary"]=="Grounded note"

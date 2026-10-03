@@ -6,13 +6,18 @@ from app.auth.context import TenantContext,require_tenant
 from .repository import SqlGraphRepository
 from .schemas import *
 from .service import ConflictError,Service
+from .local_nlp import NLPUnavailable, get_local_nlp
 router=APIRouter(prefix="/knowledge-workspace",tags=["knowledge-workspace"])
 def get_service(t:TenantContext=Depends(require_tenant)):return Service(SqlGraphRepository(t.tenant_id,t.actor_id))
 @router.post("/nodes",response_model=Node,status_code=status.HTTP_201_CREATED)
-def create_node(data:NodeCreate,service:Service=Depends(get_service)):return service.create_node(data)
+def create_node(data:NodeCreate,service:Service=Depends(get_service)):
+    try:return service.create_node(data)
+    except ConflictError as e:raise HTTPException(409,str(e)) from e
+    except NLPUnavailable as e:raise HTTPException(503,str(e)) from e
 @router.patch("/nodes/{node_id}",response_model=Node)
 def update_node(node_id:str,data:NodeUpdate,service:Service=Depends(get_service)):
     try:return service.update_node(node_id,data)
+    except NLPUnavailable as e:raise HTTPException(503,str(e)) from e
     except LookupError:raise HTTPException(404,"node not found")
     except ConflictError as e:raise HTTPException(409,str(e))
 @router.post("/edges",response_model=Edge,status_code=status.HTTP_201_CREATED)
@@ -27,6 +32,7 @@ def neighborhood(node_id:str,depth:int=Query(1,ge=1,le=5),limit:int=Query(250,ge
 @router.post("/suggestions/{suggestion_id}/review",response_model=LinkSuggestion)
 def review(suggestion_id:str,data:ReviewRequest,service:Service=Depends(get_service)):
     try:return service.review(suggestion_id,data.accept)
+    except ConflictError as e:raise HTTPException(409,str(e)) from e
     except LookupError:raise HTTPException(409,"suggestion is not pending")
 @router.post("/planner-context")
 def planner_context(data:PlannerContextRequest,service:Service=Depends(get_service)):return service.planner_context(data.node_ids)
@@ -121,3 +127,14 @@ def stored_source_bytes(sha256:str,blobs:SourceBlobStore=Depends(get_source_blob
  except RevisionRejected as e:raise HTTPException(409,str(e)) from e
  if got is None:raise HTTPException(404,'no stored copy of these bytes for this tenant')
  return Response(content=got[0],media_type='application/octet-stream',headers={'X-Atlas-Content-SHA256':sha256,'X-Atlas-First-URI':got[1]['first_uri'][:500].encode('ascii','ignore').decode(),'X-Atlas-Stored-At':got[1]['stored_at']})
+
+@router.get('/nlp-status')
+def nlp_status(tenant:TenantContext=Depends(require_tenant)):
+    try:
+        runtime=get_local_nlp()
+        return {'available':True,'embedding':runtime.identity,'entities':runtime.entity_identity,
+                'similarity_threshold':.78,'score_is_probability':False,
+                'limits':['English models','512-token embedding truncation','NER may miss or mislabel entities',
+                          'Exact title matches only for mentions','Unversioned or incompatible old vectors need node update',
+                          'Only the first 500 repository nodes are compared']}
+    except NLPUnavailable as e:raise HTTPException(503,str(e)) from e
