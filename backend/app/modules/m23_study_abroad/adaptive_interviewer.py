@@ -209,7 +209,7 @@ def _post_loopback(url: str, body: dict, headers: dict, timeout: float) -> dict:
     try:
         limit = min(timeout, CALL_TIMEOUT_S)
         deadline = time.monotonic() + limit
-        with urllib.request.build_opener(_NoRedirect()).open(req, timeout=limit) as resp:
+        with urllib.request.build_opener(urllib.request.ProxyHandler({}), _NoRedirect()).open(req, timeout=limit) as resp:
             buf = b""
             while True:  # total wall-clock deadline, so a trickling server cannot hold the call open
                 chunk = resp.read1(16384)

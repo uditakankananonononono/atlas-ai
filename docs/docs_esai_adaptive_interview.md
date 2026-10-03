@@ -13,6 +13,6 @@ Confirmation records the acting actor id; the auth model has no student-only rol
 
 ## Revision 4 (latency bound)
 - All model work for one answer runs under a wall-clock budget (STEP_BUDGET_S, env INSTINCT_INTERVIEW_STEP_BUDGET, default 12s), each call in a daemon thread joined with the remaining budget. Past it the call is abandoned and the question is a labeled fallback ("timeout"/"budget_exhausted" in detail). Request model latency is therefore about 12s plus DB work, not 2 x 20s (tested with a 6s-silent server and a 2s budget).
-- Transport total deadline: reads are chunked and checked against CALL_TIMEOUT_S (20s), so a trickling server is cut off (tested).
+- Transport: no env proxy (HTTP_PROXY ignored, tested), no redirects. The body read is checked against CALL_TIMEOUT_S, but delayed headers followed by a slow body are not a hard transport total; the HARD request cap is the 12s step budget (worker thread join).
 - An abandoned call may keep generating locally; its thread holds one of 2 slots until it really ends. While both slots are held, new answers get a labeled fallback ("busy"). Still synchronous inside the request thread; no background/status endpoint.
 - Real run (qwen0.5b_rev4.txt, counts computed by the script from per-turn records): turns 1-4 questions: 2 adaptive_span_anchored, 2 fixed_script_fallback; extraction 0 proposed, 9 rejected. Extraction is unsupported on this model.

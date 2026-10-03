@@ -346,3 +346,27 @@ def test_detail_distinguishes_budget_timeout_busy_from_unreachable(monkeypatch):
     step = iv.step(track="college", turns=[{"question": QUESTIONS[0], "student_response": ANSWER}],
                    fixed_next=QUESTIONS[1], want_question=True)
     assert "budget" in step.detail and "no local model reachable" not in step.detail, step.detail
+
+
+def test_env_http_proxy_is_never_used_by_model_transport(monkeypatch):
+    import http.server, threading
+    from app.modules.m23_study_abroad.adaptive_interviewer import _post_loopback
+    seen = []
+    class Spy(http.server.BaseHTTPRequestHandler):
+        def do_POST(self):
+            seen.append(self.path); self.send_response(500); self.end_headers()
+        def log_message(self, *a): pass
+    class Ok(http.server.BaseHTTPRequestHandler):
+        def do_POST(self):
+            self.rfile.read(int(self.headers["content-length"]))
+            out = b'{"choices":[{"message":{"content":"x"}}]}'
+            self.send_response(200); self.send_header("content-length", str(len(out))); self.end_headers(); self.wfile.write(out)
+        def log_message(self, *a): pass
+    proxy, target = (http.server.HTTPServer(("127.0.0.1", 0), h) for h in (Spy, Ok))
+    for sv in (proxy, target):
+        threading.Thread(target=sv.serve_forever, daemon=True).start()
+    for k in ("HTTP_PROXY", "http_proxy"):
+        monkeypatch.setenv(k, f"http://127.0.0.1:{proxy.server_port}")
+    monkeypatch.delenv("NO_PROXY", raising=False); monkeypatch.delenv("no_proxy", raising=False)
+    assert _post_loopback(f"http://127.0.0.1:{target.server_port}/v1/chat/completions", {"a": 1}, {}, 5)["choices"]
+    assert seen == []
