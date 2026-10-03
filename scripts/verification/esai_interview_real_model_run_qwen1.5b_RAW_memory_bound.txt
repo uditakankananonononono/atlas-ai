@@ -1,0 +1,33 @@
+OPENING (fixed script): What experience has shaped how you see yourself?
+
+--- turn 1 (29.4s) ---
+STUDENT: When my family moved to a new town in eighth grade I didn't know anyone, so I started a robotics club at my school because nobody else would, and I taught twelve younger kids to solder.
+NEXT QUESTION: You mentioned "I taught twelve younger kids to solder". Why did that matter to you? [adaptive_span_anchored]
+extraction: none_no_model proposed 0 rejected 0 | no local model reachable; no quote extraction
+
+--- turn 2 (40.4s) ---
+STUDENT: I stayed after school every day even when only two people came, because I promised the younger kids that the club would still be there next week.
+NEXT QUESTION: What work or activity gives you energy, and why? [fixed_script_fallback]
+extraction: none_no_model proposed 0 rejected 0 | no local model reachable; fixed script question used: needle-local:skipped; ornith-local:error; inkling-local:unavailable | no local model reachable; no quote extraction
+
+--- turn 3 (40.4s) ---
+STUDENT: I get the most energy when I take something broken and make it work again, like repairing the old radio my grandfather left and hearing it play.
+NEXT QUESTION: What strength have other people seen you demonstrate? [fixed_script_fallback]
+extraction: none_no_model proposed 0 rejected 0 | no local model reachable; fixed script question used: needle-local:skipped; ornith-local:error; inkling-local:unavailable | no local model reachable; no quote extraction
+
+--- turn 4 (34.4s) ---
+STUDENT: My teachers say I'm patient. Last spring a sophomore couldn't get her circuit to work and I sat with her for two hours until she found the loose wire herself.
+NEXT QUESTION: You mentioned "found the loose wire herself". What changed for you after that? [adaptive_span_anchored]
+extraction: none_no_model proposed 0 rejected 0 | no local model reachable; no quote extraction
+
+--- turn 5 (20.2s) ---
+STUDENT: I want to study mechanical engineering and build low cost medical devices, because my grandfather's hearing aid cost more than our rent.
+NEXT QUESTION: None [None]
+extraction: none_no_model proposed 0 rejected 0 | no local model reachable; no quote extraction
+
+BRANDID values: [] 
+strengths: [] 
+patterns(beyond raw answers): []
+proposed (UNCONFIRMED) evidence items:
+
+SUMMARY {"turns": 5, "model_backed_question_turns": 0, "fallback_question_turns": 2, "grounded_items": 0, "rejected_items": 0}
