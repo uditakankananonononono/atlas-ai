@@ -89,12 +89,17 @@ class Service:
             suggestion.reasons.append({"kind":"node_versions","source_version":node.version,"target_version":other.version})
         return suggestions
     def _reachable(self,start,target,rel):
+        # Advisory service precheck only. SQL save_edge repeats authoritative full
+        # reachability inside its transaction; exhaustion never implies a cycle.
         frontier={start};seen=set()
-        for _ in range(50):
+        while frontier:
             if target in frontier:return True
-            seen|=frontier;frontier={e.target_id for e in self.repository.edges_for(frontier) if e.source_id in frontier and e.relationship==rel}-seen
-            if not frontier:return False
-        return True
+            seen|=frontier
+            if hasattr(self.repository,"outgoing_targets"):
+                frontier=self.repository.outgoing_targets(frontier,rel)-seen
+            else:
+                frontier={e.target_id for e in self.repository.edges_for(frontier) if e.source_id in frontier and e.relationship==rel}-seen
+        return False
     def _node(self,nid):
         n=self.repository.get_node(nid)
         if not n:raise LookupError(nid)

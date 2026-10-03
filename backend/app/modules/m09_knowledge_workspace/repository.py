@@ -114,6 +114,9 @@ class SqlGraphRepository:
             db.add(AuditRow(tenant_id=self.tenant_id,actor_id=self.actor_id,action="edge.created",entity_id=e.id,detail={"relationship":e.relationship.value,"source_version":source.version,"target_version":target.version},created_at=e.created_at))
             db.flush()
         return e
+    def outgoing_targets(self,node_ids,relationship):
+        with self.sessions() as db:
+            return set(db.scalars(select(EdgeRow.target_id).where(EdgeRow.tenant_id==self.tenant_id,EdgeRow.source_id.in_(node_ids),EdgeRow.relationship==relationship.value)))
     def edges_for(self,node_ids:set[str],limit=1000):
         with self.sessions() as db:return [_edge(r) for r in db.scalars(select(EdgeRow).where(EdgeRow.tenant_id==self.tenant_id,or_(EdgeRow.source_id.in_(node_ids),EdgeRow.target_id.in_(node_ids))).limit(limit))]
     def save_suggestion(self,s:LinkSuggestion):
