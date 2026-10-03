@@ -89,6 +89,7 @@ class _TreeNode:
     completed: frozenset[str]
     parent: "_TreeNode | None" = None
     action_taken: str | None = None  # plan-node id executed to reach here
+    path: tuple[str, ...] = ()  # action order from the root (dependency-valid)
     visits: int = 0
     total_value: float = 0.0
     total_value_sq: float = 0.0
@@ -189,7 +190,7 @@ class BoundedMCTS:
                     action = node.untried.pop(self.random.randrange(len(node.untried)))
                     child = _TreeNode(
                         completed=frozenset(completed | {action}),
-                        parent=node, action_taken=action,
+                        parent=node, action_taken=action, path=node.path + (action,),
                     )
                     child_ready = self._ready(plan, child.completed)
                     child.untried = [n.id for n in child_ready]
@@ -204,7 +205,7 @@ class BoundedMCTS:
                 completed = set(node.completed)
                 depth += 1
             # rollout from the frontier
-            reward = self._rollout(plan, completed, depth)
+            reward = self._rollout(plan, node.path, depth)
             # backpropagate
             while node is not None:
                 node.visits += 1
@@ -258,33 +259,38 @@ class BoundedMCTS:
             return True
         return self.random.random() < est.value
 
-    def _rollout(self, plan: list[PlanNode], completed: set[str], depth: int) -> float:
-        """Simulate one completion; reward is the fraction of the plan finished."""
+    def _rollout(self, plan: list[PlanNode], path: tuple[str, ...], depth: int) -> float:
+        """Simulate one completion; reward is the fraction of the plan finished.
+
+        Tree-chosen steps replay in their chosen order, then random ready steps
+        follow. Every step, tree-chosen or rolled out, runs only if all its
+        dependencies actually succeeded in this rollout (or in the plan already);
+        otherwise it is blocked: no draw, not done, and its dependents are
+        blocked in turn. A failed step is not retried within one rollout.
+        """
+        by_id = {n.id: n for n in plan}
+        base_done = {n.id for n in plan if n.state == TaskState.SUCCEEDED}
         done: set[str] = set()
-        failed: set[str] = set()  # a failed step is not retried within one rollout
-        # Steps chosen in the tree get the same failure draw as rollout steps,
-        # in plan-dependency-safe sorted order for reproducibility.
-        for nid in sorted(completed):
-            if self._attempt(nid):
-                done.add(nid)
+        failed: set[str] = set()  # failed or blocked in this rollout
+        for nid in path:
+            node = by_id.get(nid)
+            if node is None:
+                continue
+            if all(d in base_done or d in done for d in node.depends_on):
+                (done if self._attempt(nid) else failed).add(nid)
             else:
-                failed.add(nid)
+                failed.add(nid)  # blocked by a failed/unfinished ancestor
         steps = 0
         while depth + steps < self.max_depth:
             ready = [n for n in self._ready(plan, frozenset(done)) if n.id not in failed]
             if not ready:
                 break
             node = self.random.choice(ready)
-            if self._attempt(node.id):
-                done.add(node.id)
-            else:
-                failed.add(node.id)
-            # a failed step blocks its descendants but not its siblings
+            (done if self._attempt(node.id) else failed).add(node.id)
             steps += 1
         total = len([n for n in plan if n.state != TaskState.CANCELLED]) or 1
-        finished = len([n for n in plan if n.state == TaskState.SUCCEEDED]) + len(done - {n.id for n in plan if n.state == TaskState.SUCCEEDED})
-        progress = min(1.0, finished / total)
-        return max(0.0, min(1.0, progress))
+        finished = len(base_done) + len(done - base_done)
+        return max(0.0, min(1.0, finished / total))
 
     @staticmethod
     def _principal_variation_ids(root: _TreeNode) -> list[str]:
