@@ -108,3 +108,61 @@ def test_http_route_tenant_scoped_label(monkeypatch):
 
 def test_cosine_basic():
     assert cosine([1, 0], [1, 0]) == pytest.approx(1.0) and cosine([1, 0], [0, 1]) == 0.0 and cosine([0, 0], [1, 1]) == 0.0
+
+
+def _resp(data):
+    def h(hh, req):
+        out = json.dumps({"data": data}).encode(); hh.send_response(200); hh.end_headers(); hh.wfile.write(out)
+    return h
+
+
+@pytest.mark.parametrize("data", [
+    [{"index": 0, "embedding": ["1", "2"]}, {"index": 1, "embedding": [1, 2]}],            # numeric strings
+    [{"index": 0, "embedding": [1e999, 1]}, {"index": 1, "embedding": [1, 2]}],            # overflow -> inf
+    [{"index": 0, "embedding": [1, 2]}, {"index": 0, "embedding": [1, 3]}],                # duplicate index
+    [{"index": 0, "embedding": [1, 2]}, {"index": 5, "embedding": [1, 3]}],                # out of range
+    [{"index": 0, "embedding": [True, 2]}, {"index": 1, "embedding": [1, 2]}],             # bool
+    [{"index": 0, "embedding": []}, {"index": 1, "embedding": []}],                        # empty
+    [{"index": 0}, {"index": 1, "embedding": [1, 2]}],                                     # missing vector
+    "garbage",
+])
+def test_malformed_embedding_responses_fall_back_safely(data):
+    srv = _server(_resp(data))
+    m = LocalEmbeddingMatcher(f"http://127.0.0.1:{srv.server_port}/v1", "stub", timeout=3)
+    assert m.rank("q", ["a"]) is None
+    r = EssayToolService(matcher=m).topic_finder("robot", EVID[:1])
+    assert r["match_mode"] == FALLBACK
+
+
+def test_nan_json_constant_is_rejected():
+    def h(hh, req):
+        out = b'{"data":[{"index":0,"embedding":[NaN,1]},{"index":1,"embedding":[1,2]}]}'
+        hh.send_response(200); hh.end_headers(); hh.wfile.write(out)
+    srv = _server(h)
+    assert LocalEmbeddingMatcher(f"http://127.0.0.1:{srv.server_port}/v1", "stub").rank("q", ["a"]) is None
+
+
+def test_env_http_proxy_is_never_used(monkeypatch):
+    seen = []
+    def spy(hh, req): seen.append(req); hh.send_response(500); hh.end_headers()
+    proxy = _server(spy)
+    target = _server(_ok)
+    monkeypatch.setenv("HTTP_PROXY", f"http://127.0.0.1:{proxy.server_port}")
+    monkeypatch.setenv("http_proxy", f"http://127.0.0.1:{proxy.server_port}")
+    monkeypatch.delenv("NO_PROXY", raising=False); monkeypatch.delenv("no_proxy", raising=False)
+    assert LocalEmbeddingMatcher(f"http://127.0.0.1:{target.server_port}/v1", "stub").rank("q", ["robot"]) is not None
+    assert seen == []
+
+
+def test_hard_total_cap_with_delayed_headers_then_body():
+    def slow(hh, req):
+        time.sleep(1.2); hh.send_response(200); hh.send_header("content-length", "100000"); hh.end_headers()
+        try:
+            for _ in range(40):
+                hh.wfile.write(b"x" * 10); hh.wfile.flush(); time.sleep(0.3)
+        except Exception:
+            pass
+    srv = _server(slow)
+    t0 = time.time()
+    assert LocalEmbeddingMatcher(f"http://127.0.0.1:{srv.server_port}/v1", "stub", timeout=1.5).rank("q", ["a"]) is None
+    assert time.time() - t0 < 2.5
