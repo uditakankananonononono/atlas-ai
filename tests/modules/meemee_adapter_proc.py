@@ -49,7 +49,7 @@ async def main():
         try:
             tok = None if os.environ.get("NO_TOKEN") else json.load(open(meta_p))["approval"]
             out = await client().execute(a, tok)
-            print(json.dumps({"ok": True, "replayed": out["replayed"], "status": out["status"]}))
+            print(json.dumps({"ok": True, "replayed": out["replayed"], "status": out["status"], "outcome": out.get("outcome")}))
         except Exception as e:
             print(json.dumps({"ok": False, "err": f"{type(e).__name__}: {e}"}))
 asyncio.run(main())

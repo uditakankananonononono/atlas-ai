@@ -101,12 +101,40 @@ class MeemeeLocalClient:
                 or req.payload.get("preview") != preview):
             raise AdapterError("approval missing, not approved, not this owner's, or not for this exact action")
 
+    UNCERTAIN_NOTE = ("Execution outcome is UNKNOWN: the command was issued but no completion was recorded. It may have run, "
+                      "not run, or still be picked up by a device. This adapter cannot cancel it. Meemee DeviceRegistry has no "
+                      "cancel/expire method (revoke only blocks new issues); the signed envelope is rejected by a verifying "
+                      "device after 300s (verify_command tolerance), which is the only bound. It will not be re-issued.")
+
     def _report(self, claim: sqlite3.Row) -> dict[str, Any]:
         if not claim["command_id"]:
-            return {"replayed": True, "command_id": None, "status": "indeterminate", "result": None,
-                    "note": "claimed but no command recorded (in flight or crashed); not re-issued"}
+            return {"replayed": True, "command_id": None, "status": "indeterminate", "outcome": "uncertain", "result": None,
+                    "note": "Claimed but no command recorded (in flight or crashed). A command may or may not have been issued; "
+                            "it is not linked here, cannot be cancelled by this adapter, and will not be re-issued."}
         cmd = self.registry.command(claim["command_id"])
-        return {"replayed": True, "command_id": claim["command_id"], "status": cmd["status"] if cmd else "missing", "result": cmd["result"] if cmd else None}
+        st = cmd["status"] if cmd else "missing"
+        out = {"replayed": True, "command_id": claim["command_id"], "status": st, "result": cmd["result"] if cmd else None}
+        if st == "completed":
+            out["outcome"] = "completed"
+        elif st == "failed":
+            out["outcome"] = "failed"; out["error"] = cmd["error"]
+        else:
+            out["outcome"] = "uncertain"; out["note"] = self.UNCERTAIN_NOTE
+        return out
+
+    def verify_audit(self) -> dict[str, Any]:
+        """Recompute every persisted event hash and the previous_hash links (tamper check)."""
+        with contextlib.closing(self._db()) as db:
+            rows = db.execute("SELECT * FROM claire_adapter_audit WHERE owner_id=? AND device_id=? ORDER BY sequence", (self.owner_id, self.device_id)).fetchall()
+        prev = "0" * 64
+        for i, r in enumerate(rows, 1):
+            body = json.dumps({"sequence": i, "device_id": self.device_id, "action_id": r["action_id"], "phase": r["phase"],
+                               "payload": json.loads(r["payload"]), "previous_hash": prev}, sort_keys=True, default=str)
+            h = hashlib.sha256(body.encode()).hexdigest()
+            if r["sequence"] != i or r["previous_hash"] != prev or r["event_hash"] != h:
+                return {"ok": False, "events": len(rows), "first_bad_sequence": i}
+            prev = h
+        return {"ok": True, "events": len(rows), "head": prev}
 
     async def execute(self, action: dict[str, Any], approval_token: str | None = None) -> dict[str, Any]:
         kind = action.get("kind", "")
@@ -153,7 +181,7 @@ class MeemeeLocalClient:
             result = getattr(out, "result", out)
             self.registry.complete(env["command_id"], result=result)
             self._audit(aid, "completed", {"command_id": env["command_id"]})
-            return {"replayed": False, "command_id": env["command_id"], "status": "completed", "result": result}
+            return {"replayed": False, "command_id": env["command_id"], "status": "completed", "outcome": "completed", "result": result}
         except Exception as e:
             self.registry.complete(env["command_id"], error=str(e))
             self._audit(aid, "failed", {"command_id": env["command_id"], "error": str(e)})
