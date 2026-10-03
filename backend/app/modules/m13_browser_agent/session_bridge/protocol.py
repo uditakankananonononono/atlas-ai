@@ -62,6 +62,18 @@ class CommandRejected(BridgeError):
     """The daemon refused the command (capability, pacing, or token)."""
 
 
+class EffectUncertain(BridgeError):
+    """A command that may cause an external effect failed AFTER it was sent.
+
+    The effect may or may not have happened. Callers must not retry and must not say
+    "not submitted". Typed on purpose: never decide this from error text.
+    """
+
+
+class DispatchUncertain(EffectUncertain):
+    """Sent, then no answer (timeout) or the connection dropped."""
+
+
 class PlatformBlocked(BridgeError):
     """The site itself stopped the read: login wall, challenge, or rate limit.
 

@@ -121,7 +121,7 @@ async def test_capture_bound_submit_over_bridge(env, tmp_path):
 
     result = await execute_capture_bound_submit(service, sf, "t", SESSION_ID, "#go", V,
                                                 staged["approval_id"], CAP)
-    assert result["status"] == "submitted"
+    assert result["status"] == "click_dispatched_unconfirmed"
 
     submit_commands = [c for c in connection.commands if c["kind"] is CommandKind.CLICK_SUBMIT]
     assert len(submit_commands) == 1
