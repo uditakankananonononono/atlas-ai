@@ -201,6 +201,7 @@ class ApplicationSession:
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
     legacy_status_reinterpreted: str = ""
+    attempt_id: str = ""  # owner token of the in-flight submit attempt (the approval id)
     outcome_uncertain: bool = False  # True once a submit click may have reached the site
 
     def normalize_legacy(self) -> "ApplicationSession":
@@ -245,6 +246,7 @@ class ApplicationSessionStore(Protocol):
     def create(self, record: ApplicationSession) -> ApplicationSession: ...
     def get(self, tenant_id: str, session_id: str) -> ApplicationSession | None: ...
     def save(self, record: ApplicationSession) -> ApplicationSession: ...
+    def compare_and_save(self, record: ApplicationSession, expected_status: str, expected_attempt_id: str) -> bool: ...
 
 
 class BrowserSurface(Protocol):
@@ -609,17 +611,30 @@ class ApplicationFlow:
         # Consume before the external effect: a failed click cannot replay.
         # Persist an honest "attempting, outcome unconfirmed" marker FIRST. If the process is
         # interrupted or killed anywhere from here on, the record never claims success or failure.
+        # Claim by compare-and-set against the PERSISTED row: only one worker can move the session
+        # from awaiting_submit_approval to attempting. A loser writes nothing and never clicks.
         record.status = WorkflowStatus.SUBMIT_ATTEMPTING.value
         record.outcome_uncertain = True
+        record.attempt_id = approval_id
         record.error = ""
-        self._save(record)
+        record.updated_at = time.time()
+        if not self.store.compare_and_save(record, WorkflowStatus.AWAITING_SUBMIT_APPROVAL.value, ""):
+            raise PermissionError("another submit attempt already owns this session; outcome unconfirmed, do not retry")
         try:
             await self.browser.store.consume(approval_id, tenant_id)
         except Exception:
-            # Consume refused: nothing was attempted, so the marker is withdrawn.
-            record.status = WorkflowStatus.AWAITING_SUBMIT_APPROVAL.value
-            record.outcome_uncertain = False
-            self._save(record)
+            # Withdraw only if we can prove nothing was consumed AND we still own the marker (CAS).
+            # If the approval is consumed (by anyone) or the proof itself fails, keep the marker.
+            try:
+                consumed = await self.browser.store.was_consumed(approval_id)
+            except Exception:
+                consumed = True
+            if not consumed:
+                record.status = WorkflowStatus.AWAITING_SUBMIT_APPROVAL.value
+                record.outcome_uncertain = False
+                record.attempt_id = ""
+                record.updated_at = time.time()
+                self.store.compare_and_save(record, WorkflowStatus.SUBMIT_ATTEMPTING.value, approval_id)
             raise
         try:
             await page.locator(payload["selector"]).click()
@@ -650,6 +665,7 @@ class ApplicationFlow:
                 raise BlockedError(record.error) from error
             record.status = WorkflowStatus.FAILED.value
             record.outcome_uncertain = False  # provably before dispatch
+            record.attempt_id = ""
             record.error = f"submit click failed: {error}"
             self._save(record)
             await self._audit(record, ActionType.SUBMIT, {
