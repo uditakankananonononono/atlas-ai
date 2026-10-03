@@ -1,0 +1,2 @@
+200 minilm-l6 embedding_local_model [('Robotics', 0.2579), ('Pantry', 0.1249), ('Shelter', 0.1247)]
+200 bge-small embedding_local_model [('Robotics', 0.5644), ('Pantry', 0.4395), ('Shelter', 0.386)]

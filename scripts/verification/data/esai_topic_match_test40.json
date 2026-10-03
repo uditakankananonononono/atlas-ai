@@ -1,0 +1,990 @@
+[
+ {
+  "prompt": "Describe a challenge you overcame and what it taught you.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Joined the school orchestra as a cellist",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I lost my voice for a year after surgery and relearned to speak and present in class through daily therapy",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Helped plan the senior picnic",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Collected canned food for the pantry",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Write about a time you helped someone in your community.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Took a coding class online",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Played in the regional tennis tournament",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Drove elderly neighbors to their appointments every week after the bus route was cut",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Won an award for chemistry",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "Tell us about an activity that shows your leadership.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Captain of the debate team who rebuilt the novice training program after we lost four seniors",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Likes watching baseball",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Worked at a frozen yogurt shop",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Visited grandparents in Pune each summer",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "What is a moment that changed how you see the world?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Won the district spelling bee",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Traveled to a flooded village with my aunt's relief group and saw what a week without clean water means",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Studied violin",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Rode my bike across the county",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Discuss your intellectual curiosity.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Played in a bowling league",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Walked dogs",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "I spent a summer reading about how bridges fail and wrote a report that an engineer at the city office answered",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Planned the school dance",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "Describe a time you failed at something important.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Ran for treasurer",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I bombed my first science fair project because I rushed the data, then redid it a month later and caught the error",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Went to the beach",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Learned to knit",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Tell us about a person who has influenced you.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Edited the school paper",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Went to chess club",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Joined the track team",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "My grandmother, who ran a tiny tailoring shop and taught me to treat every customer like family",
+    "values": []
+   }
+  ],
+  "gold": 3
+ },
+ {
+  "prompt": "How do you contribute to a team?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I keep our robotics team's notebook and make sure every member's idea is written down before we vote",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Likes jazz",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Camped in Yosemite",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Read three novels a month",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Describe something you made or created.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Played in the marching band",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Babysat",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Wrote and recorded an album of songs about my town and sold it to fund a school music program",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Shadowed a dentist",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "What does diversity mean to you and how have you lived it?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Spoke Assamese at home and English at school, so I learned to translate between two worlds daily",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Played flute",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Took AP Statistics",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Worked as a lifeguard",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Describe a time you took a risk.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Studied for the SAT",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Volunteered at a library",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Walked the dog",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Cold-emailed a marine biologist and asked to join her field survey, even though I was only sixteen",
+    "values": []
+   }
+  ],
+  "gold": 3
+ },
+ {
+  "prompt": "Tell us about a time you disagreed with someone and how you handled it.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Won the school art prize",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "My co-captain wanted to cut practice time; I made a chart of injury rates and we agreed on a compromise",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Played squash",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Joined Model UN",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "What problem would you like to solve?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Wants to cure diseases",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Cleaned the school garden",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Played the oboe",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I want to design cheap water filters because my village's well tests positive for bacteria every monsoon",
+    "values": []
+   }
+  ],
+  "gold": 3
+ },
+ {
+  "prompt": "Describe a hobby that has taught you perseverance.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Went to prom",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Sold cookies",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Practicing the tabla for six years, including weeks when I could not keep rhythm and wanted to quit",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Studied geometry",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "Share an experience that shaped your career goals.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Part of the yearbook staff",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Interned at a hospital pharmacy where I saw how a missed dosage check can hurt a patient",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Likes road trips",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Played basketball",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Tell us about a time you were out of your comfort zone.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Spoke at the town council meeting about the skate park even though I get nervous speaking",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Read the newspaper",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Played with my dog",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Took chemistry",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Describe an obstacle in your education.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Joined the choir",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Won a math award",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "My school had no calculus class, so I taught myself from library books and took the exam on my own",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Played golf",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "How have you made your school or neighborhood better?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Played cello",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I organized a cleanup that turned a trash-filled lot into a pocket park and recruited the local hardware store for paint",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Learned chess",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Walked to school",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Describe a time you worked hard to improve a skill.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Likes pizza",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Sang karaoke",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Went to a football game",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Rewrote my essays six times with my writing tutor until my topic sentences stopped wandering",
+    "values": []
+   }
+  ],
+  "gold": 3
+ },
+ {
+  "prompt": "Tell us about your family's influence on you.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Played saxophone",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "My parents ran a night-shift laundry and I did homework folding towels beside them",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Went to summer camp",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Wrote for yearbook",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "What are you most proud of?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Built a website for my neighbor's bakery that doubled her online orders",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Likes rain",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Went to a concert",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Plays video games",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Describe a time you showed responsibility.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Joined the glee club",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Loves hiking",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Cared for my two younger brothers every afternoon while my mother worked, including cooking and homework help",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Played ping pong",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "Write about an issue you care about.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I tracked air quality near my school with a homemade sensor and presented the data to the city",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Enjoys painting",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Went to a pool party",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Does yoga",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Tell us about a time you learned from criticism.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Sang in the choir",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Played drums",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "My debate coach said my arguments were loud but empty, so I started building every case from evidence",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Wrote poems",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "Describe your involvement in your cultural community.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Played baseball",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Teaches Bihu dance to children at our local Assamese association every Sunday",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Joined the math club",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Likes camping",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "What is something you taught yourself?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Worked at the grocery store",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Went to the mall",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Visited relatives",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Learned video editing from free tutorials and now cut the school's morning announcements",
+    "values": []
+   }
+  ],
+  "gold": 3
+ },
+ {
+  "prompt": "Describe a team project and your role.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Played tennis",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Our four-person app team had no designer, so I took on the interface and user testing",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Read comics",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Did the dishes",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "How have you dealt with change?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Joined the swim team",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Wrote songs",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "When my family moved three times in two years I started a new club in each school to meet people",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Went skiing",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "Tell us about a time you were persistent.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Won a poetry contest",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I kept refiling my science experiment for the state fair after three rejections until a judge gave me feedback",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Played in the band",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Ate lunch with friends",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "What makes you curious about the future?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Painted a mural",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Went to a baseball game",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Talked with a retired pilot about autopilot and now I build flight simulators from scrap parts",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Played Scrabble",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "Describe a time you stood up for others.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Joined the school choir",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I started a petition when the cafeteria stopped serving halal food and met with the principal until it returned",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Skipped rope",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Went to the dentist",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Tell us about a skill you developed through a job.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Wrote a blog",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Swam laps",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Selling tickets at the cinema taught me to stay calm with angry customers and resolve problems quickly",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Played cards",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "Describe a time you balanced competing demands.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Went to the park",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Studied AP Biology",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Ran cross country while working twenty hours a week at my aunt's shop and still kept my grades up by planning every night",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Liked soup",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "How did you find a passion for learning?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "A library card from my neighbor led me to Feynman's lectures and now I watch physics lectures at night",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Visited a zoo",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Had a goldfish",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Played volleyball",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Share a story that shows your honesty.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Played baseball",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Found a wallet with cash on the bus and tracked down the owner through the ID inside",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Joined drama club",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Went to Bali",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Describe a time you adapted to a new environment.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Learned guitar",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Moved from Guwahati to Ohio and learned to cook my own meals, take the bus, and speak up in class",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Played checkers",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Walked home",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "What does service mean to you?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Collected stamps",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Did yoga",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Plays Minecraft",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I pack meals at a shelter every Friday and have seen how a hot dinner changes a person's night",
+    "values": []
+   }
+  ],
+  "gold": 3
+ },
+ {
+  "prompt": "Tell us about a creative solution you found.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Played soccer",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Ate lunch",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "When our club could not afford a projector, I built one from a shoebox and magnifying lens and ran movie nights",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Went camping",
+    "values": []
+   }
+  ],
+  "gold": 2
+ }
+]
