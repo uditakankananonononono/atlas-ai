@@ -34,7 +34,8 @@ def test_row_203_m20_31_semantic_behavior():
 
 def test_row_204_m20_32_semantic_behavior():
  result=semantic_behavior(204,{'streams': ['market_analysis', 'pitch_deck', 'mvp']})
- assert result.mapping.requirement_id=='M20-32' and result.status=="implemented"
+ assert result.mapping.requirement_id=='M20-32' and result.status=="planned"
+ assert not result.output['executed'] and not result.output['end_to_end_verified']
  assert result.output
 
 def test_row_205_m20_33_semantic_behavior():
