@@ -261,3 +261,36 @@ async def test_real_sigkill_subprocess_then_restart_fails_closed(env, tmp_path, 
     answer = await restarted.execute(p.make_command(p.CommandKind.CLICK_SUBMIT, args, command_id="k2"))
     assert answer["ok"] is False and "already reserved" in answer["error"] and answer["effect_uncertain"] is True
     assert browser.clicks == 0
+
+
+def test_verify_time_expiry_guard_in_isolation(monkeypatch):
+    """The protocol verify itself refuses an expired token, independent of every other refusal layer."""
+    kw = dict(approval_id="a", capture_sha256="c" * 64, selector="#s", values_digest="d" * 64,
+              device_id="dev", session="main", expires_at=2_000_000_000)
+    token = p.submit_token("secret", **kw)
+    monkeypatch.setattr(p.time, "time", lambda: 1_999_999_999)
+    assert p.verify_submit_token("secret", token=token, **kw) is True
+    monkeypatch.setattr(p.time, "time", lambda: 2_000_000_001)
+    assert p.verify_submit_token("secret", token=token, **kw) is False
+
+
+@pytest.mark.asyncio
+async def test_expiry_after_pace_reverify_is_caught_by_the_in_run_click_time_verify(env, monkeypatch):
+    """The first two verifies (arrival, after pace) see a live token; the clock moves just before the third
+    (in-run, right before the click), so that guard is the only layer that can refuse."""
+    make, browser, config = env
+    d = make()
+    real_verify = p.verify_submit_token
+    calls = {"n": 0}
+    real_time = time.time
+
+    def verify(*a, **k):
+        calls["n"] += 1
+        if calls["n"] == 3:
+            monkeypatch.setattr(p.time, "time", lambda: real_time() + 3600)
+        return real_verify(*a, **k)
+    monkeypatch.setattr(p, "verify_submit_token", verify)
+    answer = await d.execute(cmd(config, expires=int(time.time()) + 5))
+    assert calls["n"] == 3
+    assert answer["ok"] is False and "expired before click" in answer["error"] and browser.clicks == 0
+    assert reservations(d) == 1
