@@ -818,11 +818,12 @@ def _interleave_two_workers(rig, base, approval_id):
     persisted_during_a_click = []
 
     async def gated(approval):
+        result = await original(approval)  # both workers read "not consumed" ...
         arrived.append(1)
         if len(arrived) >= 2:
             gate.set()
-        await gate.wait()
-        return await original(approval)
+        await gate.wait()  # ... before either one consumes
+        return result
     store.was_consumed = gated
 
     async def a_click():
@@ -830,20 +831,23 @@ def _interleave_two_workers(rig, base, approval_id):
         persisted_during_a_click.append(rig.flow.store.get("local", sid))
     rig.page.click_hook = a_click
 
-    async def worker_a():
-        return await rig.flow.execute_submit("local", "local-user", sid, approval_id)
-
-    async def worker_b():
+    async def worker():
         try:
-            await _a.sleep(0)
             return await rig.flow.execute_submit("local", "local-user", sid, approval_id)
-        except Exception as error:  # the loser must be refused
+        except Exception as error:  # whichever worker loses the consume race is refused
             return error
         finally:
+            if not rig.page.clicked or len(rig.page.clicked) == 0:
+                pass
+
+    async def loser_wrapper():
+        result = await worker()
+        if isinstance(result, Exception):
             b_done.set()
+        return result
 
     async def go():
-        return await _a.gather(worker_a(), worker_b(), return_exceptions=True)
+        return await _a.gather(loser_wrapper(), loser_wrapper())
     results = _a.run(go())
     store.was_consumed = original
     return results, persisted_during_a_click
@@ -855,7 +859,7 @@ def test_losing_worker_cannot_erase_the_winners_attempt_marker(rig):
     assert during, "winner click never observed"
     seen = during[0]
     assert seen.status == "submit_attempting_outcome_unconfirmed" and seen.outcome_uncertain is True, (seen.status, seen.outcome_uncertain)
-    assert isinstance(results[1], Exception)
+    assert sum(isinstance(r, Exception) for r in results) == 1
     assert rig.page.clicked == ["#submit-btn"] or len(rig.page.clicked) == 1
     final = rig.client.get(base).json()
     assert final["status"] == "submit_dispatched_unconfirmed" and final["outcome_uncertain"] is True
