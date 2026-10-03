@@ -1,0 +1,11 @@
+BALANCED17 (length-controlled, written after the dev/test length confound was found; evaluated once)
+  token_overlap                top1= 1/17 mrr=0.363
+  CONTROL longest_description  top1=13/17 mrr=0.868
+  minilm-l6                    top1= 2/17 mrr=0.515
+  minilm-l6+overlap a=0.5      top1= 1/17 mrr=0.461
+  minilm-l6+overlap a=0.7      top1= 1/17 mrr=0.461
+  minilm-l6+overlap a=0.85     top1= 2/17 mrr=0.515
+  bge-small                    top1= 5/17 mrr=0.598
+  bge-small+overlap a=0.5      top1= 1/17 mrr=0.451
+  bge-small+overlap a=0.7      top1= 1/17 mrr=0.466
+  bge-small+overlap a=0.85     top1= 3/17 mrr=0.534

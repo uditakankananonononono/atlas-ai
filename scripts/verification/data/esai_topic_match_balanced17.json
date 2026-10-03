@@ -1,0 +1,444 @@
+[
+ {
+  "prompt": "Describe a time you overcame a setback.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Our robotics team's drive train snapped before regionals, so I redesigned it overnight and we still placed",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I received a setback notice about my library card and renewed it online the next morning",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Every Sunday I volunteer at the animal shelter and walk the dogs with my cousin",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I wrote a sports column for the school paper about the track team all spring",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Discuss an accomplishment that gave you confidence.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I play second trumpet in the jazz band and rarely miss a rehearsal",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I trained for eight months and finally ran my first full marathon without stopping once",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "My accomplishment chart for chores is pinned on the fridge and my brother updates it",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I enjoy reading mystery novels and trading recommendations with my cousin every month",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Tell us about a community you belong to.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I took a course in watercolor painting at the community college during the summer",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "My physics class built a weather balloon and tracked its flight path on a map",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "I help coordinate weekend shifts at our neighborhood food pantry and greet families as they arrive",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "The online gaming community I follow released a new patch with balance changes last month",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "What have you learned from a failure?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Failure rates at my school's cafeteria dishwasher were discussed in the student council meeting",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I sing in the church choir and help organize the holiday concert each December",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "I repaired my bike tire last weekend and rode to the lake with friends",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I rushed my first chemistry lab report, lost half the points, and now check every number twice",
+    "values": []
+   }
+  ],
+  "gold": 3
+ },
+ {
+  "prompt": "Describe a person who has been important to you.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "My uncle drove me to the hospital every week for two years and never once complained",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "An important person visited our school last year to give a talk about business",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "I enjoy long hikes in the Cascades with my dad on summer weekends",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I practice piano two hours every night before dinner and finish my homework after",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Write about a time you took initiative.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I collect vintage stamps and sort them by year and country on rainy afternoons",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Our school had no coding club, so I found a sponsor, booked a room, and recruited twenty members",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "I took the initiative survey at the doctor's office and filled in all the blank boxes",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I volunteer as a lifeguard at the community pool on Saturdays during the summer",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Tell us about something you are curious about.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I attend the swim meet every Thursday and cheer for my younger sister loudly",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I helped paint the stage sets for the school musical during spring break",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "I record bird songs at dawn and try to identify each species from the spectrograms",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "The curious cat next door keeps visiting our yard and sits on the window ledge",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "Describe a time you worked with a team.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "My team of cousins plays cards at family gatherings and argues about who cheated",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I walk my neighbor's dog twice a week and she pays me with cookies",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "I enjoy baking sourdough bread and share loaves with the people on our street",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Four of us debugged our app's sensors until two in the morning before the robotics finals",
+    "values": []
+   }
+  ],
+  "gold": 3
+ },
+ {
+  "prompt": "How have you contributed to your school?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I took first place in the county chess tournament and teach the beginners club after class",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I built a free tutoring network that pairs seniors with struggling freshmen in math and science",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "The school contribution jar by the cafeteria register collects spare coins for the lunch fund",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I rode the bus to a museum with my class and wrote notes about the exhibits",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Describe a challenge in your family or home life.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I joined a book club and we meet on Fridays to discuss historical fiction novels",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "My mother's night shifts meant I cooked dinner and helped my brothers with homework most evenings",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "My home challenge this week is cleaning the garage before my cousin visits from Texas",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I train for cross country and my best five kilometer time is nineteen minutes",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Tell us about a time you disagreed with a group.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I plant tomatoes and herbs in our backyard garden every spring with my grandmother",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I volunteer at the library sorting donated books into categories on Saturday mornings",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "My team wanted to skip testing, but I showed injury data until they agreed to shorten drills",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "The group chat disagreed about pizza toppings for Friday night, and we settled on pepperoni",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "What are you passionate about outside class?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Outside class the school bus stops at the corner near the bakery every morning",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I attended a leadership camp last summer and met students from six different states",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "I shadowed a dentist for a week and learned how X-rays are taken carefully",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I spend evenings composing electronic music and post tracks that strangers now remix online",
+    "values": []
+   }
+  ],
+  "gold": 3
+ },
+ {
+  "prompt": "Describe a time you helped someone learn.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I taught my grandfather to video call by writing him step-by-step cards with large letters",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I learned about volcanoes in earth science class and drew a diagram of the layers",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "I run an hour every morning before school and track my pace in a notebook",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I collect rare coins and trade duplicates with a pen pal in Canada regularly",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Share a story about a risk you took.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I earned a green belt in karate and plan to test for brown next spring",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I emailed a marine biologist asking to join her survey even though I was only sixteen",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "The risk assessment form for the field trip was signed by my parents and returned",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I sing in the shower every morning and my sister claims it wakes the whole house",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "What role does culture play in your life?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I ran the school fundraiser and sold more than three hundred raffle tickets in two days",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I repair old radios and sell them at the flea market for pocket money",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "I teach Bihu dance to children at our Assamese association every Sunday afternoon after lunch",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "The culture section of the newspaper reviewed a new film my friend recommended last week",
+    "values": []
+   }
+  ],
+  "gold": 2
+ },
+ {
+  "prompt": "Describe a time you solved a hard problem.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "I solved the daily crossword puzzle in the newspaper every morning before breakfast with tea",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I attend orchestra rehearsals on Mondays and play viola in the second section row",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "I volunteer at the blood drive by registering donors and handing out snacks afterwards",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Our school had no lab gear, so I built a spectrometer from a DVD, a box, and a phone",
+    "values": []
+   }
+  ],
+  "gold": 3
+ },
+ {
+  "prompt": "What experience led you to your intended major?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Fixing my grandfather's broken hearing aid made me want to build affordable medical devices",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "My intended route to school passes the bakery, and the major road is closed this month",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "I play ultimate frisbee on weekends with a team from three neighboring towns regularly",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "I paint landscapes with watercolors and gave one to my teacher last year",
+    "values": []
+   }
+  ],
+  "gold": 0
+ }
+]
