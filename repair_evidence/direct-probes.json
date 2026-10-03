@@ -1,0 +1,162 @@
+{
+  "nlp_stack": {
+    "tokens": [
+      "Apply",
+      "2027",
+      "01",
+      "01",
+      "to",
+      "Oxford",
+      "University"
+    ],
+    "dates": [
+      "2027-01-01"
+    ],
+    "entity_candidates": [
+      "Apply",
+      "Oxford University"
+    ],
+    "bert_ready": false,
+    "pipeline": [
+      "python_regex"
+    ],
+    "semantic_model_loaded": false,
+    "extraction_method": "regex_candidates_only",
+    "execution_performed": false,
+    "local_computation_performed": true,
+    "input_provenance": "caller_supplied_unverified",
+    "method_limits": [
+      "Planning/evaluation only; current official sources and human review control application decisions.",
+      "Caller-supplied inputs are not independently verified. Counts describe local computation, not full specification acceptance."
+    ]
+  },
+  "submission_approval": {
+    "artifact": "application",
+    "module0_approval": false,
+    "approval_verified": false,
+    "submission_allowed": false,
+    "state": "blocked",
+    "reason": "No exact M23 external executor and M00 action/payload contract is integrated. Caller approval claims are not authority.",
+    "execution_performed": false,
+    "local_computation_performed": true,
+    "input_provenance": "caller_supplied_unverified",
+    "method_limits": [
+      "Planning/evaluation only; current official sources and human review control application decisions.",
+      "No submission occurs on this route.",
+      "Caller-supplied inputs are not independently verified. Counts describe local computation, not full specification acceptance."
+    ]
+  },
+  "official_monitoring": {
+    "verified_records": [],
+    "unverified_records": [
+      {
+        "official_url": "garbage",
+        "checked_at": "now"
+      }
+    ],
+    "invalid_source_metadata": [
+      {
+        "official_url": "garbage",
+        "checked_at": "now"
+      }
+    ],
+    "metadata_valid_records": [],
+    "metadata_coverage": 0.0,
+    "coverage": 0.0,
+    "verification_performed": false,
+    "program_level": false,
+    "execution_performed": false,
+    "local_computation_performed": true,
+    "input_provenance": "caller_supplied_unverified",
+    "method_limits": [
+      "Planning/evaluation only; current official sources and human review control application decisions.",
+      "No login scraping; official public sources must be rechecked for current facts.",
+      "Caller-supplied inputs are not independently verified. Counts describe local computation, not full specification acceptance."
+    ]
+  },
+  "fit_scoring": {
+    "schools": [
+      {
+        "school": "A",
+        "fit": null,
+        "probability": null,
+        "probability_source": "unavailable",
+        "bucket": "unavailable",
+        "bucket_method": "caller_probability_threshold_heuristic"
+      }
+    ],
+    "counts": {
+      "reach": 0,
+      "target": 0,
+      "safety": 0,
+      "unavailable": 1
+    },
+    "execution_performed": false,
+    "local_computation_performed": true,
+    "input_provenance": "caller_supplied_unverified",
+    "method_limits": [
+      "Planning/evaluation only; current official sources and human review control application decisions.",
+      "Buckets are planning labels, never admission guarantees.",
+      "Caller-supplied inputs are not independently verified. Counts describe local computation, not full specification acceptance.",
+      "Heuristic or caller-label computation only; no trained semantic model is used."
+    ]
+  },
+  "identity_embedding": {
+    "embedding": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "dimensions": 16,
+    "model": "transparent_token_hash",
+    "semantic_model_loaded": false,
+    "embedding_method": "lexical_hash_heuristic",
+    "source_text_preserved": "scientist",
+    "execution_performed": false,
+    "local_computation_performed": true,
+    "input_provenance": "caller_supplied_unverified",
+    "method_limits": [
+      "Planning/evaluation only; current official sources and human review control application decisions.",
+      "Caller-supplied inputs are not independently verified. Counts describe local computation, not full specification acceptance.",
+      "Heuristic or caller-label computation only; no trained semantic model is used."
+    ]
+  },
+  "multi_provider_ai": {
+    "provider_health_verified": false,
+    "model_loaded": false,
+    "provider_execution_performed": false,
+    "selected": {
+      "name": "gpt-4o",
+      "healthy": true,
+      "cost": 1
+    },
+    "fallback_order": [
+      {
+        "name": "gpt-4o",
+        "healthy": true,
+        "cost": 1
+      }
+    ],
+    "execution_performed": false,
+    "local_computation_performed": true,
+    "input_provenance": "caller_supplied_unverified",
+    "method_limits": [
+      "Planning/evaluation only; current official sources and human review control application decisions.",
+      "Caller-supplied inputs are not independently verified. Counts describe local computation, not full specification acceptance.",
+      "Lists/configuration and supplied-data calculations only; no worker, database, collector, provider, encryption or translation backend is executed here."
+    ]
+  }
+}
