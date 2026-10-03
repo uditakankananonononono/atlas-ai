@@ -79,3 +79,27 @@ def test_exactly_one_process_wins_the_attempt_claim(tmp_path, which):
     winner = next(k for k, v in results.items() if v)
     final = SQLApplicationSessionStore(sessionmaker(bind=create_engine(url))).get("t1", "s1")
     assert final.attempt_id == winner and final.status == WorkflowStatus.SUBMIT_ATTEMPTING.value
+
+
+def _stores(tmp_path):
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+    from app.core.database import Base
+    from app.modules.m13_browser_agent.application_store import (
+        InMemoryApplicationSessionStore, SQLApplicationSessionStore)
+    engine = create_engine(f"sqlite:///{tmp_path/'s.db'}")
+    Base.metadata.create_all(engine)
+    return [InMemoryApplicationSessionStore(), SQLApplicationSessionStore(sessionmaker(bind=engine, expire_on_commit=False))]
+
+
+def test_stale_copy_cannot_overwrite_a_newer_write_on_either_store(tmp_path):
+    # characterization added WITH the fix (not failing-first): plain saves are revision-guarded too
+    for store in _stores(tmp_path):
+        store.create(_record(status=WorkflowStatus.AWAITING_SUBMIT_APPROVAL.value))
+        a, b = store.get("t1", "s1"), store.get("t1", "s1")
+        a.status = WorkflowStatus.SUBMIT_DISPATCHED.value
+        store.save(a)
+        b.status = WorkflowStatus.AWAITING_SUBMIT_APPROVAL.value
+        with pytest.raises(af.StaleSessionError):
+            store.save(b)
+        assert store.get("t1", "s1").status == WorkflowStatus.SUBMIT_DISPATCHED.value

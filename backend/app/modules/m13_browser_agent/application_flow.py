@@ -201,6 +201,7 @@ class ApplicationSession:
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
     legacy_status_reinterpreted: str = ""
+    rev: int = 0  # optimistic-concurrency revision; every store write is guarded by it
     attempt_id: str = ""  # owner token of the in-flight submit attempt (the approval id)
     outcome_uncertain: bool = False  # True once a submit click may have reached the site
 
@@ -240,6 +241,10 @@ class ApplicationSession:
         view["staged_fields"] = sorted(self.staged_values)
         view.pop("staged_values", None)
         return view
+
+
+class StaleSessionError(RuntimeError):
+    """The persisted session changed since this copy was read; the write was refused."""
 
 
 class ApplicationSessionStore(Protocol):
@@ -725,8 +730,9 @@ class ApplicationFlow:
         """
         record = self._record(tenant_id, session_id)
         self._require_actor(record, actor_id)
-        recoverable = (record.status in {WorkflowStatus.SUBMIT_DISPATCHED.value,
-                                         WorkflowStatus.SUBMIT_ATTEMPTING.value}
+        # Not from SUBMIT_ATTEMPTING: the owning worker may still be mid-click and an assertion
+        # would race its outcome write. An attempt that never finished needs manual site checking.
+        recoverable = (record.status == WorkflowStatus.SUBMIT_DISPATCHED.value
                        or (record.status == WorkflowStatus.BLOCKED.value and record.outcome_uncertain))
         if not recoverable:
             raise PermissionError("no submit with an unconfirmed outcome awaiting an assertion")

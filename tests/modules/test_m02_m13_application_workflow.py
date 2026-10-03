@@ -879,3 +879,18 @@ def test_consume_refusal_is_not_withdrawn_when_ownership_or_non_consumption_cann
     store.consume = original_consume
     view = rig.client.get(base).json()
     assert view["status"] == "submit_attempting_outcome_unconfirmed" and view["outcome_uncertain"] is True
+
+
+def test_assertion_is_refused_while_an_attempt_is_in_flight_or_unfinished(rig):
+    base, approval_id = _approved_submit(rig)
+    sid = base.rsplit("/", 1)[1]
+    codes = []
+
+    async def peek():
+        codes.append(rig.client.post(f"{base}/assert-site-accepted",
+                                     json={"owner_asserts_site_accepted": True}).status_code)
+    rig.page.click_hook = peek
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    assert codes == [409]  # no in-flight assertion; the owner's outcome write is not raced
+    view = rig.client.get(base).json()
+    assert view["status"] == "submit_dispatched_unconfirmed" and view.get("owner_assertion") in (None, {}, "")
