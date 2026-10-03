@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from . import protocol
-from .protocol import (BlockKind, BridgeError, CommandKind, DeviceOffline, DispatchUncertain, EffectUncertain,
+from .protocol import (BlockKind, BridgeError, CommandKind, DeviceOffline, DispatchUncertain, EffectUncertain, PreDispatchError,
                        PlatformBlocked, clamp_pacing, is_pc_session, split_pc_session)
 from .registry import BridgeRegistry
 
@@ -72,10 +72,12 @@ class DaemonConnection:
             if sent and not isinstance(error, BridgeError):
                 raise DispatchUncertain(f"sending the command failed part-way ({type(error).__name__}); "
                                         "it may have been delivered") from error
+            if not sent and not isinstance(error, BridgeError):
+                raise PreDispatchError(f"command was not sent ({type(error).__name__})") from error
             raise
         finally:
             self._pending.pop(command["id"], None)
-        return protocol.parse_result(raw)
+        return protocol.parse_result(raw, kind)
 
     async def handle_message(self, raw: dict[str, Any]) -> None:
         command_id = str(raw.get("id", ""))
@@ -309,7 +311,7 @@ class BridgedSessions:
             raise DeviceOffline("paired device is not connected")
         capability = "click_submit" if kind is CommandKind.CLICK_SUBMIT else kind.value
         if capability not in set(device.capabilities):
-            raise BridgeError(f"paired device was not granted the '{capability}' capability")
+            raise PreDispatchError(f"paired device was not granted the '{capability}' capability")
         return await connection.execute(kind, {"session": local_name, **args}, timeout=timeout)
 
 

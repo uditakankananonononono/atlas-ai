@@ -150,7 +150,7 @@ class WorkflowTests(unittest.TestCase):
     def test_status_monitor_history_and_terminal_guard(self):
         self.make_ready(); staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {})
         self.manager.approve_action(staged.id, "approval-1", Verifier()); self.manager.execute_action(staged.id, Browser())
-        # the executor only dispatched the click; the portal's own observations carry the evidence
+        # the executor only dispatched the click; these are caller-reported observations (free-text source/evidence, unverified)
         self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
         received = StatusObservation(self.ws.id, ApplicationStatus.SUBMITTED, "portal", datetime(2026,11,1,tzinfo=timezone.utc), "Portal lists the application as received", "ABC")
         self.manager.record_status_observation(received)

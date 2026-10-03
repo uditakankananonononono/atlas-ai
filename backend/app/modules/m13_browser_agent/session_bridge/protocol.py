@@ -54,7 +54,13 @@ class BridgeError(RuntimeError):
     """Base error for bridge transport and protocol failures."""
 
 
-class DeviceOffline(BridgeError):
+class PreDispatchError(BridgeError):
+    """Positive assurance: this failure happened before anything was sent to the daemon,
+    or the daemon said explicitly (effect_uncertain=false) that no click was attempted.
+    Absence of this marker never means "safe to retry"."""
+
+
+class DeviceOffline(PreDispatchError):
     """The paired device has no live connection."""
 
 
@@ -135,7 +141,7 @@ def parse_command(raw: dict[str, Any]) -> tuple[str, CommandKind, dict[str, Any]
 
 def make_result(command_id: str, *, ok: bool, result: dict[str, Any] | None = None,
                 error: str | None = None, blocked: str | None = None,
-                receipt: dict[str, Any] | None = None, effect_uncertain: bool = False) -> dict[str, Any]:
+                receipt: dict[str, Any] | None = None, effect_uncertain: bool | None = None) -> dict[str, Any]:
     body: dict[str, Any] = {"v": PROTOCOL_VERSION, "id": command_id, "ok": bool(ok)}
     if result is not None:
         body["result"] = result
@@ -145,9 +151,19 @@ def make_result(command_id: str, *, ok: bool, result: dict[str, Any] | None = No
         body["blocked"] = BlockKind(blocked).value
     if receipt is not None:
         body["receipt"] = receipt
-    if effect_uncertain:
-        body["effect_uncertain"] = True  # the click may have happened; typed signal, not error text
+    if effect_uncertain is not None:
+        # True: the click may have happened. False: positively refused before any click.
+        # Omitted: not a click_submit answer (or an older daemon): receivers must assume uncertain.
+        body["effect_uncertain"] = bool(effect_uncertain)
     return body
+
+
+class PlatformBlockedPreDispatch(PlatformBlocked, PreDispatchError):
+    """The daemon refused before any click (explicit effect_uncertain=false)."""
+
+
+class CommandRejectedPreDispatch(CommandRejected, PreDispatchError):
+    """The daemon rejected before any click (explicit effect_uncertain=false)."""
 
 
 class PlatformBlockedAfterEffect(PlatformBlocked, EffectUncertain):
@@ -161,25 +177,37 @@ class CommandRejectedAfterEffect(CommandRejected, EffectUncertain):
 def is_provably_pre_dispatch(error: BaseException) -> bool:
     """True only when a click failure is known to have happened before anything reached the site.
 
-    Our own bridge errors that are NOT typed EffectUncertain were raised before the command was
-    sent (offline device, daemon refusal before any click). Everything else, notably direct
+    Only errors carrying positive assurance (PreDispatchError: raised before anything was written,
+    or an explicit effect_uncertain=false from the daemon) qualify; a plain BridgeError, or a daemon
+    answer without the flag (older daemon, same protocol version), does not. Everything else, notably direct
     Playwright errors such as a 30s click timeout waiting on the navigation the click started,
     cannot be placed before the effect and is treated as uncertain.
     """
-    return isinstance(error, BridgeError) and not isinstance(error, EffectUncertain)
+    return isinstance(error, PreDispatchError) and not isinstance(error, EffectUncertain)
 
 
-def parse_result(raw: dict[str, Any]) -> dict[str, Any]:
+def parse_result(raw: dict[str, Any], kind: "CommandKind | None" = None) -> dict[str, Any]:
     if raw.get("v") != PROTOCOL_VERSION:
         raise BridgeError(f"unsupported protocol version: {raw.get('v')!r}")
-    uncertain = raw.get("effect_uncertain") is True
+    flag = raw.get("effect_uncertain")
+    if kind is CommandKind.CLICK_SUBMIT and flag is not False:
+        uncertain, assured = True, False  # True, or absent (older daemon): assume the click may have run
+    else:
+        uncertain, assured = flag is True, flag is False and kind is CommandKind.CLICK_SUBMIT
     if raw.get("blocked"):
+        detail = str(raw.get("error", "no detail"))
         if uncertain:
-            raise PlatformBlockedAfterEffect(raw["blocked"], str(raw.get("error", "no detail")))
-        raise PlatformBlocked(raw["blocked"], str(raw.get("error", "no detail")))
+            raise PlatformBlockedAfterEffect(raw["blocked"], detail)
+        if assured:
+            raise PlatformBlockedPreDispatch(raw["blocked"], detail)
+        raise PlatformBlocked(raw["blocked"], detail)
     if not raw.get("ok"):
         message = str(raw.get("error", "command failed"))[:2000]
-        raise (CommandRejectedAfterEffect(message) if uncertain else CommandRejected(message))
+        if uncertain:
+            raise CommandRejectedAfterEffect(message)
+        if assured:
+            raise CommandRejectedPreDispatch(message)
+        raise CommandRejected(message)
     result = raw.get("result")
     return result if isinstance(result, dict) else {}
 
