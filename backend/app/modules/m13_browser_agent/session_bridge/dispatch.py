@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from . import protocol
-from .protocol import (BlockKind, BridgeError, CommandKind, DeviceOffline, DispatchUncertain,
+from .protocol import (BlockKind, BridgeError, CommandKind, DeviceOffline, DispatchUncertain, EffectUncertain,
                        PlatformBlocked, clamp_pacing, is_pc_session, split_pc_session)
 from .registry import BridgeRegistry
 
@@ -53,18 +53,25 @@ class DaemonConnection:
         try:
             await self._pace()
             async with self._send_lock:
+                sent = True  # from here a partial write cannot be ruled out, so failures are uncertain
                 await self.websocket.send_json(command)
-            sent = True
             raw = await asyncio.wait_for(future, timeout=timeout)
         except asyncio.TimeoutError as error:
             if sent:
                 raise DispatchUncertain(f"daemon did not answer within {timeout:.0f}s; "
                                         "the command was sent and may have run") from error
             raise BridgeError(f"daemon did not answer within {timeout:.0f}s") from error
+        except EffectUncertain:
+            raise
         except DeviceOffline as error:
             if sent:
                 raise DispatchUncertain(f"connection lost after the command was sent ({error}); "
                                         "it may have run") from error
+            raise
+        except Exception as error:
+            if sent and not isinstance(error, BridgeError):
+                raise DispatchUncertain(f"sending the command failed part-way ({type(error).__name__}); "
+                                        "it may have been delivered") from error
             raise
         finally:
             self._pending.pop(command["id"], None)

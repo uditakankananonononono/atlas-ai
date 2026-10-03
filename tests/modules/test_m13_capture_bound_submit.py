@@ -18,7 +18,9 @@ class Locator:
     def __init__(self, page, sel): self.page, self.sel = page, sel
     async def click(self):
         if self.page.fail_click:
-            raise self.page.fail_click if isinstance(self.page.fail_click, Exception) else RuntimeError("detached")
+            from app.modules.m13_browser_agent.session_bridge.protocol import DeviceOffline
+            # True = a provably pre-dispatch failure (device offline). Anything else is not provable.
+            raise self.page.fail_click if isinstance(self.page.fail_click, Exception) else DeviceOffline("detached")
         self.page.clicked.append(self.sel)
     async def input_value(self): return self.page.values[self.sel]
 

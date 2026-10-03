@@ -30,7 +30,7 @@ from bs4 import BeautifulSoup
 
 from .domain import ActionType, AuditEvent
 from .forms import FieldDescriptor, match_fields_detailed
-from .session_bridge.protocol import EffectUncertain
+from .session_bridge.protocol import is_provably_pre_dispatch
 from .security import NavigationBlocked, file_digest, validate_public_url, values_digest
 
 
@@ -199,23 +199,27 @@ class ApplicationSession:
     error: str = ""
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
+    legacy_status_reinterpreted: str = ""
+
+    def normalize_legacy(self) -> "ApplicationSession":
+        """Earlier builds stored "submitted" right after the click. That never meant accepted."""
+        if self.status == WorkflowStatus.SUBMITTED.value and "site_acceptance" not in self.confirmation:
+            self.legacy_status_reinterpreted = self.status
+            self.status = WorkflowStatus.SUBMIT_DISPATCHED.value
+            self.confirmation = {**self.confirmation, "site_acceptance": "unconfirmed_legacy"}
+        return self
 
     def to_dict(self) -> dict[str, Any]:
+        self.normalize_legacy()
         return asdict(self)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "ApplicationSession":
-        return cls(**data)
+        return cls(**data).normalize_legacy()
 
     def public_view(self) -> dict[str, Any]:
         """Owner-facing record: every state, digests, evidence - never staged raw values."""
         view = self.to_dict()
-        if self.status == WorkflowStatus.SUBMITTED.value and "site_acceptance" not in self.confirmation:
-            # Persisted by an earlier build that set "submitted" right after the click. That was
-            # click dispatched + page text, never confirmed acceptance. Shown honestly, stored as is.
-            view["legacy_status_reinterpreted"] = self.status
-            view["status"] = WorkflowStatus.SUBMIT_DISPATCHED.value
-            view["confirmation"] = {**self.confirmation, "site_acceptance": "unconfirmed_legacy"}
         view["staged_fields"] = sorted(self.staged_values)
         view.pop("staged_values", None)
         return view
@@ -264,7 +268,7 @@ class ApplicationFlow:
         record = self.store.get(tenant_id, session_id)
         if record is None:
             raise SessionNotFoundError(session_id)
-        return record
+        return record.normalize_legacy()
 
     @staticmethod
     def _require_actor(record: ApplicationSession, actor_id: str) -> None:
@@ -588,9 +592,9 @@ class ApplicationFlow:
             await page.locator(payload["selector"]).click()
         except Exception as error:
             text = str(error)
-            if isinstance(error, EffectUncertain):
-                # Typed: the click was sent (or the daemon reserved it) and the answer is unknown or
-                # blocked. Never "not submitted", never retryable. Error text plays no part.
+            if not is_provably_pre_dispatch(error):
+                # Not provably before dispatch (typed bridge uncertainty, or a direct Playwright error that
+                # may have followed the send): never "not submitted", never retryable.
                 reason = f"submit outcome unknown after the click was sent; do not retry; check the site manually: {text}"
                 await self._audit(record, ActionType.SUBMIT, {
                     "phase": "blocked_after_click", "approval_id": approval_id, "selector": payload["selector"],
@@ -656,9 +660,7 @@ class ApplicationFlow:
         """
         record = self._record(tenant_id, session_id)
         self._require_actor(record, actor_id)
-        legacy = (record.status == WorkflowStatus.SUBMITTED.value
-                  and "site_acceptance" not in record.confirmation)
-        if record.status != WorkflowStatus.SUBMIT_DISPATCHED.value and not legacy:
+        if record.status != WorkflowStatus.SUBMIT_DISPATCHED.value:
             raise PermissionError("no dispatched submit awaiting an assertion")
         if owner_asserts_site_accepted is not True:
             raise PermissionError("an explicit assertion is required")
