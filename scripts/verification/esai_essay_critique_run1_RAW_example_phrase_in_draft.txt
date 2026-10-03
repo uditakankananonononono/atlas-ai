@@ -1,0 +1,11 @@
+
+=== draft A (5.1s) mode=model_selected_spans_plus_verified_measures model=qwen2.5-0.5b detail=''
+ - verified_measure abstract_claim | quote: 'I have always been a hard worker and I am passionate about helping people.' | This sentence states a trait ("passionate") without a specific example in it. | What is one specific moment that shows this about you?
+ - model_selected_span evidence | quote: 'I have always been a hard worker' |  | You wrote "I have always been a hard worker". What is one example from your life that shows this?
+ - model_selected_span reason | quote: 'I am passionate about helping people' |  | You wrote "I am passionate about helping people". Why did that matter to you?
+ rejected model lines: [{'line': 'change | learned to solder from library books', 'reason': 'phrase is not an exact copy from the draft'}]
+
+=== draft B (1.6s) mode=verified_measures_only_model_spans_rejected model=qwen2.5-0.5b detail='model gave no usable span; only verified measures returned'
+ - verified_measure long_sentence | quote: 'As captain of the debate team I led practices every Tuesday, helped novices write their fi' | This sentence has 59 words (over 40). | Which one idea in this sentence matters most to you?
+ - verified_measure abstract_claim | quote: 'I am a determined leader and a natural leader.' | This sentence states a trait ("determined") without a specific example in it. | What is one specific moment that shows this about you?
+ rejected model lines: [{'line': 'change | my passion to be a determined and natural leader', 'reason': 'phrase is not an exact copy from the draft'}]

@@ -1,0 +1,12 @@
+
+=== draft A (2.3s) mode=model_selected_spans_plus_verified_measures model=qwen2.5-0.5b detail=''
+ - verified_measure abstract_claim | quote: 'I consider myself a dedicated student and I am passionate about helping people.' | This sentence states a trait ("passionate") without a specific example in it. | What is one specific moment that shows this about you?
+ - model_selected_span evidence | quote: "my grandfather's hearing aid broke" |  | You wrote "my grandfather's hearing aid broke". What is one example from your life that shows this?
+ - model_selected_span change | quote: 'I taught myself to solder from library books and fixed it in three weekends' |  | You wrote "I taught myself to solder from library books and fixed it in three weekends". What changed for you after that?
+ rejected model lines: [{'line': "reason | my grandfather's hearing aid broke", 'reason': 'duplicate'}]
+
+=== draft B (2.9s) mode=model_selected_spans_plus_verified_measures model=qwen2.5-0.5b detail=''
+ - verified_measure long_sentence | quote: 'As captain of the debate team I led practices every Tuesday, helped novices write their fi' | This sentence has 59 words (over 40). | Which one idea in this sentence matters most to you?
+ - verified_measure abstract_claim | quote: 'I am a determined leader and a natural leader.' | This sentence states a trait ("determined") without a specific example in it. | What is one specific moment that shows this about you?
+ - model_selected_span evidence | quote: 'I am a determined leader and a natural leader' |  | You wrote "I am a determined leader and a natural leader". What is one example from your life that shows this?
+ rejected model lines: [{'line': 'reason | as captain of the debate team, led practices every Tuesday, helped novices write their first cases, stayed late when our coach was sick, at state tournament winning round', 'reason': 'phrase is not an exact copy from the draft'}]
