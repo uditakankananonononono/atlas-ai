@@ -91,6 +91,8 @@ class FakeLocator:
         if self.page.fail_click:
             from app.modules.m13_browser_agent.session_bridge.protocol import DeviceOffline
             raise DeviceOffline("paired device is not connected")  # provably before dispatch
+        if getattr(self.page, "click_hook", None) is not None:
+            await self.page.click_hook()
         if self.page.click_error is not None:
             self.page.clicked.append(self.selector)
             raise self.page.click_error
@@ -674,3 +676,48 @@ def test_legacy_normalization_holds_on_every_path_not_only_public_view(rig):
                                            "confirmation": {k: v for k, v in raw["confirmation"].items() if k != "site_acceptance"}})
     assert loaded.status == "submit_dispatched_unconfirmed"
     assert loaded.confirmation["site_acceptance"] == "unconfirmed_legacy"
+
+
+def test_cancellation_after_dispatch_leaves_the_session_blocked_not_awaiting_approval(rig):
+    import asyncio as _a
+    base, approval_id = _approved_submit(rig)
+    sid = base.rsplit("/", 1)[1]
+    started = []
+
+    async def hang():
+        started.append(1)
+        await _a.sleep(30)
+    rig.page.click_hook = hang
+
+    async def go():
+        task = _a.ensure_future(rig.flow.execute_submit("local", "local-user", sid, approval_id))
+        for _ in range(100):
+            if started:
+                break
+            await _a.sleep(0.05)
+        assert started
+        task.cancel()
+        try:
+            await task
+        except _a.CancelledError:
+            pass
+    _a.run(go())
+    status = rig.client.get(base).json()
+    assert status["status"] == "blocked", status["status"]
+    assert "outcome unknown" in status["error"] and "do not retry" in status["error"]
+
+
+def test_v4_owner_confirmed_legacy_is_an_unverified_assertion_not_acceptance(rig):
+    from app.modules.m13_browser_agent.application_flow import ApplicationSession
+    base, approval_id = _approved_submit(rig)
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    sid = base.rsplit("/", 1)[1]
+    record = rig.flow.store.get("local", sid)
+    record.status = "submitted"
+    record.confirmation = {**record.confirmation, "site_acceptance": "owner_confirmed", "owner_confirmed_at": 1.0}
+    raw = record.to_dict()
+    assert raw["status"] == "submit_owner_asserted_accepted"
+    assert raw["confirmation"]["site_acceptance"] == "owner_asserted_unverified"
+    assert raw["confirmation"]["owner_assertion"]["actor_id"] == "local-user"
+    assert "not independently verified" in raw["confirmation"]["owner_assertion"]["basis"]
+    assert raw["legacy_status_reinterpreted"] == "submitted"
