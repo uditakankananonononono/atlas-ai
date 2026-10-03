@@ -99,3 +99,16 @@ def test_overlapping_reviews_have_one_winner_and_one_edge():
         except ConflictError:return 'conflict'
     with ThreadPoolExecutor(max_workers=2) as pool:results=list(pool.map(approve,[0,1]))
     assert sorted(results)==['accepted','conflict'] and len(repo.edges_for({a.id,b.id}))==1
+
+def test_manual_opposing_child_edges_cannot_commit_cycle(monkeypatch):
+    _,repo,svc=setup();a=svc.create_node(NodeCreate(node_type='note',title='Parent'));b=svc.create_node(NodeCreate(node_type='note',title='Child'))
+    client=TestClient(app);headers={'X-Atlas-Tenant':repo.tenant_id}
+    barrier=Barrier(2);original=Service._reachable
+    def overlap(self,*args):
+        answer=original(self,*args);barrier.wait(timeout=15);return answer
+    monkeypatch.setattr(Service,'_reachable',overlap)
+    def write(pair):
+        return client.post('/api/v1/knowledge-workspace/edges',headers=headers,json={'source_id':pair[0],'target_id':pair[1],'relationship':'child_of'}).status_code
+    with ThreadPoolExecutor(max_workers=2) as pool:results=list(pool.map(write,[(a.id,b.id),(b.id,a.id)]))
+    assert sorted(results)==[201,409]
+    assert len(repo.edges_for({a.id,b.id}))==1
