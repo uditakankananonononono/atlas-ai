@@ -18,8 +18,13 @@ class UniversityIn(BaseModel):
 def valid_money(value):
  import math
  if value is None:return None
- if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or value<0:
+ if isinstance(value,bool) or not isinstance(value,(int,float)):
   raise ValueError('financial values must be finite nonnegative numbers, not booleans')
+ try:representable=float(value)
+ except (OverflowError,ValueError,TypeError):
+  raise ValueError('financial values must be representable as finite numbers') from None
+ if not math.isfinite(representable) or value<0:
+  raise ValueError('financial values must be finite nonnegative numbers')
  return value
 class IdentityInterviewStartIn(BaseModel):
     track:Literal['college','career']
