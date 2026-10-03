@@ -24,3 +24,10 @@ def test_real_dns_tls_get_stops_without_form(tmp_path):
         assert page.evaluate("fetch('https://www.iana.org/').then(()=>'fetched').catch(()=>'blocked')") == 'blocked'
     finally:
         e.close()
+
+
+def test_real_dns_names_resolving_to_private_space_are_refused():
+    from app.guided_signup import transport
+    for name in ('localtest.me', '169.254.169.254.nip.io', '127.0.0.1.nip.io'):
+        with pytest.raises(transport.TransportError):
+            transport.fetch('GET', f'https://{name}/', {})
