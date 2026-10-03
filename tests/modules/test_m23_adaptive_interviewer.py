@@ -261,3 +261,21 @@ def test_bad_span_falls_back_labeled():
     s = repo.start("college")
     out = repo.answer(s["id"], ANSWER)
     assert out["next_question_source"] == FALLBACK and "not an exact copy" in out["interviewer"]["turns"][0]["detail"]
+
+
+def test_call_timeout_applies_to_a_silent_server(monkeypatch):
+    import http.server, threading, time
+    from instinct_models import ProviderUnavailable
+    from app.modules.m23_study_abroad import adaptive_interviewer as ai
+    class Slow(http.server.BaseHTTPRequestHandler):
+        def do_POST(self):
+            time.sleep(4); self.send_response(200); self.end_headers()
+        def log_message(self, *a): pass
+    srv = http.server.HTTPServer(("127.0.0.1", 0), Slow)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    monkeypatch.setattr(ai, "CALL_TIMEOUT_S", 1.0)
+    t0 = time.time()
+    with pytest.raises(ProviderUnavailable):
+        ai._post_loopback(f"http://127.0.0.1:{srv.server_port}/v1/chat/completions", {}, {}, 120)
+    assert time.time() - t0 < 3.5
+    srv.shutdown()
