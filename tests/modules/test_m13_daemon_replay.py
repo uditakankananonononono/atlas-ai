@@ -49,10 +49,34 @@ class Browser:
             raise RuntimeError("connection lost after effect")
 
 
+@pytest.fixture(autouse=True)
+def _labeled_fake_click_fixture(monkeypatch):
+    """TEST FIXTURE, NOT THE REAL CLICK PATH. This file proves the daemon's token / durable-ledger / replay
+    ordering with a counted fake page. The real M18 click (preview, field and destination checks,
+    NetworkGuard) is exercised against real Chromium in test_m13_daemon_postclick_status.py and
+    test_m13_capture_bound_*; only the click body and its post-click guard are replaced here."""
+    async def fake_click_submit(self, page, args):
+        await page.locator(args["selector"]).click()
+        return {}
+
+    async def fake_click_nav(self, page, session, args):
+        await page.locator(args["selector"]).click()
+        return {}
+
+    async def noop(self, *a, **k):
+        return None
+    monkeypatch.setattr(Daemon, "_click_submit", fake_click_submit)
+    monkeypatch.setattr(Daemon, "_click_nav", fake_click_nav)
+    monkeypatch.setattr(Daemon, "_after_submit", noop)
+    monkeypatch.setattr(Daemon, "_require_containment", noop)
+    monkeypatch.setattr(Daemon, "_lift_resting", noop)
+
+
 @pytest.fixture
 def setup(tmp_path):
     config = DaemonConfig(device_id="test-device", command_secret="test-only-secret",
                           key_path=str(tmp_path / "key.pem"), pacing_seconds=0, click_settle_seconds=0,
+                          consumed_path=str(tmp_path / "consumed.json"),
                           capabilities=["click_submit", "click_nav"])
     identity = DeviceIdentity.load_or_create(tmp_path / "key.pem")
     browser = Browser()
@@ -88,7 +112,7 @@ async def test_duplicate_at_most_once(setup, mode):
         if mode == "different-command-id":
             cmd = {**cmd, "id": "other"}
         answers = [first, await daemon.execute(cmd)]
-    assert sum(a["ok"] for a in answers) == 1
+    assert sum(a["ok"] for a in answers) == 1, [a.get("error") for a in answers]
     assert browser.clicks == 1
     print(f"{mode}: ok={[a['ok'] for a in answers]}, fake clicks={browser.clicks}")
 
