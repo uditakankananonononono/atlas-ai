@@ -69,6 +69,16 @@ class DeviceIdentity:
         return self._private.sign(message)
 
 
+_SENSITIVE_AUTOCOMPLETE = ("password", "one-time-code", "cc-number", "cc-csc", "cc-exp")
+
+
+async def _is_credential_field(locator: Any) -> bool:
+    """True for password, one-time-code and card fields; their values are never read out."""
+    info = await locator.evaluate(
+        "e => ({type: (e.type || '').toLowerCase(), ac: (e.autocomplete || '').toLowerCase()})")
+    return info.get("type") == "password" or any(m in info.get("ac", "") for m in _SENSITIVE_AUTOCOMPLETE)
+
+
 class BrowserHandle:
     """Playwright lifecycle: attach over CDP or launch a persistent profile."""
 
@@ -241,6 +251,8 @@ class Daemon:
             for selector in args.get("selectors", [])[:200]:
                 locator = page.locator(str(selector))
                 if await locator.count():
+                    if await _is_credential_field(locator.first):
+                        raise PermissionError("read refused: credential field values never leave the PC")
                     values[str(selector)] = await locator.first.input_value()
             return {"values": values, "url": page.url}
         if kind is CommandKind.FILL:
