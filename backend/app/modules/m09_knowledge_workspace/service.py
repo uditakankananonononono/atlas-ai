@@ -3,6 +3,7 @@ import math,re
 from datetime import datetime,timezone
 from uuid import uuid4
 from .schemas import *
+from .repository import GraphWriteConflict
 from .local_nlp import get_local_nlp, validate_vector, NLPUnavailable
 class ConflictError(RuntimeError):pass
 class Service:
@@ -27,6 +28,9 @@ class Service:
         suggestions=self._suggest(node,entities)
         return suggestions
     def _persist(self,node,action,suggestions):
+        if hasattr(self.repository,"save_node_with_suggestions"):
+            try:return self.repository.save_node_with_suggestions(node,action,suggestions,node.version-1 if action=="node.updated" else None)
+            except GraphWriteConflict as e:raise ConflictError(str(e)) from e
         self.repository.save_node(node,action)
         for suggestion in suggestions:self.repository.save_suggestion(suggestion)
         return node
@@ -50,6 +54,9 @@ class Service:
             if not frontier or truncated:break
         return Neighborhood(nodes=[n for n in self.repository.list_nodes() if n.id in ids],edges=edges,truncated=truncated)
     def review(self,sid,accept):
+        if hasattr(self.repository,"review_with_edge"):
+            try:return self.repository.review_with_edge(sid,accept,datetime.now(timezone.utc))
+            except GraphWriteConflict as e:raise ConflictError(str(e)) from e
         s=self.repository.get_suggestion(sid)
         if not s or s.status!=SuggestionStatus.PENDING:raise LookupError(sid)
         if accept:self.create_edge(EdgeCreate(source_id=s.source_id,target_id=s.target_id,relationship=s.relationship,rationale="Approved suggestion",evidence={"suggestion_id":s.id,"reasons":s.reasons}),s.score)
@@ -73,6 +80,9 @@ class Service:
             for other in nodes:
                 if other.id!=node.id and other.title.casefold()==entity["text"].casefold():
                     suggestions.append(LinkSuggestion(id=str(uuid4()),source_id=node.id,target_id=other.id,relationship=Relationship.MENTIONS,score=1.0,reasons=[{"kind":"named_entity_exact_title_match","text":entity["text"],"entity_type":entity.get("type"),"ner_identity":node.metadata["_atlas_m09_nlp"]["entities"],"not_probability":True}],created_at=now))
+        for suggestion in suggestions:
+            other=next(n for n in nodes if n.id==suggestion.target_id)
+            suggestion.reasons.append({"kind":"node_versions","source_version":node.version,"target_version":other.version})
         return suggestions
     def _reachable(self,start,target,rel):
         frontier={start};seen=set()
