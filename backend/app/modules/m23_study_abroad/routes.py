@@ -67,6 +67,10 @@ def essay_outline(x:OutlineCoachIn):return essay_tools.outline(x.prompt,x.studen
 def essay_hook(x:HookCoachIn):return essay_tools.hook_coach(x.student_hook,x.evidence)
 @router.post('/essay-tools/conclusion')
 def essay_conclusion(x:ConclusionCoachIn):return essay_tools.conclusion_coach(x.student_conclusion,x.thesis)
+from .essay_critique import critique as _critique, router_from_env as _critique_router
+@router.post('/essay-tools/critique')
+def essay_critique(x:EssayCritiqueIn,tenant:TenantContext=Depends(require_tenant)):return _critique(x.draft,_critique_router())
+
 @router.post('/essay-tools/clarity')
 def essay_clarity(x:ClarityReviewIn):return essay_tools.clarity_review(x.draft)
 
