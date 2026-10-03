@@ -134,6 +134,9 @@ class CompetitionManager:
         action.updated_at = utcnow(); return self.repo.save_action(action)
 
     def record_status_observation(self, observation: StatusObservation) -> ApplicationWorkspace:
+        """Apply a caller-reported status. NOT verified: `source` and `evidence` are free strings,
+        there is no caller or auth binding in this method, and nothing checks them against the site.
+        Treat the result as "reported by the caller", not as confirmed acceptance."""
         ws = self.repo.get_workspace(observation.application_id)
         history = self._observations.setdefault(ws.id, [])
         if history and observation.observed_at < history[-1].observed_at: raise ValueError("stale status observation")

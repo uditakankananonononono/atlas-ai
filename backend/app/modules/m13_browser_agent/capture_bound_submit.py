@@ -116,7 +116,16 @@ async def execute_capture_bound_submit(service, sessions_factory, tenant_id: str
     state, error = "clicked", None
     try:
         await page.locator(selector).click()
-    except Exception as exc:  # noqa: BLE001 - record, never retry
+    except BaseException as exc:  # noqa: BLE001 - record, never retry
+        if not isinstance(exc, Exception):
+            # Cancelled/interrupted after the click began: the approval is consumed and the site may
+            # have received it. Record that durably before unwinding.
+            with sessions_factory.begin() as db:
+                row = db.scalar(select(SubmitAttemptRow).where(SubmitAttemptRow.tenant_id == tenant_id,
+                                                               SubmitAttemptRow.approval_id == approval_id))
+                row.state, row.error = "click_uncertain", f"request ended after the click began ({type(exc).__name__})"
+                row.finished_at = datetime.now(timezone.utc)
+            raise
         from .session_bridge.protocol import is_provably_pre_dispatch
         # Only a provable pre-dispatch failure may invite a fresh approval. A direct Playwright
         # timeout can follow a form the server already received.

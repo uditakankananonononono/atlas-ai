@@ -185,7 +185,8 @@ class Daemon:
                                                               "capability": capability})
             return protocol.make_result(command_id, ok=False,
                                         error=f"capability '{capability}' was not granted at pairing",
-                                        blocked=BlockKind.POLICY.value, receipt=event)
+                                        blocked=BlockKind.POLICY.value, receipt=event,
+                                        effect_uncertain=False if kind is CommandKind.CLICK_SUBMIT else None)
         submit_claims = None
         if kind is CommandKind.CLICK_SUBMIT:
             # Do not coerce/truncate signed claims. A token for another device,
@@ -199,7 +200,7 @@ class Daemon:
                 event = self._receipt_event(command_id, "blocked", {"reason": "submit token invalid"})
                 return protocol.make_result(command_id, ok=False,
                                             error="submit token missing, expired or invalid; the click was not approved",
-                                            blocked=BlockKind.POLICY.value, receipt=event)
+                                            blocked=BlockKind.POLICY.value, receipt=event, effect_uncertain=False)
             session = args["session"]
             try:
                 reserved = self.effects.reserve(self.config.device_id, args["approval_id"],
@@ -207,7 +208,7 @@ class Daemon:
             except Exception as error:
                 return protocol.make_result(command_id, ok=False,
                                             error=f"effect reservation unavailable; no click: {error}",
-                                            blocked=BlockKind.POLICY.value)
+                                            blocked=BlockKind.POLICY.value, effect_uncertain=False)
             if not reserved:
                 event = self._receipt_event(command_id, "blocked", {"reason": "effect already reserved"})
                 return protocol.make_result(command_id, ok=False,
@@ -219,7 +220,7 @@ class Daemon:
                     self.config.command_secret, **submit_claims):
                 return protocol.make_result(command_id, ok=False,
                                             error="submit token expired before effect; reservation retained",
-                                            blocked=BlockKind.POLICY.value)
+                                            blocked=BlockKind.POLICY.value, effect_uncertain=False)
             result = await self._run(kind, session, args)
         except Exception as error:  # noqa: BLE001 - report, never retry blindly
             detail = str(error)
@@ -227,7 +228,7 @@ class Daemon:
                 detail = f"effect outcome uncertain; reservation retained; do not retry: {error}"
             event = self._receipt_event(command_id, "failed", {"error": detail[:1000]})
             return protocol.make_result(command_id, ok=False, error=detail[:2000], receipt=event,
-                                        effect_uncertain=submit_claims is not None)
+                                        effect_uncertain=True if submit_claims is not None else None)
         block = detect_block(result.get("url", ""), result.get("http_status"),
                              result.get("html_excerpt", ""))
         is_click = kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT)
@@ -248,7 +249,7 @@ class Daemon:
                                                               "http_status": result.get("http_status")})
             return protocol.make_result(command_id, ok=False, error=error,
                                         blocked=block.value, receipt=event,
-                                        effect_uncertain=submit_claims is not None)
+                                        effect_uncertain=True if submit_claims is not None else None)
         if submit_claims is not None:
             try:
                 self.effects.click_observed(self.config.device_id, args["approval_id"])

@@ -203,10 +203,24 @@ class ApplicationSession:
 
     def normalize_legacy(self) -> "ApplicationSession":
         """Earlier builds stored "submitted" right after the click. That never meant accepted."""
-        if self.status == WorkflowStatus.SUBMITTED.value and "site_acceptance" not in self.confirmation:
+        if self.status != WorkflowStatus.SUBMITTED.value:
+            return self
+        acceptance = self.confirmation.get("site_acceptance")
+        if acceptance is None:
             self.legacy_status_reinterpreted = self.status
             self.status = WorkflowStatus.SUBMIT_DISPATCHED.value
             self.confirmation = {**self.confirmation, "site_acceptance": "unconfirmed_legacy"}
+        elif acceptance == "owner_confirmed":
+            # An interim build stored a boolean "owner confirmed" as status submitted. It was an
+            # authenticated actor's assertion, never verified acceptance.
+            self.legacy_status_reinterpreted = self.status
+            self.status = WorkflowStatus.SUBMIT_OWNER_ASSERTED.value
+            self.confirmation = {
+                **self.confirmation, "site_acceptance": "owner_asserted_unverified",
+                "owner_assertion": {"actor_id": self.actor_id,
+                                    "asserted_at": self.confirmation.get("owner_confirmed_at"),
+                                    "basis": "legacy owner_confirmed boolean; authenticated actor assertion; "
+                                             "not independently verified"}}
         return self
 
     def to_dict(self) -> dict[str, Any]:
@@ -590,7 +604,21 @@ class ApplicationFlow:
         await self.browser.store.consume(approval_id, tenant_id)
         try:
             await page.locator(payload["selector"]).click()
-        except Exception as error:
+        except BaseException as error:
+            if isinstance(error, Exception):
+                pass  # handled below
+            else:
+                # Cancellation (or interpreter exit) after the click began: the approval is consumed and
+                # the site may have received the submit. Make that durable before unwinding.
+                self._blocked(record, "request ended after the submit click began; outcome unknown; "
+                                      "do not retry; check the site manually", [])
+                try:
+                    await self._audit(record, ActionType.SUBMIT, {
+                        "phase": "interrupted_after_click", "approval_id": approval_id,
+                        "selector": payload["selector"], "error": type(error).__name__})
+                except BaseException:  # noqa: BLE001 - best effort while unwinding
+                    pass
+                raise
             text = str(error)
             if not is_provably_pre_dispatch(error):
                 # Not provably before dispatch (typed bridge uncertainty, or a direct Playwright error that
