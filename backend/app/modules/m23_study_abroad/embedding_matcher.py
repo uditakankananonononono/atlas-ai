@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import time
 import urllib.request
 from urllib.parse import urlparse
 
@@ -27,21 +28,33 @@ def cosine(a: list[float], b: list[float]) -> float:
 
 
 class LocalEmbeddingMatcher:
-    def __init__(self, base_url: str, model: str, timeout: float = 20.0):
+    def __init__(self, base_url: str, model: str, timeout: float = 10.0):
         if not _loopback(base_url):
             raise ValueError("embedding server must be on loopback (local, free, private)")
         self.base_url, self.model, self.timeout = base_url.rstrip("/"), model, timeout
 
     def embed(self, texts: list[str]) -> list[list[float]] | None:
+        """Loopback only, NO redirects, hard total deadline (self.timeout seconds for the whole response)."""
         body = json.dumps({"model": self.model, "input": texts}).encode()
         req = urllib.request.Request(self.base_url + "/embeddings", data=body,
                                      headers={"content-type": "application/json"})
+
+        class _NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, req, fp, code, msg, hdrs, newurl):
+                raise OSError("embedding endpoint redirected; refusing to follow")
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as r:  # noqa: S310 loopback only
-                data = json.load(r)["data"]
+            deadline = time.monotonic() + self.timeout
+            with urllib.request.build_opener(_NoRedirect()).open(req, timeout=self.timeout) as r:  # noqa: S310 loopback only
+                buf = b""
+                while chunk := r.read1(16384):
+                    buf += chunk
+                    if len(buf) > 8_000_000 or time.monotonic() > deadline:
+                        return None
+            data = json.loads(buf.decode())["data"]
             vecs = [d["embedding"] for d in sorted(data, key=lambda d: d["index"])]
-            return vecs if len(vecs) == len(texts) and all(vecs) else None
-        except Exception:  # unreachable / malformed -> caller labels fallback
+            dims = {len(v) for v in vecs}
+            return vecs if len(vecs) == len(texts) and len(dims) == 1 and 0 not in dims else None
+        except Exception:  # unreachable / malformed / slow -> caller labels the token-overlap fallback
             return None
 
     def rank(self, query: str, docs: list[str]) -> list[float] | None:
