@@ -13,9 +13,10 @@ def fit(x:FitIn):return service.fit(x.profile,x.universities)
 from fastapi import Depends,HTTPException
 from app.auth.context import TenantContext,require_tenant
 from .interview import IdentityInterviewRepository
+from .adaptive_interviewer import interviewer_from_env
 
 def interview_repository(tenant:TenantContext=Depends(require_tenant)):
- return IdentityInterviewRepository(tenant.tenant_id)
+ return IdentityInterviewRepository(tenant.tenant_id, interviewer=interviewer_from_env())
 
 @router.post('/identity-interviews',status_code=201)
 def start_identity_interview(x:IdentityInterviewStartIn,repo:IdentityInterviewRepository=Depends(interview_repository)):
