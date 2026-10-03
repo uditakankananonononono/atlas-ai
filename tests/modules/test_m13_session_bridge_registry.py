@@ -105,3 +105,19 @@ def test_receipt_verification_against_device_identity(registry):
     tampered[1]["payload"] = {"block": "nothing-to-see"}
     with pytest.raises(PairingError, match="hash mismatch"):
         registry.verify_receipt(device["device_id"], tampered)
+
+
+def test_dispatched_unconfirmed_receipt_is_terminal_but_never_a_completed_outcome(registry):
+    challenge = registry.create_challenge("tenant-1")
+    _, pem = _keypair()
+    device = registry.confirm_pairing(challenge["server_nonce"], challenge["code"],
+                                      name="laptop", public_key=pem, capabilities=["click_submit"])
+    chain = ReceiptChain(device["device_id"])
+    chain.append("cmd-1", "dispatched_unconfirmed", {"kind": "click_submit", "site_acceptance": "unconfirmed"})
+    result = registry.verify_receipt(device["device_id"], chain.events)
+    assert result["receipt_complete"] is True
+    assert result["terminal_phase"] == "dispatched_unconfirmed"
+    assert result["outcome"] == "click_dispatched_site_acceptance_unconfirmed"
+    chain2 = ReceiptChain(device["device_id"])
+    chain2.append("cmd-2", "completed", {"kind": "navigate"})
+    assert registry.verify_receipt(device["device_id"], chain2.events)["outcome"] == "completed"

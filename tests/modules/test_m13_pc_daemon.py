@@ -137,7 +137,7 @@ async def test_submit_click_with_valid_token_runs(daemon):
     answer = await daemon.execute(_command(CommandKind.CLICK_SUBMIT, args))
     assert answer["ok"] is True
     assert daemon.browser._page.clicked == ["#go"]
-    assert answer["receipt"]["phase"] == "completed"
+    assert answer["receipt"]["phase"] == "dispatched_unconfirmed"
 
 
 @pytest.mark.asyncio

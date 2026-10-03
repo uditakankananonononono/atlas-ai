@@ -112,6 +112,9 @@ async def test_end_to_end_over_real_websocket(paired):
                                     selector="#send", values=values)
     await page.locator("#send").click()
     assert "thanks" in (await sessions.page("tenant-e2e", sid)).url
+    obs = page.last_click_observation
+    assert obs["site_acceptance"] == "unconfirmed" and obs["http_status"] == 200
+    assert obs["post_click_observation"]["bounded"] is True
 
 
 @pytest.mark.asyncio
