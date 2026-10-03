@@ -19,3 +19,4 @@ class OutlineCoachIn(BaseModel):prompt:str=Field(min_length=5,max_length=5000);s
 class HookCoachIn(BaseModel):student_hook:str=Field(min_length=5,max_length=5000);evidence:list[str]=Field(min_length=1,max_length=100)
 class ConclusionCoachIn(BaseModel):student_conclusion:str=Field(min_length=5,max_length=10000);thesis:str=Field(min_length=5,max_length=5000)
 class ClarityReviewIn(BaseModel):draft:str=Field(min_length=20,max_length=100000)
+class EssayCritiqueIn(BaseModel):draft:str=Field(min_length=40,max_length=20000)
