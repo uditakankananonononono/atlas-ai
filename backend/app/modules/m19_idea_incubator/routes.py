@@ -1,20 +1,24 @@
-from fastapi import APIRouter,Depends,HTTPException,Query,status
+from fastapi import APIRouter,Depends,HTTPException,Query,status,Header
 from app.auth.context import TenantContext,require_tenant
 from app.core.approvals import approvals
-from app.core.providers import generate
+from app.core.providers import ProviderError
+from .local_provider import generate_local
+from .run_repository import RunRepository,RunConflict
 from app.core.models import ApprovalRequest
 from .schemas import *
 from .repository import SqlIdeaRepository
 from .ledger import ConflictError,LedgerService,ValidationError
 from .service import Service
-router=APIRouter(prefix="/idea-incubator",tags=["idea-incubator"]);_service=None
-def get_service()->Service:
- global _service
- if _service is None:_service=Service(generate=generate,approval_store=approvals)
- return _service
+router=APIRouter(prefix="/idea-incubator",tags=["idea-incubator"])
+def get_service(t:TenantContext=Depends(require_tenant))->Service:
+ return Service(generate=generate_local,approval_store=approvals,repository=RunRepository(t.tenant_id))
 def get_ledger(t:TenantContext=Depends(require_tenant)):return LedgerService(SqlIdeaRepository(t.tenant_id),t.actor_id)
 @router.post("/ideas",response_model=RunOut,status_code=201)
-async def intake(request:IntakeIn,service:Service=Depends(get_service)):return await service.intake(request)
+async def intake(request:IntakeIn,service:Service=Depends(get_service),idempotency_key:str|None=Header(default=None)):
+ try:return await service.intake(request,idempotency_key)
+ except ProviderError as e:raise HTTPException(503,str(e)) from e
+ except RunConflict as e:raise HTTPException(409,str(e)) from e
+ except ValueError as e:raise HTTPException(422,str(e)) from e
 @router.get("/ideas/{run_id}",response_model=RunOut)
 def get(run_id:str,service:Service=Depends(get_service)):
  try:return service.get(run_id)
@@ -27,6 +31,13 @@ def preview(run_id:str,request:PreviewIn,service:Service=Depends(get_service)):
 @router.post("/packages",response_model=PackageOut)
 async def package(request:PackageIn,service:Service=Depends(get_service)):
  try:return await service.package(request)
+ except KeyError as e:raise HTTPException(404,"idea not found") from e
+ except ProviderError as e:raise HTTPException(503,str(e)) from e
+ except RunConflict as e:raise HTTPException(409,str(e)) from e
+
+@router.get("/ideas/{run_id}/events")
+def run_events(run_id:str,service:Service=Depends(get_service)):
+ try:return service.repository.events(run_id)
  except KeyError as e:raise HTTPException(404,"idea not found") from e
 
 def _error(e):

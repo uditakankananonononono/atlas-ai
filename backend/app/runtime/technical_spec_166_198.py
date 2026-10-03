@@ -21,16 +21,16 @@ def execute(row,d):
  if row==168:
   name=str(d.get('name','')).strip();
   if not name:raise ValueError('prototype name required')
-  return _base(row,{'files':[f'{name}/frontend/package.json',f'{name}/frontend/src/App.tsx',f'{name}/backend/app.py',f'{name}/README.md'],'api_contract':d.get('api_contract',{}),'tests_included':True})
- if row==169:return _base(row,{'action':'deploy_sandbox_preview','provider':'vercel','preview_only':True,'requires_approval':True,'status':'proposal','artifact_ref':d.get('artifact_ref')})
+  return _base(row,{'files':[f'{name}/frontend/package.json',f'{name}/frontend/src/App.tsx',f'{name}/backend/app.py',f'{name}/README.md'],'api_contract':d.get('api_contract',{}),'tests_included':False,'execution_status':'planned','files_written':False,'tests_run':False})
+ if row==169:return _base(row,{'action':'deploy_sandbox_preview','provider':'vercel','preview_only':True,'requires_approval':True,'status':'proposal','execution_status':'not_executed','executor_available':False,'artifact_ref':d.get('artifact_ref')})
  if row==170:
   failures=d.get('failures');limit=int(d.get('max_iterations',3))
   if not isinstance(failures,list) or not 1<=limit<=10:raise ValueError('failures and max_iterations 1..10 required')
-  attempts=[{'iteration':i+1,'failure':f,'patch_proposed':True} for i,f in enumerate(failures[:limit])];return _base(row,{'attempts':attempts,'bounded':True,'stopped':len(failures)>=limit})
+  attempts=[{'iteration':i+1,'failure':f,'patch_proposed':False,'patch_applied':False,'status':'failure_recorded'} for i,f in enumerate(failures[:limit])];return _base(row,{'attempts':attempts,'bounded':True,'execution_status':'not_executed','repair_executor_available':False,'truncated':len(failures)>limit,'stopped':False})
  if row==171:
   ev=d.get('evidence');
   if not isinstance(ev,list) or not ev:raise ValueError('evidence required')
-  return _base(row,{'format':'pdf','sections':['executive summary','prototype link','market analysis','technical feasibility','recommendation'],'recommendation':d.get('recommendation','needs_review'),'evidence':ev,'render_status':'ready'})
+  return _base(row,{'format':'pdf','sections':['executive summary','prototype link','market analysis','technical feasibility','recommendation'],'recommendation':d.get('recommendation','needs_review'),'evidence':ev,'render_status':'not_rendered','execution_status':'planned','pdf_created':False})
  if row==172:
   budget=float(d.get('budget',0));used=float(d.get('used',0));return _base(row,{'idea_id':d.get('idea_id'),'budget':budget,'remaining':max(0,budget-used),'stoppable':True,'eligible_for_idle_cycle':budget>used and not d.get('stop_requested',False)})
  if row==173:
