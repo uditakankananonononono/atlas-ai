@@ -50,17 +50,23 @@ def test_api_unavailable_is_503_and_no_write(monkeypatch):
     assert SqlGraphRepository(tenant,'local-user').list_nodes()==[]
 
 @pytest.mark.skipif(os.getenv('ATLAS_M09_RUN_REAL_TESTS')!='1',reason='real downloaded models required')
-def test_real_default_api_with_sql_and_ner(tmp_path):
+@pytest.mark.parametrize('full_app',[False,True])
+def test_real_default_api_with_sql_and_ner(tmp_path,full_app):
     from uuid import uuid4
     tenant='m09-real-'+str(uuid4())
-    app=FastAPI();app.include_router(routes.router);client=TestClient(app)
+    if full_app:
+        from app.main import app
+        prefix='/api/v1'
+    else:
+        app=FastAPI();app.include_router(routes.router);prefix=''
+    client=TestClient(app)
     headers={'X-Atlas-Tenant':tenant,'X-Atlas-Actor':'real-model-test'}
-    status=client.get('/knowledge-workspace/nlp-status',headers=headers)
+    status=client.get(prefix+'/knowledge-workspace/nlp-status',headers=headers)
     assert status.status_code==200 and status.json()['embedding']['dimension']==384
     payload={'node_type':'note','title':'Paris','body':'Paris is the capital of France.'}
-    first=client.post('/knowledge-workspace/nodes',headers=headers,json=payload)
-    second=client.post('/knowledge-workspace/nodes',headers=headers,json=payload)
-    mention=client.post('/knowledge-workspace/nodes',headers=headers,json={'node_type':'note','title':'Travel log','body':'I visited Paris with Alice last summer.'})
+    first=client.post(prefix+'/knowledge-workspace/nodes',headers=headers,json=payload)
+    second=client.post(prefix+'/knowledge-workspace/nodes',headers=headers,json=payload)
+    mention=client.post(prefix+'/knowledge-workspace/nodes',headers=headers,json={'node_type':'note','title':'Travel log','body':'I visited Paris with Alice last summer.'})
     assert first.status_code==second.status_code==mention.status_code==201
     a,b,m=first.json(),second.json(),mention.json()
     assert len(a['embedding'])==384 and all(math.isfinite(x) for x in a['embedding'])
@@ -71,17 +77,17 @@ def test_real_default_api_with_sql_and_ner(tmp_path):
         mentions=[s for s in suggestions if s.source_id==m['id'] and s.target_id==a['id'] and s.relationship=='mentions']
         assert related and related[0].score>0.999 and mentions
         assert all(s.status=='pending' for s in suggestions)
-    update=client.patch('/knowledge-workspace/nodes/'+a['id'],headers=headers,json={'expected_version':1,'body':'Paris is a city in France.'})
+    update=client.patch(prefix+'/knowledge-workspace/nodes/'+a['id'],headers=headers,json={'expected_version':1,'body':'Paris is a city in France.'})
     assert update.status_code==200 and update.json()['version']==2
     # A separate tenant cannot contribute to this tenant's graph.
     assert SqlGraphRepository('other-'+tenant,'real-model-test').list_nodes()==[]
-    evidence={'status':status.json(),'nodes':[{k:v for k,v in n.items() if k!='embedding'} for n in (a,b,m)],
+    evidence={'full_app':full_app,'status':status.json(),'nodes':[{k:v for k,v in n.items() if k!='embedding'} for n in (a,b,m)],
               'identical_text_similarity':related[0].score,
               'suggestions':[{'relationship':s.relationship,'status':s.status,'score':s.score,'reasons':s.reasons} for s in suggestions],
               'update_status':update.status_code}
     import json
     output=os.getenv('ATLAS_M09_EVIDENCE_PATH')
-    if output:open(output,'w').write(json.dumps(evidence,indent=2))
+    if output:open(output.replace('.json','-full-app.json') if full_app else output,'w').write(json.dumps(evidence,indent=2))
 
 def test_update_inference_error_preserves_existing_node():
     repo=Repo();svc=Service(repo,embed=lambda t:[1,0],extract_entities=lambda t:[])
