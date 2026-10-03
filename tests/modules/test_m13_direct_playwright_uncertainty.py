@@ -52,6 +52,9 @@ class RealPage:
     def locator(self, selector):
         return self._page.locator(selector)
 
+    def __getattr__(self, name):  # content(), evaluate(), ... on the real page
+        return getattr(self._page, name)
+
 
 class Sessions:
     def __init__(self, page): self.p = page
@@ -78,6 +81,14 @@ class Approvals:
     def get(self, i): return self.rows.get(i)
 
 
+@pytest.fixture(autouse=True)
+def _allow_unguarded_server_submit_fixture(monkeypatch):
+    # TEST FIXTURE: the shipped default REFUSES approved submits on server-side sessions (no click-time
+    # guard). This file only proves uncertainty bookkeeping for a slow response on a real page; the
+    # refusal itself is covered by test_m13_server_side_refusal.py. Not a real-path claim.
+    monkeypatch.setattr(Service, "allow_unguarded_server_submit", True, raising=False)
+
+
 @pytest.mark.asyncio
 async def test_direct_playwright_click_timeout_after_server_received_is_uncertain(tmp_path):
     HITS.clear()
@@ -93,13 +104,15 @@ async def test_direct_playwright_click_timeout_after_server_received_is_uncertai
         sf = sessionmaker(bind=engine, expire_on_commit=False)
         svc = Service(Sessions(RealPage(page)), Approvals(), Store(), str(tmp_path), {"example.com"})
         V = {"#name": "Ada", "#email": "a@b.co"}
+        import hashlib  # the capture's DOM hash is now really compared with the live page
+        svc.store.captures[CAP].artifact["dom_sha256"] = hashlib.sha256((await page.content()).encode()).hexdigest()
         req = await request_capture_bound_submit(svc, "t", "u", "s1", "#go", V, CAP)
         a = req["approval_id"]
         svc.approvals.rows[a]["status"] = ApprovalStatus.APPROVED
         with pytest.raises(Exception) as caught:
             await execute_capture_bound_submit(svc, sf, "t", "s1", "#go", V, a, CAP)
         await asyncio.sleep(0.2)
-        assert len(HITS) == 1, HITS  # the server did receive the submit
+        assert len(HITS) == 1, (HITS, repr(caught.value))  # the server did receive the submit
         assert "approve again" not in str(caught.value)
         assert "outcome unknown" in str(caught.value) and "do not retry" in str(caught.value)
         with sf() as db:
