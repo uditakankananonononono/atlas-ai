@@ -138,17 +138,18 @@ async def test_submit_click_without_preview_is_refused_even_with_valid_token(dae
     import time
     deadline = time.time() + 60
     token = protocol.submit_token("topsecret", approval_id="a1", capture_sha256="c" * 64,
-                                  selector="#go", values_digest="d" * 64, deadline=deadline)
+                                  selector="#go", values_digest="d" * 64, device_id="dev1",
+                                  session="s", expires_at=int(deadline))
     args = {"session": "s", "selector": "#go", "approval_id": "a1", "capture_sha256": "c" * 64,
             "values_digest": "d" * 64, "token": token, "values": {"#name": "Ada"},
-            "deadline": deadline}
+            "expires_at": int(deadline)}
     answer = await daemon.execute(_command(CommandKind.CLICK_SUBMIT, args))
     assert answer["ok"] is False and "preview" in answer["error"]
     assert daemon.browser._page.clicked == []  # no preview-less plain click path exists
 
 
 @pytest.mark.asyncio
-async def test_submit_click_without_deadline_is_refused_and_token_is_one_shot(daemon):
+async def test_submit_click_without_reviewed_preview_is_refused_and_spends_the_approval(daemon):
     import time
     token = protocol.submit_token("topsecret", approval_id="a1", capture_sha256="c" * 64,
                                   selector="#go", values_digest="d" * 64, device_id="dev1", session="s",
