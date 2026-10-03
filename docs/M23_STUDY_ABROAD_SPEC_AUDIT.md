@@ -12,4 +12,14 @@ Observed official sources on September 20, 2026:
 
 ## Intake requirement rows
 
-Status at intake: 4 verified core / 18 thin / 40 missing. Machine-readable ledger: `audits/module-23-study-abroad.json`.
+Historical intake reported 4 verified core / 18 thin / 40 missing. A later ledger claimed 62 `verified-pushed` using code/test paths and broad smoke checks. These are incompatible reports and neither establishes full specification acceptance.
+
+## October 3, 2026 bounded truth repair
+
+Current ledger: 62 PARTIAL rows, zero full-spec VERIFIED rows. PARTIAL means local helper artifacts exist, not that every required sub-capability works. Previous statuses/counts remain in the JSON for traceability. An independent requirement-level audit is still required.
+
+Reproduced failures: regex extraction claimed spaCy/dateparser/BERT readiness; a caller boolean claimed Module 0 approval; any truthy URL/date claimed verified monitoring coverage; absent admission probabilities became zero/reach; substring/budget scoring was presented without its heuristic label.
+
+Repairs are local only: regex/calendar validation is named accurately; approval remains blocked without an exact M23 executor/M00 contract; independently verified coverage is zero, with separately measured valid input metadata; absent probabilities are unavailable and invalid probabilities rejected; heuristic scores are identified and cannot claim admission bands. Model/provider/collector/vector/language catalog helpers disclose that no backend execution or independent verification occurs. No final essay prose is generated.
+
+These checks do not supply global admissions datasets, top-100 institutions, semantic embeddings, trained NLP, live collectors, translation, real multi-model review or an external submission executor. No third-party action occurs. No repair was pushed.

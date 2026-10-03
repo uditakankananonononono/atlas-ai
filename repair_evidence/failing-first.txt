@@ -1,0 +1,260 @@
+FFFFFFFFFFFFFFFFF.FF                                                     [100%]
+=================================== FAILURES ===================================
+_____________________ test_regex_does_not_claim_loaded_nlp _____________________
+
+    def test_regex_does_not_claim_loaded_nlp():
+        x = output('nlp_stack', {'text': 'Apply 2027-02-30 to Oxford University'})
+>       assert x['bert_ready'] is False
+E       assert True is False
+
+tests/modules/test_m23_truth_repair.py:13: AssertionError
+____________ test_caller_boolean_never_authorizes_submission[True] _____________
+
+claim = True
+
+    @pytest.mark.parametrize('claim', [True, False, 'approved', {'approved': True}, 1])
+    def test_caller_boolean_never_authorizes_submission(claim):
+        x = output('submission_approval', {'artifact':'application','module0_approval':claim})
+>       assert x['submission_allowed'] is False
+E       assert True is False
+
+tests/modules/test_m23_truth_repair.py:22: AssertionError
+____________ test_caller_boolean_never_authorizes_submission[False] ____________
+
+claim = False
+
+    @pytest.mark.parametrize('claim', [True, False, 'approved', {'approved': True}, 1])
+    def test_caller_boolean_never_authorizes_submission(claim):
+        x = output('submission_approval', {'artifact':'application','module0_approval':claim})
+        assert x['submission_allowed'] is False
+        assert x['state'] == 'blocked'
+>       assert x['approval_verified'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'approval_verified'
+
+tests/modules/test_m23_truth_repair.py:24: KeyError
+__________ test_caller_boolean_never_authorizes_submission[approved] ___________
+
+claim = 'approved'
+
+    @pytest.mark.parametrize('claim', [True, False, 'approved', {'approved': True}, 1])
+    def test_caller_boolean_never_authorizes_submission(claim):
+        x = output('submission_approval', {'artifact':'application','module0_approval':claim})
+>       assert x['submission_allowed'] is False
+E       assert True is False
+
+tests/modules/test_m23_truth_repair.py:22: AssertionError
+___________ test_caller_boolean_never_authorizes_submission[claim3] ____________
+
+claim = {'approved': True}
+
+    @pytest.mark.parametrize('claim', [True, False, 'approved', {'approved': True}, 1])
+    def test_caller_boolean_never_authorizes_submission(claim):
+        x = output('submission_approval', {'artifact':'application','module0_approval':claim})
+>       assert x['submission_allowed'] is False
+E       assert True is False
+
+tests/modules/test_m23_truth_repair.py:22: AssertionError
+______________ test_caller_boolean_never_authorizes_submission[1] ______________
+
+claim = 1
+
+    @pytest.mark.parametrize('claim', [True, False, 'approved', {'approved': True}, 1])
+    def test_caller_boolean_never_authorizes_submission(claim):
+        x = output('submission_approval', {'artifact':'application','module0_approval':claim})
+>       assert x['submission_allowed'] is False
+E       assert True is False
+
+tests/modules/test_m23_truth_repair.py:22: AssertionError
+__________ test_input_metadata_does_not_become_verification[records0] __________
+
+records = [{'official_url': 'garbage', 'checked_at': 'now'}]
+
+    @pytest.mark.parametrize('records', [
+        [{'official_url':'garbage','checked_at':'now'}],
+        [{'official_url':'https://u.example/a','checked_at':'garbage'}],
+        [{'official_url':'https://u.example/a','checked_at':'2999-01-01'}],
+        [{'official_url':'https://u.example/a','checked_at':'2026-01-01','source_verified':True}],
+    ])
+    def test_input_metadata_does_not_become_verification(records):
+        x = output('official_monitoring', {'records':records})
+>       assert x['verified_records'] == []
+E       AssertionError: assert [{'official_u...d_at': 'now'}] == []
+E         
+E         Left contains one more item: {'official_url': 'garbage', 'checked_at': 'now'}
+E         Use -v to get more diff
+
+tests/modules/test_m23_truth_repair.py:34: AssertionError
+__________ test_input_metadata_does_not_become_verification[records1] __________
+
+records = [{'official_url': 'https://u.example/a', 'checked_at': 'garbage'}]
+
+    @pytest.mark.parametrize('records', [
+        [{'official_url':'garbage','checked_at':'now'}],
+        [{'official_url':'https://u.example/a','checked_at':'garbage'}],
+        [{'official_url':'https://u.example/a','checked_at':'2999-01-01'}],
+        [{'official_url':'https://u.example/a','checked_at':'2026-01-01','source_verified':True}],
+    ])
+    def test_input_metadata_does_not_become_verification(records):
+        x = output('official_monitoring', {'records':records})
+>       assert x['verified_records'] == []
+E       AssertionError: assert [{'official_u...': 'garbage'}] == []
+E         
+E         Left contains one more item: {'official_url': 'https://u.example/a', 'checked_at': 'garbage'}
+E         Use -v to get more diff
+
+tests/modules/test_m23_truth_repair.py:34: AssertionError
+__________ test_input_metadata_does_not_become_verification[records2] __________
+
+records = [{'official_url': 'https://u.example/a', 'checked_at': '2999-01-01'}]
+
+    @pytest.mark.parametrize('records', [
+        [{'official_url':'garbage','checked_at':'now'}],
+        [{'official_url':'https://u.example/a','checked_at':'garbage'}],
+        [{'official_url':'https://u.example/a','checked_at':'2999-01-01'}],
+        [{'official_url':'https://u.example/a','checked_at':'2026-01-01','source_verified':True}],
+    ])
+    def test_input_metadata_does_not_become_verification(records):
+        x = output('official_monitoring', {'records':records})
+>       assert x['verified_records'] == []
+E       AssertionError: assert [{'official_u...'2999-01-01'}] == []
+E         
+E         Left contains one more item: {'official_url': 'https://u.example/a', 'checked_at': '2999-01-01'}
+E         Use -v to get more diff
+
+tests/modules/test_m23_truth_repair.py:34: AssertionError
+__________ test_input_metadata_does_not_become_verification[records3] __________
+
+records = [{'official_url': 'https://u.example/a', 'checked_at': '2026-01-01', 'source_verified': True}]
+
+    @pytest.mark.parametrize('records', [
+        [{'official_url':'garbage','checked_at':'now'}],
+        [{'official_url':'https://u.example/a','checked_at':'garbage'}],
+        [{'official_url':'https://u.example/a','checked_at':'2999-01-01'}],
+        [{'official_url':'https://u.example/a','checked_at':'2026-01-01','source_verified':True}],
+    ])
+    def test_input_metadata_does_not_become_verification(records):
+        x = output('official_monitoring', {'records':records})
+>       assert x['verified_records'] == []
+E       AssertionError: assert [{'official_u...ified': True}] == []
+E         
+E         Left contains one more item: {'official_url': 'https://u.example/a', 'checked_at': '2026-01-01', 'source_verified': True}
+E         Use -v to get more diff
+
+tests/modules/test_m23_truth_repair.py:34: AssertionError
+____________ test_valid_metadata_coverage_and_invalid_calendar_date ____________
+
+    def test_valid_metadata_coverage_and_invalid_calendar_date():
+        x = output('program_intelligence', {'records':[
+            {'official_url':'https://u.example/a','checked_at':'2026-01-01'},
+            {'official_url':'https://u.example/a','checked_at':'2026-02-30'}]})
+>       assert x['metadata_coverage'] == .5
+               ^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'metadata_coverage'
+
+tests/modules/test_m23_truth_repair.py:42: KeyError
+________________ test_missing_admission_probability_is_unknown _________________
+
+    def test_missing_admission_probability_is_unknown():
+        x = output('fit_scoring', {'schools':[{'name':'A','fit':.7}]})
+>       assert x['schools'][0]['probability'] is None
+E       assert 0.0 is None
+
+tests/modules/test_m23_truth_repair.py:47: AssertionError
+___________________ test_invalid_probability_rejected[-0.1] ____________________
+
+value = -0.1
+
+    @pytest.mark.parametrize('value', [-.1,1.1,float('nan'),float('inf'),True,'bad'])
+    def test_invalid_probability_rejected(value):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m23_truth_repair.py:53: Failed
+____________________ test_invalid_probability_rejected[1.1] ____________________
+
+value = 1.1
+
+    @pytest.mark.parametrize('value', [-.1,1.1,float('nan'),float('inf'),True,'bad'])
+    def test_invalid_probability_rejected(value):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m23_truth_repair.py:53: Failed
+____________________ test_invalid_probability_rejected[nan] ____________________
+
+value = nan
+
+    @pytest.mark.parametrize('value', [-.1,1.1,float('nan'),float('inf'),True,'bad'])
+    def test_invalid_probability_rejected(value):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m23_truth_repair.py:53: Failed
+____________________ test_invalid_probability_rejected[inf] ____________________
+
+value = inf
+
+    @pytest.mark.parametrize('value', [-.1,1.1,float('nan'),float('inf'),True,'bad'])
+    def test_invalid_probability_rejected(value):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m23_truth_repair.py:53: Failed
+___________________ test_invalid_probability_rejected[True] ____________________
+
+value = True
+
+    @pytest.mark.parametrize('value', [-.1,1.1,float('nan'),float('inf'),True,'bad'])
+    def test_invalid_probability_rejected(value):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m23_truth_repair.py:53: Failed
+_______ test_service_fit_labels_heuristic_and_does_not_predict_admission _______
+
+    def test_service_fit_labels_heuristic_and_does_not_predict_admission():
+        profile=StudentProfileIn(values=[],turning_points=[],strengths=[],goals=['science'])
+        u=UniversityIn(id='u',name='U',country='US',programs=['Computer Science'],official_url='https://u.example')
+        x=Service().fit(profile,[u])[0]
+>       assert x['scoring_method'] == 'substring_budget_heuristic'
+               ^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'scoring_method'
+
+tests/modules/test_m23_truth_repair.py:60: KeyError
+__________ test_backend_lists_and_language_catalog_are_not_execution ___________
+
+    def test_backend_lists_and_language_catalog_are_not_execution():
+        for method,data in [('collectors',{'collectors':[]}),('multi_provider_ai',{'providers':[{'healthy':True}]}),('languages_12',{'language':'Assamese'}),('vector_embeddings',{'query':[1,0],'items':[]})]:
+            x=output(method,data)
+>           assert x['execution_performed'] is False
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'execution_performed'
+
+tests/modules/test_m23_truth_repair.py:68: KeyError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m23_truth_repair.py::test_regex_does_not_claim_loaded_nlp
+FAILED tests/modules/test_m23_truth_repair.py::test_caller_boolean_never_authorizes_submission[True]
+FAILED tests/modules/test_m23_truth_repair.py::test_caller_boolean_never_authorizes_submission[False]
+FAILED tests/modules/test_m23_truth_repair.py::test_caller_boolean_never_authorizes_submission[approved]
+FAILED tests/modules/test_m23_truth_repair.py::test_caller_boolean_never_authorizes_submission[claim3]
+FAILED tests/modules/test_m23_truth_repair.py::test_caller_boolean_never_authorizes_submission[1]
+FAILED tests/modules/test_m23_truth_repair.py::test_input_metadata_does_not_become_verification[records0]
+FAILED tests/modules/test_m23_truth_repair.py::test_input_metadata_does_not_become_verification[records1]
+FAILED tests/modules/test_m23_truth_repair.py::test_input_metadata_does_not_become_verification[records2]
+FAILED tests/modules/test_m23_truth_repair.py::test_input_metadata_does_not_become_verification[records3]
+FAILED tests/modules/test_m23_truth_repair.py::test_valid_metadata_coverage_and_invalid_calendar_date
+FAILED tests/modules/test_m23_truth_repair.py::test_missing_admission_probability_is_unknown
+FAILED tests/modules/test_m23_truth_repair.py::test_invalid_probability_rejected[-0.1]
+FAILED tests/modules/test_m23_truth_repair.py::test_invalid_probability_rejected[1.1]
+FAILED tests/modules/test_m23_truth_repair.py::test_invalid_probability_rejected[nan]
+FAILED tests/modules/test_m23_truth_repair.py::test_invalid_probability_rejected[inf]
+FAILED tests/modules/test_m23_truth_repair.py::test_invalid_probability_rejected[True]
+FAILED tests/modules/test_m23_truth_repair.py::test_service_fit_labels_heuristic_and_does_not_predict_admission
+FAILED tests/modules/test_m23_truth_repair.py::test_backend_lists_and_language_catalog_are_not_execution
+19 failed, 1 passed in 0.36s

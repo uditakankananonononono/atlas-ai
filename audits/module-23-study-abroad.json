@@ -3,625 +3,809 @@
   "name": "Study Abroad Planner & Global Admissions Intelligence",
   "source_message_id": "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUMxNjM2MjYzMEIyNENCMUE3NzJDNjAyQjYxOUQxNDgA",
   "counts": {
-    "verified-pushed": 62,
-    "thin": 0,
-    "missing": 0
+    "PARTIAL": 62
   },
   "rows": [
     {
       "row": 1,
       "requirement": "End-to-end study abroad lifecycle",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 2,
       "requirement": "55 study destinations",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 3,
       "requirement": "Top 100 institutions per destination/global T100",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 4,
       "requirement": "Identity Intelligence profile",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "implementation": "backend/app/modules/m23_study_abroad/service.py",
-        "test": "tests/modules/test_m23_study_abroad.py"
-      }
+        "test": "tests/modules/test_m23_study_abroad.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 5,
       "requirement": "Narrative Intelligence patterns",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "implementation": "backend/app/modules/m23_study_abroad/service.py",
-        "test": "tests/modules/test_m23_study_abroad.py"
-      }
+        "test": "tests/modules/test_m23_study_abroad.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 6,
       "requirement": "Contextual Intelligence opportunity fit",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "implementation": "backend/app/modules/m23_study_abroad/service.py",
-        "test": "tests/modules/test_m23_study_abroad.py"
-      }
+        "test": "tests/modules/test_m23_study_abroad.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 7,
       "requirement": "Voice/chat identity onboarding",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "implementation": "backend/app/modules/m23_study_abroad/interview.py",
-        "test": "tests/modules/test_m23_identity_interview.py"
-      }
+        "test": "tests/modules/test_m23_identity_interview.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 8,
       "requirement": "Embedding identity vector",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 9,
       "requirement": "Pattern discovery clustering",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 10,
       "requirement": "Story development frameworks",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 11,
       "requirement": "Multi-dimensional essay feedback",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 12,
       "requirement": "Common App adaptation",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 13,
       "requirement": "Coalition adaptation",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 14,
       "requirement": "UC PIQ adaptation",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 15,
       "requirement": "UCAS adaptation",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 16,
       "requirement": "OUAC adaptation",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 17,
       "requirement": "European national systems",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 18,
       "requirement": "Graduate SOP coaching",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 19,
       "requirement": "Diversity statement coaching",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 20,
       "requirement": "Research statement coaching",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 21,
       "requirement": "No ghostwriting final prose",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "implementation": "backend/app/modules/m23_study_abroad/service.py",
-        "test": "tests/modules/test_m23_study_abroad.py"
-      }
+        "test": "tests/modules/test_m23_study_abroad.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 22,
       "requirement": "Draft version control in Knowledge Workspace",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 23,
       "requirement": "Official admissions monitoring",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 24,
       "requirement": "Deep university profiles",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 25,
       "requirement": "Program-level intelligence",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 26,
       "requirement": "Reach/Target/Safety fit scoring",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 27,
       "requirement": "Multi-application portal support",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 28,
       "requirement": "Deadline tracker",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 29,
       "requirement": "Document vault",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 30,
       "requirement": "Recommender coordination",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 31,
       "requirement": "Interview preparation",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 32,
       "requirement": "Submission approval via Module 0",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 33,
       "requirement": "Pre-submission multi-model review",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 34,
       "requirement": "Global scholarship databases",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 35,
       "requirement": "Scholarship matching",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 36,
       "requirement": "Net cost calculator",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 37,
       "requirement": "Financial aid forms",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 38,
       "requirement": "Scholarship deadline/document tasks",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 39,
       "requirement": "Scholarship award tracking",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 40,
       "requirement": "Allowed social intelligence sources",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 41,
       "requirement": "Advice credibility scoring",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 42,
       "requirement": "Admissions trend detection",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 43,
       "requirement": "Webinar discovery",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 44,
       "requirement": "Webinar workflow",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 45,
       "requirement": "Daily intelligence brief",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 46,
       "requirement": "Strategist agent",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 47,
       "requirement": "Storyteller agent",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 48,
       "requirement": "Researcher agent",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 49,
       "requirement": "Executor agent",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 50,
       "requirement": "Critic agent",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 51,
       "requirement": "PostgreSQL tenant records",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 52,
       "requirement": "Vector embeddings",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 53,
       "requirement": "University graph",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 54,
       "requirement": "Celery source schedules",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 55,
       "requirement": "Playwright and static collectors",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 56,
       "requirement": "Multi-provider AI layer",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 57,
       "requirement": "spaCy/dateparser/BERT NLP",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 58,
       "requirement": "Encrypted OAuth/credentials/audit",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 59,
       "requirement": "Cross-module achievement narrative flow",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 60,
       "requirement": "12+ languages",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 61,
       "requirement": "Historical applied-won improvement",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     },
     {
       "row": 62,
       "requirement": "Career outcomes and visa pathways",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "6479c29e04015345a7e30f70aa697911b7228c02",
         "implementation": "backend/app/modules/m23_study_abroad/lifecycle_unverified_01_62.py",
-        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py"
-      }
+        "test": "tests/modules/test_m23_lifecycle_unverified_01_62.py",
+        "repair_test": "tests/modules/test_m23_truth_repair.py"
+      },
+      "previous_status": "verified-pushed",
+      "status_basis": "Local helpers exist; supplied implementation/test paths are not full-spec behavioral proof. Previous verified-pushed claim withdrawn pending independent requirement-level verification."
     }
   ],
   "esai_sources": [
@@ -629,5 +813,11 @@
     "https://www.esai.ai/explore/brandi",
     "https://www.esai.ai/resources/faq",
     "https://www.esai.ai/pricing"
-  ]
+  ],
+  "previous_counts": {
+    "verified-pushed": 62,
+    "thin": 0,
+    "missing": 0
+  },
+  "assessment_scope": "Bounded local truth/approval repair, not full module acceptance. Independent audit required. No repair commit pushed."
 }
