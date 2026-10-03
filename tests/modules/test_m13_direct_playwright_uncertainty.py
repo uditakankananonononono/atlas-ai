@@ -107,3 +107,33 @@ async def test_direct_playwright_click_timeout_after_server_received_is_uncertai
         assert row.state == "click_uncertain"
         await browser.close()
     site.shutdown()
+
+
+@pytest.mark.asyncio
+async def test_cancellation_after_dispatch_leaves_durable_uncertainty(tmp_path):
+    """A cancelled request after the click began must not leave a consumed approval with no outcome."""
+    import tests.modules.test_m13_capture_bound_submit as base
+    engine = create_engine(f"sqlite:///{tmp_path/'m13.db'}"); Base.metadata.create_all(engine)
+    sf = sessionmaker(bind=engine, expire_on_commit=False)
+    svc = Service(base.Sessions(), base.Approvals(), base.Store(), str(tmp_path), {"example.com"})
+    started = asyncio.Event()
+
+    async def hanging_click(self):
+        started.set()
+        await asyncio.sleep(30)
+    base.Locator.click, original = hanging_click, base.Locator.click
+    try:
+        req = await request_capture_bound_submit(svc, "t", "u", "s1", "#go", base.V, base.CAP)
+        a = req["approval_id"]
+        svc.approvals.rows[a]["status"] = ApprovalStatus.APPROVED
+        task = asyncio.create_task(execute_capture_bound_submit(svc, sf, "t", "s1", "#go", base.V, a, base.CAP))
+        await asyncio.wait_for(started.wait(), 5)
+        task.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await task
+    finally:
+        base.Locator.click = original
+    assert a in svc.store.consumed
+    with sf() as db:
+        row = db.scalar(select(SubmitAttemptRow).where(SubmitAttemptRow.approval_id == a))
+    assert row.state == "click_uncertain" and row.finished_at is not None

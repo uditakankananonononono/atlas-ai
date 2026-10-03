@@ -264,7 +264,7 @@ async def test_effect_uncertain_flag_only_where_a_click_may_have_happened(daemon
     bad = _submit_args("ap-flag")
     bad["token"] = "wrong"
     answer = await daemon.execute(protocol.make_command(CommandKind.CLICK_SUBMIT, bad, command_id=_id()))
-    assert answer["ok"] is False and not answer.get("effect_uncertain")  # refused before any click
+    assert answer["ok"] is False and answer["effect_uncertain"] is False  # explicit: refused before any click
     good = _submit_args("ap-flag2")
     first = await daemon.execute(protocol.make_command(CommandKind.CLICK_SUBMIT, good, command_id=_id()))
     assert first["ok"] is True
