@@ -72,6 +72,13 @@ class DeviceIdentity:
 
 
 NAV_WAIT_SECONDS = 0.8  # fixed delay before the daemon sends a guarded click's navigation
+def redact_urls(text: str) -> str:
+    """Strip query strings and fragments from every URL inside an error message (guard reports quote
+    full URLs, which can carry tokens; nothing past the path may leave the PC)."""
+    import re
+    return re.sub(r"https?://[^\s'\"<>)]+", lambda m: safe_url(m.group(0)), text)
+
+
 def safe_url(url: str | None) -> str:
     """scheme://host/path only: queries and fragments often carry tokens and never leave the PC."""
     from urllib.parse import urlsplit
@@ -622,7 +629,6 @@ class Daemon:
                 event = self._receipt_event(command_id, "blocked", {"reason": "consumed record refused"})
                 return protocol.make_result(command_id, ok=False, error=problem,
                                             blocked=BlockKind.POLICY.value, receipt=event, effect_uncertain=True)
-            await self._pace()
         try:
             await self._pace()
             if submit_claims is not None and not protocol.verify_submit_token(
@@ -632,9 +638,9 @@ class Daemon:
                                             blocked=BlockKind.POLICY.value, effect_uncertain=False)
             result = await self._run(kind, session, args)
         except Exception as error:  # noqa: BLE001 - report, never retry blindly
-            detail = str(error)
+            detail = redact_urls(str(error))
             if submit_claims is not None:
-                detail = f"effect outcome uncertain; reservation retained; do not retry: {error}"
+                detail = f"effect outcome uncertain; reservation retained; do not retry: {detail}"
             event = self._receipt_event(command_id, "failed", {"error": detail[:1000]})
             return protocol.make_result(command_id, ok=False, error=detail[:2000], receipt=event,
                                         effect_uncertain=True if submit_claims is not None else None)
