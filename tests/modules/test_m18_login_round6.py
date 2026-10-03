@@ -27,7 +27,22 @@ async def _submit_once(setup):
     return args
 
 
+def _drop_reservation(daemon, args):
+    """TEST SCOPE: simulate loss of the durable reservation ledger entry for this approval so that the consumed-submit
+    STORE layer (rollback, wrong MAC, deletion, unusable record) is the layer under test. With the reservation intact
+    the unified daemon refuses first with "already reserved" (covered in test_m13_unified_token_adversarial.py)."""
+    import sqlite3
+    try:
+        db = sqlite3.connect(daemon.effects.path)
+        db.execute("DELETE FROM submit_effects WHERE approval_id=?", (args.get('approval_id'),))
+        db.commit()
+        db.close()
+    except sqlite3.OperationalError:
+        pass
+
+
 async def _replay(setup, daemon, args):
+    _drop_reservation(daemon, args)
     return await daemon.execute(protocol.make_command(protocol.CommandKind.CLICK_SUBMIT, args))
 
 

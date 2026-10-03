@@ -84,12 +84,12 @@ async def test_r5_f2_token_covers_deadline_and_replay_survives_restart(setup, tm
     assert result['state'] == 'succeeded'
     command = [c for c in setup[6].commands if c['kind'] == 'click_submit'][-1]
     args = dict(command['args'])
-    assert 'deadline' in args
-    # Editing the deadline invalidates the token.
+    assert 'expires_at' in args and 'deadline' not in args  # unified v3 token: signed integer expiry
+    # Editing the expiry invalidates the token.
     page, paired = await _compose_with_values(setup)
     for selector, value in args['values'].items():
         await page.fill(selector, value)
-    edited = dict(args, deadline=time.time() + 10_000)
+    edited = dict(args, expires_at=int(time.time()) + 10_000)
     answer = await setup_daemon(setup).execute(protocol.make_command(protocol.CommandKind.CLICK_SUBMIT, edited))
     assert answer['ok'] is False and 'token' in answer['error'].lower(), answer
     # A restarted daemon process still refuses the consumed token.
@@ -97,7 +97,7 @@ async def test_r5_f2_token_covers_deadline_and_replay_survives_restart(setup, tm
     fresh = Daemon(old.config, old.identity)
     fresh.browser = old.browser
     answer = await fresh.execute(protocol.make_command(protocol.CommandKind.CLICK_SUBMIT, dict(args)))
-    assert answer['ok'] is False and ('replay' in answer['error'].lower() or 'armed too long' in answer['error'].lower()), answer
+    assert answer['ok'] is False and ('replay' in answer['error'].lower() or 'armed too long' in answer['error'].lower() or 'already reserved' in answer['error'].lower()), answer  # unified: durable reservation refuses first
     assert len(setup[6].posts) == 1
 
 
