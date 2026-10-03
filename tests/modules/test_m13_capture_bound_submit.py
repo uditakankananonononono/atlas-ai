@@ -93,6 +93,7 @@ async def test_execute_is_single_use_and_rechecks_live_page(env):
         await execute_capture_bound_submit(svc, sf, "t", "s1", "#go", V, a, "f" * 64)
     out = await execute_capture_bound_submit(svc, sf, "t", "s1", "#go", V, a, CAP)
     assert out["status"] == "submitted" and svc.sessions.p.clicked == ["#go"]
+    assert out["site_acceptance"] == "unconfirmed" and out["click_dispatched"] is True
     with pytest.raises(PermissionError, match="already consumed"):
         await execute_capture_bound_submit(svc, sf, "t", "s1", "#go", V, a, CAP)
     req2 = await request_capture_bound_submit(svc, "t", "u", "s1", "#go", V, CAP)
