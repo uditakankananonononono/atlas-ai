@@ -73,10 +73,21 @@ class DeviceIdentity:
 
 NAV_WAIT_SECONDS = 0.8  # fixed delay before the daemon sends a guarded click's navigation
 def redact_urls(text: str) -> str:
-    """Strip query strings and fragments from every URL inside an error message (guard reports quote
-    full URLs, which can carry tokens; nothing past the path may leave the PC)."""
+    """Strip query strings, fragments and userinfo from every URL inside an error message (guard reports quote
+    full URLs, which can carry tokens; nothing past the path may leave the PC). Also handles upper-case
+    schemes, percent-encoded and JSON-escaped URLs, bare secret-named key=value pairs and Bearer/Basic values.
+    Operational non-secret information (scheme, host, path) is kept."""
     import re
-    return re.sub(r"https?://[^\s'\"<>)]+", lambda m: safe_url(m.group(0)), text)
+    from urllib.parse import unquote
+
+    def _url(match: "re.Match[str]") -> str:
+        raw = unquote(match.group(0)).replace("\\/", "/")
+        return safe_url(raw.replace("HTTP", "http", 1) if raw[:4] == "HTTP" else raw)
+
+    text = re.sub(r"(?i)https?(?::|%3A)(?:\\?/|%2F){2}[^\s'\"<>)]+", _url, text)
+    text = re.sub(r"(?i)\b(access_token|id_token|refresh_token|token|secret|password|passwd|api[_-]?key|"
+                  r"session(?:id)?|sid|auth|code|key)=[^\s&'\")]+", r"\1=[redacted]", text)
+    return re.sub(r"(?i)\b(bearer|basic)\s+[A-Za-z0-9._~+/=-]+", r"\1 [redacted]", text)
 
 
 def safe_url(url: str | None) -> str:
