@@ -81,7 +81,10 @@ def test_row14_route(client):
     r = c.post("/api/modules/20/meta/counterfactuals",
                json={"episode_id": episode_id,
                      "alternatives": [{"replaces_step": 0, "action": "dry run", "risk": "read"}]})
-    assert r.json()["best_alternative"]["alternative_action"] == "dry run"
+    body = r.json()
+    assert r.status_code == 200 and body["alternatives"][0]["alternative_action"] == "dry run"
+    assert body["alternatives"][0]["estimated_success_probability"] is None
+    assert body["best_alternative"] is None
     assert c.post("/api/modules/20/meta/counterfactuals",
                   json={"episode_id": "nope", "alternatives": []}).status_code == 404
 

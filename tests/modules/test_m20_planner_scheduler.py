@@ -91,16 +91,19 @@ def test_ready_nodes_and_deadlock():
     assert HTNPlanner.is_complete(plan) is True
 
 
-def test_meta_reasoner_prefers_high_gain_low_cost():
+def test_meta_reasoner_orders_by_risk_tier_and_reports_no_invented_scores():
     meta = MetaReasoner()
     research = PlanNode(title="research competitors", tool="web_search", risk=Risk.READ)
     send = PlanNode(title="email results", tool="send_email", risk=Risk.EXTERNAL)
     scored = meta.score_candidates([send, research], wm_context="", ltm_hits=2)
-    assert scored[0].node.title == "research competitors"
-    assert scored[0].score > scored[1].score
+    assert scored[0].node.title == "research competitors"  # safer tier first
+    # no recorded episodes -> no success estimate and no information-gain number
+    assert all(c.score is None and c.progress_probability is None for c in scored)
+    assert all(c.information_gain is None for c in scored)
+    assert "no success estimate" in scored[0].ranking_basis
 
 
-def test_mcts_rumination_returns_ordering():
+def test_mcts_rumination_returns_ordering_without_invented_probability():
     a = PlanNode(title="research", risk=Risk.READ)
     b = PlanNode(title="draft", risk=Risk.REVERSIBLE, depends_on=[a.id])
     c = PlanNode(title="publish", risk=Risk.EXTERNAL, depends_on=[b.id])
@@ -108,7 +111,9 @@ def test_mcts_rumination_returns_ordering():
     result = ruminator.ruminate([a, b, c])
     assert result["simulations"] == 16
     assert result["best_ordering"] == ["research", "draft", "publish"]
-    assert 0 < result["expected_success"] <= 1.0
+    assert result["mode"] == "simulated_search"
+    assert result["expected_success"] is None  # no evidence -> unavailable, not 0.x
+    assert "too little recorded evidence" in result["expected_success_status"]
     a.state = b.state = c.state = TaskState.SUCCEEDED
     assert ruminator.ruminate([a, b, c])["expected_success"] == 1.0
 
