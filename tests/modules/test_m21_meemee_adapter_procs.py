@@ -42,13 +42,13 @@ def test_concurrent_different_keys_same_approval_only_one_wins(tmp_path):
 
 
 def chain_ok(d):
+    """Recompute every event hash via the adapter itself (not just sequence links)."""
     import sqlite3
-    rows = sqlite3.connect(d / "m.db").execute("SELECT sequence,previous_hash,event_hash FROM claire_adapter_audit ORDER BY sequence").fetchall()
-    prev = "0" * 64
-    for i, (seq, ph, eh) in enumerate(rows, 1):
-        assert seq == i and ph == prev
-        prev = eh
-    return len(rows)
+    from app.modules.m21_claire.meemee_local_client import MeemeeLocalClient
+    cl = MeemeeLocalClient(None, "tenant-a", "dev1", None, None, str(d / "m.db"))
+    v = cl.verify_audit()
+    assert v["ok"], v
+    return v["events"]
 
 import pytest
 
@@ -67,6 +67,7 @@ def test_real_crash_points_fail_closed(tmp_path, point, effects_n, status):
     assert r2["ok"] and r2["replayed"]
     if status:
         assert r2["status"] == status
+        assert r2["outcome"] == "uncertain"  # never reported as completed
     assert len(effects(tmp_path)) == effects_n  # the retry never produced a second effect
     chain_ok(tmp_path)
     r3 = done(run(tmp_path, "exec", "k9", "ls"))
@@ -77,3 +78,16 @@ def test_replay_without_authorizing_approval_cannot_read_result(tmp_path):
     assert done(run(tmp_path, "exec", "k1", "ls"))["ok"]
     r = done(run(tmp_path, "exec", "k1", "ls", NO_TOKEN="1"))
     assert not r["ok"] and "requires the approval" in r["err"]
+
+
+def test_audit_tamper_is_detected(tmp_path):
+    import sqlite3
+    done(run(tmp_path, "setup"))
+    assert done(run(tmp_path, "exec", "k1", "ls"))["ok"]
+    assert chain_ok(tmp_path) >= 2
+    db = sqlite3.connect(tmp_path / "m.db")
+    db.execute("UPDATE claire_adapter_audit SET payload=replace(payload,'run_command','xxxxxxxxxxx') WHERE sequence=1")
+    db.commit()
+    from app.modules.m21_claire.meemee_local_client import MeemeeLocalClient
+    v = MeemeeLocalClient(None, "tenant-a", "dev1", None, None, str(tmp_path / "m.db")).verify_audit()
+    assert v == {"ok": False, "events": v["events"], "first_bad_sequence": 1}
