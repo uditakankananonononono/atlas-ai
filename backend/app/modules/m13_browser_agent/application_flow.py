@@ -40,6 +40,7 @@ class WorkflowStatus(str, Enum):
     READY = "ready"
     STAGED = "staged"
     AWAITING_SUBMIT_APPROVAL = "awaiting_submit_approval"
+    SUBMIT_ATTEMPTING = "submit_attempting_outcome_unconfirmed"  # persisted BEFORE the approval is consumed/click sent
     SUBMIT_DISPATCHED = "submit_dispatched_unconfirmed"  # approved click sent; site acceptance NOT confirmed
     SUBMIT_OWNER_ASSERTED = "submit_owner_asserted_accepted"  # authenticated actor SAID the site accepted; unverified
     SUBMITTED = "submitted"                              # legacy value only; this build never sets it
@@ -200,6 +201,7 @@ class ApplicationSession:
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
     legacy_status_reinterpreted: str = ""
+    outcome_uncertain: bool = False  # True once a submit click may have reached the site
 
     def normalize_legacy(self) -> "ApplicationSession":
         """Earlier builds stored "submitted" right after the click. That never meant accepted."""
@@ -306,6 +308,10 @@ class ApplicationFlow:
         final_url = validate_public_url(page.url, self.browser.allowed_hosts)
         html = await self.browser.extract(record.tenant_id, record.session_id)
         return page, final_url, probe_auth(final_url, html), probe_captcha(html)
+
+    def _blocked_after_click(self, record: ApplicationSession, reason: str, evidence: list[str]) -> ApplicationSession:
+        record.outcome_uncertain = True  # typed marker; recovery never depends on the message text
+        return self._blocked(record, reason, evidence)
 
     def _blocked(self, record: ApplicationSession, reason: str, evidence: list[str]) -> ApplicationSession:
         record.status = WorkflowStatus.BLOCKED.value
@@ -601,7 +607,20 @@ class ApplicationFlow:
             raise PermissionError("approval was already consumed")
 
         # Consume before the external effect: a failed click cannot replay.
-        await self.browser.store.consume(approval_id, tenant_id)
+        # Persist an honest "attempting, outcome unconfirmed" marker FIRST. If the process is
+        # interrupted or killed anywhere from here on, the record never claims success or failure.
+        record.status = WorkflowStatus.SUBMIT_ATTEMPTING.value
+        record.outcome_uncertain = True
+        record.error = ""
+        self._save(record)
+        try:
+            await self.browser.store.consume(approval_id, tenant_id)
+        except Exception:
+            # Consume refused: nothing was attempted, so the marker is withdrawn.
+            record.status = WorkflowStatus.AWAITING_SUBMIT_APPROVAL.value
+            record.outcome_uncertain = False
+            self._save(record)
+            raise
         try:
             await page.locator(payload["selector"]).click()
         except BaseException as error:
@@ -610,7 +629,7 @@ class ApplicationFlow:
             else:
                 # Cancellation (or interpreter exit) after the click began: the approval is consumed and
                 # the site may have received the submit. Make that durable before unwinding.
-                self._blocked(record, "request ended after the submit click began; outcome unknown; "
+                self._blocked_after_click(record, "request ended after the submit click began; outcome unknown; "
                                       "do not retry; check the site manually", [])
                 try:
                     await self._audit(record, ActionType.SUBMIT, {
@@ -627,9 +646,10 @@ class ApplicationFlow:
                 await self._audit(record, ActionType.SUBMIT, {
                     "phase": "blocked_after_click", "approval_id": approval_id, "selector": payload["selector"],
                     "error": text[:500]})
-                self._blocked(record, reason, [])
+                self._blocked_after_click(record, reason, [])
                 raise BlockedError(record.error) from error
             record.status = WorkflowStatus.FAILED.value
+            record.outcome_uncertain = False  # provably before dispatch
             record.error = f"submit click failed: {error}"
             self._save(record)
             await self._audit(record, ActionType.SUBMIT, {
@@ -644,14 +664,14 @@ class ApplicationFlow:
         if isinstance(http_status, int) and http_status >= 400:
             await self._audit(record, ActionType.SUBMIT, {"phase": "blocked_after_click", "approval_id": approval_id,
                                                           "http_status": http_status})
-            self._blocked(record, f"site answered HTTP {http_status} after the submit click; "
+            self._blocked_after_click(record, f"site answered HTTP {http_status} after the submit click; "
                                   "effect may have occurred; do not retry; confirm the outcome manually", [])
             raise BlockedError(record.error)
         html = await self.browser.extract(tenant_id, session_id)
         captcha = probe_captcha(html)
         if captcha:
             await self._audit(record, ActionType.SUBMIT, {"phase": "blocked_after_click", "evidence": captcha, "approval_id": approval_id})
-            self._blocked(record, "site presented a CAPTCHA after the submit click; effect may have occurred; do not retry; confirm the outcome manually", captcha)
+            self._blocked_after_click(record, "site presented a CAPTCHA after the submit click; effect may have occurred; do not retry; confirm the outcome manually", captcha)
             raise BlockedError(record.error)
         record.confirmation = {
             "final_url": final_url,
@@ -663,6 +683,7 @@ class ApplicationFlow:
             "site_acceptance": "unconfirmed",
         }
         record.status = WorkflowStatus.SUBMIT_DISPATCHED.value
+        record.outcome_uncertain = True  # dispatched, acceptance unconfirmed
         record.error = ""
         self._save(record)
         await self._audit(record, ActionType.SUBMIT, {
@@ -688,8 +709,11 @@ class ApplicationFlow:
         """
         record = self._record(tenant_id, session_id)
         self._require_actor(record, actor_id)
-        if record.status != WorkflowStatus.SUBMIT_DISPATCHED.value:
-            raise PermissionError("no dispatched submit awaiting an assertion")
+        recoverable = (record.status in {WorkflowStatus.SUBMIT_DISPATCHED.value,
+                                         WorkflowStatus.SUBMIT_ATTEMPTING.value}
+                       or (record.status == WorkflowStatus.BLOCKED.value and record.outcome_uncertain))
+        if not recoverable:
+            raise PermissionError("no submit with an unconfirmed outcome awaiting an assertion")
         if owner_asserts_site_accepted is not True:
             raise PermissionError("an explicit assertion is required")
         record.status = WorkflowStatus.SUBMIT_OWNER_ASSERTED.value

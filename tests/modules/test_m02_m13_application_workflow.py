@@ -721,3 +721,86 @@ def test_v4_owner_confirmed_legacy_is_an_unverified_assertion_not_acceptance(rig
     assert raw["confirmation"]["owner_assertion"]["actor_id"] == "local-user"
     assert "not independently verified" in raw["confirmation"]["owner_assertion"]["basis"]
     assert raw["legacy_status_reinterpreted"] == "submitted"
+
+
+def test_attempt_marker_is_durable_before_the_click_starts(rig):
+    base, approval_id = _approved_submit(rig)
+    sid = base.rsplit("/", 1)[1]
+    seen = []
+
+    async def peek():
+        seen.append(rig.flow.store.get("local", sid).status)
+    rig.page.click_hook = peek
+    assert rig.client.post(f"{base}/submit", json={"approval_id": approval_id}).status_code == 200
+    assert seen == ["submit_attempting_outcome_unconfirmed"], seen
+
+
+def test_interruption_after_consume_before_click_leaves_unconfirmed_not_awaiting_approval(rig):
+    import asyncio as _a
+    base, approval_id = _approved_submit(rig)
+    sid = base.rsplit("/", 1)[1]
+    store = rig.flow.browser.store
+    original = store.consume
+
+    async def consume_then_die(*args, **kwargs):
+        await original(*args, **kwargs)
+        raise _a.CancelledError()
+    store.consume = consume_then_die
+
+    async def go():
+        try:
+            await rig.flow.execute_submit("local", "local-user", sid, approval_id)
+        except _a.CancelledError:
+            pass
+    _a.run(go())
+    store.consume = original
+    status = rig.client.get(base).json()
+    assert status["status"] == "submit_attempting_outcome_unconfirmed"
+    assert rig.page.clicked == []  # the click never ran, but the record must not claim that either way
+    assert "success" not in status["status"] and status["status"] != "failed"
+    retry = rig.client.post(f"{base}/submit-approval")
+    assert retry.status_code in (409, 422)  # no retry path from an unconfirmed attempt
+
+
+def test_failure_before_consume_does_not_leave_an_attempt_marker(rig):
+    base, approval_id = _approved_submit(rig)
+    store = rig.flow.browser.store
+    original = store.consume
+
+    async def refuse(*args, **kwargs):
+        raise PermissionError("approval was already consumed")
+    store.consume = refuse
+    response = rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    store.consume = original
+    assert response.status_code == 409
+    assert rig.client.get(base).json()["status"] == "awaiting_submit_approval"
+
+
+def test_actor_may_assert_from_an_uncertain_block_but_not_from_an_ordinary_block_and_cannot_retry(rig):
+    from app.modules.m13_browser_agent.session_bridge.protocol import DispatchUncertain
+    base, approval_id = _approved_submit(rig)
+    rig.page.click_error = DispatchUncertain("daemon did not answer within 60s")
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    status = rig.client.get(base).json()
+    assert status["status"] == "blocked" and status["outcome_uncertain"] is True
+    assert rig.client.post(f"{base}/submit-approval").status_code in (409, 422)  # no retry
+    done = rig.client.post(f"{base}/assert-site-accepted", json={"owner_asserts_site_accepted": True})
+    assert done.status_code == 200, done.text
+    assert done.json()["status"] == "submit_owner_asserted_accepted"
+    assert done.json()["site_acceptance"] == "owner_asserted_unverified" and done.json()["submitted"] is False
+    assert rig.client.post(f"{base}/submit-approval").status_code in (409, 422)  # still no retry
+    assert rig.competitions.get_competition("comp-1").status != SubmissionStatus.SUBMITTED
+
+
+def test_ordinary_block_cannot_be_asserted_into_acceptance(rig):
+    rig.page.url, rig.page.html = FORM_URL, FORM_HTML
+    sid = create_session(rig)["session_id"]
+    rig.client.post(f"/api/v1/competition-manager/applications/sessions/{sid}/inspect")
+    rig.page.html = "<html><body><h1>We redesigned our portal</h1></body></html>"
+    rig.client.post(f"/api/v1/competition-manager/applications/sessions/{sid}/stage",
+                    json={"fields": {"full name": "Ada"}, "submit_selector": "#submit-btn"})
+    view = rig.client.get(f"/api/v1/competition-manager/applications/sessions/{sid}").json()
+    assert view["status"] == "blocked" and view["outcome_uncertain"] is False
+    refused = rig.client.post(f"/api/v1/competition-manager/applications/sessions/{sid}/assert-site-accepted",
+                              json={"owner_asserts_site_accepted": True})
+    assert refused.status_code == 409

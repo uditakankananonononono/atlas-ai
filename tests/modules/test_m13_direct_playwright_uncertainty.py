@@ -137,3 +137,24 @@ async def test_cancellation_after_dispatch_leaves_durable_uncertainty(tmp_path):
     with sf() as db:
         row = db.scalar(select(SubmitAttemptRow).where(SubmitAttemptRow.approval_id == a))
     assert row.state == "click_uncertain" and row.finished_at is not None
+
+
+@pytest.mark.asyncio
+async def test_capture_bound_attempt_row_exists_before_consume_and_is_not_a_success_or_failure(tmp_path):
+    import tests.modules.test_m13_capture_bound_submit as base
+    engine = create_engine(f"sqlite:///{tmp_path/'m13.db'}"); Base.metadata.create_all(engine)
+    sf = sessionmaker(bind=engine, expire_on_commit=False)
+    svc = Service(base.Sessions(), base.Approvals(), base.Store(), str(tmp_path), {"example.com"})
+    req = await request_capture_bound_submit(svc, "t", "u", "s1", "#go", base.V, base.CAP)
+    a = req["approval_id"]
+    svc.approvals.rows[a]["status"] = ApprovalStatus.APPROVED
+
+    async def die(approval_id, tenant):
+        raise asyncio.CancelledError()
+    svc.store.consume = die
+    with pytest.raises(asyncio.CancelledError):
+        await execute_capture_bound_submit(svc, sf, "t", "s1", "#go", base.V, a, base.CAP)
+    with sf() as db:
+        row = db.scalar(select(SubmitAttemptRow).where(SubmitAttemptRow.approval_id == a))
+    assert row.state == "clicking" and row.finished_at is None  # attempt started, outcome unconfirmed
+    assert svc.sessions.p.clicked == []
