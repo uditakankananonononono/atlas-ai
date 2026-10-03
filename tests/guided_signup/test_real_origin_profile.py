@@ -39,3 +39,13 @@ def test_launch_args_https_profiles_get_no_bypass_for_real_host():
     args = Engine._launch_args([Profile(site='x', origin='https://example.org')])
     joined = ' '.join(args)
     assert 'example.org' not in joined and 'MAP * ~NOTFOUND' in joined
+
+
+def test_phase_paths_and_user_agent_validated():
+    p = Profile(site='x', origin='https://example.org', verify_path='/account/verify', resend_path='/account/resend',
+                link_path='/account/confirm', user_agent='AssistantBot/1.0 (automated; owner contact: owner@example.org)')
+    assert p.link_path == '/account/confirm'
+    for bad in ({'verify_path': 'verify'}, {'link_path': '/a?b=1'}, {'resend_path': '/a b'},
+                {'user_agent': 'x\r\nHost: evil'}, {'user_agent': 'x' * 201}):
+        with pytest.raises(ValueError):
+            Profile(site='x', origin='https://example.org', **bad)

@@ -49,6 +49,11 @@ class Profile:
     # Exact reviewed DKIM signing domains (header.i) accepted for the verification mail.
     # Empty means the From address domain only. Never suffix/wildcard matched.
     dkim_domains: tuple[str, ...] = ()
+    # Reviewed per-site phase paths (defaults are the fixture's) and honest automation label.
+    verify_path: str = '/verify'
+    resend_path: str = '/resend'
+    link_path: str = '/verify-link'
+    user_agent: str = ''
 
     def __post_init__(self):
         p = urlsplit(self.origin)
@@ -60,8 +65,11 @@ class Profile:
             raise ValueError('origin must be http://127.0.0.1:PORT (fixture) or https://reviewed.host.name')
         if any(not re.fullmatch(FQDN, d) for d in self.dkim_domains):
             raise ValueError('dkim_domains must be exact lowercase DNS names')
-        if not re.fullmatch(r'/[A-Za-z0-9/_-]*', self.signup_path):
-            raise ValueError('invalid signup path')
+        for path in (self.signup_path, self.verify_path, self.resend_path, self.link_path):
+            if not re.fullmatch(r'/[A-Za-z0-9/_-]*', path):
+                raise ValueError('invalid reviewed path')
+        if self.user_agent and not re.fullmatch(r'[\x20-\x7e]{1,200}', self.user_agent):
+            raise ValueError('invalid user agent')
         if any(c not in STOPS for c in self.commitments):
             raise ValueError('unknown commitment classification')
 
@@ -208,7 +216,7 @@ class Engine:
         u = urlsplit(target)
         if not p.accepts(target) or u.fragment:
             return False
-        if u.query and u.path != '/verify-link':
+        if u.query and u.path != p.link_path:
             return False
         flat = unquote_plus(u.path) + '?' + unquote_plus(u.query)
         return not (gate is not None and any(v and v in flat for v in gate['secrets']))
@@ -235,7 +243,7 @@ class Engine:
         if any(v and v in flat for v in gate['secrets']):
             return False
         # Only the actor-opened verification link carries a query.
-        if u.query and u.path != '/verify-link':
+        if u.query and u.path != p.link_path:
             return False
         if request.method in ('GET', 'HEAD'):
             return True
@@ -244,7 +252,7 @@ class Engine:
         expected = gate['expected']
         if expected is None or gate['phase'] == 'idle':
             return False
-        phase_path = {'submit': p.signup_path, 'verify': '/verify', 'resend': '/resend'}[gate['phase']]
+        phase_path = {'submit': p.signup_path, 'verify': p.verify_path, 'resend': p.resend_path}[gate['phase']]
         if u.path != phase_path or u.query:
             return False
         try:
@@ -352,7 +360,8 @@ class Engine:
                    deadline=now+lifetime, profile_digest=p.digest, inspection_digest='',
                    approved_digest='', verification_since=now, generation=0, reason='')
         self.store.save(run)
-        context = self.browser.new_context(service_workers='block', accept_downloads=False)
+        context = self.browser.new_context(service_workers='block', accept_downloads=False,
+                                          **({'user_agent': p.user_agent} if p.user_agent else {}))
         # All resources and redirects are bound to this explicit local origin, and the
         # account-creation POST is allowed exactly once: transparent browser retries
         # after a reset are aborted so one request can never create two submissions.
@@ -469,7 +478,7 @@ class Engine:
             kind, value = proof
             if kind == 'link':
                 parsed = urlsplit(value)
-                if not p.accepts(value) or parsed.path != '/verify-link' or not re.fullmatch(r'token=[A-Za-z0-9_-]{16,128}', parsed.query):
+                if not p.accepts(value) or parsed.path != p.link_path or not re.fullmatch(r'token=[A-Za-z0-9_-]{16,128}', parsed.query):
                     return self._state(run, 'verification', 'verification_link_rejected')
                 page.goto(value, wait_until='networkidle')
                 self.gates[rid]['secrets'] |= {parsed.query.split('=', 1)[1]}
