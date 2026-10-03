@@ -116,9 +116,17 @@ async def integrated_application(competition_id:str,request:IntegratedApplicatio
     from .grounded_drafting import GroundedApplicationDrafter
     from .humanize import NaturalVoiceService
     from .integrated_application import IntegratedApplicationFlow
-    flow=IntegratedApplicationFlow(ProfileCorpus(tenant.tenant_id,get_embedding_provider(request.embedding_provider)),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),approvals,tenant.tenant_id)
+    from .profile_routes import default_provider
+    from app.core.embeddings import EmbeddingError
+    from app.core.providers import ProviderError
+    ep=(request.embedding_provider or default_provider()).lower()
+    flow=IntegratedApplicationFlow(ProfileCorpus(tenant.tenant_id,get_embedding_provider(ep),provider_name=ep),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),approvals,tenant.tenant_id)
     try:return await flow.prepare(competition_id,request.official_url,[x.model_dump() for x in request.fields],request.provider)
     except ValueError as e:raise HTTPException(422,str(e))
+    except (EmbeddingError,ProviderError) as e:raise HTTPException(503,f'Model unavailable, nothing was drafted: {e}')
+    except Exception as e:
+        if type(e).__name__ in {'ConnectError','ConnectTimeout','ReadTimeout'}:raise HTTPException(503,'Local model server is not reachable, nothing was drafted.')
+        raise
 
 @router.get('/expanded-owner-132-179')
 def expanded_owner_catalog_132_179():
