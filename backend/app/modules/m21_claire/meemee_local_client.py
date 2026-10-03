@@ -37,11 +37,13 @@ class AdapterError(PermissionError):
 
 class MeemeeLocalClient:
     def __init__(self, registry: Any, owner_id: str, device_id: str,
-                 transport: Callable[[dict[str, Any]], Any], approvals: Any, state_path: str):
+                 transport: Callable[[dict[str, Any]], Any], approvals: Any, state_path: str,
+                 fault_hook: Callable[[str], None] | None = None):
         if not owner_id or not device_id:
             raise ValueError("owner_id and device_id are required")
         self.registry, self.owner_id, self.device_id = registry, owner_id, device_id
         self.transport, self.approvals, self.state_path = transport, approvals, str(state_path)
+        self._fault = fault_hook or (lambda point: None)  # test-only crash injection
         with contextlib.closing(self._db()) as db:
             db.executescript("""
               CREATE TABLE IF NOT EXISTS claire_adapter_claims(owner_id TEXT NOT NULL,device_id TEXT NOT NULL,idem_key TEXT NOT NULL,
@@ -70,6 +72,7 @@ class MeemeeLocalClient:
             self.chain.events = [AuditEvent(r["sequence"], self.device_id, r["action_id"], r["phase"], json.loads(r["payload"]), r["previous_hash"], r["event_hash"]) for r in rows]
             e = self.chain.append(action_id, phase, payload)
             db.execute("INSERT INTO claire_adapter_audit VALUES(?,?,?,?,?,?,?,?)", (self.owner_id, self.device_id, e.sequence, e.action_id, e.phase, json.dumps(e.payload, sort_keys=True, default=str), e.previous_hash, e.event_hash))
+            self._fault("mid_audit")
             db.execute("COMMIT")
 
     def _device(self) -> dict[str, Any]:
@@ -92,10 +95,11 @@ class MeemeeLocalClient:
             return
         if not token:
             raise AdapterError("approval required")
-        req = self.approvals.get(token)
+        req = self.approvals.get(token, user_id=self.owner_id)  # owner-scoped lookup
         if (req is None or req.status != ApprovalStatus.APPROVED or req.action_type != f"claire:{kind}"
+                or req.payload.get("tenant_id") != self.owner_id
                 or req.payload.get("preview") != preview):
-            raise AdapterError("approval missing, not approved, or not for this exact action")
+            raise AdapterError("approval missing, not approved, not this owner's, or not for this exact action")
 
     def _report(self, claim: sqlite3.Row) -> dict[str, Any]:
         if not claim["command_id"]:
@@ -120,6 +124,8 @@ class MeemeeLocalClient:
                 db.execute("COMMIT")
                 if claim["action_digest"] != digest:
                     raise AdapterError("idempotency key already used for a different action")
+                if claim["approval_id"] and approval_token != claim["approval_id"]:
+                    raise AdapterError("reading this result requires the approval it was authorized with")
                 return self._report(claim)
             try:
                 self._check_approval(action, preview, approval_token)
@@ -133,13 +139,17 @@ class MeemeeLocalClient:
                 raise
             db.execute("INSERT INTO claire_adapter_claims VALUES(?,?,?,?,?,NULL,'claimed',?)", (self.owner_id, self.device_id, key, digest, approval_token, datetime.now(timezone.utc).isoformat()))
             db.execute("COMMIT")
+        self._fault("after_claim")
         env = self.registry.issue(self.owner_id, self.device_id, kind, action.get("arguments", {}))
+        self._fault("after_issue")
         with contextlib.closing(self._db()) as db:
             db.execute("UPDATE claire_adapter_claims SET command_id=?,state='issued' WHERE owner_id=? AND device_id=? AND idem_key=?", (env["command_id"], self.owner_id, self.device_id, key))
+        self._fault("after_update")
         aid = action.get("id") or env["command_id"]
         self._audit(aid, "issued", {"command_id": env["command_id"], "kind": kind, "preview_digest": digest, "approval": approval_token})
         try:
             out = self.transport(env)
+            self._fault("after_transport")
             result = getattr(out, "result", out)
             self.registry.complete(env["command_id"], result=result)
             self._audit(aid, "completed", {"command_id": env["command_id"]})

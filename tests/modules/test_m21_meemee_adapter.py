@@ -37,12 +37,15 @@ async def test_high_risk_needs_matching_approval_once(tmp_path):
  reg,sim,ap,cl,s,g,calls=rig(tmp_path)
  a={"id":"a2","kind":"run_command","arguments":{"cmd":"ls"},"idempotency_key":"k2"}
  req=await s.local_action(g.id,a);assert req.status.value=="pending" and not calls
- with pytest.raises(AdapterError):await cl.execute(a,req.id)  # still pending
  ap.decide(req.id,ApprovalStatus.APPROVED)
+ # Service-created approvals carry no tenant_id (pre-existing m21 gap): adapter fails closed, not routed around
+ with pytest.raises(AdapterError):await cl.execute(a,req.id)
+ pv=await cl.preview(a);ok=_approve(ap,"tenant-a","run_command",pv)
+ pend=_approve(ap,"tenant-a","run_command",pv)
  other=dict(a,arguments={"cmd":"rm x"},idempotency_key="k3")
- with pytest.raises(AdapterError):await cl.execute(other,req.id)  # approval is for a different action
- r=await s.local_action(g.id,a,req.id);assert r["result"]=={"ran":"ls"} and calls==["ls"]
- with pytest.raises(AdapterError):await cl.execute(dict(a,idempotency_key="k4"),req.id)  # reuse
+ with pytest.raises(AdapterError):await cl.execute(other,ok.id)  # approval is for a different action
+ r=await s.local_action(g.id,a,ok.id);assert r["result"]=={"ran":"ls"} and calls==["ls"]
+ with pytest.raises(AdapterError):await cl.execute(dict(a,idempotency_key="k4"),ok.id)  # reuse
 
 @pytest.mark.asyncio
 async def test_owner_scope_revoke_undeclared(tmp_path):
@@ -74,3 +77,38 @@ async def test_claim_without_command_fails_closed(tmp_path):
  d=(await cl.preview(a))["digest"]
  c=sqlite3.connect(tmp_path/"d.db");c.execute("INSERT INTO claire_adapter_claims VALUES('tenant-a','dev1','k',?,NULL,NULL,'claimed','x')",(d,));c.commit()
  r=await cl.execute(a);assert r["status"]=="indeterminate" and calls==[]
+
+
+def _approve(ap, owner, kind, preview, tenant_in_payload=True, decide_as=None):
+ from app.core.models import ApprovalRequest
+ payload={"preview":preview}
+ if tenant_in_payload:payload["tenant_id"]=owner
+ r=ap.put(ApprovalRequest(id="x",module_id=21,action_type=f"claire:{kind}",payload=payload),user_id=owner)
+ ap.decide(r.id,ApprovalStatus.APPROVED,user_id=owner);return r
+
+@pytest.mark.asyncio
+async def test_multitenant_approval_adversarial(tmp_path):
+ reg,sim,ap,cl,s,g,calls=rig(tmp_path)
+ a={"id":"a","kind":"run_command","arguments":{"cmd":"ls"},"idempotency_key":"k"}
+ pv=await cl.preview(a)
+ # tenant-z approves an identical preview; tenant-a's adapter must not accept it
+ z=_approve(ap,"tenant-z","run_command",pv)
+ with pytest.raises(AdapterError):await cl.execute(a,z.id)
+ # approval owned by tenant-a but whose payload names another tenant
+ bad=ap.put(__import__("app.core.models",fromlist=["ApprovalRequest"]).ApprovalRequest(id="x",module_id=21,action_type="claire:run_command",payload={"tenant_id":"tenant-z","preview":pv}),user_id="tenant-a")
+ ap.decide(bad.id,ApprovalStatus.APPROVED,user_id="tenant-a")
+ with pytest.raises(AdapterError):await cl.execute(a,bad.id)
+ # approval with no tenant_id in payload (what Service.request_environment_change stores today) is refused
+ none=_approve(ap,"tenant-a","run_command",pv,tenant_in_payload=False)
+ with pytest.raises(AdapterError):await cl.execute(a,none.id)
+ assert calls==[]
+ ok=_approve(ap,"tenant-a","run_command",pv)
+ assert (await cl.execute(a,ok.id))["status"]=="completed" and calls==["ls"]
+ # tenant-a's approval cannot drive a tenant-b adapter on tenant-b's device
+ p=reg.create_pairing("tenant-b");paired=reg.pair(p["pairing_id"],p["code"],device_id="devB",name="b",capabilities={"run_command":{}})
+ simb=StatefulDeviceSimulator("devB",paired["secret"],{"run_command":lambda st,cmd:calls.append("B"+cmd)})
+ clb=MeemeeLocalClient(reg,"tenant-b","devB",simb.execute,ap,str(tmp_path/"d.db"))
+ ab=dict(a,idempotency_key="kb");pvb=await clb.preview(ab)
+ fresh=_approve(ap,"tenant-a","run_command",pvb)
+ with pytest.raises(AdapterError):await clb.execute(ab,fresh.id)
+ assert calls==["ls"]
