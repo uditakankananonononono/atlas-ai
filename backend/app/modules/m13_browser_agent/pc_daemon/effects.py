@@ -46,10 +46,11 @@ class EffectLedger:
         finally:
             connection.close()
 
-    def completed(self, device_id: str, approval_id: str) -> None:
+    def click_observed(self, device_id: str, approval_id: str) -> None:
+        """Click dispatched and no block seen in the bounded window. Site acceptance stays unconfirmed."""
         connection = self._connect()
         try:
-            connection.execute("UPDATE submit_effects SET state='completed' "
+            connection.execute("UPDATE submit_effects SET state='click_observed_unconfirmed' "
                                "WHERE device_id=? AND approval_id=?", (device_id, approval_id))
         finally:
             connection.close()

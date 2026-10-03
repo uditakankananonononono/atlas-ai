@@ -229,8 +229,10 @@ class Daemon:
             return protocol.make_result(command_id, ok=False, error=detail[:2000], receipt=event)
         block = detect_block(result.get("url", ""), result.get("http_status"),
                              result.get("html_excerpt", ""))
-        if kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT):
+        is_click = kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT)
+        if is_click:
             result.pop("html_excerpt", None)  # used for classification only; never returned
+            result["url"] = safe_url(result.get("url"))  # classified on the raw URL above
         if block is not None:
             if submit_claims is not None:
                 # The click happened; the site then stopped us. Keep the reservation so
@@ -247,11 +249,16 @@ class Daemon:
                                         blocked=block.value, receipt=event)
         if submit_claims is not None:
             try:
-                self.effects.completed(self.config.device_id, args["approval_id"])
+                self.effects.click_observed(self.config.device_id, args["approval_id"])
             except Exception as error:
                 return protocol.make_result(command_id, ok=False,
                                             error=f"effect outcome uncertain; do not retry: {error}")
-        event = self._receipt_event(command_id, "completed", {"kind": kind.value, "url": safe_url(result.get("url"))})
+        payload = {"kind": kind.value, "url": safe_url(result.get("url"))}
+        if is_click:
+            # ok means "click dispatched, no block seen in the bounded window". Never "site accepted".
+            result["site_acceptance"] = "unconfirmed"
+            payload["site_acceptance"] = "unconfirmed"
+        event = self._receipt_event(command_id, "completed", payload)
         return protocol.make_result(command_id, ok=True, result=result, receipt=event)
 
     async def _run(self, kind: CommandKind, session: str, args: dict[str, Any]) -> dict[str, Any]:
@@ -336,7 +343,7 @@ class Daemon:
             finally:
                 page.remove_listener("response", _on_response)
                 page.remove_listener("framenavigated", _on_navigated)
-            return {"url": safe_url(page.url), "http_status": statuses[-1] if statuses else None,
+            return {"url": page.url, "http_status": statuses[-1] if statuses else None,  # raw: classified, then sanitized in execute()
                     "html_excerpt": html_excerpt,
                     "post_click_observation": {
                         "bounded": True, "window_seconds": round(time.monotonic() - started, 2),
