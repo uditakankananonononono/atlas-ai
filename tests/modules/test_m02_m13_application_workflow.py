@@ -894,3 +894,53 @@ def test_assertion_is_refused_while_an_attempt_is_in_flight_or_unfinished(rig):
     assert codes == [409]  # no in-flight assertion; the owner's outcome write is not raced
     view = rig.client.get(base).json()
     assert view["status"] == "submit_dispatched_unconfirmed" and view.get("owner_assertion") in (None, {}, "")
+
+
+def _competing_writer(rig, sid):
+    async def hook():
+        other = rig.flow.store.get("local", sid)
+        other.error = "competing writer note"
+        rig.flow.store.save(other)
+    rig.page.click_hook = hook
+
+
+def _assert_honest_stale_response(rig, base, response):
+    assert response.status_code == 502, (response.status_code, response.text)
+    text = response.text
+    assert "do not retry" in text and "application workflow failed" not in text
+    assert "was not submitted" not in text
+    stored = rig.client.get(base).json()
+    assert stored["status"] == "submit_attempting_outcome_unconfirmed"  # newer record not overwritten
+    assert stored["outcome_uncertain"] is True and stored["error"] == "competing writer note"
+    assert rig.client.post(f"{base}/submit-approval").status_code in (409, 422)
+
+
+def test_stale_post_dispatch_save_is_honest_uncertain_not_http_500(rig):
+    base, approval_id = _approved_submit(rig)
+    _competing_writer(rig, base.rsplit("/", 1)[1])
+    _assert_honest_stale_response(rig, base, rig.client.post(f"{base}/submit", json={"approval_id": approval_id}))
+
+
+def test_stale_save_on_post_click_http_block_is_honest_uncertain(rig):
+    base, approval_id = _approved_submit(rig)
+    rig.page.next_observation = {"url": DONE_URL, "http_status": 403, "site_acceptance": "unconfirmed"}
+    _competing_writer(rig, base.rsplit("/", 1)[1])
+    _assert_honest_stale_response(rig, base, rig.client.post(f"{base}/submit", json={"approval_id": approval_id}))
+
+
+def test_stale_save_on_typed_uncertain_click_failure_is_honest_uncertain(rig):
+    from app.modules.m13_browser_agent.session_bridge.protocol import DispatchUncertain
+    base, approval_id = _approved_submit(rig)
+    rig.page.click_error = DispatchUncertain("daemon did not answer within 60s")
+    _competing_writer(rig, base.rsplit("/", 1)[1])
+    _assert_honest_stale_response(rig, base, rig.client.post(f"{base}/submit", json={"approval_id": approval_id}))
+
+
+@pytest.mark.parametrize("bad", ["x", -1, True, 1.5, None, [1]])
+def test_malformed_rev_is_refused_explicitly_not_coerced(bad):
+    from app.modules.m13_browser_agent.application_flow import ApplicationFlowError, UnsupportedSessionRecordError
+    data = ApplicationSession(tenant_id="t", session_id="s", actor_id="a", url="https://example.com/").to_dict()
+    data["rev"] = bad
+    with pytest.raises(UnsupportedSessionRecordError):
+        ApplicationSession.from_dict(data)
+    assert issubclass(UnsupportedSessionRecordError, ApplicationFlowError)
