@@ -2,6 +2,9 @@
 from collections import Counter
 
 
+MAX_EMBED_ITEMS = 50
+
+
 class EssayToolService:
     def __init__(self, matcher=None):
         self.matcher = matcher  # optional LocalEmbeddingMatcher; None keeps the token-overlap behaviour
@@ -10,6 +13,17 @@ class EssayToolService:
     def _tokens(text: str) -> set[str]:
         return {w.strip(".,:;!?()[]\"'").lower() for w in text.split() if len(w) > 3}
 
+    @staticmethod
+    def _values(item: dict) -> list[str]:
+        """Bounded, type-safe 'values': a str becomes [str]; None/numbers/non-lists become []; list entries are
+        kept only if str/int/float (as str), max 20 entries of 200 chars. (Previously None/123/mixed lists were a 500.)"""
+        v = item.get("values", [])
+        if isinstance(v, str):
+            v = [v]
+        if not isinstance(v, list):
+            return []
+        return [str(x)[:200] for x in v[:20] if isinstance(x, (str, int, float)) and not isinstance(x, bool)]
+
     def topic_finder(self, prompt: str, evidence: list[dict]) -> dict:
         prompt_terms = self._tokens(prompt)
         candidates = []
@@ -17,24 +31,28 @@ class EssayToolService:
             description = str(item.get("description", "")).strip()
             if not description:
                 continue
-            terms = self._tokens(description + " " + " ".join(item.get("values", [])))
+            terms = self._tokens(description + " " + " ".join(self._values(item)))
             overlap = sorted(prompt_terms & terms)
             candidates.append({"evidence_index": index, "label": item.get("label", f"Evidence {index + 1}"),
                                "prompt_connections": overlap,
                                "reflection_questions": ["What changed before and after this experience?",
                                                         "Which specific scene could you describe in your own words?",
                                                         "What does this reveal that the rest of your application does not?"]})
-        match_mode = "token_overlap_fallback"
-        if self.matcher is not None and candidates:
-            docs = [str(evidence[c["evidence_index"]].get("description", "")) + " "
-                    + " ".join(evidence[c["evidence_index"]].get("values", [])) for c in candidates]
-            scores = self.matcher.rank(prompt, docs)
+        match_mode, match_detail = "token_overlap_fallback", "no embedding matcher configured" if self.matcher is None else ""
+        if self.matcher is not None and len(candidates) > MAX_EMBED_ITEMS:
+            match_detail = f"more than {MAX_EMBED_ITEMS} evidence items; embedding skipped (bounded work)"
+        elif self.matcher is not None and candidates:
+            docs = [(str(evidence[c["evidence_index"]].get("description", "")) + " "
+                     + " ".join(self._values(evidence[c["evidence_index"]])))[:2000] for c in candidates]
+            scores = self.matcher.rank(prompt[:2000], docs)
             if scores is not None:
                 for c, sc in zip(candidates, scores):
                     c["embedding_similarity"] = sc
                 candidates.sort(key=lambda c: -c["embedding_similarity"])
-                match_mode = "embedding_local_model"
-        return {"candidates": candidates, "match_mode": match_mode, "student_selects_topic": True,
+                match_mode, match_detail = "embedding_local_model", ""
+            else:
+                match_detail = "no usable local embedding (unreachable, busy, slow or malformed); token overlap used"
+        return {"candidates": candidates, "match_mode": match_mode, "match_detail": match_detail, "student_selects_topic": True,
                 "generated_essay_prose": None}
 
     def outline(self, prompt: str, student_thesis: str, evidence: list[dict]) -> dict:
