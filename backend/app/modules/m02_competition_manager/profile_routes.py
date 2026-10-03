@@ -4,6 +4,7 @@ from app.auth.context import TenantContext,require_tenant
 from app.core.embeddings import get_embedding_provider
 from app.integrations.google_grounding import GoogleWorkspaceGrounder
 import hashlib,os
+from pydantic import field_validator
 from typing import Literal
 from app.core.embeddings import EmbeddingError
 from .profile_corpus import ProfileCorpus
@@ -20,8 +21,18 @@ router=APIRouter(prefix='/competition-manager/profile-corpus',tags=['competition
 class DocsIn(BaseModel):doc_type:Literal['writings','essays','activity_descriptions']|None=None;document_ids:list[str]=Field(min_length=1,max_length=100);embedding_provider:str|None=None
 class SheetsIn(BaseModel):spreadsheet_id:str;ranges:list[str]=Field(min_length=1,max_length=100);embedding_provider:str|None=None
 class RetrieveIn(BaseModel):query:str=Field(min_length=3,max_length=10000);limit:int=Field(8,ge=1,le=50);embedding_provider:str|None=None
+CLIENT_PROVIDERS={'lexical','ollama','bge','local'}
+def resolve_provider(requested):
+ """Clients may only pick offline/local providers; anything hosted is chosen by the server env alone."""
+ default=default_provider()
+ if requested is None:return default
+ name=requested.lower()
+ if name==default or name in CLIENT_PROVIDERS:return name
+ raise HTTPException(422,f'embedding_provider must be one of {sorted(CLIENT_PROVIDERS)} or the server default')
 def corpus(t,provider):
- name=(provider or default_provider()).lower();return ProfileCorpus(t.tenant_id,get_embedding_provider(name),provider_name=name)
+ name=resolve_provider(provider)
+ try:return ProfileCorpus(t.tenant_id,get_embedding_provider(name),provider_name=name)
+ except EmbeddingError as e:raise HTTPException(422,str(e))
 @router.post('/google-docs')
 async def docs(x:DocsIn,t:TenantContext=Depends(require_tenant)):
  try:g=GoogleWorkspaceGrounder()
@@ -51,14 +62,18 @@ def onboarding_complete(x:OnboardingCompleteIn,t:TenantContext=Depends(require_t
 def onboarding_skip(t:TenantContext=Depends(require_tenant)):return OnboardingService(t.tenant_id).skip()
 
 class PasteIn(BaseModel):
- doc_type:Literal['writings','essays','activity_descriptions'];title:str=Field(min_length=1,max_length=200);text:str=Field(min_length=20,max_length=200000);embedding_provider:str|None=None
+ model_config={'extra':'forbid'}
+ doc_type:Literal['writings','essays','activity_descriptions'];title:str=Field(min_length=1,max_length=200);text:str=Field(min_length=20,max_length=200000)
+ @field_validator('title','text',mode='before')
+ @classmethod
+ def _strip(cls,v):return v.strip() if isinstance(v,str) else v
 @router.post('/onboarding/documents')
 async def onboarding_paste(x:PasteIn,t:TenantContext=Depends(require_tenant)):
- """Owner pastes their own text; stored locally, embedded with the local/offline provider, never sent anywhere else."""
- text=x.text.strip()
- src=SimpleNamespace(text=text,source_type='pasted',source_id='paste:'+hashlib.sha256((x.doc_type+x.title+text).encode()).hexdigest()[:16],locator='paste/'+x.doc_type,provenance={'title':x.title,'doc_type':x.doc_type,'origin':'owner_paste'})
- c=corpus(t,x.embedding_provider);out=await guarded(c.ingest([src]))
- docs=c.list_docs();row=[d for d in docs if d['title']==x.title and d['doc_type']==x.doc_type][-1]
+ """Owner pastes their own text. Always indexed with the server's configured provider (not client-selectable)."""
+ sid='paste:'+hashlib.sha256((x.doc_type+x.title+x.text).encode()).hexdigest()[:16]
+ src=SimpleNamespace(text=x.text,source_type='pasted',source_id=sid,locator='paste/'+x.doc_type,provenance={'title':x.title,'doc_type':x.doc_type,'origin':'owner_paste'})
+ c=corpus(t,None);out=await guarded(c.ingest([src]))
+ docs=c.list_docs();row=next(d for d in docs if d['source_id']==sid)
  return {**out,'document':row,'status':OnboardingService(t.tenant_id).status(docs)}
 async def drafting_model():
  """Report, without guessing, whether a local drafting model is configured and reachable."""

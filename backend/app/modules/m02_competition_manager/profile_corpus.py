@@ -42,4 +42,4 @@ class ProfileCorpus:
 
  def list_docs(self):
   with self.sessions() as db:rows=list(db.scalars(select(ProfileDocumentRow).where(ProfileDocumentRow.tenant_id==self.tenant_id).order_by(ProfileDocumentRow.id)))
-  return [{'id':x.id,'title':x.title,'doc_type':(x.provenance or {}).get('doc_type'),'source_type':x.source_type,'chars':len(x.text),'embedding_provider':(x.provenance or {}).get('embedding_provider')} for x in rows]
+  return [{'id':x.id,'source_id':x.source_id,'title':x.title,'doc_type':(x.provenance or {}).get('doc_type'),'source_type':x.source_type,'chars':len(x.text),'embedding_provider':(x.provenance or {}).get('embedding_provider')} for x in rows]

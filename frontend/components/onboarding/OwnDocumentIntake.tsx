@@ -12,7 +12,7 @@ type DocType=typeof TYPES[number]["id"];
 type Model={configured:boolean;reachable:boolean;installed?:boolean;model?:string;detail:string};
 type Status={documents:number;by_type:Record<string,number>;missing_types:string[];ready_for_drafting:boolean;complete:boolean;indexing_note?:string;indexing_leaves_machine?:boolean;drafting_model?:Model};
 
-export default function OwnDocumentIntake({onDone}:{onDone:()=>void}){
+export default function OwnDocumentIntake({onDone,reopened=false}:{onDone:()=>void;reopened?:boolean}){
  const [type,setType]=useState<DocType>("essays");
  const [title,setTitle]=useState("");
  const [text,setText]=useState("");
@@ -25,7 +25,7 @@ export default function OwnDocumentIntake({onDone}:{onDone:()=>void}){
  async function add(){
   setBusy(true);setMsg(null);
   try{
-   const r=await authFetch(`${P}/onboarding/documents`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({doc_type:type,title,text})});
+   const r=await authFetch(`${P}/onboarding/documents`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({doc_type:type,title:title.trim(),text:text.trim()})});
    if(!r.ok){setMsg({kind:"err",text:typeof (await detail(r))==="string"?await detail(r):"Could not save this document."});return}
    const j=await r.json();setStatus(s=>({...(s||{}),...j.status}));setIds(x=>[...x,j.document.id]);setTitle("");setText("");setMsg({kind:"ok",text:`Saved "${j.document.title}" as ${type.replace("_"," ")}.`});
   }catch{setMsg({kind:"err",text:"Atlas backend is not reachable."})}finally{setBusy(false)}
@@ -39,7 +39,7 @@ export default function OwnDocumentIntake({onDone}:{onDone:()=>void}){
    onDone();
   }catch{setMsg({kind:"err",text:"Atlas backend is not reachable."})}finally{setBusy(false)}
  }
- async function skip(){await authFetch(`${P}/onboarding/skip`,{method:"POST"}).catch(()=>{});onDone()}
+ async function skip(){if(!reopened)await authFetch(`${P}/onboarding/skip`,{method:"POST"}).catch(()=>{});onDone()}
  const total=status?.documents||0;
  return <section aria-labelledby="own-docs-title" className="rounded-xl border border-cyan-700 bg-slate-900 p-6">
   <p className="text-sm uppercase tracking-wide text-cyan-400">Your source documents</p>
@@ -53,6 +53,6 @@ export default function OwnDocumentIntake({onDone}:{onDone:()=>void}){
   {status?.indexing_note&&<p className={`mt-3 text-xs ${status.indexing_leaves_machine?"text-amber-300":"text-slate-400"}`}>{status.indexing_note}{status.indexing_leaves_machine?" Your text leaves this machine for indexing.":""} Matching is keyword-based unless a model provider is configured.</p>}
   {status?.drafting_model&&!(status.drafting_model.configured&&status.drafting_model.reachable&&status.drafting_model.installed)&&<p className="mt-2 text-xs text-amber-300">Drafting is not available yet: {status.drafting_model.detail} You can still save documents now.</p>}
   {total>0&&status&&status.missing_types.length>0&&<p className="mt-2 text-xs text-slate-400">Partial: Atlas will only draw on what you have added. Not yet added: {status.missing_types.map(x=>x.replace("_"," ")).join(", ")}.</p>}
-  <div className="mt-5 flex items-center justify-between"><button onClick={skip} className="text-sm text-slate-400 underline">Skip for now</button><button disabled={busy||total===0} onClick={finish} className="rounded bg-emerald-600 px-4 py-2 disabled:opacity-40">{status&&status.missing_types.length>0?"Done (partial)":"Done"}</button></div>
+  <div className="mt-5 flex items-center justify-between"><button onClick={skip} className="text-sm text-slate-400 underline">{reopened?"Close":"Skip for now"}</button><button disabled={busy||total===0} onClick={finish} className="rounded bg-emerald-600 px-4 py-2 disabled:opacity-40">{status&&status.missing_types.length>0?"Done (partial)":"Done"}</button></div>
  </section>;
 }

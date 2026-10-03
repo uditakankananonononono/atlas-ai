@@ -117,12 +117,14 @@ async def integrated_application(competition_id:str,request:IntegratedApplicatio
     from .grounded_drafting import GroundedApplicationDrafter
     from .humanize import NaturalVoiceService
     from .integrated_application import IntegratedApplicationFlow
-    from .profile_routes import default_provider
+    from .profile_routes import resolve_provider
     from app.core.embeddings import EmbeddingError
     from app.core.providers import ProviderError
+    if request.provider.lower() not in {'ollama','local'} and os.getenv('ATLAS_ALLOW_HOSTED_DRAFTING')!='1':
+        raise HTTPException(422,'Hosted drafting providers are disabled for owner documents; use provider "ollama" or set ATLAS_ALLOW_HOSTED_DRAFTING=1 on the server.')
     if request.provider.lower() in {'ollama','local'} and not os.getenv('ATLAS_OLLAMA_MODEL'):
         raise HTTPException(503,'No local drafting model is configured (set ATLAS_OLLAMA_MODEL); nothing was drafted.')
-    ep=(request.embedding_provider or default_provider()).lower()
+    ep=resolve_provider(request.embedding_provider)
     flow=IntegratedApplicationFlow(ProfileCorpus(tenant.tenant_id,get_embedding_provider(ep),provider_name=ep),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),approvals,tenant.tenant_id)
     try:return await flow.prepare(competition_id,request.official_url,[x.model_dump() for x in request.fields],request.provider)
     except ValueError as e:raise HTTPException(422,str(e))
