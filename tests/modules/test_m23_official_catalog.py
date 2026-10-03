@@ -1,4 +1,4 @@
-import io, json, os, zipfile, urllib.request
+import hashlib, io, json, os, zipfile, urllib.request
 from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
@@ -115,14 +115,7 @@ def test_sources_are_pinned_to_nces_https_only():
         assert s["url"].startswith("https://nces.ed.gov/")
 
 
-def test_download_refuses_offhost_redirect(tmp_path, monkeypatch):
-    class Op:
-        def open(self, req, timeout=0):
-            raise oc.CatalogError("refused redirect to https://evil.example/x")
-    with pytest.raises(oc.CatalogError, match="refused redirect"):
-        oc.download_sources(tmp_path, opener=Op())
-    h = oc.urllib.request.HTTPRedirectHandler
-    # the real redirect handler built inside download_sources rejects off-host targets
+def test_download_refuses_offhost_redirect_and_disables_proxy(tmp_path, monkeypatch):
     seen = {}
     class Cap:
         def open(self, req, timeout=0):
@@ -130,10 +123,57 @@ def test_download_refuses_offhost_redirect(tmp_path, monkeypatch):
     monkeypatch.setattr(oc.urllib.request, "build_opener", lambda *handlers: (seen.setdefault("h", handlers), Cap())[1])
     with pytest.raises(RuntimeError):
         oc.download_sources(tmp_path)
-    with pytest.raises(oc.CatalogError, match="refused redirect"):
-        seen["h"][0]().redirect_request(None, None, 302, "", {}, "https://evil.example/a.zip")
-    with pytest.raises(oc.CatalogError, match="refused redirect"):
-        seen["h"][0]().redirect_request(None, None, 302, "", {}, "http://nces.ed.gov/a.zip")
+    ph = [h for h in seen["h"] if isinstance(h, oc.urllib.request.ProxyHandler)]
+    assert ph and ph[0].proxies == {}  # explicit empty proxy map: HTTP(S)_PROXY env ignored
+    redirect = [h for h in seen["h"] if isinstance(h, type)][0]()
+    for bad in ("https://evil.example/a.zip", "http://nces.ed.gov/a.zip"):
+        with pytest.raises(oc.CatalogError, match="refused redirect"):
+            redirect.redirect_request(None, None, 302, "", {}, bad)
+
+
+class _Resp:
+    def __init__(self, data):
+        self.b = io.BytesIO(data)
+    def read(self, n=-1):
+        return self.b.read(n)
+    def __enter__(self):
+        return self
+    def __exit__(self, *a):
+        return False
+
+
+def _opener(data):
+    class Op:
+        def open(self, req, timeout=0):
+            return _Resp(data)
+    return Op()
+
+
+def test_download_rejects_hash_mismatch_and_leaves_nothing(tmp_path):
+    with pytest.raises(oc.CatalogError, match="!= pinned"):
+        oc.download_sources(tmp_path, opener=_opener(b"tampered"))
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_download_enforces_size_cap_while_streaming(tmp_path, monkeypatch):
+    monkeypatch.setitem(oc.SOURCES["hd"], "max_bytes", 100)
+    with pytest.raises(oc.CatalogError, match="size cap"):
+        oc.download_sources(tmp_path, opener=_opener(b"x" * 100_000))
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_download_accepts_exact_pinned_content(tmp_path, monkeypatch):
+    data = b"fixture-bytes"
+    for s in oc.SOURCES.values():
+        monkeypatch.setitem(s, "sha256", hashlib.sha256(data).hexdigest())
+    got = oc.download_sources(tmp_path, opener=_opener(data))
+    assert set(got) == set(oc.SOURCES) and all(p.read_bytes() == data for p in got.values())
+    assert not list(tmp_path.glob("*.part"))
+
+
+def test_pins_are_full_sha256_and_sizes_bounded():
+    for s in oc.SOURCES.values():
+        assert len(s["sha256"]) == 64 and 0 < s["max_bytes"] <= 20_000_000
 
 
 def test_routes_503_when_not_imported_then_work(fx, monkeypatch, tmp_path):

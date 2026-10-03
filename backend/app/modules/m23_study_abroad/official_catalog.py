@@ -31,17 +31,24 @@ from urllib.parse import urlparse
 ALLOWED_HOST = "nces.ed.gov"
 BASE = "https://nces.ed.gov/ipeds/datacenter/data/"
 SOURCES = {
-    "hd": {"url": BASE + "HD2024.zip", "member": "HD2024.csv", "what": "IPEDS Institutional Characteristics directory, collection year 2024"},
-    "completions": {"url": BASE + "C2024_A.zip", "member": "C2024_a.csv", "what": "IPEDS Completions by CIP code and award level, 2023-24 awards"},
-    "cip": {"url": "https://nces.ed.gov/ipeds/cipcode/Files/CIPCode2020.csv", "member": None, "what": "NCES CIP 2020 program titles"},
+    "hd": {"url": BASE + "HD2024.zip", "member": "HD2024.csv", "what": "IPEDS Institutional Characteristics directory, collection year 2024",
+           "sha256": "d98425c123d7c0e872aec6e83960dfb501884818bf17385c340790f3d1f28345", "max_bytes": 5_000_000},
+    "completions": {"url": BASE + "C2024_A.zip", "member": "C2024_a.csv", "what": "IPEDS Completions by CIP code and award level, 2023-24 awards",
+              "sha256": "03234cc27fe4e7eb835a66d4f37aaec11bdac8dfa278f971584e1b20d03e1159", "max_bytes": 20_000_000},
+    "cip": {"url": "https://nces.ed.gov/ipeds/cipcode/Files/CIPCode2020.csv", "member": None, "what": "NCES CIP 2020 program titles",
+            "sha256": "6cf0882c1f5beb94981d0a1a72285ab5cf633759f45433fb909afbfb6d6b2657", "max_bytes": 5_000_000},
 }
 TERMS = {
     "url": "https://nces.ed.gov/help/disclaimer.asp",
-    "statement": ("Unless stated otherwise, all information on the U.S. Department of Education's IES website "
-                  "is in the public domain and may be reproduced, published, linked to, or otherwise used "
-                  "without IES' permission. Cite: U.S. Department of Education, Institute of Education Sciences."),
+    "statement": ("Verbatim: \"Unless stated otherwise, all information on the U.S. Department of Education's IES website at "
+                  "http://ies.ed.gov is in the public domain and may be reproduced, published, linked to, or otherwise used "
+                  "without IES' permission. This statement does not pertain to information at websites other than "
+                  "http://ies.ed.gov, whether funded by or linked to from IES.\" Cite: U.S. Department of Education. "
+                  "Institute of Education Sciences."),
     "checked_on": "2026-10-03",
-    "caveat": "Statement read from the NCES disclaimer page; not legal advice. Re-check before commercial redistribution.",
+    "caveat": ("Site-level statement. It names ies.ed.gov; these files are served from nces.ed.gov (an IES center, page "
+               "titled '| IES'), so applying it to the data files is my reading, not a file-specific licence or legal "
+               "guarantee. Re-check before any redistribution."),
 }
 SECTOR = {"0": "Administrative unit", "1": "Public, 4-year or above", "2": "Private not-for-profit, 4-year or above",
           "3": "Private for-profit, 4-year or above", "4": "Public, 2-year", "5": "Private not-for-profit, 2-year",
@@ -80,7 +87,10 @@ def _sha(path: Path) -> str:
 
 
 def download_sources(dest: Path, *, opener=None) -> dict[str, Path]:
-    """Download the pinned public files. Only https://nces.ed.gov; any redirect off-host is refused."""
+    """Download the pinned public files. Only https://nces.ed.gov; off-host redirects refused; proxies explicitly
+    disabled (environment proxy settings are NOT honoured); streamed with a hard size cap; the sha256 must equal the
+    pinned value or the file is discarded. A hash mismatch means NCES published a different file: review it, then
+    update the pin deliberately. Nothing is written to `dest` unless it verified."""
     dest.mkdir(parents=True, exist_ok=True)
 
     class _NoOffHost(urllib.request.HTTPRedirectHandler):
@@ -90,15 +100,31 @@ def download_sources(dest: Path, *, opener=None) -> dict[str, Path]:
                 raise CatalogError(f"refused redirect to {newurl}")
             return super().redirect_request(req, fp, code, msg, headers, newurl)
 
-    op = opener or urllib.request.build_opener(_NoOffHost)
+    op = opener or urllib.request.build_opener(urllib.request.ProxyHandler({}), _NoOffHost)
     out = {}
     for key, s in SOURCES.items():
         p = urlparse(s["url"])
         if p.scheme != "https" or p.hostname != ALLOWED_HOST:
             raise CatalogError("source not on allowed host")
         target = dest / Path(p.path).name
-        with op.open(urllib.request.Request(s["url"], headers={"User-Agent": "atlas-catalog-importer/1"}), timeout=60) as r:
-            target.write_bytes(r.read())
+        part = Path(str(target) + ".part")
+        h, n = hashlib.sha256(), 0
+        try:
+            with op.open(urllib.request.Request(s["url"], headers={"User-Agent": "atlas-catalog-importer/1"}), timeout=60) as r, open(part, "wb") as f:
+                while True:
+                    chunk = r.read(1 << 16)
+                    if not chunk:
+                        break
+                    n += len(chunk)
+                    if n > s["max_bytes"]:
+                        raise CatalogError(f"{key}: exceeds size cap {s['max_bytes']} bytes")
+                    h.update(chunk)
+                    f.write(chunk)
+            if h.hexdigest() != s["sha256"]:
+                raise CatalogError(f"{key}: sha256 {h.hexdigest()} != pinned {s['sha256']}; file changed upstream, review before re-pinning")
+            part.replace(target)
+        finally:
+            part.unlink(missing_ok=True)
         out[key] = target
     return out
 
