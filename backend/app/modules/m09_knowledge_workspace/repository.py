@@ -28,12 +28,7 @@ class GraphWriteConflict(RuntimeError):pass
 class SqlGraphRepository:
     def __init__(self,tenant_id:str,actor_id:str,session_factory:sessionmaker=SessionLocal):self.tenant_id=tenant_id;self.actor_id=actor_id;self.sessions=session_factory;Base.metadata.create_all(engine)
     def save_node(self,n:Node,action="node.created"):
-        with self.sessions.begin() as db:
-            r=db.scalar(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==n.id))
-            if r is None:r=NodeRow(tenant_id=self.tenant_id,id=n.id);db.add(r)
-            for k,v in {"node_type":n.node_type.value,"title":n.title,"body":n.body,"source_uri":n.source_uri,"source_module":n.source_module,"external_id":n.external_id,"metadata_json":n.metadata,"embedding":n.embedding,"version":n.version,"created_at":n.created_at,"updated_at":n.updated_at}.items():setattr(r,k,v)
-            db.add(AuditRow(tenant_id=self.tenant_id,actor_id=self.actor_id,action=action,entity_id=n.id,detail={"version":n.version,"title":n.title},created_at=n.updated_at))
-        return n
+        return self.save_node_with_suggestions(n,action,[],n.version-1 if action=="node.updated" else None)
     @contextmanager
     def _mutation(self):
         # Serialize cooperating graph writes per tenant. SQLite lacks row locks.

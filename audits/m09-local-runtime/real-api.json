@@ -17,7 +17,10 @@
       "provider": "spacy",
       "model": "en_core_web_sm",
       "version": "3.8.0",
-      "language": "en"
+      "language": "en",
+      "pipeline_sha256": "46fbe7759ef9f273f98f13b7cdf5e1c02a781ce2e884e75ef259ee0ad94bc316",
+      "ner_weights_sha256": "cd93e9ca9126c69f1d10a1039ef67c3d9ec1223b44d079856705970f0f19ff4e",
+      "policy": "allowlisted-packaged-3.8.0"
     },
     "similarity_threshold": 0.78,
     "score_is_probability": false,
@@ -55,15 +58,18 @@
             "provider": "spacy",
             "model": "en_core_web_sm",
             "version": "3.8.0",
-            "language": "en"
+            "language": "en",
+            "pipeline_sha256": "46fbe7759ef9f273f98f13b7cdf5e1c02a781ce2e884e75ef259ee0ad94bc316",
+            "ner_weights_sha256": "cd93e9ca9126c69f1d10a1039ef67c3d9ec1223b44d079856705970f0f19ff4e",
+            "policy": "allowlisted-packaged-3.8.0"
           },
           "incompatible_nodes_skipped": 0
         }
       },
-      "id": "c842a216-5e5e-4f3a-94ce-c5bf35abd1ea",
+      "id": "e3fc8f3b-ca03-40d2-b681-eef27762b88a",
       "version": 1,
-      "created_at": "2026-10-03T10:20:55.300809Z",
-      "updated_at": "2026-10-03T10:20:55.300809Z"
+      "created_at": "2026-10-03T10:27:22.561075Z",
+      "updated_at": "2026-10-03T10:27:22.561075Z"
     },
     {
       "node_type": "note",
@@ -89,15 +95,18 @@
             "provider": "spacy",
             "model": "en_core_web_sm",
             "version": "3.8.0",
-            "language": "en"
+            "language": "en",
+            "pipeline_sha256": "46fbe7759ef9f273f98f13b7cdf5e1c02a781ce2e884e75ef259ee0ad94bc316",
+            "ner_weights_sha256": "cd93e9ca9126c69f1d10a1039ef67c3d9ec1223b44d079856705970f0f19ff4e",
+            "policy": "allowlisted-packaged-3.8.0"
           },
           "incompatible_nodes_skipped": 0
         }
       },
-      "id": "bbf4f83f-e144-4431-ba82-4e5609d57762",
+      "id": "705e222d-8608-45bf-8fa2-d61a2354f274",
       "version": 1,
-      "created_at": "2026-10-03T10:20:55.331108Z",
-      "updated_at": "2026-10-03T10:20:55.331108Z"
+      "created_at": "2026-10-03T10:27:22.601187Z",
+      "updated_at": "2026-10-03T10:27:22.601187Z"
     },
     {
       "node_type": "note",
@@ -123,15 +132,18 @@
             "provider": "spacy",
             "model": "en_core_web_sm",
             "version": "3.8.0",
-            "language": "en"
+            "language": "en",
+            "pipeline_sha256": "46fbe7759ef9f273f98f13b7cdf5e1c02a781ce2e884e75ef259ee0ad94bc316",
+            "ner_weights_sha256": "cd93e9ca9126c69f1d10a1039ef67c3d9ec1223b44d079856705970f0f19ff4e",
+            "policy": "allowlisted-packaged-3.8.0"
           },
           "incompatible_nodes_skipped": 0
         }
       },
-      "id": "5ab69c4a-748f-441c-b1b5-0a72006d666a",
+      "id": "c7f2cfec-2f4f-45cf-94a8-e4e647f142f2",
       "version": 1,
-      "created_at": "2026-10-03T10:20:55.369603Z",
-      "updated_at": "2026-10-03T10:20:55.369603Z"
+      "created_at": "2026-10-03T10:27:22.644364Z",
+      "updated_at": "2026-10-03T10:27:22.644364Z"
     }
   ],
   "identical_text_similarity": 1.0000000000000002,
@@ -157,6 +169,11 @@
           },
           "threshold": 0.78,
           "not_probability": true
+        },
+        {
+          "kind": "node_versions",
+          "source_version": 1,
+          "target_version": 1
         }
       ]
     },
@@ -173,9 +190,17 @@
             "provider": "spacy",
             "model": "en_core_web_sm",
             "version": "3.8.0",
-            "language": "en"
+            "language": "en",
+            "pipeline_sha256": "46fbe7759ef9f273f98f13b7cdf5e1c02a781ce2e884e75ef259ee0ad94bc316",
+            "ner_weights_sha256": "cd93e9ca9126c69f1d10a1039ef67c3d9ec1223b44d079856705970f0f19ff4e",
+            "policy": "allowlisted-packaged-3.8.0"
           },
           "not_probability": true
+        },
+        {
+          "kind": "node_versions",
+          "source_version": 1,
+          "target_version": 1
         }
       ]
     },
@@ -192,9 +217,17 @@
             "provider": "spacy",
             "model": "en_core_web_sm",
             "version": "3.8.0",
-            "language": "en"
+            "language": "en",
+            "pipeline_sha256": "46fbe7759ef9f273f98f13b7cdf5e1c02a781ce2e884e75ef259ee0ad94bc316",
+            "ner_weights_sha256": "cd93e9ca9126c69f1d10a1039ef67c3d9ec1223b44d079856705970f0f19ff4e",
+            "policy": "allowlisted-packaged-3.8.0"
           },
           "not_probability": true
+        },
+        {
+          "kind": "node_versions",
+          "source_version": 1,
+          "target_version": 1
         }
       ]
     },
@@ -211,9 +244,17 @@
             "provider": "spacy",
             "model": "en_core_web_sm",
             "version": "3.8.0",
-            "language": "en"
+            "language": "en",
+            "pipeline_sha256": "46fbe7759ef9f273f98f13b7cdf5e1c02a781ce2e884e75ef259ee0ad94bc316",
+            "ner_weights_sha256": "cd93e9ca9126c69f1d10a1039ef67c3d9ec1223b44d079856705970f0f19ff4e",
+            "policy": "allowlisted-packaged-3.8.0"
           },
           "not_probability": true
+        },
+        {
+          "kind": "node_versions",
+          "source_version": 1,
+          "target_version": 1
         }
       ]
     }

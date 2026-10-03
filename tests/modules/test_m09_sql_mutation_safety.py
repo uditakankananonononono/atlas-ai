@@ -63,3 +63,39 @@ def test_untrained_named_ner_configuration_is_rejected(tmp_path,monkeypatch):
     blank=spacy.blank('en');blank.add_pipe('ner');blank.initialize();blank.to_disk(tmp_path/'blank')
     monkeypatch.setenv('ATLAS_M09_SPACY_MODEL',str(tmp_path/'blank'))
     with pytest.raises(NLPUnavailable):get_local_nlp()
+
+def test_update_suggestion_failure_rolls_back_node_invalidation_and_audit():
+    _,repo,svc=setup();a=svc.create_node(NodeCreate(node_type='note',title='Paris'))
+    b=svc.create_node(NodeCreate(node_type='note',title='Paris'))
+    old=list(suggestions(repo));old_ids={s.id for s in old}
+    def fail(mapper,connection,target):
+        if target.tenant_id==repo.tenant_id:raise RuntimeError('forced proposal refresh failure')
+    event.listen(SuggestionRow,'before_update',fail)
+    try:
+        with pytest.raises(RuntimeError,match='forced proposal'):svc.update_node(b.id,NodeUpdate(expected_version=1,body='Paris'))
+    finally:event.remove(SuggestionRow,'before_update',fail)
+    assert repo.get_node(b.id).version==1
+    assert {s.id for s in suggestions(repo)}==old_ids
+    assert all(s.status=='pending' for s in suggestions(repo))
+
+def test_review_edge_failure_rolls_back_status_and_audit():
+    _,repo,svc=setup();a=svc.create_node(NodeCreate(node_type='note',title='Paris'));b=svc.create_node(NodeCreate(node_type='note',title='Paris'))
+    old=next(s for s in suggestions(repo) if s.relationship=='related_to')
+    def fail(mapper,connection,target):
+        if target.tenant_id==repo.tenant_id:raise RuntimeError('forced edge insert failure')
+    event.listen(EdgeRow,'before_insert',fail)
+    try:
+        with pytest.raises(RuntimeError,match='forced edge'):svc.review(old.id,True)
+    finally:event.remove(EdgeRow,'before_insert',fail)
+    assert repo.get_suggestion(old.id).status.value=='pending' and not repo.edges_for({a.id,b.id})
+
+def test_overlapping_reviews_have_one_winner_and_one_edge():
+    _,repo,svc=setup();a=svc.create_node(NodeCreate(node_type='note',title='Paris'));b=svc.create_node(NodeCreate(node_type='note',title='Paris'))
+    old=next(s for s in suggestions(repo) if s.relationship=='related_to')
+    barrier=Barrier(2)
+    def approve(_):
+        barrier.wait(timeout=15)
+        try:return Service(SqlGraphRepository(repo.tenant_id,'tester')).review(old.id,True).status.value
+        except ConflictError:return 'conflict'
+    with ThreadPoolExecutor(max_workers=2) as pool:results=list(pool.map(approve,[0,1]))
+    assert sorted(results)==['accepted','conflict'] and len(repo.edges_for({a.id,b.id}))==1

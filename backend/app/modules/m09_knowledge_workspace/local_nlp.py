@@ -14,12 +14,20 @@ class NLPUnavailable(RuntimeError):
 class LocalNLP:
     def __init__(self, model: str, ner_model: str, cache: str | None, threads: int):
         try:
+            if ner_model != 'en_core_web_sm':
+                raise ValueError('M09 permits only the verified packaged en_core_web_sm 3.8.0 NER model')
             from fastembed import TextEmbedding
             import spacy
             self.encoder = TextEmbedding(model_name=model, cache_dir=cache, threads=threads,
                                          providers=['CPUExecutionProvider'])
             self.ner = spacy.load(ner_model)
+            if version('en-core-web-sm') != '3.8.0':
+                raise ValueError('M09 requires en_core_web_sm package version 3.8.0')
+            pipeline_hash = _tree_sha(Path(self.ner.path))
+            if pipeline_hash != '46fbe7759ef9f273f98f13b7cdf5e1c02a781ce2e884e75ef259ee0ad94bc316':
+                raise ValueError('M09 spaCy pipeline bytes do not match the verified package')
             if 'ner' not in self.ner.pipe_names:
+
                 raise ValueError('spaCy pipeline has no trained NER component')
             # Bind persisted vectors to the actual ONNX/tokenizer bytes, not just dimensions.
             model_dir = Path(self.encoder.model._model_dir)
@@ -35,7 +43,10 @@ class LocalNLP:
                 'fastembed_version': version('fastembed'),
             }
             self.entity_identity = {'provider': 'spacy', 'model': ner_model,
-                                    'version': self.ner.meta.get('version'), 'language': self.ner.lang}
+                                    'version': self.ner.meta.get('version'), 'language': self.ner.lang,
+                                    'pipeline_sha256': pipeline_hash,
+                                    'ner_weights_sha256': _sha(Path(self.ner.path) / 'ner' / 'model'),
+                                    'policy': 'allowlisted-packaged-3.8.0'}
             self.lock = RLock()
         except Exception as exc:
             raise NLPUnavailable(f'M09 local NLP unavailable ({type(exc).__name__}). '
@@ -59,6 +70,16 @@ class LocalNLP:
                     for e in doc.ents]
         except Exception as exc:
             raise NLPUnavailable('M09 entity inference failed; no node write was performed') from exc
+
+
+def _tree_sha(root: Path) -> str:
+    digest=hashlib.sha256()
+    for path in sorted(root.rglob('*')):
+        if path.is_file():
+            digest.update(path.relative_to(root).as_posix().encode()+b'\0')
+            with path.open('rb') as stream:
+                for block in iter(lambda:stream.read(1024*1024),b''):digest.update(block)
+    return digest.hexdigest()
 
 
 def _sha(path: Path) -> str:
