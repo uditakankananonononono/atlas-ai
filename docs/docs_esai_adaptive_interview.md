@@ -16,3 +16,5 @@ Confirmation records the acting actor id; the auth model has no student-only rol
 - Transport: no env proxy (HTTP_PROXY ignored, tested), no redirects. The body read is checked against CALL_TIMEOUT_S, but delayed headers followed by a slow body are not a hard transport total; the HARD request cap is the 12s step budget (worker thread join).
 - An abandoned call may keep generating locally; its thread holds one of 2 slots until it really ends. While both slots are held, new answers get a labeled fallback ("busy"). Still synchronous inside the request thread; no background/status endpoint.
 - Real run (qwen0.5b_rev4.txt, counts computed by the script from per-turn records): turns 1-4 questions: 2 adaptive_span_anchored, 2 fixed_script_fallback; extraction 0 proposed, 9 rejected. Extraction is unsupported on this model.
+
+- Privacy: loopback is not a privacy sandbox. The local model server you point this at can log or retain the student's answers.
