@@ -20,6 +20,8 @@ class DaemonConfig:
     capabilities: list[str] = field(default_factory=lambda: ["navigate", "extract", "screenshot", "read_values"])
     effect_ledger_path: str | None = None  # defaults beside the persistent device key
     command_timeout_seconds: float = 90.0
+    click_settle_seconds: float = 1.0        # quiet time with no navigation before a click is judged
+    click_observe_max_seconds: float = 10.0  # hard cap on the post-click observation window
 
     @classmethod
     def load(cls, path: Path) -> "DaemonConfig":

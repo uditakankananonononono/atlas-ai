@@ -69,14 +69,39 @@ class DeviceIdentity:
         return self._private.sign(message)
 
 
+def safe_url(url: str | None) -> str:
+    """scheme://host/path only: queries and fragments often carry tokens and never leave the PC."""
+    from urllib.parse import urlsplit
+    try:
+        parts = urlsplit(url or "")
+    except ValueError:
+        return "unknown page"
+    if not parts.scheme:
+        return (url or "")[:200]
+    return f"{parts.scheme}://{parts.netloc.rsplit('@', 1)[-1]}{parts.path}"[:500]
+
+
+_SENSITIVE_NAME = ("password", "passwd", "passcode", "otp", "2fa", "mfa", "token", "secret",
+                   "cvv", "cvc", "card", "ssn", "pin")
 _SENSITIVE_AUTOCOMPLETE = ("password", "one-time-code", "cc-number", "cc-csc", "cc-exp")
 
 
 async def _is_credential_field(locator: Any) -> bool:
     """True for password, one-time-code and card fields; their values are never read out."""
     info = await locator.evaluate(
-        "e => ({type: (e.type || '').toLowerCase(), ac: (e.autocomplete || '').toLowerCase()})")
-    return info.get("type") == "password" or any(m in info.get("ac", "") for m in _SENSITIVE_AUTOCOMPLETE)
+        "e => ({type: (e.type || '').toLowerCase(), ac: (e.autocomplete || '').toLowerCase(),"
+        " names: [e.name, e.id, e.placeholder, e.getAttribute('aria-label'), e.getAttribute('data-testid')]"
+        ".filter(Boolean).join(' ').toLowerCase(),"
+        " masked: (getComputedStyle(e).webkitTextSecurity || 'none') !== 'none'})")
+    if info.get("type") == "password" or info.get("masked"):
+        return True
+    if any(m in info.get("ac", "") for m in _SENSITIVE_AUTOCOMPLETE):
+        return True
+    import re
+    return any(re.search(rf"(?<![a-z]){re.escape(m)}(?![a-z])|{re.escape(m)}", info.get("names", ""))
+               for m in _SENSITIVE_NAME if len(m) > 3) or any(
+        re.search(rf"(?<![a-z0-9]){re.escape(m)}(?![a-z0-9])", info.get("names", ""))
+        for m in _SENSITIVE_NAME if len(m) <= 3)
 
 
 class BrowserHandle:
@@ -213,10 +238,10 @@ class Daemon:
                 error = (f"platform blocked after click ({block.value}); "
                          "effect may have occurred; do not retry")
             elif kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT):
-                error = f"platform blocked after click ({block.value}) at {result.get('url', 'unknown page')}"
+                error = f"platform blocked after click ({block.value}) at {safe_url(result.get('url'))}"
             else:
-                error = f"site stopped the read at {result.get('url', 'unknown page')}"
-            event = self._receipt_event(command_id, "blocked", {"block": block.value, "url": result.get("url"),
+                error = f"site stopped the read at {safe_url(result.get('url'))}"
+            event = self._receipt_event(command_id, "blocked", {"block": block.value, "url": safe_url(result.get("url")),
                                                               "http_status": result.get("http_status")})
             return protocol.make_result(command_id, ok=False, error=error,
                                         blocked=block.value, receipt=event)
@@ -226,7 +251,7 @@ class Daemon:
             except Exception as error:
                 return protocol.make_result(command_id, ok=False,
                                             error=f"effect outcome uncertain; do not retry: {error}")
-        event = self._receipt_event(command_id, "completed", {"kind": kind.value, "url": result.get("url")})
+        event = self._receipt_event(command_id, "completed", {"kind": kind.value, "url": safe_url(result.get("url"))})
         return protocol.make_result(command_id, ok=True, result=result, receipt=event)
 
     async def _run(self, kind: CommandKind, session: str, args: dict[str, Any]) -> dict[str, Any]:
@@ -272,27 +297,53 @@ class Daemon:
             # Capture the main-frame document response a click causes (if any) so the
             # landing page's HTTP status is classified exactly like NAVIGATE's.
             statuses: list[int] = []
+            last_event = [time.monotonic()]
 
             def _on_response(response: Any) -> None:
                 try:
                     if (response.request.is_navigation_request()
                             and response.request.frame == page.main_frame):
                         statuses.append(int(response.status))
+                        last_event[0] = time.monotonic()
                 except Exception:  # noqa: BLE001 - observation only, never alter the click
                     pass
 
+            def _on_navigated(frame: Any) -> None:
+                if frame == page.main_frame:
+                    last_event[0] = time.monotonic()
+
             page.on("response", _on_response)
+            page.on("framenavigated", _on_navigated)
+            started = time.monotonic()
             try:
                 await page.locator(str(args["selector"])).click()
+                last_event[0] = time.monotonic()
+                # Watch until no main-frame navigation has happened for the settle time
+                # (each navigation restarts it), capped. This catches redirects and short
+                # JS-timer navigations; it cannot see anything that starts later.
+                settle = float(self.config.click_settle_seconds)
+                cap = float(self.config.click_observe_max_seconds)
+                while True:
+                    now = time.monotonic()
+                    if now - last_event[0] >= settle or now - started >= cap:
+                        break
+                    await asyncio.sleep(min(0.05, settle))
                 try:
                     await page.wait_for_load_state("domcontentloaded", timeout=5000)
-                except Exception:  # noqa: BLE001 - no navigation / slow page: classify what we have
+                except Exception:  # noqa: BLE001
                     pass
                 html_excerpt = (await page.content())[:4000]
             finally:
                 page.remove_listener("response", _on_response)
-            return {"url": page.url, "http_status": statuses[-1] if statuses else None,
-                    "html_excerpt": html_excerpt, **extra}
+                page.remove_listener("framenavigated", _on_navigated)
+            return {"url": safe_url(page.url), "http_status": statuses[-1] if statuses else None,
+                    "html_excerpt": html_excerpt,
+                    "post_click_observation": {
+                        "bounded": True, "window_seconds": round(time.monotonic() - started, 2),
+                        "main_frame_navigations_seen": len(statuses),
+                        "note": ("later navigations after this window are not observed; "
+                                 "ok means no block was seen in the window, not that the site accepted it")},
+                    **extra}
         if kind is CommandKind.CLOSE:
             closed = await self.browser.close_page(session)
             return {"closed": closed}
