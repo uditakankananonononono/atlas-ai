@@ -145,3 +145,15 @@ def test_duplicate_manual_api_edge_returns_conflict():
     assert client.post('/api/v1/knowledge-workspace/edges',headers=headers,json=body).status_code==201
     assert client.post('/api/v1/knowledge-workspace/edges',headers=headers,json=body).status_code==409
     assert len(repo.edges_for({a.id,b.id}))==1
+
+def test_manual_api_long_acyclic_path_is_allowed_and_real_cycle_denied():
+    _,repo,svc=setup();outside=svc.create_node(NodeCreate(node_type='note',title='Outside'));first=svc.create_node(NodeCreate(node_type='note',title='First'));last=svc.create_node(NodeCreate(node_type='note',title='Last'))
+    ids=[first.id]+[str(uuid4()) for _ in range(60)]+[last.id]
+    with repo.sessions.begin() as db:
+        for nid in ids[1:-1]:db.add(NodeRow(tenant_id=repo.tenant_id,id=nid,node_type='note',title='Chain',metadata_json={},embedding=None,version=1,created_at=first.created_at,updated_at=first.updated_at))
+        for start,end in zip(ids,ids[1:]):db.add(EdgeRow(tenant_id=repo.tenant_id,id=str(uuid4()),source_id=start,target_id=end,relationship='depends_on',evidence={},confidence=1,created_at=first.created_at))
+    client=TestClient(app);headers={'X-Atlas-Tenant':repo.tenant_id}
+    body={'source_id':outside.id,'target_id':first.id,'relationship':'depends_on'}
+    assert client.post('/api/v1/knowledge-workspace/edges',headers=headers,json=body).status_code==201
+    body={'source_id':last.id,'target_id':first.id,'relationship':'depends_on'}
+    assert client.post('/api/v1/knowledge-workspace/edges',headers=headers,json=body).status_code==409
