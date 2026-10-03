@@ -18,6 +18,9 @@ STOPS = frozenset({'payment', 'card', 'paid_trial', 'subscription', 'fee',
                    'unsupported_auth', 'unknown'})
 
 
+FQDN = r'(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}'
+
+
 @dataclass(frozen=True)
 class Profile:
     site: str
@@ -43,12 +46,20 @@ class Profile:
     expected_policy: str = 'Free local test account. No charges. Cancel any time.'
     sender: str = 'verify@fixture.invalid'
     subject: str = 'Verify your local test account'
+    # Exact reviewed DKIM signing domains (header.i) accepted for the verification mail.
+    # Empty means the From address domain only. Never suffix/wildcard matched.
+    dkim_domains: tuple[str, ...] = ()
 
     def __post_init__(self):
         p = urlsplit(self.origin)
-        # Deliberate shipping boundary. No remote signup is enabled in this release.
-        if p.scheme != 'http' or p.hostname != '127.0.0.1' or not p.port or p.path or p.query or p.fragment or p.username:
-            raise ValueError('local fixture origin must be http://127.0.0.1:PORT')
+        loopback = (p.scheme == 'http' and p.hostname == '127.0.0.1' and p.port)
+        # Real site: https, one exact reviewed DNS name, default port, no IP literal, no userinfo.
+        real = (p.scheme == 'https' and p.port is None and p.hostname == p.netloc
+                and re.fullmatch(FQDN, p.hostname or '') and not re.fullmatch(r'[0-9.]+', p.hostname or ''))
+        if not (loopback or real) or p.path or p.query or p.fragment or p.username:
+            raise ValueError('origin must be http://127.0.0.1:PORT (fixture) or https://reviewed.host.name')
+        if any(not re.fullmatch(FQDN, d) for d in self.dkim_domains):
+            raise ValueError('dkim_domains must be exact lowercase DNS names')
         if not re.fullmatch(r'/[A-Za-z0-9/_-]*', self.signup_path):
             raise ValueError('invalid signup path')
         if any(c not in STOPS for c in self.commitments):
@@ -138,7 +149,10 @@ class Engine:
           host:port origins.
         * UDP: QUIC/HTTP3 (WebTransport) is off, WebRTC may not use non-proxied UDP.
         """
-        bypass = sorted({'127.0.0.1:%d' % urlsplit(p.origin).port for p in profiles})
+        # Only loopback fixtures need a bypass. https profiles are served through the route
+        # handler (route.fetch), never by Chrome's own network stack, so DNS stays blocked.
+        bypass = sorted({'127.0.0.1:%d' % urlsplit(p.origin).port for p in profiles
+                         if urlsplit(p.origin).hostname == '127.0.0.1'}) or ['127.0.0.1:1']
         return ['--no-sandbox',
                 '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1',
                 '--proxy-server=http://127.0.0.1:1',
@@ -444,7 +458,7 @@ class Engine:
         if run['state'] != 'verification':
             return dict(run)
         scope = {'request_id': rid, 'recipient': run['email'], 'sender': p.sender,
-                 'subject': p.subject, 'since': run['verification_since'],
+                 'subject': p.subject, 'dkim_domains': p.dkim_domains, 'since': run['verification_since'],
                  'until': min(time.time(), run['deadline']), 'origin': p.origin,
                  'generation': run['generation']}
         try:
