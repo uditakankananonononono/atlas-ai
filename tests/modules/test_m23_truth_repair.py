@@ -97,3 +97,53 @@ def test_mounted_boolean_approval_and_invalid_probability():
     assert x.status_code==200 and x.json()['output']['submission_allowed'] is False
     x=client.post('/lifecycle-workbench/analyze',json={'method':'fit_scoring','data':{'schools':[{'name':'A','estimated_admit_probability':1.2}]}})
     assert x.status_code==422
+
+@pytest.mark.parametrize('url', ['https://u.example:bogus/a','https://u.example:99999/a','https://u.example:0/a'])
+def test_invalid_url_port_is_not_valid_source_metadata(url):
+    x=output('official_monitoring',{'records':[{'official_url':url,'checked_at':'2026-01-01'}]})
+    assert x['metadata_coverage']==0
+
+@pytest.mark.parametrize('records', [[None],[1],['bad'],[{} ,None]])
+def test_mounted_bad_record_types_are_422(records):
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from app.modules.m23_study_abroad.lifecycle_routes_01_62 import router
+    app=FastAPI();app.include_router(router);client=TestClient(app)
+    r=client.post('/lifecycle-workbench/analyze',json={'method':'official_monitoring','data':{'records':records}})
+    assert r.status_code==422
+
+def test_credential_contents_are_not_echoed_anywhere():
+    import json
+    r=run('encrypted_credentials_audit',{'credentials':[{'id':'record','encrypted':True,'password':'FAKE_SECRET_SENTINEL'}],'audit_events':[{'id':'a','contents':'FAKE_SECRET_SENTINEL'}],'other':'FAKE_SECRET_SENTINEL'})
+    assert 'FAKE_SECRET_SENTINEL' not in json.dumps(r)
+    assert r['inputs']=={'redacted':True}
+
+@pytest.mark.parametrize('field,value', [('budget',True),('budget',float('nan')),('budget',float('inf')),('budget',-1),('tuition',True),('tuition',float('nan')),('tuition',-1)])
+def test_fit_rejects_invalid_financial_values(field,value):
+    data={'values':[],'turning_points':[],'strengths':[],'goals':['science'],'finances':{'annual_budget_usd':200}}
+    u={'id':'u','name':'U','country':'US','programs':['Science'],'official_url':'https://u.example','annual_tuition_usd':100}
+    if field=='budget':data['finances']['annual_budget_usd']=value
+    else:u['annual_tuition_usd']=value
+    with pytest.raises(ValueError):Service().fit(StudentProfileIn(**data),[UniversityIn(**u)])
+
+@pytest.mark.parametrize('value', [True,-1,'bad'])
+def test_mounted_fit_financial_validation(value):
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from app.modules.m23_study_abroad.routes import router
+    app=FastAPI();app.include_router(router);client=TestClient(app)
+    body={'profile':{'values':[],'turning_points':[],'strengths':[],'finances':{'annual_budget_usd':value}},'universities':[]}
+    assert client.post('/study-abroad/fit',json=body).status_code==422
+
+def test_credential_id_and_metadata_cannot_reflect_secrets():
+    import json
+    r=run('encrypted_credentials_audit',{'credentials':[{'id':'FAKE_SECRET_SENTINEL','encrypted':False,'rotation_due':True}],'audit_events':[]})
+    assert 'FAKE_SECRET_SENTINEL' not in json.dumps(r)
+    assert r['output']['claimed_unencrypted_indices']==[0]
+
+def test_unknown_financials_remain_unknown_and_zero_is_known():
+    p=StudentProfileIn(values=[],turning_points=[],strengths=[],finances={'annual_budget_usd':0})
+    u=UniversityIn(id='u',name='U',country='US',programs=[],official_url='https://u.example',annual_tuition_usd=0)
+    assert Service().fit(p,[u])[0]['evidence']['budget_fit']==1
+    u.annual_tuition_usd=None
+    assert Service().fit(p,[u])[0]['score'] is None

@@ -20,3 +20,11 @@ All 62 previous full-spec verified-pushed labels are withdrawn to PARTIAL pendin
 API field changes are intentional: regex entities become entity_candidates; language support becomes a catalog with supported false; claimed encryption count replaces encryption proof; source links replace verified counts; top-100 candidate ranking is named caller-supplied. Consumers must not read old fields as proof.
 
 No final essay prose is generated. No pushes, signups, submissions or third-party communications occur. Main is responsible for separate audit and final owner communication.
+
+## Independent review follow-up
+
+Review against e71f7f7 found invalid URL ports admitted as valid metadata, malformed record elements raising server errors, credential input contents reflected in response, and bool/NaN/negative financial amounts accepted. Added 20 review tests. All 52 truth regression tests on e71f7f7: 19 failed, 33 passed. Patched complete M23 suite: 180 passed, one dependency deprecation warning.
+
+Repairs: parse/range-check URL ports; reject non-object monitoring records with 422; completely redact row58 inputs and return indices rather than untrusted credential identifiers; validate tuition and annual budget as finite nonnegative numeric values excluding bool, at schema and service boundaries. Unknown None stays unknown, explicit zero stays known. Mounted fit rejects malformed budgets with 422. No credential plaintext storage or encryption capability is claimed.
+
+Consumer impact: row58 inputs always returns {redacted:true}; unencrypted_ids/rotation_due become claimed_unencrypted_indices/claimed_rotation_due_indices to prevent reflection of arbitrary secrets. Financial numeric strings and booleans no longer coerce to amounts; invalid financial or source-record inputs receive 422 instead of accepted calculations/500. Bad source ports yield invalid metadata, not verification. Existing repo consumers have not been accepted by this repair lane; external clients remain unknown. Independent reviewer found unauthenticated production access returns 401; development local access is open by design. Neither observation is an approval or production-readiness claim.
