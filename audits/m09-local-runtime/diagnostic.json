@@ -14,31 +14,34 @@
     "provider": "spacy",
     "model": "en_core_web_sm",
     "version": "3.8.0",
-    "language": "en"
+    "language": "en",
+    "pipeline_sha256": "46fbe7759ef9f273f98f13b7cdf5e1c02a781ce2e884e75ef259ee0ad94bc316",
+    "ner_weights_sha256": "cd93e9ca9126c69f1d10a1039ef67c3d9ec1223b44d079856705970f0f19ff4e",
+    "policy": "allowlisted-packaged-3.8.0"
   },
-  "load_seconds": 1.3051736479999931,
-  "peak_rss_kib_linux": 354168,
+  "load_seconds": 1.44826702499995,
+  "peak_rss_kib_linux": 375756,
   "pairs": [
     {
       "a": "The cat sits on the mat.",
       "b": "The cat sits on the mat.",
       "cosine": 1.0,
       "passes_existing_0_78_threshold": true,
-      "inference_seconds": 0.016605926000011095
+      "inference_seconds": 0.01577885000006063
     },
     {
       "a": "The cat sits on the mat.",
       "b": "A kitten rests on a rug.",
       "cosine": 0.7809932199002518,
       "passes_existing_0_78_threshold": true,
-      "inference_seconds": 0.014640573999997741
+      "inference_seconds": 0.014689766999936182
     },
     {
       "a": "The cat sits on the mat.",
       "b": "Database backups are scheduled every Sunday.",
       "cosine": 0.33735504219229145,
       "passes_existing_0_78_threshold": false,
-      "inference_seconds": 0.014846636000015678
+      "inference_seconds": 0.01582241499988868
     }
   ],
   "extraction": [

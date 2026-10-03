@@ -15,7 +15,7 @@ Base: 313309be. Local branch: local/m09-real-local-runtime. No push and no main 
 - Read-only paths do not need models. No cloud/key fallback is added; shared core defaults are unchanged.
 - M25 stays a 16-bin SHA-256 token-hash plus lexical-overlap heuristic, now explicitly labelled in class documentation and returned retrieval metadata. No learned M25 model is claimed.
 
-Final run: 282 tests passed across every test_m09*.py and test_m25*.py file on Linux Python 3.12.14. See test-output.txt. The earlier broader attempt failed collection for an uninstalled unrelated bs4 dependency; its log is preserved. After required dependency installation the full entrypoint imported and all 282 tests passed.
+Final run: 289 tests passed across every test_m09*.py and test_m25*.py file on Linux Python 3.12.14. See test-output.txt. The earlier broader attempt failed collection for an uninstalled unrelated bs4 dependency; its log is preserved. After required dependency installation the full entrypoint imported and all 282 tests passed on the initial candidate (19fc49f); the revised candidate adds seven real-runtime safety tests.
 
 ## Costs and limits
 
@@ -23,7 +23,7 @@ First public model download was approximately 66.5 MB ONNX plus tokenizer/config
 
 English models; embedding truncates at 512 tokens. Existing threshold 0.78 unchanged, uncalibrated. Exact title matching only for mentions, and duplicate titles may create multiple suggestions. Diagnostics show spaCy mislabelled Alice as ORG, a concrete NER limitation. Scores are not probabilities. Comparison is limited to the first 500 repository nodes. Old vectors require node updates, not an automatic migration.
 
-Node and suggestion writes remain separate SQL transactions. Database failure after node save can leave missing suggestions. Existing stale suggestion, optimistic concurrency, truncation, graph-scaling and production readiness concerns are not fixed by this scope. No PostgreSQL, OIDC deployment, Windows or owner-PC validation. No module-wide implemented claim.
+Node, audit and suggestion writes now share a transaction; review status, edge and audit are also atomic. SQL expected-version compare-and-swap prevents lost updates. Pending proposals are invalidated on either endpoint edit and approval rechecks captured versions. Real SQLite regressions reproduced these failures before the fixes and now pass. PostgreSQL tenant advisory locking is coded but not tested. Manual cycle/concurrent-edge behavior, truncation, graph-scaling and production readiness remain outside this scope. No PostgreSQL, OIDC deployment, Windows or owner-PC validation. No module-wide implemented claim.
 
 ## Reproduce
 
@@ -37,3 +37,16 @@ Use Python >=3.12. Model download requires internet on first setup.
 The environment lock is the tested focused dependency set, not a replacement for the full project's dependency manifest. For product install use `pip install -e '.[m09-local]'`. Module-owned settings and HTTP behavior are documented in backend/app/modules/m09_knowledge_workspace/INTEGRATION.md.
 
 Artifacts: real-api.json and real-api-full-app.json, missing-model.json, diagnostic.json, test-output.txt, environment-lock.txt. Real-model tests are explicitly enabled by ATLAS_M09_RUN_REAL_TESTS=1; without that variable they skip rather than fake acceptance.
+
+
+## Independent-audit-driven repairs
+
+The first candidate's runtime inference was independently reproduced, but audit found three pre-existing SQL safety defects plus an overly broad NER-config acceptance condition. Their failing-first evidence is retained in sql-failing-first.txt (3 failures) and ner-failing-first.txt (1 failure). Changes now tested with actual models and SQLite:
+
+1. Stale proposal approval after either source or target edit returns 409, and creates no edge.
+2. SQL suggestion insert failure rolls back new node and audit. Update refresh failure preserves old node version, pending proposal IDs/status and audit.
+3. Two overlapping expected-version-1 updates produce one version-2 winner and one conflict. Two overlapping reviews produce one accepted winner, one conflict, one edge.
+4. Edge insertion failure rolls back review status and audit.
+5. A blank initialized NER with a component named ner is not accepted. Only the packaged en_core_web_sm 3.8.0 model is supported, verified against the actual full pipeline SHA-256 and NER weight SHA-256. Arbitrary user configuration cannot create a trained-model claim.
+
+Seven real-model/SQL safety test functions are additional to the two router/full-app real inference acceptance cases. The bulk of 289 passing tests are adjacent M09/M25 contracts, not 289 model quality tests. No independent re-audit result is claimed for this revised bundle.
