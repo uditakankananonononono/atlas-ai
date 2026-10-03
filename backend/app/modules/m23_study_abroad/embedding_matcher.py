@@ -19,6 +19,7 @@ EMBEDDING = "embedding_local_model"
 FALLBACK = "token_overlap_fallback"
 
 
+MAX_DIM = 4096  # explicit ceiling on vector length; with <=51 vectors this bounds JSON validation and cosine work
 _SLOTS = threading.BoundedSemaphore(4)  # embedding calls in flight; an abandoned (timed-out) call keeps its slot until it ends
 
 
@@ -79,7 +80,7 @@ class LocalEmbeddingMatcher:
                 return None
             by_index[i] = v
         vecs = [by_index[i] for i in range(n)]
-        if len({len(v) for v in vecs}) != 1 or any(not any(x for x in v) for v in vecs):  # all-zero vector is unusable
+        if len({len(v) for v in vecs}) != 1 or len(vecs[0]) > MAX_DIM or any(not any(x for x in v) for v in vecs):  # all-zero vector is unusable
             return None
         return vecs
 

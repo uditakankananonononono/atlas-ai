@@ -230,3 +230,13 @@ def test_oversized_evidence_skips_embedding_with_honest_detail():
     assert r["match_mode"] == FALLBACK and "bounded work" in r["match_detail"] and len(r["candidates"]) == 60
     ok = svc.topic_finder("robot", EVID)
     assert ok["match_mode"] == EMBEDDING and ok["match_detail"] == ""
+
+
+def test_vector_dimension_ceiling():
+    from app.modules.m23_study_abroad.embedding_matcher import MAX_DIM
+    big = [{"index": 0, "embedding": [1.0] * (MAX_DIM + 1)}, {"index": 1, "embedding": [1.0] * (MAX_DIM + 1)}]
+    srv = _server(_resp(big))
+    assert LocalEmbeddingMatcher(f"http://127.0.0.1:{srv.server_port}/v1", "stub").rank("q", ["a"]) is None
+    ok = [{"index": 0, "embedding": [1.0] * MAX_DIM}, {"index": 1, "embedding": [1.0] * MAX_DIM}]
+    srv2 = _server(_resp(ok))
+    assert LocalEmbeddingMatcher(f"http://127.0.0.1:{srv2.server_port}/v1", "stub").rank("q", ["a"]) == [1.0]
