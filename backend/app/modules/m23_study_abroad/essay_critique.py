@@ -22,7 +22,9 @@ from instinct_models.router import RouteAttempt, RoutedResult
 
 MODEL_SPAN = "model_selected_span"
 VERIFIED = "verified_measure"
-MAX_DRAFT = 6000
+HEURISTIC = "keyword_heuristic"
+MAX_DRAFT = 6000        # model sees at most this many characters (explicitly reported); measures use the full draft
+MAX_MEASURE = 100000
 STEP_BUDGET_S = 12.0
 CALL_TIMEOUT_S = 20.0
 _SLOTS = threading.BoundedSemaphore(2)
@@ -43,7 +45,7 @@ TEMPLATES = {
     "change": 'You wrote "{q}". What changed for you after that?',
 }
 ABSTRACT = ("passionate", "hardworking", "hard worker", "dedicated", "determined", "natural leader", "team player",
-            "always been", "love to learn", "driven", "motivated")
+            "always been", "love to learn")
 _SENT = re.compile(r"(?<=[.!?])\s+")
 _STOP = set("that this with from have what when where which would could about your their there them they then than been "
             "were will just into over some more very also because while after before again being".split())
@@ -57,48 +59,55 @@ def _ws(t: str) -> str:
     return " ".join((t or "").split())
 
 
+def _word_re(w: str) -> re.Pattern:
+    return re.compile(r"(?<!\w)" + re.escape(w) + r"(?!\w)", re.I)
+
+
 def verified_measures(draft: str) -> list[dict]:
-    """Deterministic, checkable diagnostics. Each quote is an exact sentence of the draft."""
-    out, sents = [], _sentences(draft)
+    """long_sentence and repeated_word are exact counts (VERIFIED). trait_word is only a KEYWORD HEURISTIC: it can
+    flag a sentence that already contains a good example, and says so. Quotes are exact sentences of the draft."""
+    out, sents = [], _sentences(draft[:MAX_MEASURE])
     for s in sents:
         n = len(s.split())
         if n > 40:
             out.append({"type": "long_sentence", "source": VERIFIED, "quote": s,
                         "observation": f"This sentence has {n} words (over 40).",
                         "question": "Which one idea in this sentence matters most to you?"})
-    words = [w.strip(".,;:!?\"'()").lower() for w in draft.split()]
     counts: dict[str, int] = {}
-    for w in words:
+    for w in re.findall(r"[A-Za-z']+", draft[:MAX_MEASURE].lower()):
+        w = w.strip("'")
         if len(w) > 4 and w not in _STOP:
             counts[w] = counts.get(w, 0) + 1
     for w, n in sorted(counts.items(), key=lambda kv: -kv[1])[:2]:
         if n >= 4:
-            first = next((s for s in sents if w in s.lower()), None)
+            first = next((s for s in sents if _word_re(w).search(s)), None)
             if first:
                 out.append({"type": "repeated_word", "source": VERIFIED, "quote": first,
-                            "observation": f'The word "{w}" appears {n} times in the draft.',
+                            "observation": f'The whole word "{w}" appears {n} times in the draft (case-insensitive); '
+                                           "the first sentence containing it is quoted.",
                             "question": "Where could a different, more specific word or detail say what you mean?"})
     for s in sents:
-        low = s.lower()
-        hit = next((a for a in ABSTRACT if a in low), None)
-        if hit and not re.search(r"\d", s) and len(s.split()) < 25:
-            out.append({"type": "abstract_claim", "source": VERIFIED, "quote": s,
-                        "observation": f'This sentence states a trait ("{hit}") without a specific example in it.',
-                        "question": "What is one specific moment that shows this about you?"})
-    return out[:6]
+        hit = next((a for a in ABSTRACT if _word_re(a).search(s)), None)
+        if hit:
+            out.append({"type": "trait_word", "source": HEURISTIC, "quote": s,
+                        "observation": f'Keyword heuristic only: this sentence contains the trait phrase "{hit}". '
+                                       "It may already include a specific example; you decide.",
+                        "question": "Is there one specific moment that shows this about you?"})
+    return out[:8]
 
 
 def parse_spans(text: str, draft: str) -> tuple[list[dict], list[dict]]:
-    kept, rejected, hay, seen = [], [], _ws(draft), set()
+    kept, rejected, seen = [], [], set()
     for raw in (text or "").splitlines():
         parts = [p.strip() for p in raw.strip().lstrip("-*0123456789.) ").split("|")]
         if len(parts) != 2 or parts[0].lower() not in TEMPLATES:
             if raw.strip():
                 rejected.append({"line": raw.strip()[:200], "reason": "not TYPE | phrase with an allowed type"})
             continue
-        span = _ws(parts[1].strip(" \"'"))
-        if not 3 <= len(span.split()) <= 14 or span not in hay:
-            rejected.append({"line": raw.strip()[:200], "reason": "phrase is not an exact copy from the draft"})
+        span = parts[1].strip(" \"'")
+        if not 4 <= len(span.split()) <= 14 or not re.search(r"(?<!\w)" + re.escape(span) + r"(?!\w)", draft):
+            rejected.append({"line": raw.strip()[:200],
+                             "reason": "phrase is not an exact raw substring of the draft at word boundaries"})
         elif span in seen:
             rejected.append({"line": raw.strip()[:200], "reason": "duplicate"})
         else:
@@ -180,15 +189,16 @@ def _ask(router: Router, draft: str) -> RoutedResult:
 
 
 def critique(draft: str, router: Router | None) -> dict:
-    draft = draft.strip()[:MAX_DRAFT]
+    draft = draft.strip()
+    seen_by_model = draft[:MAX_DRAFT]
     items = verified_measures(draft)
     mode, detail, rejected, model = "verified_measures_only_no_model", "", [], None
     if router is None:
         detail = "no local model configured; only verified measures returned"
     else:
-        routed = _ask(router, draft)
+        routed = _ask(router, seen_by_model)
         if routed.ok:
-            spans, rejected = parse_spans(routed.result.text, draft)
+            spans, rejected = parse_spans(routed.result.text, seen_by_model)
             items += spans
             model = routed.result.model
             mode = "model_selected_spans_plus_verified_measures" if spans else "verified_measures_only_model_spans_rejected"
@@ -199,5 +209,7 @@ def critique(draft: str, router: Router | None) -> dict:
             detail = (f"model call {a.outcome}" if a and a.outcome in ("busy", "timeout", "error")
                       else "no local model reachable") + "; only verified measures returned"
     return {"mode": mode, "detail": detail, "model": model, "items": items, "rejected_model_lines": rejected,
+            "processed": {"draft_chars": len(draft), "measures_chars": min(len(draft), MAX_MEASURE),
+                          "model_chars_considered": len(seen_by_model), "model_truncated": len(draft) > MAX_DRAFT},
             "student_authored_final": True, "generated_essay_prose": None, "revised_draft": None,
             "limits": "span choice and question relevance are not verified; this is coaching, not a rewrite"}

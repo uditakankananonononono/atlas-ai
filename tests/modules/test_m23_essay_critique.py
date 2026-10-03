@@ -31,8 +31,9 @@ def _router(srv):
 def test_verified_measures_are_exact_and_checkable():
     m = ec.verified_measures(DRAFT)
     kinds = {x["type"] for x in m}
-    assert {"abstract_claim", "repeated_word"} <= kinds
-    assert all(x["quote"] in DRAFT for x in m) and all(x["source"] == ec.VERIFIED for x in m)
+    assert {"trait_word", "repeated_word"} <= kinds
+    assert all(x["quote"] in DRAFT for x in m)
+    assert all(x["source"] == (ec.HEURISTIC if x["type"] == "trait_word" else ec.VERIFIED) for x in m)
     rep = next(x for x in m if x["type"] == "repeated_word")
     assert DRAFT.lower().count("engineering") >= 4 and "engineering" in rep["observation"]
 
@@ -94,7 +95,7 @@ def test_draft_is_capped_and_http_route_works(monkeypatch):
     assert r.json()["generated_essay_prose"] is None
     assert c.post("/api/v1/study-abroad/essay-tools/critique", headers=H, json={"draft": "short"}).status_code == 422
     big = ec.critique("word " * 5000, None)
-    assert all(len(i["quote"]) <= ec.MAX_DRAFT for i in big["items"])
+    assert big["processed"]["model_truncated"] is True and all(i["quote"] in "word " * 5000 for i in big["items"])
     s.shutdown()
 
 
@@ -116,3 +117,69 @@ def test_busy_slots_return_labeled_measures_only(monkeypatch):
         assert "busy" in out["detail"] and out["mode"].startswith("verified_measures_only")
     finally:
         for _ in range(2): ec._SLOTS.release()
+
+
+def test_trait_word_is_a_labeled_heuristic_and_whole_word_only():
+    ravi = ("I consider myself dedicated, but what matters is that my grandfather Ravi has run the shop on Park Street for "
+            "forty years and I opened it every morning at six during the monsoon. I was driven to the hospital by a neighbor.")
+    m = ec.verified_measures(ravi)
+    t = [x for x in m if x["type"] == "trait_word"]
+    assert t and all(x["source"] == ec.HEURISTIC and "Keyword heuristic only" in x["observation"] for x in t)
+    assert "without a specific example" not in json.dumps(m)
+    assert not any("driven" in x["observation"] for x in t)           # 'driven to the hospital' no longer flagged
+    assert ec.verified_measures("My hardworking friends and a hard-working team.") == [] or all(
+        x["source"] == ec.HEURISTIC for x in ec.verified_measures("My hardworking friends"))
+
+
+def test_repeated_word_counts_whole_words_only_and_attributes_to_a_real_sentence():
+    d = "Engineering is fun. Reengineering plans bore me. I like engineering and engineering teams, so engineering wins."
+    m = [x for x in ec.verified_measures(d) if x["type"] == "repeated_word"]
+    assert m and "4 times" in m[0]["observation"] and m[0]["quote"] == "Engineering is fun."
+    assert "Reengineering" not in m[0]["observation"]
+
+
+def test_midword_and_whitespace_changed_spans_are_rejected():
+    d = "Last spring I rebuilt the drive train of our robot overnight, and we  still placed."
+    assert ec.parse_spans("scene | ebuilt the drive train of our robot", d)[0] == []                 # mid-word start
+    assert ec.parse_spans("scene | rebuilt the drive train of our rob", d)[0] == []                  # mid-word end
+    assert ec.parse_spans("scene | and we still placed", d)[0] == []                                  # whitespace collapsed
+    assert ec.parse_spans("scene | I rebuilt the drive train", d)[0][0]["quote"] == "I rebuilt the drive train"
+    assert ec.parse_spans("scene | the drive train", d)[0] == []                                      # 3 words < 4
+
+
+def test_long_draft_reports_what_was_processed_instead_of_silently_truncating():
+    long = DRAFT + (" Filler sentence about nothing in particular." * 400) + " Engineering Engineering. The late sentence is " + "word " * 45 + "."
+    out = ec.critique(long, None)
+    assert out["processed"]["model_truncated"] is True and out["processed"]["draft_chars"] == len(long.strip())
+    assert out["processed"]["measures_chars"] == len(long.strip())
+    assert any(i["type"] == "long_sentence" and "late sentence" in i["quote"] for i in out["items"])  # measures see the tail
+    short = ec.critique(DRAFT, None)
+    assert short["processed"]["model_truncated"] is False
+
+
+def test_two_slot_adversarial_load_is_bounded(monkeypatch):
+    import time, threading as th
+    class TS(http.server.ThreadingHTTPServer):
+        daemon_threads = True
+    release = th.Event()
+    class H(http.server.BaseHTTPRequestHandler):
+        def do_POST(self):
+            self.rfile.read(int(self.headers["content-length"]))
+            try:
+                self.wfile.write(b"HTTP/1.1 200 OK\r\n")
+                for _ in range(60):
+                    if release.is_set(): break
+                    self.wfile.write(b"X-a: b\r\n"); self.wfile.flush(); time.sleep(0.2)
+            except Exception: pass
+        def log_message(self, *a): pass
+    srv = TS(("127.0.0.1", 0), H); th.Thread(target=srv.serve_forever, daemon=True).start()
+    monkeypatch.setattr(ec, "STEP_BUDGET_S", 0.4)
+    r = _router(srv)
+    before = th.active_count()
+    for _ in range(2):
+        assert ec.critique(DRAFT, r)["mode"].startswith("verified_measures_only")   # times out, abandons, keeps its slot
+    t0 = time.time()
+    outs = [ec.critique(DRAFT, r) for _ in range(30)]
+    assert time.time() - t0 < 2.0 and all("busy" in o["detail"] for o in outs)
+    assert th.active_count() - before <= 6
+    release.set()

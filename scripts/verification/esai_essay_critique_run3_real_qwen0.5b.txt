@@ -1,0 +1,11 @@
+
+=== draft A (3.6s) mode=verified_measures_only_model_spans_rejected model=qwen2.5-0.5b detail='model gave no usable span; only verified measures returned'
+ - keyword_heuristic trait_word | quote: 'I consider myself a dedicated student and I am passionate about helping people.' | Keyword heuristic only: this sentence contains the trait phrase "passionate". It may already include a specific example; you decide. | Is there one specific moment that shows this about you?
+ rejected model lines: [{'line': "evidence | When my grandfather's hearing aid broke and the repair cost more than our monthly rent, I taught myself to solder from library books and fixed it in three weekends", 'reason': 'phrase is not an exact raw substring of the draft at word boundaries'}, {'line': 'reason | The problem required a creative solution that could be used for personal projects or small business ventures', 'reason': 'phrase is not an exact raw substring of the draft at word boundaries'}, {'line': 'change | I wanted to study mechanical engineering', 'reason': 'phrase is not an exact raw substring of the draft at word boundaries'}]
+
+=== draft B (1.7s) mode=model_selected_spans_plus_verified_measures model=qwen2.5-0.5b detail=''
+ - verified_measure long_sentence | quote: 'As captain of the debate team I led practices every Tuesday, helped novices write their fi' | This sentence has 59 words (over 40). | Which one idea in this sentence matters most to you?
+ - keyword_heuristic trait_word | quote: 'I am a determined leader and a natural leader.' | Keyword heuristic only: this sentence contains the trait phrase "determined". It may already include a specific example; you decide. | Is there one specific moment that shows this about you?
+ - model_selected_span evidence | quote: 'As captain of the debate team' |  | You wrote "As captain of the debate team". What is one example from your life that shows this?
+ - model_selected_span reason | quote: 'helped novices write their first cases' |  | You wrote "helped novices write their first cases". Why did that matter to you?
+ rejected model lines: []
