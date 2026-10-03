@@ -166,3 +166,67 @@ def test_hard_total_cap_with_delayed_headers_then_body():
     t0 = time.time()
     assert LocalEmbeddingMatcher(f"http://127.0.0.1:{srv.server_port}/v1", "stub", timeout=1.5).rank("q", ["a"]) is None
     assert time.time() - t0 < 2.5
+
+
+@pytest.mark.parametrize("url", ["file:///etc/passwd", "ftp://127.0.0.1/x", "http://user:pw@127.0.0.1:1/v1",
+                                 "http://127.0.0.1:99999/v1", "http://127.0.0.1:1/v1?x=1", "http://[::2]/v1", "http://example.com/v1"])
+def test_bad_urls_rejected(url):
+    with pytest.raises(ValueError):
+        LocalEmbeddingMatcher(url, "m")
+    assert matcher_from_env({"INSTINCT_EMBED_URL": url, "INSTINCT_EMBED_MODEL": "m"}) is None
+
+
+def test_all_zero_vectors_are_rejected():
+    srv = _server(_resp([{"index": 0, "embedding": [0, 0]}, {"index": 1, "embedding": [0.0, 0.0]}]))
+    assert LocalEmbeddingMatcher(f"http://127.0.0.1:{srv.server_port}/v1", "stub").rank("q", ["a"]) is None
+
+
+def test_abandoned_calls_are_bounded_and_extra_calls_fall_back_immediately():
+    import threading as th
+    from app.modules.m23_study_abroad import embedding_matcher as em
+    release = th.Event()
+    def hang(hh, req):  # a header line every 0.2s: each socket read stays under the 0.3s timeout, so the worker lingers
+        try:
+            hh.wfile.write(b"HTTP/1.1 200 OK\r\n")
+            for _ in range(90):
+                if release.is_set():
+                    break
+                hh.wfile.write(b"X-a: b\r\n"); hh.wfile.flush(); time.sleep(0.2)
+        except Exception:
+            pass
+    class TS(http.server.ThreadingHTTPServer):
+        daemon_threads = True
+    class H(http.server.BaseHTTPRequestHandler):
+        def do_POST(self):
+            self.rfile.read(int(self.headers["content-length"])); hang(self, None)
+        def log_message(self, *a): pass
+    srv = TS(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    m = LocalEmbeddingMatcher(f"http://127.0.0.1:{srv.server_port}/v1", "stub", timeout=0.3)
+    before = th.active_count()
+    for _ in range(4):
+        assert m.rank("q", ["a"]) is None          # each times out and is abandoned, holding its slot
+    t0 = time.time()
+    for _ in range(20):
+        assert m.rank("q", ["a"]) is None          # no slot left -> instant fallback, no new thread
+    assert time.time() - t0 < 0.5
+    assert th.active_count() - before <= 10        # <= 4 lingering workers (+ server handler threads), not 24
+    release.set()
+
+
+def test_bad_evidence_values_do_not_500_and_are_bounded():
+    c = TestClient(app)
+    H = {"x-atlas-tenant": "emb-v", "x-atlas-actor": "student"}
+    for values in (None, 123, ["x", 3], "bad", [{"a": 1}], [True], ["y" * 5000] * 50):
+        ev = [{"label": "A", "description": "robot robot", "values": values}]
+        r = c.post("/api/v1/study-abroad/essay-tools/topics", headers=H, json={"prompt": "robot", "evidence": ev})
+        assert r.status_code == 200, (values, r.status_code)
+
+
+def test_oversized_evidence_skips_embedding_with_honest_detail():
+    srv = _server(_ok)
+    svc = EssayToolService(matcher=LocalEmbeddingMatcher(f"http://127.0.0.1:{srv.server_port}/v1", "stub"))
+    r = svc.topic_finder("robot", [{"label": str(i), "description": "robot", "values": []} for i in range(60)])
+    assert r["match_mode"] == FALLBACK and "bounded work" in r["match_detail"] and len(r["candidates"]) == 60
+    ok = svc.topic_finder("robot", EVID)
+    assert ok["match_mode"] == EMBEDDING and ok["match_detail"] == ""

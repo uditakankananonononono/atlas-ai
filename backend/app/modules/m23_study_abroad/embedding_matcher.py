@@ -19,8 +19,20 @@ EMBEDDING = "embedding_local_model"
 FALLBACK = "token_overlap_fallback"
 
 
+_SLOTS = threading.BoundedSemaphore(4)  # embedding calls in flight; an abandoned (timed-out) call keeps its slot until it ends
+
+
 def _loopback(url: str | None) -> bool:
-    return bool(url) and (urlparse(url).hostname or "") in {"127.0.0.1", "localhost", "::1"}
+    """http(s) only, loopback host, no credentials/query/fragment. (urllib would also open file:/ftp: URLs.)"""
+    if not url:
+        return False
+    try:
+        u = urlparse(url)
+        u.port  # raises ValueError on a malformed port
+    except ValueError:
+        return False
+    return (u.scheme in ("http", "https") and (u.hostname or "") in {"127.0.0.1", "localhost", "::1"}
+            and not u.username and not u.password and not u.query and not u.fragment)
 
 
 def cosine(a: list[float], b: list[float]) -> float:
@@ -67,18 +79,24 @@ class LocalEmbeddingMatcher:
                 return None
             by_index[i] = v
         vecs = [by_index[i] for i in range(n)]
-        return vecs if len({len(v) for v in vecs}) == 1 else None
+        if len({len(v) for v in vecs}) != 1 or any(not any(x for x in v) for v in vecs):  # all-zero vector is unusable
+            return None
+        return vecs
 
     def embed(self, texts: list[str]) -> list[list[float]] | None:
         """Loopback only, no redirects, no env proxy; the whole call (connect, headers, body) is capped at
         self.timeout seconds by a worker thread. Anything malformed returns None so callers label the fallback."""
         box: dict = {}
+        if not _SLOTS.acquire(blocking=False):
+            return None  # 4 calls already in flight (some may be abandoned): labeled fallback, no new thread
 
         def work():
             try:
                 box["raw"] = self._fetch(texts)
             except Exception:  # noqa: BLE001
                 pass
+            finally:
+                _SLOTS.release()
         t = threading.Thread(target=work, daemon=True)
         t.start()
         t.join(self.timeout)

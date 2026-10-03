@@ -8,3 +8,9 @@
 My two first authored sets were length-confounded: the longest description was always the gold item (control "longest_description" scores 100% on dev20 and test38), so their numbers (dev: embedding 12/20 vs token 13/20; test: embedding 27/38 vs token 12/38) prove nothing about matching. They are kept only as raw data, marked confounded.
 A third set (balanced17) mostly controls length but the control still gets 13/17, and its distractors were authored as lexical traps. On it: token 1/17 (MRR .363), MiniLM 2/17 (.515), bge-small 5/17 (.598); chance is about 25% top-1 / MRR .52. So neither model shows a reliable advantage over chance on these hand-authored cases, and hybrid weighting did not help. The sets are small and written by me, not user data; no benchmark of real student prompts was available.
 Conclusion: real local embedding functionality and fallback labeling are verified; matching quality is NOT demonstrated.
+
+## Limits (added after review)
+- Concurrency: at most 4 embedding calls in flight; a call that times out is abandoned for the request but keeps its slot until its worker really ends. When all 4 are held, new calls return the labeled fallback immediately ("busy"), so abandoned threads cannot grow without bound. No cancellation of the server's own work.
+- Inputs: at most 50 evidence items per request (more -> token-overlap fallback with match_detail), prompt cut to 2000 chars, each description+values doc to 2000 chars, values list max 20 x 200 chars. Types are normalized (None/number/mixed list no longer 500; this was a pre-existing bug on main in topic_finder).
+- URL must be http(s) on 127.0.0.1/localhost/::1 with no credentials, query or fragment. All-zero or non-finite vectors are refused.
+- Privacy: loopback is not a privacy sandbox. Any local model server you point this at can log or retain the prompt and the student's evidence.
