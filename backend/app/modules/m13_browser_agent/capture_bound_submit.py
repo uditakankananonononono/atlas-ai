@@ -126,4 +126,6 @@ async def execute_capture_bound_submit(service, sessions_factory, tenant_id: str
         "phase": "executed_capture_bound", "approval_id": approval_id, "capture_sha256": capture_sha256, "state": state}))
     if state != "clicked":
         raise RuntimeError(f"click failed after the approval was consumed; capture and approve again ({error})")
-    return {"status": "submitted", "approval_id": approval_id, "capture_sha256": capture_sha256}
+    # "submitted" means the approved click was dispatched. It is not proof the site accepted it.
+    return {"status": "submitted", "click_dispatched": True, "site_acceptance": "unconfirmed",
+            "approval_id": approval_id, "capture_sha256": capture_sha256}

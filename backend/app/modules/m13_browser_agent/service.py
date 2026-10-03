@@ -109,4 +109,4 @@ class Service:
                             selector=selector, values=values)
         await page.locator(selector).click()
         await self.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.SUBMIT, {"phase": "executed", "selector": selector, "approval_id": approval_id, "digest": expected["values_digest"], "page_url": current_url}))
-        return {"status": "submitted"}
+        return {"status": "submitted", "click_dispatched": True, "site_acceptance": "unconfirmed"}

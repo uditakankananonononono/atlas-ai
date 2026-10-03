@@ -229,9 +229,6 @@ async def test_read_values_refuses_unmarked_secret_looking_fields(daemon, server
 @pytest.mark.parametrize("query", ["next=/login", "challenge=1"])
 async def test_url_markers_in_query_are_classified_but_not_returned(daemon, server, kind, query):
     STATUS_PAGES["/ok-q"] = 200
-    answer = await daemon.execute(protocol.make_command(
-        CommandKind.NAVIGATE, {"session": "s", "url": f"{server}/start/ok-q?{query}"}, command_id=_id()))
-    # the form posts GET to /ok-q without query, so go through a redirecting start page instead
     args = _submit_args("ap-qm") if kind is CommandKind.CLICK_SUBMIT else {"session": "s", "selector": "#go"}
     page = await daemon.browser.page("s")
     await page.goto(f"{server}/ok-q?{query}")
@@ -239,7 +236,6 @@ async def test_url_markers_in_query_are_classified_but_not_returned(daemon, serv
     args["selector"] = "#go" if kind is CommandKind.CLICK_NAV else "#sub"
     answer = await daemon.execute(protocol.make_command(kind, args, command_id=_id()))
     assert answer["ok"] is False and answer["blocked"] in ("login_wall", "challenge"), answer
-    assert query.split("=")[0] not in str(answer.get("error", "")) or "login" not in str(answer.get("error", "")).split("at")[-1]
     assert "next=" not in str(answer) and "challenge=1" not in str(answer)
 
 
