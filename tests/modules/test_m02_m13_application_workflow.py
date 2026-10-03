@@ -90,7 +90,11 @@ class FakeLocator:
     async def click(self):
         if self.page.fail_click:
             raise RuntimeError("click did not land")
+        if self.page.click_error is not None:
+            self.page.clicked.append(self.selector)
+            raise self.page.click_error
         self.page.clicked.append(self.selector)
+        self.page.last_click_observation = self.page.next_observation
         self.page.url = self.page.after_submit_url
         self.page.html = self.page.after_submit_html
 
@@ -104,6 +108,9 @@ class FakePage:
         self.filled: dict[str, str] = {}
         self.clicked: list[str] = []
         self.fail_click = False
+        self.click_error = None
+        self.next_observation = None
+        self.last_click_observation = None
         self.shot_bytes = b"redacted-png-v1"
         self.mouse = self
 
@@ -286,17 +293,17 @@ def test_full_mounted_workflow_with_owner_login_pause(rig):
     )
     assert submitted.status_code == 200, submitted.text
     outcome = submitted.json()
-    assert outcome["submitted"] is True
-    assert outcome["confirmation"]["final_url"] == DONE_URL
-    assert "application was received" in outcome["confirmation"]["page_excerpt"]
+    # A dispatched click plus a page that looks fine is NOT proof the site accepted the application.
+    assert outcome["submitted"] is False
+    assert outcome["status"] == "submit_dispatched_unconfirmed"
+    assert outcome["click_dispatched"] is True and outcome["site_acceptance"] == "unconfirmed"
+    assert outcome["observation"]["final_url"] == DONE_URL
+    assert "application was received" in outcome["observation"]["page_excerpt"]
     assert rig.page.clicked == ["#submit-btn"]
-
-    # M2 status evidence lands only after the site's own readback.
     competition = rig.competitions.get_competition("comp-1")
-    assert competition.status == SubmissionStatus.SUBMITTED
-    evidence = competition.status_evidence[-1]
-    assert evidence.source == "browser_readback"
-    assert sid in evidence.reference
+    assert competition.status != SubmissionStatus.SUBMITTED
+    status = rig.client.get(f"/api/v1/competition-manager/applications/sessions/{sid}").json()
+    assert status["status"] == "submit_dispatched_unconfirmed"
 
     status = rig.client.get(f"/api/v1/competition-manager/applications/sessions/{sid}")
     assert status.json()["status"] == "submitted"
@@ -535,3 +542,47 @@ def test_descriptors_are_grounded_in_page_html():
     assert by_selector["#f-name"].required is True
     assert by_selector["#f-essay"].placeholder == "Your essay"
     assert by_selector["#f-pass"].input_type == "password"
+
+
+def _approved_submit(rig):
+    sid, _ = reach_staged(rig)
+    base = f"/api/v1/competition-manager/applications/sessions/{sid}"
+    approval = rig.client.post(f"{base}/submit-approval").json()
+    approve(rig, approval["approval_id"])
+    return base, approval["approval_id"]
+
+
+def test_error_status_after_click_is_blocked_with_uncertain_outcome(rig):
+    base, approval_id = _approved_submit(rig)
+    rig.page.next_observation = {"url": DONE_URL, "http_status": 403, "site_acceptance": "unconfirmed"}
+    response = rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    assert response.status_code == 502
+    status = rig.client.get(base).json()
+    assert status["status"] == "blocked"
+    assert "effect may have occurred" in status["error"] and "do not retry" in status["error"]
+    assert rig.competitions.get_competition("comp-1").status != SubmissionStatus.SUBMITTED
+
+
+def test_platform_block_after_click_is_not_reported_as_not_submitted(rig):
+    from app.modules.m13_browser_agent.session_bridge.protocol import PlatformBlocked
+    base, approval_id = _approved_submit(rig)
+    rig.page.click_error = PlatformBlocked(
+        "policy", "platform blocked after click (policy); effect may have occurred; do not retry")
+    response = rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    assert response.status_code == 502
+    status = rig.client.get(base).json()
+    assert status["status"] == "blocked"
+    assert "effect may have occurred" in status["error"]
+    assert "was not submitted" not in status["error"] and "was not submitted" not in response.text
+
+
+def test_owner_confirmation_is_the_only_path_to_submitted(rig):
+    base, approval_id = _approved_submit(rig)
+    assert rig.client.post(f"{base}/submit", json={"approval_id": approval_id}).status_code == 200
+    early = rig.client.post(f"{base}/confirm-submitted", json={"owner_confirmed": False})
+    assert early.status_code == 422 or early.status_code == 409
+    done = rig.client.post(f"{base}/confirm-submitted", json={"owner_confirmed": True})
+    assert done.status_code == 200, done.text
+    assert done.json()["status"] == "submitted" and done.json()["site_acceptance"] == "owner_confirmed"
+    # the competition record still needs real source evidence; the owner click alone does not write it
+    assert rig.competitions.get_competition("comp-1").status != SubmissionStatus.SUBMITTED
