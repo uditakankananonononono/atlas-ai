@@ -112,3 +112,36 @@ def test_manual_opposing_child_edges_cannot_commit_cycle(monkeypatch):
     with ThreadPoolExecutor(max_workers=2) as pool:results=list(pool.map(write,[(a.id,b.id),(b.id,a.id)]))
     assert sorted(results)==[201,409]
     assert len(repo.edges_for({a.id,b.id}))==1
+
+@pytest.mark.parametrize('relationship',['child_of','blocks','depends_on'])
+def test_manual_cycle_full_path_and_direct_repository_boundary(relationship):
+    from datetime import datetime,timezone
+    from app.modules.m09_knowledge_workspace.schemas import Edge
+    from app.modules.m09_knowledge_workspace.repository import GraphWriteConflict
+    _,repo,svc=setup();a=svc.create_node(NodeCreate(node_type='note',title='Beginning'));b=svc.create_node(NodeCreate(node_type='note',title='End'))
+    # Private SQL fixture for a path beyond the old 50-level service guard.
+    ids=[a.id]+[str(uuid4()) for _ in range(60)]+[b.id]
+    with repo.sessions.begin() as db:
+        for nid in ids[1:-1]:db.add(NodeRow(tenant_id=repo.tenant_id,id=nid,node_type='note',title='Chain',metadata_json={},embedding=None,version=1,created_at=a.created_at,updated_at=a.updated_at))
+        for start,end in zip(ids,ids[1:]):db.add(EdgeRow(tenant_id=repo.tenant_id,id=str(uuid4()),source_id=start,target_id=end,relationship=relationship,evidence={},confidence=1,created_at=a.created_at))
+    with pytest.raises(GraphWriteConflict,match='cycle'):
+        repo.save_edge(Edge(id=str(uuid4()),source_id=b.id,target_id=a.id,relationship=relationship,created_at=datetime.now(timezone.utc)))
+    assert len(repo.edges_for({a.id,b.id}))==2
+
+def test_manual_edge_conflicts_if_endpoint_changes_after_precheck(monkeypatch):
+    _,repo,svc=setup();a=svc.create_node(NodeCreate(node_type='note',title='Parent'));b=svc.create_node(NodeCreate(node_type='note',title='Child'))
+    from app.modules.m09_knowledge_workspace.schemas import EdgeCreate
+    original=repo.save_edge
+    def intervening(edge,expected_versions=None):
+        svc.update_node(a.id,NodeUpdate(expected_version=1,title='Edited parent'))
+        return original(edge,expected_versions=expected_versions)
+    monkeypatch.setattr(repo,'save_edge',intervening)
+    with pytest.raises(ConflictError,match='endpoints changed'):svc.create_edge(EdgeCreate(source_id=a.id,target_id=b.id,relationship='child_of'))
+    assert not repo.edges_for({a.id,b.id})
+
+def test_duplicate_manual_api_edge_returns_conflict():
+    _,repo,svc=setup();a=svc.create_node(NodeCreate(node_type='note',title='Parent'));b=svc.create_node(NodeCreate(node_type='note',title='Child'))
+    client=TestClient(app);headers={'X-Atlas-Tenant':repo.tenant_id};body={'source_id':a.id,'target_id':b.id,'relationship':'child_of'}
+    assert client.post('/api/v1/knowledge-workspace/edges',headers=headers,json=body).status_code==201
+    assert client.post('/api/v1/knowledge-workspace/edges',headers=headers,json=body).status_code==409
+    assert len(repo.edges_for({a.id,b.id}))==1

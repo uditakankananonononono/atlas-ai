@@ -88,8 +88,31 @@ class SqlGraphRepository:
         with self.sessions() as db:r=db.scalar(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==node_id));return _node(r) if r else None
     def list_nodes(self,limit=500):
         with self.sessions() as db:return [_node(r) for r in db.scalars(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id).limit(limit))]
-    def save_edge(self,e:Edge):
-        with self.sessions.begin() as db:db.add(EdgeRow(tenant_id=self.tenant_id,id=e.id,source_id=e.source_id,target_id=e.target_id,relationship=e.relationship.value,rationale=e.rationale,evidence=e.evidence,confidence=e.confidence,created_at=e.created_at));db.add(AuditRow(tenant_id=self.tenant_id,actor_id=self.actor_id,action="edge.created",entity_id=e.id,detail={"relationship":e.relationship.value},created_at=e.created_at))
+    def save_edge(self,e:Edge,expected_versions=None):
+        # Manual edges use the same tenant mutation boundary as node edits/review.
+        with self._mutation() as db:
+            source=db.scalar(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==e.source_id))
+            target=db.scalar(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==e.target_id))
+            if source is None or target is None:raise LookupError("node not found")
+            if expected_versions and (source.version,target.version)!=expected_versions:
+                raise GraphWriteConflict("edge endpoints changed; refresh before linking")
+            if source.id==target.id:raise GraphWriteConflict("self edge")
+            duplicate=db.scalar(select(EdgeRow).where(EdgeRow.tenant_id==self.tenant_id,EdgeRow.source_id==e.source_id,EdgeRow.target_id==e.target_id,EdgeRow.relationship==e.relationship.value))
+            if duplicate:raise GraphWriteConflict("edge already exists")
+            if e.relationship in {Relationship.CHILD_OF,Relationship.BLOCKS,Relationship.DEPENDS_ON}:
+                # No depth/page cap: reachability must include the whole relevant graph.
+                pairs=db.execute(select(EdgeRow.source_id,EdgeRow.target_id).where(EdgeRow.tenant_id==self.tenant_id,EdgeRow.relationship==e.relationship.value)).all()
+                adjacency={}
+                for start,end in pairs:adjacency.setdefault(start,set()).add(end)
+                frontier=[e.target_id];seen=set()
+                while frontier:
+                    current=frontier.pop()
+                    if current==e.source_id:raise GraphWriteConflict("edge would create a cycle")
+                    if current in seen:continue
+                    seen.add(current);frontier.extend(adjacency.get(current,()))
+            db.add(EdgeRow(tenant_id=self.tenant_id,id=e.id,source_id=e.source_id,target_id=e.target_id,relationship=e.relationship.value,rationale=e.rationale,evidence=e.evidence,confidence=e.confidence,created_at=e.created_at))
+            db.add(AuditRow(tenant_id=self.tenant_id,actor_id=self.actor_id,action="edge.created",entity_id=e.id,detail={"relationship":e.relationship.value,"source_version":source.version,"target_version":target.version},created_at=e.created_at))
+            db.flush()
         return e
     def edges_for(self,node_ids:set[str],limit=1000):
         with self.sessions() as db:return [_edge(r) for r in db.scalars(select(EdgeRow).where(EdgeRow.tenant_id==self.tenant_id,or_(EdgeRow.source_id.in_(node_ids),EdgeRow.target_id.in_(node_ids))).limit(limit))]

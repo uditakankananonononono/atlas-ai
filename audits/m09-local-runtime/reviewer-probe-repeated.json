@@ -1,0 +1,73 @@
+{
+  "stale_review": {
+    "status": 409,
+    "stored_status": "invalidated",
+    "edge_count": 0
+  },
+  "atomic_create": {
+    "before": 2,
+    "after": 2
+  },
+  "concurrent_update": [
+    2,
+    "conflict"
+  ],
+  "proposal_id_refresh": {
+    "old": "f535205d-fbee-4ba3-ac53-908c589eeafa",
+    "new": "7f5f15b2-7bb7-4a4c-8ba0-d45b28a62edc",
+    "old_review": "conflict"
+  },
+  "concurrent_review": {
+    "responses": [
+      "accepted",
+      "conflict"
+    ],
+    "edge_count": 1
+  },
+  "ATLAS_M09_SPACY_MODEL": {
+    "status": 503,
+    "nodes": 0
+  },
+  "ATLAS_M09_EMBEDDING_PROVIDER": {
+    "status": 503,
+    "nodes": 0
+  },
+  "identity": {
+    "embedding": {
+      "provider": "fastembed-cpu",
+      "model": "BAAI/bge-small-en-v1.5",
+      "dimension": 384,
+      "onnx_sha256": "51f1bd0addd6e859e42c2c8021a5e5461385bb676a649f4b269aa445449f2431",
+      "tokenizer_sha256": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66",
+      "config_sha256": "13582bcf2effc85b7bf3d3f5532e686bc1c9ce86bb009d10f0ec33cbe92299dd",
+      "tokenizer_config_sha256": "0b29c7bfc889e53b36d9dd3e686dd4300f6525110eaa98c76a5dafceb2029f53",
+      "special_tokens_sha256": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+      "fastembed_version": "0.7.4"
+    },
+    "entities": {
+      "provider": "spacy",
+      "model": "en_core_web_sm",
+      "version": "3.8.0",
+      "language": "en",
+      "pipeline_sha256": "46fbe7759ef9f273f98f13b7cdf5e1c02a781ce2e884e75ef259ee0ad94bc316",
+      "ner_weights_sha256": "cd93e9ca9126c69f1d10a1039ef67c3d9ec1223b44d079856705970f0f19ff4e",
+      "policy": "allowlisted-packaged-3.8.0"
+    }
+  },
+  "metadata": {
+    "keep": "user",
+    "forged_present": false
+  },
+  "error_before_update": {
+    "status": 503,
+    "version_before": 2,
+    "version_after": 2
+  },
+  "outside_scope_manual_cycle": {
+    "responses": [
+      "child_of",
+      "ConflictError"
+    ],
+    "edge_count": 1
+  }
+}
