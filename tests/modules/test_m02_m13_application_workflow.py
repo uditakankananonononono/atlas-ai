@@ -89,7 +89,8 @@ class FakeLocator:
 
     async def click(self):
         if self.page.fail_click:
-            raise RuntimeError("click did not land")
+            from app.modules.m13_browser_agent.session_bridge.protocol import DeviceOffline
+            raise DeviceOffline("paired device is not connected")  # provably before dispatch
         if self.page.click_error is not None:
             self.page.clicked.append(self.selector)
             raise self.page.click_error
@@ -588,11 +589,22 @@ def test_typed_post_dispatch_uncertainty_is_blocked_not_failed(rig):
     assert "was not submitted" not in status["error"] and "was not submitted" not in response.text
 
 
-def test_error_text_alone_does_not_decide_uncertainty(rig):
+def test_direct_playwright_timeout_is_uncertain_not_failed(rig):
+    from playwright.async_api import TimeoutError as PlaywrightTimeout
     base, approval_id = _approved_submit(rig)
-    rig.page.click_error = RuntimeError("effect may have occurred somewhere else")
+    rig.page.click_error = PlaywrightTimeout("Locator.click: Timeout 30000ms exceeded.")
+    response = rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    assert response.status_code == 502
+    status = rig.client.get(base).json()
+    assert status["status"] == "blocked" and "outcome unknown" in status["error"]
+    assert "was not submitted" not in status["error"] and "was not submitted" not in response.text
+
+
+def test_unknown_click_error_is_uncertain_only_a_provable_pre_dispatch_error_is_failed(rig):
+    base, approval_id = _approved_submit(rig)
+    rig.page.click_error = RuntimeError("anything we cannot place before the send")
     rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
-    assert rig.client.get(base).json()["status"] == "failed"
+    assert rig.client.get(base).json()["status"] == "blocked"
 
 
 def test_owner_assertion_is_recorded_as_an_assertion_only(rig):
@@ -644,3 +656,21 @@ def test_legacy_dispatch_only_submitted_sessions_are_not_shown_as_accepted(rig):
     assert view["status"] == "submit_dispatched_unconfirmed"
     assert view["legacy_status_reinterpreted"] == "submitted"
     assert view["confirmation"]["site_acceptance"] == "unconfirmed_legacy"
+
+
+def test_legacy_normalization_holds_on_every_path_not_only_public_view(rig):
+    from app.modules.m13_browser_agent.application_flow import ApplicationSession
+    base, approval_id = _approved_submit(rig)
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    sid = base.rsplit("/", 1)[1]
+    record = rig.flow.store.get("local", sid)
+    record.status = "submitted"
+    record.confirmation = {k: v for k, v in record.confirmation.items() if k != "site_acceptance"}
+    raw = record.to_dict()
+    assert raw["status"] == "submit_dispatched_unconfirmed"
+    assert raw["legacy_status_reinterpreted"] == "submitted"
+    assert raw["confirmation"]["site_acceptance"] == "unconfirmed_legacy"
+    loaded = ApplicationSession.from_dict({**raw, "status": "submitted",
+                                           "confirmation": {k: v for k, v in raw["confirmation"].items() if k != "site_acceptance"}})
+    assert loaded.status == "submit_dispatched_unconfirmed"
+    assert loaded.confirmation["site_acceptance"] == "unconfirmed_legacy"

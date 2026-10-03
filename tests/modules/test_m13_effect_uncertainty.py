@@ -37,11 +37,23 @@ async def test_disconnect_after_send_is_effect_uncertain_not_plain_offline():
 
 
 @pytest.mark.asyncio
-async def test_failure_before_send_is_not_effect_uncertain():
+async def test_send_json_failure_is_uncertain_because_a_partial_send_cannot_be_ruled_out():
     conn = DaemonConnection(WS(fail_send=True), "dev", 0.0)
+    with pytest.raises(EffectUncertain):
+        await conn.execute(CommandKind.CLICK_SUBMIT, {"session": "s"}, timeout=1)
+
+
+@pytest.mark.asyncio
+async def test_failure_before_anything_was_written_is_not_effect_uncertain():
+    conn = DaemonConnection(WS(), "dev", 0.0)
+
+    async def broken_pace():
+        raise RuntimeError("pacing failed")
+    conn._pace = broken_pace
     with pytest.raises(Exception) as caught:
         await conn.execute(CommandKind.CLICK_SUBMIT, {"session": "s"}, timeout=1)
     assert not isinstance(caught.value, EffectUncertain)
+    assert conn.websocket.sent == []
 
 
 def test_parse_result_types_come_from_a_flag_not_from_message_text():
