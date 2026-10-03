@@ -114,13 +114,25 @@ class CompetitionManager:
         current = payload_digest(action.action, action.target_url, action.payload)
         if current != action.approved_digest: raise PermissionError("action changed after approval")
         action.state = ActionState.EXECUTING; action.updated_at = utcnow(); self.repo.save_action(action)
+        from app.modules.m13_browser_agent.session_bridge.protocol import EffectUncertain
         try:
             action.result = executor.execute(action.action, action.target_url, action.payload)
-            action.state = ActionState.SUCCEEDED
-            if action.action == "submit_application":
-                ws = self.repo.get_workspace(action.application_id); version = ws.version
-                if ws.status != ApplicationStatus.STAGED: raise ValueError("workspace is no longer staged")
-                ws.status = ApplicationStatus.SUBMITTED; ws.updated_at = utcnow(); self.repo.save_workspace(ws, expected_version=version)
+            confirmed = (isinstance(action.result, dict) and action.result.get("site_acceptance") == "confirmed"
+                         and bool(action.result.get("acceptance_evidence")))
+            if action.action == "submit_application" and not confirmed:
+                # The executor returned: the click was dispatched. That is not site acceptance.
+                action.state = ActionState.DISPATCHED_UNCONFIRMED
+            else:
+                action.state = ActionState.SUCCEEDED
+                if action.action == "submit_application":
+                    ws = self.repo.get_workspace(action.application_id); version = ws.version
+                    if ws.status != ApplicationStatus.STAGED: raise ValueError("workspace is no longer staged")
+                    ws.status = ApplicationStatus.SUBMITTED; ws.updated_at = utcnow(); self.repo.save_workspace(ws, expected_version=version)
+        except EffectUncertain as exc:
+            # Sent, outcome unknown: not FAILED (which reads as retryable), not submitted.
+            action.state = ActionState.DISPATCHED_UNCONFIRMED
+            action.error = f"outcome unknown; do not retry; check the site manually: {exc}"
+            action.updated_at = utcnow(); return self.repo.save_action(action)
         except Exception as exc:
             action.state = ActionState.FAILED; action.error = str(exc); action.updated_at = utcnow(); self.repo.save_action(action); raise
         action.updated_at = utcnow(); return self.repo.save_action(action)

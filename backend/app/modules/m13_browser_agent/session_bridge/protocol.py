@@ -135,7 +135,7 @@ def parse_command(raw: dict[str, Any]) -> tuple[str, CommandKind, dict[str, Any]
 
 def make_result(command_id: str, *, ok: bool, result: dict[str, Any] | None = None,
                 error: str | None = None, blocked: str | None = None,
-                receipt: dict[str, Any] | None = None) -> dict[str, Any]:
+                receipt: dict[str, Any] | None = None, effect_uncertain: bool = False) -> dict[str, Any]:
     body: dict[str, Any] = {"v": PROTOCOL_VERSION, "id": command_id, "ok": bool(ok)}
     if result is not None:
         body["result"] = result
@@ -145,16 +145,30 @@ def make_result(command_id: str, *, ok: bool, result: dict[str, Any] | None = No
         body["blocked"] = BlockKind(blocked).value
     if receipt is not None:
         body["receipt"] = receipt
+    if effect_uncertain:
+        body["effect_uncertain"] = True  # the click may have happened; typed signal, not error text
     return body
+
+
+class PlatformBlockedAfterEffect(PlatformBlocked, EffectUncertain):
+    """The site stopped us after the click was sent; the effect may have happened."""
+
+
+class CommandRejectedAfterEffect(CommandRejected, EffectUncertain):
+    """The daemon failed after reserving/sending the effect; outcome unknown."""
 
 
 def parse_result(raw: dict[str, Any]) -> dict[str, Any]:
     if raw.get("v") != PROTOCOL_VERSION:
         raise BridgeError(f"unsupported protocol version: {raw.get('v')!r}")
+    uncertain = raw.get("effect_uncertain") is True
     if raw.get("blocked"):
+        if uncertain:
+            raise PlatformBlockedAfterEffect(raw["blocked"], str(raw.get("error", "no detail")))
         raise PlatformBlocked(raw["blocked"], str(raw.get("error", "no detail")))
     if not raw.get("ok"):
-        raise CommandRejected(str(raw.get("error", "command failed"))[:2000])
+        message = str(raw.get("error", "command failed"))[:2000]
+        raise (CommandRejectedAfterEffect(message) if uncertain else CommandRejected(message))
     result = raw.get("result")
     return result if isinstance(result, dict) else {}
 

@@ -564,9 +564,9 @@ def test_error_status_after_click_is_blocked_with_uncertain_outcome(rig):
 
 
 def test_platform_block_after_click_is_not_reported_as_not_submitted(rig):
-    from app.modules.m13_browser_agent.session_bridge.protocol import PlatformBlocked
+    from app.modules.m13_browser_agent.session_bridge.protocol import PlatformBlockedAfterEffect
     base, approval_id = _approved_submit(rig)
-    rig.page.click_error = PlatformBlocked(
+    rig.page.click_error = PlatformBlockedAfterEffect(
         "policy", "platform blocked after click (policy); effect may have occurred; do not retry")
     response = rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
     assert response.status_code == 502

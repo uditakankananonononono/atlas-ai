@@ -212,10 +212,11 @@ async def execute_submit(
     service: Service = Depends(get_service),
     flow: ApplicationFlow = Depends(get_application_flow),
 ):
-    """Execute the approved submit exactly once, then read back the site's response.
+    """Execute the approved submit exactly once and report what was observed.
 
-    Competition status is updated only from the post-submit source readback;
-    a failed or blocked click leaves the competition unsubmitted.
+    The result is "click dispatched, site acceptance unconfirmed". Competition status is
+    not changed here; a blocked, errored or unknown-outcome click is reported as such and
+    must not be retried.
     """
     try:
         result = await flow.execute_submit(tenant.tenant_id, tenant.actor_id, session_id, body.approval_id)
@@ -232,24 +233,25 @@ async def execute_submit(
     return result
 
 
-class ConfirmSubmittedIn(BaseModel):
-    owner_confirmed: bool
+class AssertSiteAcceptedIn(BaseModel):
+    owner_asserts_site_accepted: bool
 
 
-@router.post(_BASE + "/sessions/{session_id}/confirm-submitted")
-async def confirm_submitted(
+@router.post(_BASE + "/sessions/{session_id}/assert-site-accepted")
+async def assert_site_accepted(
     session_id: str,
-    body: ConfirmSubmittedIn,
+    body: AssertSiteAcceptedIn,
     tenant: TenantContext = Depends(require_tenant),
     flow: ApplicationFlow = Depends(get_application_flow),
 ):
-    """The owner confirms, after checking the site, that it accepted the submit.
+    """Record the authenticated actor's assertion that the site accepted the submit.
 
-    Dispatch alone never reaches "submitted". This records the owner's confirmation
-    in the workflow only; it does not write competition status evidence.
+    An assertion, not verification: it is only as strong as the auth behind the request,
+    and it is not site evidence. It never writes competition status.
     """
     try:
-        return await flow.confirm_submission(tenant.tenant_id, tenant.actor_id, session_id, body.owner_confirmed)
+        return await flow.assert_site_accepted(tenant.tenant_id, tenant.actor_id, session_id,
+                                               body.owner_asserts_site_accepted)
     except ActorMismatchError as error:
         raise HTTPException(status_code=403, detail=str(error)) from error
     except PermissionError as error:
