@@ -1,0 +1,8 @@
+url: https://nces.ed.gov/help/disclaimer.asp
+fetched: 2026-10-03 18:09 IST via web_fetch; full page text sha256 874c726e5ccc25904217b67a88c56cf5716b0ee995207fa5ac2eebc64a0002d8
+---
+## Permission to Replicate Information
+
+Unless stated otherwise, all information on the U.S. Department of Education's IES website at http://ies.ed.gov is in the public domain and may be reproduced, published, linked to, or otherwise used without IES' permission. This statement does not pertain to information at websites other than http://ies.ed.gov, whether funded by or linked to from IES.
+
+The following citation should be used when referencing all IES products: U.S. Department of Education. Institute of Education Sciences.
