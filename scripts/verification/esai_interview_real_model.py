@@ -34,12 +34,12 @@ for i, a in enumerate(ANSWERS, 1):
     t = s["interviewer"]["turns"][-1]
     print(f"\n--- turn {i} ({time.time()-t0:.1f}s) ---\nSTUDENT: {a}")
     print("NEXT QUESTION:", s["next_question"], f"[{s['next_question_source']}]")
-    print("extraction:", t["extraction_mode"], "grounded", t["grounded_items"], "rejected", t["rejected_items"], "|", t["detail"])
+    print("extraction:", t["extraction_mode"], "proposed", t["proposed_items"], "rejected", t["rejected_items"], "|", t["detail"])
 with SessionLocal() as db:
     b = db.get("BrandIdRow" and BrandIdRow, "real-model-check")
     grounded = [e for e in b.evidence if e.get("provenance")]
 print("\nBRANDID values:", b.values, "\nstrengths:", b.strengths, "\npatterns(beyond raw answers):", b.patterns[3:])
-print("grounded evidence items:")
+print("proposed (UNCONFIRMED) evidence items:")
 for g in grounded:
     print(" ", g["kind"], "|", g["label"], "| quote:", repr(g["quote"]), "| turn", g["turn"])
 print("\nSUMMARY", json.dumps({"turns": len(ANSWERS), "model_backed_question_turns": sum(1 for x in s["interviewer"]["turns"][:-1] if x["question_source"] == "adaptive_local_model"),
