@@ -21,7 +21,11 @@ def effect(state, cmd):
 def client():
     m = json.load(open(meta_p))
     sim = StatefulDeviceSimulator("dev1", m["secret"], {"run_command": effect})
-    return MeemeeLocalClient(reg, "tenant-a", "dev1", sim.execute, ap, os.path.join(d, "m.db"))
+    crash = os.environ.get("ADAPTER_CRASH_AT")
+    def hook(point):
+        if point == crash:
+            os._exit(137)  # real process death, no cleanup
+    return MeemeeLocalClient(reg, "tenant-a", "dev1", sim.execute, ap, os.path.join(d, "m.db"), fault_hook=hook)
 
 async def main():
     if mode == "setup":
@@ -32,6 +36,10 @@ async def main():
         a = {"id": "a1", "kind": "run_command", "arguments": {"cmd": "ls"}, "idempotency_key": "k1"}
         pv = await cl.preview(a)
         r = ap.put(ApprovalRequest(id="x", module_id=21, action_type="claire:run_command", payload={"tenant_id": "tenant-a", "preview": pv}), user_id="tenant-a")
+        if os.environ.get("ALSO_Z"):
+            rz = ap.put(ApprovalRequest(id="x", module_id=21, action_type="claire:run_command", payload={"tenant_id": "tenant-z", "preview": pv}), user_id="tenant-z")
+            ap.decide(rz.id, ApprovalStatus.APPROVED, user_id="tenant-z")
+            m0 = json.load(open(meta_p)); m0["approval_z"] = rz.id; json.dump(m0, open(meta_p, "w"))
         ap.decide(r.id, ApprovalStatus.APPROVED, user_id="tenant-a")
         m = json.load(open(meta_p)); m["approval"] = r.id; json.dump(m, open(meta_p, "w"))
         print(r.id)
@@ -39,7 +47,8 @@ async def main():
         key, cmd = sys.argv[3], sys.argv[4]
         a = {"id": "a1", "kind": "run_command", "arguments": {"cmd": cmd}, "idempotency_key": key}
         try:
-            out = await client().execute(a, json.load(open(meta_p))["approval"])
+            tok = None if os.environ.get("NO_TOKEN") else json.load(open(meta_p))["approval"]
+            out = await client().execute(a, tok)
             print(json.dumps({"ok": True, "replayed": out["replayed"], "status": out["status"]}))
         except Exception as e:
             print(json.dumps({"ok": False, "err": f"{type(e).__name__}: {e}"}))
