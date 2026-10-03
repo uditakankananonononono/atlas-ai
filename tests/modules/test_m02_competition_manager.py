@@ -87,16 +87,38 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
         self.assertEqual(len(browser.calls), 1)
 
-    def test_submission_recorded_only_with_explicit_acceptance_evidence(self):
+    def test_executor_self_reported_acceptance_never_promotes_the_workspace(self):
         self.make_ready()
         staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {"confirm":True})
         self.manager.approve_action(staged.id, "approval-1", Verifier())
-        class Confirming(Browser):
+        class Claiming(Browser):
             def execute(self, action, target_url, payload):
                 return {"receipt": "R1", "site_acceptance": "confirmed", "acceptance_evidence": "page text: received #R1"}
-        finished = self.manager.execute_action(staged.id, Confirming())
-        self.assertEqual(finished.state, ActionState.SUCCEEDED)
-        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.SUBMITTED)
+        finished = self.manager.execute_action(staged.id, Claiming())
+        self.assertEqual(finished.state, ActionState.DISPATCHED_UNCONFIRMED)
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
+
+    def _approved_submit(self):
+        self.make_ready()
+        staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {"confirm":True})
+        self.manager.approve_action(staged.id, "approval-1", Verifier())
+        return staged
+
+    def test_unknown_submit_executor_error_is_uncertain(self):
+        staged = self._approved_submit()
+        class Odd(Browser):
+            def execute(self, action, target_url, payload): raise TimeoutError("30s")
+        finished = self.manager.execute_action(staged.id, Odd())
+        self.assertEqual(finished.state, ActionState.DISPATCHED_UNCONFIRMED)
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
+
+    def test_provable_pre_dispatch_submit_error_is_failed(self):
+        from app.modules.m13_browser_agent.session_bridge.protocol import DeviceOffline
+        staged = self._approved_submit()
+        class Offline(Browser):
+            def execute(self, action, target_url, payload): raise DeviceOffline("paired device is not connected")
+        with self.assertRaises(DeviceOffline): self.manager.execute_action(staged.id, Offline())
+        self.assertEqual(self.repo.get_action(staged.id).state, ActionState.FAILED)
 
     def test_uncertain_executor_failure_is_not_a_plain_failure_or_retryable(self):
         from app.modules.m13_browser_agent.session_bridge.protocol import DispatchUncertain
