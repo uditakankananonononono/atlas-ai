@@ -804,3 +804,74 @@ def test_ordinary_block_cannot_be_asserted_into_acceptance(rig):
     refused = rig.client.post(f"/api/v1/competition-manager/applications/sessions/{sid}/assert-site-accepted",
                               json={"owner_asserts_site_accepted": True})
     assert refused.status_code == 409
+
+
+def _interleave_two_workers(rig, base, approval_id):
+    """Worker A and B both pass the pre-click checks; A clicks; B's consume then refuses."""
+    import asyncio as _a
+    sid = base.rsplit("/", 1)[1]
+    store = rig.flow.browser.store
+    original = store.was_consumed
+    arrived = []
+    gate = _a.Event()
+    b_done = _a.Event()
+    persisted_during_a_click = []
+
+    async def gated(approval):
+        arrived.append(1)
+        if len(arrived) >= 2:
+            gate.set()
+        await gate.wait()
+        return await original(approval)
+    store.was_consumed = gated
+
+    async def a_click():
+        await b_done.wait()
+        persisted_during_a_click.append(rig.flow.store.get("local", sid))
+    rig.page.click_hook = a_click
+
+    async def worker_a():
+        return await rig.flow.execute_submit("local", "local-user", sid, approval_id)
+
+    async def worker_b():
+        try:
+            await _a.sleep(0)
+            return await rig.flow.execute_submit("local", "local-user", sid, approval_id)
+        except Exception as error:  # the loser must be refused
+            return error
+        finally:
+            b_done.set()
+
+    async def go():
+        return await _a.gather(worker_a(), worker_b(), return_exceptions=True)
+    results = _a.run(go())
+    store.was_consumed = original
+    return results, persisted_during_a_click
+
+
+def test_losing_worker_cannot_erase_the_winners_attempt_marker(rig):
+    base, approval_id = _approved_submit(rig)
+    results, during = _interleave_two_workers(rig, base, approval_id)
+    assert during, "winner click never observed"
+    seen = during[0]
+    assert seen.status == "submit_attempting_outcome_unconfirmed" and seen.outcome_uncertain is True, (seen.status, seen.outcome_uncertain)
+    assert isinstance(results[1], Exception)
+    assert rig.page.clicked == ["#submit-btn"] or len(rig.page.clicked) == 1
+    final = rig.client.get(base).json()
+    assert final["status"] == "submit_dispatched_unconfirmed" and final["outcome_uncertain"] is True
+
+
+def test_consume_refusal_is_not_withdrawn_when_ownership_or_non_consumption_cannot_be_proved(rig):
+    base, approval_id = _approved_submit(rig)
+    sid = base.rsplit("/", 1)[1]
+    store = rig.flow.browser.store
+    original_consume = store.consume
+
+    async def consumed_elsewhere_then_raise(*a, **k):
+        await original_consume(*a, **k)  # someone else consumed it, then ours refuses
+        raise PermissionError("approval was already consumed")
+    store.consume = consumed_elsewhere_then_raise
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    store.consume = original_consume
+    view = rig.client.get(base).json()
+    assert view["status"] == "submit_attempting_outcome_unconfirmed" and view["outcome_uncertain"] is True
