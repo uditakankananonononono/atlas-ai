@@ -1,0 +1,5 @@
+/tmp/m19-py312/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+http://127.0.0.1:bad HTTP 503 state unavailable canvas None error invalid local Ollama URL configuration; use a loopback or compose ollama HTTP origin with a valid port
+http://127.0.0.1:99999 HTTP 503 state unavailable canvas None error invalid local Ollama URL configuration; use a loopback or compose ollama HTTP origin with a valid port
+http://[::1 HTTP 503 state unavailable canvas None error invalid local Ollama URL configuration; use a loopback or compose ollama HTTP origin with a valid port

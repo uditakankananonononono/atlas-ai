@@ -6,9 +6,9 @@ Baseline: 313309be. Local branch: repair/m19-local-state. No remote push.
 
 `python -m pytest tests/modules/test_m19* tests/test_technical_spec_166_198.py tests/modules/test_technical_spec_round8_199_229.py tests/test_m19_spec_truth.py -q`
 
-Result: 283 passed, 1 dependency deprecation warning on CPython 3.12.14.
+Result after provider-boundary repair: 287 passed, 1 dependency deprecation warning on CPython 3.12.14.
 See tests.txt and environment.txt. The tests include existing ledger/domain tests,
-16 new run-state/provider/migration tests, and 5 new spec-truth tests. Tests
+20 new run-state/provider/migration tests, and 5 new spec-truth tests. Tests
 reproduce file-backed SQL persistence, a fresh subprocess restart, four-process
 idempotent intake reservation, parallel thread claims, version conflict rollback,
 cross-tenant isolation, verified production OIDC identity, failure persistence,
@@ -58,3 +58,20 @@ backend/app/modules/m20_general_cognitive_worker/technical_spec_round8_199_229.p
 Preserve those row-level corrections when combining other lanes. Run migration
 20261003_m19_runs; reconcile it with other new Alembic heads if needed. Set local
 model configuration; the repair does not install, train or download a model.
+
+## Independent review follow-up
+
+Independent review of 59a4fea returned PARTIAL for malformed local URL/port errors
+escaping normalization and valid-JSON 302 responses being accepted. Four mounted
+regression tests failed before the fix (provider-boundary-red.txt), then the full
+287-test acceptance passed after URL parsing/port validation was placed within
+the configuration error boundary and non-2xx responses were rejected.
+
+Configuration and ordinary transport failures now become ProviderError and are
+persisted as unavailable with no canvas and no operation lease. Intake returns a
+specific error with run_id and HTTP 503. No automatic fallback was introduced.
+The allowed hostnames are a host allowlist, not DNS-pinned local guarantees:
+localhost/ollama resolution depends on the operating system/container network.
+No claim of immutable local address resolution or actual successful inference is
+made. Existing cross-store uncertainty/manual reconciliation, no PDF/executor,
+and untested PostgreSQL limitations remain unchanged.

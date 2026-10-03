@@ -1,0 +1,13 @@
+CONFIG http://[::1 ProviderError invalid local Ollama URL configuration; use a loopback or compose ollama HTTP origin with a valid port
+CONFIG http://127.0.0.1:bad ProviderError invalid local Ollama URL configuration; use a loopback or compose ollama HTTP origin with a valid port
+CONFIG http://127.0.0.1:99999 ProviderError invalid local Ollama URL configuration; use a loopback or compose ollama HTTP origin with a valid port
+CONFIG http://127.0.0.1@evil.example ProviderError invalid local Ollama URL configuration; use a loopback or compose ollama HTTP origin with a valid port
+CONFIG http://127.0.0.1/path ProviderError invalid local Ollama URL configuration; use a loopback or compose ollama HTTP origin with a valid port
+CONFIG http://evil.example ProviderError invalid local Ollama URL configuration; use a loopback or compose ollama HTTP origin with a valid port
+CONFIG http://localhost?x=1 ProviderError invalid local Ollama URL configuration; use a loopback or compose ollama HTTP origin with a valid port
+REDIRECT result ProviderError
+REDIRECT requests ['http://127.0.0.1:11434/api/chat']
+ACTUAL_APPROVAL 323d3466-df85-49b8-b0a8-cc76fe79f536 tenant-a 1 0
+ACTUAL_REPLAY True
+ATOMIC_ROLLBACK True True
+CROSS_TENANT_WRITE rejected
