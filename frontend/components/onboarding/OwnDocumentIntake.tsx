@@ -10,7 +10,7 @@ const TYPES=[
 ] as const;
 type DocType=typeof TYPES[number]["id"];
 type Model={configured:boolean;reachable:boolean;installed?:boolean;model?:string;detail:string};
-type Status={documents:number;by_type:Record<string,number>;missing_types:string[];ready_for_drafting:boolean;complete:boolean;indexing_note?:string;indexing_leaves_machine?:boolean;drafting_model?:Model};
+type Status={documents:number;by_type:Record<string,number>;missing_types:string[];ready_for_drafting:boolean;complete:boolean;indexing_note?:string;embedding_provider?:string;indexing_leaves_machine?:boolean;drafting_model?:Model};
 
 export default function OwnDocumentIntake({onDone,reopened=false}:{onDone:()=>void;reopened?:boolean}){
  const [type,setType]=useState<DocType>("essays");
@@ -50,7 +50,7 @@ export default function OwnDocumentIntake({onDone,reopened=false}:{onDone:()=>vo
   <label className="mt-3 block text-sm">Text<textarea value={text} onChange={e=>setText(e.target.value)} rows={8} className="mt-1 w-full rounded bg-slate-800 p-2" placeholder="Paste your own writing here (at least 20 characters)"/></label>
   <div className="mt-3 flex items-center gap-3"><button disabled={busy||!title.trim()||text.trim().length<20} onClick={add} className="rounded bg-cyan-600 px-4 py-2 disabled:opacity-40">Save document</button><span className="text-sm text-slate-400">{total} saved{status&&status.missing_types.length?` · not yet added: ${status.missing_types.map(x=>x.replace("_"," ")).join(", ")}`:""}</span></div>
   {msg&&<p role={msg.kind==="err"?"alert":"status"} className={`mt-3 text-sm ${msg.kind==="err"?"text-red-300":"text-emerald-300"}`}>{msg.text}</p>}
-  {status?.indexing_note&&<p className={`mt-3 text-xs ${status.indexing_leaves_machine?"text-amber-300":"text-slate-400"}`}>{status.indexing_note}{status.indexing_leaves_machine?" Your text leaves this machine for indexing.":""} Matching is keyword-based unless a model provider is configured.</p>}
+  {status?.indexing_note&&<p className={`mt-3 text-xs ${status.indexing_leaves_machine?"text-amber-300":"text-slate-400"}`}>{status.indexing_note}{status.indexing_leaves_machine?" Your text leaves this machine for indexing.":""}{status.embedding_provider==="lexical"?" Matching is keyword-based.":""}</p>}
   {status?.drafting_model&&!(status.drafting_model.configured&&status.drafting_model.reachable&&status.drafting_model.installed)&&<p className="mt-2 text-xs text-amber-300">Drafting is not available yet: {status.drafting_model.detail} You can still save documents now.</p>}
   {total>0&&status&&status.missing_types.length>0&&<p className="mt-2 text-xs text-slate-400">Partial: Atlas will only draw on what you have added. Not yet added: {status.missing_types.map(x=>x.replace("_"," ")).join(", ")}.</p>}
   <div className="mt-5 flex items-center justify-between"><button onClick={skip} className="text-sm text-slate-400 underline">{reopened?"Close":"Skip for now"}</button><button disabled={busy||total===0} onClick={finish} className="rounded bg-emerald-600 px-4 py-2 disabled:opacity-40">{status&&status.missing_types.length>0?"Done (partial)":"Done"}</button></div>
