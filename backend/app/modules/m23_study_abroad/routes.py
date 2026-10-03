@@ -46,7 +46,8 @@ def passion_projects(x:PassionProjectIn,s:AdvisingService=Depends(advising_servi
 def advising_history(kind:str|None=None,s:AdvisingService=Depends(advising_service)):return s.history(kind)
 
 from .essay_tools import EssayToolService
-essay_tools=EssayToolService()
+from .embedding_matcher import matcher_from_env
+essay_tools=EssayToolService(matcher=matcher_from_env())
 @router.post('/essay-tools/topics')
 def essay_topics(x:TopicFinderIn):return essay_tools.topic_finder(x.prompt,x.evidence)
 @router.post('/essay-tools/outline')

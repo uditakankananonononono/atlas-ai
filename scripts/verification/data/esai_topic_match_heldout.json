@@ -1,0 +1,522 @@
+[
+ {
+  "prompt": "Describe a time you overcame a setback.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Rebuilt my robot's drive train after it snapped at regionals, and we still placed",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Volunteered weekends at the animal shelter walking dogs",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Wrote for the school newspaper's sports section",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Tutored younger kids in fractions",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Discuss an accomplishment that sparked personal growth.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Played trumpet in the jazz band",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Taught myself to code and shipped a bus-tracking app for my town",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Worked the register at my uncle's bakery",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Ran the 5k fundraiser",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Tell us about a community you belong to and your role in it.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Organized the neighborhood food pantry shifts every Saturday",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Built a weather balloon with my physics class",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Learned to bake sourdough",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Read all of Dostoevsky",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Reflect on a time you questioned a belief you once held.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Raised money for a school in Kenya",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I used to think math was memorizing until my teacher made us derive formulas, and I changed how I study",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Captain of the soccer team",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Built a chicken coop",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "What is something you do that shows your curiosity?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Spent two summers taking apart broken radios to see how they work",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Student council treasurer",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Member of the swim team",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Babysat my cousins",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Describe a challenge you faced and what you learned from it.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Moved countries at fourteen and had to learn English while keeping up in class",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Won the science fair with a solar oven",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Sang in the church choir",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Lifeguarded at the community pool",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Share an experience where you led others.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Practiced piano two hours daily",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Coordinated twelve volunteers to repaint the library mural",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Collected stamps",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Did the regional spelling bee",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Discuss a topic that is meaningful to you.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Cared for my grandmother through her dementia, which made me want to study neuroscience",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Part-time job at the movie theater",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Joined the debate team",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Went on a school trip to Washington",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Describe how you have contributed to your school.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Built a free tutoring network pairing seniors with struggling freshmen",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Loves hiking in the Cascades",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Sells handmade earrings online",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Plays chess online",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Tell us about a failure and how you responded.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Ran for class president and lost badly, then joined the committee that beat me and helped write the new lunch policy",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Volunteer at the hospital front desk",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Won a county art award",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Swam varsity",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "What perspective or background would you bring to campus?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Grew up translating for my immigrant parents at doctor visits and bank counters",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Fixed my neighbor's bike",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Won the math league",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Lead role in the school play",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Describe a time you worked with a team toward a goal.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Hiking solo across the Pyrenees",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Our four-person robotics team debugged sensors until 2am before the competition",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Self-published a poetry zine",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Practice violin",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Describe a passion that keeps you engaged.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Honor roll all four years",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "I record birdsong at dawn and map the species in my county",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Sold lemonade",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Chaired the prom committee",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Discuss an act of kindness you gave or received that shaped you.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Built a model rocket",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "A stranger paid my bus fare when I was short and now I pay for others at the transit office",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Third place at state swimming",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Edited the yearbook",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "How have you pursued intellectual interests outside the classroom?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Cleaning tables at my family's diner each night",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Read university lecture notes on number theory and emailed a professor my own proof attempt",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Went to prom",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Played Little League",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Describe a moment when you acted on your values.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Refused to join a group chat mocking a classmate and reported it to the counselor",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Fixed up old laptops for a charity",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Studied Spanish for three years",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Went camping every summer",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Tell us about a place where you feel most like yourself.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "The community garden where I grow tomatoes and talk with elderly neighbors",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Honor society secretary",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "AP Calculus",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Dance team",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "Describe a time you took initiative.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Started a coding club when my school had none, recruiting a teacher sponsor myself",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Watched documentaries",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Rode horses",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Worked as a cashier",
+    "values": []
+   }
+  ],
+  "gold": 0
+ },
+ {
+  "prompt": "What have you learned from a person who influenced you?",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "Played in a rock band",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "My coach showed me that showing up on bad days matters more than winning, which changed how I treat teammates",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Dissected a frog in biology",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Competed in Model UN",
+    "values": []
+   }
+  ],
+  "gold": 1
+ },
+ {
+  "prompt": "Discuss a time you solved a problem creatively.",
+  "evidence": [
+   {
+    "label": "E0",
+    "description": "When our school had no lab equipment, I built a spectrometer from a cardboard box, a DVD and my phone camera",
+    "values": []
+   },
+   {
+    "label": "E1",
+    "description": "Served as class secretary",
+    "values": []
+   },
+   {
+    "label": "E2",
+    "description": "Went to the state fair",
+    "values": []
+   },
+   {
+    "label": "E3",
+    "description": "Volunteered at the food bank",
+    "values": []
+   }
+  ],
+  "gold": 0
+ }
+]

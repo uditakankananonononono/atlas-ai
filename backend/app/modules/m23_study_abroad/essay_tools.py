@@ -3,6 +3,9 @@ from collections import Counter
 
 
 class EssayToolService:
+    def __init__(self, matcher=None):
+        self.matcher = matcher  # optional LocalEmbeddingMatcher; None keeps the token-overlap behaviour
+
     @staticmethod
     def _tokens(text: str) -> set[str]:
         return {w.strip(".,:;!?()[]\"'").lower() for w in text.split() if len(w) > 3}
@@ -21,7 +24,18 @@ class EssayToolService:
                                "reflection_questions": ["What changed before and after this experience?",
                                                         "Which specific scene could you describe in your own words?",
                                                         "What does this reveal that the rest of your application does not?"]})
-        return {"candidates": candidates, "student_selects_topic": True, "generated_essay_prose": None}
+        match_mode = "token_overlap_fallback"
+        if self.matcher is not None and candidates:
+            docs = [str(evidence[c["evidence_index"]].get("description", "")) + " "
+                    + " ".join(evidence[c["evidence_index"]].get("values", [])) for c in candidates]
+            scores = self.matcher.rank(prompt, docs)
+            if scores is not None:
+                for c, sc in zip(candidates, scores):
+                    c["embedding_similarity"] = sc
+                candidates.sort(key=lambda c: -c["embedding_similarity"])
+                match_mode = "embedding_local_model"
+        return {"candidates": candidates, "match_mode": match_mode, "student_selects_topic": True,
+                "generated_essay_prose": None}
 
     def outline(self, prompt: str, student_thesis: str, evidence: list[dict]) -> dict:
         labels = [x.get("label", f"Evidence {i + 1}") for i, x in enumerate(evidence) if x.get("description")]
