@@ -17,13 +17,13 @@ Everything the executive thinks lands in a transparent TraceEntry stream.
 """
 from __future__ import annotations
 
-import math
-import random
 from dataclasses import dataclass, field
 from typing import Any, Protocol, runtime_checkable
 
 from .episodic_memory import EpisodicMemory
+from .evidence import OutcomeEstimate, ToolEvidence
 from .htn_planner import HTNPlanner, PlanError
+from .mcts import BoundedMCTS
 from .schemas import (
     ActionRecord, Budget, ChunkType, EpisodeOutcome, MemoryChunk, PlanNode,
     Risk, TaskContext, TaskState, TraceEntry,
@@ -42,97 +42,152 @@ class ExecutiveModel(Protocol):
     def complete(self, purpose: str, payload: dict[str, Any]) -> dict[str, Any]: ...
 
 
+# Safety ordering of risk tiers. A policy rank used only to order candidates
+# (safer first). It is not a probability and not a cost estimate.
+RISK_RANK = {Risk.READ: 0, Risk.REVERSIBLE: 1, Risk.EXTERNAL: 2, Risk.IRREVERSIBLE: 3}
+
+
 @dataclass
 class CandidateAction:
+    """A ready step plus the evidence behind its ranking.
+
+    ``progress_probability`` is the observed success rate of the step's tool in
+    recorded episodes, or None when there is not enough evidence. There is no
+    information-gain number: nothing in the recorded data measures it, so it
+    is reported as not estimated.
+    """
+
     node: PlanNode
-    information_gain: float
-    cost: float
-    progress_probability: float
+    estimate: OutcomeEstimate
+    risk_rank: int
 
     @property
-    def score(self) -> float:
-        if self.cost <= 0:
-            return 0.0
-        return (0.5 * self.information_gain + 0.5 * self.progress_probability) / self.cost
+    def progress_probability(self) -> float | None:
+        return self.estimate.value
 
+    @property
+    def information_gain(self) -> None:
+        return None
 
-RISK_COST = {Risk.READ: 1.0, Risk.REVERSIBLE: 2.0, Risk.EXTERNAL: 4.0, Risk.IRREVERSIBLE: 8.0}
+    @property
+    def score(self) -> float | None:
+        """Observed success rate when evidence exists; otherwise None."""
+        return self.estimate.value
+
+    @property
+    def ranking_basis(self) -> str:
+        if self.estimate.available:
+            return (f"risk tier first, then observed success rate "
+                    f"{self.estimate.successes}/{self.estimate.samples}")
+        return f"risk tier only; no success estimate ({self.estimate.basis})"
 
 
 class MetaReasoner:
-    """Decision-tree leaf selection (spec 4.2.4 Decide)."""
+    """Next-action selection (spec 4.2.4 Decide), evidence-based.
+
+    Candidates are ordered safest risk tier first, then by the observed
+    success rate of the step's tool (higher first), then by plan order. Steps
+    without enough recorded evidence are not scored; they are ordered by risk
+    tier and plan order only and say so.
+    """
+
+    def __init__(self, evidence: ToolEvidence | None = None) -> None:
+        self.evidence = evidence or ToolEvidence(())
 
     def score_candidates(
-        self, ready: list[PlanNode], *, wm_context: str, ltm_hits: int,
+        self, ready: list[PlanNode], *, wm_context: str = "", ltm_hits: int = 0,
     ) -> list[CandidateAction]:
-        candidates: list[CandidateAction] = []
-        for node in ready:
-            info_gain = 0.5
-            if node.tool in ("web_search", "reader", "search") or node.kind == "research":
-                info_gain = 0.9
-            if node.title.lower() in wm_context.lower():
-                info_gain *= 0.5
-            progress = 0.5 + 0.1 * min(ltm_hits, 3) - 0.1 * node.attempts
-            candidates.append(CandidateAction(
-                node=node,
-                information_gain=max(0.0, min(1.0, info_gain)),
-                cost=RISK_COST.get(node.risk, 1.0),
-                progress_probability=max(0.05, min(0.95, progress)),
-            ))
-        candidates.sort(key=lambda c: c.score, reverse=True)
+        # wm_context / ltm_hits are accepted for API compatibility; neither is a
+        # measurement of this step's success, so neither is turned into a score.
+        candidates = [
+            CandidateAction(
+                node=node, estimate=self.evidence.for_tool(node.tool),
+                risk_rank=RISK_RANK.get(node.risk, len(RISK_RANK)),
+            )
+            for node in ready
+        ]
+        order = {id(c): i for i, c in enumerate(candidates)}
+        candidates.sort(key=lambda c: (
+            c.risk_rank,
+            0 if c.estimate.available else 1,
+            -(c.estimate.value or 0.0),
+            order[id(c)],
+        ))
         return candidates
 
 
 class MCTSRuminator:
-    """Idle-time Monte Carlo exploration of remaining plan orderings.
+    """Idle-time rumination: real UCT tree search (BoundedMCTS) over the
+    remaining plan, driven by recorded tool evidence.
 
-    Each simulation orders the pending steps randomly (respecting
-    dependencies) and scores the ordering by aggregate risk-adjusted success
-    probability, so the executive can surface the most robust next ordering.
+    Output distinguishes SIMULATED search from real execution, reports which
+    steps were assumed to succeed for lack of evidence, and gives
+    ``expected_success`` only when every step in the ordering has an evidence
+    estimate (product of per-tool observed rates, independence assumed).
+    Otherwise it is None, never a made-up number.
     """
 
-    def __init__(self, simulations: int = 32, seed: int | None = None) -> None:
+    def __init__(
+        self, simulations: int = 32, seed: int | None = None,
+        evidence: ToolEvidence | None = None, max_seconds: float = 1.0,
+    ) -> None:
         self.simulations = simulations
-        self.random = random.Random(seed)
-
-    def _orderings(self, plan: list[PlanNode]) -> list[list[PlanNode]]:
-        pending = [n for n in plan if n.state == TaskState.PENDING]
-        done = {n.id for n in plan if n.state == TaskState.SUCCEEDED}
-        ordering: list[PlanNode] = []
-        pool = pending[:]
-        while pool:
-            ready = [n for n in pool if all(d in done or d in {x.id for x in ordering} for d in n.depends_on)]
-            if not ready:
-                break
-            choice = self.random.choice(ready)
-            ordering.append(choice)
-            pool.remove(choice)
-        return ordering
+        self.evidence = evidence or ToolEvidence(())
+        self._seed = seed
+        self._max_seconds = max_seconds
 
     def ruminate(self, plan: list[PlanNode]) -> dict[str, Any]:
-        if not any(n.state == TaskState.PENDING for n in plan):
-            return {"simulations": 0, "best_ordering": [], "expected_success": 1.0}
-        best_order: list[str] = []
-        best_score = -1.0
-        for _ in range(self.simulations):
-            ordering = self._orderings(plan)
-            if not ordering:
+        pending = [n for n in plan if n.state == TaskState.PENDING]
+        if not pending:
+            return {"simulations": 0, "best_ordering": [], "expected_success": 1.0,
+                    "expected_success_status": "nothing pending",
+                    "mode": "simulated_search"}
+        search = BoundedMCTS(
+            max_simulations=self.simulations, max_seconds=self._max_seconds,
+            seed=self._seed, evidence=self.evidence,
+        ).search(plan)
+        by_id = {n.id: n for n in plan}
+        ordering_ids = list(search.principal_variation_ids)
+        searched = len(ordering_ids)
+        # Complete the ordering deterministically (dependency-safe, safer risk
+        # first) for steps the search did not reach; flagged as unsearched.
+        done = {n.id for n in plan if n.state == TaskState.SUCCEEDED} | set(ordering_ids)
+        remaining = [n for n in pending if n.id not in done]
+        while remaining:
+            ready = [n for n in remaining if all(d in done for d in n.depends_on)]
+            if not ready:
                 break
-            log_prob = 0.0
-            risk_penalty = 0.0
-            for node in ordering:
-                p = max(0.05, 0.9 - 0.1 * node.attempts)
-                log_prob += math.log(p)
-                risk_penalty += RISK_COST.get(node.risk, 1.0)
-            score = log_prob - 0.05 * risk_penalty
-            if score > best_score:
-                best_score = score
-                best_order = [n.title for n in ordering]
-        expected = math.exp(best_score) if best_score < 0 else 1.0
+            ready.sort(key=lambda n: RISK_RANK.get(n.risk, 9))
+            ordering_ids.append(ready[0].id)
+            done.add(ready[0].id)
+            remaining.remove(ready[0])
+        estimates = [self.evidence.for_tool(by_id[i].tool) for i in ordering_ids if i in by_id]
+        if ordering_ids and all(e.available for e in estimates) and not remaining:
+            expected = 1.0
+            for e in estimates:
+                expected *= e.value
+            expected_status = "product of observed per-tool success rates; steps assumed independent"
+        else:
+            expected = None
+            expected_status = (
+                "not estimated: " + (
+                    "plan has steps that cannot be ordered (blocked dependencies)"
+                    if remaining else "some steps have too little recorded evidence"
+                )
+            )
         return {
-            "simulations": self.simulations,
-            "best_ordering": best_order,
-            "expected_success": round(expected, 4),
+            "simulations": search.simulations_run,
+            "mode": search.mode,
+            "best_ordering": [by_id[i].title for i in ordering_ids if i in by_id],
+            "ordering_source": {"searched_steps": searched,
+                                "unsearched_tail_steps": len(ordering_ids) - searched},
+            "expected_success": round(expected, 4) if expected is not None else None,
+            "expected_success_status": expected_status,
+            "search_value": search.root_value,
+            "search_value_standard_error": search.root_standard_error,
+            "value_semantics": search.value_semantics,
+            "assumed_success_steps": [by_id[i].title for i in search.assumed_success_steps if i in by_id],
+            "evidence": search.evidence,
         }
 
 
@@ -158,9 +213,10 @@ class DeliberativeLoop:
         self.semantic = semantic
         self.skills = skills
         self.model = model
-        self.ruminator = ruminator or MCTSRuminator(seed=7)
+        self.evidence = ToolEvidence(self.episodic.episodes)
+        self.ruminator = ruminator or MCTSRuminator(seed=7, evidence=self.evidence)
         self.max_ticks = max_ticks
-        self.meta = MetaReasoner()
+        self.meta = MetaReasoner(self.evidence)
         self.traces: list[TraceEntry] = []
         # Optional hook invoked after planning and before each run, so the
         # durable runtime can register pre-dispatch expectations.
@@ -236,7 +292,7 @@ class DeliberativeLoop:
             if not candidates:
                 break
             chosen = candidates[0]
-            self._trace("decide", f"next action: {chosen.node.title} (score={chosen.score:.3f})",
+            self._trace("decide", f"next action: {chosen.node.title} ({chosen.ranking_basis})",
                         task_id=context.id)
             node = chosen.node
             node.attempts += 1

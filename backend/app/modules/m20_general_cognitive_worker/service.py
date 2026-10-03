@@ -13,6 +13,7 @@ from typing import Any
 
 from .embeddings import EmbeddingProvider
 from .episodic_memory import EpisodicMemory
+from .evidence import ToolEvidence
 from .executive import DeliberativeLoop, ExecutiveModel, MCTSRuminator
 from .htn_planner import HTNPlanner, PlannerModel
 from .reflection import (
@@ -29,7 +30,7 @@ from .semantic_memory import SemanticMemory
 from .sensory import DocumentParser, SensoryLayer, Transcriber, VisionModel
 from .skill_library import SkillLibrary
 from .metacognition import (
-    AttentionResidueManager, BiasDetector, CalibrationEngine, CounterfactualEngine,
+    AttentionResidueManager, BiasDetector, CalibrationEngine, CounterfactualEngine, EvidenceOutcomeModel,
     CuriosityEngine, DecisionFatigueGuard, DevilsAdvocate, EpistemicCalendar,
     FlowStateManager, GoalHierarchyManager, ImprovementLoop, IntuitionEngine,
     KnowledgeDecayModeler, LoadBalancer, MetaLearner, PerspectiveSimulator,
@@ -147,7 +148,9 @@ class CognitiveWorkerService:
         self.meta_learner = MetaLearner()
         self.load_balancer = LoadBalancer()
         self.calibration = CalibrationEngine()
-        self.counterfactuals = CounterfactualEngine()
+        self.counterfactuals = CounterfactualEngine(
+            EvidenceOutcomeModel(ToolEvidence(self.episodic.episodes))
+        )
         self.temporal = TemporalTradeoffs()
         self.residue = AttentionResidueManager()
         self.flow = FlowStateManager()

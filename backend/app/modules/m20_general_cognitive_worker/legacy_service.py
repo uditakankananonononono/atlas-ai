@@ -124,16 +124,28 @@ class DeliberativeLoop:
             ready=[s for s in run.plan.steps if s.state in {State.PENDING,State.WAITING_APPROVAL} and all(by_id[d].state==State.SUCCEEDED for d in s.depends_on)]
             if not ready:run.status=State.BLOCKED;break
             before=[(s.id,s.state,s.attempts) for s in ready]
-            await self.scheduler.run(ready,lambda s:self._step(run,s))
+            results=await self.scheduler.run(ready,lambda s:self._step(run,s))
+            for s,res in zip(ready,results):
+                if isinstance(res,asyncio.CancelledError):raise res
+                if isinstance(res,BaseException):
+                    # never swallow a step-level failure: surface it on the step, the run and the trace
+                    s.error=f"{type(res).__name__}: {res}";s.state=State.FAILED
+                    run.traces.append(Trace("execution",f"Step raised outside tool dispatch: {s.title}: {s.error}",[{"step_id":s.id,"error":s.error}],["retry","escalate"],"escalate",["errors are surfaced, never swallowed"]))
             after=[(s.id,s.state,s.attempts) for s in ready]
             if before==after:break
         return run
+    def _approval_unavailable(self,run:Run,step:Step,op:str,exc:Exception):
+        # Fail closed: an external step whose approval cannot be created or read never runs.
+        step.error=f"approval store {op} failed: {type(exc).__name__}: {exc}";step.state=State.BLOCKED
+        run.traces.append(Trace("execution",f"Approval unavailable, step blocked without execution: {step.title}: {step.error}",[{"step_id":step.id,"error":step.error}],["fix approval store","retry"],"block",["approval gate fails closed"]))
     async def _step(self,run:Run,step:Step):
         if step.risk in {Risk.EXTERNAL,Risk.IRREVERSIBLE}:
             if not step.approval_id:
-                req=self.approvals.put(ApprovalRequest(id=str(uuid.uuid4()),module_id=MODULE_ID,action_type=f"cognitive:{step.tool or 'step'}",payload={"run_id":run.id,"step_id":step.id,"title":step.title,"arguments":step.arguments,"risk":step.risk.value}))
+                try:req=self.approvals.put(ApprovalRequest(id=str(uuid.uuid4()),module_id=MODULE_ID,action_type=f"cognitive:{step.tool or 'step'}",payload={"run_id":run.id,"step_id":step.id,"title":step.title,"arguments":step.arguments,"risk":step.risk.value}))
+                except Exception as e:return self._approval_unavailable(run,step,"create",e)
                 step.approval_id=req.id;step.state=State.WAITING_APPROVAL;return
-            req=next((x for x in self.approvals.list() if x.id==step.approval_id),None)
+            try:req=next((x for x in self.approvals.list() if x.id==step.approval_id),None)
+            except Exception as e:return self._approval_unavailable(run,step,"read",e)
             if not req or req.status==ApprovalStatus.PENDING:return
             if req.status!=ApprovalStatus.APPROVED:step.state=State.BLOCKED;return
         step.state=State.RUNNING;step.attempts+=1

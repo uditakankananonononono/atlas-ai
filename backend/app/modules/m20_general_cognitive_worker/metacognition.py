@@ -22,6 +22,7 @@ from uuid import uuid4
 from .reasoning import hyperbolic_discount, minimax_regret, opportunity_cost
 from .schemas import Episode, PlanNode, Risk, TaskContext, TaskState
 from .embeddings import tokenize
+from .evidence import OutcomeEstimate, ToolEvidence
 
 
 def _uid() -> str:
@@ -356,52 +357,96 @@ class CalibrationEngine:
 
 @runtime_checkable
 class OutcomeModel(Protocol):
-    def estimate(self, action_description: str, risk: Risk) -> float: ...
+    """Returns an OutcomeEstimate (preferred), a bare float from a caller-owned
+    model, or None when no estimate is available."""
+
+    def estimate(self, action_description: str, risk: Risk, *, tool: str | None = None) -> Any: ...
 
 
-class HeuristicOutcomeModel:
-    """Default counterfactual estimator: success odds fall with risk tier."""
+class EvidenceOutcomeModel:
+    """Counterfactual estimator grounded in recorded episodes only.
 
-    BASE = {Risk.READ: 0.9, Risk.REVERSIBLE: 0.75, Risk.EXTERNAL: 0.55, Risk.IRREVERSIBLE: 0.4}
+    The estimate depends on which tool the alternative uses and what actually
+    happened when that tool ran before. Risk tier is not turned into a
+    probability. With too little history the answer is "unavailable".
+    """
 
-    def estimate(self, action_description: str, risk: Risk) -> float:
-        return self.BASE.get(risk, 0.5)
+    def __init__(self, evidence: ToolEvidence) -> None:
+        self.evidence = evidence
+
+    def estimate(self, action_description: str, risk: Risk, *, tool: str | None = None) -> OutcomeEstimate:
+        return self.evidence.for_action_text(action_description, tool=tool)
 
 
 class CounterfactualEngine:
-    """Row 14: simulate alternative histories over a finished episode."""
+    """Row 14: simulate alternative histories over a finished episode.
+
+    These are *estimates from past evidence*, not replays: nothing is
+    executed. Alternatives without enough evidence come back unavailable.
+    """
 
     def __init__(self, outcome_model: OutcomeModel | None = None) -> None:
-        self.outcome_model = outcome_model or HeuristicOutcomeModel()
+        # With no model, evidence is empty and every estimate is unavailable.
+        self.outcome_model = outcome_model or EvidenceOutcomeModel(ToolEvidence(()))
+
+    def _estimate(self, alt: dict[str, Any], risk: Risk) -> OutcomeEstimate:
+        action = str(alt.get("action", ""))
+        raw = self.outcome_model.estimate(action, risk, tool=alt.get("tool"))
+        if isinstance(raw, OutcomeEstimate):
+            return raw
+        if raw is None:
+            return OutcomeEstimate(None, 0, 0, 0, None, None, None,
+                                   "not estimated: custom model returned no estimate")
+        return OutcomeEstimate(
+            None, 0, 0, 0, float(raw), None, None,
+            "caller-supplied model value; the engine cannot verify its evidence or sample count",
+        )
 
     def simulate(
         self,
         episode: Episode,
         alternatives: list[dict[str, Any]],
     ) -> dict[str, Any]:
-        """alternatives: [{replaces_step: int, action: str, risk: str}].
-        Returns per-alternative estimated outcome vs. the actual path."""
+        """alternatives: [{replaces_step: int, action: str, risk: str, tool?: str}].
+        Returns per-alternative evidence-based estimates vs. the actual path."""
         actual_success = episode.outcome.value == "succeeded"
         results = []
         for alt in alternatives:
             risk = Risk(alt.get("risk", Risk.REVERSIBLE.value))
-            estimated = self.outcome_model.estimate(str(alt.get("action", "")), risk)
+            est = self._estimate(alt, risk)
+            if est.available:
+                lesson = (
+                    f"alternative {alt.get('action')!r}: {est.basis}"
+                    + (f" ({est.successes}/{est.samples}, 95% interval "
+                       f"{est.interval_low:.0%}-{est.interval_high:.0%})" if est.samples else "")
+                    + f"; actual path {'succeeded' if actual_success else 'failed'}"
+                )
+            else:
+                lesson = (
+                    f"alternative {alt.get('action')!r} has no success estimate: {est.basis}"
+                )
             results.append({
                 "replaces_step": alt.get("replaces_step"),
                 "alternative_action": alt.get("action"),
-                "estimated_success_probability": round(estimated, 3),
-                "actual_outcome_succeeded": actual_success,
-                "lesson": (
-                    f"alternative {alt.get('action')!r} had estimated success "
-                    f"{estimated:.0%} vs actual {'success' if actual_success else 'failure'}"
+                "estimated_success_probability": (
+                    round(est.value, 3) if est.value is not None else None
                 ),
+                "estimate": est.as_dict(),
+                "actual_outcome_succeeded": actual_success,
+                "lesson": lesson,
             })
-        best = max(results, key=lambda r: r["estimated_success_probability"], default=None)
+        scored = [r for r in results if r["estimated_success_probability"] is not None]
+        best = max(scored, key=lambda r: r["estimated_success_probability"], default=None)
         return {
             "episode_id": episode.id,
             "actual_outcome": episode.outcome.value,
             "alternatives": results,
             "best_alternative": best,
+            "best_alternative_status": (
+                "ranked among alternatives with evidence"
+                if best else "unavailable: no alternative has enough recorded evidence"
+            ),
+            "unestimated_alternatives": len(results) - len(scored),
         }
 
 
