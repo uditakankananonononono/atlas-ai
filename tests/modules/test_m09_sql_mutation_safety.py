@@ -56,3 +56,10 @@ def test_overlapping_expected_version_updates_have_one_winner():
     with ThreadPoolExecutor(max_workers=2) as pool:results=list(pool.map(write,['Paris one','Paris two']))
     assert sorted(map(str,results))==['2','conflict']
     assert repo.get_node(a.id).version==2
+
+def test_untrained_named_ner_configuration_is_rejected(tmp_path,monkeypatch):
+    import spacy
+    from app.modules.m09_knowledge_workspace.local_nlp import get_local_nlp,NLPUnavailable
+    blank=spacy.blank('en');blank.add_pipe('ner');blank.initialize();blank.to_disk(tmp_path/'blank')
+    monkeypatch.setenv('ATLAS_M09_SPACY_MODEL',str(tmp_path/'blank'))
+    with pytest.raises(NLPUnavailable):get_local_nlp()

@@ -1,7 +1,9 @@
 """Tenant-scoped adjacency-list persistence with append-only audit history."""
 from __future__ import annotations
 from datetime import datetime
-from sqlalchemy import JSON,DateTime,Float,Integer,String,Text,UniqueConstraint,or_,select
+from contextlib import contextmanager
+import hashlib
+from sqlalchemy import update, text, JSON,DateTime,Float,Integer,String,Text,UniqueConstraint,or_,select
 from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
 from app.core.database import Base,SessionLocal,engine
 from .schemas import Edge,LinkSuggestion,Node,NodeType,Relationship,SuggestionStatus
@@ -21,6 +23,8 @@ class AuditRow(Base):
 def _node(r):return Node(id=r.id,node_type=NodeType(r.node_type),title=r.title,body=r.body,source_uri=r.source_uri,source_module=r.source_module,external_id=r.external_id,metadata=r.metadata_json,embedding=r.embedding,version=r.version,created_at=r.created_at,updated_at=r.updated_at)
 def _edge(r):return Edge(id=r.id,source_id=r.source_id,target_id=r.target_id,relationship=Relationship(r.relationship),rationale=r.rationale,evidence=r.evidence,confidence=r.confidence,created_at=r.created_at)
 def _suggestion(r):return LinkSuggestion(id=r.id,source_id=r.source_id,target_id=r.target_id,relationship=Relationship(r.relationship),score=r.score,reasons=r.reasons,status=SuggestionStatus(r.status),created_at=r.created_at,reviewed_at=r.reviewed_at)
+class GraphWriteConflict(RuntimeError):pass
+
 class SqlGraphRepository:
     def __init__(self,tenant_id:str,actor_id:str,session_factory:sessionmaker=SessionLocal):self.tenant_id=tenant_id;self.actor_id=actor_id;self.sessions=session_factory;Base.metadata.create_all(engine)
     def save_node(self,n:Node,action="node.created"):
@@ -30,6 +34,61 @@ class SqlGraphRepository:
             for k,v in {"node_type":n.node_type.value,"title":n.title,"body":n.body,"source_uri":n.source_uri,"source_module":n.source_module,"external_id":n.external_id,"metadata_json":n.metadata,"embedding":n.embedding,"version":n.version,"created_at":n.created_at,"updated_at":n.updated_at}.items():setattr(r,k,v)
             db.add(AuditRow(tenant_id=self.tenant_id,actor_id=self.actor_id,action=action,entity_id=n.id,detail={"version":n.version,"title":n.title},created_at=n.updated_at))
         return n
+    @contextmanager
+    def _mutation(self):
+        # Serialize cooperating graph writes per tenant. SQLite lacks row locks.
+        with self.sessions() as db:
+            try:
+                if db.bind.dialect.name == "sqlite":db.execute(text("BEGIN IMMEDIATE"))
+                elif db.bind.dialect.name == "postgresql":
+                    key=int.from_bytes(hashlib.sha256(self.tenant_id.encode()).digest()[:8],"big",signed=True)
+                    db.execute(text("SELECT pg_advisory_xact_lock(:key)"),{"key":key})
+                yield db
+                db.commit()
+            except BaseException:
+                db.rollback();raise
+    def save_node_with_suggestions(self,n,action,suggestions,expected_version=None):
+        with self._mutation() as db:
+            values={"node_type":n.node_type.value,"title":n.title,"body":n.body,"source_uri":n.source_uri,"source_module":n.source_module,"external_id":n.external_id,"metadata_json":n.metadata,"embedding":n.embedding,"version":n.version,"created_at":n.created_at,"updated_at":n.updated_at}
+            if expected_version is None:
+                db.add(NodeRow(tenant_id=self.tenant_id,id=n.id,**values))
+            else:
+                result=db.execute(update(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==n.id,NodeRow.version==expected_version).values(**values))
+                if result.rowcount!=1:raise GraphWriteConflict("node changed; refresh before editing")
+                db.execute(update(SuggestionRow).where(SuggestionRow.tenant_id==self.tenant_id,SuggestionRow.status=="pending",or_(SuggestionRow.source_id==n.id,SuggestionRow.target_id==n.id)).values(status="invalidated",reviewed_at=n.updated_at))
+            db.flush()
+            db.add(AuditRow(tenant_id=self.tenant_id,actor_id=self.actor_id,action=action,entity_id=n.id,detail={"version":n.version,"title":n.title},created_at=n.updated_at))
+            for suggestion in suggestions:
+                versions=suggestion.reasons[-1]
+                target=db.scalar(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==suggestion.target_id))
+                if target is None or target.version!=versions["target_version"]:continue
+                old=db.scalar(select(SuggestionRow).where(SuggestionRow.tenant_id==self.tenant_id,SuggestionRow.source_id==n.id,SuggestionRow.target_id==suggestion.target_id,SuggestionRow.relationship==suggestion.relationship.value))
+                vals={"id":suggestion.id,"source_id":suggestion.source_id,"target_id":suggestion.target_id,"relationship":suggestion.relationship.value,"score":suggestion.score,"reasons":suggestion.reasons,"status":suggestion.status.value,"created_at":suggestion.created_at,"reviewed_at":None}
+                if old is None:db.add(SuggestionRow(tenant_id=self.tenant_id,**vals))
+                elif old.status=="invalidated":
+                    # A regenerated proposal has a new id, so old approvals cannot approve it.
+                    for k,v in vals.items():setattr(old,k,v)
+            db.flush()
+        return n
+    def review_with_edge(self,sid,accept,at):
+        with self._mutation() as db:
+            row=db.scalar(select(SuggestionRow).where(SuggestionRow.tenant_id==self.tenant_id,SuggestionRow.id==sid))
+            if row is None or row.status!="pending":raise GraphWriteConflict("suggestion is stale or not pending")
+            versions=next((r for r in row.reasons if r.get("kind")=="node_versions"),None)
+            source=db.scalar(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==row.source_id))
+            target=db.scalar(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==row.target_id))
+            if not versions or not source or not target or source.version!=versions["source_version"] or target.version!=versions["target_version"]:
+                raise GraphWriteConflict("suggestion is stale; regenerate it before review")
+            if accept:
+                if row.relationship not in {"related_to","mentions"}:raise GraphWriteConflict("unsupported generated relationship")
+                existing=db.scalar(select(EdgeRow).where(EdgeRow.tenant_id==self.tenant_id,EdgeRow.source_id==row.source_id,EdgeRow.target_id==row.target_id,EdgeRow.relationship==row.relationship))
+                if existing:raise GraphWriteConflict("edge already exists")
+                from uuid import uuid4
+                eid=str(uuid4())
+                db.add(EdgeRow(tenant_id=self.tenant_id,id=eid,source_id=row.source_id,target_id=row.target_id,relationship=row.relationship,rationale="Approved suggestion",evidence={"suggestion_id":row.id,"reasons":row.reasons},confidence=row.score,created_at=at))
+                db.add(AuditRow(tenant_id=self.tenant_id,actor_id=self.actor_id,action="edge.created",entity_id=eid,detail={"suggestion_id":row.id},created_at=at))
+            row.status="accepted" if accept else "rejected";row.reviewed_at=at
+            db.flush();return _suggestion(row)
     def get_node(self,node_id):
         with self.sessions() as db:r=db.scalar(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==node_id));return _node(r) if r else None
     def list_nodes(self,limit=500):

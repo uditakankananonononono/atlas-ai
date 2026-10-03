@@ -12,6 +12,7 @@ def get_service(t:TenantContext=Depends(require_tenant)):return Service(SqlGraph
 @router.post("/nodes",response_model=Node,status_code=status.HTTP_201_CREATED)
 def create_node(data:NodeCreate,service:Service=Depends(get_service)):
     try:return service.create_node(data)
+    except ConflictError as e:raise HTTPException(409,str(e)) from e
     except NLPUnavailable as e:raise HTTPException(503,str(e)) from e
 @router.patch("/nodes/{node_id}",response_model=Node)
 def update_node(node_id:str,data:NodeUpdate,service:Service=Depends(get_service)):
@@ -31,6 +32,7 @@ def neighborhood(node_id:str,depth:int=Query(1,ge=1,le=5),limit:int=Query(250,ge
 @router.post("/suggestions/{suggestion_id}/review",response_model=LinkSuggestion)
 def review(suggestion_id:str,data:ReviewRequest,service:Service=Depends(get_service)):
     try:return service.review(suggestion_id,data.accept)
+    except ConflictError as e:raise HTTPException(409,str(e)) from e
     except LookupError:raise HTTPException(409,"suggestion is not pending")
 @router.post("/planner-context")
 def planner_context(data:PlannerContextRequest,service:Service=Depends(get_service)):return service.planner_context(data.node_ids)
