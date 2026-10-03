@@ -576,13 +576,71 @@ def test_platform_block_after_click_is_not_reported_as_not_submitted(rig):
     assert "was not submitted" not in status["error"] and "was not submitted" not in response.text
 
 
-def test_owner_confirmation_is_the_only_path_to_submitted(rig):
+def test_typed_post_dispatch_uncertainty_is_blocked_not_failed(rig):
+    from app.modules.m13_browser_agent.session_bridge.protocol import DispatchUncertain
+    base, approval_id = _approved_submit(rig)
+    rig.page.click_error = DispatchUncertain("daemon did not answer within 60s")
+    response = rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    assert response.status_code == 502
+    status = rig.client.get(base).json()
+    assert status["status"] == "blocked" and status["status"] != "failed"
+    assert "outcome unknown" in status["error"] and "do not retry" in status["error"]
+    assert "was not submitted" not in status["error"] and "was not submitted" not in response.text
+
+
+def test_error_text_alone_does_not_decide_uncertainty(rig):
+    base, approval_id = _approved_submit(rig)
+    rig.page.click_error = RuntimeError("effect may have occurred somewhere else")
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    assert rig.client.get(base).json()["status"] == "failed"
+
+
+def test_owner_assertion_is_recorded_as_an_assertion_only(rig):
     base, approval_id = _approved_submit(rig)
     assert rig.client.post(f"{base}/submit", json={"approval_id": approval_id}).status_code == 200
-    early = rig.client.post(f"{base}/confirm-submitted", json={"owner_confirmed": False})
-    assert early.status_code == 422 or early.status_code == 409
-    done = rig.client.post(f"{base}/confirm-submitted", json={"owner_confirmed": True})
+    refused = rig.client.post(f"{base}/assert-site-accepted", json={"owner_asserts_site_accepted": False})
+    assert refused.status_code in (409, 422)
+    done = rig.client.post(f"{base}/assert-site-accepted", json={"owner_asserts_site_accepted": True})
     assert done.status_code == 200, done.text
-    assert done.json()["status"] == "submitted" and done.json()["site_acceptance"] == "owner_confirmed"
-    # the competition record still needs real source evidence; the owner click alone does not write it
+    body = done.json()
+    assert body["status"] == "submit_owner_asserted_accepted" and body["submitted"] is False
+    assert body["site_acceptance"] == "owner_asserted_unverified"
+    assert body["owner_assertion"]["actor_id"] == "local-user"
+    assert "not independently verified" in body["owner_assertion"]["basis"]
     assert rig.competitions.get_competition("comp-1").status != SubmissionStatus.SUBMITTED
+    again = rig.client.post(f"{base}/assert-site-accepted", json={"owner_asserts_site_accepted": True})
+    assert again.status_code == 409  # no double assertion
+
+
+def test_assertion_requires_dispatched_state_and_same_actor(rig):
+    sid, _ = reach_staged(rig)
+    base = f"/api/v1/competition-manager/applications/sessions/{sid}"
+    early = rig.client.post(f"{base}/assert-site-accepted", json={"owner_asserts_site_accepted": True})
+    assert early.status_code == 409
+    approval = rig.client.post(f"{base}/submit-approval").json()
+    approve(rig, approval["approval_id"])
+    rig.client.post(f"{base}/submit", json={"approval_id": approval["approval_id"]})
+    import asyncio as _a
+    from app.modules.m13_browser_agent.application_flow import ActorMismatchError
+    flow = rig.flow
+    with pytest.raises(ActorMismatchError):
+        _a.run(flow.assert_site_accepted("local", "someone-else", sid, True))
+    assert rig.client.get(base).json()["status"] == "submit_dispatched_unconfirmed"
+    missing = rig.client.post(f"/api/v1/competition-manager/applications/sessions/nope/assert-site-accepted",
+                              json={"owner_asserts_site_accepted": True})
+    assert missing.status_code in (404, 409)
+
+
+def test_legacy_dispatch_only_submitted_sessions_are_not_shown_as_accepted(rig):
+    base, approval_id = _approved_submit(rig)
+    rig.client.post(f"{base}/submit", json={"approval_id": approval_id})
+    sid = base.rsplit("/", 1)[1]
+    record = rig.flow.store.get("local", sid)
+    record.status = "submitted"  # shape persisted by earlier builds: dispatch + readback, no acceptance field
+    record.confirmation = {k: v for k, v in record.confirmation.items()
+                           if k not in ("site_acceptance", "http_status", "post_click_observation")}
+    rig.flow.store.save(record)
+    view = rig.client.get(base).json()
+    assert view["status"] == "submit_dispatched_unconfirmed"
+    assert view["legacy_status_reinterpreted"] == "submitted"
+    assert view["confirmation"]["site_acceptance"] == "unconfirmed_legacy"

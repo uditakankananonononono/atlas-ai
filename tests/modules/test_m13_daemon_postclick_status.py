@@ -135,6 +135,7 @@ async def test_click_submit_landing_on_error_status_is_blocked_and_uncertain(dae
         CommandKind.CLICK_SUBMIT, _submit_args(f"ap{path}"), command_id=_id()))
     assert answer["ok"] is False and answer["blocked"] == kind
     assert "effect may have occurred" in answer["error"] and "do not retry" in answer["error"]
+    assert answer["effect_uncertain"] is True
     # the reservation stays: a second click with the same approval must not reach the browser
     again = await daemon.execute(protocol.make_command(
         CommandKind.CLICK_SUBMIT, _submit_args(f"ap{path}"), command_id=_id()))
@@ -255,3 +256,17 @@ async def test_late_navigation_beyond_window_is_never_reported_as_accepted(daemo
         db = sqlite3.connect(daemon.effects.path)
         state = db.execute("SELECT state FROM submit_effects WHERE approval_id='ap-late'").fetchone()[0]
         assert state == "click_observed_unconfirmed"
+
+
+@pytest.mark.asyncio
+async def test_effect_uncertain_flag_only_where_a_click_may_have_happened(daemon, server):
+    await _arrive(daemon, server, "/ok")
+    bad = _submit_args("ap-flag")
+    bad["token"] = "wrong"
+    answer = await daemon.execute(protocol.make_command(CommandKind.CLICK_SUBMIT, bad, command_id=_id()))
+    assert answer["ok"] is False and not answer.get("effect_uncertain")  # refused before any click
+    good = _submit_args("ap-flag2")
+    first = await daemon.execute(protocol.make_command(CommandKind.CLICK_SUBMIT, good, command_id=_id()))
+    assert first["ok"] is True
+    again = await daemon.execute(protocol.make_command(CommandKind.CLICK_SUBMIT, good, command_id=_id()))
+    assert again["ok"] is False and again["effect_uncertain"] is True  # already reserved: outcome unknown

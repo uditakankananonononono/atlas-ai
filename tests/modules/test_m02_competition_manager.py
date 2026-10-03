@@ -81,10 +81,35 @@ class WorkflowTests(unittest.TestCase):
         approved = self.manager.approve_action(staged.id, "approval-1", Verifier())
         self.assertEqual(approved.state, ActionState.APPROVED)
         browser = Browser(); finished = self.manager.execute_action(staged.id, browser)
-        self.assertEqual(finished.state, ActionState.SUCCEEDED)
+        # an executor returning is a dispatched click, not site acceptance
+        self.assertEqual(finished.state, ActionState.DISPATCHED_UNCONFIRMED)
         self.assertEqual(finished.result["receipt"], "ABC123")
-        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.SUBMITTED)
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
         self.assertEqual(len(browser.calls), 1)
+
+    def test_submission_recorded_only_with_explicit_acceptance_evidence(self):
+        self.make_ready()
+        staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {"confirm":True})
+        self.manager.approve_action(staged.id, "approval-1", Verifier())
+        class Confirming(Browser):
+            def execute(self, action, target_url, payload):
+                return {"receipt": "R1", "site_acceptance": "confirmed", "acceptance_evidence": "page text: received #R1"}
+        finished = self.manager.execute_action(staged.id, Confirming())
+        self.assertEqual(finished.state, ActionState.SUCCEEDED)
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.SUBMITTED)
+
+    def test_uncertain_executor_failure_is_not_a_plain_failure_or_retryable(self):
+        from app.modules.m13_browser_agent.session_bridge.protocol import DispatchUncertain
+        self.make_ready()
+        staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {"confirm":True})
+        self.manager.approve_action(staged.id, "approval-1", Verifier())
+        class Timeout(Browser):
+            def execute(self, action, target_url, payload): raise DispatchUncertain("daemon did not answer within 60s")
+        finished = self.manager.execute_action(staged.id, Timeout())
+        self.assertEqual(finished.state, ActionState.DISPATCHED_UNCONFIRMED)
+        self.assertIn("outcome unknown", finished.error)
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
+        with self.assertRaises(PermissionError): self.manager.execute_action(staged.id, Browser())
 
     def test_tampering_after_approval_is_rejected(self):
         self.make_ready(); staged = self.manager.stage_browser_action(self.ws.id, "fill_form", "https://example.test/apply", {"name":"U"})

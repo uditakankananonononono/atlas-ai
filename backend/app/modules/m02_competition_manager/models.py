@@ -38,6 +38,7 @@ class ActionState(str, Enum):
     APPROVED = "approved"
     EXECUTING = "executing"
     SUCCEEDED = "succeeded"
+    DISPATCHED_UNCONFIRMED = "dispatched_unconfirmed"  # executor ran; effect may have happened; acceptance not confirmed
     FAILED = "failed"
     CANCELLED = "cancelled"
 
