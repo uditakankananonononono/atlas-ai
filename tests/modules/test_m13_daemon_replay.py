@@ -28,6 +28,20 @@ class Browser:
     def locator(self, selector):
         return self
 
+    main_frame = object()
+
+    def on(self, event, handler):
+        pass
+
+    def remove_listener(self, event, handler):
+        pass
+
+    async def wait_for_load_state(self, state, timeout=None):
+        pass
+
+    async def content(self):
+        return "<html>fake</html>"
+
     async def click(self):
         self.clicks += 1
         await asyncio.sleep(0)
