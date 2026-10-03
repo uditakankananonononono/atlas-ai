@@ -39,6 +39,13 @@ class _Handler(BaseHTTPRequestHandler):
             body = (f'<html><body><button id="sub" onclick="setTimeout(()=>{{location.href=\'{target}?token=SECRETQ\'}},400)">s'
                     '</button></body></html>')
             status = 200
+        elif path.startswith("/startm/"):
+            # clean start page whose shipped link / approved POST form target carries a URL marker in its query
+            marker = {"m1": "next=/login", "m2": "challenge=1"}[path[len("/startm/"):]]
+            target = f"/ok-q?{marker}"
+            body = (f'<html><body><a id="go" href="{target}">go</a>'
+                    f'<form method="post" action="{target}"><button id="sub">s</button></form></body></html>')
+            status = 200
         elif path.startswith("/late/"):
             target = "/" + path[len("/late/"):]
             body = (f'<html><body><button id="sub" onclick="setTimeout(()=>{{location.href=\'{target}\'}},1600)">s'
@@ -203,18 +210,31 @@ async def test_navigate_bare_error_status_is_blocked(daemon, server, path):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("kind", [CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT])
-async def test_delayed_js_navigation_to_403_is_blocked(daemon, server, kind):
+@pytest.mark.parametrize("path", ["delayed", "late"])
+async def test_script_driven_navigation_click_nav_is_blocked_by_m18_guard_and_redacted(daemon, server, path):
+    """Strict M18 contract: a click that navigates by script (not the shipped link) is aborted before landing."""
+    await daemon.execute(protocol.make_command(
+        CommandKind.NAVIGATE, {"session": "s", "url": f"{server}/{path}/bare403"}, command_id=_id()))
     answer = await daemon.execute(protocol.make_command(
-        CommandKind.NAVIGATE, {"session": "s", "url": f"{server}/delayed/bare403"}, command_id=_id()))
-    assert answer["ok"] is True
-    args = await _submit_args(daemon, "ap-delayed") if kind is CommandKind.CLICK_SUBMIT else {"session": "s", "selector": "#sub"}
-    answer = await daemon.execute(protocol.make_command(kind, args, command_id=_id()))
-    assert answer["ok"] is False and answer["blocked"] == "policy", answer
-    if kind is CommandKind.CLICK_SUBMIT:
-        assert "effect may have occurred" in answer["error"]
-        again = await daemon.execute(protocol.make_command(kind, await _submit_args(daemon, "ap-delayed"), command_id=_id()))
-        assert "already reserved" in again["error"]
+        CommandKind.CLICK_NAV, {"session": "s", "selector": "#sub"}, command_id=_id()))
+    assert answer["ok"] is False
+    assert "unapproved request" in answer["error"] and "blocked" in answer["error"]
+    assert "SECRETQ" not in str(answer) and "token=" not in str(answer)
+    assert answer["receipt"]["phase"] == "failed"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("path", ["delayed", "late"])
+async def test_script_navigating_submit_control_cannot_be_approved_at_all(daemon, server, path):
+    """The same control as a submit target is refused when the preview is built (inline handler / no form),
+    so no token can be minted and no reservation is ever created."""
+    await daemon.execute(protocol.make_command(
+        CommandKind.NAVIGATE, {"session": "s", "url": f"{server}/{path}/bare403"}, command_id=_id()))
+    with pytest.raises(PermissionError):
+        await _submit_args(daemon, f"ap-{path}")
+    import sqlite3
+    tables = sqlite3.connect(daemon.effects.path).execute("SELECT name FROM sqlite_master WHERE name='submit_effects'").fetchall()
+    assert tables == [] or sqlite3.connect(daemon.effects.path).execute("SELECT count(*) FROM submit_effects").fetchone()[0] == 0
 
 
 @pytest.mark.asyncio
@@ -225,18 +245,6 @@ async def test_click_reports_bounded_observation_window(daemon, server):
     obs = answer["result"]["post_click_observation"]
     assert obs["bounded"] is True and obs["window_seconds"] > 0
     assert obs["note"].startswith("later navigations after this window are not observed")
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("kind", [CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT])
-async def test_landing_url_query_and_fragment_never_leave_the_pc(daemon, server, kind):
-    answer = await daemon.execute(protocol.make_command(
-        CommandKind.NAVIGATE, {"session": "s", "url": f"{server}/delayed/bare403"}, command_id=_id()))
-    args = await _submit_args(daemon, "ap-q") if kind is CommandKind.CLICK_SUBMIT else {"session": "s", "selector": "#sub"}
-    answer = await daemon.execute(protocol.make_command(kind, args, command_id=_id()))
-    assert answer["ok"] is False
-    assert "SECRETQ" not in str(answer) and "token=" not in str(answer)
-    assert "/bare403" in answer["receipt"]["payload"]["url"] if "payload" in answer["receipt"] else True
 
 
 @pytest.mark.asyncio
@@ -257,35 +265,31 @@ async def test_read_values_refuses_unmarked_secret_looking_fields(daemon, server
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("kind", [CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT])
-@pytest.mark.parametrize("query", ["next=/login", "challenge=1"])
-async def test_url_markers_in_query_are_classified_but_not_returned(daemon, server, kind, query):
-    STATUS_PAGES["/ok-q"] = 200
-    args = await _submit_args(daemon, "ap-qm") if kind is CommandKind.CLICK_SUBMIT else {"session": "s", "selector": "#go"}
-    page = await daemon.browser.page("s")
-    await page.goto(f"{server}/ok-q?{query}")
-    await page.set_content(f'<a id="go" href="{server}/ok-q?{query}">go</a><button id="sub" onclick="location.href=\'{server}/ok-q?{query}\'">s</button>')
-    args["selector"] = "#go" if kind is CommandKind.CLICK_NAV else "#sub"
+@pytest.mark.parametrize("marker", ["m1", "m2"])
+async def test_url_markers_in_query_are_classified_but_not_returned(daemon, server, kind, marker):
+    """Allowed path (shipped link / approved POST form) landing on a URL whose query carries a marker."""
+    answer = await daemon.execute(protocol.make_command(
+        CommandKind.NAVIGATE, {"session": "s", "url": f"{server}/startm/{marker}"}, command_id=_id()))
+    assert answer["ok"] is True, answer
+    args = await _submit_args(daemon, f"ap-qm-{marker}") if kind is CommandKind.CLICK_SUBMIT else {"session": "s", "selector": "#go"}
     answer = await daemon.execute(protocol.make_command(kind, args, command_id=_id()))
     assert answer["ok"] is False and answer["blocked"] in ("login_wall", "challenge"), answer
     assert "next=" not in str(answer) and "challenge=1" not in str(answer)
+    if kind is CommandKind.CLICK_SUBMIT:
+        assert answer["effect_uncertain"] is True
+        again = await daemon.execute(protocol.make_command(kind, args, command_id=_id()))  # replay of the same signed args
+        assert again["ok"] is False and "already reserved" in again["error"]
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("kind", [CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT])
-async def test_late_navigation_beyond_window_is_never_reported_as_accepted(daemon, server, kind):
-    answer = await daemon.execute(protocol.make_command(
-        CommandKind.NAVIGATE, {"session": "s", "url": f"{server}/late/bare403"}, command_id=_id()))
-    args = await _submit_args(daemon, "ap-late") if kind is CommandKind.CLICK_SUBMIT else {"session": "s", "selector": "#sub"}
-    answer = await daemon.execute(protocol.make_command(kind, args, command_id=_id()))
-    # the window cannot see a 1.6s-late navigation: ok is allowed, acceptance is not claimed
-    assert answer["ok"] is True
-    assert answer["result"]["site_acceptance"] == "unconfirmed"
-    assert answer["receipt"]["payload"]["site_acceptance"] == "unconfirmed"
-    if kind is CommandKind.CLICK_SUBMIT:
-        import sqlite3
-        db = sqlite3.connect(daemon.effects.path)
-        state = db.execute("SELECT state FROM submit_effects WHERE approval_id='ap-late'").fetchone()[0]
-        assert state == "click_observed_unconfirmed"
+async def test_approved_submit_landing_ok_is_unconfirmed_not_accepted(daemon, server):
+    await _arrive(daemon, server, "/ok")
+    answer = await daemon.execute(protocol.make_command(CommandKind.CLICK_SUBMIT, await _submit_args(daemon, "ap-ok"), command_id=_id()))
+    assert answer["ok"] is True and answer["result"]["site_acceptance"] == "unconfirmed"
+    assert answer["receipt"]["phase"] == "dispatched_unconfirmed"
+    import sqlite3
+    state = sqlite3.connect(daemon.effects.path).execute("SELECT state FROM submit_effects WHERE approval_id='ap-ok'").fetchone()[0]
+    assert state == "click_observed_unconfirmed"
 
 
 @pytest.mark.asyncio
