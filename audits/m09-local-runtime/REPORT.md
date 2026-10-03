@@ -15,7 +15,7 @@ Base: 313309be. Local branch: local/m09-real-local-runtime. No push and no main 
 - Read-only paths do not need models. No cloud/key fallback is added; shared core defaults are unchanged.
 - M25 stays a 16-bin SHA-256 token-hash plus lexical-overlap heuristic, now explicitly labelled in class documentation and returned retrieval metadata. No learned M25 model is claimed.
 
-Final run: 295 tests passed across every test_m09*.py and test_m25*.py file on Linux Python 3.12.14. See test-output.txt. The earlier broader attempt failed collection for an uninstalled unrelated bs4 dependency; its log is preserved. After required dependency installation the full entrypoint imported and all 282 tests passed on the initial candidate (19fc49f); the revised candidate adds seven real-runtime safety tests.
+Final run: 296 tests passed across every test_m09*.py and test_m25*.py file on Linux Python 3.12.14. See test-output.txt. The earlier broader attempt failed collection for an uninstalled unrelated bs4 dependency; its log is preserved. After required dependency installation the full entrypoint imported and all 282 tests passed on the initial candidate (19fc49f); the revised candidate adds seven real-runtime safety tests.
 
 ## Costs and limits
 
@@ -49,7 +49,7 @@ The first candidate's runtime inference was independently reproduced, but audit 
 4. Edge insertion failure rolls back review status and audit.
 5. A blank initialized NER with a component named ner is not accepted. Only the packaged en_core_web_sm 3.8.0 model is supported, verified against the actual full pipeline SHA-256 and NER weight SHA-256. Arbitrary user configuration cannot create a trained-model claim.
 
-Seven real-model/SQL safety test functions are additional to the two router/full-app real inference acceptance cases. The bulk of 295 passing tests are adjacent M09/M25 contracts, not 289 model quality tests. No independent re-audit result is claimed for this revised bundle.
+Seven real-model/SQL safety test functions are additional to the two router/full-app real inference acceptance cases. The bulk of 296 passing tests are adjacent M09/M25 contracts, not 289 model quality tests. No independent re-audit result is claimed for this revised bundle.
 
 
 ## Manual structural-edge race repair
@@ -57,3 +57,10 @@ Seven real-model/SQL safety test functions are additional to the two router/full
 Independent re-audit accepted the repaired runtime/node/generated-review scope but reproduced opposing child_of requests both committing a cycle. manual-cycle-failing-first.txt preserves our failing actual API/concurrent SQL reproduction (two HTTP 201 responses). Manual save_edge now shares the tenant mutation boundary, verifies tenant endpoints and the versions captured by Service, rejects self/duplicate edges, and rechecks full relationship reachability inside the transaction before committing edge+audit. Reachability has no 50-level or 1000-edge cap inside this safety check. Direct SqlGraphRepository.save_edge also performs cycle checks, not just the API.
 
 Six additional parametrized cases cover actual API opposing-edge race (201/409 with one stored edge), direct repository paths beyond 50 nodes for child_of/blocks/depends_on, endpoint edits between precheck and commit, and duplicate manual API edge 409. Independent repaired-probe.py was repeated against this candidate and its manual cycle now has one ConflictError and one saved edge; output is retained as reviewer-probe-repeated.json. This repeat is builder work, not a new independent audit. PostgreSQL branch remains untested; no all-graph or production guarantee.
+
+
+## API long-path correction
+
+The next independent audit reproduced a valid acyclic 60-edge depends_on path being falsely rejected by the old service-level 50-iteration precheck. long-api-failing-first.txt retains the failing actual HTTP acceptance test. Service precheck now walks until its frontier is empty or it finds the source; it never treats depth exhaustion as a cycle. SQL precheck uses uncapped outgoing-target queries scoped to tenant and relationship. The full authoritative check still runs inside save_edge's mutation transaction.
+
+The new actual API regression accepts the long acyclic link with HTTP 201 and rejects a true cycle on that long path with 409. The exact independent manual-guards.py was repeated: API race 201/409, self/cross-tenant/duplicate guards hold, induced audit INSERT failure leaves edge/audit counts unchanged, valid long path returns 201. Its final direct-repository attempt then conflicts because the API has already saved that exact edge, not because of a cycle. This builder repeat is in manual-guards-repeated.json. No graph-scale performance or PostgreSQL validation is claimed. Revised candidate needs independent re-audit.
