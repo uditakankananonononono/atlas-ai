@@ -7,7 +7,7 @@ import pytest
 from instinct_models import ChatResult, Provider, ProviderUnavailable, Router
 from instinct_models.providers import LOCAL, HOSTED
 from app.modules.m23_study_abroad.adaptive_interviewer import (
-    ADAPTIVE, FALLBACK, AdaptiveInterviewer, check_question, interviewer_from_env, parse_extraction)
+    ANCHORED, parse_span, ADAPTIVE, FALLBACK, AdaptiveInterviewer, check_question, interviewer_from_env, parse_extraction)
 from app.modules.m23_study_abroad.interview import IdentityInterviewRepository, QUESTIONS
 from app.modules.m23_study_abroad.story import BrandIdRow
 from app.core.database import SessionLocal
@@ -17,14 +17,15 @@ ANSWER = "I started a robotics club at my school because nobody else would, and 
 
 class Fake(Provider):
     name, locality = "fake-local", LOCAL
-    def __init__(self, question, extraction, fail=False):
-        self.question, self.extraction, self.fail, self.calls = question, extraction, fail, []
+    def __init__(self, question, extraction, fail=False, span=""):
+        self.question, self.extraction, self.fail, self.span, self.calls = question, extraction, fail, span, []
     def available(self): return True
     def chat(self, messages, *, tools=None, max_tokens=1024):
         self.calls.append(messages)
         if self.fail:
             raise ProviderUnavailable("down")
-        text = self.extraction if "KIND |" in messages[0]["content"] else self.question
+        sysm = messages[0]["content"]
+        text = self.extraction if "KIND |" in sysm else (self.span if "TYPE |" in sysm else self.question)
         return ChatResult(self.name, "fake-model", text, [], {})
 
 
@@ -65,7 +66,7 @@ def test_question_introducing_unsaid_facts_or_leading_is_rejected():
 
 
 def _repo(tenant, provider):
-    return IdentityInterviewRepository(tenant, interviewer=AdaptiveInterviewer(Router([provider])))
+    return IdentityInterviewRepository(tenant, interviewer=AdaptiveInterviewer(Router([provider]), freeform=True))
 
 
 def test_model_backed_turn_is_labeled_and_brand_uses_only_grounded_items():
@@ -76,7 +77,7 @@ def test_model_backed_turn_is_labeled_and_brand_uses_only_grounded_items():
     assert s["next_question"] == QUESTIONS[0] and s["next_question_source"] == "fixed_script_opening"
     out = repo.answer(s["id"], ANSWER)
     assert out["next_question"] == "What was it like when you taught the younger kids?"
-    assert out["next_question_source"] == ADAPTIVE
+    assert out["next_question_source"] in (ADAPTIVE, ANCHORED)
     assert out["interviewer"]["model_backed_turns"] == [1]
     assert out["interviewer"]["turns"][0]["proposed_items"] == 1 and out["interviewer"]["turns"][0]["rejected_items"] == 1
     # the stored turn-2 question is the adaptive one
@@ -216,7 +217,7 @@ def test_http_tenant_isolation_and_labels_through_real_routes(monkeypatch):
             b = json.loads(self.rfile.read(int(self.headers["content-length"])))
             ext = "KIND |" in b["messages"][0]["content"]
             txt = ('strength | robotics club | "started a robotics club at my school"' if ext
-                   else "What was it like when you taught the younger kids to solder?")
+                   else "scene | taught 12 younger kids to solder")
             o = json.dumps({"choices": [{"message": {"content": txt}}], "model": "stub"}).encode()
             self.send_response(200); self.send_header("content-type", "application/json"); self.end_headers(); self.wfile.write(o)
         def log_message(self, *a): pass
@@ -230,7 +231,7 @@ def test_http_tenant_isolation_and_labels_through_real_routes(monkeypatch):
     sid = c.post("/api/v1/study-abroad/identity-interviews", headers=A, json={"track": "college"}).json()["id"]
     r = c.post(f"/api/v1/study-abroad/identity-interviews/{sid}/turns", headers=A,
                json={"modality": "chat", "student_response": ANSWER, "evidence_tags": []})
-    assert r.status_code == 200 and r.json()["next_question_source"] == ADAPTIVE
+    assert r.status_code == 200 and r.json()["next_question_source"] in (ADAPTIVE, ANCHORED)
     assert c.get(f"/api/v1/study-abroad/identity-interviews/{sid}", headers=B).status_code == 404
     assert c.post(f"/api/v1/study-abroad/identity-interviews/{sid}/turns", headers=B,
                   json={"modality": "chat", "student_response": ANSWER, "evidence_tags": []}).status_code == 404
@@ -239,3 +240,24 @@ def test_http_tenant_isolation_and_labels_through_real_routes(monkeypatch):
     ok = c.post(f"/api/v1/study-abroad/identity-interviews/{sid}/insights/1/0/confirm", headers=A, json={"confirmed": True})
     assert ok.status_code == 200
     srv.shutdown()
+
+
+def test_span_anchored_question_cannot_invent_facts_and_is_labeled():
+    assert parse_span('scene | started a robotics club at my school', ANSWER, []) == ("scene", "started a robotics club at my school")
+    assert parse_span('scene | started a chemistry club at my school', ANSWER, []) is None      # not an exact copy
+    assert parse_span('career | started a robotics club at my school', ANSWER, []) is None      # type not allowed
+    assert parse_span('scene | my school', ANSWER, []) is None                                  # too short
+    p = Fake("", "", span="reason | taught 12 younger kids to solder")
+    repo = IdentityInterviewRepository("anchored-a", interviewer=AdaptiveInterviewer(Router([p])))
+    s = repo.start("college")
+    out = repo.answer(s["id"], ANSWER)
+    assert out["next_question_source"] == ANCHORED
+    assert out["next_question"] == 'You mentioned "taught 12 younger kids to solder". Why did that matter to you?'
+    assert out["interviewer"]["model_backed_turns"] == [1]
+
+
+def test_bad_span_falls_back_labeled():
+    repo = IdentityInterviewRepository("anchored-b", interviewer=AdaptiveInterviewer(Router([Fake("", "", span="scene | became a famous inventor")])))
+    s = repo.start("college")
+    out = repo.answer(s["id"], ANSWER)
+    assert out["next_question_source"] == FALLBACK and "not an exact copy" in out["interviewer"]["turns"][0]["detail"]

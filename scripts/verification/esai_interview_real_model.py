@@ -42,6 +42,6 @@ print("\nBRANDID values:", b.values, "\nstrengths:", b.strengths, "\npatterns(be
 print("proposed (UNCONFIRMED) evidence items:")
 for g in grounded:
     print(" ", g["kind"], "|", g["label"], "| quote:", repr(g["quote"]), "| turn", g["turn"])
-print("\nSUMMARY", json.dumps({"turns": len(ANSWERS), "model_backed_question_turns": sum(1 for x in s["interviewer"]["turns"][:-1] if x["question_source"] == "adaptive_local_model"),
+print("\nSUMMARY", json.dumps({"turns": len(ANSWERS), "model_backed_question_turns": sum(1 for x in s["interviewer"]["turns"][:-1] if x["question_source"] in ("adaptive_local_model", "adaptive_span_anchored")),
       "fallback_question_turns": sum(1 for x in s["interviewer"]["turns"][:-1] if x["question_source"] == "fixed_script_fallback"),
       "grounded_items": len(grounded), "rejected_items": sum(x["rejected_items"] for x in s["interviewer"]["turns"])}))

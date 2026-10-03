@@ -1,33 +1,33 @@
 OPENING (fixed script): What experience has shaped how you see yourself?
 
---- turn 1 (6.8s) ---
+--- turn 1 (6.2s) ---
 STUDENT: When my family moved to a new town in eighth grade I didn't know anyone, so I started a robotics club at my school because nobody else would, and I taught twelve younger kids to solder.
-NEXT QUESTION: Which values guided a difficult choice you made? [fixed_script_fallback]
-extraction: adaptive_local_model proposed 0 rejected 2 | model question failed lexical grounding checks; fixed script question used
+NEXT QUESTION: You mentioned "nobody else would". Why did that matter to you? [adaptive_span_anchored]
+extraction: adaptive_local_model proposed 0 rejected 2 | 
 
---- turn 2 (5.5s) ---
+--- turn 2 (5.4s) ---
 STUDENT: I stayed after school every day even when only two people came, because I promised the younger kids that the club would still be there next week.
 NEXT QUESTION: What work or activity gives you energy, and why? [fixed_script_fallback]
-extraction: adaptive_local_model proposed 0 rejected 1 | model question failed lexical grounding checks; fixed script question used
+extraction: adaptive_local_model proposed 0 rejected 1 | model span was not an exact copy / allowed type; fixed script question used
 
---- turn 3 (5.6s) ---
+--- turn 3 (5.8s) ---
 STUDENT: I get the most energy when I take something broken and make it work again, like repairing the old radio my grandfather left and hearing it play.
-NEXT QUESTION: What strength have other people seen you demonstrate? [fixed_script_fallback]
-extraction: adaptive_local_model proposed 0 rejected 1 | model question failed lexical grounding checks; fixed script question used
+NEXT QUESTION: You mentioned "repairing the old radio my grandfather left and hearing it play". Why did that matter to you? [adaptive_span_anchored]
+extraction: adaptive_local_model proposed 0 rejected 2 | 
 
---- turn 4 (7.1s) ---
+--- turn 4 (7.0s) ---
 STUDENT: My teachers say I'm patient. Last spring a sophomore couldn't get her circuit to work and I sat with her for two hours until she found the loose wire herself.
 NEXT QUESTION: What do you want to explore next in college or your career? [fixed_script_fallback]
-extraction: adaptive_local_model proposed 0 rejected 2 | model question failed lexical grounding checks; fixed script question used
+extraction: adaptive_local_model proposed 0 rejected 2 | model span was not an exact copy / allowed type; fixed script question used
 
---- turn 5 (1.5s) ---
+--- turn 5 (2.6s) ---
 STUDENT: I want to study mechanical engineering and build low cost medical devices, because my grandfather's hearing aid cost more than our rent.
 NEXT QUESTION: None [None]
-extraction: adaptive_local_model proposed 0 rejected 1 | 
+extraction: adaptive_local_model proposed 0 rejected 2 | 
 
 BRANDID values: [] 
 strengths: [] 
 patterns(beyond raw answers): []
 proposed (UNCONFIRMED) evidence items:
 
-SUMMARY {"turns": 5, "model_backed_question_turns": 0, "fallback_question_turns": 4, "grounded_items": 0, "rejected_items": 7}
+SUMMARY {"turns": 5, "model_backed_question_turns": 0, "fallback_question_turns": 2, "grounded_items": 0, "rejected_items": 9}

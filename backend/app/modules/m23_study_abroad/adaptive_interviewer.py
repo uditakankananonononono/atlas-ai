@@ -1,6 +1,8 @@
 """Adaptive, model-backed student interviewer with quote-verified extraction.
 
 Truth labels (never merged):
+- question_source "adaptive_span_anchored": the model only chose an exact span of the student's answer and a type from a
+  closed list; the question text is OURS around that span, so it cannot invent student facts (span choice quality unverified).
 - question_source "adaptive_local_model": a local model wrote the next question from the
   student's own last answer and it passed the shape checks below.
 - question_source "fixed_script_fallback": the model was unavailable or its output failed
@@ -24,10 +26,12 @@ from urllib.parse import urlparse
 
 from instinct_models import ProductConfig, ProviderError, ProviderUnavailable, Router, Task, load_config
 
-CALL_TIMEOUT_S = 8.0   # per model call; one answer makes at most 2 calls
+import os as _os
+CALL_TIMEOUT_S = float(_os.environ.get("INSTINCT_INTERVIEW_CALL_TIMEOUT", "20"))  # per model call; an answer makes at most 2 calls
 _SLOTS = threading.BoundedSemaphore(2)  # at most 2 concurrent model calls; extra requests fall back instead of queueing
 
-ADAPTIVE = "adaptive_local_model"
+ADAPTIVE = "adaptive_local_model"          # model wrote the whole question (strict lexical guards)
+ANCHORED = "adaptive_span_anchored"        # model chose a span + type; WE wrote the question around the exact span
 FALLBACK = "fixed_script_fallback"
 KINDS = ("value", "strength", "pattern")
 _DRAFT_MARKERS = ("dear ", "in conclusion", "here is your", "here's your", "essay:", "sincerely", "personal statement:")
@@ -37,6 +41,20 @@ QUESTION_SYSTEM = (
     "follow-up question that builds on a specific detail the student just said. Do not write any "
     "essay text, advice, praise paragraphs or lists. Output only the question, ending with a question mark."
 )
+SPAN_SYSTEM = (
+    "Read the student's latest answer. Pick the ONE phrase (4 to 12 words) that is most worth asking about and "
+    "copy it EXACTLY from the answer. Then pick TYPE: scene (ask for a concrete moment), feeling, reason (why it "
+    "mattered) or change (what changed afterwards). Output one line only: TYPE | copied phrase"
+)
+SPAN_EXAMPLE_USER = ("Student's latest answer:\nI coached the junior swim team every Saturday for two years "
+                     "because I wanted kids who were scared of water to feel safe.")
+SPAN_EXAMPLE_REPLY = "reason | kids who were scared of water to feel safe"
+SPAN_TYPES = {
+    "scene": 'You mentioned "{span}". Can you walk me through one specific moment when that happened?',
+    "feeling": 'You mentioned "{span}". How did that feel for you at the time?',
+    "reason": 'You mentioned "{span}". Why did that matter to you?',
+    "change": 'You mentioned "{span}". What changed for you after that?',
+}
 EXTRACT_SYSTEM = (
     "Read the student's latest answer. List up to 3 things it shows about the student. One per line, "
     "in the format: KIND | short label | \"words copied exactly from the answer\". "
@@ -63,15 +81,16 @@ class InterviewStep:
     provider: str | None = None
     model: str | None = None
     detail: str = ""
+    anchor: dict | None = None
 
     @property
     def model_backed(self) -> bool:
-        return self.question_source == ADAPTIVE or self.extraction_mode == ADAPTIVE
+        return self.question_source in (ADAPTIVE, ANCHORED) or self.extraction_mode == ADAPTIVE
 
     def as_dict(self) -> dict:
         return {"question": self.question, "question_source": self.question_source, "extraction": self.extraction,
                 "rejected": self.rejected, "extraction_mode": self.extraction_mode, "provider": self.provider,
-                "model": self.model, "detail": self.detail, "model_backed": self.model_backed}
+                "model": self.model, "detail": self.detail, "anchor": self.anchor, "model_backed": self.model_backed}
 
 
 _STOP = set("that this with from have what when where which would could about your their there them they then than been were will just into over some more very also because while after before again being does did how why who whom whose".split())
@@ -147,6 +166,19 @@ def parse_extraction(text: str, answer: str) -> tuple[list[dict], list[dict]]:
     return kept[:3], rejected
 
 
+def parse_span(text: str, answer: str, asked: list[str]) -> tuple[str, str] | None:
+    """(type, exact_span) when the model's span is an exact 3-14 word copy of the answer and the type is allowed."""
+    line = next((x.strip() for x in (text or "").strip().splitlines() if x.strip()), "")
+    parts = [p.strip() for p in line.lstrip("-*0123456789.) ").split("|")]
+    if len(parts) != 2 or parts[0].lower() not in SPAN_TYPES:
+        return None
+    span = _ws(parts[1].strip(" \"'"))
+    if not 3 <= len(span.split()) <= 14 or span not in _ws(answer):
+        return None
+    q = SPAN_TYPES[parts[0].lower()].format(span=span)
+    return None if _norm(q) in {_norm(a) for a in asked} else (parts[0].lower(), span)
+
+
 def _post_loopback(url: str, body: dict, headers: dict, timeout: float) -> dict:
     """Loopback-only JSON POST with NO redirects and a hard timeout."""
     u = urlparse(url)
@@ -175,8 +207,10 @@ def _harden(router: Router) -> Router:
 
 
 class AdaptiveInterviewer:
-    def __init__(self, router: Router, *, question_tokens: int = 60, extract_tokens: int = 160):
-        self.router, self.question_tokens, self.extract_tokens = router, question_tokens, extract_tokens
+    def __init__(self, router: Router, *, question_tokens: int = 60, extract_tokens: int = 160, freeform: bool = False):
+        # freeform=True additionally tries a model-written question (strict lexical guards); off by default because
+        # real small-model runs failed those guards on every turn (see docs).
+        self.router, self.question_tokens, self.extract_tokens, self.freeform = router, question_tokens, extract_tokens, freeform
 
     def _ask(self, system: str, user: str, max_tokens: int, example: tuple[str, str] | None = None):
         shots = ([{"role": "user", "content": example[0]}, {"role": "assistant", "content": example[1]}]
@@ -208,17 +242,29 @@ class AdaptiveInterviewer:
         asked = [t["question"] for t in turns]
         details: list[str] = []
         if want_question:
-            routed = self._ask(QUESTION_SYSTEM, f"Track: {track}.\n{transcript}\nCoach:", self.question_tokens)
+            routed = self._ask(SPAN_SYSTEM, f"Student's latest answer:\n{latest}", 40,
+                               example=(SPAN_EXAMPLE_USER, SPAN_EXAMPLE_REPLY))
             if routed.ok:
-                q = check_question(routed.result.text, asked, conversation)
-                if q and _content(q) & _content(latest):
-                    step.question, step.question_source = q, ADAPTIVE
+                picked = parse_span(routed.result.text, latest, asked)
+                if picked:
+                    step.question = SPAN_TYPES[picked[0]].format(span=picked[1])
+                    step.question_source = ANCHORED
                     step.provider, step.model = routed.result.provider, routed.result.model
+                    step.anchor = {"type": picked[0], "span": picked[1]}
                 else:
-                    details.append("model question failed lexical grounding checks; fixed script question used")
+                    details.append("model span was not an exact copy / allowed type; fixed script question used")
             else:
                 details.append("no local model reachable; fixed script question used: "
                                + "; ".join(f"{a.provider}:{a.outcome}" for a in routed.attempts))
+            if step.question_source == FALLBACK and self.freeform:
+                routed = self._ask(QUESTION_SYSTEM, f"Track: {track}.\n{transcript}\nCoach:", self.question_tokens)
+                if routed.ok:
+                    q = check_question(routed.result.text, asked, conversation)
+                    if q and _content(q) & _content(latest):
+                        step.question, step.question_source = q, ADAPTIVE
+                        step.provider, step.model = routed.result.provider, routed.result.model
+                    else:
+                        details.append("model question failed lexical grounding checks; fixed script question used")
         routed = self._ask(EXTRACT_SYSTEM, f"Student's latest answer:\n{latest}", self.extract_tokens,
                            example=(EXTRACT_EXAMPLE_USER, EXTRACT_EXAMPLE_REPLY))
         if routed.ok:
