@@ -33,8 +33,15 @@ def test_bad_type_and_short_text_rejected_and_unavailable_model_is_honest():
     assert c.get(P+'/onboarding/status',headers=H(t)).json()['documents']==0
 def test_integrated_application_reports_unavailable_model_instead_of_500_or_fake_draft(monkeypatch):
     from app.modules.m02_competition_manager.routes import router as cr
-    monkeypatch.setenv('ATLAS_OLLAMA_URL','http://127.0.0.1:9')
+    monkeypatch.setenv('ATLAS_OLLAMA_URL','http://127.0.0.1:9');monkeypatch.setenv('ATLAS_OLLAMA_MODEL','tiny-test')
     a=FastAPI();a.include_router(cr);a.include_router(router);c=TestClient(a);t='own-doc-d'
     c.post(P+'/onboarding/documents',headers=H(t),json={'doc_type':'essays','title':'E','text':ESSAY})
     r=c.post('/competition-manager/competitions/c1/integrated-application',headers=H(t),json={'official_url':'https://official.example','fields':[{'field':'impact','question':'What did you build?'}]})
     assert r.status_code==503 and 'nothing was drafted' in r.json()['detail'],r.text
+def test_status_reports_model_not_configured_and_integrated_refuses_without_model(monkeypatch):
+    monkeypatch.delenv('ATLAS_OLLAMA_MODEL',raising=False)
+    from app.modules.m02_competition_manager.routes import router as cr
+    a=FastAPI();a.include_router(cr);a.include_router(router);c=TestClient(a);t='own-doc-e'
+    st=c.get(P+'/onboarding/status',headers=H(t)).json();assert st['drafting_model']['configured'] is False and st['indexing_leaves_machine'] is False
+    r=c.post('/competition-manager/competitions/c1/integrated-application',headers=H(t),json={'official_url':'https://o.example','fields':[{'field':'f','question':'Why enter?'}]})
+    assert r.status_code==503 and 'No local drafting model' in r.json()['detail']

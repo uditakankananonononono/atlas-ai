@@ -60,7 +60,19 @@ async def onboarding_paste(x:PasteIn,t:TenantContext=Depends(require_tenant)):
  c=corpus(t,x.embedding_provider);out=await guarded(c.ingest([src]))
  docs=c.list_docs();row=[d for d in docs if d['title']==x.title and d['doc_type']==x.doc_type][-1]
  return {**out,'document':row,'status':OnboardingService(t.tenant_id).status(docs)}
+async def drafting_model():
+ """Report, without guessing, whether a local drafting model is configured and reachable."""
+ model=os.getenv('ATLAS_OLLAMA_MODEL');url=os.getenv('ATLAS_OLLAMA_URL','http://ollama:11434').rstrip('/')
+ if not model:return {'configured':False,'reachable':False,'detail':'No local drafting model configured (set ATLAS_OLLAMA_MODEL to a model your machine can run).'}
+ try:
+  import httpx
+  async with httpx.AsyncClient(timeout=1.5) as c:r=await c.get(url+'/api/tags')
+  names=[m.get('name') for m in r.json().get('models',[])] if r.status_code==200 else []
+  ok=model in names
+  return {'configured':True,'reachable':r.status_code==200,'model':model,'installed':ok,'detail':'' if ok else f'Model "{model}" is not installed on the local model server.'}
+ except Exception:
+  return {'configured':True,'reachable':False,'model':model,'installed':False,'detail':'Local model server is not reachable.'}
 @router.get('/onboarding/status')
-def onboarding_status(t:TenantContext=Depends(require_tenant)):
- docs=ProfileCorpus(t.tenant_id,None).list_docs()
- return {**OnboardingService(t.tenant_id).status(docs),'documents_list':docs,'embedding_provider_default':default_provider(),'note':'Retrieval uses offline keyword matching unless a local model provider is selected.' if default_provider()=='lexical' else ''}
+async def onboarding_status(t:TenantContext=Depends(require_tenant)):
+ docs=ProfileCorpus(t.tenant_id,None).list_docs();prov=default_provider()
+ return {**OnboardingService(t.tenant_id).status(docs),'documents_list':docs,'embedding_provider':prov,'indexing_leaves_machine':prov in {'openai'},'indexing_note':'Offline keyword indexing: text is not sent to any model service.' if prov=='lexical' else f'Indexing uses "{prov}".','drafting_model':await drafting_model()}

@@ -1,4 +1,5 @@
 """FastAPI routes local to the Competition Manager module."""
+import os
 
 from uuid import uuid4
 
@@ -119,6 +120,8 @@ async def integrated_application(competition_id:str,request:IntegratedApplicatio
     from .profile_routes import default_provider
     from app.core.embeddings import EmbeddingError
     from app.core.providers import ProviderError
+    if request.provider.lower() in {'ollama','local'} and not os.getenv('ATLAS_OLLAMA_MODEL'):
+        raise HTTPException(503,'No local drafting model is configured (set ATLAS_OLLAMA_MODEL); nothing was drafted.')
     ep=(request.embedding_provider or default_provider()).lower()
     flow=IntegratedApplicationFlow(ProfileCorpus(tenant.tenant_id,get_embedding_provider(ep),provider_name=ep),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),approvals,tenant.tenant_id)
     try:return await flow.prepare(competition_id,request.official_url,[x.model_dump() for x in request.fields],request.provider)

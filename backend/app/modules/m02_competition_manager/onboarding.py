@@ -40,4 +40,4 @@ class OnboardingService:
    r=db.get(CorpusOnboardingRow,self.tenant_id)
    if r is None:db.add(CorpusOnboardingRow(tenant_id=self.tenant_id,completed=False,skipped=True,document_types=[],source_ids=[],updated_at=now))
    else:r.skipped=True;r.updated_at=now
-  return {'skipped':True,'warning':'Application drafting remains unavailable until owner source documents are indexed.'}
+  return {'skipped':True,'warning':'Application drafting is unavailable until at least one owner source document is indexed.'}
