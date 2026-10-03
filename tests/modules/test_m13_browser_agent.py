@@ -124,3 +124,10 @@ async def test_visual_loop_stages_submit_without_clicking(tmp_path):
     result = await NavigationLoop(service, Planner()).run("t", "r", "pay", actor_id="u")
     assert result["status"] == "awaiting_approval"
     assert sessions.p.clicked == []
+
+
+@pytest.fixture(autouse=True)
+def _allow_fake_server_side_submit(monkeypatch):
+    # These tests drive fake in-process pages. The default refuses server-side submits
+    # (no click-time guard); see test_m13_server_side_refusal.py.
+    monkeypatch.setattr(Service, "allow_unguarded_server_submit", True, raising=False)

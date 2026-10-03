@@ -19,6 +19,17 @@ class DaemonConfig:
     pacing_seconds: float = 5.0
     capabilities: list[str] = field(default_factory=lambda: ["navigate", "extract", "screenshot", "read_values"])
     command_timeout_seconds: float = 90.0
+    # Session pages run in their own browser context (see BrowserHandle._session_context).
+    isolate_session_context: bool = True
+    browser_args: list[str] = field(default_factory=list)
+    # Hosts the guarded session may resolve (the site). With them, a browser the daemon launches gets
+    # --host-resolver-rules="MAP * ~NOTFOUND, EXCLUDE <hosts>" so a secret cannot leave as a DNS name.
+    site_hosts: list[str] = field(default_factory=list)
+    # Over CDP the daemon cannot set launch flags. The owner must attest that the attached browser was
+    # started with them (see BrowserHandle.launch_args); the daemon then also runs a live UDP probe.
+    cdp_containment_attested: bool = False
+    # Consumed submit tokens/approvals survive a daemon restart here (audit finding F2).
+    consumed_path: str = str(DEFAULT_STATE_DIR / "consumed_submit.json")
 
     @classmethod
     def load(cls, path: Path) -> "DaemonConfig":

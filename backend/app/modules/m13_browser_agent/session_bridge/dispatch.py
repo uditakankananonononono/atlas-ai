@@ -22,7 +22,24 @@ from typing import Any
 from . import protocol
 from .protocol import (BlockKind, BridgeError, CommandKind, DeviceOffline,
                        PlatformBlocked, clamp_pacing, is_pc_session, split_pc_session)
+from . import form_guard
+from .form_guard import ARM_TTL_SECONDS
 from .registry import BridgeRegistry
+
+
+def screenshot_path(tenant_id: str, session_id: str, *, root=Path("/tmp/atlas-browser")) -> str:
+    """Validate components and refuse symlink-resolved paths outside the root."""
+    protocol.validate_identifier(tenant_id)
+    if is_pc_session(session_id):
+        split_pc_session(session_id)
+    else:
+        protocol.validate_identifier(session_id)
+    import secrets as _secrets
+    root = Path(root).resolve()
+    path = (root / tenant_id / session_id / f"{_secrets.token_hex(12)}.png").resolve()
+    if not path.is_relative_to(root):
+        raise ValueError("screenshot path resolves outside its root")
+    return str(path)
 
 
 class DaemonConnection:
@@ -148,7 +165,11 @@ class BridgedPage:
 
     async def _click(self, selector: str) -> None:
         kind, extra = self._sessions._click_class(self.tenant_id, self.device_id, self.local_name, selector)
-        await self._execute(kind, {"selector": selector, **extra})
+        result = await self._execute(kind, {"selector": selector, **extra})
+        if kind is CommandKind.CLICK_SUBMIT and isinstance(result, dict):
+            # Record what the device says it dispatched so the caller can verify it.
+            self._sessions._dispatched[(self.tenant_id, self.session_id)] = result.get("approval_id")
+            self._sessions._guard[(self.tenant_id, self.session_id)] = result.get("guard")
 
     async def goto(self, url: str, wait_until: str = "domcontentloaded") -> Any:
         result = await self._execute(CommandKind.NAVIGATE, {"url": url, "wait_until": wait_until}, timeout=90.0)
@@ -181,11 +202,19 @@ class BridgedPage:
 class BridgedSessions:
     """Session factory whose pages run on the owner's paired devices."""
 
-    def __init__(self, registry: BridgeRegistry, hub: ConnectionHub | None = None):
+    def __init__(self, registry: BridgeRegistry, hub: ConnectionHub | None = None,
+                 *, arm_ttl_seconds: float = ARM_TTL_SECONDS, clock=time.monotonic):
         self.registry = registry
         self.hub = hub or HUB
+        # An approved submit that nobody clicks must not block the session forever.
+        self.arm_ttl_seconds = float(arm_ttl_seconds)
+        self.clock = clock
+        self._guard: dict[tuple[str, str], Any] = {}
+        self._expired_selector: dict[tuple[str, str], str] = {}
         # One armed submit per (tenant, session); consumed by the next click.
         self._armed: dict[tuple[str, str], dict[str, str]] = {}
+        self._consumed_selector: dict[tuple[str, str], str] = {}
+        self._dispatched: dict[tuple[str, str], Any] = {}
         # Last URL reported by the daemon per (tenant, session); lets a fresh
         # page handle know where the paired browser currently is.
         self._urls: dict[tuple[str, str], str] = {}
@@ -199,6 +228,7 @@ class BridgedSessions:
         return None
 
     async def page(self, tenant_id: str, session_id: str, persistent: bool = False) -> BridgedPage:
+        protocol.validate_identifier(tenant_id)
         device_id, local_name = split_pc_session(session_id)
         device = self.registry.get_device(device_id)
         if device is None or device.tenant_id != tenant_id:
@@ -215,6 +245,7 @@ class BridgedSessions:
             return False
         await self._execute(tenant_id, device_id, local_name, CommandKind.CLOSE, {})
         self._armed.pop((tenant_id, session_id), None)
+        self._expired_selector.pop((tenant_id, session_id), None)
         return True
 
     # -- read-adapter surface for pre_submit_capture ------------------------
@@ -235,9 +266,8 @@ class BridgedSessions:
         return str(result.get("html", ""))
 
     async def screenshot(self, tenant_id: str, session_id: str, mask_selectors: list[str] | None = None) -> str:
+        path = screenshot_path(tenant_id, session_id)
         page = await self.page(tenant_id, session_id, True)
-        import secrets as _secrets
-        path = f"/tmp/atlas-browser/{tenant_id}/{session_id}/{_secrets.token_hex(12)}.png"
         mask = [BridgedLocator(page, selector) for selector in (mask_selectors or [])]
         await page.screenshot(path=path, full_page=True, mask=mask)
         return path
@@ -245,7 +275,8 @@ class BridgedSessions:
     # -- approval arming ----------------------------------------------------
 
     async def authorize_submit(self, tenant_id: str, session_id: str, *, approval_id: str,
-                               capture_sha256: str, selector: str, values: dict[str, str]) -> None:
+                               capture_sha256: str, selector: str, values: dict[str, str], preview: dict | None = None,
+                               readback_selectors: dict | None = None) -> None:
         """Arm the next click on this session as the approved submit.
 
         Called by the M13 submit path only after the approval was consumed.
@@ -254,23 +285,85 @@ class BridgedSessions:
         this session consumes it, whether it succeeds or fails.
         """
         from ..security import values_digest
+        from ..submit_binding import preview_digest
+        # No preview, no arming: the daemon would refuse the click anyway (audit finding 1).
+        if not isinstance(preview, dict) or not preview.get("form_facts"):
+            raise PermissionError("an approved submit needs a reviewed destination preview")
+        if preview["form_facts"].get("enctype") != form_guard.DEFAULT_ENCTYPE:
+            raise PermissionError("only urlencoded forms can be approved; multipart and text/plain are refused")
+        pdigest = preview_digest(preview)
+        extra_binding = "" if pdigest == capture_sha256 else pdigest
         device_id, _ = split_pc_session(session_id)
         device = self.registry.get_device(device_id)
         if device is None or device.tenant_id != tenant_id:
             raise DeviceOffline("no paired device for this session")
+        deadline = round(time.time() + self.arm_ttl_seconds, 3)
         token = protocol.submit_token(device.command_secret, approval_id=approval_id,
                                       capture_sha256=capture_sha256, selector=selector,
-                                      values_digest=values_digest(values))
+                                      values_digest=values_digest(values), preview_sha256=extra_binding,
+                                      deadline=deadline)
+        self._dispatched.pop((tenant_id, session_id), None)
+        self._guard.pop((tenant_id, session_id), None)
+        self._expired_selector.pop((tenant_id, session_id), None)
+        self._consumed_selector.pop((tenant_id, session_id), None)
         self._armed[(tenant_id, session_id)] = {
-            "approval_id": approval_id, "capture_sha256": capture_sha256, "token": token}
+            "approval_id": approval_id, "capture_sha256": capture_sha256, "token": token, "selector": selector,
+            "values_digest": values_digest(values), "values": values,
+            "armed_at": self.clock(), "deadline": deadline,
+            "preview": preview, "readback_selectors": readback_selectors or {}}
+        if extra_binding:
+            self._armed[(tenant_id, session_id)]["preview_sha256"] = extra_binding
 
     def _click_class(self, tenant_id: str, device_id: str, local_name: str,
                      selector: str) -> tuple[CommandKind, dict[str, str]]:
         key = (tenant_id, f"{protocol.PC_SESSION_PREFIX}{device_id}.{local_name}")
-        armed = self._armed.pop(key, None)
+        armed = self._live_armed(key)
         if armed is None:
+            if selector == self._consumed_selector.get(key):
+                raise BridgeError("the approved submit was already used on this control; preview and approve again")
+            if selector == self._expired_selector.pop(key, None):
+                # Never fall back to an unapproved navigation click of the approved control.
+                raise BridgeError("the armed approval expired before the click; preview and approve again")
+            self._expired_selector.pop(key, None)
             return CommandKind.CLICK_NAV, {}
+        if selector != armed["selector"]:
+            # Fail closed: an unrelated click must neither consume the one-shot
+            # arming nor be dispatched while an approved submit is pending.
+            raise BridgeError("an approved submit is armed on this session; refusing unrelated click")
+        del self._armed[key]
+        # A consumed arming must refuse, not fall through to CLICK_NAV (audit finding F3).
+        self._consumed_selector[key] = selector
         return CommandKind.CLICK_SUBMIT, armed
+
+    def _live_armed(self, key):
+        """Return the armed entry, dropping it (and remembering why) once past its TTL."""
+        armed = self._armed.get(key)
+        if armed is not None and self.clock() - armed["armed_at"] > self.arm_ttl_seconds:
+            del self._armed[key]
+            self._expired_selector[key] = armed["selector"]
+            return None
+        return armed
+
+    def is_armed(self, tenant_id: str, session_id: str, *, approval_id: str, selector: str) -> bool:
+        armed = self._live_armed((tenant_id, session_id))
+        return bool(armed and armed["approval_id"] == approval_id and armed["selector"] == selector)
+
+    def disarm(self, tenant_id: str, session_id: str) -> None:
+        self._armed.pop((tenant_id, session_id), None)
+        self._expired_selector.pop((tenant_id, session_id), None)
+
+    def submit_dispatched(self, tenant_id: str, session_id: str, approval_id: str) -> bool:
+        """True once, only if the device echoed this approval on a CLICK_SUBMIT."""
+        return self._dispatched.pop((tenant_id, session_id), None) == approval_id
+
+    def submit_guard(self, tenant_id: str, session_id: str) -> dict | None:
+        """What the device's network guard did during the approved click (once)."""
+        return self._guard.pop((tenant_id, session_id), None)
+
+    async def form_facts(self, tenant_id: str, session_id: str, selector: str) -> dict:
+        device_id, local_name = split_pc_session(session_id)
+        result = await self._execute(tenant_id, device_id, local_name, CommandKind.FORM_FACTS, {"selector": selector})
+        return result.get("facts")
 
     # -- transport ----------------------------------------------------------
 
@@ -284,7 +377,7 @@ class BridgedSessions:
         connection = self.hub.get(device_id)
         if connection is None:
             raise DeviceOffline("paired device is not connected")
-        capability = "click_submit" if kind is CommandKind.CLICK_SUBMIT else kind.value
+        capability = protocol.capability_for(kind)
         if capability not in set(device.capabilities):
             raise BridgeError(f"paired device was not granted the '{capability}' capability")
         return await connection.execute(kind, {"session": local_name, **args}, timeout=timeout)
@@ -318,6 +411,25 @@ class HybridSessions:
     async def close_session(self, tenant_id: str, session_id: str) -> bool:
         return await self._backend(session_id).close_session(tenant_id, session_id)
 
+    def is_armed(self, tenant_id: str, session_id: str, **kwargs) -> bool:
+        return self.bridged.is_armed(tenant_id, session_id, **kwargs)
+
+    def submit_guard(self, tenant_id: str, session_id: str) -> dict | None:
+        return self.bridged.submit_guard(tenant_id, session_id)
+
+    async def form_facts(self, tenant_id: str, session_id: str, selector: str) -> dict:
+        if is_pc_session(session_id):
+            return await self.bridged.form_facts(tenant_id, session_id, selector)
+        from .form_guard import FORM_FACTS_JS
+        page = await self.server.page(tenant_id, session_id, False)
+        return await page.evaluate(FORM_FACTS_JS, selector)
+
+    def disarm(self, tenant_id: str, session_id: str) -> None:
+        self.bridged.disarm(tenant_id, session_id)
+
+    def submit_dispatched(self, tenant_id: str, session_id: str, approval_id: str) -> bool:
+        return self.bridged.submit_dispatched(tenant_id, session_id, approval_id)
+
     async def authorize_submit(self, tenant_id: str, session_id: str, **kwargs) -> None:
         """Arm an approved submit; only meaningful for paired-PC sessions."""
         if is_pc_session(session_id):
@@ -338,8 +450,7 @@ class HybridSessions:
     async def screenshot(self, tenant_id: str, session_id: str, mask_selectors: list[str] | None = None) -> str:
         if is_pc_session(session_id):
             return await self.bridged.screenshot(tenant_id, session_id, mask_selectors)
-        import secrets as _secrets
-        path = f"/tmp/atlas-browser/{tenant_id}/{session_id}/{_secrets.token_hex(12)}.png"
+        path = screenshot_path(tenant_id, session_id)
         page = await self.server.page(tenant_id, session_id, False)
         mask = [page.locator(selector) for selector in (mask_selectors or [])]
         Path(path).parent.mkdir(parents=True, exist_ok=True)

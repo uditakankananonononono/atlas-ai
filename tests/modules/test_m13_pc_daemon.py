@@ -66,6 +66,11 @@ class FakeBrowser:
     def __init__(self):
         self._page = FakePage()
 
+    isolated = False
+
+    async def verify_containment(self):
+        return None  # a fake browser has no network to contain
+
     async def page(self, name):
         return self._page
 
@@ -77,6 +82,7 @@ class FakeBrowser:
 def daemon(tmp_path):
     config = DaemonConfig(server_url="https://atlas.test", device_id="dev1",
                           command_secret="topsecret", pacing_seconds=0,
+                          consumed_path=str(tmp_path / "consumed.json"),
                           capabilities=["navigate", "extract", "read_values", "fill",
                                         "click_nav", "click_submit"])
     identity = DeviceIdentity.load_or_create(tmp_path / "key.pem")
@@ -93,7 +99,7 @@ def _command(kind, args, command_id="cmd-1"):
 async def test_capability_not_granted_is_blocked(tmp_path):
     config = DaemonConfig(server_url="https://atlas.test", device_id="dev1",
                           command_secret="topsecret", pacing_seconds=0,
-                          capabilities=["extract"])
+                          consumed_path=str(tmp_path / "consumed.json"), capabilities=["extract"])
     daemon = Daemon(config, DeviceIdentity.load_or_create(tmp_path / "key.pem"))
     daemon.browser = FakeBrowser()
     answer = await daemon.execute(_command(CommandKind.FILL, {"session": "s", "selector": "#a", "value": "x"}))
@@ -114,15 +120,36 @@ async def test_submit_click_requires_valid_token(daemon):
 
 
 @pytest.mark.asyncio
-async def test_submit_click_with_valid_token_runs(daemon):
+async def test_submit_click_without_preview_is_refused_even_with_valid_token(daemon):
+    import time
+    deadline = time.time() + 60
+    token = protocol.submit_token("topsecret", approval_id="a1", capture_sha256="c" * 64,
+                                  selector="#go", values_digest="d" * 64, deadline=deadline)
+    args = {"session": "s", "selector": "#go", "approval_id": "a1", "capture_sha256": "c" * 64,
+            "values_digest": "d" * 64, "token": token, "values": {"#name": "Ada"},
+            "deadline": deadline}
+    answer = await daemon.execute(_command(CommandKind.CLICK_SUBMIT, args))
+    assert answer["ok"] is False and "preview" in answer["error"]
+    assert daemon.browser._page.clicked == []  # no preview-less plain click path exists
+
+
+@pytest.mark.asyncio
+async def test_submit_click_without_deadline_is_refused_and_token_is_one_shot(daemon):
+    import time
     token = protocol.submit_token("topsecret", approval_id="a1", capture_sha256="c" * 64,
                                   selector="#go", values_digest="d" * 64)
-    args = {"session": "s", "selector": "#go", "approval_id": "a1",
-            "capture_sha256": "c" * 64, "values_digest": "d" * 64, "token": token}
+    args = {"session": "s", "selector": "#go", "approval_id": "a1", "capture_sha256": "c" * 64,
+            "values_digest": "d" * 64, "token": token}
     answer = await daemon.execute(_command(CommandKind.CLICK_SUBMIT, args))
-    assert answer["ok"] is True
-    assert daemon.browser._page.clicked == ["#go"]
-    assert answer["receipt"]["phase"] == "completed"
+    assert answer["ok"] is False and "armed" in answer["error"]
+    args["deadline"] = time.time() + 60
+    args["token"] = protocol.submit_token("topsecret", approval_id="a1", capture_sha256="c" * 64,
+                                          selector="#go", values_digest="d" * 64, deadline=args["deadline"])
+    first = await daemon.execute(_command(CommandKind.CLICK_SUBMIT, args, command_id="c1"))
+    assert first["ok"] is False and "replay" not in first["error"]
+    again = await daemon.execute(_command(CommandKind.CLICK_SUBMIT, args, command_id="c2"))
+    assert again["ok"] is False and "replay" in again["error"]
+    assert daemon.browser._page.clicked == []
 
 
 @pytest.mark.asyncio
