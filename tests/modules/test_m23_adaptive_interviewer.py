@@ -279,3 +279,50 @@ def test_call_timeout_applies_to_a_silent_server(monkeypatch):
         ai._post_loopback(f"http://127.0.0.1:{srv.server_port}/v1/chat/completions", {}, {}, 120)
     assert time.time() - t0 < 3.5
     srv.shutdown()
+
+
+def test_step_budget_caps_request_latency_and_labels_timeout(monkeypatch):
+    import http.server, threading, time
+    from app.modules.m23_study_abroad import adaptive_interviewer as ai
+    class Slow(http.server.BaseHTTPRequestHandler):
+        def do_POST(self):
+            time.sleep(6); self.send_response(200); self.end_headers()
+        def log_message(self, *a): pass
+    srv = http.server.HTTPServer(("127.0.0.1", 0), Slow)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    monkeypatch.setattr(ai, "STEP_BUDGET_S", 2.0)
+    monkeypatch.setenv("INSTINCT_ORNITH_URL", f"http://127.0.0.1:{srv.server_port}/v1")
+    monkeypatch.setenv("INSTINCT_ORNITH_MODEL", "stub")
+    repo = IdentityInterviewRepository("budget-a", interviewer=ai.interviewer_from_env())
+    s = repo.start("college")
+    t0 = time.time()
+    out = repo.answer(s["id"], ANSWER)
+    elapsed = time.time() - t0
+    assert elapsed < 4.5, elapsed                      # budget 2s + overhead, not 2 x 20s
+    assert out["turns"][0]["student_response"] == ANSWER
+    assert out["next_question_source"] == FALLBACK
+    assert "timeout" in out["interviewer"]["turns"][0]["detail"] or "budget" in out["interviewer"]["turns"][0]["detail"]
+    srv.shutdown()
+
+
+def test_trickling_response_hits_total_deadline(monkeypatch):
+    import http.server, threading, time
+    from instinct_models import ProviderUnavailable
+    from app.modules.m23_study_abroad import adaptive_interviewer as ai
+    class Trickle(http.server.BaseHTTPRequestHandler):
+        def do_POST(self):
+            self.send_response(200); self.send_header("content-length", "100000"); self.end_headers()
+            try:
+                for _ in range(60):
+                    self.wfile.write(b"x" * 10); self.wfile.flush(); time.sleep(0.3)
+            except Exception:
+                pass
+        def log_message(self, *a): pass
+    srv = http.server.HTTPServer(("127.0.0.1", 0), Trickle)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    monkeypatch.setattr(ai, "CALL_TIMEOUT_S", 1.5)
+    t0 = time.time()
+    with pytest.raises(ProviderUnavailable):
+        ai._post_loopback(f"http://127.0.0.1:{srv.server_port}/v1/x", {}, {}, 120)
+    assert time.time() - t0 < 3.5
+    srv.shutdown()

@@ -42,6 +42,13 @@ print("\nBRANDID values:", b.values, "\nstrengths:", b.strengths, "\npatterns(be
 print("proposed (UNCONFIRMED) evidence items:")
 for g in grounded:
     print(" ", g["kind"], "|", g["label"], "| quote:", repr(g["quote"]), "| turn", g["turn"])
-print("\nSUMMARY", json.dumps({"turns": len(ANSWERS), "model_backed_question_turns": sum(1 for x in s["interviewer"]["turns"][:-1] if x["question_source"] in ("adaptive_local_model", "adaptive_span_anchored")),
-      "fallback_question_turns": sum(1 for x in s["interviewer"]["turns"][:-1] if x["question_source"] == "fixed_script_fallback"),
-      "grounded_items": len(grounded), "rejected_items": sum(x["rejected_items"] for x in s["interviewer"]["turns"])}))
+from collections import Counter
+asked = s["interviewer"]["turns"][:-1]  # turns 1..4 each pick a next question; turn 5 only extracts
+all_turns = s["interviewer"]["turns"]
+print("\nSUMMARY (computed from the per-turn records above)", json.dumps({
+    "turns": len(ANSWERS),
+    "next_question_source_counts_turns_1_to_4": dict(Counter(x["question_source"] for x in asked)),
+    "extraction_mode_counts_all_turns": dict(Counter(x["extraction_mode"] for x in all_turns)),
+    "proposed_items": sum(x["proposed_items"] for x in all_turns),
+    "rejected_items": sum(x["rejected_items"] for x in all_turns),
+    "unconfirmed_items_in_brandid_evidence": len(grounded)}))
