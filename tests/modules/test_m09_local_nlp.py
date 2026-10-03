@@ -82,3 +82,15 @@ def test_real_default_api_with_sql_and_ner(tmp_path):
     import json
     output=os.getenv('ATLAS_M09_EVIDENCE_PATH')
     if output:open(output,'w').write(json.dumps(evidence,indent=2))
+
+def test_update_inference_error_preserves_existing_node():
+    repo=Repo();svc=Service(repo,embed=lambda t:[1,0],extract_entities=lambda t:[])
+    old=svc.create_node(NodeCreate(node_type='note',title='Original'))
+    def broken(text):raise NLPUnavailable('inference error')
+    svc.extract_entities=broken
+    with pytest.raises(NLPUnavailable):svc.update_node(old.id,NodeUpdate(expected_version=1,title='Not saved'))
+    assert repo.nodes[old.id].title=='Original' and repo.nodes[old.id].version==1
+
+def test_provider_failure_does_not_affect_read_only_context(monkeypatch):
+    monkeypatch.setenv('ATLAS_M09_EMBEDDING_PROVIDER','unsupported')
+    repo=Repo();assert Service(repo).planner_context(['missing'])=={'nodes':[],'edges':[]}

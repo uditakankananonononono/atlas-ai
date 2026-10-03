@@ -2,7 +2,20 @@
 
 The graph is a real tenant-scoped SQL adjacency list. Node creation computes an embedding through an injected provider and proposes similarity and NER links; it never silently accepts a link. Hierarchical and dependency relationships reject cycles. Optimistic versions prevent lost edits. Audit rows record graph mutations. `/planner-context` exports bounded graph context without exposing another tenant.
 
-For production, inject Atlas's embedding and NER services in `get_service`; the offline default intentionally produces no speculative links. PostgreSQL can later add a pgvector HNSW column/index without changing the service boundary. Register `spec` in `modules/registry.py` and mark catalog item 9 implemented.
+The old silent no-op default has been removed. The production `get_service` uses the free in-process M09 runtime on writes. Install `pip install -e '.[m09-local]'` (Python >=3.12). First embedding use downloads public model weights; spaCy weights are installed by the extra. No account or API key is required. Subsequent inference runs locally on CPU. Read-only graph paths do not load models.
+
+M09 owns these settings independently of core OpenAI/Ollama defaults:
+- `ATLAS_M09_EMBEDDING_PROVIDER=fastembed` (the only supported provider here)
+- `ATLAS_M09_EMBEDDING_MODEL=BAAI/bge-small-en-v1.5`
+- `ATLAS_M09_SPACY_MODEL=en_core_web_sm`
+- `ATLAS_M09_MODEL_CACHE` (optional writable model cache)
+- `ATLAS_M09_CPU_THREADS=2` (1-32)
+
+`GET /knowledge-workspace/nlp-status` loads the runtime and returns model identities, vector dimension, artifact hashes and limits, or HTTP 503. Node create/update returns 503 if models are missing, load fails, vectors are invalid or inference fails. Both embedding and entity inference finish before the node is saved; there is no token/hash/empty fallback. Other database failures can still leave a saved node with incomplete suggestions because node/suggestion writes are separate transactions.
+
+`metadata._atlas_m09_nlp` is server-owned and overwritten at each node write. Similarity requires equal identity, including ONNX/tokenizer hashes, version and dimension. Legacy/unversioned or differently embedded nodes are skipped and counted in the new node's metadata; update them to regenerate embeddings. This is conservative compatibility, not automatic migration. Vector validity is checked before comparison. Suggestions remain pending until explicit review. `related_to` uses the existing 0.78 cosine threshold, unchanged and not calibrated as a probability. `mentions` means a trained NER span exactly matches another node title, case-insensitively; its score 1.0 is an exact-match indicator, not NER confidence. Duplicate titles may generate multiple suggestions.
+
+Limits: English-only small models, 512-token embedding truncation, NER misses/mislabels, exact-title-only mentions, first 500 repository nodes, and existing optimistic-update/concurrency behavior. This repair does not verify semantic/paraphrase accuracy, add ANN search, train a model, repair stale suggestions after edits, or certify all of M09. PostgreSQL/Windows/owner-PC validation is separate. Core embeddings and M25 are not changed to this runtime; M25's default is now explicitly labelled 16-bin SHA-256 token hashing plus lexical overlap, not learned semantic retrieval.
 
 Frontend dependency: `@xyflow/react`. The included component uses the actual React Flow canvas, MiniMap, controls, type filters and double-click selection.
 
