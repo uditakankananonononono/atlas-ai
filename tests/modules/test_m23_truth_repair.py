@@ -147,3 +147,24 @@ def test_unknown_financials_remain_unknown_and_zero_is_known():
     assert Service().fit(p,[u])[0]['evidence']['budget_fit']==1
     u.annual_tuition_usd=None
     assert Service().fit(p,[u])[0]['score'] is None
+
+@pytest.mark.parametrize('field', ['budget','tuition'])
+def test_financial_values_must_be_float_representable(field):
+    huge=10**400
+    p={'values':[],'turning_points':[],'strengths':[],'finances':{'annual_budget_usd':100}}
+    u={'id':'u','name':'U','country':'US','programs':[],'official_url':'https://u.example','annual_tuition_usd':100}
+    if field=='budget':p['finances']['annual_budget_usd']=huge
+    else:u['annual_tuition_usd']=huge
+    with pytest.raises(ValueError):Service().fit(StudentProfileIn(**p),[UniversityIn(**u)])
+
+def test_mounted_huge_budget_is_422_not_overflow():
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from app.modules.m23_study_abroad.routes import router
+    app=FastAPI();app.include_router(router);client=TestClient(app)
+    body={'profile':{'values':[],'turning_points':[],'strengths':[],'finances':{'annual_budget_usd':10**400}},'universities':[]}
+    assert client.post('/study-abroad/fit',json=body).status_code==422
+
+def test_service_validates_huge_budget_even_for_unvalidated_models():
+    p=StudentProfileIn.model_construct(values=[],turning_points=[],strengths=[],goals=[],finances={'annual_budget_usd':10**400})
+    with pytest.raises(ValueError):Service().fit(p,[])
