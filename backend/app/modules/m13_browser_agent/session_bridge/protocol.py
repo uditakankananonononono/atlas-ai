@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import re
 import secrets
 from enum import Enum
 from typing import Any
@@ -39,7 +40,15 @@ class CommandKind(str, Enum):
     CLICK_NAV = "click_nav"        # reversible in-page navigation (open a dialog, a tab)
     CLICK_SUBMIT = "click_submit"  # irreversible external effect; requires an approval token
     SOCIAL_READ = "social_read"    # daemon-side read-only collection (e.g. instaloader)
+    FORM_FACTS = "form_facts"      # read-only: browser-resolved form destination and attributes
     CLOSE = "close"
+
+
+def capability_for(kind: CommandKind) -> str:
+    """Pairing capability a command needs. Form facts are a read of the page."""
+    if kind is CommandKind.FORM_FACTS:
+        return CommandKind.READ_VALUES.value
+    return kind.value
 
 
 class BlockKind(str, Enum):
@@ -74,6 +83,13 @@ class PlatformBlocked(BridgeError):
         self.detail = detail
 
 
+def validate_identifier(value: str) -> str:
+    """One bounded ASCII component, never a path or encoded path."""
+    if not isinstance(value, str) or re.fullmatch(r"[A-Za-z0-9_-]{1,120}", value) is None:
+        raise ValueError("invalid identifier: use 1-120 ASCII letters, digits, underscore or hyphen")
+    return value
+
+
 def is_pc_session(session_id: str) -> bool:
     return session_id.startswith(PC_SESSION_PREFIX)
 
@@ -86,12 +102,14 @@ def split_pc_session(session_id: str) -> tuple[str, str]:
     device_id, _, name = rest.partition(".")
     if not device_id or not name:
         raise ValueError("paired-PC session id must be pc.<device_id>.<name>")
+    validate_identifier(device_id)
+    validate_identifier(name)
     return device_id, name
 
 
 def make_pc_session(device_id: str, name: str) -> str:
-    if not device_id or not name or "." in device_id:
-        raise ValueError("invalid device id or session name")
+    validate_identifier(device_id)
+    validate_identifier(name)
     return f"{PC_SESSION_PREFIX}{device_id}.{name}"
 
 
@@ -152,17 +170,37 @@ def clamp_pacing(value: float | int | None) -> float:
     return max(MIN_PACING_SECONDS, min(MAX_PACING_SECONDS, float(value)))
 
 
+def deadline_text(deadline: float | int | None) -> str:
+    if isinstance(deadline, bool) or not isinstance(deadline, (int, float)):
+        return "none"
+    return f"{float(deadline):.3f}"
+
+
 def submit_token(command_secret: str, *, approval_id: str, capture_sha256: str,
-                 selector: str, values_digest: str) -> str:
-    """One-shot proof that this exact approved click may run on the device."""
-    body = "|".join([approval_id, capture_sha256, selector, values_digest])
+                 selector: str, values_digest: str, preview_sha256: str = "",
+                 deadline: float | int | None = None) -> str:
+    """Proof that this exact approved click may run on the device.
+
+    ``preview_sha256`` binds the reviewed destination preview when its digest is
+    not already the capture digest (the M13 capture-bound flow). The device keeps
+    a consumed-token cache, so each token works once per device process.
+    """
+    parts = [approval_id, capture_sha256, selector, values_digest]
+    if preview_sha256:
+        parts.append(preview_sha256)
+    # The deadline is signed into the token: editing it invalidates the token, so an
+    # old command cannot be re-dated to outlive the arming window (audit finding F2).
+    parts.append(f"deadline={deadline_text(deadline)}")
+    body = "|".join(parts)
     return hmac.new(command_secret.encode("utf-8"), body.encode("utf-8"), hashlib.sha256).hexdigest()
 
 
 def verify_submit_token(command_secret: str, *, approval_id: str, capture_sha256: str,
-                        selector: str, values_digest: str, token: str) -> bool:
+                        selector: str, values_digest: str, token: str, preview_sha256: str = "",
+                        deadline: float | int | None = None) -> bool:
     expected = submit_token(command_secret, approval_id=approval_id, capture_sha256=capture_sha256,
-                            selector=selector, values_digest=values_digest)
+                            selector=selector, values_digest=values_digest, preview_sha256=preview_sha256,
+                            deadline=deadline)
     return hmac.compare_digest(expected, token)
 
 

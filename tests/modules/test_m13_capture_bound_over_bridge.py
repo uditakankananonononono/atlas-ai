@@ -22,6 +22,8 @@ from app.modules.m13_browser_agent.session_bridge.registry import BridgeRegistry
 CAP = "c" * 64
 URL = "https://example.com/form"
 V = {"#name": "Ada", "#email": "a@b.co"}
+FORM_HTML = ('<html><body><form method="post" action="/submit"><input id="name" name="name">'
+             '<input id="email" name="email"><button id="go">Go</button></form></body></html>')
 
 
 class FakeConnection:
@@ -39,7 +41,12 @@ class FakeConnection:
         if kind is CommandKind.SCREENSHOT:
             return {"png_base64": base64.b64encode(b"\x89PNG-fake").decode(), "url": self.url}
         if kind is CommandKind.EXTRACT:
-            return {"html": "<html>form</html>", "url": self.url}
+            return {"html": FORM_HTML, "url": self.url}
+        if kind is CommandKind.FORM_FACTS:
+            return {"facts": {"url": URL, "base_uri": URL, "base_count": 0, "action": "https://example.com/submit",
+                              "method": "post", "enctype": "application/x-www-form-urlencoded", "target": "",
+                              "accept_charset": "", "no_validate": False, "on_attrs": [], "overrides": [],
+                              "external_controls": 0}, "url": self.url}
         return {"url": self.url}
 
 
@@ -59,7 +66,7 @@ class Store:
         self.events, self.consumed = [], set()
         self.captures = {CAP: SimpleNamespace(
             session_id=session_id,
-            artifact={"destination": URL, "fields": dict(V), "dom_sha256": "d" * 64,
+            artifact={"destination": URL, "fields": dict(V), "dom_sha256": __import__("hashlib").sha256(FORM_HTML.encode()).hexdigest(),
                       "screenshot_sha256": "e" * 64, "captured_at": "now"})}
 
     async def append_audit(self, e):
@@ -128,10 +135,52 @@ async def test_capture_bound_submit_over_bridge(env, tmp_path):
     token = submit_commands[0]["args"]["token"]
     assert protocol.verify_submit_token(
         device["command_secret"], approval_id=staged["approval_id"], capture_sha256=CAP,
-        selector="#go", values_digest=values_digest(V), token=token)
+        selector="#go", values_digest=values_digest(V), token=token,
+        preview_sha256=submit_commands[0]["args"]["preview_sha256"], deadline=submit_commands[0]["args"]["deadline"])
+    preview = submit_commands[0]["args"]["preview"]
+    assert preview["form_action"] == "https://example.com/submit" and preview["field_names"] == {"#name": "name", "#email": "email"}
 
     # Replay is impossible: the approval was consumed.
     with pytest.raises(PermissionError, match="consumed|not approved"):
         await execute_capture_bound_submit(service, sf, "t", SESSION_ID, "#go", V,
                                            staged["approval_id"], CAP)
     assert len([c for c in connection.commands if c["kind"] is CommandKind.CLICK_SUBMIT]) == 1
+
+
+@pytest.mark.asyncio
+async def test_r5_approval_payload_shows_form_action_and_execute_compares_it(env):
+    service, sessions, device, connection, SESSION_ID, sf = env
+    page = await sessions.page("t", SESSION_ID)
+    await page.goto(URL)
+    staged = await request_capture_bound_submit(service, "t", "u", SESSION_ID, "#go", V, CAP)
+    payload = service.approvals.rows[staged["approval_id"]]["payload"]
+    assert payload["form_action"] == "https://example.com/submit" and payload["form_method"] == "post"
+    service.approvals.rows[staged["approval_id"]]["status"] = ApprovalStatus.APPROVED
+    payload["form_action"] = "https://example.com/other"  # owner approved a different destination
+    with pytest.raises(PermissionError, match="form_action"):
+        await execute_capture_bound_submit(service, sf, "t", SESSION_ID, "#go", V, staged["approval_id"], CAP)
+    assert not [c for c in connection.commands if c["kind"] is CommandKind.CLICK_SUBMIT]
+
+
+@pytest.mark.asyncio
+async def test_r5_execute_refuses_when_dom_hash_differs_from_the_approved_capture(env):
+    service, sessions, device, connection, SESSION_ID, sf = env
+    page = await sessions.page("t", SESSION_ID)
+    await page.goto(URL)
+    staged = await request_capture_bound_submit(service, "t", "u", SESSION_ID, "#go", V, CAP)
+    service.approvals.rows[staged["approval_id"]]["status"] = ApprovalStatus.APPROVED
+    service.approvals.rows[staged["approval_id"]]["payload"]["dom_sha256"] = "0" * 64
+    with pytest.raises(PermissionError, match="dom_sha256"):
+        await execute_capture_bound_submit(service, sf, "t", SESSION_ID, "#go", V, staged["approval_id"], CAP)
+    assert not [c for c in connection.commands if c["kind"] is CommandKind.CLICK_SUBMIT]
+
+
+@pytest.mark.asyncio
+async def test_r5_server_side_session_submit_is_refused_by_default(tmp_path):
+    from types import SimpleNamespace
+    class Sessions:
+        async def page(self, *a): return SimpleNamespace(url=URL)
+    session_id = "server-side-session"
+    service = Service(Sessions(), Approvals(), Store(session_id), str(tmp_path), {"example.com"})
+    with pytest.raises(PermissionError, match="no click-time guard"):
+        await request_capture_bound_submit(service, "t", "u", session_id, "#go", V, CAP)

@@ -11,6 +11,10 @@ from .security import file_digest, validate_public_url, values_digest
 
 
 class Service:
+    # Server-side sessions have no click-time guard; approved submits there are refused
+    # unless a caller explicitly opts in (tests with fake pages do).
+    allow_unguarded_server_submit = False
+
     def __init__(self, sessions: Any, approval_service: Any, store: Any, artifact_root: str = "/tmp/atlas-browser", allowed_hosts: set[str] | None = None):
         self.sessions = sessions
         self.approvals = approval_service
@@ -36,7 +40,14 @@ class Service:
 
     async def click(self, tenant_id: str, session_id: str, selector: str) -> dict[str, str]:
         page = await self.sessions.page(tenant_id, session_id, False)
-        await page.locator(selector).click()
+        from .session_bridge.form_guard import SUBMIT_CONTROL_JS
+        locator = page.locator(selector)
+        evaluate = getattr(locator, "evaluate", None)
+        # A generic click never submits a form: submit-type controls only go through the
+        # approval, preview and arm path (audit finding F3). Fail closed if undecidable.
+        if evaluate is None or await evaluate(SUBMIT_CONTROL_JS):
+            raise PermissionError("this control submits a form or cannot be checked; use the approved submit path")
+        await locator.click()
         await self.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.CLICK, {"selector": selector}))
         return {"status": "ok"}
 
@@ -82,6 +93,9 @@ class Service:
             "snapshot_path": snapshot,
             "snapshot_digest": file_digest(snapshot),
         }
+        from .capture_bound_submit import _bind
+        from .submit_binding import reviewed_destination
+        payload.update(reviewed_destination(await _bind(self, tenant_id, session_id, selector, values)))
         view = self.approvals.submit(module_id=13, action_type="browser_submit", user_id=tenant_id, payload=payload, ttl_seconds=3600)
         await self.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.SUBMIT, {"phase": "staged", "approval_id": view["id"], "selector": selector, "digest": digest, "page_url": page_url}))
         return {"status": RunStatus.AWAITING_APPROVAL, "approval_id": view["id"], "snapshot_path": snapshot, "values_digest": digest, "page_url": page_url}
@@ -100,13 +114,13 @@ class Service:
             raise PermissionError("approved form values do not match")
         if await self.store.was_consumed(approval_id):
             raise PermissionError("approval was already consumed")
+        from .capture_bound_submit import _arm, _bind
+        preview = await _bind(self, tenant_id, session_id, selector, values)
+        from .submit_binding import check_reviewed_destination
+        check_reviewed_destination(payload, preview)
         # Consume before the external effect. A failed click requires a fresh approval and cannot replay.
         await self.store.consume(approval_id, tenant_id)
-        authorize = getattr(self.sessions, "authorize_submit", None)
-        if authorize is not None:
-            await authorize(tenant_id, session_id, approval_id=approval_id,
-                            capture_sha256=str(payload.get("capture_sha256", "")),
-                            selector=selector, values=values)
+        await _arm(self, tenant_id, session_id, approval_id, str(payload.get("capture_sha256", "")), selector, values, preview)
         await page.locator(selector).click()
         await self.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.SUBMIT, {"phase": "executed", "selector": selector, "approval_id": approval_id, "digest": expected["values_digest"], "page_url": current_url}))
         return {"status": "submitted"}

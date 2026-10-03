@@ -107,19 +107,34 @@ async def test_click_defaults_to_nav_and_armed_click_becomes_submit(env):
     assert "token" not in hub.connection.commands[-1]["args"]
 
     values = {"#name": "Ada"}
+    facts = {"url": "https://example.com/f", "action": "https://example.com/submit", "method": "post",
+             "enctype": "application/x-www-form-urlencoded"}
+    preview = {"url": "https://example.com/f", "form_action": facts["action"], "form_facts": facts,
+               "method": "post", "values": values, "field_names": {"#name": "name"}}
+    with pytest.raises(PermissionError, match="preview"):
+        await sessions.authorize_submit("t", session_id, approval_id="a1",
+                                        capture_sha256="c" * 64, selector="#go", values=values)
+    with pytest.raises(PermissionError, match="urlencoded"):
+        await sessions.authorize_submit("t", session_id, approval_id="a1", capture_sha256="c" * 64, selector="#go",
+                                        values=values, preview={**preview, "form_facts": {**facts, "enctype": "multipart/form-data"}})
     await sessions.authorize_submit("t", session_id, approval_id="a1",
-                                    capture_sha256="c" * 64, selector="#go", values=values)
+                                    capture_sha256="c" * 64, selector="#go", values=values, preview=preview)
     await page.locator("#go").click()
     command = hub.connection.commands[-1]
     assert command["kind"] is CommandKind.CLICK_SUBMIT
     from app.modules.m13_browser_agent.security import values_digest
     assert protocol.verify_submit_token(
         device["command_secret"], approval_id="a1", capture_sha256="c" * 64,
-        selector="#go", values_digest=values_digest(values), token=command["args"]["token"])
+        selector="#go", values_digest=values_digest(values), token=command["args"]["token"],
+        preview_sha256=command["args"]["preview_sha256"], deadline=command["args"]["deadline"])
+    assert command["args"]["preview"] == preview
 
-    # The armed token is one-shot: the next click is a nav click again.
-    await page.locator("#go").click()
-    assert hub.connection.commands[-1]["kind"] is CommandKind.CLICK_NAV
+    # The armed token is one-shot: a consumed arming refuses the next click of the same
+    # control instead of falling through to CLICK_NAV (round-4 finding F3).
+    count = len(hub.connection.commands)
+    with pytest.raises(BridgeError, match="already used"):
+        await page.locator("#go").click()
+    assert len(hub.connection.commands) == count
 
 
 @pytest.mark.asyncio
