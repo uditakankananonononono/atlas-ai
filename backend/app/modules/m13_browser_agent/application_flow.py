@@ -30,6 +30,7 @@ from bs4 import BeautifulSoup
 
 from .domain import ActionType, AuditEvent
 from .forms import FieldDescriptor, match_fields_detailed
+from .session_bridge.protocol import EffectUncertain
 from .security import NavigationBlocked, file_digest, validate_public_url, values_digest
 
 
@@ -40,7 +41,8 @@ class WorkflowStatus(str, Enum):
     STAGED = "staged"
     AWAITING_SUBMIT_APPROVAL = "awaiting_submit_approval"
     SUBMIT_DISPATCHED = "submit_dispatched_unconfirmed"  # approved click sent; site acceptance NOT confirmed
-    SUBMITTED = "submitted"                              # only after the owner confirms what the site showed
+    SUBMIT_OWNER_ASSERTED = "submit_owner_asserted_accepted"  # authenticated actor SAID the site accepted; unverified
+    SUBMITTED = "submitted"                              # legacy value only; this build never sets it
     BLOCKED = "blocked"
     FAILED = "failed"
 
@@ -208,6 +210,12 @@ class ApplicationSession:
     def public_view(self) -> dict[str, Any]:
         """Owner-facing record: every state, digests, evidence - never staged raw values."""
         view = self.to_dict()
+        if self.status == WorkflowStatus.SUBMITTED.value and "site_acceptance" not in self.confirmation:
+            # Persisted by an earlier build that set "submitted" right after the click. That was
+            # click dispatched + page text, never confirmed acceptance. Shown honestly, stored as is.
+            view["legacy_status_reinterpreted"] = self.status
+            view["status"] = WorkflowStatus.SUBMIT_DISPATCHED.value
+            view["confirmation"] = {**self.confirmation, "site_acceptance": "unconfirmed_legacy"}
         view["staged_fields"] = sorted(self.staged_values)
         view.pop("staged_values", None)
         return view
@@ -580,9 +588,10 @@ class ApplicationFlow:
             await page.locator(payload["selector"]).click()
         except Exception as error:
             text = str(error)
-            if "effect may have occurred" in text:
-                # The click was sent and the site then stopped us. Do not say "not submitted".
-                reason = f"platform blocked after the submit click; effect may have occurred; do not retry: {text}"
+            if isinstance(error, EffectUncertain):
+                # Typed: the click was sent (or the daemon reserved it) and the answer is unknown or
+                # blocked. Never "not submitted", never retryable. Error text plays no part.
+                reason = f"submit outcome unknown after the click was sent; do not retry; check the site manually: {text}"
                 await self._audit(record, ActionType.SUBMIT, {
                     "phase": "blocked_after_click", "approval_id": approval_id, "selector": payload["selector"],
                     "error": text[:500]})
@@ -637,23 +646,35 @@ class ApplicationFlow:
                 "note": "The approved click was sent. The site's acceptance is not confirmed; "
                         "check what the site shows, then confirm."}
 
-    async def confirm_submission(self, tenant_id: str, actor_id: str, session_id: str,
-                                 owner_confirmed: bool) -> dict[str, Any]:
-        """Only the owner, having checked the site, moves a dispatched submit to SUBMITTED."""
+    async def assert_site_accepted(self, tenant_id: str, actor_id: str, session_id: str,
+                                   owner_asserts_site_accepted: bool) -> dict[str, Any]:
+        """Record that the authenticated actor SAYS the site accepted the submit.
+
+        This is an assertion by whoever the auth layer says the actor is (OIDC in production,
+        weaker in dev). It is not verified human confirmation and not site evidence, and it
+        never writes competition status.
+        """
         record = self._record(tenant_id, session_id)
         self._require_actor(record, actor_id)
-        if record.status != WorkflowStatus.SUBMIT_DISPATCHED.value:
-            raise PermissionError("no dispatched submit awaiting confirmation")
-        if owner_confirmed is not True:
-            raise PermissionError("explicit owner confirmation is required")
-        record.status = WorkflowStatus.SUBMITTED.value
-        record.confirmation = {**record.confirmation, "site_acceptance": "owner_confirmed",
-                               "owner_confirmed_at": time.time()}
+        legacy = (record.status == WorkflowStatus.SUBMITTED.value
+                  and "site_acceptance" not in record.confirmation)
+        if record.status != WorkflowStatus.SUBMIT_DISPATCHED.value and not legacy:
+            raise PermissionError("no dispatched submit awaiting an assertion")
+        if owner_asserts_site_accepted is not True:
+            raise PermissionError("an explicit assertion is required")
+        record.status = WorkflowStatus.SUBMIT_OWNER_ASSERTED.value
+        record.confirmation = {
+            **record.confirmation, "site_acceptance": "owner_asserted_unverified",
+            "owner_assertion": {"actor_id": actor_id, "asserted_at": time.time(),
+                                "basis": "authenticated actor assertion; not independently verified"}}
         self._save(record)
-        await self._audit(record, ActionType.SUBMIT, {"phase": "owner_confirmed_submission",
+        await self._audit(record, ActionType.SUBMIT, {"phase": "actor_asserted_site_accepted",
+                                                      "actor_id": actor_id,
                                                       "approval_id": record.confirmation.get("approval_id")})
-        return {"session_id": session_id, "status": record.status, "submitted": True,
-                "site_acceptance": "owner_confirmed", "confirmation": dict(record.confirmation)}
+        return {"session_id": session_id, "status": record.status, "submitted": False,
+                "site_acceptance": "owner_asserted_unverified",
+                "owner_assertion": dict(record.confirmation["owner_assertion"]),
+                "confirmation": dict(record.confirmation)}
 
     def status(self, tenant_id: str, actor_id: str, session_id: str) -> dict[str, Any]:
         record = self._record(tenant_id, session_id)

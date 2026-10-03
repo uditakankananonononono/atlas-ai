@@ -117,15 +117,20 @@ async def execute_capture_bound_submit(service, sessions_factory, tenant_id: str
     try:
         await page.locator(selector).click()
     except Exception as exc:  # noqa: BLE001 - record, never retry
-        state, error = "click_failed", str(exc)[:1000]
+        from .session_bridge.protocol import EffectUncertain
+        # Typed: an uncertain failure may have submitted. Anything else never reached the site.
+        state = "click_uncertain" if isinstance(exc, EffectUncertain) else "click_failed"
+        error = str(exc)[:1000]
     with sessions_factory.begin() as db:
         row = db.scalar(select(SubmitAttemptRow).where(SubmitAttemptRow.tenant_id == tenant_id,
                                                        SubmitAttemptRow.approval_id == approval_id))
         row.state, row.error, row.finished_at = state, error, datetime.now(timezone.utc)
     await service.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.SUBMIT, {
         "phase": "executed_capture_bound", "approval_id": approval_id, "capture_sha256": capture_sha256, "state": state}))
+    if state == "click_uncertain":
+        raise RuntimeError(f"submit outcome unknown after the click was sent; do not retry; check the site manually ({error})")
     if state != "clicked":
         raise RuntimeError(f"click failed after the approval was consumed; capture and approve again ({error})")
-    # "submitted" means the approved click was dispatched. It is not proof the site accepted it.
-    return {"status": "submitted", "click_dispatched": True, "site_acceptance": "unconfirmed",
+    # The approved click was dispatched. That is not proof the site accepted it.
+    return {"status": "click_dispatched_unconfirmed", "click_dispatched": True, "site_acceptance": "unconfirmed",
             "approval_id": approval_id, "capture_sha256": capture_sha256}

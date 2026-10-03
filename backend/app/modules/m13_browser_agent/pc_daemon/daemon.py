@@ -212,7 +212,7 @@ class Daemon:
                 event = self._receipt_event(command_id, "blocked", {"reason": "effect already reserved"})
                 return protocol.make_result(command_id, ok=False,
                                             error="effect already reserved; outcome may be uncertain; do not retry",
-                                            blocked=BlockKind.POLICY.value, receipt=event)
+                                            blocked=BlockKind.POLICY.value, receipt=event, effect_uncertain=True)
         try:
             await self._pace()
             if submit_claims is not None and not protocol.verify_submit_token(
@@ -226,7 +226,8 @@ class Daemon:
             if submit_claims is not None:
                 detail = f"effect outcome uncertain; reservation retained; do not retry: {error}"
             event = self._receipt_event(command_id, "failed", {"error": detail[:1000]})
-            return protocol.make_result(command_id, ok=False, error=detail[:2000], receipt=event)
+            return protocol.make_result(command_id, ok=False, error=detail[:2000], receipt=event,
+                                        effect_uncertain=submit_claims is not None)
         block = detect_block(result.get("url", ""), result.get("http_status"),
                              result.get("html_excerpt", ""))
         is_click = kind in (CommandKind.CLICK_NAV, CommandKind.CLICK_SUBMIT)
@@ -246,12 +247,13 @@ class Daemon:
             event = self._receipt_event(command_id, "blocked", {"block": block.value, "url": safe_url(result.get("url")),
                                                               "http_status": result.get("http_status")})
             return protocol.make_result(command_id, ok=False, error=error,
-                                        blocked=block.value, receipt=event)
+                                        blocked=block.value, receipt=event,
+                                        effect_uncertain=submit_claims is not None)
         if submit_claims is not None:
             try:
                 self.effects.click_observed(self.config.device_id, args["approval_id"])
             except Exception as error:
-                return protocol.make_result(command_id, ok=False,
+                return protocol.make_result(command_id, ok=False, effect_uncertain=True,
                                             error=f"effect outcome uncertain; do not retry: {error}")
         payload = {"kind": kind.value, "url": safe_url(result.get("url"))}
         if is_click:

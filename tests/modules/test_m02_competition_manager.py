@@ -128,9 +128,13 @@ class WorkflowTests(unittest.TestCase):
     def test_status_monitor_history_and_terminal_guard(self):
         self.make_ready(); staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {})
         self.manager.approve_action(staged.id, "approval-1", Verifier()); self.manager.execute_action(staged.id, Browser())
+        # the executor only dispatched the click; the portal's own observations carry the evidence
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
+        received = StatusObservation(self.ws.id, ApplicationStatus.SUBMITTED, "portal", datetime(2026,11,1,tzinfo=timezone.utc), "Portal lists the application as received", "ABC")
+        self.manager.record_status_observation(received)
         accepted = StatusObservation(self.ws.id, ApplicationStatus.ACCEPTED, "portal", datetime(2026,11,2,tzinfo=timezone.utc), "Portal says accepted", "ABC")
         ws = self.manager.record_status_observation(accepted)
-        self.assertEqual(ws.status, ApplicationStatus.ACCEPTED); self.assertEqual(self.manager.status_history(ws.id), [accepted])
+        self.assertEqual(ws.status, ApplicationStatus.ACCEPTED); self.assertEqual(self.manager.status_history(ws.id), [received, accepted])
         with self.assertRaisesRegex(ValueError, "terminal"):
             self.manager.record_status_observation(StatusObservation(ws.id, ApplicationStatus.REJECTED, "email", datetime(2026,11,3,tzinfo=timezone.utc), "Rejected"))
 
