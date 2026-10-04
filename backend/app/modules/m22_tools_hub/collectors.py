@@ -48,7 +48,7 @@ class PypiNameCollector:
  FAIL_COOLDOWN=60.0
  def __init__(self,fetch=None,ttl=3600):
   import threading
-  self.name='pypi';self.url=PYPI_SIMPLE_URL;self._fetch=fetch;self._ttl=ttl;self._cache=(0.0,'');self._lock=threading.Lock();self._fail=(0.0,None)
+  self.name='pypi';self.url=PYPI_SIMPLE_URL;self._fetch=fetch;self._ttl=ttl;self._cache=(0.0,'');self._lock=threading.Lock();self._fail=(0.0,None);self.rejected_names=0
  def _gunzip(self,r):
   import zlib
   d=zlib.decompressobj(31);out=bytearray()
@@ -67,12 +67,28 @@ class PypiNameCollector:
   if len(raw)>self.MAX_BYTES:raise ValueError('PyPI simple index exceeds the size cap; refusing to parse')
   return raw
  def _parse(self,raw):
+  """Structural, incremental parse: meta object is parsed with json, then each element of the top-level
+  "projects" array is decoded one at a time with raw_decode (no full 900k-dict tree). Unsupported shape is refused."""
   text=raw.decode('utf-8','strict')
-  if not text.lstrip().startswith('{'):raise ValueError('PyPI simple index is not JSON')
   k=text.find('"projects"')
-  if k<0 or not _re.search(r'"api-version"\s*:\s*"1\.',text[:k+1] if k>=0 else ''):raise ValueError('PyPI simple index shape not recognised (need meta.api-version 1.x then projects)')
-  names=[n for n in _re.findall(r'\{[^{}]*?"name"\s*:\s*"([^"\\]+)"',text[k:]) if _PYPI_NAME.match(n)]
+  if not text.lstrip().startswith('{') or k<0:raise ValueError('PyPI simple index shape not recognised (JSON object with projects)')
+  try:meta=json.loads(text[:k].rstrip().rstrip(',')+'}')
+  except ValueError:raise ValueError('PyPI simple index shape not recognised (projects is not a top-level key)') from None
+  version=str(((meta or {}).get('meta') or {}).get('api-version',''))
+  if not version.startswith('1.'):raise ValueError('PyPI simple index shape not recognised (need meta.api-version 1.x)')
+  pos=text.find('[',k)
+  if pos<0:raise ValueError('PyPI simple index projects is not an array')
+  pos+=1;dec=json.JSONDecoder();names=[];rejected=0;n=len(text)
+  while True:
+   while pos<n and text[pos] in ' \t\r\n,':pos+=1
+   if pos>=n:raise ValueError('PyPI simple index projects array is unterminated')
+   if text[pos]==']':break
+   item,pos=dec.raw_decode(text,pos)
+   name=item.get('name') if isinstance(item,dict) else None
+   if isinstance(name,str) and _PYPI_NAME.match(name):names.append(name)
+   else:rejected+=1
   if not names:raise ValueError('PyPI simple index had no valid project names')
+  self.rejected_names=rejected
   return '\n'.join(names)
  def _load(self):
   """Returns (names_text, stale, fetched_at). Single-flight (lock). On failure a cached index is served flagged stale;
@@ -97,7 +113,7 @@ class PypiNameCollector:
   hits.sort(key=lambda n:(n.lower()!=q,not n.lower().startswith(q),len(n),n.lower()))
   age=int(time.time()-at)
   for n in hits[:20]:
-   yield {'name':n,'url':f"https://pypi.org/project/{n}/",'summary':'PyPI project NAME match from the official Simple index (name-only; descriptions are not searched)'+(f' [STALE cache, age {age}s]' if stale else ''),'maintenance':0.,'security':0.,'fit':0.,'novelty':0.,'evidence':[{'source':'pypi','match':'name-only','stale_cache':stale,'cache_age_s':age,'quality_signals':'unmeasured'}],'permissions':[],'kind':'package'}
+   yield {'name':n,'url':f"https://pypi.org/project/{n}/",'summary':'PyPI project NAME match from the official Simple index (name-only; descriptions are not searched)'+(f' [STALE cache, age {age}s]' if stale else ''),'maintenance':0.,'security':0.,'fit':0.,'novelty':0.,'evidence':[{'source':'pypi','match':'name-only','stale_cache':stale,'cache_age_s':age,'quality_signals':'unmeasured','rejected_index_entries':self.rejected_names}],'permissions':[],'kind':'package'}
 def _npm(p):
  for row in p.get('objects',[])[:20]:
   x=row.get('package',{});yield {'name':x.get('name',''),'url':(x.get('links') or {}).get('npm',f"https://www.npmjs.com/package/{x.get('name','')}"),'summary':x.get('description') or 'npm package','version':x.get('version'),'license':None,'maintenance':float(row.get('score',{}).get('detail',{}).get('maintenance',.5)),'security':float(row.get('score',{}).get('detail',{}).get('quality',.5)),'fit':.6,'novelty':.4,'evidence':[{'source':'npm','score':row.get('score',{}).get('final')}],'permissions':[], 'kind':'package'}
