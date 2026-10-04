@@ -96,6 +96,9 @@ class DurableRunStore:
   import os as _os,stat as _st
   parent=Path(self.path).parent
   parent.mkdir(parents=True,exist_ok=True,mode=0o700)
+  pst=_os.stat(parent)
+  if not _st.S_ISDIR(pst.st_mode) or (pst.st_mode&0o022 and not pst.st_mode&_st.S_ISVTX):raise PermissionError(f"refusing run store: parent {parent} is group/other-writable without the sticky bit")
+  if pst.st_uid not in (_os.geteuid(),0):raise PermissionError(f"refusing run store: parent {parent} is owned by another user")
   try:fd=_os.open(self.path,_os.O_RDWR|_os.O_CREAT|_os.O_NOFOLLOW,0o600)
   except OSError as e:raise PermissionError(f"refusing run store {self.path}: {e.strerror}") from e
   try:

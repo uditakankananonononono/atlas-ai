@@ -21,7 +21,7 @@ WORD=re.compile(r"[a-z][a-z'-]{2,}",re.I)
 STOP={"the","and","for","that","with","this","from","your","you","are","was","but","not","essay","into","have","has"}
 
 from app.core.operator_accounts import operator_account_granted
-CREDENTIALED_PLATFORMS=frozenset({'youtube','pinterest'})  # reddit/public_web need no operator credential
+CREDENTIALED_PLATFORMS=frozenset({'youtube','pinterest','x','instagram'})  # ALLOWED today excludes x/instagram; listed so adding them can never bypass the gate  # reddit/public_web need no operator credential
 
 class Collector(Protocol):
  async def collect(self,query:str,limit:int)->list[dict[str,Any]]: ...

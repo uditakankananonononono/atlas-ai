@@ -57,3 +57,15 @@ def test_unsafe_store_fails_the_durable_route_closed_not_the_app(tmp_path,monkey
     loose=tmp_path/"l.sqlite3"; loose.write_bytes(b""); os.chmod(loose,0o666)
     monkeypatch.setattr(R,"_run_store_cache",[]); monkeypatch.setenv("ATLAS_M18_RUN_DB",str(loose))
     r=c.post(S+"/durable-runs",json=RUN,headers=A); assert r.status_code==503 and "refused" in r.text
+def test_wal_and_shm_files_are_not_group_or_other_accessible_while_the_store_is_in_use(tmp_path):
+    import sqlite3
+    p=tmp_path/"w"/"runs.sqlite3"; st=DurableRunStore(p)
+    db=st._db(); db.execute("INSERT INTO hustle_runs(tenant_id,run_id,snapshot) VALUES('t','r','{}')"); db.commit()  # connection still open: -wal/-shm exist
+    names=sorted(x.name for x in p.parent.iterdir()); assert any(n.endswith("-wal") for n in names), names
+    for x in p.parent.iterdir(): assert stat.S_IMODE(os.stat(x).st_mode)&0o077==0, x
+    db.close()
+def test_store_refuses_a_world_writable_non_sticky_parent_but_allows_sticky_tmp_style(tmp_path):
+    d=tmp_path/"open"; d.mkdir(); os.chmod(d,0o777)
+    with pytest.raises(PermissionError): DurableRunStore(d/"r.sqlite3")
+    s=tmp_path/"sticky"; s.mkdir(); os.chmod(s,0o1777)
+    DurableRunStore(s/"r.sqlite3")   # like /tmp: world-writable but sticky -> allowed

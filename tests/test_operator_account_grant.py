@@ -53,3 +53,13 @@ def test_m17_route_maps_to_403(monkeypatch):
     monkeypatch.setattr(M17,"_service",NService(generate=None,collectors={"youtube":Col()}))
     r=TestClient(app,raise_server_exceptions=False).post("/api/v1/narrative-architect/advice",json={"query":"college essay","platforms":["youtube"]},headers={"x-atlas-tenant":"t-no","x-atlas-actor":"u"})
     assert r.status_code==403,r.text
+
+
+def test_old_m18_variable_is_not_honored_and_says_so(monkeypatch,caplog):
+    import app.core.operator_accounts as OA
+    monkeypatch.setattr(OA,"_warned",False)
+    monkeypatch.delenv("ATLAS_OPERATOR_ACCOUNT_TENANTS",raising=False)
+    monkeypatch.setenv("ATLAS_M18_OPERATOR_ACCOUNT_TENANTS","t1")
+    with caplog.at_level("WARNING"):
+        assert OA.operator_account_granted("t1") is False
+    assert "renamed" in caplog.text and "ATLAS_OPERATOR_ACCOUNT_TENANTS" in caplog.text
