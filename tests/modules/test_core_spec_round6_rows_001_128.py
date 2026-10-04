@@ -292,3 +292,9 @@ def test_row_95_refusals_are_422_over_http(inputs):
 
 def test_row_95_without_text_stays_plan_only():
     assert execute_3(95,Request_3(objective="multipart")).executed is False
+
+@pytest.mark.parametrize("sizes,mp",[([1]*50+[5000],20),([5000]+[1]*50,20),([3000,1,1,1,3000,1,1,1,3000],4),([10]*100,3),([1]*30,20)])
+def test_row_95_skewed_paragraph_sizes_never_exceed_the_part_cap(sizes,mp):
+    t="\n\n".join("p"*z for z in sizes)
+    m=execute_3(95,Request_3(objective="multipart",inputs={"text":t,"max_parts":mp})).artifact["multipart"]
+    assert m["part_count"]<=min(mp,20) and "\n\n".join(p["text"] for p in m["parts"])==t
