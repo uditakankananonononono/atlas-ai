@@ -27,7 +27,7 @@ import os
 import re
 import time
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Any, AsyncIterator, Callable, Iterator
 from urllib.parse import quote_plus
 from urllib.request import Request, urlopen
@@ -81,6 +81,8 @@ def _recency_score(timestamp: str | None) -> float:
         seen = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
     except ValueError:
         return 0.5
+    if seen.tzinfo is None:
+        seen = seen.replace(tzinfo=timezone.utc)  # naive timestamps are treated as UTC (previously raised TypeError)
     days = (datetime.now(timezone.utc) - seen).days
     if days <= 180:
         return 0.8
@@ -90,28 +92,47 @@ def _recency_score(timestamp: str | None) -> float:
 
 
 _SIGNALS=("maintenance","security","fit","novelty")
-_TS_KEYS=("pushed_at","last_activity_at","updated_at","released_at","published_at","lastUpdateTime")
+_TS_KEYS=("pushed_at","last_activity_at","updated_at")
+_PROJECT_KINDS=("repository","package")
+def _activity_recency(ev: dict[str, Any]) -> tuple[bool, float | None]:
+    """(measured, score) for PROJECT kinds only. Needs the archived flag or a parseable, NOT-future activity timestamp."""
+    if ev.get("archived"):
+        return True, 0.1
+    for key in _TS_KEYS:
+        value = ev.get(key)
+        if isinstance(value, str) and value:
+            try:
+                seen = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            except ValueError:
+                continue
+            if seen.tzinfo is None:
+                seen = seen.replace(tzinfo=timezone.utc)
+            if seen > datetime.now(timezone.utc) + timedelta(days=1):
+                continue  # future timestamp is not evidence
+            return True, _recency_score(value)
+    return False, None
 def honest_signals(item: dict[str, Any]) -> dict[str, Any]:
-    """Placeholder constants are NOT measurements. security/fit/novelty are fixed per-source numbers in every collector,
-    so they are always marked unmeasured. maintenance counts as measured only when the item carries a parseable
-    activity timestamp (coarse 3-bucket recency heuristic) or an explicit archived flag; otherwise it is unmeasured.
-    Unmeasured signals are zeroed here so a stale constant can never be read as data; the scorer excludes them."""
-    ev = (item.get("evidence") or [{}])[0] if isinstance(item.get("evidence"), list) and item.get("evidence") else {}
-    measured_maintenance = bool(ev.get("archived"))
-    if not measured_maintenance:
-        for key in _TS_KEYS:
-            value = ev.get(key)
-            if isinstance(value, str) and value:
-                try:
-                    datetime.fromisoformat(value.replace("Z", "+00:00")); measured_maintenance = True; break
-                except ValueError:
-                    pass
-    unmeasured = [k for k in _SIGNALS if k != "maintenance" or not measured_maintenance]
+    """Placeholder constants are NOT measurements. security/fit/novelty are fixed per-source numbers in every collector
+    and are always unmeasured (unless a collector declares `measured_signals` for a value it really took from the
+    source, e.g. npm's registry maintenance score). Maintenance is measured only for repositories/packages, from
+    the archived flag or a parseable non-future activity timestamp (coarse 3-bucket recency heuristic). Article /
+    podcast / feed publish dates are NOT project maintenance, so for those kinds maintenance is unmeasured.
+    Unmeasured signals are zeroed; the scorer excludes them."""
+    ev = item["evidence"][0] if isinstance(item.get("evidence"), list) and item["evidence"] and isinstance(item["evidence"][0], dict) else {}
+    declared = item.pop("measured_signals", None)
+    if declared is not None:
+        measured = set(declared) & set(_SIGNALS)
+    else:
+        measured = set()
+        if item.get("kind") in _PROJECT_KINDS:
+            ok, score = _activity_recency(ev)
+            if ok:
+                measured.add("maintenance"); item["maintenance"] = score
+    unmeasured = [k for k in _SIGNALS if k not in measured]
     for k in unmeasured:
         item[k] = 0.0
     item["unmeasured"] = unmeasured
     return item
-
 
 class JsonSourceCollector:
     """Async collector over one JSON search endpoint. ``fetch`` is injectable for tests."""

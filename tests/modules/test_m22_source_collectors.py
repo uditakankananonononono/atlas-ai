@@ -508,10 +508,26 @@ def test_every_default_collector_marks_placeholder_signals_unmeasured_fixture():
     hn = JsonSourceCollector("hackernews", "article", "https://x.example/{query}", _parse_hackernews,
                              fetch=lambda url: _json.dumps({"hits": [{"title": "t", "url": "https://e.example/", "author": "a", "created_at": "2026-09-01T00:00:00Z"}]}).encode())
     out = asyncio.run((lambda: _drain(hn))())
-    assert out and out[0]["unmeasured"] == ["security", "fit", "novelty"]  # HN evidence.published_at counts as the (coarse) recency basis
-    arch = honest_signals({"name": "x", "evidence": [{"archived": True}], "maintenance": 0.1})
+    assert out and out[0]["unmeasured"] == ["maintenance", "security", "fit", "novelty"]  # article publish date is NOT project maintenance
+    arch = honest_signals({"name": "x", "kind": "repository", "evidence": [{"archived": True}], "maintenance": 0.1})
     assert arch["unmeasured"] == ["security", "fit", "novelty"] and arch["maintenance"] == 0.1
 
 
 async def _drain(c):
     return [x async for x in c.collect("q")]
+
+
+def test_maintenance_requires_project_kind_and_non_future_timestamp_and_npm_uses_registry_scores():
+    from app.modules.m22_tools_hub.sources import honest_signals
+    from app.modules.m22_tools_hub import collectors as mod
+    fut = honest_signals({"name": "x", "kind": "repository", "evidence": [{"pushed_at": "2099-01-01T00:00:00Z"}], "maintenance": 0.9})
+    assert "maintenance" in fut["unmeasured"] and fut["maintenance"] == 0.0  # future date is not evidence
+    art = honest_signals({"name": "x", "kind": "blog", "evidence": [{"updated_at": "2026-09-30T00:00:00Z"}], "maintenance": 0.8})
+    assert "maintenance" in art["unmeasured"]
+    naive = honest_signals({"name": "x", "kind": "repository", "evidence": [{"pushed_at": "2026-09-30T00:00:00"}]})
+    assert naive["unmeasured"] == ["security", "fit", "novelty"] and naive["maintenance"] == 0.8
+    row = {"package": {"name": "p", "version": "1.0.0"}, "score": {"final": .7, "detail": {"quality": .9, "maintenance": .4}}}
+    got = honest_signals(next(mod._npm({"objects": [row]})))
+    assert got["unmeasured"] == ["security", "fit", "novelty"] and got["maintenance"] == 0.4 and got["evidence"][0]["registry_quality"] == .9
+    nomaint = honest_signals(next(mod._npm({"objects": [{"package": {"name": "p"}}]})))
+    assert "maintenance" in nomaint["unmeasured"]

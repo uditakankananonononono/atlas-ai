@@ -139,14 +139,14 @@ def _isolated_approval_database(tmp_path, monkeypatch):
     """Module 0's process-wide default service otherwise binds to the ambient, untracked ./atlas.db in the cwd, so
     tests passed or failed depending on whether a migrated DB happened to exist. Give every test its own temporary
     SQLite DB with the schema created from the ORM models (NOT via Alembic; Alembic is covered by test_m19 roundtrip)."""
-    try:
-        from sqlalchemy import create_engine
-        from sqlalchemy.orm import sessionmaker
-        from app.core.database import Base
-        from app.modules.m00_approval_center import service as m00
-    except Exception:  # bare-workspace stubs: nothing to isolate
-        yield
+    if "app.core.database" in sys.modules and not hasattr(sys.modules["app.core.database"], "DATABASE_URL"):
+        yield  # bare-workspace stub package (see _stub_app_core): there is no real approval DB to isolate
         return
+    # Real repo: a broken or missing import here must FAIL the test run, not silently disable isolation.
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+    from app.core.database import Base
+    from app.modules.m00_approval_center import service as m00
     engine = create_engine(f"sqlite:///{tmp_path / 'approvals_test.db'}", connect_args={"check_same_thread": False})
     Base.metadata.create_all(engine)
     monkeypatch.setattr(m00, "_default_service", m00.Service(session_factory=sessionmaker(bind=engine, expire_on_commit=False)))
