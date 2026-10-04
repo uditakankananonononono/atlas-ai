@@ -1,5 +1,8 @@
 """m18 legacy /runs and /durable-runs through the booted app: tenant ownership and approval owner. Dev headers = TEST MODE."""
 import os, stat
+# The m00 approval service only auto-creates its schema when this opt-in is set (production uses Alembic).
+# Without it a fresh database fails request-approval with "no such table m00_approval_policies" (seen on a clean 3.12 clone).
+os.environ.setdefault("ATLAS_AUTO_CREATE_SCHEMA","1")
 from fastapi.testclient import TestClient
 from app.main import app
 import app.modules.m18_side_hustle_scraper.routes as R
