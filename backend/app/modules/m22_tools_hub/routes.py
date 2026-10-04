@@ -42,7 +42,7 @@ async def discover_batch(req:BatchDiscoveryIn,s:Service=Depends(get_service)):
 def discovery_report(query:str,s:Service=Depends(get_service)):return s.discovery_report(query)
 
 @router.get("/queries")
-def query_history(s:Service=Depends(get_service)):return {"queries":s.query_history}
+def query_history(s:Service=Depends(get_service)):return {"queries":s.query_history,"cache":s.cache_stats()}
 
 @router.get("/candidates/export")
 def export_candidates(format:str="json",s:Service=Depends(get_service)):

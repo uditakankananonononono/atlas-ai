@@ -127,20 +127,38 @@ class Service:
         if complete:
             snapshot={self._key(x):x.name for x in ranked}
             previous=self._query_snapshots.get(query)
-            self.last_diffs[query]={"first_run":previous is None,"added":[name for k,name in snapshot.items() if previous is not None and k not in previous],"removed":[name for k,name in (previous or {}).items() if k not in snapshot]}
+            was_reset=query in getattr(self,"_reset_baselines",[])
+            if was_reset:self._reset_baselines=[q for q in self._reset_baselines if q!=query]
+            self.last_diffs[query]={"baseline_reset":was_reset,"first_run":previous is None,"added":[name for k,name in snapshot.items() if previous is not None and k not in previous],"removed":[name for k,name in (previous or {}).items() if k not in snapshot]}
             self._query_snapshots[query]=snapshot
             self.query_history=[*self.query_history[-199:],{"query":query,"kinds":kinds,"at":now_dt().isoformat(),"count":len(ranked)}]
         else:
             self.last_diffs[query]={"incomplete":True,"reason":"some sources failed or were cooling down; no snapshot/diff committed","failed_sources":sorted(errs)}
-        return {"ranked":ranked,"errors":dict(errs),"sources_attempted":len(selected),"sources_ok":len(ok_sources),"sources_failed":len(errs)}
+        return {"ranked":ranked,"errors":dict(errs),"sources_attempted":len(selected),"sources_ok":len(ok_sources),"sources_failed":len(errs),"cache":self.cache_stats()}
     MAX_CACHED_CANDIDATES=5000;MAX_QUERY_SNAPSHOTS=500
-    cache_evicted=0
+    cache_evicted=0;baseline_resets=0
+    def _protected_candidate_ids(self)->set:
+        """Candidates referenced by an installation proposal or an installed record are never evicted: dropping them would
+        break portfolio()/propose paths (KeyError) for something the user already acted on."""
+        return set(self.installed)|{p.candidate_id for p in self.proposals.values()}
     def _bound_caches(self)->None:
-        """Per-service in-memory caches are bounded; oldest-inserted entries are dropped and COUNTED in cache_evicted
-        (visible, not silent). Durable candidates live in the pipeline DB; this is only the discovery working cache."""
-        for store,cap in ((self.candidates,self.MAX_CACHED_CANDIDATES),(self._query_snapshots,self.MAX_QUERY_SNAPSHOTS),(self.last_diffs,self.MAX_QUERY_SNAPSHOTS)):
-            while len(store)>cap:
-                store.pop(next(iter(store)));self.cache_evicted+=1
+        """Bound the in-memory working caches AFTER writes. Oldest unprotected entries are dropped and counted (see
+        cache_stats(), exposed by /queries and discovery_report). Protected candidates may keep the cache above the cap;
+        that excess is reported, not hidden. Evicting a query snapshot resets that query's diff baseline: the next run
+        reports first_run plus baseline_reset=True (never silently)."""
+        protected=self._protected_candidate_ids()
+        for k in [k for k in self.candidates if k not in protected]:
+            if len(self.candidates)<=self.MAX_CACHED_CANDIDATES:break
+            del self.candidates[k];self.cache_evicted+=1
+        for store in (self._query_snapshots,self.last_diffs):
+            while len(store)>self.MAX_QUERY_SNAPSHOTS:
+                old=next(iter(store));del store[old];self.cache_evicted+=1
+                if store is self._query_snapshots:
+                    self.baseline_resets+=1;self._reset_baselines=[*getattr(self,"_reset_baselines",[])[-999:],old]
+    def cache_stats(self)->dict[str,Any]:
+        return {"candidates":len(self.candidates),"candidates_cap":self.MAX_CACHED_CANDIDATES,"protected_candidates":len(self._protected_candidate_ids()),
+                "query_snapshots":len(self._query_snapshots),"query_snapshots_cap":self.MAX_QUERY_SNAPSHOTS,
+                "evicted_total":self.cache_evicted,"baseline_resets_total":self.baseline_resets}
     async def discover_many(self,queries:list[str],kinds:list[str]|None=None,weights:dict[str,float]|None=None)->dict[str,Any]:
         """Batch discovery: one call, one deduped+ranked merge across queries."""
         if len(queries)>20:raise ValueError("at most 20 queries per batch")
@@ -152,7 +170,7 @@ class Service:
         return {"per_query":per_query,"merged":sorted(merged.values(),key=lambda x:x.rank_key,reverse=True)}
     def discovery_report(self,query:str)->dict[str,Any]:
         ranked=sorted((c for c in self.candidates.values()),key=lambda x:x.rank_key,reverse=True)
-        return {"query":query,"candidates":[asdict(x)|{"score":x.score,"score_complete":x.score_complete,"score_state":x.score_state} for x in ranked],"diff":self.last_diffs.get(query),"errors":dict(self.last_errors),"sources":self.sources()}
+        return {"query":query,"candidates":[asdict(x)|{"score":x.score,"score_complete":x.score_complete,"score_state":x.score_state} for x in ranked],"diff":self.last_diffs.get(query),"errors":dict(self.last_errors),"sources":self.sources(),"cache":self.cache_stats()}
     def export_candidates(self,fmt:str="json")->str:
         """Export the current candidate store as json, csv or markdown."""
         items=sorted(self.candidates.values(),key=lambda x:x.rank_key,reverse=True)

@@ -214,10 +214,7 @@ def test_discovery_history_endpoint_does_not_leak_across_tenants_through_http(mo
     assert ra["queries"] == [{"query": "only-for-a"}] and rb["queries"] == []
 
 
-def test_service_working_caches_are_bounded_and_evictions_are_counted():
-    from app.modules.m22_tools_hub.service import Service, Candidate
-    import inspect
-    sig = inspect.signature(Candidate)
+def test_service_working_caches_are_bounded_after_writes_and_evictions_are_reported():
     svc = _real([_Empty("x")])
     svc.MAX_CACHED_CANDIDATES, svc.MAX_QUERY_SNAPSHOTS = 3, 2
     for i in range(5):
@@ -225,6 +222,46 @@ def test_service_working_caches_are_bounded_and_evictions_are_counted():
         svc._query_snapshots[f"q{i}"] = {}
         svc.last_diffs[f"q{i}"] = {}
     svc._bound_caches()
-    assert len(svc.candidates) == 3 and list(svc.candidates) == ["c2", "c3", "c4"]
+    assert list(svc.candidates) == ["c2", "c3", "c4"]  # exactly the cap, not cap+1
     assert len(svc._query_snapshots) == 2 and len(svc.last_diffs) == 2
-    assert svc.cache_evicted == 2 + 3 + 3
+    st = svc.cache_stats()
+    assert st["evicted_total"] == 2 + 3 + 3 and st["baseline_resets_total"] == 3
+    assert st["candidates"] == 3 and st["candidates_cap"] == 3
+
+
+def test_installed_and_proposed_candidates_are_never_evicted_and_portfolio_still_works():
+    from types import SimpleNamespace
+    svc = _real([_Empty("x")])
+    svc.MAX_CACHED_CANDIDATES = 2
+    for i in range(6):
+        svc.candidates[f"c{i}"] = SimpleNamespace(id=f"c{i}")
+    svc.installed["c0"] = {"proposal": None, "evidence": {}, "installed_at": "t"}
+    svc.proposals["p1"] = SimpleNamespace(candidate_id="c1")
+    svc._bound_caches()
+    assert "c0" in svc.candidates and "c1" in svc.candidates  # retained although oldest
+    assert [x["candidate"].id for x in svc.portfolio()] == ["c0"]  # no KeyError
+    assert svc.cache_stats()["protected_candidates"] == 2 and len(svc.candidates) == 2
+    assert svc.cache_evicted == 4
+
+
+def test_snapshot_eviction_is_reported_as_baseline_reset_on_next_run_not_silent_first_run():
+    svc = _real([_Empty("x")])
+    svc.MAX_QUERY_SNAPSHOTS = 1
+
+    async def go():
+        await svc.discover_report("q1")
+        await svc.discover_report("q2")  # evicts q1's snapshot -> baseline reset
+        return await svc.discover_report("q1")
+    rep = asyncio.run(go())
+    assert svc.last_diffs["q1"]["first_run"] is True and svc.last_diffs["q1"]["baseline_reset"] is True
+    assert rep["cache"]["baseline_resets_total"] >= 1
+
+
+def test_cache_stats_are_visible_through_the_queries_api(monkeypatch):
+    from app.modules.m22_tools_hub import routes as rt
+    monkeypatch.setattr(rt, "_services", {})
+    monkeypatch.setattr(rt, "_shared_collectors", [])
+    rt.service_for_tenant("stat-t").cache_evicted = 7
+    c = TestClient(app, raise_server_exceptions=False)
+    body = c.get("/api/v1/tools-hub/queries", headers={"x-atlas-tenant": "stat-t"}).json()
+    assert body["cache"]["evicted_total"] == 7
