@@ -94,3 +94,8 @@ def test_incomplete_banner_only_when_not_complete(tmp_path):
     assert "INCOMPLETE" not in er.render_latex(r)
     r.status = "partial"
     assert "INCOMPLETE" in er.render_latex(r)
+
+def test_long_run_gets_break_points_and_short_text_does_not():
+    assert er.tex_escape("x" * 200).count(r"\allowbreak{}") == 10
+    assert r"\allowbreak" not in er.tex_escape("short words only")
+    assert er.tex_escape("x" * 20 + " " + "y" * 20).count(r"\allowbreak{}") == 2  # run resets at spaces
