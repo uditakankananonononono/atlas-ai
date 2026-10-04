@@ -1,5 +1,6 @@
 """m18 legacy /runs and /durable-runs through the booted app: tenant ownership and approval owner. Dev headers = TEST MODE."""
 import os, stat
+import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 import app.modules.m18_side_hustle_scraper.routes as R
@@ -8,6 +9,22 @@ S="/api/v1/side-hustle-scraper"
 A={"x-atlas-tenant":"run-A","x-atlas-actor":"a"}; B={"x-atlas-tenant":"run-B","x-atlas-actor":"b"}
 RUN={"title":"FIXTURE tutoring test","first_experiment":"Ask 5 students","max_budget":0}
 c=TestClient(app,raise_server_exceptions=False)
+
+@pytest.fixture(autouse=True, scope="module")
+def _temp_database(tmp_path_factory):
+    """Fresh temp SQLite for the approval tables (the m00 service writes through the shared SessionLocal). Without
+    this a fresh checkout fails request-approval with 'no such table m00_approval_policies' (observed on a clean
+    3.12 clone), and the default sqlite:///./atlas.db in the cwd would receive test approval data.
+    No env var is set, nothing leaks past this module, the production default is unchanged."""
+    from sqlalchemy import create_engine
+    from app.core.database import Base, SessionLocal, engine as default_engine
+    import app.modules.m00_approval_center.service  # noqa: F401  registers the approval tables on Base
+    tmp=create_engine(f"sqlite:///{tmp_path_factory.mktemp('m18db')}/approvals.db",connect_args={"check_same_thread":False})
+    Base.metadata.create_all(tmp)
+    SessionLocal.configure(bind=tmp)
+    yield
+    SessionLocal.configure(bind=default_engine)
+    tmp.dispose()
 
 def _step(run):  # first step with an external action
     return next(x["id"] for x in run["steps"] if x.get("external_action"))
