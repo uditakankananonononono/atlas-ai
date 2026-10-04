@@ -86,11 +86,24 @@ class DurableRunStore:
  """Tenant-partitioned durable snapshots for runs, receipts and outcomes."""
  def __init__(self,path:str|Path):
   self.path=str(path)
-  import os as _os
-  Path(self.path).parent.mkdir(parents=True,exist_ok=True)
+  self._secure_file()
   with self._db() as db:db.execute('CREATE TABLE IF NOT EXISTS hustle_runs(tenant_id TEXT NOT NULL,run_id TEXT NOT NULL,snapshot TEXT NOT NULL,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(tenant_id,run_id))')
-  try:_os.chmod(self.path,0o600)  # owner-only (file is often created under shared temp)
-  except OSError:pass
+  self._secure_file()
+ def _secure_file(self):
+  """Create-or-verify the store file safely: parent dir 0700 if we create it; the file is created 0600 atomically (never at
+  the default umask), a symlink, a non-regular file, a file owned by someone else or one readable/writable by group/other is
+  REFUSED (fail closed, no silent chmod of a file we do not own). Raises PermissionError."""
+  import os as _os,stat as _st
+  parent=Path(self.path).parent
+  parent.mkdir(parents=True,exist_ok=True,mode=0o700)
+  try:fd=_os.open(self.path,_os.O_RDWR|_os.O_CREAT|_os.O_NOFOLLOW,0o600)
+  except OSError as e:raise PermissionError(f"refusing run store {self.path}: {e.strerror}") from e
+  try:
+   info=_os.fstat(fd)
+   if not _st.S_ISREG(info.st_mode):raise PermissionError("run store is not a regular file")
+   if info.st_uid!=_os.geteuid():raise PermissionError("run store is owned by another user")
+   if info.st_mode&0o077:raise PermissionError("run store is accessible to group/other (mode %o); refusing"%_st.S_IMODE(info.st_mode))
+  finally:_os.close(fd)
  def _db(self):
   db=sqlite3.connect(self.path);db.execute('PRAGMA journal_mode=WAL');db.execute('PRAGMA synchronous=FULL');return db
  def save(self,tenant_id:str,run:HustleRun)->None:

@@ -39,8 +39,16 @@ import os
 router = APIRouter(prefix="/side-hustle-scraper", tags=["side-hustle-scraper"])
 _service = None
 _runner = HustleRunner()
-_run_store=DurableRunStore(os.getenv("ATLAS_M18_RUN_DB") or (os.path.join(os.environ["ATLAS_RUNTIME_DATA_DIR"],"m18-runs.sqlite3") if os.getenv("ATLAS_RUNTIME_DATA_DIR") else "/tmp/atlas-m18-runs.sqlite3"))  # /tmp fallback is shared-temp: set ATLAS_RUNTIME_DATA_DIR/ATLAS_M18_RUN_DB in deployments
-def durable_runner(t:TenantContext=Depends(require_tenant)):return DurableHustleRunner(t.tenant_id,_run_store)
+_run_store_cache=[]
+def _run_store_path()->str:
+ return os.getenv("ATLAS_M18_RUN_DB") or (os.path.join(os.environ["ATLAS_RUNTIME_DATA_DIR"],"m18-runs.sqlite3") if os.getenv("ATLAS_RUNTIME_DATA_DIR") else "/tmp/atlas-m18-runs.sqlite3")  # /tmp fallback is shared-temp: set ATLAS_RUNTIME_DATA_DIR/ATLAS_M18_RUN_DB in deployments
+def _get_run_store():
+ """Lazy: an unsafe pre-existing store file fails THIS route closed (PermissionError -> 503), not app import/boot."""
+ if not _run_store_cache:_run_store_cache.append(DurableRunStore(_run_store_path()))
+ return _run_store_cache[0]
+def durable_runner(t:TenantContext=Depends(require_tenant)):
+ try:return DurableHustleRunner(t.tenant_id,_get_run_store())
+ except PermissionError:raise HTTPException(503,"durable run store refused: unsafe file permissions or ownership")
 
 
 def get_service() -> Service:
