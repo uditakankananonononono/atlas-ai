@@ -72,6 +72,32 @@ class Service:
 
     # --- skeleton behaviour (unchanged) ------------------------------------
 
+    async def _collect_normalized(self, platform: str, query: str, limit: int) -> list[dict]:
+        """Accept both collector shapes: legacy async collectors returning list[dict], and the real lane collectors
+        (blocking, returning (list[RawDocument], list[CollectionError])), run off the event loop. Collection errors are
+        not hidden: if nothing was collected and errors exist, raise RuntimeError (route maps to 502 w/ category only)."""
+        import asyncio, inspect
+        fn = self._collectors[platform].collect
+        if inspect.iscoroutinefunction(fn):
+            res = await fn(query, limit)
+        else:
+            res = await asyncio.to_thread(fn, query, limit)
+            if inspect.isawaitable(res):
+                res = await res
+        if isinstance(res, tuple) and len(res) == 2:
+            docs, errors = res
+        else:
+            docs, errors = res, []
+        out = []
+        for d in docs:
+            if isinstance(d, dict):
+                out.append(d)
+            else:
+                out.append({"url": d.url, "text": f"{getattr(d, 'title', '')}. {getattr(d, 'text', '')}".strip(". ")})
+        if not out and errors:
+            raise RuntimeError(f"collector {platform} returned no documents and {len(errors)} error(s)")
+        return out
+
     async def discover(self, request: DiscoverIn) -> list[BlueprintOut]:
         sources = []
         for platform in request.platforms:
@@ -79,7 +105,7 @@ class Service:
                 raise ValueError(f"unsupported or non-compliant collector: {platform}")
             if platform not in self._collectors:
                 raise RuntimeError(f"collector not configured: {platform}")
-            for raw in await self._collectors[platform].collect(request.query, request.limit_per_platform):
+            for raw in await self._collect_normalized(platform, request.query, request.limit_per_platform):
                 text = " ".join((raw.get("transcript") or raw.get("text") or "").split())[:6000]
                 sources.append({"url": raw["url"], "platform": platform, "text": text,
                                 "scam_signals": [x for x in SCAM if x in text.lower()]})

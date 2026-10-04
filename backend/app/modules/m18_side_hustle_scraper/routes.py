@@ -8,7 +8,7 @@ cross-process retention inject their shared repository through the dependency.
 """
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.core.providers import generate
+from app.core.providers import generate, ProviderError
 
 from .lane_freshness import FreshnessMonitor
 from .lane_pipeline import CollectionPipeline
@@ -62,13 +62,22 @@ def get_service() -> Service:
 async def discover(request: DiscoverIn, service: Service = Depends(get_service)):
     try:
         return await service.discover(request)
-    except (ValueError, RuntimeError) as e:
+    except ProviderError as e:
+        raise HTTPException(503, f"model provider unavailable: {e}")  # no model configured: honest failure, nothing simulated
+    except ValueError as e:
         raise HTTPException(422, str(e))
+    except RuntimeError as e:
+        raise HTTPException(422 if "not configured" in str(e) else 502, str(e))
 
 
 @router.post("/feasibility", response_model=FeasibilityOut)
 async def analyze(request: AnalyzeIn, service: Service = Depends(get_service)):
-    return await service.analyze(request)
+    try:
+        return await service.analyze(request)
+    except ProviderError as e:
+        raise HTTPException(503, f"model provider unavailable: {e}")
+    except ValueError as e:  # model returned non-schema output
+        raise HTTPException(502, "model output rejected by schema")
 
 
 @router.post("/collect", response_model=CollectReportOut)
