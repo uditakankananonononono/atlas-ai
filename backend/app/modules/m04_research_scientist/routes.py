@@ -124,6 +124,14 @@ async def research_loop_route(request:ResearchLoopRequest,tenant:TenantContext=D
             "steps":[asdict(s) for s in res.steps],
             "papers":[{"paper_id":p.paper_id,"title":p.title,"source":p.source,"url":str(p.url) if p.url else None,"published_at":p.published_at} for p in res.papers.values()]}
 
+@router.get("/surveillance/term-gaps")
+def surveillance_term_gaps(min_df:int=2,limit:int=20,tenant:TenantContext=Depends(require_tenant)):
+    """HEURISTIC corpus-relative term co-occurrence gaps over this tenant's ingested papers."""
+    from .surveillance import SurveillanceRepository,term_cooccurrence_gaps
+    try:gaps=term_cooccurrence_gaps(SurveillanceRepository(tenant.tenant_id).rows(),min_df=min_df,limit=limit)
+    except ValueError as exc:raise HTTPException(status_code=422,detail="invalid bounds") from exc
+    return {"method":"heuristic: term pairs never co-occurring within this tenant's ingested corpus; not global novelty","gaps":gaps}
+
 @router.get("/surveillance/clusters")
 def surveillance_clusters(threshold:float=.72,tenant:TenantContext=Depends(require_tenant)):
     from .surveillance import SurveillancePipeline,SurveillanceRepository
