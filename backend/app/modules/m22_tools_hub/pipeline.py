@@ -202,11 +202,25 @@ def _proposal_view(row: ProposalRow) -> dict[str, Any]:
     }
 
 
+def _score_state(signals: Any) -> str:
+    """complete / partial / unmeasured, or legacy_unverified for rows persisted before `unmeasured` existed: those used
+    fixed placeholder constants for security/fit/novelty and must NOT be assumed complete."""
+    if not isinstance(signals, dict) or "unmeasured" not in signals:
+        return "legacy_unverified"
+    um = signals.get("unmeasured") or []
+    if not um:
+        return "complete"
+    return "unmeasured" if all(k in um for k in ("fit", "security", "maintenance", "novelty")) else "partial"
+
+
+LIST_CANDIDATES_SCAN_CAP = 5000  # rows scanned (highest stored score first) before bucket-aware ordering; bound, not pagination
+
+
 def _candidate_view(row: CandidateRow) -> dict[str, Any]:
     return {
         "id": row.id, "name": row.name, "url": row.url, "source": row.source, "summary": row.summary,
         "version": row.version, "license": row.license, "score": row.score, "signals": row.signals_json,
-        "score_complete": not (row.signals_json or {}).get("unmeasured"),
+        "score_state": _score_state(row.signals_json), "score_complete": _score_state(row.signals_json) == "complete",
         "evidence": row.evidence_json, "queries": row.queries_json,
         "first_seen_at": _aware(row.first_seen_at).isoformat(), "last_seen_at": _aware(row.last_seen_at).isoformat(),
     }
@@ -364,7 +378,7 @@ class InstallPipeline:
             q = select(CandidateRow).where(CandidateRow.tenant_id == self.tenant_id)
             if source:
                 q = q.where(CandidateRow.source == source)
-            views=[_candidate_view(r) for r in db.scalars(q.order_by(CandidateRow.score.desc(), CandidateRow.pk))]
+            views=[_candidate_view(r) for r in db.scalars(q.order_by(CandidateRow.score.desc(), CandidateRow.pk).limit(max(limit, LIST_CANDIDATES_SCAN_CAP)))]
             views.sort(key=lambda v: (v["score_complete"], v["score"]), reverse=True)  # stable: DB order breaks ties
             return views[:limit]
 

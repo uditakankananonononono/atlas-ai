@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 from urllib.parse import quote_plus
 from urllib.request import Request,urlopen
-from .sources import _recency_score, default_source_collectors
+from .sources import _recency_score, default_source_collectors, honest_signals
 class JsonCollector:
  def __init__(self,name,url,parse,kind="package"):self.name=name;self.url=url;self.parse=parse;self.kind=kind
  async def collect(self,query):
@@ -19,7 +19,7 @@ class JsonCollector:
    request=Request(self.url.format(query=quote_plus(query)),headers={'User-Agent':'AtlasAI-ToolsHub/1.0','Accept':'application/json'})
    with urlopen(request,timeout=10) as r:return json.load(r)
   payload=await asyncio.to_thread(fetch)
-  for item in self.parse(payload):yield item
+  for item in self.parse(payload):yield honest_signals(item)
 def _github(p):
  for x in p.get('items',[])[:20]:yield {'name':x['full_name'],'url':x['html_url'],'summary':x.get('description') or '', 'version':None,'license':(x.get('license') or {}).get('spdx_id'),'maintenance':.1 if x.get('archived') else _recency_score(x.get('pushed_at') or x.get('updated_at')),'security':.6,'fit':.7,'novelty':.5,'evidence':[{'stars':x.get('stargazers_count',0),'updated_at':x.get('updated_at'),'pushed_at':x.get('pushed_at')}], 'permissions':[], 'kind':'repository'}
 PYPI_SIMPLE_URL='https://pypi.org/simple/'

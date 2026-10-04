@@ -25,6 +25,7 @@ class Candidate:
         """Weights over MEASURED signals only; signals listed in `unmeasured` carry no information and are excluded
         (renormalised), they are NOT treated as a measured 0."""
         values=self._signal_values();weights=dict(self.weights or self.DEFAULT_WEIGHTS)
+        if all(k in self.unmeasured for k in ("fit","security","maintenance","novelty")):return {}  # evidence COUNT alone is not a quality measure
         return {k:float(weights.get(k,0.)) for k in values if k not in self.unmeasured}
     @property
     def score(self):
@@ -38,6 +39,11 @@ class Candidate:
     def score_complete(self)->bool:
         return not self.unmeasured
     @property
+    def score_state(self)->str:
+        """complete = every quality signal measured; partial = some excluded; unmeasured = none measured (score 0.0)."""
+        if not self.unmeasured:return "complete"
+        return "unmeasured" if all(k in self.unmeasured for k in ("fit","security","maintenance","novelty")) else "partial"
+    @property
     def rank_key(self):
         """Candidates with every signal measured sort before partially measured ones; then by score."""
         return (self.score_complete,self.score)
@@ -50,7 +56,7 @@ class Candidate:
         for k,v in values.items():
             if k in self.unmeasured:contributions[k]={"value":None,"weight":weights.get(k,0.),"contribution":0.,"measured":False}
             else:contributions[k]={"value":round(v,4),"weight":weights.get(k,0.),"contribution":round(float(weights.get(k,0.))*v/(total or 1.),4),"measured":True}
-        return {"score":self.score,"kind":self.kind,"source":self.source,"weighted":bool(self.weights),"score_complete":self.score_complete,"unmeasured":list(self.unmeasured),"contributions":contributions}
+        return {"score":self.score,"kind":self.kind,"source":self.source,"weighted":bool(self.weights),"score_complete":self.score_complete,"score_state":self.score_state,"unmeasured":list(self.unmeasured),"contributions":contributions}
 @dataclass
 class InstallationProposal:
     candidate_id:str;adapter_type:str;config:dict[str,Any];requested_scopes:list[str];rollback_plan:dict[str,Any];approval_id:str;id:str=field(default_factory=lambda:str(uuid.uuid4()))
@@ -122,19 +128,19 @@ class Service:
         return {"per_query":per_query,"merged":sorted(merged.values(),key=lambda x:x.rank_key,reverse=True)}
     def discovery_report(self,query:str)->dict[str,Any]:
         ranked=sorted((c for c in self.candidates.values()),key=lambda x:x.rank_key,reverse=True)
-        return {"query":query,"candidates":[asdict(x)|{"score":x.score,"score_complete":x.score_complete} for x in ranked],"diff":self.last_diffs.get(query),"errors":dict(self.last_errors),"sources":self.sources()}
+        return {"query":query,"candidates":[asdict(x)|{"score":x.score,"score_complete":x.score_complete,"score_state":x.score_state} for x in ranked],"diff":self.last_diffs.get(query),"errors":dict(self.last_errors),"sources":self.sources()}
     def export_candidates(self,fmt:str="json")->str:
         """Export the current candidate store as json, csv or markdown."""
         items=sorted(self.candidates.values(),key=lambda x:x.rank_key,reverse=True)
-        if fmt=="json":return json.dumps([asdict(x)|{"score":x.score,"score_complete":x.score_complete} for x in items],indent=1)
+        if fmt=="json":return json.dumps([asdict(x)|{"score":x.score,"score_complete":x.score_complete,"score_state":x.score_state} for x in items],indent=1)
         if fmt=="csv":
             out=io.StringIO();writer=csv.writer(out)
-            writer.writerow(["name","kind","source","score","url","summary"])
-            for x in items:writer.writerow([x.name,x.kind,x.source,x.score,x.url,x.summary.replace("\n"," ")])
+            writer.writerow(["name","kind","source","score","score_state","unmeasured_signals","url","summary"])
+            for x in items:writer.writerow([x.name,x.kind,x.source,x.score,x.score_state,";".join(x.unmeasured),x.url,x.summary.replace("\n"," ")])
             return out.getvalue()
         if fmt in ("markdown","md"):
             lines=["# Tools Hub candidate digest","",f"{len(items)} candidates, ranked by score.",""]
-            for x in items:lines.append(f"- **{x.name}** ({x.kind} via {x.source}, score {x.score}) - {x.url}")
+            for x in items:lines.append(f"- **{x.name}** ({x.kind} via {x.source}, score {x.score if x.score_state=='complete' else str(x.score)+' ['+x.score_state+': '+','.join(x.unmeasured)+' not measured]'}) - {x.url}")
             return "\n".join(lines)+"\n"
         raise ValueError(f"unknown export format {fmt!r}; use json, csv or markdown")
     # -- runtime blocklist (persisted under state_path) ---------------------

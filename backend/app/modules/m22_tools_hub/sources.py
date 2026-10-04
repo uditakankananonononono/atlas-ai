@@ -89,6 +89,30 @@ def _recency_score(timestamp: str | None) -> float:
     return 0.2
 
 
+_SIGNALS=("maintenance","security","fit","novelty")
+_TS_KEYS=("pushed_at","last_activity_at","updated_at","released_at","published_at","lastUpdateTime")
+def honest_signals(item: dict[str, Any]) -> dict[str, Any]:
+    """Placeholder constants are NOT measurements. security/fit/novelty are fixed per-source numbers in every collector,
+    so they are always marked unmeasured. maintenance counts as measured only when the item carries a parseable
+    activity timestamp (coarse 3-bucket recency heuristic) or an explicit archived flag; otherwise it is unmeasured.
+    Unmeasured signals are zeroed here so a stale constant can never be read as data; the scorer excludes them."""
+    ev = (item.get("evidence") or [{}])[0] if isinstance(item.get("evidence"), list) and item.get("evidence") else {}
+    measured_maintenance = bool(ev.get("archived"))
+    if not measured_maintenance:
+        for key in _TS_KEYS:
+            value = ev.get(key)
+            if isinstance(value, str) and value:
+                try:
+                    datetime.fromisoformat(value.replace("Z", "+00:00")); measured_maintenance = True; break
+                except ValueError:
+                    pass
+    unmeasured = [k for k in _SIGNALS if k != "maintenance" or not measured_maintenance]
+    for k in unmeasured:
+        item[k] = 0.0
+    item["unmeasured"] = unmeasured
+    return item
+
+
 class JsonSourceCollector:
     """Async collector over one JSON search endpoint. ``fetch`` is injectable for tests."""
 
@@ -112,7 +136,7 @@ class JsonSourceCollector:
             raise SourceError(f"{self.name} returned non-JSON content: {exc}") from exc
         for item in self.parse(payload):
             item.setdefault("kind", self.kind)
-            yield item
+            yield honest_signals(item)
 
 
 # --------------------------------------------------------------------------
@@ -240,7 +264,7 @@ class FeedCollector:
             return out
 
         for item in await asyncio.to_thread(read_entries):
-            yield item
+            yield honest_signals(item)
 
 
 def feed_collector(feed_url: str, *, name: str | None = None, max_items: int = MAX_FEED_ITEMS,
@@ -262,7 +286,7 @@ class MediumTagCollector(JsonSourceCollector):
         for item in parse_feed(raw):
             item["kind"] = "blog"
             item["evidence"] = [{"source": "medium", "feed": self.url_for(query)}, *item.get("evidence", [])]
-            yield item
+            yield honest_signals(item)
 
 
 # --------------------------------------------------------------------------
@@ -415,7 +439,7 @@ class PodcastIndexCollector:
         except json.JSONDecodeError as exc:
             raise SourceError(f"podcastindex returned non-JSON content: {exc}") from exc
         for x in (payload.get("feeds") or [])[:20]:
-            yield {
+            yield honest_signals({
                 "name": x.get("title") or "(untitled podcast)",
                 "url": x.get("link") or x.get("url") or "",
                 "summary": _truncate(_strip_html(x.get("description") or "")),
@@ -430,7 +454,7 @@ class PodcastIndexCollector:
                     "language": x.get("language"), "itunes_id": x.get("itunesId"),
                 }],
                 "permissions": [],
-            }
+            })
 
 
 def default_source_collectors() -> list[Any]:

@@ -21,7 +21,7 @@ async def discover_batch(req:BatchDiscoveryIn,s:Service=Depends(get_service)):
   result=await s.discover_many(req.queries,kinds=req.kinds,weights=req.weights)
  except ValueError as e:raise HTTPException(422,str(e))
  from dataclasses import asdict
- return {"per_query":{q:[asdict(x)|{"score":x.score,"score_complete":x.score_complete} for x in items] for q,items in result["per_query"].items()},"merged":[asdict(x)|{"score":x.score,"score_complete":x.score_complete} for x in result["merged"]]}
+ return {"per_query":{q:[asdict(x)|{"score":x.score,"score_complete":x.score_complete,"score_state":x.score_state} for x in items] for q,items in result["per_query"].items()},"merged":[asdict(x)|{"score":x.score,"score_complete":x.score_complete,"score_state":x.score_state} for x in result["merged"]]}
 
 @router.get("/discoveries/{query}/report")
 def discovery_report(query:str,s:Service=Depends(get_service)):return s.discovery_report(query)

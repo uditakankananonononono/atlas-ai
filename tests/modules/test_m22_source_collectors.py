@@ -480,3 +480,38 @@ def test_pypi_collector_outer_structure_length_recursion_and_stats():
     async def d():
         return [x async for x in c2.collect("zzz")]
     assert asyncio.run(d()) == [] and c2.index_stats()["rejected_entries"] == 1 and c2.index_stats()["names"] == 1
+
+
+def test_every_default_collector_marks_placeholder_signals_unmeasured_fixture():
+    # FIXTURE payloads (no network). security/fit/novelty are always unmeasured; maintenance is measured only with a
+    # parseable activity timestamp or archived flag.
+    import asyncio
+    from app.modules.m22_tools_hub import collectors as mod
+    from app.modules.m22_tools_hub.sources import honest_signals, JsonSourceCollector, _parse_hackernews, _parse_gitlab
+
+    gh = mod.JsonCollector("github", "https://x.example/{query}", mod._github, kind="repository")
+    gh_payload = {"items": [{"full_name": "a/b", "html_url": "https://github.com/a/b", "pushed_at": "2026-09-01T00:00:00Z", "stargazers_count": 1},
+                            {"full_name": "c/d", "html_url": "https://github.com/c/d"}]}
+    import json as _json
+    import app.modules.m22_tools_hub.collectors as cm
+    orig = cm.urlopen
+    try:
+        cm.urlopen = lambda *a, **k: io.BytesIO(_json.dumps(gh_payload).encode())
+
+        async def run(c):
+            return [x async for x in c.collect("q")]
+        a, b = asyncio.run(run(gh))
+    finally:
+        cm.urlopen = orig
+    assert a["unmeasured"] == ["security", "fit", "novelty"] and a["security"] == a["fit"] == a["novelty"] == 0.0
+    assert "maintenance" in b["unmeasured"] and b["maintenance"] == 0.0  # no timestamp -> not a measured 0.5
+    hn = JsonSourceCollector("hackernews", "article", "https://x.example/{query}", _parse_hackernews,
+                             fetch=lambda url: _json.dumps({"hits": [{"title": "t", "url": "https://e.example/", "author": "a", "created_at": "2026-09-01T00:00:00Z"}]}).encode())
+    out = asyncio.run((lambda: _drain(hn))())
+    assert out and out[0]["unmeasured"] == ["security", "fit", "novelty"]  # HN evidence.published_at counts as the (coarse) recency basis
+    arch = honest_signals({"name": "x", "evidence": [{"archived": True}], "maintenance": 0.1})
+    assert arch["unmeasured"] == ["security", "fit", "novelty"] and arch["maintenance"] == 0.1
+
+
+async def _drain(c):
+    return [x async for x in c.collect("q")]
