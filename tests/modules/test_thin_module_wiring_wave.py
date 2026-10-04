@@ -4,7 +4,8 @@ def test_m17_default_and_optional_legal_sources():
  assert 'reddit' in build_narrative_collectors({})
  configured=build_narrative_collectors({'ATLAS_YOUTUBE_API_KEY':'y','ATLAS_PINTEREST_ACCESS_TOKEN':'p','ATLAS_M18_PUBLIC_URLS':'https://example.com'})
  assert {'reddit','youtube','pinterest','public_web'} <= set(configured)
-def test_m22_ships_free_official_discovery_sources():
+def test_m22_default_collectors_declare_https_wiring_only():
+ # Scope: declared collector wiring + https only (list compared with its own source list, so partly circular). NOT proof of free/official/live sources.
  # Updated expectation (stale since a1ef402b added sources.py): the original three come first, then exactly the
  # sources default_source_collectors() declares. Live reachability of the extras is NOT asserted here (offline test).
  from app.modules.m22_tools_hub.sources import default_source_collectors

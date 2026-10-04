@@ -72,7 +72,22 @@ async def test_gap(setup, name):
     # in flight. Wait for it, keep it as PRE-CLICK traffic, and only then open the click window. Pre-click
     # protection is NOT supported by the guard (documented limit, see docs/UNIFIED_SUBMIT_TOKEN_BOUNDS.md); this
     # test asserts what happens from the click onward.
-    await page.wait_for_timeout(1500)
+    # Event-based, not a fixed sleep: for the cookie vector wait (<=10s) until the /setc request is OBSERVED; for the
+    # others wait until observed traffic is quiet for 500ms (<=3s cap, so a very late arrival is still a documented
+    # residual race for those vectors, not proof).
+    if name == 'httponly_cookie_via_input_before_click':
+        for _ in range(100):
+            if any('/setc' in r[2] for r in raw):
+                break
+            await page.wait_for_timeout(100)
+    else:
+        last, quiet = -1, 0
+        for _ in range(30):
+            await page.wait_for_timeout(100)
+            quiet = quiet + 1 if len(raw) == last else 0
+            last = len(raw)
+            if quiet >= 5:
+                break
     pre_click = list(raw)
     raw.clear()
     if name == 'httponly_cookie_via_input_before_click':
