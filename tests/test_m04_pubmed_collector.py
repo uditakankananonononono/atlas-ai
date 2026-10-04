@@ -151,3 +151,14 @@ def test_remote_ids_must_be_valid_format():
     <entry><id>http://arxiv.org/abs/2610.00009v2</id><title>Good id title</title><summary>long enough summary text for the abstract</summary></entry>
     <entry><id>http://arxiv.org/abs/cs.LG/0701001v1</id><title>Old id title</title><summary>long enough summary text for the abstract</summary></entry></feed>"""
     assert [p.paper_id for p in ac.parse_arxiv_atom(bad)] == ["arxiv:2610.00009v2", "arxiv:cs.LG/0701001v1"]
+
+def test_non_numeric_pmid_skipped():
+    x = XML.replace(b"<PMID>111</PMID>", b"<PMID>1/../x</PMID>")
+    assert pc.parse_pubmed_xml(x) == []
+
+def test_programming_errors_are_not_masked_as_502(monkeypatch):
+    def bug(q, n): raise KeyError("programming bug")
+    c = _client(monkeypatch, bug)
+    c.raise_server_exceptions = False
+    r = c.post("/research-scientist/surveillance/collect/pubmed", json={"query": "tumor niches"})
+    assert r.status_code == 500
