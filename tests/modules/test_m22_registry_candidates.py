@@ -202,6 +202,9 @@ def test_score_state_buckets_and_legacy_rows_are_not_assumed_complete():
     from app.modules.m22_tools_hub.pipeline import _score_state
     assert _score_state({"fit": .9}) == "legacy_unverified"  # row persisted before `unmeasured` existed
     assert _score_state(None) == "legacy_unverified"
+    assert _score_state({"unmeasured": None}) == "legacy_unverified"  # null is not proof of completeness
+    assert _score_state({"unmeasured": "fit"}) == "legacy_unverified" and _score_state({"unmeasured": {"fit": 1}}) == "legacy_unverified"
+    assert _score_state({"unmeasured": [1]}) == "legacy_unverified" and _score_state({"unmeasured": ["bogus"]}) == "legacy_unverified"
     assert _score_state({"unmeasured": []}) == "complete"
     assert _score_state({"unmeasured": ["security"]}) == "partial"
     assert _score_state({"unmeasured": ["maintenance", "security", "fit", "novelty"]}) == "unmeasured"
@@ -221,15 +224,32 @@ def test_score_state_migration_backfills_legacy_rows_and_downgrades():
     with engine.begin() as conn:
         conn.execute(sa.text("CREATE TABLE m22_tool_candidates (pk INTEGER PRIMARY KEY, tenant_id VARCHAR(120), score FLOAT, signals_json JSON)"))
         rows = [(1, '{"fit": 0.9}'), (2, '{"unmeasured": []}'), (3, '{"unmeasured": ["security"]}'),
-                (4, '{"unmeasured": ["maintenance","security","fit","novelty"]}'), (5, 'null')]
+                (4, '{"unmeasured": ["maintenance","security","fit","novelty"]}'), (5, 'null'), (6, '{"unmeasured": null}'), (7, '{"unmeasured": "fit"}'), (8, '{"unmeasured": ["bogus"]}'), (9, '{"unmeasured": [3]}')]
         for pk, js in rows:
             conn.execute(sa.text("INSERT INTO m22_tool_candidates VALUES (:pk,'t',0.5,:js)"), {"pk": pk, "js": js})
         ctx = MigrationContext.configure(conn)
         with Operations.context(ctx):
             mig.upgrade()
         got = dict(conn.execute(sa.text("SELECT pk, score_state FROM m22_tool_candidates")).fetchall())
-        assert got == {1: "legacy_unverified", 2: "complete", 3: "partial", 4: "unmeasured", 5: "legacy_unverified"}
+        assert got == {1: "legacy_unverified", 2: "complete", 3: "partial", 4: "unmeasured", 5: "legacy_unverified", 6: "legacy_unverified", 7: "legacy_unverified", 8: "legacy_unverified", 9: "legacy_unverified"}
         with Operations.context(ctx):
             mig.downgrade()
         cols = [c["name"] for c in sa.inspect(conn).get_columns("m22_tool_candidates")]
         assert "score_state" not in cols
+
+
+def test_alembic_full_chain_upgrade_head_downgrade_one_and_reupgrade_on_sqlite(tmp_path, monkeypatch):
+    # Real alembic chain (all revisions) on SQLite. SQLite only: Postgres is NOT exercised here.
+    pytest.importorskip("pgvector")
+    import pathlib
+    from alembic import command
+    from alembic.config import Config
+    root = pathlib.Path(__file__).resolve().parents[2]
+    monkeypatch.setenv("ATLAS_DATABASE_URL", f"sqlite:///{tmp_path / 'chain.db'}")
+    cfg = Config(str(root / "alembic.ini")); cfg.set_main_option("script_location", str(root / "migrations"))
+    from alembic.script import ScriptDirectory
+    assert ScriptDirectory.from_config(cfg).get_heads() == ["20261004_m22_score_state"]
+    command.upgrade(cfg, "head"); command.downgrade(cfg, "-1"); command.upgrade(cfg, "head")
+    import sqlalchemy as sa
+    eng = sa.create_engine(f"sqlite:///{tmp_path / 'chain.db'}")
+    assert "score_state" in [c["name"] for c in sa.inspect(eng).get_columns("m22_tool_candidates")]

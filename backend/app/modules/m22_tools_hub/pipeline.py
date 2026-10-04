@@ -204,16 +204,18 @@ def _proposal_view(row: ProposalRow) -> dict[str, Any]:
 
 
 def _score_state(signals: Any) -> str:
-    """complete / partial / unmeasured, or legacy_unverified for rows persisted before `unmeasured` existed: those used
-    fixed placeholder constants for security/fit/novelty and must NOT be assumed complete."""
+    """complete / partial / unmeasured, or legacy_unverified. Rows persisted before `unmeasured` existed used fixed
+    placeholder constants and must NOT be assumed complete; a missing key, null, a non-list, non-string members or
+    unknown signal names are malformed => legacy_unverified (never complete)."""
+    quality = ("fit", "security", "maintenance", "novelty")
     if not isinstance(signals, dict) or "unmeasured" not in signals:
         return "legacy_unverified"
-    um = signals.get("unmeasured") or []
+    um = signals["unmeasured"]
+    if not isinstance(um, list) or any(not isinstance(k, str) or k not in quality for k in um):
+        return "legacy_unverified"
     if not um:
         return "complete"
-    return "unmeasured" if all(k in um for k in ("fit", "security", "maintenance", "novelty")) else "partial"
-
-
+    return "unmeasured" if all(k in um for k in quality) else "partial"
 
 
 def _candidate_view(row: CandidateRow) -> dict[str, Any]:
