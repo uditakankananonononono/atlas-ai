@@ -35,3 +35,46 @@ def test_no_model_configured_is_503_not_500(client,monkeypatch):
     _use(monkeypatch, Service(generate=generate,collectors={"reddit":RealShapeCollector([_doc()])}))
     r=client.post("/api/v1/side-hustle-scraper/blueprints",json={"query":"student tutoring","platforms":["reddit"]},headers=H)
     assert r.status_code==503 and "provider unavailable" in r.json()["detail"], r.text
+
+
+def test_partial_collector_failure_is_exposed_not_dropped(client,monkeypatch):
+    class Two:
+        def collect(self,q,l): return [_doc()],["e1","e2"]
+    _use(monkeypatch, Service(generate=fixture_generate,collectors={"reddit":Two()}))
+    r=client.post("/api/v1/side-hustle-scraper/blueprints",json={"query":"student tutoring","platforms":["reddit"]},headers=H)
+    assert r.status_code==200
+    assert json.loads(r.headers["X-Atlas-Collection-Partial-Failures"])==[{"platform":"reddit","errors":2,"docs":1}]
+    assert "e1" not in r.headers["X-Atlas-Collection-Partial-Failures"]  # counts only, no raw error text
+
+def test_two_document_tuple_is_not_misread_as_docs_errors_pair(client,monkeypatch):
+    class TwoDocs:
+        async def collect(self,q,l): return ({"url":"https://example.com/1","text":"a"},{"url":"https://example.com/2","text":"b"})
+    _use(monkeypatch, Service(generate=fixture_generate,collectors={"reddit":TwoDocs()}))
+    r=client.post("/api/v1/side-hustle-scraper/blueprints",json={"query":"student tutoring","platforms":["reddit"]},headers=H)
+    assert r.status_code==200 and "X-Atlas-Collection-Partial-Failures" not in r.headers
+
+def test_provider_error_text_is_not_echoed(client,monkeypatch):
+    from app.core.providers import ProviderError
+    async def boom(*a): raise ProviderError("SECRET-KEY-sk-123 upstream detail")
+    _use(monkeypatch, Service(generate=boom,collectors={"reddit":RealShapeCollector([_doc()])}))
+    r=client.post("/api/v1/side-hustle-scraper/blueprints",json={"query":"student tutoring","platforms":["reddit"]},headers=H)
+    assert r.status_code==503 and "SECRET" not in r.text
+
+def test_collected_documents_are_tenant_isolated_through_the_http_routes(client,monkeypatch):
+    from app.modules.m18_side_hustle_scraper.lane_pipeline import CollectionPipeline
+    from app.modules.m18_side_hustle_scraper.lane_repository import SQLiteDocumentRepository
+    from app.modules.m18_side_hustle_scraper.lane_validation import DocumentValidator
+    from app.modules.m18_side_hustle_scraper.lane_ranking import BlueprintRanker
+    from app.modules.m18_side_hustle_scraper.lane_freshness import FreshnessMonitor
+    repo=SQLiteDocumentRepository(":memory:")
+    d=_doc(); d.text="Tutoring students online: interview five students, set a price, and run a trial lesson. "*8
+    cols={"reddit":RealShapeCollector([d])}
+    pipe=CollectionPipeline(repository=repo,validator=DocumentValidator(),ranker=BlueprintRanker(),monitor=FreshnessMonitor(repo),collectors=cols)
+    _use(monkeypatch, Service(generate=fixture_generate,collectors=cols,pipeline=pipe))
+    A={"x-atlas-tenant":"m18-A","x-atlas-actor":"a"}; B={"x-atlas-tenant":"m18-B","x-atlas-actor":"b"}
+    rc=client.post("/api/v1/side-hustle-scraper/collect",json={"query":"student tutoring","platforms":["reddit"]},headers=A)
+    assert rc.status_code==200 and rc.json()["documents_new"]==1, rc.text
+    ra=client.post("/api/v1/side-hustle-scraper/rank",json={"query":"student tutoring"},headers=A).json()
+    rb=client.post("/api/v1/side-hustle-scraper/rank",json={"query":"student tutoring"},headers=B).json()
+    assert len(ra)==1 and rb==[]
+    assert client.get("/api/v1/side-hustle-scraper/freshness",headers=B).json()["watched"]==0
