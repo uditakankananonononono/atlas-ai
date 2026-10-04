@@ -324,7 +324,7 @@ def test_pypi_collector_is_name_only_over_simple_index_offline_fixture():
     # FIXTURE: a fake PEP 691 payload; no network. Proves ranking + honesty labelling only, not live PyPI.
     import asyncio
     from app.modules.m22_tools_hub.collectors import PypiNameCollector
-    fx = {"projects": [{"name": "flask-cors"}, {"name": "Flask"}, {"name": "my-flask-thing"}, {"name": "django"}]}
+    fx = {"meta": {"api-version": "1.1"}, "projects": [{"name": "flask-cors"}, {"name": "Flask"}, {"name": "my-flask-thing"}, {"name": "django"}]}
     c = PypiNameCollector(fetch=lambda url: fx)
 
     async def run():
@@ -344,7 +344,7 @@ def test_pypi_collector_stale_cache_on_failure_oversize_and_no_cache_error(monke
     def fetch(url):
         if state["fail"]:
             raise OSError("down")
-        return {"projects": [{"name": "flask"}]}
+        return {"meta": {"api-version": "1.1"}, "projects": [{"name": "flask"}]}
 
     async def drain(c):
         return [x async for x in c.collect("flask")]
@@ -358,6 +358,79 @@ def test_pypi_collector_stale_cache_on_failure_oversize_and_no_cache_error(monke
     big.MAX_BYTES = 10
     class _R(io.BytesIO):
         headers = {}
-    monkeypatch.setattr(mod, "urlopen", lambda *a, **k: _R(b"x" * 100))
+    monkeypatch.setattr(mod._HttpsPypiRedirects, "build", staticmethod(lambda: type("O", (), {"open": lambda self, *a, **k: _R(b"x" * 100)})()))
     with _pytest.raises(ValueError, match="size cap"):
         asyncio.run(drain(big))
+
+
+def test_pypi_collector_hardening_fixture_cases(monkeypatch):
+    # FIXTURE-based (no network): gzip truncation, name validation, shape check, single-flight, cooldown, redirects.
+    import asyncio, gzip, threading
+    import pytest as _pytest
+    from app.modules.m22_tools_hub import collectors as mod
+    good = json.dumps({"meta": {"api-version": "1.1"}, "projects": [{"_last-serial": 5, "name": "flask"}, {"name": "a/../x?y#z"}, {"name": "ok.name_1"}]}).encode()
+
+    class _R(io.BytesIO):
+        def __init__(self, b, gz):
+            super().__init__(b)
+            self.headers = {"Content-Encoding": "gzip"} if gz else {}
+
+    def opener_for(body, gz=True, counter=None):
+        def open_(self, *a, **k):
+            if counter is not None:
+                counter.append(1)
+            return _R(body, gz)
+        return staticmethod(lambda: type("O", (), {"open": open_})())
+
+    async def drain(c, q="flask"):
+        return [x async for x in c.collect(q)]
+    # valid gzip: invalid name 'a/../x?y#z' is dropped, others kept
+    monkeypatch.setattr(mod._HttpsPypiRedirects, "build", opener_for(gzip.compress(good)))
+    names = [x["name"] for x in asyncio.run(drain(mod.PypiNameCollector(), "o"))]
+    assert "a/../x?y#z" not in names and "ok.name_1" in names
+    # truncated gzip is refused, not cached partial
+    monkeypatch.setattr(mod._HttpsPypiRedirects, "build", opener_for(gzip.compress(good)[:-12]))
+    c = mod.PypiNameCollector()
+    with _pytest.raises(ValueError, match="truncated"):
+        asyncio.run(drain(c))
+    assert c._cache[1] == ""
+    # cooldown: second call within FAIL_COOLDOWN re-raises without refetching
+    calls = []
+    monkeypatch.setattr(mod._HttpsPypiRedirects, "build", opener_for(b"<html>", gz=False, counter=calls))
+    c = mod.PypiNameCollector()
+    for _ in range(2):
+        with _pytest.raises(ValueError):
+            asyncio.run(drain(c))
+    assert len(calls) == 1
+    # shape: projects without meta.api-version 1.x refused
+    c = mod.PypiNameCollector(fetch=lambda u: {"projects": [{"name": "flask"}]})
+    with _pytest.raises(ValueError, match="shape"):
+        asyncio.run(drain(c))
+    # single-flight: concurrent first calls fetch once
+    calls = []
+    monkeypatch.setattr(mod._HttpsPypiRedirects, "build", opener_for(good, gz=False, counter=calls))
+    c = mod.PypiNameCollector()
+
+    async def many():
+        return await asyncio.gather(*[drain(c) for _ in range(5)])
+    asyncio.run(many())
+    assert len(calls) == 1
+    monkeypatch.undo()
+    # redirect to non-https / foreign host refused
+    from urllib.request import Request
+    h = mod._HttpsPypiRedirects.build()
+    handler = [x for x in h.handlers if x.__class__.__name__ == "H"][0]
+    for bad in ("http://pypi.org/simple/", "https://evil.example/simple/"):
+        with _pytest.raises(ValueError, match="refusing redirect"):
+            handler.redirect_request(Request("https://pypi.org/simple/"), None, 302, "x", {}, bad)
+    # stale summary visible
+    state = {"fail": False}
+    def fetch(u):
+        if state["fail"]:
+            raise OSError("down")
+        return {"meta": {"api-version": "1.1"}, "projects": [{"name": "flask"}]}
+    c = mod.PypiNameCollector(fetch=fetch, ttl=0)
+    asyncio.run(drain(c)); state["fail"] = True
+    out = asyncio.run(drain(c))
+    assert "STALE cache" in out[0]["summary"] and out[0]["evidence"][0]["quality_signals"] == "unmeasured"
+    assert out[0]["maintenance"] == out[0]["security"] == out[0]["fit"] == out[0]["novelty"] == 0.0
