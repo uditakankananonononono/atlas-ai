@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from typing import Literal
 
 from pydantic import BaseModel, Field, HttpUrl, model_validator
+from app.core.public_validation import PublicValidationError
 
 
 class ClaimEvidence(BaseModel):
@@ -44,7 +45,7 @@ class ContradictionInboxRequest(BaseModel):
     def unique_ids_and_decisions(self):
         evidence_ids = [row.evidence_id for row in self.evidence]
         if len(evidence_ids) != len(set(evidence_ids)):
-            raise ValueError("duplicate evidence_id")
+            raise PublicValidationError("duplicate evidence_id")
         keys = [decision.claim_key.casefold().strip() for decision in self.decisions]
         if len(keys) != len(set(keys)):
             raise ValueError("duplicate decision for claim_key")
