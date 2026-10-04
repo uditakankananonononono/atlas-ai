@@ -175,3 +175,24 @@ def test_live_registries_fetch_and_scan():
     for fetched in (fetch_pypi("idna"), fetch_npm("left-pad")):
         manifest = ToolManifest.from_dict(build_manifest(fetched))
         assert SecurityScanner().scan(fetched.artifact, manifest).passed
+
+
+@pytest.mark.asyncio
+async def test_unmeasured_signals_are_excluded_from_score_and_sort_after_fully_measured(env):
+    # FIXTURE collectors. An 'unmeasured' signal is not a measured 0: it is excluded from the score, shown as None in
+    # explain(), flagged score_complete False in service and persisted views, and incomplete candidates sort last.
+    make, _ = env
+    svc = DiscoveryService(approval_store=None, collectors=[
+        StaticCollector("measured", [{"name": "mid", "url": "https://x.example/mid", "summary": "m", "security": .1, "fit": .1, "maintenance": .1, "novelty": .1}]),
+        StaticCollector("namefinder", [{"name": "hi", "url": "https://x.example/hi", "summary": "n", "security": 0., "fit": 0., "maintenance": 0., "novelty": 0.,
+                                        "unmeasured": ["security", "fit", "maintenance", "novelty"], "evidence": [{"a": 1}, {"b": 2}, {"c": 3}]}])])
+    found = await svc.discover("q")
+    by = {c.name: c for c in found}
+    assert by["hi"].score_complete is False and by["mid"].score_complete is True
+    assert by["hi"].score == 1.0  # evidence-only basis; must NOT outrank a complete candidate
+    assert [c.name for c in found] == ["mid", "hi"]
+    ex = by["hi"].explain()
+    assert ex["score_complete"] is False and ex["contributions"]["fit"]["value"] is None and ex["contributions"]["fit"]["measured"] is False
+    views = await make().discover("q", svc)
+    assert [v["name"] for v in views] == ["mid", "hi"] and views[1]["score_complete"] is False
+    assert [v["name"] for v in make().list_candidates()] == ["mid", "hi"]

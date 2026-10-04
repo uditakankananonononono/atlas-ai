@@ -17,24 +17,40 @@ class ApprovalStore(Protocol):
     def put(self,item:ApprovalRequest)->ApprovalRequest:...
 @dataclass
 class Candidate:
-    name:str;url:str;summary:str;source:str;version:str|None=None;license:str|None=None;permissions:list[str]=field(default_factory=list);maintenance:float=0.;security:float=0.;fit:float=0.;novelty:float=0.;evidence:list[dict[str,Any]]=field(default_factory=list);id:str=field(default_factory=lambda:str(uuid.uuid4()));kind:str="tool";weights:dict[str,float]|None=None
+    name:str;url:str;summary:str;source:str;version:str|None=None;license:str|None=None;permissions:list[str]=field(default_factory=list);maintenance:float=0.;security:float=0.;fit:float=0.;novelty:float=0.;evidence:list[dict[str,Any]]=field(default_factory=list);id:str=field(default_factory=lambda:str(uuid.uuid4()));kind:str="tool";weights:dict[str,float]|None=None;unmeasured:list[str]=field(default_factory=list)
     DEFAULT_WEIGHTS={"fit":.30,"security":.25,"maintenance":.20,"novelty":.15,"evidence":.10}
     def _signal_values(self):
         return {"fit":self.fit,"security":self.security,"maintenance":self.maintenance,"novelty":self.novelty,"evidence":min(1.,len(self.evidence)/3)}
+    def _active_weights(self):
+        """Weights over MEASURED signals only; signals listed in `unmeasured` carry no information and are excluded
+        (renormalised), they are NOT treated as a measured 0."""
+        values=self._signal_values();weights=dict(self.weights or self.DEFAULT_WEIGHTS)
+        return {k:float(weights.get(k,0.)) for k in values if k not in self.unmeasured}
     @property
     def score(self):
         values=self._signal_values()
-        if self.weights:
-            total=sum(float(self.weights.get(k,0.)) for k in values)
+        if self.weights or self.unmeasured:
+            active=self._active_weights();total=sum(active.values())
             if total<=0:return 0.
-            return round(sum(float(self.weights.get(k,0.))*v for k,v in values.items())/total,4)
+            return round(sum(w*values[k] for k,w in active.items())/total,4)
         return round(sum(w*values[k] for k,w in self.DEFAULT_WEIGHTS.items()),4)
+    @property
+    def score_complete(self)->bool:
+        return not self.unmeasured
+    @property
+    def rank_key(self):
+        """Candidates with every signal measured sort before partially measured ones; then by score."""
+        return (self.score_complete,self.score)
     def explain(self)->dict[str,Any]:
-        """Why this candidate ranked where it did: per-signal value x weight = contribution."""
+        """Why this candidate ranked where it did: per-signal value x weight = contribution. Unmeasured signals are
+        reported as value None and excluded from the score (score_complete False)."""
         values=self._signal_values();weights=self.weights or self.DEFAULT_WEIGHTS
-        total=sum(float(weights.get(k,0.)) for k in values) if self.weights else 1.
-        contributions={k:{"value":round(v,4),"weight":weights.get(k,0.),"contribution":round(float(weights.get(k,0.))*v/(total or 1.),4)} for k,v in values.items()}
-        return {"score":self.score,"kind":self.kind,"source":self.source,"weighted":bool(self.weights),"contributions":contributions}
+        active=self._active_weights();total=sum(active.values()) if (self.weights or self.unmeasured) else 1.
+        contributions={}
+        for k,v in values.items():
+            if k in self.unmeasured:contributions[k]={"value":None,"weight":weights.get(k,0.),"contribution":0.,"measured":False}
+            else:contributions[k]={"value":round(v,4),"weight":weights.get(k,0.),"contribution":round(float(weights.get(k,0.))*v/(total or 1.),4),"measured":True}
+        return {"score":self.score,"kind":self.kind,"source":self.source,"weighted":bool(self.weights),"score_complete":self.score_complete,"unmeasured":list(self.unmeasured),"contributions":contributions}
 @dataclass
 class InstallationProposal:
     candidate_id:str;adapter_type:str;config:dict[str,Any];requested_scopes:list[str];rollback_plan:dict[str,Any];approval_id:str;id:str=field(default_factory=lambda:str(uuid.uuid4()))
@@ -87,7 +103,7 @@ class Service:
         for collector,result in zip(active,results):
             if isinstance(result,Exception):self.last_errors[collector.name]=str(result);continue
             found.extend(result)
-        dedup={self._key(x):x for x in found};ranked=sorted(dedup.values(),key=lambda x:x.score,reverse=True)
+        dedup={self._key(x):x for x in found};ranked=sorted(dedup.values(),key=lambda x:x.rank_key,reverse=True)
         self.candidates.update({x.id:x for x in ranked})
         snapshot={self._key(x):x.name for x in ranked}
         previous=self._query_snapshots.get(query)
@@ -103,14 +119,14 @@ class Service:
         merged={}
         for items in per_query.values():
             for x in items:merged.setdefault(self._key(x),x)
-        return {"per_query":per_query,"merged":sorted(merged.values(),key=lambda x:x.score,reverse=True)}
+        return {"per_query":per_query,"merged":sorted(merged.values(),key=lambda x:x.rank_key,reverse=True)}
     def discovery_report(self,query:str)->dict[str,Any]:
-        ranked=sorted((c for c in self.candidates.values()),key=lambda x:x.score,reverse=True)
-        return {"query":query,"candidates":[asdict(x)|{"score":x.score} for x in ranked],"diff":self.last_diffs.get(query),"errors":dict(self.last_errors),"sources":self.sources()}
+        ranked=sorted((c for c in self.candidates.values()),key=lambda x:x.rank_key,reverse=True)
+        return {"query":query,"candidates":[asdict(x)|{"score":x.score,"score_complete":x.score_complete} for x in ranked],"diff":self.last_diffs.get(query),"errors":dict(self.last_errors),"sources":self.sources()}
     def export_candidates(self,fmt:str="json")->str:
         """Export the current candidate store as json, csv or markdown."""
-        items=sorted(self.candidates.values(),key=lambda x:x.score,reverse=True)
-        if fmt=="json":return json.dumps([asdict(x)|{"score":x.score} for x in items],indent=1)
+        items=sorted(self.candidates.values(),key=lambda x:x.rank_key,reverse=True)
+        if fmt=="json":return json.dumps([asdict(x)|{"score":x.score,"score_complete":x.score_complete} for x in items],indent=1)
         if fmt=="csv":
             out=io.StringIO();writer=csv.writer(out)
             writer.writerow(["name","kind","source","score","url","summary"])
@@ -158,7 +174,7 @@ class Service:
         host=urlparse(url).hostname or ""
         if self.require_https and url and urlparse(url).scheme!="https":return None
         if host.lower() in self.blocked_domains or any(p in text for p in self.blocked_patterns):return None
-        return Candidate(x["name"],url,x.get("summary",""),source,x.get("version"),x.get("license"),x.get("permissions",[]),float(x.get("maintenance",.5)),float(x.get("security",.5)),float(x.get("fit",.5)),float(x.get("novelty",.5)),x.get("evidence",[]),kind=x.get("kind","tool"),weights=weights)
+        return Candidate(x["name"],url,x.get("summary",""),source,x.get("version"),x.get("license"),x.get("permissions",[]),float(x.get("maintenance",.5)),float(x.get("security",.5)),float(x.get("fit",.5)),float(x.get("novelty",.5)),x.get("evidence",[]),kind=x.get("kind","tool"),weights=weights,unmeasured=[k for k in x.get("unmeasured",[]) if k in ("fit","security","maintenance","novelty")])
     @staticmethod
     def _canonical_url(url:str)->str:
         """Canonical form for dedup: lowercase host, no default ports, no

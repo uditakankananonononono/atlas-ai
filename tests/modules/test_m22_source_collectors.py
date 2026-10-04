@@ -457,3 +457,26 @@ def test_pypi_collector_structural_parser_nested_unicode_and_shape(monkeypatch):
         run({"meta": {"api-version": "1.4", "projects": []}, "projects2": 1})
     with _pytest.raises(ValueError, match="api-version"):
         run({"meta": {"api-version": "2.0"}, "projects": [{"name": "a"}]})
+
+
+def test_pypi_collector_outer_structure_length_recursion_and_stats():
+    # FIXTURE-based (no network): complete-outer-structure, name length cap, recursion, rejected stats without hits.
+    import asyncio
+    import pytest as _pytest
+    from app.modules.m22_tools_hub import collectors as mod
+    ok = b'{"meta":{"api-version":"1.4"},"projects":[{"name":"good"},{"name":"' + b"a" * 257 + b'"}]'
+    c = mod.PypiNameCollector()
+    assert c._parse(ok + b"}") == "good" and c.rejected_names == 1  # over-long name rejected and counted
+    assert c._parse(ok + b',"extra":[1]}') == "good"  # other well-formed keys after the array are fine
+    for bad in (ok + b"}garbage", ok + b",", ok + b',"x":'):
+        with _pytest.raises(ValueError, match="malformed or truncated"):
+            c._parse(bad)
+    deep = b'{"meta":{"api-version":"1.4"},"projects":[{"name":"x","d":' + b"[" * 50000 + b"]" * 50000 + b"}]}"
+    with _pytest.raises(ValueError, match="nested too deeply|malformed"):
+        c._parse(deep)
+    # rejected count is available even when a query has no hits
+    c2 = mod.PypiNameCollector(fetch=lambda u: {"meta": {"api-version": "1.4"}, "projects": [{"name": "good"}, {"name": "caf\u00e9"}]})
+
+    async def d():
+        return [x async for x in c2.collect("zzz")]
+    assert asyncio.run(d()) == [] and c2.index_stats()["rejected_entries"] == 1 and c2.index_stats()["names"] == 1
