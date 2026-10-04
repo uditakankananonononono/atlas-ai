@@ -17,13 +17,14 @@ def _temp_database(tmp_path_factory):
     3.12 clone), and the default sqlite:///./atlas.db in the cwd would receive test approval data.
     No env var is set, nothing leaks past this module, the production default is unchanged."""
     from sqlalchemy import create_engine
-    from app.core.database import Base, SessionLocal, engine as default_engine
+    from app.core.database import Base, SessionLocal
     import app.modules.m00_approval_center.service  # noqa: F401  registers the approval tables on Base
     tmp=create_engine(f"sqlite:///{tmp_path_factory.mktemp('m18db')}/approvals.db",connect_args={"check_same_thread":False})
     Base.metadata.create_all(tmp)
+    previous=SessionLocal.kw.get("bind")  # restore what was bound before, not assume the default engine
     SessionLocal.configure(bind=tmp)
     yield
-    SessionLocal.configure(bind=default_engine)
+    SessionLocal.configure(bind=previous)
     tmp.dispose()
 
 def _step(run):  # first step with an external action
