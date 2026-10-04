@@ -11,7 +11,7 @@ from .schemas import (
     ProposedAnalysis,
     SurveillanceRequest,
     SurveillanceResponse,
-    SurveillanceIngestRequest, GapEvidenceOut,
+    SurveillanceIngestRequest, GapEvidenceOut, ArxivCollectRequest,
 )
 from .service import Service
 
@@ -55,6 +55,22 @@ async def ingest_surveillance(request:SurveillanceIngestRequest,tenant:TenantCon
     from app.core.embeddings import get_embedding_provider
     from .surveillance import SurveillancePipeline,SurveillanceRepository
     return await SurveillancePipeline(SurveillanceRepository(tenant.tenant_id),get_embedding_provider(request.embedding_provider)).ingest(request.papers)
+
+@router.post("/surveillance/collect/arxiv")
+async def collect_arxiv_route(request:ArxivCollectRequest,tenant:TenantContext=Depends(require_tenant)):
+    """REAL fetch from the public arXiv API, then ingest. arXiv only; other sources are not collected."""
+    from starlette.concurrency import run_in_threadpool
+    from app.core.embeddings import get_embedding_provider
+    from .arxiv_collector import ArxivCollectorError,collect_arxiv
+    from .surveillance import SurveillancePipeline,SurveillanceRepository
+    try:papers=await run_in_threadpool(collect_arxiv,request.query,request.max_results)
+    except ValueError as exc:raise HTTPException(status_code=422,detail="invalid arXiv query") from exc
+    except (ArxivCollectorError,Exception) as exc:raise HTTPException(status_code=502,detail="arXiv collection failed") from exc
+    if not papers:return {"fetched":0,"received":0,"created":0,"source":"arxiv"}
+    from app.core.embeddings import EmbeddingError
+    try:out=await SurveillancePipeline(SurveillanceRepository(tenant.tenant_id),get_embedding_provider(request.embedding_provider)).ingest(papers)
+    except Exception as exc:raise HTTPException(status_code=503,detail="embedding provider unavailable") from exc
+    return {"fetched":len(papers),**out,"source":"arxiv"}
 
 @router.get("/surveillance/clusters")
 def surveillance_clusters(threshold:float=.72,tenant:TenantContext=Depends(require_tenant)):
