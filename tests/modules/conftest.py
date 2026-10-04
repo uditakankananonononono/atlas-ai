@@ -152,12 +152,18 @@ def _isolated_approval_database(tmp_path, monkeypatch):
         per test cost ~0.1-0.3s of setup across thousands of tests)."""
         _real = None
         _engine = None
+        builds = 0
+        _lock = __import__("threading").Lock()  # production default_service() is lock-guarded; first touch from many threads must build once
 
         def _build(self):
             if self._real is None:
-                self._engine = create_engine(f"sqlite:///{tmp_path / 'approvals_test.db'}", connect_args={"check_same_thread": False})
-                Base.metadata.create_all(self._engine)
-                self._real = m00.Service(session_factory=sessionmaker(bind=self._engine, expire_on_commit=False))
+                with self._lock:
+                    if self._real is None:  # double-checked
+                        engine = create_engine(f"sqlite:///{tmp_path / 'approvals_test.db'}", connect_args={"check_same_thread": False})
+                        Base.metadata.create_all(engine)
+                        self._engine = engine
+                        self.builds += 1
+                        self._real = m00.Service(session_factory=sessionmaker(bind=engine, expire_on_commit=False))
             return self._real
 
         def __getattr__(self, name):
