@@ -24,6 +24,7 @@ from app.modules.m20_general_cognitive_worker.product_orchestrator_routes import
 from app.core.model_routes import router as model_catalog_router
 from app.self_improve.routes import router as self_improve_router
 
+from app.core.public_validation import PublicValidationError
 configure_telemetry()
 app = FastAPI(title="Atlas AI", version="0.1.0")
 
@@ -50,7 +51,12 @@ async def _validation_errors_without_input(_request: Request, exc: RequestValida
         if kind in ("extra_forbidden", "dict_key", "unexpected_keyword_argument") and out:
             out[-1] = "<field>"  # the last element is a caller-chosen key
         return out
-    detail = [{"type": str(e.get("type", ""))[:60], "loc": loc(e.get("loc", ()), str(e.get("type", ""))), "msg": _FIXED_MSG.get(str(e.get("type", "")), "invalid value")} for e in exc.errors()[:50]]
+    def msg(e) -> str:
+        err = (e.get("ctx") or {}).get("error")
+        if isinstance(err, PublicValidationError):
+            return err.reason  # fixed owner-controlled reason; the detail (may contain caller input) is never sent
+        return _FIXED_MSG.get(str(e.get("type", "")), "invalid value")
+    detail = [{"type": str(e.get("type", ""))[:60], "loc": loc(e.get("loc", ()), str(e.get("type", ""))), "msg": msg(e)} for e in exc.errors()[:50]]
     return JSONResponse(status_code=422, content={"detail": detail})
 
 
