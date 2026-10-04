@@ -12,7 +12,7 @@ class VerifyReconciliationEvidence(BaseModel):
  @model_validator(mode='after')
  def unique(self):
   for label,ids in [('message_id',[x.message_id for x in self.messages]),('reviewer_id',[x.reviewer_id for x in self.attestations])]:
-   if len(ids)!=len(set(ids)):raise PublicValidationError('duplicate', str(label))
+   if len(ids)!=len(set(ids)):raise PublicValidationError('duplicate '+str(label))
   return self
 def verify_reconciliation_evidence(body:VerifyReconciliationEvidence,key_lookup,*,retired_lookup=None,proven_time=None)->dict:
  """key_lookup(reviewer_id, key_id) -> 32 raw Ed25519 bytes of the reviewer's *active registered* key."""

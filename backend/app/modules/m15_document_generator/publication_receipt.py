@@ -2,12 +2,13 @@ from __future__ import annotations
 import hashlib
 from typing import Literal
 from pydantic import BaseModel,Field,model_validator
+from app.core.public_validation import PublicValidationError
 class PrivatePublicationReceipt(BaseModel):
  approval_id:str=Field(min_length=1);version_id:str=Field(min_length=1);expected_sha256:str=Field(pattern=r'^[0-9a-f]{64}$');published_sha256:str=Field(pattern=r'^[0-9a-f]{64}$');access:Literal['private'];download_url:str=Field(pattern=r'^https://');byte_size:int=Field(gt=0);approval_consumed:bool
  @model_validator(mode='after')
  def valid(self):
-  if not self.approval_consumed:raise ValueError('approval must be consumed before publication is accepted')
-  if self.expected_sha256!=self.published_sha256:raise ValueError('published artifact hash does not match approved render')
+  if not self.approval_consumed:raise PublicValidationError('approval must be consumed before publication is accepted')
+  if self.expected_sha256!=self.published_sha256:raise PublicValidationError('published artifact hash does not match approved render')
   return self
 def verify_private_publication(x:PrivatePublicationReceipt)->dict:
  identity=f'{x.approval_id}\0{x.version_id}\0{x.published_sha256}\0{x.download_url}\0{x.byte_size}'
