@@ -469,7 +469,7 @@ class InstallPipeline:
                 raise KeyError("installed operation not found")
             if entry.status != "active" or not entry.backup_id:
                 raise PipelineError("no prior version to restore for this install")
-        receipt = self.installer.get_receipt(operation_id)
+        receipt = self._receipt_or_keyerror(operation_id)
         subject = _rollback_subject(receipt)
         approval = self.center.submit(
             module_id=MODULE_ID, action_type=ROLLBACK_ACTION, user_id=self.tenant_id,
@@ -479,8 +479,17 @@ class InstallPipeline:
         return {"operation_id": operation_id, "approval_id": approval["id"], "rollback_subject": subject,
                 "status": "awaiting_approval"}
 
+    def _receipt_or_keyerror(self, operation_id: str):
+        """Unknown or other-tenant operation ids are 'not found' (KeyError -> 404), not an unhandled InstallError (500).
+        Each tenant's installer only reads its own receipts dir, so a foreign id is simply absent here."""
+        from .installer import InstallError
+        try:
+            return self.installer.get_receipt(operation_id)
+        except InstallError as exc:
+            raise KeyError("installed operation not found") from exc
+
     def enqueue_rollback(self, operation_id: str, approval_id: str) -> dict[str, Any]:
-        receipt = self.installer.get_receipt(operation_id)
+        receipt = self._receipt_or_keyerror(operation_id)
         self._approved(approval_id, ROLLBACK_ACTION, {"operation_id": operation_id,
                                                       "rollback_subject": _rollback_subject(receipt)})
         with self.sessions.begin() as db:
