@@ -1,6 +1,7 @@
 """Claire request -> approve -> apply with a real Meemee adapter + simulator (labeled simulator, no real device).
 Shows the apply path honors tenant ownership end to end now that Service-created approvals carry tenant_id."""
 import pytest
+pytest.importorskip("meemee", reason="needs the separate Meemee repo: pip install '.[claire-adapter]' (meemee-agent @ 6b8c444); NOT run, not passed")
 from app.core.models import ApprovalStatus
 from app.modules.m21_claire.meemee_local_client import AdapterError
 from tests.modules.test_m21_meemee_adapter import rig
