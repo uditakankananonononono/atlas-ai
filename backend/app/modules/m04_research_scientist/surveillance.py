@@ -69,3 +69,26 @@ class SurveillancePipeline:
             if min_similarity<=score<max_similarity:
                 out.append(GapEvidence(a.paper_id,b.paper_id,round(score,4),shared,f"Test whether the mechanism in {a.paper_id} transfers to the context in {b.paper_id}."))
         return out
+
+
+def term_cooccurrence_gaps(rows,*,min_df:int=2,top_terms:int=40,limit:int=20):
+    """HEURISTIC, corpus-relative. Pairs of terms (paper keywords + title words) that each occur in
+    at least min_df papers of THIS stored corpus but never in the same paper. Absence here means
+    absence in these ingested papers only; it says nothing about global novelty or the literature."""
+    from .research_loop import key_terms
+    if not (1<=min_df<=50 and 2<=top_terms<=100 and 1<=limit<=100):raise ValueError("bad bounds")
+    docs=[]
+    for r in rows:
+        docs.append({t.lower() for t in (r.keywords or [])}|set(key_terms(r.title)))
+    df={}
+    for d in docs:
+        for t in d:df[t]=df.get(t,0)+1
+    cands=sorted((t for t,c in df.items() if c>=min_df),key=lambda t:(-df[t],t))[:top_terms]
+    out=[]
+    for a,b in combinations(cands,2):
+        if not any(a in d and b in d for d in docs):
+            out.append({"term_a":a,"term_b":b,"papers_with_a":df[a],"papers_with_b":df[b],"papers_with_both":0,
+                        "corpus_size":len(docs),
+                        "statement":f"In this corpus of {len(docs)} papers, '{a}' appears in {df[a]} and '{b}' in {df[b]}, but never together. Corpus-relative only; not evidence of global novelty."})
+    out.sort(key=lambda g:(-min(g["papers_with_a"],g["papers_with_b"]),-(g["papers_with_a"]+g["papers_with_b"]),g["term_a"],g["term_b"]))
+    return out[:limit]
