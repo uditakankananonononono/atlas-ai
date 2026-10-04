@@ -115,7 +115,8 @@ def test_mcts_rumination_returns_ordering_without_invented_probability():
     assert result["expected_success"] is None  # no evidence -> unavailable, not 0.x
     assert "too little recorded evidence" in result["expected_success_status"]
     a.state = b.state = c.state = TaskState.SUCCEEDED
-    assert ruminator.ruminate([a, b, c])["expected_success"] == 1.0
+    done = ruminator.ruminate([a, b, c])  # all steps already SUCCEEDED: retrospective status, not a forecast
+    assert done["expected_success"] is None and done["remaining_steps"] == 0 and "no steps remain" in done["expected_success_status"]
 
 
 def test_scheduler_priority_and_round_robin():

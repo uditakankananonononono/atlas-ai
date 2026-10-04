@@ -139,8 +139,10 @@ class MCTSRuminator:
     def ruminate(self, plan: list[PlanNode]) -> dict[str, Any]:
         pending = [n for n in plan if n.state == TaskState.PENDING]
         if not pending:
-            return {"simulations": 0, "best_ordering": [], "expected_success": 1.0,
-                    "expected_success_status": "nothing pending",
+            # Nothing is left to run: a completed plan is a past fact, not a forecast, so no probability is reported.
+            return {"simulations": 0, "best_ordering": [], "expected_success": None,
+                    "expected_success_status": "nothing pending: no steps remain, so no future-success probability applies",
+                    "remaining_steps": 0,
                     "mode": "simulated_search"}
         search = BoundedMCTS(
             max_simulations=self.simulations, max_seconds=self._max_seconds,
