@@ -1,0 +1,135 @@
+[
+ {
+  "step": "m16 post event",
+  "method": "POST",
+  "path": "/api/v1/executive-dashboard/events",
+  "status": 201,
+  "body": "{\"id\":\"d9057440-dad2-4036-8459-e26b59a6edb2\",\"sequence\":1,\"topic\":\"opportunity.discovered\",\"aggregate_type\":\"opportunity\",\"aggregate_id\":\"o1\",\"payload\":{\"title\":\"FIXTURE-event\"},\"occurred_at\":\"2026-10-04T03:57:31.096883Z\"}"
+ },
+ {
+  "step": "m16 post event missing field",
+  "method": "POST",
+  "path": "/api/v1/executive-dashboard/events",
+  "status": 422,
+  "body": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"aggregate_type\"],\"msg\":\"Field required\",\"input\":{\"topic\":\"x\"}},{\"type\":\"missing\",\"loc\":[\"body\",\"aggregate_id\"],\"msg\":\"Field required\",\"input\":{\"topic\":\"x\"}}]}"
+ },
+ {
+  "step": "m16 kpi after event",
+  "method": "GET",
+  "path": "/api/v1/executive-dashboard/kpis",
+  "status": 200,
+  "body": "[{\"id\":\"opportunities_discovered\",\"label\":\"Opportunities discovered\",\"unit\":\"count\",\"value\":1.0,\"previous_value\":0.0,\"window_hours\":24,\"definition\":\"Events with topic opportunity.discovered inside the window.\",\"evidence\":[{\"kind\":\"event\",\"id\":\"d9057440-dad2-4036-8459-e26b59a6edb2\",\"summary\":\"opportunity.discovered on opportunity/o1\",\"sequence\":1}],\"evidence_total\":1},{\"id\":\"applications_submitted\",\"label\":\"Applications submitted\",\"unit\":\"count\",\"value\":0.0,\"previous_value\":0.0,\"window_hours\":24,\"definition\":\"Events with topic application.submitted inside the window.\",\"evidence\":[],\"evidence_to"
+ },
+ {
+  "step": "m16 snapshot",
+  "method": "GET",
+  "path": "/api/v1/executive-dashboard/snapshot",
+  "status": 200,
+  "body": "{\"version\":1,\"last_sequence\":1,\"generated_at\":\"2026-10-04T03:57:31.192973\",\"data\":{\"metrics\":{\"topic:opportunity.discovered\":1},\"timeline\":[],\"alerts\":[],\"freshness\":{\"opportunity/o1\":\"2026-10-04T03:57:31.096883\"}}}"
+ },
+ {
+  "step": "m16 events",
+  "method": "GET",
+  "path": "/api/v1/executive-dashboard/events",
+  "status": 200,
+  "body": "[{\"id\":\"d9057440-dad2-4036-8459-e26b59a6edb2\",\"sequence\":1,\"topic\":\"opportunity.discovered\",\"aggregate_type\":\"opportunity\",\"aggregate_id\":\"o1\",\"payload\":{\"title\":\"FIXTURE-event\"},\"occurred_at\":\"2026-10-04T03:57:31.096883\"}]"
+ },
+ {
+  "step": "m16 csv export",
+  "method": "GET",
+  "path": "/api/v1/executive-dashboard/export/events.csv",
+  "status": 200,
+  "body": "id,sequence,topic,aggregate_type,aggregate_id,module_id,occurred_at\r\nd9057440-dad2-4036-8459-e26b59a6edb2,1,opportunity.discovered,opportunity,o1,,2026-10-04T03:57:31.096883\r\n"
+ },
+ {
+  "step": "m16 command preview",
+  "method": "POST",
+  "path": "/api/v1/executive-dashboard/commands/preview",
+  "status": 200,
+  "body": "{\"id\":\"f30fef8c-49ad-4afa-98d3-d7d3461102d5\",\"utterance\":\"show pending approvals\",\"intent\":\"search_dashboard\",\"parameters\":{\"query\":\"show pending approvals\"},\"plan\":[{\"action\":\"read_dashboard\",\"input\":\"show pending approvals\"}],\"read_only\":true,\"confidence\":0.55,\"expires_at\":\"2026-10-04T04:07:31.257102Z\",\"created_at\":\"2026-10-04T03:57:31.257102Z\"}"
+ },
+ {
+  "step": "m16 digest",
+  "method": "GET",
+  "path": "/api/v1/executive-dashboard/digest",
+  "status": 200,
+  "body": "{\"generated_at\":\"2026-10-04T03:57:31.273816Z\",\"pending_approvals\":0,\"open_blockers\":0,\"sections\":[{\"title\":\"KPIs\",\"lines\":[\"Opportunities discovered: 1 count (+1 vs prior 24h)\",\"Applications submitted: 0 count (+0 vs prior 24h)\",\"Grants won: 0 count (+0 vs prior 24h)\",\"Tasks completed: 0 count (+0 vs prior 24h)\",\"Dashboard events: 1 count (+1 vs prior 24h)\",\"Approvals pending: 0 count\",\"Approval decisions: 0 count\",\"Avg approval turnaround: 0 hours\",\"Agents stalled/offline: 0 count\",\"Timeline items at risk: 0 count\"]},{\"title\":\"Blockers\",\"lines\":[\"none\"]},{\"title\":\"Modules\",\"lines\":[\"module 0 "
+ },
+ {
+  "step": "m16 other tenant events (expect [])",
+  "method": "GET",
+  "path": "/api/v1/executive-dashboard/events",
+  "status": 200,
+  "body": "[]"
+ },
+ {
+  "step": "m18 blueprints",
+  "method": "POST",
+  "path": "/api/v1/side-hustle-scraper/blueprints",
+  "status": 500,
+  "body": "Internal Server Error"
+ },
+ {
+  "step": "m18 feasibility",
+  "method": "POST",
+  "path": "/api/v1/side-hustle-scraper/feasibility",
+  "status": 422,
+  "body": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"blueprint\"],\"msg\":\"Field required\",\"input\":{\"query\":\"freelance tutoring\"}},{\"type\":\"missing\",\"loc\":[\"body\",\"user\"],\"msg\":\"Field required\",\"input\":{\"query\":\"freelance tutoring\"}}]}"
+ },
+ {
+  "step": "m18 collect (network blocked)",
+  "method": "POST",
+  "path": "/api/v1/side-hustle-scraper/collect",
+  "status": 200,
+  "body": "{\"query\":\"freelance tutoring\",\"platforms\":[{\"platform\":\"reddit\",\"collected\":0,\"accepted_new\":0,\"accepted_duplicate\":0,\"rejected\":0,\"rejection_reasons\":[],\"errors\":[\"circuit_open\",\"circuit_open\",\"circuit_open\",\"circuit_open\"]},{\"platform\":\"hacker_news\",\"collected\":0,\"accepted_new\":0,\"accepted_duplicate\":0,\"rejected\":0,\"rejection_reasons\":[],\"errors\":[\"blocked 34.160.168.181\"]},{\"platform\":\"dev_to\",\"collected\":0,\"accepted_new\":0,\"accepted_duplicate\":0,\"rejected\":0,\"rejection_reasons\":[],\"errors\":[\"blocked 151.101.2.217\"]},{\"platform\":\"youtube\",\"collected\":0,\"accepted_new\":0,\"accepted_duplicate\":"
+ },
+ {
+  "step": "m18 rank",
+  "method": "POST",
+  "path": "/api/v1/side-hustle-scraper/rank",
+  "status": 200,
+  "body": "[]"
+ },
+ {
+  "step": "m18 refresh",
+  "method": "POST",
+  "path": "/api/v1/side-hustle-scraper/refresh",
+  "status": 200,
+  "body": "{\"sources_due\":0,\"sources_checked\":0,\"changes_detected\":0,\"dead_sources\":[]}"
+ },
+ {
+  "step": "m18 durable run create",
+  "method": "POST",
+  "path": "/api/v1/side-hustle-scraper/durable-runs",
+  "status": 422,
+  "body": "{\"detail\":\"title and first_experiment are required\"}"
+ },
+ {
+  "step": "m18 durable list",
+  "method": "GET",
+  "path": "/api/v1/side-hustle-scraper/durable-runs",
+  "status": 200,
+  "body": "[]"
+ },
+ {
+  "step": "m21 goal create",
+  "method": "POST",
+  "path": "/api/v1/claire/goals",
+  "status": 503,
+  "body": "{\"detail\":\"GCW default service requires a tenant-scoped request\"}"
+ },
+ {
+  "step": "m21 devices list",
+  "method": "GET",
+  "path": "/api/v1/claire/devices",
+  "status": 200,
+  "body": "[]"
+ },
+ {
+  "step": "m21 owner workflow empty",
+  "method": "POST",
+  "path": "/api/v1/claire/owner-workflow-279-329",
+  "status": 422,
+  "body": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"row_id\"],\"msg\":\"Field required\",\"input\":{}}]}"
+ }
+]
