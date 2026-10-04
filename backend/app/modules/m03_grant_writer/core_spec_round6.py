@@ -91,8 +91,23 @@ def _budget_table(request:CapabilityRequest)->dict[str,Any]:
         lines=[BudgetRequestLine(l["rate_code"],Decimal(str(l["quantity"])),l["description"]) for l in i["lines"]]
         as_of=date.fromisoformat(i["as_of"]); ind=Decimal(str(i.get("indirect_rate","0")))
         b=GrantWriterService(GrantCorpus(),rates).build_budget(lines,as_of=as_of,observed_by=datetime.now(timezone.utc),indirect_rate=ind)
-    except (KeyError,TypeError,AttributeError,ValueError,InvalidOperation) as exc:  # ValidationError and bad ISO dates are ValueErrors
-        raise ValueError(f"row 93 budget inputs invalid: {exc}") from exc
+    except (KeyError,TypeError,AttributeError,ValueError,InvalidOperation) as exc:
+        # Fixed categories only: never echo caller input (it may hold secrets or be unbounded) into the error or the log.
+        from .lane_models import ValidationError
+        if isinstance(exc,ValidationError):
+            m=str(exc)
+            cat=("no current, observed rate for the requested code and date" if m.startswith("no current, observed rate") else
+                 "quantity must be positive" if "quantity" in m else
+                 "mixed-currency budgets are not supported" if "mixed-currency" in m else
+                 "indirect_rate must be between 0 and 1" if "indirect_rate" in m else
+                 "a rate or line was rejected by the budget rules")
+        elif isinstance(exc,KeyError):
+            cat="a required field is missing"
+        elif str(exc).startswith("row 93 rate source_url"):
+            raise ValueError("row 93 rate source_url must be an http(s) URL with a hostname, no credentials or control characters") from None
+        else:
+            cat="a field has the wrong type or format"
+        raise ValueError(f"row 93 budget inputs invalid: {cat}") from None
     return {"provenance_note":"rates, dates and source URLs are CALLER-ASSERTED; this engine did not fetch or verify them",
             "currency":b.currency,"direct_total":str(b.direct_total),"indirect_total":str(b.indirect_total),
             "grand_total":str(b.grand_total),"as_of":b.as_of.isoformat(),

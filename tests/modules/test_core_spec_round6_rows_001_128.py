@@ -231,3 +231,19 @@ def test_row_93_malformed_containers_are_422_over_http_never_500(inputs):
     r=c.post("/m3/core-spec/capabilities/93",json={"objective":"budget","inputs":inputs})
     assert r.status_code==422,(r.status_code,r.text[:200])
     assert "invalid" in r.text
+
+SECRET="Bearer sk-live-SECRET-0123456789"
+@pytest.mark.parametrize("bad",[
+    {"rate":{"observed_at":SECRET}},{"rate":{"effective_from":SECRET}},{"rate":{"effective_to":SECRET*50}},
+    {"rate":{"amount":SECRET}},{"rate":{"source_url":SECRET}},{"rate":{"code":SECRET},"lines":[{"rate_code":SECRET+"x","quantity":"1","description":"d"}]},
+    {"lines":[{"rate_code":SECRET,"quantity":"1","description":"d"}]},{"lines":[{"rate_code":"gpu","quantity":SECRET,"description":"d"}]},
+    {"as_of":SECRET*100},{"indirect_rate":SECRET},
+])
+def test_row_93_errors_never_echo_caller_input_over_http(bad):
+    r0=_rates()[0]; r0.update(bad.get("rate",{}))
+    inp={"rates":[r0],"lines":bad.get("lines",[{"rate_code":"gpu","quantity":"1","description":"d"}]),"as_of":bad.get("as_of","2026-10-04")}
+    if "indirect_rate" in bad: inp["indirect_rate"]=bad["indirect_rate"]
+    app=FastAPI();app.include_router(router_3,prefix="/m3")
+    r=TestClient(app,raise_server_exceptions=False).post("/m3/core-spec/capabilities/93",json={"objective":"budget","inputs":inp})
+    assert r.status_code==422,(r.status_code,r.text[:200])
+    assert "SECRET" not in r.text and "sk-live" not in r.text and len(r.text)<400
