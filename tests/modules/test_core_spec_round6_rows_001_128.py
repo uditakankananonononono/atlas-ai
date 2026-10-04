@@ -298,3 +298,15 @@ def test_row_95_skewed_paragraph_sizes_never_exceed_the_part_cap(sizes,mp):
     t="\n\n".join("p"*z for z in sizes)
     m=execute_3(95,Request_3(objective="multipart",inputs={"text":t,"max_parts":mp})).artifact["multipart"]
     assert m["part_count"]<=min(mp,20) and "\n\n".join(p["text"] for p in m["parts"])==t
+
+def test_row_95_lone_surrogate_is_422_not_500():
+    app=FastAPI();app.include_router(router_3,prefix="/m3")
+    r=TestClient(app,raise_server_exceptions=False).post("/m3/core-spec/capabilities/95",json={"objective":"multipart","inputs":{"text":"a\ud800b"}})
+    assert r.status_code==422 and "valid Unicode" in r.text
+
+def test_row_95_titles_skip_blank_lines_and_crlf_is_one_lossless_part_with_the_limit_stated():
+    m=execute_3(95,Request_3(objective="multipart",inputs={"text":"\n\n\nHeading A\nbody\n\nsecond"})).artifact["multipart"]
+    assert [p["title"] for p in m["parts"]][0]!="" 
+    t="one\r\n\r\ntwo\r\n\r\nthree"
+    m=execute_3(95,Request_3(objective="multipart",inputs={"text":t,"max_parts":5})).artifact["multipart"]
+    assert m["part_count"]==1 and m["parts"][0]["text"]==t and "CRLF" in m["note"]

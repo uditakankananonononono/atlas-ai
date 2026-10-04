@@ -90,6 +90,11 @@ class SuccessAnalysisResponse(BaseModel):
     shared_language: list[str]
     missing_common_terms: list[str]
     caveat: str
+    similarity_method: str = "none"
+    nearest_examples: list[dict] = Field(default_factory=list)
+    mean_similarity: float | None = None
+    structure_gaps: list[str] = Field(default_factory=list)
+    method_note: str = ""
 
 
 class ExportRequest(BaseModel):

@@ -144,7 +144,11 @@ def _multipart_split(request:CapabilityRequest)->dict[str,Any]:
         raise ValueError("row 95 inputs invalid: text must be a non-empty string of at most 2,000,000 characters")
     if isinstance(mp,bool) or not isinstance(mp,int) or not 1<=mp<=20:
         raise ValueError("row 95 inputs invalid: max_parts must be an integer from 1 to 20")
-    paras=[x for x in text.split("\n\n")]
+    try:
+        text.encode("utf-8")  # a lone surrogate cannot be hashed or stored
+    except UnicodeEncodeError:
+        raise ValueError("row 95 inputs invalid: text is not valid Unicode") from None
+    paras=[x for x in text.split("\n\n")]  # LF-LF paragraph breaks only: CRLF text is one paragraph (documented limit)
     n=min(mp,len(paras)); total=len(text); target=total/n
     parts=[]; cur=[]; cur_len=0
     for k,para in enumerate(paras):
@@ -152,10 +156,11 @@ def _multipart_split(request:CapabilityRequest)->dict[str,Any]:
             parts.append("\n\n".join(cur)); cur=[]; cur_len=0
         cur.append(para); cur_len+=len(para)+2
     if cur: parts.append("\n\n".join(cur))
-    assert "\n\n".join(parts)==text and 1<=len(parts)<=20
+    if "\n\n".join(parts)!=text or not 1<=len(parts)<=20:  # explicit check (survives python -O)
+        raise RuntimeError("row 95 splitter invariant violated")
     return {"part_count":len(parts),"max_parts":mp,"source_chars":total,"source_sha256":hashlib.sha256(text.encode()).hexdigest(),
-            "parts":[{"order":k+1,"chars":len(x),"sha256":hashlib.sha256(x.encode()).hexdigest(),"title":(x.strip().splitlines() or [""])[0][:80],"text":x} for k,x in enumerate(parts)],
-            "note":"deterministic paragraph splitter: it does not draft, summarise or rewrite; the 1M-statistics requirement is not addressed here"}
+            "parts":[{"order":k+1,"chars":len(x),"sha256":hashlib.sha256(x.encode()).hexdigest(),"title":next((ln.strip() for ln in x.splitlines() if ln.strip()),"")[:80],"text":x} for k,x in enumerate(parts)],
+            "note":"deterministic greedy paragraph splitter (at most max_parts, not a balance guarantee; a single huge paragraph is not split; CRLF text is one paragraph): it does not draft, summarise or rewrite; the 1M-statistics requirement is not addressed here"}
 
 def execute(row:int, request:CapabilityRequest) -> CapabilityResult:
     if row not in ROWS:
