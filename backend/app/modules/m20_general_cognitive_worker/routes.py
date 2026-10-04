@@ -7,20 +7,34 @@ service - these endpoints only expose control and inspection.
 """
 from __future__ import annotations
 
+import contextvars
 import threading
 
 from datetime import datetime
 import os
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+
+from app.auth.context import TenantContext, require_tenant
 from pydantic import BaseModel, Field
 
 from .foresight import SystemsModel
 from .safety import ApprovalGateDecision
 from .schemas import Risk, ToolSpec
 
-router = APIRouter(prefix="/api/modules/20", tags=["m20_general_cognitive_worker"])
+_default_lock = threading.Lock()
+_tenant_var: contextvars.ContextVar[str] = contextvars.ContextVar("gcw_tenant", default="local")
+_default_services: dict[str, object] = {}
+
+
+async def _tenant_scope(ctx: TenantContext = Depends(require_tenant)) -> None:
+    """Key unbound default services by the tenant resolved by require_tenant (the same dependency the app uses; not the
+    raw header). Whether that tenant is authenticated is require_tenant's behaviour (dev mode trusts headers: test mode)."""
+    _tenant_var.set(ctx.tenant_id)
+
+
+router = APIRouter(prefix="/api/modules/20", tags=["m20_general_cognitive_worker"], dependencies=[Depends(_tenant_scope)])
 
 _service = None
 
@@ -30,24 +44,20 @@ def bind_service(service) -> None:
     _service = service
 
 
-_default_lock = threading.Lock()
-
-
 def get_service():
-    """Return the bound service. If the host app never bound one (the booted app does not), lazily create a default
-    IN-MEMORY service with NO language/embedding models, so the routes are not permanently 503. State is per process
-    and lost on restart (not persisted); planner/executive model-backed behaviour is absent, not simulated."""
-    global _service
-    if _service is None:
-        with _default_lock:
-            if _service is None:
-                from .service import CognitiveWorkerService
-                _service = CognitiveWorkerService()
-                _service_is_default.append(True)
-    return _service
-
-
-_service_is_default: list[bool] = []
+    """Return the explicitly bound service (tests/hosts; shared, caller's responsibility). If none was bound, as in the
+    booted app, lazily create a default IN-MEMORY service per tenant key, with NO language/embedding models. State is per
+    process and lost on restart (not persisted); model-backed behaviour is absent, not simulated. Creation is guarded by
+    a lock; the lock covers creation only, not the services' own internal mutation."""
+    if _service is not None:
+        return _service
+    tenant = _tenant_var.get()
+    with _default_lock:
+        svc = _default_services.get(tenant)
+        if svc is None:
+            from .service import CognitiveWorkerService
+            svc = _default_services[tenant] = CognitiveWorkerService()
+    return svc
 
 
 class GoalRequest(BaseModel):
