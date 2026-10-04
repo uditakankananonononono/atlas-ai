@@ -37,3 +37,23 @@ def test_durable_runs_tenant_keyed_and_approval_owner_authenticated():
 def test_durable_store_file_is_owner_only(tmp_path):
     p=tmp_path/"sub"/"runs.sqlite3"; DurableRunStore(p)
     assert stat.S_IMODE(os.stat(p).st_mode)==0o600
+
+
+import pytest
+def test_store_refuses_symlink_foreign_mode_and_nonregular_files(tmp_path):
+    real=tmp_path/"real.sqlite3"; real.write_bytes(b""); os.chmod(real,0o600)
+    link=tmp_path/"link.sqlite3"; os.symlink(real,link)
+    with pytest.raises(PermissionError): DurableRunStore(link)            # symlink
+    loose=tmp_path/"loose.sqlite3"; loose.write_bytes(b""); os.chmod(loose,0o644)
+    with pytest.raises(PermissionError): DurableRunStore(loose)           # pre-existing group/other-readable file
+    with pytest.raises(PermissionError): DurableRunStore(tmp_path)        # a directory
+def test_store_is_created_0600_directly_under_a_permissive_umask(tmp_path):
+    old=os.umask(0o000)
+    try: p=tmp_path/"d"/"runs.sqlite3"; DurableRunStore(p)
+    finally: os.umask(old)
+    assert stat.S_IMODE(os.stat(p).st_mode)==0o600 and stat.S_IMODE(os.stat(p.parent).st_mode)==0o700
+    assert all(stat.S_IMODE(os.stat(x).st_mode)&0o077==0 for x in p.parent.iterdir())   # incl. -wal/-shm if present
+def test_unsafe_store_fails_the_durable_route_closed_not_the_app(tmp_path,monkeypatch):
+    loose=tmp_path/"l.sqlite3"; loose.write_bytes(b""); os.chmod(loose,0o666)
+    monkeypatch.setattr(R,"_run_store_cache",[]); monkeypatch.setenv("ATLAS_M18_RUN_DB",str(loose))
+    r=c.post(S+"/durable-runs",json=RUN,headers=A); assert r.status_code==503 and "refused" in r.text
