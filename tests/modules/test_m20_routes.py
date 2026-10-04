@@ -114,3 +114,19 @@ def test_standup_health_ruminate_and_404s(client):
     assert c.post(f"/api/modules/20/tasks/{missing}/resume",
                   json={"node_id": "x", "approved": True}).status_code == 404
     assert c.post(f"/api/modules/20/tasks/{missing}/retrospective", json={}).status_code == 404
+
+
+def test_booted_app_m20_routes_are_not_permanently_503_when_no_service_bound():
+    """Regression: app.main never bound a GCW service, so /tasks, /standup, /tools... were 503 forever.
+    The lazily-created default is in-memory with no models; this asserts reachability only, not model quality."""
+    import app.modules.m20_general_cognitive_worker.routes as r
+    saved = r._service
+    r._service = None
+    try:
+        from fastapi.testclient import TestClient
+        from app.main import app
+        c = TestClient(app, raise_server_exceptions=False)
+        assert c.get("/api/v1/api/modules/20/tasks").status_code == 200
+        assert c.get("/api/v1/api/modules/20/health").json()["healthy"] is True
+    finally:
+        r._service = saved
