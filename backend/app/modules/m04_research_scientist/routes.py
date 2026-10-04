@@ -115,7 +115,7 @@ async def research_loop_route(request:ResearchLoopRequest,tenant:TenantContext=D
     table={"arxiv":lambda q,n:ac.collect_arxiv(q,n),"pubmed":lambda q,n:pc.collect_pubmed(q,n)}
     cols={s:table[s] for s in dict.fromkeys(request.sources)}
     try:res=await run_in_threadpool(rl.run_loop,request.question,cols,max_steps=request.max_steps,per_step=request.per_step)
-    except ValueError as exc:raise HTTPException(status_code=422,detail="invalid research question") from exc
+    except rl.ResearchQuestionError as exc:raise HTTPException(status_code=422,detail="invalid research question") from exc
     if res.status=="failed":
         logging.getLogger(__name__).warning("research loop failed: %s %s",res.stop_reason,res.error)
         if res.stop_reason=="deadline":raise HTTPException(status_code=504,detail="research loop deadline exceeded before any papers were collected")

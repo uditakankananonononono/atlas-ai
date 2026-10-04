@@ -40,6 +40,10 @@ STOP = {"about", "after", "also", "among", "based", "before", "between", "both",
 
 def _stem(w: str) -> str:
     return w[:-1] if len(w) > 4 and w.endswith("s") else w
+class ResearchQuestionError(ValueError):
+    """Caller input problem (bad question or bounds). Only this maps to HTTP 422."""
+
+
 Collector = Callable[[str, int], list[PaperInput]]
 
 
@@ -80,12 +84,12 @@ def run_loop(question: str, collectors: dict[str, Collector], *, max_steps: int 
     requests per call) and behind the cross-process flock, whose wait is unbounded. A hard bound
     would need the absolute budget propagated into the queue wait and every HTTP timeout."""
     if not 1 <= max_steps <= 3 or not 1 <= per_step <= 20:
-        raise ValueError("max_steps 1-3 and per_step 1-20")
+        raise ResearchQuestionError("max_steps 1-3 and per_step 1-20")
     base = key_terms(question)[:6]
     if len(base) < 1:
-        raise ValueError("question has no usable terms")
+        raise ResearchQuestionError("question has no usable terms")
     if not 1 <= deadline_s <= 120:
-        raise ValueError("deadline_s 1-120")
+        raise ResearchQuestionError("deadline_s 1-120")
     res = LoopResult(question=question)
     started = clock()
     extra: list[str] = []

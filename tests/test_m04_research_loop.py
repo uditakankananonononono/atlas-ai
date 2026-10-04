@@ -142,3 +142,14 @@ def test_route_partial_includes_caveat(monkeypatch):
         return list(CORPUS.values())
     j = _client(monkeypatch, c).post("/research-scientist/research-loop", json={"question": "immune niches tumor spatial", "max_steps": 3}).json()
     assert j["status"] == "partial" and "incomplete" in j["caveat"]
+
+def test_collector_valueerror_bug_is_not_422_over_http(monkeypatch):
+    def bug(q, n): raise ValueError("collector bug")
+    c = TestClient(_client(monkeypatch, bug).app, raise_server_exceptions=False)
+    r = c.post("/research-scientist/research-loop", json={"question": "immune niches tumor spatial"})
+    assert r.status_code == 500
+    assert c.post("/research-scientist/research-loop", json={"question": "!!! ??? ... --- ,,, ;;;"}).status_code == 422
+
+def test_question_validation_uses_specific_error():
+    with pytest.raises(rl.ResearchQuestionError):
+        rl.run_loop("the and for are", {"arxiv": lambda q, n: []})
