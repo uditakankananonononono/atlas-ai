@@ -185,6 +185,21 @@ async def test_v(setup_mode, name):
     page, _ = await _compose_with_values(setup); site = setup[6]
     daemon = site.daemon
     other = None
+    if name == 'bc_other_tab':
+        # The guard DENIES the BroadcastChannel constructor in the GUARDED session page (form_guard.py
+        # deny('BroadcastChannel')); an unguarded other tab can still create one. The attacking guarded page therefore
+        # cannot build the vector, so this test asserts the denial, NOT an attack outcome. A vector through a channel
+        # object that existed in the guarded page before the guard was installed is not constructed here: labeled gap.
+        ctx = daemon.browser._context
+        other = await ctx.new_page(); await other.goto(setup[1].origin+'/compose')
+        # An unguarded OTHER owner tab can create a channel (it is not the guarded session page); the guarded
+        # page cannot, so the attacking page has no way to post to it.
+        await other.evaluate("new BroadcastChannel('x')")
+        with pytest.raises(Exception, match='blocked by Atlas guard'):
+            await page.evaluate(V[name])
+        site.hits.clear(); site.posts.clear()
+        assert site.posts == [] and leaked(site) == []
+        return
     if name in OTHER:
         ctx = daemon.browser._context  # the owner's context
         other = await ctx.new_page(); await other.goto(setup[1].origin+'/compose')

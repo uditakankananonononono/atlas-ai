@@ -68,7 +68,15 @@ async def test_gap(setup, name):
         site.html_hook = None
     await page.fill('#draft', SECRET)
     await page.evaluate(code if code.startswith('document') or code.startswith('const') is False else code)
+    # Deterministic pre-click settlement: the page's OWN script ran before the click and its request may still be
+    # in flight. Wait for it, keep it as PRE-CLICK traffic, and only then open the click window. Pre-click
+    # protection is NOT supported by the guard (documented limit, see docs/UNIFIED_SUBMIT_TOKEN_BOUNDS.md); this
+    # test asserts what happens from the click onward.
+    await page.wait_for_timeout(1500)
+    pre_click = list(raw)
     raw.clear()
+    if name == 'httponly_cookie_via_input_before_click':
+        assert any('/setc' in r[2] for r in pre_click), pre_click  # the pre-click own-page leak is observed, not hidden
     try:
         answer = await _nav_click(setup, '#lnk')
     except Exception as error:  # a refusal is a safe outcome

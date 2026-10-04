@@ -88,14 +88,28 @@ def test_row_392_velocity_tracking_averages_closed_sprints():
     assert report.inputs["sprint_ids"]==[sp1.id,sp2.id]
     assert s.velocity_report().sprints[0].committed_points==8.0
 def test_row_393_burndown_tracks_actual_vs_ideal_with_scope_note():
-    s=svc();sp=sprint(s,"S1",NOW-timedelta(days=4),NOW+timedelta(days=6))
+    # ONE coherent clock: the service stamps completed_at with the real clock, so the sprint and the report must
+    # use the same real clock read inside the test (a module-import NOW goes stale across UTC midnight).
+    now=datetime.now(timezone.utc)
+    s=svc();sp=sprint(s,"S1",now-timedelta(days=4),now+timedelta(days=6))
     a=item(s,"a",estimate=4,sprint_id=sp.id);b=item(s,"b",estimate=4,sprint_id=sp.id)
     s.patch_work_item(a.id,WorkItemPatch(status="done"))
-    report=s.burndown(sp.id,NOW)
+    report=s.burndown(sp.id,datetime.now(timezone.utc))
     assert report.series[0].total_committed==8 and report.series[0].ideal_remaining==8
     assert report.series[-1].actual_remaining<=8 and any("Ideal line is linear" in x for x in report.assumptions)
     done_days=[p for p in report.series if p.actual_remaining<8]
     assert done_days and all(p.actual_remaining==4 for p in done_days)
+
+
+def test_row_393_burndown_report_clock_before_completion_counts_nothing_done():
+    # Regression for the cross-midnight failure: a report clock EARLIER than the completion time must not count it.
+    now=datetime.now(timezone.utc)
+    s=svc();sp=sprint(s,"S1",now-timedelta(days=6),now+timedelta(days=4))
+    a=item(s,"a",estimate=4,sprint_id=sp.id);item(s,"b",estimate=4,sprint_id=sp.id)
+    s.patch_work_item(a.id,WorkItemPatch(status="done"))
+    report=s.burndown(sp.id,now-timedelta(days=1))  # stale clock: completion is in its future
+    assert all(p.actual_remaining==8 for p in report.series)
+
 def test_row_394_kanban_board_columns_and_wip_limits():
     s=svc()
     items=[item(s,f"t{i}") for i in range(4)]
