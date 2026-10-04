@@ -14,6 +14,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import threading
 import unicodedata
 from pathlib import Path
 
@@ -21,10 +22,20 @@ from .research_loop import LoopResult
 
 _SPECIAL = {"\\": r"\textbackslash{}", "{": r"\{", "}": r"\}", "$": r"\$", "&": r"\&", "#": r"\#",
             "^": r"\textasciicircum{}", "_": r"\_", "%": r"\%", "~": r"\textasciitilde{}",
-            "<": r"\textless{}", ">": r"\textgreater{}", "|": r"\textbar{}", '"': "''"}
+            "<": r"\textless{}", ">": r"\textgreater{}", "|": r"\textbar{}", '"': r"\textquotedbl{}",
+            "'": r"\textquotesingle{}", "`": r"\textasciigrave{}", "-": "{-}"}  # no quote/dash ligatures
+
+
+MAX_ABSTRACT_CHARS = 5000   # per paper; longer abstracts are cut WITH a visible notice
+MAX_CONCURRENT_COMPILES = 2
+_SLOTS = threading.BoundedSemaphore(MAX_CONCURRENT_COMPILES)
 
 
 class ReportError(RuntimeError):
+    pass
+
+
+class ReportBusy(ReportError):
     pass
 
 
@@ -49,7 +60,7 @@ def render_latex(res: LoopResult, gaps: list[dict] | None = None) -> str:
            r"\par\textbf{Status:} " + tex_escape(res.status) + " (" + tex_escape(res.stop_reason or "n/a") + r")",
            *([r"\par\textbf{INCOMPLETE:} the loop stopped early, so this list is partial."] if res.status != "complete" else []),
            r"\par This document lists retrieved records only. No text in it was written by a language model "
-           r"and it contains no analysis, review or conclusion. Non-ASCII characters were transliterated or dropped.",
+           r"and it contains no analysis, review or conclusion. Non-ASCII characters were transliterated or dropped. Text is typeset, not byte-faithful: the font may substitute ligatures such as fi and fl, and long words may be split.",
            r"\section*{Query trail}"]
     out.append(r"\begin{itemize}" if res.steps else "No query steps were recorded.")
     for s in res.steps:
@@ -63,7 +74,12 @@ def render_latex(res: LoopResult, gaps: list[dict] | None = None) -> str:
             out.append(r"\par \textbf{URL:} " + tex_escape(str(p.url)))
         if p.keywords:
             out.append(r"\par \textbf{Keywords:} " + tex_escape(", ".join(p.keywords)))
-        out.append(r"\par \textbf{Abstract (as retrieved):} " + tex_escape(p.abstract))
+        ab = p.abstract
+        note = ""
+        if len(ab) > MAX_ABSTRACT_CHARS:
+            note = rf" \textbf{{[abstract truncated: showing {MAX_ABSTRACT_CHARS} of {len(ab)} characters]}}"
+            ab = ab[:MAX_ABSTRACT_CHARS]
+        out.append(r"\par \textbf{Abstract (as retrieved):} " + tex_escape(ab) + note)
     if gaps:
         out += [r"\section*{Corpus-relative term gaps (heuristic)}",
                 r"Counts within the retrieved set only; not evidence of global novelty.", r"\begin{itemize}"]
@@ -77,6 +93,15 @@ def compile_pdf(tex: str, *, timeout: int = 60) -> tuple[bytes, int]:
     exe = shutil.which("pdflatex")
     if not exe:
         raise ReportError("pdflatex not installed")
+    if not _SLOTS.acquire(blocking=False):
+        raise ReportBusy("too many concurrent report compiles")
+    try:
+        return _compile(exe, tex, timeout)
+    finally:
+        _SLOTS.release()
+
+
+def _compile(exe: str, tex: str, timeout: int) -> tuple[bytes, int]:
     with tempfile.TemporaryDirectory(prefix="atlas-tex-") as d:
         (Path(d) / "r.tex").write_text(tex, encoding="ascii")
         env = {"PATH": os.environ.get("PATH", ""), "HOME": d, "openout_any": "p", "openin_any": "p",
