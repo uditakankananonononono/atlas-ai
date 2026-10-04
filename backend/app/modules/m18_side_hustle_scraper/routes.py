@@ -72,7 +72,9 @@ async def discover(request: DiscoverIn, response: Response, service: Service = D
             raise HTTPException(422, str(e))
         raise HTTPException(502, "collector returned no documents")
     if partial:
-        response.headers["X-Atlas-Collection-Partial-Failures"] = json.dumps(partial[:8], separators=(",", ":"))[:600]
+        # bounded and always valid JSON: platform names clipped, <=8 entries, whole-entry drop (never slice the serialized text)
+        entries = [{"platform": str(e["platform"])[:40], "errors": int(e["errors"]), "docs": int(e["docs"])} for e in partial[:8]]
+        response.headers["X-Atlas-Collection-Partial-Failures"] = json.dumps(entries, separators=(",", ":"))
     return out
 
 
