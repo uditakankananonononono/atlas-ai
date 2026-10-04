@@ -434,3 +434,26 @@ def test_pypi_collector_hardening_fixture_cases(monkeypatch):
     out = asyncio.run(drain(c))
     assert "STALE cache" in out[0]["summary"] and out[0]["evidence"][0]["quality_signals"] == "unmeasured"
     assert out[0]["maintenance"] == out[0]["security"] == out[0]["fit"] == out[0]["novelty"] == 0.0
+
+
+def test_pypi_collector_structural_parser_nested_unicode_and_shape(monkeypatch):
+    # FIXTURE-based (no network): structural parser semantics.
+    import asyncio
+    import pytest as _pytest
+    from app.modules.m22_tools_hub import collectors as mod
+
+    def run(payload, q="good"):
+        c = mod.PypiNameCollector(fetch=lambda u: payload)
+
+        async def d():
+            return [x async for x in c.collect(q)]
+        return asyncio.run(d()), c
+    out, c = run({"meta": {"api-version": "1.4"}, "projects": [{"name": "good", "x": {"name": "inner"}}, {"name": "caf\u00e9"}, "str", {"name": 5}]})
+    assert [x["name"] for x in out] == ["good"]  # nested 'inner' not picked up
+    assert c.rejected_names == 3 and out[0]["evidence"][0]["rejected_index_entries"] == 3  # unicode, non-dict, non-str reported
+    raw = b'{"meta":{"api-version":"1.4"},"projects":[{"_last-serial":1,"name":"caf\\u0065"}]}'  # JSON-escaped ASCII
+    assert mod.PypiNameCollector()._parse(raw) == "cafe"
+    with _pytest.raises(ValueError, match="top-level"):
+        run({"meta": {"api-version": "1.4", "projects": []}, "projects2": 1})
+    with _pytest.raises(ValueError, match="api-version"):
+        run({"meta": {"api-version": "2.0"}, "projects": [{"name": "a"}]})
