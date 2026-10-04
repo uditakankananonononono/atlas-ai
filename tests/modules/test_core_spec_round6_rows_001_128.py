@@ -154,3 +154,21 @@ def test_core_spec_rows_are_labelled_plan_only_not_executed(execute,Request,row)
     r=execute(row,Request(objective="label check",inputs={"batch_limit":1}))
     assert r.status in {"plan_only","approval_required","configuration_required"} and r.status!="ready"
     assert r.executed is False
+
+def _rates():
+    return [{"code":"gpu","label":"GPU hour","unit":"hour","amount":"2.50","currency":"USD","effective_from":"2026-01-01",
+             "source_url":"https://example.test/rates","observed_at":"2026-09-01T00:00:00+00:00"}]
+
+def test_row_93_budget_table_really_computes_from_sourced_rates():
+    r=execute_3(93,Request_3(objective="budget",inputs={"rates":_rates(),"lines":[{"rate_code":"gpu","quantity":"100","description":"training"}],
+                                                     "as_of":"2026-10-04","indirect_rate":"0.1"}))
+    b=r.artifact["budget"]
+    assert r.executed is True and r.status=="executed"
+    assert (b["direct_total"],b["indirect_total"],b["grand_total"])==("250.00","25.00","275.00")
+    assert b["lines"][0]["source_url"]=="https://example.test/rates"
+
+def test_row_93_budget_refuses_unsourced_or_expired_rates_and_never_invents_one():
+    with pytest.raises(ValueError,match="no current, observed rate"):
+        execute_3(93,Request_3(objective="budget",inputs={"rates":_rates(),"lines":[{"rate_code":"tpu","quantity":"1","description":"x"}],"as_of":"2026-10-04"}))
+    with pytest.raises(ValueError,match="invalid"):
+        execute_3(93,Request_3(objective="budget",inputs={"rates":[{"code":"gpu"}],"lines":[],"as_of":"2026-10-04"}))

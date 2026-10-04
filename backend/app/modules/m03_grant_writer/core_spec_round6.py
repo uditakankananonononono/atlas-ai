@@ -54,6 +54,30 @@ class CapabilityResult(BaseModel):
     requires_approval: bool
     artifact: dict[str, Any]
 
+def _budget_table(request:CapabilityRequest)->dict[str,Any]:
+    """Row 93 REAL path: runs GrantWriterService.build_budget over caller-supplied, dated, sourced rates.
+    inputs: rates=[{code,label,unit,amount,currency,effective_from,source_url,observed_at}], lines=[{rate_code,quantity,description}],
+    as_of (YYYY-MM-DD), optional indirect_rate. No rate is invented: a missing/expired rate raises ValueError (HTTP 422)."""
+    from datetime import date
+    from decimal import Decimal, InvalidOperation
+    from .lane_models import BudgetRate, BudgetRequestLine, ValidationError
+    from .lane_repository import GrantCorpus
+    from .lane_service import GrantWriterService
+    i=request.inputs
+    try:
+        rates=[BudgetRate(code=r["code"],label=r["label"],unit=r["unit"],amount=Decimal(str(r["amount"])),currency=r["currency"],
+                          effective_from=date.fromisoformat(r["effective_from"]),source_url=r["source_url"],
+                          observed_at=datetime.fromisoformat(r["observed_at"])) for r in i["rates"]]
+        lines=[BudgetRequestLine(l["rate_code"],Decimal(str(l["quantity"])),l["description"]) for l in i["lines"]]
+        as_of=date.fromisoformat(i["as_of"]); ind=Decimal(str(i.get("indirect_rate","0")))
+        b=GrantWriterService(GrantCorpus(),rates).build_budget(lines,as_of=as_of,observed_by=datetime.now(timezone.utc),indirect_rate=ind)
+    except (KeyError,TypeError,InvalidOperation,ValidationError) as exc:
+        raise ValueError(f"row 93 budget inputs invalid: {exc}") from exc
+    return {"currency":b.currency,"direct_total":str(b.direct_total),"indirect_total":str(b.indirect_total),
+            "grand_total":str(b.grand_total),"as_of":b.as_of.isoformat(),
+            "lines":[{"rate_code":l.rate_code,"description":l.description,"quantity":str(l.quantity),"unit":l.unit,
+                      "unit_amount":str(l.unit_amount),"total":str(l.total),"source_url":l.source_url} for l in b.lines]}
+
 def execute(row:int, request:CapabilityRequest) -> CapabilityResult:
     if row not in ROWS:
         raise KeyError(f"unsupported module-3 core-spec row: {row}")
@@ -82,7 +106,11 @@ def execute(row:int, request:CapabilityRequest) -> CapabilityResult:
     if row in SCALE_ROWS and not request.inputs.get("batch_limit"):
         artifact["warning"]="batch_limit required before production execution"
         status="configuration_required"
-    return CapabilityResult(row=row,requirement=ROWS[row],status=status,adapter=adapter,
+    executed=False
+    if row==93 and {"rates","lines","as_of"}<=request.inputs.keys():
+        artifact["budget"]=_budget_table(request); executed=True; status="executed"
+        adapter="grant-writer-budget-engine"; operations[2]="execute_build_budget"
+    return CapabilityResult(row=row,requirement=ROWS[row],status=status,adapter=adapter,executed=executed,
       operations=operations,requires_approval=requires,artifact=artifact,
       provenance={"request_sha256":digest,"source_urls":request.source_urls,
         "generated_at":datetime.now(timezone.utc).isoformat(),"implementation":"core-spec-round6-v1"})
