@@ -92,3 +92,10 @@ class ArxivCollectRequest(BaseModel):
 
 class PubmedCollectRequest(ArxivCollectRequest):
     pass
+
+
+class ResearchLoopRequest(BaseModel):
+    question:str=Field(min_length=10,max_length=300)
+    sources:list[Literal["arxiv","pubmed"]]=Field(default_factory=lambda:["arxiv"],min_length=1,max_length=2)
+    max_steps:int=Field(default=2,ge=1,le=3)
+    per_step:int=Field(default=8,ge=1,le=20)
