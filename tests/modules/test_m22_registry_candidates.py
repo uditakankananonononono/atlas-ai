@@ -189,10 +189,19 @@ async def test_unmeasured_signals_are_excluded_from_score_and_sort_after_fully_m
     found = await svc.discover("q")
     by = {c.name: c for c in found}
     assert by["hi"].score_complete is False and by["mid"].score_complete is True
-    assert by["hi"].score == 1.0  # evidence-only basis; must NOT outrank a complete candidate
+    assert by["hi"].score == 0.0 and by["hi"].score_state == "unmeasured"  # evidence COUNT alone is not a quality measure
     assert [c.name for c in found] == ["mid", "hi"]
     ex = by["hi"].explain()
     assert ex["score_complete"] is False and ex["contributions"]["fit"]["value"] is None and ex["contributions"]["fit"]["measured"] is False
     views = await make().discover("q", svc)
     assert [v["name"] for v in views] == ["mid", "hi"] and views[1]["score_complete"] is False
     assert [v["name"] for v in make().list_candidates()] == ["mid", "hi"]
+
+
+def test_score_state_buckets_and_legacy_rows_are_not_assumed_complete():
+    from app.modules.m22_tools_hub.pipeline import _score_state
+    assert _score_state({"fit": .9}) == "legacy_unverified"  # row persisted before `unmeasured` existed
+    assert _score_state(None) == "legacy_unverified"
+    assert _score_state({"unmeasured": []}) == "complete"
+    assert _score_state({"unmeasured": ["security"]}) == "partial"
+    assert _score_state({"unmeasured": ["maintenance", "security", "fit", "novelty"]}) == "unmeasured"

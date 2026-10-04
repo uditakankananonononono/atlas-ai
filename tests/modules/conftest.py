@@ -132,3 +132,23 @@ def _isolated_device_anchor(tmp_path, monkeypatch):
     """Keep each test's device anchor out of the real ~/.atlas-pc."""
     monkeypatch.setenv("ATLAS_PC_ANCHOR_DIR", str(tmp_path / "anchors"))
     monkeypatch.setenv("ATLAS_PC_ANCHOR_DIR2", str(tmp_path / "anchors-secondary"))
+
+
+@pytest.fixture(autouse=True)
+def _isolated_approval_database(tmp_path, monkeypatch):
+    """Module 0's process-wide default service otherwise binds to the ambient, untracked ./atlas.db in the cwd, so
+    tests passed or failed depending on whether a migrated DB happened to exist. Give every test its own temporary
+    SQLite DB with the schema created from the ORM models (NOT via Alembic; Alembic is covered by test_m19 roundtrip)."""
+    try:
+        from sqlalchemy import create_engine
+        from sqlalchemy.orm import sessionmaker
+        from app.core.database import Base
+        from app.modules.m00_approval_center import service as m00
+    except Exception:  # bare-workspace stubs: nothing to isolate
+        yield
+        return
+    engine = create_engine(f"sqlite:///{tmp_path / 'approvals_test.db'}", connect_args={"check_same_thread": False})
+    Base.metadata.create_all(engine)
+    monkeypatch.setattr(m00, "_default_service", m00.Service(session_factory=sessionmaker(bind=engine, expire_on_commit=False)))
+    yield
+    engine.dispose()
