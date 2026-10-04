@@ -116,10 +116,11 @@ async def research_loop_route(request:ResearchLoopRequest,tenant:TenantContext=D
     cols={s:table[s] for s in dict.fromkeys(request.sources)}
     try:res=await run_in_threadpool(rl.run_loop,request.question,cols,max_steps=request.max_steps,per_step=request.per_step)
     except ValueError as exc:raise HTTPException(status_code=422,detail="invalid research question") from exc
-    if res.status=="failed" and res.stop_reason=="collector_error":
-        logging.getLogger(__name__).warning("research loop collection failed: %s",res.error)
+    if res.status=="failed":
+        logging.getLogger(__name__).warning("research loop failed: %s %s",res.stop_reason,res.error)
+        if res.stop_reason=="deadline":raise HTTPException(status_code=504,detail="research loop deadline exceeded before any papers were collected")
         raise HTTPException(status_code=503 if res.error in {"ThrottleBusy","ThrottleStateError"} else 502,detail="literature collection failed")
-    return {"question":res.question,"status":res.status,"error":res.error,"stop_reason":res.stop_reason,"method":"heuristic term expansion over real retrieval; no language model",
+    return {"question":res.question,"status":res.status,"error":res.error,"stop_reason":res.stop_reason,"method":"heuristic term expansion over real retrieval; no language model","caveat":"status partial means the loop stopped early (see stop_reason and error); the papers listed are real but incomplete",
             "steps":[asdict(s) for s in res.steps],
             "papers":[{"paper_id":p.paper_id,"title":p.title,"source":p.source,"url":str(p.url) if p.url else None,"published_at":p.published_at} for p in res.papers.values()]}
 
