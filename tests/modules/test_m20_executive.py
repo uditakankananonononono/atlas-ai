@@ -134,3 +134,38 @@ def test_loop_ruminate_preserves_real_state_and_traces_none_expected_success():
     assert result["remaining_steps"] >= 1 and "unfinished" in result["expected_success_status"]
     trace = [t for t in loop.traces if t.phase == "ruminate"][-1]
     assert "expected_success=None" in trace.detail and "unfinished" in trace.detail
+
+
+def test_loop_ruminate_restores_state_when_search_raises():
+    loop, gate, calls = build_loop()
+    ctx = loop.start(TaskContext(goal="research competitors and email the findings", importance=4))
+    assert ctx.state == TaskState.WAITING_APPROVAL
+
+    def boom(plan):
+        raise RuntimeError("search failed")
+    loop.ruminator.ruminate = boom
+    with pytest.raises(RuntimeError):
+        loop.ruminate(ctx)
+    assert ctx.state == TaskState.WAITING_APPROVAL  # not stuck in RUMINATING
+
+
+def test_loop_ruminate_does_not_overwrite_concurrent_state_change():
+    loop, gate, calls = build_loop()
+    ctx = loop.start(TaskContext(goal="research competitors and email the findings", importance=4))
+    real = loop.ruminator.ruminate
+
+    def changes_state(plan):
+        ctx.state = TaskState.CANCELLED  # simulated change by another actor during rumination
+        return real(plan)
+    loop.ruminator.ruminate = changes_state
+    loop.ruminate(ctx)
+    assert ctx.state == TaskState.CANCELLED
+
+
+def test_ruminate_bookkeeping_keys_present_in_pending_branch_too():
+    from app.modules.m20_general_cognitive_worker.executive import MCTSRuminator
+    from app.modules.m20_general_cognitive_worker.schemas import PlanNode, Risk
+    n = PlanNode(title="a", risk=Risk.READ)
+    out = MCTSRuminator(simulations=4).ruminate([n])
+    assert out["plan_complete"] is False and out["state_counts"] == {"pending": 1}
+    assert out["unfinished_steps"] == 1 and out["pending_steps"] == 1 and out["remaining_steps"] == 1

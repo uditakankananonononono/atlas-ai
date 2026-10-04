@@ -138,24 +138,30 @@ class MCTSRuminator:
 
     def ruminate(self, plan: list[PlanNode]) -> dict[str, Any]:
         pending = [n for n in plan if n.state == TaskState.PENDING]
+        # Same bookkeeping in every branch. PENDING is only the searchable subset; "no PENDING" is NOT "finished".
+        counts: dict[str, int] = {}
+        for n in plan:
+            counts[n.state.value] = counts.get(n.state.value, 0) + 1
+        unfinished = sum(v for k, v in counts.items() if k != TaskState.SUCCEEDED.value)
+        bookkeeping = {
+            "state_counts": counts,
+            # unfinished_steps = every non-SUCCEEDED step (includes FAILED/BLOCKED/CANCELLED, which will not run).
+            "unfinished_steps": unfinished,
+            "pending_steps": len(pending),
+            # remaining_steps: legacy alias of unfinished_steps, kept for compatibility; prefer unfinished_steps.
+            "remaining_steps": unfinished,
+            "plan_complete": bool(plan) and unfinished == 0,
+        }
         if not pending:
-            # No PENDING step is searchable. That is NOT the same as "finished": steps can be in flight, waiting,
-            # failed, blocked or cancelled. Report the real per-state counts; only an all-SUCCEEDED plan is complete.
-            counts: dict[str, int] = {}
-            for n in plan:
-                counts[n.state.value] = counts.get(n.state.value, 0) + 1
-            unfinished = sum(v for k, v in counts.items() if k != TaskState.SUCCEEDED.value)
             if not plan:
-                status, complete = "no steps in plan", False
+                status = "no steps in plan"
             elif unfinished == 0:
-                status, complete = "plan complete: every step already succeeded (a past fact, not a forecast)", True
+                status = "plan complete: every step already succeeded (a past fact, not a forecast)"
             else:
-                status, complete = (f"no PENDING step to search; {unfinished} unfinished step(s) not completed "
-                                    f"(state counts: {counts}); no future-success probability reported"), False
+                status = (f"no PENDING step to search; {unfinished} unfinished step(s) "
+                          f"(state counts: {counts}); no future-success probability reported")
             return {"simulations": 0, "best_ordering": [], "expected_success": None,
-                    "expected_success_status": status, "plan_complete": complete,
-                    "state_counts": counts, "remaining_steps": unfinished,
-                    "mode": "simulated_search"}
+                    "expected_success_status": status, "mode": "simulated_search", **bookkeeping}
         search = BoundedMCTS(
             max_simulations=self.simulations, max_seconds=self._max_seconds,
             seed=self._seed, evidence=self.evidence,
@@ -190,6 +196,7 @@ class MCTSRuminator:
                 )
             )
         return {
+            **bookkeeping,
             "simulations": search.simulations_run,
             "mode": search.mode,
             "best_ordering": [by_id[i].title for i in ordering_ids if i in by_id],
@@ -378,7 +385,9 @@ class DeliberativeLoop:
         try:
             result = self.ruminator.ruminate(context.plan)
         finally:
-            context.state = previous
+            # Restore only if nobody changed the state while we ruminated; never overwrite a newer state.
+            if context.state == TaskState.RUMINATING:
+                context.state = previous
         self._trace("ruminate", f"mcts ordering: {result['best_ordering']}; expected_success={result['expected_success']}; "
                                 f"status={result['expected_success_status']}", task_id=context.id)
         return result
