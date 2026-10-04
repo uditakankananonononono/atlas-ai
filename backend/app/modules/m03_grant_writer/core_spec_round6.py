@@ -56,7 +56,7 @@ class CapabilityResult(BaseModel):
 
 def _budget_table(request:CapabilityRequest)->dict[str,Any]:
     """Row 93 REAL path: runs GrantWriterService.build_budget over caller-supplied, dated, sourced rates.
-    inputs: rates=[{code,label,unit,amount,currency,effective_from,source_url,observed_at}], lines=[{rate_code,quantity,description}],
+    inputs: rates=[{code,label,unit,amount,currency,effective_from,[effective_to],source_url (http/https),observed_at}], lines=[{rate_code,quantity,description}],
     as_of (YYYY-MM-DD), optional indirect_rate. No rate is invented: a missing/expired rate raises ValueError (HTTP 422)."""
     from datetime import date
     from decimal import Decimal, InvalidOperation
@@ -65,15 +65,21 @@ def _budget_table(request:CapabilityRequest)->dict[str,Any]:
     from .lane_service import GrantWriterService
     i=request.inputs
     try:
+        for r in i["rates"]:
+            url=r.get("source_url")
+            if not isinstance(url,str) or not url.startswith(("https://","http://")) or len(url)<12:
+                raise ValueError("row 93 rate source_url must be an http(s) URL")
         rates=[BudgetRate(code=r["code"],label=r["label"],unit=r["unit"],amount=Decimal(str(r["amount"])),currency=r["currency"],
                           effective_from=date.fromisoformat(r["effective_from"]),source_url=r["source_url"],
+                          effective_to=date.fromisoformat(r["effective_to"]) if r.get("effective_to") else None,
                           observed_at=datetime.fromisoformat(r["observed_at"])) for r in i["rates"]]
         lines=[BudgetRequestLine(l["rate_code"],Decimal(str(l["quantity"])),l["description"]) for l in i["lines"]]
         as_of=date.fromisoformat(i["as_of"]); ind=Decimal(str(i.get("indirect_rate","0")))
         b=GrantWriterService(GrantCorpus(),rates).build_budget(lines,as_of=as_of,observed_by=datetime.now(timezone.utc),indirect_rate=ind)
-    except (KeyError,TypeError,InvalidOperation,ValidationError) as exc:
+    except (KeyError,TypeError,InvalidOperation,ValidationError) as exc:  # ValueError from the URL check passes through unchanged
         raise ValueError(f"row 93 budget inputs invalid: {exc}") from exc
-    return {"currency":b.currency,"direct_total":str(b.direct_total),"indirect_total":str(b.indirect_total),
+    return {"provenance_note":"rates, dates and source URLs are CALLER-ASSERTED; this engine did not fetch or verify them",
+            "currency":b.currency,"direct_total":str(b.direct_total),"indirect_total":str(b.indirect_total),
             "grand_total":str(b.grand_total),"as_of":b.as_of.isoformat(),
             "lines":[{"rate_code":l.rate_code,"description":l.description,"quantity":str(l.quantity),"unit":l.unit,
                       "unit_amount":str(l.unit_amount),"total":str(l.total),"source_url":l.source_url} for l in b.lines]}

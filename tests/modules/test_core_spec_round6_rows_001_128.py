@@ -170,5 +170,42 @@ def test_row_93_budget_table_really_computes_from_sourced_rates():
 def test_row_93_budget_refuses_unsourced_or_expired_rates_and_never_invents_one():
     with pytest.raises(ValueError,match="no current, observed rate"):
         execute_3(93,Request_3(objective="budget",inputs={"rates":_rates(),"lines":[{"rate_code":"tpu","quantity":"1","description":"x"}],"as_of":"2026-10-04"}))
-    with pytest.raises(ValueError,match="invalid"):
+    with pytest.raises(ValueError,match="invalid|http"):
         execute_3(93,Request_3(objective="budget",inputs={"rates":[{"code":"gpu"}],"lines":[],"as_of":"2026-10-04"}))
+
+def _call(**over):
+    r=_rates()[0]; r.update(over.pop("rate",{}))
+    inp={"rates":[r],"lines":[{"rate_code":"gpu","quantity":"1","description":"x"}],"as_of":"2026-10-04"}; inp.update(over)
+    return execute_3(93,Request_3(objective="budget",inputs=inp))
+
+@pytest.mark.parametrize("over,match",[
+    ({"rate":{"source_url":"javascript:alert(1)"}},"http"),({"rate":{"source_url":""}},"http"),
+    ({"rate":{"effective_to":"2026-06-30"}},"no current, observed rate"),            # expired rate
+    ({"rate":{"effective_from":"2027-01-01"}},"no current, observed rate"),
+    ({"rate":{"observed_at":"2026-09-01T00:00:00"}},"invalid"),                      # naive timestamp
+    ({"rate":{"observed_at":"2999-01-01T00:00:00+00:00"}},"no current, observed rate"),  # observed in the future
+    ({"lines":[{"rate_code":"gpu","quantity":"0","description":"x"}]},"invalid"),
+    ({"lines":[{"rate_code":"gpu","quantity":"-3","description":"x"}]},"invalid"),
+    ({"indirect_rate":"2"},"invalid"),
+    ({"rates":[_rates()[0],{**_rates()[0],"code":"cpu","currency":"EUR"}],"lines":[{"rate_code":"gpu","quantity":"1","description":"a"},{"rate_code":"cpu","quantity":"1","description":"b"}]},"invalid"),
+])
+def test_row_93_refusals(over,match):
+    with pytest.raises(ValueError,match=match): _call(**over)
+
+def test_row_93_result_says_inputs_are_caller_asserted():
+    assert "CALLER-ASSERTED" in _call().artifact["budget"]["provenance_note"]
+
+def test_row_93_without_budget_inputs_stays_plan_only_and_route_422_on_bad_input():
+    assert execute_3(93,Request_3(objective="budget")).status=="plan_only"
+    app=FastAPI();app.include_router(router_3,prefix="/m3");c=TestClient(app)
+    ok=c.post("/m3/core-spec/capabilities/93",json={"objective":"budget","inputs":{"rates":_rates(),"lines":[{"rate_code":"gpu","quantity":"2","description":"x"}],"as_of":"2026-10-04"}})
+    assert ok.status_code==200 and ok.json()["executed"] is True and ok.json()["artifact"]["budget"]["grand_total"]=="5.00"
+    bad=c.post("/m3/core-spec/capabilities/93",json={"objective":"budget","inputs":{"rates":[{**_rates()[0],"source_url":"javascript:x"}],"lines":[{"rate_code":"gpu","quantity":"2","description":"x"}],"as_of":"2026-10-04"}})
+    assert bad.status_code==422
+
+@pytest.mark.parametrize("module,rows,execute,Request",[(1,ROWS_1,execute_1,Request_1),(2,ROWS_2,execute_2,Request_2),(3,ROWS_3,execute_3,Request_3),(4,ROWS_4,execute_4,Request_4)])
+def test_no_core_spec_row_in_any_module_reports_ready(module,rows,execute,Request):
+    for row in rows:
+        r=execute(row,Request(objective="label sweep",inputs={"batch_limit":1}))
+        assert r.status!="ready", (module,row)
+        assert r.executed is False, (module,row)  # sweep supplies no row-93 budget inputs, so nothing executes
