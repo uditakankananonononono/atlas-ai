@@ -53,9 +53,12 @@ def test_title_words_count_as_terms():
     assert frozenset({"graphene", "ribosome"}) in pairs
 
 def test_ranking_order_is_min_df_then_sum_then_alpha():
-    rows = [R("t1", [k]) for k in ["ppp"] * 3 + ["qqq"] * 3 + ["rrr"] * 2 + ["sss"] * 2]
-    g = term_cooccurrence_gaps(rows, min_df=2)
-    order = [(x["term_a"], x["term_b"]) for x in g]
-    assert order[0] == ("ppp", "qqq")                      # min df 3 beats min df 2
-    assert order[-1] == ("rrr", "sss")                     # min 2, sum 4 sorts after sum 5 pairs
-    assert order[1:-1] == [("ppp", "rrr"), ("ppp", "sss"), ("qqq", "rrr"), ("qqq", "sss")]
+    # generation order (by df) differs from ranked order, so the sort is load-bearing
+    rows = [R("t1", [k]) for k in ["ppp"] * 5 + ["qqq"] * 4 + ["rrr"] * 3 + ["sss"] * 2]
+    order = [(x["term_a"], x["term_b"]) for x in term_cooccurrence_gaps(rows, min_df=2)]
+    assert order == [("ppp", "qqq"), ("ppp", "rrr"), ("qqq", "rrr"), ("ppp", "sss"), ("qqq", "sss"), ("rrr", "sss")]
+
+def test_tie_on_min_df_breaks_by_sum_then_alpha():
+    rows = [R("t1", [k]) for k in ["aaa"] * 4 + ["bbb"] * 2 + ["ccc"] * 2 + ["ddd"] * 3]
+    order = [(x["term_a"], x["term_b"]) for x in term_cooccurrence_gaps(rows, min_df=2)]
+    assert order == [("aaa", "ddd"), ("aaa", "bbb"), ("aaa", "ccc"), ("ddd", "bbb"), ("ddd", "ccc"), ("bbb", "ccc")]
