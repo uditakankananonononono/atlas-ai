@@ -5,7 +5,7 @@ import base64
 import binascii
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from pydantic import BaseModel, Field
 
 from app.auth.context import TenantContext, require_tenant
@@ -141,11 +141,22 @@ class CandidateProposalIn(BaseModel):
 
 
 @router.post("/discoveries", status_code=201)
-async def discover_and_persist(body: DiscoveryQueryIn, p: InstallPipeline = Depends(get_pipeline),
+async def discover_and_persist(body: DiscoveryQueryIn, response: Response, p: InstallPipeline = Depends(get_pipeline),
                                service=Depends(get_discovery_service)):
-    """Run the free official-registry collectors and persist ranked candidates for this tenant."""
+    """Run the free official-registry collectors and persist ranked candidates for this tenant.
+    Source failures are NOT hidden: if every source failed and nothing was found the answer is 502 with per-source
+    errors (an empty 201 would read as 'no matches'); on partial failure the body stays the candidate list and the
+    X-Atlas-Discovery-Source-Errors header carries the per-source errors as JSON."""
     try:
-        return await p.discover(body.query, service)
+        found = await p.discover(body.query, service)
+        errors = dict(getattr(service, "last_errors", {}) or {})
+        if errors and not found:
+            raise HTTPException(502, {"message": "no discovery source answered; zero results is NOT 'no matches'",
+                                      "source_errors": errors})
+        if errors:
+            import json as _json
+            response.headers["X-Atlas-Discovery-Source-Errors"] = _json.dumps(errors)[:4000]
+        return found
     except ERRORS as exc:
         raise _http(exc) from exc
     except OSError as exc:
