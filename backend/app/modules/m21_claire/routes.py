@@ -10,8 +10,7 @@ from app.auth.context import TenantContext,require_tenant as _rt
 _lock=threading.Lock()
 async def get_service(ctx:TenantContext=Depends(_rt)):
  """Per-tenant Claire Service (in-memory, lost on restart). The tenant resolved by require_tenant is also set for the
- m20 cognitive service lookup, which refuses requests without a tenant. NOTE: the approvals store is still the process
- global core facade (known gap), so approvals are not tenant-partitioned here."""
+ m20 cognitive service lookup, which refuses requests without a tenant. Approvals go to the core facade owned by this tenant (payload tenant_id)."""
  from app.modules.m20_general_cognitive_worker.routes import _tenant_var
  token=_tenant_var.set(ctx.tenant_id)
  try:
@@ -20,7 +19,7 @@ async def get_service(ctx:TenantContext=Depends(_rt)):
    s=_services.get(ctx.tenant_id)
    if s is None:
     if len(_services)>=MAX_TENANT_SERVICES:raise HTTPException(503,"Claire in-memory service capacity reached")
-    s=_services[ctx.tenant_id]=Service(cognitive_service(),approvals)
+    s=_services[ctx.tenant_id]=Service(cognitive_service(),approvals);s.tenant_id=ctx.tenant_id
   yield s
  finally:_tenant_var.reset(token)
 @router.post("/goals",status_code=201)
