@@ -7,19 +7,36 @@ Nature/Science, custom journals. Transport is injectable for tests only.
 from __future__ import annotations
 
 import re
-import xml.etree.ElementTree as ET
 from collections.abc import Callable
 from urllib.parse import urlencode
 
 import httpx
+from defusedxml import ElementTree as DET
+from defusedxml.common import DefusedXmlException
+from xml.etree.ElementTree import ParseError
 
 from .schemas import PaperInput
+from .source_throttle import THROTTLE
 
 ARXIV_API = "https://export.arxiv.org/api/query"
 MAX_BYTES = 5_000_000
+
+
+def capped_get(url: str, cap: int, err: type) -> bytes:
+    """Stream the body and stop at `cap` bytes; never follow redirects."""
+    with httpx.Client(timeout=30, follow_redirects=False) as c:
+        with c.stream("GET", url, headers={"User-Agent": "atlas-m04-surveillance/1"}) as r:
+            if r.status_code != 200:
+                raise err(f"HTTP {r.status_code}")
+            buf = bytearray()
+            for chunk in r.iter_bytes():
+                buf += chunk
+                if len(buf) > cap:
+                    raise err("response too large")
+            return bytes(buf)
 _NS = {"a": "http://www.w3.org/2005/Atom", "x": "http://arxiv.org/schemas/atom"}
 _QUERY_RE = re.compile(r"^[\w\s\-.:\"()*+']{3,300}$")
-_ID_RE = re.compile(r"arxiv\.org/abs/(.+)$")
+_ID_RE = re.compile(r"^https?://arxiv\.org/abs/((?:[a-z\-]+(?:\.[A-Z]{2})?/\d{7}|\d{4}\.\d{4,5})(?:v\d+)?)$")
 
 
 class ArxivCollectorError(RuntimeError):
@@ -33,11 +50,11 @@ def _clean(text: str | None) -> str:
 def parse_arxiv_atom(payload: bytes) -> list[PaperInput]:
     if len(payload) > MAX_BYTES:
         raise ArxivCollectorError("response too large")
-    if b"<!DOCTYPE" in payload.upper() or b"<!ENTITY" in payload.upper():
-        raise ArxivCollectorError("DTD not allowed")
     try:
-        root = ET.fromstring(payload)
-    except ET.ParseError as exc:
+        root = DET.fromstring(payload, forbid_dtd=True)  # decodes first, so UTF-16 cannot hide a DTD
+    except DefusedXmlException as exc:
+        raise ArxivCollectorError("DTD or entities not allowed") from exc
+    except ParseError as exc:
         raise ArxivCollectorError("malformed Atom response") from exc
     papers: list[PaperInput] = []
     for entry in root.findall("a:entry", _NS):
@@ -68,9 +85,5 @@ def collect_arxiv(query: str, max_results: int = 20, *,
                                        "sortOrder": "descending"})
     if fetch is None:
         def fetch(u: str) -> bytes:
-            with httpx.Client(timeout=30, follow_redirects=False) as c:
-                r = c.get(u, headers={"User-Agent": "atlas-m04-surveillance/1"})
-            if r.status_code != 200:
-                raise ArxivCollectorError(f"arXiv returned HTTP {r.status_code}")
-            return r.content
-    return parse_arxiv_atom(fetch(url))
+            return capped_get(u, MAX_BYTES, ArxivCollectorError)
+    return parse_arxiv_atom(THROTTLE.run("arxiv", lambda: fetch(url)))
