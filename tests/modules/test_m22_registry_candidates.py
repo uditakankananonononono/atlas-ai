@@ -205,3 +205,31 @@ def test_score_state_buckets_and_legacy_rows_are_not_assumed_complete():
     assert _score_state({"unmeasured": []}) == "complete"
     assert _score_state({"unmeasured": ["security"]}) == "partial"
     assert _score_state({"unmeasured": ["maintenance", "security", "fit", "novelty"]}) == "unmeasured"
+
+
+def test_score_state_migration_backfills_legacy_rows_and_downgrades():
+    # Runs the real migration module's upgrade()/downgrade() on a pre-migration table (SQLite fixture), not ORM create_all.
+    import importlib.util, pathlib
+    import sqlalchemy as sa
+    from alembic.migration import MigrationContext
+    from alembic.operations import Operations
+    path = pathlib.Path(__file__).resolve().parents[2] / "migrations/versions/20261004_m22_candidate_score_state.py"
+    spec = importlib.util.spec_from_file_location("m22_score_state_mig", path)
+    mig = importlib.util.module_from_spec(spec); spec.loader.exec_module(mig)
+    assert mig.down_revision == "20261003_m19_runs"
+    engine = sa.create_engine("sqlite://")
+    with engine.begin() as conn:
+        conn.execute(sa.text("CREATE TABLE m22_tool_candidates (pk INTEGER PRIMARY KEY, tenant_id VARCHAR(120), score FLOAT, signals_json JSON)"))
+        rows = [(1, '{"fit": 0.9}'), (2, '{"unmeasured": []}'), (3, '{"unmeasured": ["security"]}'),
+                (4, '{"unmeasured": ["maintenance","security","fit","novelty"]}'), (5, 'null')]
+        for pk, js in rows:
+            conn.execute(sa.text("INSERT INTO m22_tool_candidates VALUES (:pk,'t',0.5,:js)"), {"pk": pk, "js": js})
+        ctx = MigrationContext.configure(conn)
+        with Operations.context(ctx):
+            mig.upgrade()
+        got = dict(conn.execute(sa.text("SELECT pk, score_state FROM m22_tool_candidates")).fetchall())
+        assert got == {1: "legacy_unverified", 2: "complete", 3: "partial", 4: "unmeasured", 5: "legacy_unverified"}
+        with Operations.context(ctx):
+            mig.downgrade()
+        cols = [c["name"] for c in sa.inspect(conn).get_columns("m22_tool_candidates")]
+        assert "score_state" not in cols

@@ -145,6 +145,7 @@ class CandidateRow(Base):
     license: Mapped[str | None] = mapped_column(String(120), nullable=True)
     score: Mapped[float] = mapped_column(default=0.0)
     signals_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    score_state: Mapped[str] = mapped_column(String(24), default="legacy_unverified", server_default="legacy_unverified")
     evidence_json: Mapped[list] = mapped_column(JSON, default=list)
     queries_json: Mapped[list] = mapped_column(JSON, default=list)
     first_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
@@ -213,14 +214,13 @@ def _score_state(signals: Any) -> str:
     return "unmeasured" if all(k in um for k in ("fit", "security", "maintenance", "novelty")) else "partial"
 
 
-LIST_CANDIDATES_SCAN_CAP = 5000  # rows scanned (highest stored score first) before bucket-aware ordering; bound, not pagination
 
 
 def _candidate_view(row: CandidateRow) -> dict[str, Any]:
     return {
         "id": row.id, "name": row.name, "url": row.url, "source": row.source, "summary": row.summary,
         "version": row.version, "license": row.license, "score": row.score, "signals": row.signals_json,
-        "score_state": _score_state(row.signals_json), "score_complete": _score_state(row.signals_json) == "complete",
+        "score_state": row.score_state, "score_complete": row.score_state == "complete",
         "evidence": row.evidence_json, "queries": row.queries_json,
         "first_seen_at": _aware(row.first_seen_at).isoformat(), "last_seen_at": _aware(row.last_seen_at).isoformat(),
     }
@@ -356,12 +356,12 @@ class InstallPipeline:
                 if row is None:
                     row = CandidateRow(tenant_id=self.tenant_id, id=str(uuid.uuid4()), dedup_key=key, name=c.name, url=c.url,
                                        source=c.source, summary=c.summary or "", version=c.version, license=c.license,
-                                       score=float(c.score), signals_json=signals, evidence_json=list(c.evidence),
+                                       score=float(c.score), signals_json=signals, score_state=_score_state(signals), evidence_json=list(c.evidence),
                                        queries_json=[query], first_seen_at=now, last_seen_at=now)
                     db.add(row)
                 else:
                     row.summary = c.summary or row.summary; row.version = c.version or row.version
-                    row.license = c.license or row.license; row.score = float(c.score); row.signals_json = signals
+                    row.license = c.license or row.license; row.score = float(c.score); row.signals_json = signals; row.score_state = _score_state(signals)
                     row.evidence_json = list(c.evidence); row.last_seen_at = now
                     if query not in (row.queries_json or []):
                         row.queries_json = [*(row.queries_json or []), query]
@@ -378,9 +378,9 @@ class InstallPipeline:
             q = select(CandidateRow).where(CandidateRow.tenant_id == self.tenant_id)
             if source:
                 q = q.where(CandidateRow.source == source)
-            views=[_candidate_view(r) for r in db.scalars(q.order_by(CandidateRow.score.desc(), CandidateRow.pk).limit(max(limit, LIST_CANDIDATES_SCAN_CAP)))]
-            views.sort(key=lambda v: (v["score_complete"], v["score"]), reverse=True)  # stable: DB order breaks ties
-            return views[:limit]
+            from sqlalchemy import case
+            order = (case((CandidateRow.score_state == "complete", 1), else_=0).desc(), CandidateRow.score.desc(), CandidateRow.pk)
+            return [_candidate_view(r) for r in db.scalars(q.order_by(*order).limit(limit))]  # exact, DB-side, bounded by limit
 
     def get_candidate(self, candidate_id: str) -> dict[str, Any]:
         with self.sessions() as db:

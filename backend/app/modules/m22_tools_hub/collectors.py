@@ -123,9 +123,12 @@ class PypiNameCollector:
   age=int(time.time()-at)
   for n in hits[:20]:
    yield {'name':n,'url':f"https://pypi.org/project/{n}/",'summary':'PyPI project NAME match from the official Simple index (name-only; descriptions are not searched)'+(f' [STALE cache, age {age}s]' if stale else ''),'maintenance':0.,'security':0.,'fit':0.,'novelty':0.,'unmeasured':['maintenance','security','fit','novelty'],'evidence':[{'source':'pypi','match':'name-only','stale_cache':stale,'cache_age_s':age,'quality_signals':'unmeasured','rejected_index_entries':self.rejected_names}],'permissions':[],'kind':'package'}
+def _npm_detail(row,key):
+ v=((row.get('score') or {}).get('detail') or {}).get(key)
+ return float(v) if isinstance(v,(int,float)) and not isinstance(v,bool) and 0<=v<=1 else None
 def _npm(p):
  for row in p.get('objects',[])[:20]:
-  x=row.get('package',{});yield {'name':x.get('name',''),'url':(x.get('links') or {}).get('npm',f"https://www.npmjs.com/package/{x.get('name','')}"),'summary':x.get('description') or 'npm package','version':x.get('version'),'license':None,'maintenance':float(row.get('score',{}).get('detail',{}).get('maintenance',.5)),'security':float(row.get('score',{}).get('detail',{}).get('quality',.5)),'fit':.6,'novelty':.4,'evidence':[{'source':'npm','score':row.get('score',{}).get('final')}],'permissions':[], 'kind':'package'}
+  x=row.get('package',{});yield {'name':x.get('name',''),'url':(x.get('links') or {}).get('npm',f"https://www.npmjs.com/package/{x.get('name','')}"),'summary':x.get('description') or 'npm package','version':x.get('version'),'license':None,'maintenance':_npm_detail(row,'maintenance') or 0.,'security':0.,'fit':.6,'novelty':.4,'measured_signals':['maintenance'] if _npm_detail(row,'maintenance') is not None else [],'evidence':[{'source':'npm','registry_score_final':row.get('score',{}).get('final'),'registry_maintenance':_npm_detail(row,'maintenance'),'registry_quality':_npm_detail(row,'quality'),'note':'registry-computed scores; quality is not security'}],'permissions':[], 'kind':'package'}
 def default_collectors():
  base=[JsonCollector('github','https://api.github.com/search/repositories?q={query}&per_page=20',_github,kind='repository'),PypiNameCollector(),JsonCollector('npm','https://registry.npmjs.org/-/v1/search?text={query}&size=20',_npm)]
  return base+default_source_collectors()
