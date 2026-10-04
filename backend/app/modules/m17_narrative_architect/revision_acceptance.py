@@ -2,16 +2,17 @@ from __future__ import annotations
 import hashlib,json
 from datetime import datetime
 from pydantic import BaseModel,Field,model_validator
+from app.core.public_validation import PublicValidationError
 class AcceptedSuggestion(BaseModel):suggestion_id:str=Field(min_length=1);suggestion_sha256:str=Field(pattern=r'^[0-9a-f]{64}$');owner_record_sha256:str=Field(pattern=r'^[0-9a-f]{64}$')
 class RevisionAcceptance(BaseModel):
  essay_id:str=Field(min_length=1);from_version:str=Field(min_length=1);to_version:str=Field(min_length=1);revision_sha256:str=Field(pattern=r'^[0-9a-f]{64}$');accepted_suggestions:list[AcceptedSuggestion]=Field(min_length=1,max_length=1000);reviewed_by_owner:bool;reviewed_at:datetime;audience_boundary:str=Field(min_length=1);disclosure_approved:bool=False
  @model_validator(mode='after')
  def valid(self):
-  if self.from_version==self.to_version:raise ValueError('revision versions must differ')
-  if self.reviewed_at.tzinfo is None:raise ValueError('reviewed_at must be timezone-aware')
-  if not self.reviewed_by_owner:raise ValueError('owner review is required')
+  if self.from_version==self.to_version:raise PublicValidationError('revision versions must differ')
+  if self.reviewed_at.tzinfo is None:raise PublicValidationError('reviewed_at must be timezone-aware')
+  if not self.reviewed_by_owner:raise PublicValidationError('owner review is required')
   ids=[x.suggestion_id for x in self.accepted_suggestions]
-  if len(ids)!=len(set(ids)):raise ValueError('duplicate suggestion_id')
+  if len(ids)!=len(set(ids)):raise PublicValidationError('duplicate suggestion_id')
   return self
 def verify_revision_acceptance(body:RevisionAcceptance)->dict:
  payload=body.model_dump(mode='json');digest=hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(',',':')).encode()).hexdigest()

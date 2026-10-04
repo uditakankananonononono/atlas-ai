@@ -1,19 +1,20 @@
 from __future__ import annotations
 import hashlib,json
 from pydantic import BaseModel,Field,model_validator
+from app.core.public_validation import PublicValidationError
 class RequirementProof(BaseModel):
  requirement_id:str=Field(min_length=1,max_length=300);module_id:str=Field(min_length=1,max_length=100);artifact_sha256:str|None=Field(default=None,pattern=r'^[0-9a-f]{64}$');test_name:str|None=None;test_passed:bool=False;live_receipt_id:str|None=None;live_acceptance_passed:bool=False
  @model_validator(mode='after')
  def consistent(self):
-  if self.test_passed and not self.test_name:raise ValueError('test_passed requires test_name')
-  if self.live_acceptance_passed and not self.live_receipt_id:raise ValueError('live acceptance requires receipt id')
+  if self.test_passed and not self.test_name:raise PublicValidationError('test_passed requires test_name')
+  if self.live_acceptance_passed and not self.live_receipt_id:raise PublicValidationError('live acceptance requires receipt id')
   return self
 class ProofGapRequest(BaseModel):
  requirements:list[RequirementProof]=Field(min_length=1,max_length=5000)
  @model_validator(mode='after')
  def unique(self):
   ids=[x.requirement_id for x in self.requirements]
-  if len(ids)!=len(set(ids)):raise ValueError('duplicate requirement_id')
+  if len(ids)!=len(set(ids)):raise PublicValidationError('duplicate requirement_id')
   return self
 def dashboard(body:ProofGapRequest)->dict:
  rows=[]

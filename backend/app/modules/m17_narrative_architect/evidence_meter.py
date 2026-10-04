@@ -2,6 +2,7 @@ from __future__ import annotations
 import hashlib,json
 from typing import Literal
 from pydantic import BaseModel,Field,model_validator
+from app.core.public_validation import PublicValidationError
 class OwnerMaterial(BaseModel):material_id:str=Field(min_length=1);kind:Literal['owner_record','owner_statement','document','transcript'];sha256:str=Field(pattern=r'^[0-9a-f]{64}$');excerpt:str=Field(min_length=1,max_length=4000)
 class NarrativeClaim(BaseModel):claim_id:str=Field(min_length=1);kind:Literal['concept','critique_suggestion'];text:str=Field(min_length=1,max_length=4000);material_ids:list[str]=Field(default_factory=list)
 class EvidenceMeterRequest(BaseModel):
@@ -9,7 +10,7 @@ class EvidenceMeterRequest(BaseModel):
  @model_validator(mode='after')
  def unique(self):
   for label,ids in [('material_id',[x.material_id for x in self.materials]),('claim_id',[x.claim_id for x in self.claims])]:
-   if len(ids)!=len(set(ids)):raise ValueError(f'duplicate {label}')
+   if len(ids)!=len(set(ids)):raise PublicValidationError('duplicate '+str(label))
   return self
 def meter(body:EvidenceMeterRequest)->dict:
  known={x.material_id for x in body.materials};rows=[]
