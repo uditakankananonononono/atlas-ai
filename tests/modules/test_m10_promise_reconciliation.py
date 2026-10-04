@@ -91,3 +91,14 @@ def test_keep_open_records_review_without_claiming_completion():
     assert result["completed_count"] == 0
     assert result["reconciled_snapshot"]["promises"][0]["state"] == "open"
     assert result["reconciled_snapshot"]["promises"][0]["revision"] == 2
+
+
+def test_http_422_keeps_fixed_reason_but_never_echoes_caller_ids():
+    payload = request()
+    payload["reviewed_decisions"][0]["promise_id"] = "CALLERSECRET_PID"
+    response = C.post(U, json=payload, headers=H)
+    assert response.status_code == 422 and "unknown promise_id" in response.text and "CALLERSECRET" not in response.text
+    payload = request()
+    payload["reviewed_decisions"][0]["evidence_message_id"] = "CALLERSECRET_MSG"
+    response = C.post(U, json=payload, headers=H)
+    assert response.status_code == 422 and "CALLERSECRET" not in response.text

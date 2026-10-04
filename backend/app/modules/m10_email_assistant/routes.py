@@ -24,6 +24,7 @@ from .schemas import (
 )
 from .service import AccountNotFoundError, PubSubVerificationError, Service
 from .sql_repository import SqlEmailRepository
+from app.core.public_validation import public_reason
 
 router = APIRouter(prefix="/email-assistant", tags=["email-assistant"])
 
@@ -137,7 +138,7 @@ def promise_tracker(body: PromiseTrackerRequest, tenant: TenantContext = Depends
     try:
         return {'tenant_id': tenant.tenant_id, **track_promises(body)}
     except ValueError as error:
-        raise HTTPException(status_code=422, detail=str(error)) from error
+        raise HTTPException(status_code=422, detail=public_reason(error)) from error
 
 from .promise_reconciliation import PromiseReconciliationRequest, reconcile_promise_state
 
@@ -150,7 +151,7 @@ def promise_state_reconciliation(
     try:
         return {'tenant_id': tenant.tenant_id, **reconcile_promise_state(body)}
     except ValueError as error:
-        raise HTTPException(status_code=422, detail=str(error)) from error
+        raise HTTPException(status_code=422, detail=public_reason(error)) from error
 
 from .promise_persistence import PersistPromiseReconciliationRequest,persist_reconciliation
 
@@ -160,7 +161,7 @@ def get_promise_repository(tenant:TenantContext=Depends(require_tenant)):
 @router.post('/promise-state-reconciliation/persist')
 def persist_promise_state_reconciliation(body:PersistPromiseReconciliationRequest,tenant:TenantContext=Depends(require_tenant),repository=Depends(get_promise_repository)):
     try:return {'tenant_id':tenant.tenant_id,**persist_reconciliation(body,repository)}
-    except ValueError as error:raise HTTPException(status_code=409,detail=str(error)) from error
+    except ValueError as error:raise HTTPException(status_code=409,detail=public_reason(error)) from error
 from .authenticated_reconciliation import VerifyReconciliationEvidence,verify_reconciliation_evidence
 from .reviewer_key_registry import KeyGovernanceError,ReviewerKeyRegistry,RegisterReviewerKey,RetireReviewerKey,RotateReviewerKey
 from .attestation_timestamps import AttestationTimestamps
@@ -169,7 +170,7 @@ def get_reviewer_key_registry(tenant:TenantContext=Depends(require_tenant)):retu
 @router.post('/promise-state-reconciliation/evidence/verify')
 def authenticated_reconciliation_evidence(body:VerifyReconciliationEvidence,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_reviewer_key_registry),timestamps=Depends(get_attestation_timestamps)):
  try:result=verify_reconciliation_evidence(body,registry.active_public_key,retired_lookup=registry.retired_key_record,proven_time=timestamps.proven_time)
- except ValueError as error:raise HTTPException(422,str(error)) from error
+ except ValueError as error:raise HTTPException(422,public_reason(error)) from error
  # Timestamp every attestation that verified under an active key, so it keeps
  # verifying after that key is retired. A TSA outage never fails verification.
  stamps=[]

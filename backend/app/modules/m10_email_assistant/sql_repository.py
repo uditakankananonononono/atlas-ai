@@ -13,6 +13,7 @@ from sqlalchemy import JSON, DateTime, Float, Integer, String, Text, UniqueConst
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 
 from app.core.database import Base, SessionLocal, engine
+from app.core.public_validation import PublicValidationError
 
 
 def _utcnow() -> datetime:
@@ -288,7 +289,7 @@ class SqlEmailRepository:
                 db.add(row)
             else:
                 if row.snapshot_sha256 != previous_snapshot_sha256:
-                    raise ValueError("stale promise snapshot: compare-and-swap failed")
+                    raise PublicValidationError("stale promise snapshot: compare-and-swap failed")
                 row.previous_snapshot_sha256 = previous_snapshot_sha256
                 row.snapshot_sha256 = snapshot_sha256
                 row.snapshot = snapshot

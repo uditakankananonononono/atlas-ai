@@ -38,6 +38,7 @@ from typing import Any, Callable
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+from app.core.public_validation import PublicValidationError
 from pydantic import BaseModel, Field
 from sqlalchemy import JSON, Boolean, DateTime, LargeBinary, String, UniqueConstraint, select
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
@@ -125,9 +126,9 @@ def _decode_key(encoded: str) -> bytes:
     try:
         raw = base64.b64decode(encoded, validate=True)
     except Exception as exc:
-        raise ValueError("invalid public key encoding") from exc
+        raise PublicValidationError("invalid public key encoding") from exc
     if len(raw) != 32:
-        raise ValueError("Ed25519 public key must be 32 bytes")
+        raise PublicValidationError("Ed25519 public key must be 32 bytes")
     return raw
 
 
@@ -144,7 +145,7 @@ class ReviewerKeyRegistry:
                  actor_id: str = "system", roles: frozenset[str] = frozenset(),
                  clock: Callable[[], datetime] | None = None) -> None:
         if not tenant_id.strip():
-            raise ValueError("tenant_id is required")
+            raise PublicValidationError("tenant_id is required")
         self.tenant_id, self.sessions = tenant_id, sessions
         self.actor_id, self.roles = actor_id, roles
         self._clock = clock or (lambda: datetime.now(timezone.utc))
@@ -195,14 +196,14 @@ class ReviewerKeyRegistry:
             existing = self._row(db, body.reviewer_id, body.key_id)
             if existing is not None:
                 if existing.public_key != raw:
-                    raise ValueError("key_id is already bound to different public key bytes")
+                    raise PublicValidationError("key_id is already bound to different public key bytes")
                 if not existing.active:
-                    raise ValueError("key_id was retired and cannot be re-enrolled; enroll a new key_id")
+                    raise PublicValidationError("key_id was retired and cannot be re-enrolled; enroll a new key_id")
                 db.expunge(existing)
                 return existing
             active = self._active(db, body.reviewer_id)
             if active is not None:
-                raise ValueError(f"reviewer already has active key {active.key_id!r}; rotate instead")
+                raise PublicValidationError("reviewer already has an active key; rotate instead", repr(active.key_id))
             row = ReviewerKeyRow(tenant_id=self.tenant_id, reviewer_id=body.reviewer_id, key_id=body.key_id, public_key=raw,
                                  fingerprint_sha256=fingerprint, active=True, created_at=self._clock(), enrolled_by=self.actor_id)
             db.add(row)
@@ -218,10 +219,10 @@ class ReviewerKeyRegistry:
         with self.sessions.begin() as db:
             current = self._active(db, reviewer_id)
             if current is None:
-                raise ValueError("reviewer has no active key; enroll instead")
+                raise PublicValidationError("reviewer has no active key; enroll instead")
             current_key, current_id = current.public_key, current.key_id
         if self._row_exists(reviewer_id, body.new_key_id):
-            raise ValueError("new_key_id is already used for this reviewer")
+            raise PublicValidationError("new_key_id is already used for this reviewer")
         try:
             _verify(raw, body.proof_signature_base64,
                     enrollment_statement(self.tenant_id, reviewer_id, body.new_key_id, fingerprint), "proof-of-possession")
@@ -240,7 +241,7 @@ class ReviewerKeyRegistry:
         with self.sessions.begin() as db:
             current = self._active(db, reviewer_id)
             if current is None or current.key_id != current_id:
-                raise ValueError("active key changed during rotation; retry")
+                raise PublicValidationError("active key changed during rotation; retry")
             current.active, current.retired_at, current.retired_by = False, now, self.actor_id
             current.retire_reason, current.replaced_by_key_id = f"rotated ({mode})", body.new_key_id
             current.signatures_valid_before = now
