@@ -75,11 +75,11 @@ def render_latex(res: LoopResult, gaps: list[dict] | None = None) -> str:
         if p.keywords:
             out.append(r"\par \textbf{Keywords:} " + tex_escape(", ".join(p.keywords)))
         ab = p.abstract
-        note = ""
         if len(ab) > MAX_ABSTRACT_CHARS:
-            note = rf" \textbf{{[abstract truncated: showing {MAX_ABSTRACT_CHARS} of {len(ab)} characters]}}"
-            ab = ab[:MAX_ABSTRACT_CHARS]
-        out.append(r"\par \textbf{Abstract (as retrieved):} " + tex_escape(ab) + note)
+            out.append(rf"\par \textbf{{Abstract (CLIPPED to {MAX_ABSTRACT_CHARS} of {len(ab)} characters, not full text):}} "
+                       + tex_escape(ab[:MAX_ABSTRACT_CHARS]) + r" \textbf{[clipped]}")
+        else:
+            out.append(r"\par \textbf{Abstract (as retrieved):} " + tex_escape(ab))
     if gaps:
         out += [r"\section*{Corpus-relative term gaps (heuristic)}",
                 r"Counts within the retrieved set only; not evidence of global novelty.", r"\begin{itemize}"]

@@ -110,9 +110,10 @@ def test_long_abstract_truncated_with_visible_notice(tmp_path):
     n = er.MAX_ABSTRACT_CHARS + 777
     p = paper(1, abstract="w" * 10 + (" word" * (n // 5)))
     tex = er.render_latex(result([p]))
-    assert f"showing {er.MAX_ABSTRACT_CHARS} of {len(p.abstract)} characters" in tex
+    assert f"CLIPPED to {er.MAX_ABSTRACT_CHARS} of {len(p.abstract)} characters, not full text" in tex
+    assert "Abstract (as retrieved)" not in tex
     short = paper(2, abstract="short enough abstract for this paper")
-    assert "truncated" not in er.render_latex(result([short]))
+    assert "CLIPPED" not in er.render_latex(result([short])) and "Abstract (as retrieved)" in er.render_latex(result([short]))
 
 def test_concurrent_compiles_are_bounded():
     held = [er._SLOTS.acquire(blocking=False) for _ in range(er.MAX_CONCURRENT_COMPILES)]
@@ -123,3 +124,28 @@ def test_concurrent_compiles_are_bounded():
         for h in held:
             if h: er._SLOTS.release()
     er.compile_pdf(er.render_latex(result([paper(1)])))  # slot released again after use
+
+def test_route_gap_counts_match_the_papers_in_the_report(monkeypatch, tmp_path):
+    import re
+    from app.auth.context import TenantContext, require_tenant
+    from app.modules.m04_research_scientist import arxiv_collector as ac
+    mk = lambda i, t, kw: PaperInput(paper_id=f"arxiv:{i}", title=t, abstract="a sufficiently long abstract text here.", source="arxiv", keywords=kw)
+    ps = [mk(1, "Tumor niche", ["spatial", "cancer"]), mk(2, "Tumor map", ["spatial", "cancer"]),
+          mk(3, "Quantum pulse", ["optics", "quantum"]), mk(4, "Quantum device", ["optics", "quantum"])]
+    monkeypatch.setattr(ac, "collect_arxiv", lambda q, n: ps)
+    captured = {}
+    real = er.render_latex
+    monkeypatch.setattr(er, "render_latex", lambda res, gaps=None: (captured.update(res=res, gaps=gaps), real(res, gaps))[1])
+    app = FastAPI(); app.include_router(routes.router)
+    app.dependency_overrides[require_tenant] = lambda: TenantContext(tenant_id="t", actor_id="u")
+    r = TestClient(app).post("/research-scientist/research-loop/report", json={"question": "immune niches tumor spatial", "max_steps": 1})
+    assert r.status_code == 200 and captured["gaps"]
+    n_papers = len(captured["res"].papers)
+    assert n_papers == 4
+    docs = [{k.lower() for k in p.keywords} | set(rl.key_terms(p.title)) for p in captured["res"].papers.values()]
+    for g in captured["gaps"]:
+        a, b = g["term_a"], g["term_b"]
+        assert g["corpus_size"] == n_papers
+        assert g["papers_with_a"] == sum(a in d for d in docs) and g["papers_with_b"] == sum(b in d for d in docs)
+        assert sum(a in d and b in d for d in docs) == 0
+        assert f"corpus of {n_papers} papers" in g["statement"]
