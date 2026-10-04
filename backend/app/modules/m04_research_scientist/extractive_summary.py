@@ -53,6 +53,6 @@ def summarize(title: str, abstract: str, max_sentences: int = 3) -> dict:
         scores.append(w / math.sqrt(len(ts)))
     ranked = sorted(range(n), key=lambda i: (-scores[i], i))[:max_sentences]
     chosen = sorted(ranked)
-    return {"method": "extractive TF-IDF sentence ranking; verbatim sentences; not abstractive; no claim checking",
+    return {"method": "extractive TF-IDF sentence ranking; whitespace-normalized original sentences (not byte-exact spans); not abstractive; no claim checking; unitless scores, not confidence; English-focused tokenisation",
             "sentence_count": n, "selected": [{"index": i, "text": sents[i], "score": round(scores[i], 4)} for i in chosen],
             "coverage": f"{len(chosen)} of {n} abstract sentences", "source": "title+abstract only"}
