@@ -8,6 +8,7 @@ service - these endpoints only expose control and inspection.
 from __future__ import annotations
 
 import contextvars
+import os
 import threading
 
 from datetime import datetime
@@ -24,14 +25,19 @@ from .safety import ApprovalGateDecision
 from .schemas import Risk, ToolSpec
 
 _default_lock = threading.Lock()
-_tenant_var: contextvars.ContextVar[str] = contextvars.ContextVar("gcw_tenant", default="local")
+_tenant_var: contextvars.ContextVar[str | None] = contextvars.ContextVar("gcw_tenant", default=None)
 _default_services: dict[str, object] = {}
+MAX_DEFAULT_TENANT_SERVICES = 64  # finite bound on in-memory default services (no eviction)
 
 
-async def _tenant_scope(ctx: TenantContext = Depends(require_tenant)) -> None:
+async def _tenant_scope(ctx: TenantContext = Depends(require_tenant)):
     """Key unbound default services by the tenant resolved by require_tenant (the same dependency the app uses; not the
     raw header). Whether that tenant is authenticated is require_tenant's behaviour (dev mode trusts headers: test mode)."""
-    _tenant_var.set(ctx.tenant_id)
+    token = _tenant_var.set(ctx.tenant_id)
+    try:
+        yield
+    finally:
+        _tenant_var.reset(token)  # never leak one request's tenant into another
 
 
 router = APIRouter(prefix="/api/modules/20", tags=["m20_general_cognitive_worker"], dependencies=[Depends(_tenant_scope)])
@@ -39,9 +45,18 @@ router = APIRouter(prefix="/api/modules/20", tags=["m20_general_cognitive_worker
 _service = None
 
 
-def bind_service(service) -> None:
+_bound_by_tenant: dict[str, object] = {}
+
+
+def bind_service(service, *, tenant_id: str | None = None) -> None:
+    """Bind a service. With tenant_id it serves ONLY that tenant. Without it (legacy callers/tests) it is a SHARED
+    service: served to every tenant outside production, and in production only to the single tenant named by
+    ATLAS_GCW_SINGLE_TENANT (otherwise fail closed). Passing None clears the shared binding."""
     global _service
-    _service = service
+    if tenant_id is not None:
+        _bound_by_tenant[tenant_id] = service
+    else:
+        _service = service
 
 
 def get_service():
@@ -49,11 +64,23 @@ def get_service():
     booted app, lazily create a default IN-MEMORY service per tenant key, with NO language/embedding models. State is per
     process and lost on restart (not persisted); model-backed behaviour is absent, not simulated. Creation is guarded by
     a lock; the lock covers creation only, not the services' own internal mutation."""
-    if _service is not None:
-        return _service
     tenant = _tenant_var.get()
+    if tenant is not None and tenant in _bound_by_tenant:
+        return _bound_by_tenant[tenant]
+    if _service is not None:
+        if os.getenv("ATLAS_ENV", "development") != "production":
+            return _service  # test/dev mode: legacy shared binding serves everyone
+        if tenant is not None and tenant == os.getenv("ATLAS_GCW_SINGLE_TENANT"):
+            return _service
+        raise HTTPException(status_code=503, detail="GCW shared service refused: production needs a per-tenant binding or ATLAS_GCW_SINGLE_TENANT")
+    if tenant is None:
+        # No request-scoped tenant (called outside a request): refuse rather than fall into a shared bucket.
+        raise HTTPException(status_code=503, detail="GCW default service requires a tenant-scoped request")
     with _default_lock:
         svc = _default_services.get(tenant)
+        if svc is None and len(_default_services) >= MAX_DEFAULT_TENANT_SERVICES:
+            # Finite cap, fail closed: never silently evict (and so delete) another tenant's in-memory state.
+            raise HTTPException(status_code=503, detail="GCW default in-memory service capacity reached; bind a persistent service")
         if svc is None:
             from .service import CognitiveWorkerService
             svc = _default_services[tenant] = CognitiveWorkerService()
