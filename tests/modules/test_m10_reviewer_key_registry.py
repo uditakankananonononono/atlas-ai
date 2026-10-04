@@ -193,3 +193,15 @@ def test_http_governance_and_lookup_errors_keep_reason_not_caller_ids():
     assert r.status_code == 403 and "only reviewer" in r.text and "CALLERSECRET" not in r.text
     r = C.post(f"{U}/CALLERSECRET_REV/CALLERSECRET_KEY/retire", json={"reason": "caller supplied retirement reason"}, headers=OWNER)
     assert r.status_code in (403, 404) and "CALLERSECRET" not in r.text, r.text
+
+
+def test_http_404_missing_key_and_409_active_key_keep_public_reason_not_ids():
+    k, raw, fp = keypair()
+    assert C.post(U, json=enroll_body(k, raw, fp, key_id="CALLERSECRET_ACTIVE"), headers=OWNER).status_code == 200
+    # 409: an authorized owner enrolls a second key while one is active -> fixed reason, key id stays private
+    k2, raw2, fp2 = keypair()
+    r = C.post(U, json=enroll_body(k2, raw2, fp2, key_id="CALLERSECRET_KEY2"), headers=OWNER)
+    assert r.status_code == 409 and "already has an active key" in r.text and "CALLERSECRET" not in r.text, r.text
+    # 404: an authorized owner retires a key id that was never registered
+    r = C.post(f"{U}/owner/CALLERSECRET_NOKEY/retire", json={"reason": "caller supplied retirement reason"}, headers=OWNER)
+    assert r.status_code == 404 and "reviewer key not found" in r.text and "CALLERSECRET" not in r.text, r.text
