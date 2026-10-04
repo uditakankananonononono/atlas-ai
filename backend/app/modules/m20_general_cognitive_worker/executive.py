@@ -139,10 +139,22 @@ class MCTSRuminator:
     def ruminate(self, plan: list[PlanNode]) -> dict[str, Any]:
         pending = [n for n in plan if n.state == TaskState.PENDING]
         if not pending:
-            # Nothing is left to run: a completed plan is a past fact, not a forecast, so no probability is reported.
+            # No PENDING step is searchable. That is NOT the same as "finished": steps can be in flight, waiting,
+            # failed, blocked or cancelled. Report the real per-state counts; only an all-SUCCEEDED plan is complete.
+            counts: dict[str, int] = {}
+            for n in plan:
+                counts[n.state.value] = counts.get(n.state.value, 0) + 1
+            unfinished = sum(v for k, v in counts.items() if k != TaskState.SUCCEEDED.value)
+            if not plan:
+                status, complete = "no steps in plan", False
+            elif unfinished == 0:
+                status, complete = "plan complete: every step already succeeded (a past fact, not a forecast)", True
+            else:
+                status, complete = (f"no PENDING step to search; {unfinished} unfinished step(s) not completed "
+                                    f"(state counts: {counts}); no future-success probability reported"), False
             return {"simulations": 0, "best_ordering": [], "expected_success": None,
-                    "expected_success_status": "nothing pending: no steps remain, so no future-success probability applies",
-                    "remaining_steps": 0,
+                    "expected_success_status": status, "plan_complete": complete,
+                    "state_counts": counts, "remaining_steps": unfinished,
                     "mode": "simulated_search"}
         search = BoundedMCTS(
             max_simulations=self.simulations, max_seconds=self._max_seconds,
@@ -361,10 +373,14 @@ class DeliberativeLoop:
 
     def ruminate(self, context: TaskContext) -> dict[str, Any]:
         """Idle-cycle background thinking (spec 4.2.4 rumination)."""
+        previous = context.state  # restore the real prior state (was forced to RUNNING, hiding WAITING_*/FAILED/etc.)
         context.state = TaskState.RUMINATING
-        result = self.ruminator.ruminate(context.plan)
-        self._trace("ruminate", f"mcts ordering: {result['best_ordering']}", task_id=context.id)
-        context.state = TaskState.RUNNING
+        try:
+            result = self.ruminator.ruminate(context.plan)
+        finally:
+            context.state = previous
+        self._trace("ruminate", f"mcts ordering: {result['best_ordering']}; expected_success={result['expected_success']}; "
+                                f"status={result['expected_success_status']}", task_id=context.id)
         return result
 
     def _evaluate_expectation(self, context: TaskContext, node: PlanNode, record: ActionRecord) -> None:
