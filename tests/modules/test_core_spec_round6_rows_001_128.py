@@ -146,3 +146,11 @@ def test_scale_rows_require_explicit_production_bound():
     result=execute_1(32,Request_1(objective="Process platform accounts"))
     assert result.status=="configuration_required"
     assert result.artifact["bounded"] is False
+
+@pytest.mark.parametrize("execute,Request,row",[(execute_1,Request_1,1),(execute_2,Request_2,58),(execute_3,Request_3,76),(execute_4,Request_4,103)])
+def test_core_spec_rows_are_labelled_plan_only_not_executed(execute,Request,row):
+    """These rows validate input and record a hash; they do not perform the named capability (no source call, no draft,
+    no export). The result must say so, never 'ready'/'done'."""
+    r=execute(row,Request(objective="label check",inputs={"batch_limit":1}))
+    assert r.status in {"plan_only","approval_required","configuration_required"} and r.status!="ready"
+    assert r.executed is False

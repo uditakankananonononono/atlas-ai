@@ -66,7 +66,8 @@ class CapabilityResult(BaseModel):
     row: int
     requirement: str
     module: int = 1
-    status: str
+    status: str  # plan_only | approval_required | configuration_required. Never "ready"/"done": no row here performs the capability itself.
+    executed: bool = False
     adapter: str
     operations: list[str]
     provenance: dict[str, Any]
@@ -82,7 +83,7 @@ def execute(row:int, request:CapabilityRequest) -> CapabilityResult:
     if any(not u.startswith(("https://","http://")) for u in request.source_urls):
         raise ValueError("source_urls must use http or https")
     requires=row in APPROVAL_ROWS
-    status="ready"
+    status="plan_only"  # PLAN ONLY: validates input and records provenance; performs no collection, drafting, export or external call
     if requires:
         status="approval_required"
     adapter=("authorized-source-connector" if row in SOURCE_ROWS else
