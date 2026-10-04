@@ -180,9 +180,9 @@ def authenticated_reconciliation_evidence(body:VerifyReconciliationEvidence,tena
  return {'tenant_id':tenant.tenant_id,**result,'timestamps':stamps}
 def _key_errors(fn):
  try:return fn()
- except KeyGovernanceError as error:raise HTTPException(403,str(error)) from error
- except LookupError as error:raise HTTPException(404,str(error)) from error
- except ValueError as error:raise HTTPException(409,str(error)) from error
+ except KeyGovernanceError as error:raise HTTPException(403,public_reason(error)) from error
+ except LookupError as error:raise HTTPException(404,public_reason(error)) from error
+ except ValueError as error:raise HTTPException(409,public_reason(error)) from error
 @router.post('/promise-state-reconciliation/reviewer-keys')
 def register_reviewer_key(body:RegisterReviewerKey,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_reviewer_key_registry)):
  row=_key_errors(lambda:registry.register(body))

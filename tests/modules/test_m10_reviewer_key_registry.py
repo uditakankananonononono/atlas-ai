@@ -185,3 +185,11 @@ def test_tenant_isolation():
     b = rk.ReviewerKeyRegistry("t2", SESSIONS_T2, actor_id="owner")
     with pytest.raises(LookupError):
         b.active_public_key("owner", "v1")
+
+
+def test_http_governance_and_lookup_errors_keep_reason_not_caller_ids():
+    k, raw, fp = keypair()
+    r = C.post(U, json=enroll_body(k, raw, fp, reviewer="CALLERSECRET_REV"), headers=OTHER)
+    assert r.status_code == 403 and "only reviewer" in r.text and "CALLERSECRET" not in r.text
+    r = C.post(f"{U}/CALLERSECRET_REV/CALLERSECRET_KEY/retire", json={"reason": "caller supplied retirement reason"}, headers=OWNER)
+    assert r.status_code in (403, 404) and "CALLERSECRET" not in r.text, r.text

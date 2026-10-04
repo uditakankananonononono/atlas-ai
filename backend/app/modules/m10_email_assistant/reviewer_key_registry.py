@@ -38,7 +38,7 @@ from typing import Any, Callable
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
-from app.core.public_validation import PublicValidationError
+from app.core.public_validation import PublicLookupError, PublicValidationError
 from pydantic import BaseModel, Field
 from sqlalchemy import JSON, Boolean, DateTime, LargeBinary, String, UniqueConstraint, select
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
@@ -84,7 +84,7 @@ class ReviewerKeyEventRow(Base):
     at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
-class KeyGovernanceError(ValueError):
+class KeyGovernanceError(PublicValidationError):
     """Refused by policy (maps to 403)."""
 
 
@@ -163,7 +163,7 @@ class ReviewerKeyRegistry:
             return
         # Own transaction so the refusal is kept in the audit log.
         self._refuse(reviewer_id, key_id, f"{action}_refused", "actor is neither the reviewer nor an atlas-admin")
-        raise KeyGovernanceError(f"only reviewer {reviewer_id!r} or an {ADMIN_ROLE} may {action} this key")
+        raise KeyGovernanceError(f"only reviewer or an {ADMIN_ROLE} may {action} this key", repr(reviewer_id))
 
     def _event(self, db, reviewer_id: str, key_id: str, event: str, details: dict[str, Any]) -> None:
         db.add(ReviewerKeyEventRow(tenant_id=self.tenant_id, reviewer_id=reviewer_id, key_id=key_id, event=event,
@@ -262,7 +262,7 @@ class ReviewerKeyRegistry:
         with self.sessions.begin() as db:
             row = self._row(db, reviewer_id, key_id)
             if not row:
-                raise LookupError("reviewer key not found")
+                raise PublicLookupError("reviewer key not found")
         self._authorize(reviewer_id, key_id, "retire")
         with self.sessions.begin() as db:
             row = self._row(db, reviewer_id, key_id)
@@ -312,12 +312,12 @@ class ReviewerKeyRegistry:
         with self.sessions() as db:
             row = self._row(db, reviewer_id, key_id)
             if row is None:
-                raise LookupError(f"no registered key {key_id!r} for reviewer {reviewer_id!r}")
+                raise PublicLookupError("no registered key for this reviewer", f"{key_id!r} / {reviewer_id!r}")
             if row.active:
-                raise LookupError("key is active")
+                raise PublicLookupError("key is active")
             cutoff = row.signatures_valid_before or row.retired_at
             if cutoff is None:
-                raise LookupError("retired key has no validity cutoff")
+                raise PublicLookupError("retired key has no validity cutoff")
             return bytes(row.public_key), cutoff if cutoff.tzinfo else cutoff.replace(tzinfo=timezone.utc)
 
     # -- verification lookup ----------------------------------------------------
@@ -325,7 +325,7 @@ class ReviewerKeyRegistry:
         with self.sessions() as db:
             row = self._row(db, reviewer_id, key_id)
             if row is None:
-                raise LookupError(f"no registered key {key_id!r} for reviewer {reviewer_id!r}")
+                raise PublicLookupError("no registered key for this reviewer", f"{key_id!r} / {reviewer_id!r}")
             if not row.active:
-                raise LookupError(f"key {key_id!r} for reviewer {reviewer_id!r} is retired ({row.retire_reason})")
+                raise PublicLookupError("reviewer key is retired", f"{key_id!r} / {reviewer_id!r} / {row.retire_reason}")
             return bytes(row.public_key)
