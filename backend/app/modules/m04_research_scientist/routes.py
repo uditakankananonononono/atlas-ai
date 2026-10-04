@@ -3,6 +3,7 @@
 import logging
 
 import httpx
+from .source_throttle import ThrottleBusy, ThrottleStateError
 from fastapi import APIRouter, HTTPException, Depends
 from app.core.providers import ProviderError
 from app.auth.context import TenantContext, require_tenant
@@ -68,6 +69,9 @@ async def collect_arxiv_route(request:ArxivCollectRequest,tenant:TenantContext=D
     from .surveillance import SurveillancePipeline,SurveillanceRepository
     try:papers=await run_in_threadpool(collect_arxiv,request.query,request.max_results)
     except ValueError as exc:raise HTTPException(status_code=422,detail="invalid arXiv query") from exc
+    except (ThrottleBusy,ThrottleStateError) as exc:
+        logging.getLogger(__name__).warning("arxiv collector unavailable: %s",type(exc).__name__)
+        raise HTTPException(status_code=503,detail="collector busy or unavailable") from exc
     except (ArxivCollectorError,httpx.HTTPError) as exc:
         logging.getLogger(__name__).warning("arxiv collection failed: %s",type(exc).__name__)
         raise HTTPException(status_code=502,detail="arXiv collection failed") from exc
@@ -89,6 +93,9 @@ async def collect_pubmed_route(request:PubmedCollectRequest,tenant:TenantContext
     from .surveillance import SurveillancePipeline,SurveillanceRepository
     try:papers=await run_in_threadpool(pc.collect_pubmed,request.query,request.max_results)
     except ValueError as exc:raise HTTPException(status_code=422,detail="invalid PubMed query") from exc
+    except (ThrottleBusy,ThrottleStateError) as exc:
+        logging.getLogger(__name__).warning("pubmed collector unavailable: %s",type(exc).__name__)
+        raise HTTPException(status_code=503,detail="collector busy or unavailable") from exc
     except (pc.PubmedCollectorError,httpx.HTTPError) as exc:
         logging.getLogger(__name__).warning("pubmed collection failed: %s",type(exc).__name__)
         raise HTTPException(status_code=502,detail="PubMed collection failed") from exc
