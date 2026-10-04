@@ -87,10 +87,10 @@ def test_mid_step_error_keeps_prior_papers_and_is_not_success():
     calls = []
     def c(q, n):
         calls.append(q)
-        if len(calls) == 2: raise RuntimeError("secret upstream text")
+        if len(calls) == 2: raise rl.ArxivCollectorError("secret upstream text")
         return list(CORPUS.values())
     res = rl.run_loop("immune niches tumor microenvironment", {"arxiv": c}, max_steps=3)
-    assert res.status == "partial" and res.stop_reason == "collector_error" and res.error == "RuntimeError"
+    assert res.status == "partial" and res.stop_reason == "collector_error" and res.error == "ArxivCollectorError"
     assert len(res.papers) == 3 and len(res.steps) == 1 and "secret" not in repr(res.error)
 
 def test_first_step_error_is_failed_and_route_502(monkeypatch):
@@ -120,3 +120,25 @@ def test_remote_record_validation_error_is_collector_error_not_422(monkeypatch):
     app.dependency_overrides[require_tenant] = lambda: TenantContext(tenant_id="t", actor_id="u")
     r = TestClient(app).post("/research-scientist/surveillance/collect/pubmed", json={"query": "tumor niches"})
     assert r.status_code == 502
+
+def test_programming_bug_in_collector_propagates_not_collector_error():
+    def bug(q, n): raise KeyError("bug")
+    with pytest.raises(KeyError):
+        rl.run_loop("immune niches tumor microenvironment", {"arxiv": bug})
+
+def test_route_deadline_with_no_papers_is_504_not_200(monkeypatch):
+    from app.modules.m04_research_scientist import research_loop as m
+    real = m.run_loop
+    monkeypatch.setattr(m, "run_loop", lambda *a, **k: m.LoopResult(question="q", stop_reason="deadline", status="failed"))
+    r = _client(monkeypatch, lambda q, n: []).post("/research-scientist/research-loop", json={"question": "immune niches tumor spatial"})
+    assert r.status_code == 504 and "deadline" in r.text
+
+def test_route_partial_includes_caveat(monkeypatch):
+    from app.modules.m04_research_scientist import arxiv_collector as ac
+    n = []
+    def c(q, k):
+        n.append(1)
+        if len(n) > 1: raise ac.ArxivCollectorError("x")
+        return list(CORPUS.values())
+    j = _client(monkeypatch, c).post("/research-scientist/research-loop", json={"question": "immune niches tumor spatial", "max_steps": 3}).json()
+    assert j["status"] == "partial" and "incomplete" in j["caveat"]

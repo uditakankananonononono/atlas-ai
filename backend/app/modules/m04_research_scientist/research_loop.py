@@ -16,7 +16,15 @@ from collections import Counter
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
+import httpx
+
+from .arxiv_collector import ArxivCollectorError
+from .pubmed_collector import PubmedCollectorError
 from .schemas import PaperInput
+from .source_throttle import ThrottleBusy, ThrottleStateError
+
+# Only these count as an upstream/collector failure. Anything else is a bug and propagates.
+EXPECTED_ERRORS = (ArxivCollectorError, PubmedCollectorError, httpx.HTTPError, ThrottleBusy, ThrottleStateError)
 
 STOP = {"about", "after", "also", "among", "based", "before", "between", "both", "could", "data",
         "from", "have", "into", "more", "paper", "results", "show", "study", "than", "that",
@@ -66,9 +74,11 @@ class LoopResult:
 def run_loop(question: str, collectors: dict[str, Collector], *, max_steps: int = 3,
              per_step: int = 10, deadline_s: float = 60.0,
              clock: Callable[[], float] = time.monotonic) -> LoopResult:
-    """deadline_s is checked BEFORE each collector call. A call already started can still run
-    up to the collector's own 30 s HTTP timeout (plus throttle waits), so worst-case runtime is
-    about deadline_s + 30 s + 3 s, not deadline_s."""
+    """SOFT deadline only: deadline_s is checked BEFORE each collector call and cannot interrupt
+    one in flight. There is NO hard runtime maximum. A started call can wait behind the queue
+    (up to 3 queued per source per process, each up to 30 s per HTTP request, PubMed does two
+    requests per call) and behind the cross-process flock, whose wait is unbounded. A hard bound
+    would need the absolute budget propagated into the queue wait and every HTTP timeout."""
     if not 1 <= max_steps <= 3 or not 1 <= per_step <= 20:
         raise ValueError("max_steps 1-3 and per_step 1-20")
     base = key_terms(question)[:6]
@@ -87,7 +97,7 @@ def run_loop(question: str, collectors: dict[str, Collector], *, max_steps: int 
                 res.stop_reason = "deadline"; res.status = "partial" if res.papers else "failed"; return res
             try:
                 got = collect(query, per_step)
-            except Exception as exc:  # noqa: BLE001 - recorded by type only; a partial trail is kept honestly
+            except EXPECTED_ERRORS as exc:  # recorded by type only; unexpected exceptions propagate as bugs
                 res.stop_reason = "collector_error"
                 res.error = type(exc).__name__
                 res.status = "partial" if res.papers else "failed"
