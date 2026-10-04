@@ -7,6 +7,8 @@ service - these endpoints only expose control and inspection.
 """
 from __future__ import annotations
 
+import threading
+
 from datetime import datetime
 import os
 from typing import Any
@@ -28,10 +30,24 @@ def bind_service(service) -> None:
     _service = service
 
 
+_default_lock = threading.Lock()
+
+
 def get_service():
+    """Return the bound service. If the host app never bound one (the booted app does not), lazily create a default
+    IN-MEMORY service with NO language/embedding models, so the routes are not permanently 503. State is per process
+    and lost on restart (not persisted); planner/executive model-backed behaviour is absent, not simulated."""
+    global _service
     if _service is None:
-        raise HTTPException(status_code=503, detail="GCW service not bound yet")
+        with _default_lock:
+            if _service is None:
+                from .service import CognitiveWorkerService
+                _service = CognitiveWorkerService()
+                _service_is_default.append(True)
     return _service
+
+
+_service_is_default: list[bool] = []
 
 
 class GoalRequest(BaseModel):

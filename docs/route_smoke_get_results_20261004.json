@@ -1,0 +1,1471 @@
+[
+ {
+  "path": "/api/v1/agi-runtime/world/hypotheses",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/agi-runtime/world/snapshots/verify",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 16,
+  "body": "{\"valid\":true}"
+ },
+ {
+  "path": "/api/v1/ai-research-lab/clinical/rows",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 8,
+  "body": "[{\"row_id\":1110,\"method\":\"clinical_decision_support\",\"route\":\"/api/v1/ai-research-lab/clinical/1110/execute\"},{\"row_id\":1111,\"method\":\"differential_diagnosis\",\"route\":\"/api/v1/ai-research-lab/clinical"
+ },
+ {
+  "path": "/api/v1/ai-research-lab/emerging-biomed-960-1009/methods",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[{\"method\":\"regenerative_medicine\",\"feature_row\":960,\"title\":\"Regenerative Medicine\",\"mechanism\":\"quantifies viable-cell engraftment as a tissue-repair study endpoint\"},{\"method\":\"stem_cell_therapy\",\""
+ },
+ {
+  "path": "/api/v1/ai-research-lab/research-methods-135-184/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[{\"row_id\":135,\"key\":\"frequentist_analysis\",\"name\":\"Frequentist Analysis\",\"family\":\"statistics\"},{\"row_id\":136,\"key\":\"machine_learning_model_selection\",\"name\":\"Machine Learning Model Selection\",\"famil"
+ },
+ {
+  "path": "/api/v1/api/modules/20/agi-runtime/world/hypotheses",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/api/modules/20/agi-runtime/world/snapshots/verify",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 8,
+  "body": "{\"valid\":true}"
+ },
+ {
+  "path": "/api/v1/api/modules/20/api/modules/20/runtime/calibration",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "{\"claims\":0,\"resolved\":0,\"curve\":[],\"calibration_error\":null}"
+ },
+ {
+  "path": "/api/v1/api/modules/20/api/modules/20/runtime/memory/episodes",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 13,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/api/modules/20/api/modules/20/runtime/memory/facts",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 10,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/api/modules/20/api/modules/20/runtime/methods",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/api/modules/20/api/modules/20/runtime/retrospectives",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/api/modules/20/api/modules/20/runtime/tasks",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/api/modules/20/atomic-concepts-93-115/methods",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "[{\"atomic_row\":93,\"atomic_row_id\":\"50.2\",\"method\":\"system_delay\"},{\"atomic_row\":94,\"atomic_row_id\":\"50.3\",\"method\":\"emergent_behavior\"},{\"atomic_row\":95,\"atomic_row_id\":\"52.1\",\"method\":\"constraint_ide"
+ },
+ {
+  "path": "/api/v1/api/modules/20/atomic-concepts/139-160",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "[{\"atomic_row_id\":\"360.1\",\"concept\":\"TAM calculation\"},{\"atomic_row_id\":\"360.2\",\"concept\":\"SAM calculation\"},{\"atomic_row_id\":\"360.3\",\"concept\":\"SOM calculation\"},{\"atomic_row_id\":\"361.1\",\"concept\":\"C"
+ },
+ {
+  "path": "/api/v1/api/modules/20/cognitive-1960-2009/methods",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 8,
+  "body": "[{\"method\":\"graph_of_thought\",\"feature_row\":1960},{\"method\":\"self_consistency\",\"feature_row\":1961},{\"method\":\"retrieval_augmented_generation\",\"feature_row\":1962},{\"method\":\"vector_databases\",\"feature_"
+ },
+ {
+  "path": "/api/v1/api/modules/20/cognitive-learning-860-909/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 9,
+  "body": "[{\"row_id\":860,\"key\":\"historical_thinking\",\"name\":\"Historical Thinking\",\"family\":\"thinking\",\"stages\":[\"source\",\"contextualize\",\"corroborate\",\"continuity_change\",\"causal_claim\"]},{\"row_id\":861,\"key\":\"c"
+ },
+ {
+  "path": "/api/v1/api/modules/20/education/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 8,
+  "body": "[{\"row_id\":1410,\"key\":\"curriculum_design\",\"name\":\"Curriculum Design\",\"family\":\"design\"},{\"row_id\":1411,\"key\":\"learning_objective_writing\",\"name\":\"Learning Objective Writing\",\"family\":\"design\"},{\"row_i"
+ },
+ {
+  "path": "/api/v1/api/modules/20/health",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 8,
+  "body": "{\"module\":\"m20_general_cognitive_worker\",\"healthy\":true,\"tasks\":{},\"working_memory_chunks\":0,\"episodes\":0,\"semantic_facts\":0,\"skills\":6,\"tools\":0,\"tool_calls\":0,\"tool_failures\":0,\"traces\":0,\"emotional"
+ },
+ {
+  "path": "/api/v1/api/modules/20/learning-reasoning-810-859/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[{\"row_id\":810,\"key\":\"spaced_repetition\",\"name\":\"Spaced Repetition\",\"family\":\"learning\"},{\"row_id\":811,\"key\":\"interleaving\",\"name\":\"Interleaving\",\"family\":\"learning\"},{\"row_id\":812,\"key\":\"retrieval_pr"
+ },
+ {
+  "path": "/api/v1/api/modules/20/memory/episodes",
+  "status": 400,
+  "class": "other_400",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "{\"detail\":\"query required\"}"
+ },
+ {
+  "path": "/api/v1/api/modules/20/memory/facts",
+  "status": 400,
+  "class": "other_400",
+  "ctype": "application/json",
+  "ms": 8,
+  "body": "{\"detail\":\"query required\"}"
+ },
+ {
+  "path": "/api/v1/api/modules/20/meta/calibration/curve",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "{\"curve\":[],\"calibration_error\":null}"
+ },
+ {
+  "path": "/api/v1/api/modules/20/meta/epistemic-calendar/due",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 9,
+  "body": "{\"due\":[]}"
+ },
+ {
+  "path": "/api/v1/api/modules/20/meta/insights/stale",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 10,
+  "body": "{\"stale\":[]}"
+ },
+ {
+  "path": "/api/v1/api/modules/20/meta/knowledge-decay/forecast",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 10,
+  "body": "{\"forecast\":[]}"
+ },
+ {
+  "path": "/api/v1/api/modules/20/meta/world-models",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 10,
+  "body": "{\"models\":[],\"current_best\":null}"
+ },
+ {
+  "path": "/api/v1/api/modules/20/negotiation-behavior-85-109/methods",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[{\"method\":\"information_asymmetry_exploitation\",\"feature_row\":85},{\"method\":\"adverse_selection_detection\",\"feature_row\":86},{\"method\":\"moral_hazard_prevention\",\"feature_row\":87},{\"method\":\"screening_m"
+ },
+ {
+  "path": "/api/v1/api/modules/20/optimization-story-235-280/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[{\"row_id\":235,\"key\":\"dual_decomposition\",\"name\":\"Dual Decomposition\",\"family\":\"optimization\"},{\"row_id\":236,\"key\":\"admm\",\"name\":\"ADMM\",\"family\":\"optimization\"},{\"row_id\":237,\"key\":\"coordinate_descent"
+ },
+ {
+  "path": "/api/v1/api/modules/20/political-social-1760-1809/capabilities",
+  "status": 200,
+  "class": "ok_2xx_but_body_mentions_stub_or_fixture",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[{\"row_id\":1760,\"name\":\"Revolution\"},{\"row_id\":1761,\"name\":\"Democratization\"},{\"row_id\":1762,\"name\":\"Authoritarianism\"},{\"row_id\":1763,\"name\":\"Nationalism\"},{\"row_id\":1764,\"name\":\"Ethnicity\"},{\"row_id"
+ },
+ {
+  "path": "/api/v1/api/modules/20/skills",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 9,
+  "body": "[{\"id\":\"07a308f4-1f14-4efa-89b0-e9d7141ef45d\",\"name\":\"devils-advocate\",\"version\":1,\"status\":\"active\"},{\"id\":\"bd1a8df6-897a-4524-aa8a-91f46f725517\",\"name\":\"steelman\",\"version\":1,\"status\":\"active\"},{\"id"
+ },
+ {
+  "path": "/api/v1/api/modules/20/social-research-1710-1759/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[{\"row_id\":1710,\"key\":\"survey_design\",\"name\":\"Survey Design\",\"family\":\"survey\"},{\"row_id\":1711,\"key\":\"questionnaire_construction\",\"name\":\"Questionnaire Construction\",\"family\":\"survey\"},{\"row_id\":1712,"
+ },
+ {
+  "path": "/api/v1/api/modules/20/standup",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "{\"standup\":\"GCW stand-up 2026-10-04\\n- no active work\"}"
+ },
+ {
+  "path": "/api/v1/api/modules/20/tasks",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/api/modules/20/technical-spec-133-165/methods",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 8,
+  "body": "[{\"row\":133,\"requirement_id\":\"M15-02\",\"source_line_start\":87,\"source_line_end\":90,\"method\":\"structured_content\"},{\"row\":134,\"requirement_id\":\"M15-03\",\"source_line_start\":87,\"source_line_end\":90,\"metho"
+ },
+ {
+  "path": "/api/v1/api/modules/20/technical-spec/199-229/requirements",
+  "status": 200,
+  "class": "ok_2xx_but_body_mentions_stub_or_fixture",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[{\"row\":199,\"requirement_id\":\"M20-27\",\"requirement\":\"Divergent/convergent ideation modes.\",\"source_line_start\":162,\"source_line_end\":165},{\"row\":200,\"requirement_id\":\"M20-28\",\"requirement\":\"Retrospect"
+ },
+ {
+  "path": "/api/v1/api/modules/20/tools",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 8,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/api/modules/20/traces",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/approval-center/events",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "text/event-stream; charset=utf",
+  "ms": 30006,
+  "body": ""
+ },
+ {
+  "path": "/api/v1/approval-center/policies",
+  "status": 403,
+  "class": "fail_closed_4xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "{\"detail\":\"Atlas administrator role required\"}"
+ },
+ {
+  "path": "/api/v1/approval-center/requests",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 55,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/approvals",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/approved-executions",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/billing/entitlements",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 402,
+  "body": "{\"plan_id\":\"free\",\"status\":\"active\",\"features\":[\"BYOK\",\"manual collectors\"],\"limits\":{\"seats\":1,\"runs\":100},\"can_use_paid_features\":false}"
+ },
+ {
+  "path": "/api/v1/billing/invoices",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 17,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/billing/meter",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/billing/plans",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 14,
+  "body": "[{\"id\":\"free\",\"name\":\"Free\",\"monthly_price_usd\":0.0,\"included_seats\":1,\"included_runs\":100,\"features\":[\"BYOK\",\"manual collectors\"]},{\"id\":\"pro\",\"name\":\"Pro\",\"monthly_price_usd\":29.0,\"included_seats\":1"
+ },
+ {
+  "path": "/api/v1/billing/subscription",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 14,
+  "body": "{\"tenant_id\":\"local\",\"plan_id\":\"free\",\"status\":\"active\",\"customer_id\":null,\"subscription_id\":null,\"current_period_start\":null,\"current_period_end\":null,\"cancel_at_period_end\":false}"
+ },
+ {
+  "path": "/api/v1/brand-collaboration/obligations-attention",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 20,
+  "body": "{\"as_of\":\"2026-10-04T02:32:03.839807+00:00\",\"count\":0,\"items\":[]}"
+ },
+ {
+  "path": "/api/v1/browser-agent/browser-agent/bridge/devices",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 17,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/calendar-intelligence/analytics/meeting-load",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/calendar-intelligence/conflicts",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 42,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/calendar-intelligence/events",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 23,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/calendar-intelligence/prefs",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 22,
+  "body": "{\"working_hours\":{\"0\":[{\"start\":\"09:00\",\"end\":\"17:00\"}],\"1\":[{\"start\":\"09:00\",\"end\":\"17:00\"}],\"2\":[{\"start\":\"09:00\",\"end\":\"17:00\"}],\"3\":[{\"start\":\"09:00\",\"end\":\"17:00\"}],\"4\":[{\"start\":\"09:00\",\"end\":\"1"
+ },
+ {
+  "path": "/api/v1/calendar-intelligence/sources",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 21,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/calendar-intelligence/tasks",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 21,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/claire/atomic-concepts-1-23/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "[{\"atomic_row_id\":\"1.1\",\"requirement\":\"Research-project creation workflow\"},{\"atomic_row_id\":\"1.2\",\"requirement\":\"Bioinformatics-project creation workflow\"},{\"atomic_row_id\":\"1.3\",\"requirement\":\"Compu"
+ },
+ {
+  "path": "/api/v1/claire/atomic-concepts-24-46/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "[{\"atomic_row_id\":\"3.2\",\"requirement\":\"Correction-pair vector retrieval\"},{\"atomic_row_id\":\"3.3\",\"requirement\":\"Retrieved corrections injected as few-shot examples\"},{\"atomic_row_id\":\"3.4\",\"requiremen"
+ },
+ {
+  "path": "/api/v1/claire/devices",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/claire/interview/context",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 17,
+  "body": "{\"status\":\"consent_required\",\"preferences\":[]}"
+ },
+ {
+  "path": "/api/v1/claire/interview/next",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "{\"status\":\"consent_required\",\"question\":null}"
+ },
+ {
+  "path": "/api/v1/claire/journal/decisions",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/claire/social-signals/review",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 12,
+  "body": "{\"cards\":[],\"external_effects\":[],\"source\":\"already_stored_m06_observations\",\"limits\":\"No new platform read, account scan, message, like, follow or public post. External text is not an instruction or "
+ },
+ {
+  "path": "/api/v1/competition-manager/core-spec/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "[{\"row\":46,\"requirement\":\"GPT-4o rules summary then structured JSON\"},{\"row\":47,\"requirement\":\"eligibility_criteria/required_materials/deadlines/evaluation_criteria storage\"},{\"row\":48,\"requirement\":\""
+ },
+ {
+  "path": "/api/v1/competition-manager/expanded-owner-132-179",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "[{\"row_id\":132,\"requirement\":\"Official rules-page capture\"},{\"row_id\":133,\"requirement\":\"GPT-4o rules summary\"},{\"row_id\":134,\"requirement\":\"Structured rules JSON\"},{\"row_id\":135,\"requirement\":\"Eligib"
+ },
+ {
+  "path": "/api/v1/competition-manager/profile-corpus/onboarding/launch-step",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 11,
+  "body": "{\"show\":true,\"step\":\"application_source_corpus\",\"title\":\"Add your source documents\",\"prompt\":\"Connect or select your writings, essays, and activity descriptions so Atlas can ground application drafts "
+ },
+ {
+  "path": "/api/v1/competition-manager/profile-corpus/onboarding/status",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 18,
+  "body": "{\"documents\":0,\"by_type\":{\"writings\":0,\"essays\":0,\"activity_descriptions\":0},\"missing_types\":[\"writings\",\"essays\",\"activity_descriptions\"],\"ready_for_drafting\":false,\"complete\":false,\"documents_list\":"
+ },
+ {
+  "path": "/api/v1/core-spec/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "[{\"row\":1,\"requirement\":\"Kaggle RSS\"},{\"row\":2,\"requirement\":\"Devpost API\"},{\"row\":3,\"requirement\":\"Unstop collection\"},{\"row\":4,\"requirement\":\"Opportunity Desk\"},{\"row\":5,\"requirement\":\"Opportunities"
+ },
+ {
+  "path": "/api/v1/document-generator/creative-production-306-332",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "[{\"row_id\":306,\"capability\":\"Mixing\",\"key\":\"mixing\",\"family\":\"audio_post\",\"required\":[\"tracks\",\"sample_rate\",\"target_platform\"],\"stages\":[\"gain_staging\",\"pan\",\"eq\",\"dynamics\",\"spatial_fx\",\"automation\""
+ },
+ {
+  "path": "/api/v1/document-generator/deliveries",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 353,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/document-generator/versions/diff",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/email-assistant/accounts",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 23,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/email-assistant/action-items",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 22,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/email-assistant/drafts",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 22,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/email-assistant/follow-ups",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 20,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/email-assistant/messages",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 22,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/email-assistant/priority",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 21,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/email-assistant/promise-state-reconciliation/reviewer-keys",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 9,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/ai-systems-1910-1959/methods",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "[{\"method\":\"large_language_models\",\"feature_row\":1910,\"summary\":\"Token-level likelihood, perplexity and context-window utilization of a supplied language-model trace\",\"required_inputs\":[\"token_log_pro"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/alert-rules",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 14,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/analysis/jobs",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 14,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/analysis/methods",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 15,
+  "body": "[{\"method\":\"predictive\",\"feature_row\":1010,\"summary\":\"Forecasts future outcomes\",\"required_inputs\":[\"x\",\"y\",\"future_x\"],\"limits\":[]},{\"method\":\"prescriptive\",\"feature_row\":1011,\"summary\":\"Recommends a"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/approvals",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 14,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/blockers",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 21,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/digest",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 25,
+  "body": "{\"generated_at\":\"2026-10-04T02:32:04.669486Z\",\"pending_approvals\":0,\"open_blockers\":0,\"sections\":[{\"title\":\"KPIs\",\"lines\":[\"Opportunities discovered: 0 count (+0 vs prior 24h)\",\"Applications submitted"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/emerging-910-959/methods",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "[{\"method\":\"quantum_computing_application\",\"feature_row\":910,\"summary\":\"Quantum Computing Application\",\"required_evidence\":[\"logical_qubits, t_gates, odd code_distance\",\"classical_cost and quantum_cos"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/events",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 13,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/export/events.csv",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "text/csv; charset=utf-8",
+  "ms": 13,
+  "body": "id,sequence,topic,aggregate_type,aggregate_id,module_id,occurred_at\r\n"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/export/kpis.csv",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "text/csv; charset=utf-8",
+  "ms": 18,
+  "body": "id,label,value,unit,previous_value,window_hours,evidence_total\r\nopportunities_discovered,Opportunities discovered,0.0,count,0.0,24,0\r\napplications_submitted,Applications submitted,0.0,count,0.0,24,0\r\n"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/finance/methods",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[{\"method\":\"structured_products\",\"feature_row\":1360},{\"method\":\"exotic_options\",\"feature_row\":1361},{\"method\":\"barrier_options\",\"feature_row\":1362},{\"method\":\"asian_options\",\"feature_row\":1363},{\"meth"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/kpi-definitions",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 12,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/kpis",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 19,
+  "body": "[{\"id\":\"opportunities_discovered\",\"label\":\"Opportunities discovered\",\"unit\":\"count\",\"value\":0.0,\"previous_value\":0.0,\"window_hours\":24,\"definition\":\"Events with topic opportunity.discovered inside the"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/live",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "text/event-stream; charset=utf",
+  "ms": 20002,
+  "body": ""
+ },
+ {
+  "path": "/api/v1/executive-dashboard/modules",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 15,
+  "body": "[{\"module_id\":0,\"slug\":\"approval-center\",\"name\":\"Human Approval Center\",\"implemented\":true,\"agent\":null,\"pending_approvals\":0,\"events_24h\":0,\"open_blockers\":0},{\"module_id\":1,\"slug\":\"opportunity-disco"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/overview",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 25,
+  "body": "{\"generated_at\":\"2026-10-04T02:32:24.800765Z\",\"modules\":[{\"module_id\":0,\"slug\":\"approval-center\",\"name\":\"Human Approval Center\",\"implemented\":true,\"agent\":null,\"pending_approvals\":0,\"events_24h\":0,\"op"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/planning/board",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 16,
+  "body": "{\"columns\":{\"backlog\":[],\"ready\":[],\"in_progress\":[],\"review\":[],\"done\":[]},\"wip_limits\":{\"backlog\":null,\"ready\":null,\"in_progress\":3,\"review\":2,\"done\":null}}"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/planning/ceremonies",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 15,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/planning/experiments",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 14,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/planning/items",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 12,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/planning/prioritization",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 13,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/planning/retrospectives",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 13,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/planning/retrospectives/rollup",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 17,
+  "body": "{\"retrospectives\":0,\"action_items_total\":0,\"action_items_done\":0,\"action_items_open\":[],\"completion_rate\":null}"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/planning/roadmaps",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 14,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/planning/sprints",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 15,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/planning/velocity",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 15,
+  "body": "{\"sprints\":[],\"average_completed\":null,\"inputs\":{\"sprint_ids\":[],\"note\":\"Average over closed sprints only; completed means items in done with estimates.\"}}"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/rerun-schedules",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 8,
+  "body": "{\"available\":true,\"reason\":null,\"as_of\":\"2026-10-04T02:32:24.962637Z\",\"schedules_total\":0,\"schedules_active\":0,\"schedules_due_now\":0,\"proposals_total\":0,\"by_state\":{\"pending\":0,\"approved_not_executed\""
+ },
+ {
+  "path": "/api/v1/executive-dashboard/snapshot",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 14,
+  "body": "{\"version\":0,\"last_sequence\":0,\"generated_at\":\"2026-10-04T02:32:04.651799\",\"data\":{\"metrics\":{},\"timeline\":[],\"alerts\":[],\"freshness\":{}}}"
+ },
+ {
+  "path": "/api/v1/executive-dashboard/view",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 12,
+  "body": "{\"widgets\":[{\"id\":\"kpis\",\"kind\":\"kpi_card\",\"kpi_id\":null,\"visible\":true,\"position\":0},{\"id\":\"blockers\",\"kind\":\"blockers\",\"kpi_id\":null,\"visible\":true,\"position\":1},{\"id\":\"modules\",\"kind\":\"module_statu"
+ },
+ {
+  "path": "/api/v1/expanded-spec-67-131/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "[{\"row\":67,\"kind\":\"tracked_social_source\",\"name\":\"farahgulrahujaa\"},{\"row\":68,\"kind\":\"tracked_social_source\",\"name\":\"scholarshipowl\"},{\"row\":69,\"kind\":\"tracked_social_source\",\"name\":\"buildupgloabl\"},{"
+ },
+ {
+  "path": "/api/v1/grant-writer/core-spec/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 3,
+  "body": "[{\"row\":76,\"requirement\":\"Google Docs/Sheets access\"},{\"row\":77,\"requirement\":\"Report generation\"},{\"row\":78,\"requirement\":\"Micro/macro economics and broad idea browsing\"},{\"row\":79,\"requirement\":\"500"
+ },
+ {
+  "path": "/api/v1/grant-writer/corpus/search",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/grant-writer/expanded-owner-180-210",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "[{\"row_id\":180,\"requirement\":\"Google Docs access\"},{\"row_id\":181,\"requirement\":\"Google Sheets access\"},{\"row_id\":182,\"requirement\":\"Report generation\"},{\"row_id\":183,\"requirement\":\"Microeconomics idea"
+ },
+ {
+  "path": "/api/v1/grant-writer/schema-packs",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "[{\"agency\":\"NSF\",\"program\":\"GRFP\",\"solicitation\":\"NSF 26-526\",\"latest_version\":\"2026-09-24\",\"versions\":[\"2026-09-24\"],\"source_url\":\"https://www.nsf.gov/funding/opportunities/grfp-nsf-graduate-research"
+ },
+ {
+  "path": "/api/v1/idea-incubator/luxury-venture-studio/brand",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/idea-incubator/luxury-venture-studio/company-compare",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/idea-incubator/luxury-venture-studio/filings",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/idea-incubator/luxury-venture-studio/mentions",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/idea-incubator/luxury-venture-studio/news",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/idea-incubator/luxury-venture-studio/sources",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "{\"all_free\":true,\"no_api_keys_required\":true,\"verified_on\":\"2026-09-25\",\"feeds\":[{\"feed_id\":\"wwd\",\"name\":\"WWD\",\"url\":\"https://wwd.com/feed/\",\"focus\":\"fashion, beauty and retail business\",\"verified_fet"
+ },
+ {
+  "path": "/api/v1/idea-incubator/luxury-venture-studio/sources/health",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 79,
+  "body": "{\"checked\":[{\"source\":\"wwd\",\"status\":\"error\",\"detail\":\"All connection attempts failed\"},{\"source\":\"robb_report\",\"status\":\"error\",\"detail\":\"All connection attempts failed\"},{\"source\":\"luxuo\",\"status\":\""
+ },
+ {
+  "path": "/api/v1/idea-incubator/luxury-venture-studio/tools/comparable-set",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "{\"sector\":\"other\",\"listed_comparables\":[{\"ticker\":\"RH\",\"name\":\"RH\"},{\"ticker\":\"REAL\",\"name\":\"The RealReal\"}],\"non_listed_note\":\"Private or European-listed houses (Chanel, LVMH, Hermes, Kering, Richemo"
+ },
+ {
+  "path": "/api/v1/idea-incubator/luxury-venture-studio/tools/sector-presets",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "{\"sectors\":{\"automotive\":{\"constraints\":[\"scarcity\",\"dealer experience\",\"brand tone\"],\"capabilities\":[{\"capability_id\":\"owner-provenance-ledger\",\"description\":\"Verified vehicle history and craft recor"
+ },
+ {
+  "path": "/api/v1/idea-incubator/portfolio/ideas",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 14,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/integrations/acceptance",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "{\"integrations\":[{\"adapter_id\":\"google-workspace\",\"label\":\"Google Workspace\",\"configured\":false,\"live_accepted\":false,\"write_accepted\":false,\"last_successful_read\":null,\"last_successful_write\":null,\"s"
+ },
+ {
+  "path": "/api/v1/knowledge-copilot-training/contradictions",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/knowledge-copilot-training/export",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "{\"tenant_id\":\"local\",\"sources\":[],\"provenance_edges\":[]}"
+ },
+ {
+  "path": "/api/v1/knowledge-copilot/artifact-events",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/knowledge-copilot/audit",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 3,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/knowledge-workspace/contradiction-revisions/chain",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/knowledge-workspace/contradiction-revisions/keys",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 9,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/knowledge-workspace/contradiction-revisions/keys/events",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/knowledge-workspace/nlp-status",
+  "status": 503,
+  "class": "5xx_server_error",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "{\"detail\":\"M09 local NLP unavailable (ModuleNotFoundError). Install the m09-local extra and provision the configured FastEmbed and spaCy models; no node write was performed.\"}"
+ },
+ {
+  "path": "/api/v1/models/catalog",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "{\"paid_allowed\":false,\"models\":[{\"key\":\"inkling\",\"name\":\"Inkling\",\"what_it_is\":\"Thinking Machines Lab open-weights multimodal MoE (975B total / 41B active, text+image+audio in, text out), released 202"
+ },
+ {
+  "path": "/api/v1/models/health",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 29,
+  "body": "{\"paid_allowed\":false,\"providers\":[{\"provider\":\"ollama\",\"kind\":\"local\",\"configured\":true,\"reachable\":false,\"detail\":\"ConnectError\"},{\"provider\":\"openai_compat\",\"kind\":\"local\",\"configured\":true,\"reacha"
+ },
+ {
+  "path": "/api/v1/modules",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "[{\"id\":0,\"slug\":\"approval-center\",\"name\":\"Human Approval Center\",\"status\":\"implemented\"},{\"id\":1,\"slug\":\"opportunity-discovery\",\"name\":\"Opportunity Discovery Engine\",\"status\":\"implemented\"},{\"id\":2,\"s"
+ },
+ {
+  "path": "/api/v1/opportunity-discovery/expanded-spec-1-66/sources",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[{\"row_id\":1,\"key\":\"kaggle-rss\",\"name\":\"Kaggle RSS\",\"kind\":\"source_adapter\",\"access_mode\":\"rss\"},{\"row_id\":2,\"key\":\"devpost-api\",\"name\":\"Devpost API\",\"kind\":\"source_adapter\",\"access_mode\":\"official_ap"
+ },
+ {
+  "path": "/api/v1/opportunity-discovery/nlp-status",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 310,
+  "body": "{\"entity_engine\":\"keyword-tags\",\"deadline_engine\":\"regex-formats\",\"match_engine\":\"token-cosine\",\"live\":false,\"degraded\":{\"normalizer\":\"missing dependency: spacy\",\"matcher\":\"fastembed is not installed "
+ },
+ {
+  "path": "/api/v1/opportunity-discovery/opportunities",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 19,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/opportunity-discovery/sources",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "[{\"id\":\"opportunity-desk-rss\",\"name\":\"Opportunity Desk\",\"kind\":\"rss\",\"url\":\"https://www.opportunitydesk.org/feed/\",\"default_type\":\"other\",\"enabled\":true},{\"id\":\"opportunities-for-youth-rss\",\"name\":\"Op"
+ },
+ {
+  "path": "/api/v1/opportunity-discovery/student-insights",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/opportunity-discovery/student-platforms",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 3,
+  "body": "[{\"id\":\"ripplematch\",\"name\":\"RippleMatch\",\"url\":\"https://ripplematch.com/\",\"mode\":\"launch_only\",\"kind\":\"job\",\"path_pattern\":\"\",\"reason\":\"Account matching and auto-apply require an authorized interacti"
+ },
+ {
+  "path": "/api/v1/outreach-manager/cadence-policy",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 118,
+  "body": "{\"version\":0,\"source\":\"default\",\"live_thread_days\":21,\"rules\":{\"cold\":{\"min_gap_days\":7,\"max_per_30_days\":2},\"warm\":{\"min_gap_days\":3,\"max_per_30_days\":4},\"close\":{\"min_gap_days\":1,\"max_per_30_days\":8"
+ },
+ {
+  "path": "/api/v1/outreach-manager/campaigns",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 32,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/outreach-manager/follow-ups/due",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 36,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/project-builder/projects",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 41,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/research-scientist/analyses/executions",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/research-scientist/analyses/rerun-schedules",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/research-scientist/analyses/rerun-schedules/stats",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "{\"tenant_id\":\"local\",\"as_of\":\"2026-10-04T02:32:25.773567+00:00\",\"schedules\":{\"total\":0,\"active\":0,\"due_now\":[]},\"proposals\":{\"total\":0,\"by_state\":{},\"overdue\":0,\"verdicts\":{}},\"overdue\":[],\"recent\":[]"
+ },
+ {
+  "path": "/api/v1/research-scientist/core-spec/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "[{\"row\":96,\"requirement\":\"Automatic topic expansion across fields\"},{\"row\":97,\"requirement\":\"Nature/customer/scientific inspiration\"},{\"row\":98,\"requirement\":\"Hypothesis, abstract, full research paper"
+ },
+ {
+  "path": "/api/v1/research-scientist/environmental-1660-1709/methods",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "[{\"method\":\"bioremediation\",\"feature_row\":1660},{\"method\":\"ecosystem_services\",\"feature_row\":1661},{\"method\":\"biodiversity\",\"feature_row\":1662},{\"method\":\"conservation_biology\",\"feature_row\":1663},{\"m"
+ },
+ {
+  "path": "/api/v1/research-scientist/quant-methods-185-234",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 18,
+  "body": "[{\"row_id\":185,\"method\":\"Cointegration Analysis\"},{\"row_id\":186,\"method\":\"Vector Autoregression\"},{\"row_id\":187,\"method\":\"State Space Models\"},{\"row_id\":188,\"method\":\"Kalman Filtering\"},{\"row_id\":189,"
+ },
+ {
+  "path": "/api/v1/research-scientist/surveillance/clusters",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 23,
+  "body": "{\"clusters\":[]}"
+ },
+ {
+  "path": "/api/v1/research-scientist/surveillance/gaps",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 11,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/runtime/atomic-concepts-116-138/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 3,
+  "body": "[{\"atomic_row_id\":\"125.1\",\"requirement\":\"Research-data sharing compliance\"},{\"atomic_row_id\":\"125.2\",\"requirement\":\"Research-code sharing compliance\"},{\"atomic_row_id\":\"131.1\",\"requirement\":\"Attention"
+ },
+ {
+  "path": "/api/v1/runtime/capability-audit-13/ledger",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "{\"schema_version\":1,\"source\":\"docs/IMPLEMENTATION_AUDIT.md#expanded-module-and-assistant-capability-audit\",\"row_count\":13,\"rows\":[{\"id\":1,\"surface\":\"Module 0 approval center\",\"module_ids\":[0],\"require"
+ },
+ {
+  "path": "/api/v1/runtime/coherence",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 3,
+  "body": "{\"shared_api\":true,\"mounted_modules\":[0,1,2,3,4,5,6,7,8,14,15,17,18,19,20,21,22,9,16,12,13,10,11,23,24,25],\"shared_tenant_context\":true,\"shared_approval_boundary\":true,\"shared_workers\":true,\"handoff_c"
+ },
+ {
+  "path": "/api/v1/runtime/semantic-verification-1149-1435/report",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 129,
+  "body": "{\"row_start\":1149,\"row_end\":1435,\"row_count\":287,\"passed\":287,\"failed\":0,\"fixed\":0,\"rows\":[{\"row\":1149,\"requirement\":\"Medication Management\",\"family\":\"clinical\",\"implementation_path\":\"backend/app/modu"
+ },
+ {
+  "path": "/api/v1/runtime/semantic-wave-1723-2010/report",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 18,
+  "body": "[{\"row_id\":1723,\"requirement\":\"Case Study Design\",\"outcome\":\"pass\",\"fixed\":false,\"implementation_path\":\"backend/app/modules/m20_general_cognitive_worker/social_research_1710_1759.py\",\"test_path\":\"test"
+ },
+ {
+  "path": "/api/v1/runtime/technical-architecture-a01-a33/mapping",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "[{\"row\":1,\"requirement_id\":\"A01\",\"requirement\":\"Next.js 14 App Router frontend.\",\"source_line_start\":5,\"source_line_end\":5},{\"row\":2,\"requirement_id\":\"A02\",\"requirement\":\"React 18 frontend.\",\"source_l"
+ },
+ {
+  "path": "/api/v1/runtime/technical-spec-166-198/capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 3,
+  "body": "[{\"row\":166,\"requirement_id\":\"M19-04\"},{\"row\":167,\"requirement_id\":\"M19-05\"},{\"row\":168,\"requirement_id\":\"M19-06\"},{\"row\":169,\"requirement_id\":\"M19-07\"},{\"row\":170,\"requirement_id\":\"M19-08\"},{\"row\":17"
+ },
+ {
+  "path": "/api/v1/runtime/topology",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 3,
+  "body": "[{\"module_id\":0,\"operation\":\"prepare_goal_work\"},{\"module_id\":0,\"operation\":\"request_approval\"},{\"module_id\":1,\"operation\":\"prepare_goal_work\"},{\"module_id\":2,\"operation\":\"prepare_goal_work\"},{\"module"
+ },
+ {
+  "path": "/api/v1/semantic-verification/862-1148",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 23,
+  "body": "{\"rows\":[{\"row\":862,\"requirement\":\"Creative Thinking\",\"status\":\"pass\",\"implementation_path\":\"backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py\",\"ledger_implementation_path"
+ },
+ {
+  "path": "/api/v1/side-hustle-scraper/durable-runs",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/side-hustle-scraper/freshness",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "{\"watched\":0,\"alive\":0,\"dead\":0,\"due_now\":0,\"by_class\":{},\"generated_at\":\"2026-10-04T02:32:26.035349+00:00\"}"
+ },
+ {
+  "path": "/api/v1/social-media-manager/marketing/artifacts",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 14,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/social-media-manager/metrics/snapshots",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 13,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/social-media-manager/schedules",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 15,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/social-media-manager/social-media-manager/social-reading/people",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 8,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/social-media-manager/social-media-manager/social-reading/runs",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/social-media-manager/social-media-manager/social-reading/signals",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/startup-growth/experiments",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 15,
+  "body": "{\"columns\":{\"running\":[],\"needs_decision\":[],\"stopped\":[]},\"total\":0,\"spend_executed_minor\":0}"
+ },
+ {
+  "path": "/api/v1/study-abroad/admitted-cases",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "{\"cases\":[{\"id\":\"olin\",\"publisher\":\"Olin College\",\"url\":\"https://www.olin.edu/blogs/voices-olins-class-2028-college-essay-snippets\",\"evidence_type\":\"institution_published_essay\",\"title\":\"Incoming Clas"
+ },
+ {
+  "path": "/api/v1/study-abroad/advising-history",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 20,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/study-abroad/catalog/coverage",
+  "status": 503,
+  "class": "5xx_server_error",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "{\"detail\":\"official catalog not imported; run python -m app.modules.m23_study_abroad.official_catalog_cli import\"}"
+ },
+ {
+  "path": "/api/v1/study-abroad/catalog/programs",
+  "status": null,
+  "class": "skipped_required_query"
+ },
+ {
+  "path": "/api/v1/study-abroad/catalog/schools",
+  "status": 503,
+  "class": "5xx_server_error",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "{\"detail\":\"official catalog not imported; run python -m app.modules.m23_study_abroad.official_catalog_cli import\"}"
+ },
+ {
+  "path": "/api/v1/study-abroad/lifecycle-workbench/methods",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "[{\"row\":1,\"method\":\"end_to_end_lifecycle\"},{\"row\":2,\"method\":\"destinations_55\"},{\"row\":3,\"method\":\"top_institutions\"},{\"row\":8,\"method\":\"identity_embedding\"},{\"row\":9,\"method\":\"pattern_clustering\"},{\""
+ },
+ {
+  "path": "/api/v1/technical-spec-34-66",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 10,
+  "body": "[{\"row\":34,\"requirement_id\":\"A34\",\"requirement\":\"Hybrid semantic + keyword + metadata-filter retrieval.\",\"source_line_start\":19,\"source_line_end\":20},{\"row\":35,\"requirement_id\":\"A35\",\"requirement\":\"Op"
+ },
+ {
+  "path": "/api/v1/tools-hub/blocks",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "{\"domains\":[\"oceanofpdf.com\"],\"patterns\":[\"bypass paywall\",\"credential stuffing\",\"rotating proxy\",\"self-bot\",\"stealth scraping\"]}"
+ },
+ {
+  "path": "/api/v1/tools-hub/candidates/export",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 6,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/tools-hub/native-capabilities",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "[{\"id\":\"spec-to-app\",\"description\":\"Generate schema, UI/API plan, runnable preview, tests, and revisions\"},{\"id\":\"code-workspace\",\"description\":\"Multi-file bounded run/test workspace with logs, manife"
+ },
+ {
+  "path": "/api/v1/tools-hub/pipeline/candidates",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 9,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/tools-hub/pipeline/jobs",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/tools-hub/pipeline/portfolio",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/tools-hub/pipeline/proposals",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 7,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/tools-hub/portfolio",
+  "status": 200,
+  "class": "ok_2xx_empty",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "[]"
+ },
+ {
+  "path": "/api/v1/tools-hub/queries",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "{\"queries\":[]}"
+ },
+ {
+  "path": "/api/v1/tools-hub/sources",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 4,
+  "body": "{\"sources\":[{\"name\":\"github\",\"kind\":\"repository\",\"last_error\":null,\"runs\":0,\"failures\":0,\"candidates\":0,\"last_latency_ms\":0.0,\"last_status\":\"never run\"},{\"name\":\"pypi\",\"kind\":\"package\",\"last_error\":nu"
+ },
+ {
+  "path": "/health",
+  "status": 200,
+  "class": "ok_2xx",
+  "ctype": "application/json",
+  "ms": 5,
+  "body": "{\"status\":\"ok\"}"
+ },
+ {
+  "path": "/ready",
+  "status": 503,
+  "class": "5xx_server_error",
+  "ctype": "application/json",
+  "ms": 129,
+  "body": "{\"detail\":{\"status\":\"not_ready\",\"environment\":\"development\",\"checks\":{\"database\":true,\"redis\":false,\"migrations\":false}}}"
+ }
+]
