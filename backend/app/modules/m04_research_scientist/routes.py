@@ -15,7 +15,7 @@ from .schemas import (
     ProposedAnalysis,
     SurveillanceRequest,
     SurveillanceResponse,
-    SurveillanceIngestRequest, GapEvidenceOut, ArxivCollectRequest, PubmedCollectRequest,
+    SurveillanceIngestRequest, GapEvidenceOut, ArxivCollectRequest, PubmedCollectRequest, ResearchLoopRequest,
 )
 from .service import Service
 
@@ -105,6 +105,26 @@ async def collect_pubmed_route(request:PubmedCollectRequest,tenant:TenantContext
         logging.getLogger(__name__).warning("embedding unavailable: %s",type(exc).__name__)
         raise HTTPException(status_code=503,detail="embedding provider unavailable") from exc
     return {"fetched":len(papers),**out,"source":"pubmed"}
+
+@router.post("/research-loop")
+async def research_loop_route(request:ResearchLoopRequest,tenant:TenantContext=Depends(require_tenant)):
+    """Question-then-research loop: REAL arXiv/PubMed retrieval, HEURISTIC term-expansion planning (no LLM)."""
+    from dataclasses import asdict
+    from starlette.concurrency import run_in_threadpool
+    from . import arxiv_collector as ac, pubmed_collector as pc, research_loop as rl
+    table={"arxiv":lambda q,n:ac.collect_arxiv(q,n),"pubmed":lambda q,n:pc.collect_pubmed(q,n)}
+    cols={s:table[s] for s in dict.fromkeys(request.sources)}
+    try:res=await run_in_threadpool(rl.run_loop,request.question,cols,max_steps=request.max_steps,per_step=request.per_step)
+    except ValueError as exc:raise HTTPException(status_code=422,detail="invalid research question") from exc
+    except (ThrottleBusy,ThrottleStateError) as exc:
+        logging.getLogger(__name__).warning("research loop collector unavailable: %s",type(exc).__name__)
+        raise HTTPException(status_code=503,detail="collector busy or unavailable") from exc
+    except (ac.ArxivCollectorError,pc.PubmedCollectorError,httpx.HTTPError) as exc:
+        logging.getLogger(__name__).warning("research loop collection failed: %s",type(exc).__name__)
+        raise HTTPException(status_code=502,detail="literature collection failed") from exc
+    return {"question":res.question,"stop_reason":res.stop_reason,"method":"heuristic term expansion over real retrieval; no language model",
+            "steps":[asdict(s) for s in res.steps],
+            "papers":[{"paper_id":p.paper_id,"title":p.title,"source":p.source,"url":str(p.url) if p.url else None,"published_at":p.published_at} for p in res.papers.values()]}
 
 @router.get("/surveillance/clusters")
 def surveillance_clusters(threshold:float=.72,tenant:TenantContext=Depends(require_tenant)):
