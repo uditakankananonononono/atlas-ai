@@ -38,3 +38,9 @@ Real booted app routes, real shared Module 0 approval service (conftest-isolated
 - DEFECT FIXED: rollback proposal/enqueue for an unknown or other-tenant operation id raised InstallError -> HTTP 500; now KeyError -> 404.
 - The user_id guard in InstallPipeline._approved is defence in depth (HTTP paths are also blocked by per-tenant receipts and operation binding); it is pinned by a direct test and mutation-checked (removing it fails that test).
 - Discovery working caches per Service are bounded (5000 candidates, 500 snapshots/diffs), oldest dropped and counted in cache_evicted; durable candidates live in the pipeline DB. Shared PyPI collector _fail cooldown remains a global public-source availability coupling across tenants (one tenant's trigger can put the PyPI source into cooldown for all; bounded by the collector's FAIL_COOLDOWN; independent availability is NOT claimed). Pure approval store (app.core.approvals facade) filters by user_id on get/decide/audit; put() takes tenant from user_id/payload, not verified here beyond the pipeline path.
+
+### WIP32: discovery cache bounds, corrected
+- Eviction is reported, not hidden: Service.cache_stats() {candidates, cap, protected_candidates, query_snapshots, cap, evicted_total, baseline_resets_total} is returned by GET /tools-hub/queries ("cache") and discovery_report; discover_report carries it too.
+- Candidates referenced by an installation proposal or an installed record are NEVER evicted (portfolio() no longer can KeyError); they may keep the cache above the cap, and that excess shows in protected_candidates.
+- The bound is applied after writes (cap, not cap+1). Evicting a query snapshot resets that query's diff baseline; the next run reports first_run=True AND baseline_reset=True in last_diffs.
+- Scope: the HTTP fixture cases in WIP31 go through the Module 0 routes, but Module 0's own ownership checks were not independently reviewed here.
