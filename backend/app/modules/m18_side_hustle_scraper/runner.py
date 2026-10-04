@@ -89,23 +89,40 @@ class DurableRunStore:
   self._secure_file()
   with self._db() as db:db.execute('CREATE TABLE IF NOT EXISTS hustle_runs(tenant_id TEXT NOT NULL,run_id TEXT NOT NULL,snapshot TEXT NOT NULL,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(tenant_id,run_id))')
   self._secure_file()
- def _secure_file(self):
-  """Create-or-verify the store file safely: parent dir 0700 if we create it; the file is created 0600 atomically (never at
-  the default umask), a symlink, a non-regular file, a file owned by someone else or one readable/writable by group/other is
-  REFUSED (fail closed, no silent chmod of a file we do not own). Raises PermissionError."""
-  import os as _os,stat as _st
-  parent=Path(self.path).parent
-  parent.mkdir(parents=True,exist_ok=True,mode=0o700)
-  pst=_os.stat(parent)
+ @staticmethod
+ def _check_parent(pst,parent,euid):
+  import stat as _st
   if not _st.S_ISDIR(pst.st_mode) or (pst.st_mode&0o022 and not pst.st_mode&_st.S_ISVTX):raise PermissionError(f"refusing run store: parent {parent} is group/other-writable without the sticky bit")
-  if pst.st_uid not in (_os.geteuid(),0):raise PermissionError(f"refusing run store: parent {parent} is owned by another user")
+  if pst.st_uid not in (euid,0):raise PermissionError(f"refusing run store: parent {parent} is owned by another user")
+ @staticmethod
+ def _check_file(info,euid):
+  import stat as _st
+  if not _st.S_ISREG(info.st_mode):raise PermissionError("run store is not a regular file")
+  if info.st_uid!=euid:raise PermissionError("run store is owned by another user")
+  if info.st_mode&0o077:raise PermissionError("run store is accessible to group/other (mode %o); refusing"%_st.S_IMODE(info.st_mode))
+ @staticmethod
+ def _check_no_symlink_components(path):
+  import os as _os
+  cur=_os.path.abspath(path);parts=[]
+  while True:
+   parts.append(cur);nxt=_os.path.dirname(cur)
+   if nxt==cur:break
+   cur=nxt
+  for c in parts:
+   if _os.path.islink(c):raise PermissionError(f"refusing run store: path component {c} is a symlink")
+ def _secure_file(self):
+  """Create-or-verify the store file safely: no symlink in any path component, parent dir 0700 if we create it and
+  checked (directory, owner, not group/other-writable unless sticky); the file is created 0600 atomically (never at the
+  default umask) and fstat-checked (regular, owned by us, no group/other bits). Violations RAISE PermissionError (fail
+  closed, no silent chmod of a file we do not own)."""
+  import os as _os
+  parent=Path(self.path).parent
+  self._check_no_symlink_components(self.path)
+  parent.mkdir(parents=True,exist_ok=True,mode=0o700)
+  self._check_parent(_os.stat(parent),parent,_os.geteuid())
   try:fd=_os.open(self.path,_os.O_RDWR|_os.O_CREAT|_os.O_NOFOLLOW,0o600)
   except OSError as e:raise PermissionError(f"refusing run store {self.path}: {e.strerror}") from e
-  try:
-   info=_os.fstat(fd)
-   if not _st.S_ISREG(info.st_mode):raise PermissionError("run store is not a regular file")
-   if info.st_uid!=_os.geteuid():raise PermissionError("run store is owned by another user")
-   if info.st_mode&0o077:raise PermissionError("run store is accessible to group/other (mode %o); refusing"%_st.S_IMODE(info.st_mode))
+  try:self._check_file(_os.fstat(fd),_os.geteuid())
   finally:_os.close(fd)
  def _db(self):
   db=sqlite3.connect(self.path);db.execute('PRAGMA journal_mode=WAL');db.execute('PRAGMA synchronous=FULL');return db

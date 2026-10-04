@@ -48,7 +48,9 @@ def _get_run_store():
  return _run_store_cache[0]
 def durable_runner(t:TenantContext=Depends(require_tenant)):
  try:return DurableHustleRunner(t.tenant_id,_get_run_store())
- except PermissionError:raise HTTPException(503,"durable run store refused: unsafe file permissions or ownership")
+ except PermissionError as e:
+  import logging;logging.getLogger(__name__).error("m18 durable run store refused: %s",e)  # exact reason for the operator, not the client
+  raise HTTPException(503,"durable run store refused: unsafe file permissions or ownership")
 
 
 def get_service() -> Service:

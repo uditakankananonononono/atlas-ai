@@ -69,3 +69,21 @@ def test_store_refuses_a_world_writable_non_sticky_parent_but_allows_sticky_tmp_
     with pytest.raises(PermissionError): DurableRunStore(d/"r.sqlite3")
     s=tmp_path/"sticky"; s.mkdir(); os.chmod(s,0o1777)
     DurableRunStore(s/"r.sqlite3")   # like /tmp: world-writable but sticky -> allowed
+from types import SimpleNamespace as NS
+def test_owner_guards_distinguish_foreign_owner_with_controlled_stat_results():
+    me=1000
+    ok_dir=NS(st_mode=stat.S_IFDIR|0o700,st_uid=me); DurableRunStore._check_parent(ok_dir,"p",me)
+    DurableRunStore._check_parent(NS(st_mode=stat.S_IFDIR|0o755,st_uid=0),"p",me)           # root-owned parent ok
+    with pytest.raises(PermissionError,match="owned by another user"): DurableRunStore._check_parent(NS(st_mode=stat.S_IFDIR|0o700,st_uid=2000),"p",me)
+    DurableRunStore._check_file(NS(st_mode=stat.S_IFREG|0o600,st_uid=me),me)
+    with pytest.raises(PermissionError,match="owned by another user"): DurableRunStore._check_file(NS(st_mode=stat.S_IFREG|0o600,st_uid=2000),me)
+    with pytest.raises(PermissionError,match="not a regular"): DurableRunStore._check_file(NS(st_mode=stat.S_IFDIR|0o600,st_uid=me),me)
+def test_symlinked_ancestor_directory_is_refused(tmp_path):
+    real=tmp_path/"real"; real.mkdir(); link=tmp_path/"linkdir"; os.symlink(real,link)
+    with pytest.raises(PermissionError,match="symlink"): DurableRunStore(link/"sub"/"r.sqlite3")
+def test_refusal_reason_is_logged_for_the_operator(tmp_path,monkeypatch,caplog):
+    loose=tmp_path/"l.sqlite3"; loose.write_bytes(b""); os.chmod(loose,0o666)
+    monkeypatch.setattr(R,"_run_store_cache",[]); monkeypatch.setenv("ATLAS_M18_RUN_DB",str(loose))
+    with caplog.at_level("ERROR"):
+        r=c.post(S+"/durable-runs",json=RUN,headers=A)
+    assert r.status_code==503 and "mode" in caplog.text and str(loose) not in r.text
