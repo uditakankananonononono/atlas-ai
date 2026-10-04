@@ -43,6 +43,30 @@ app.include_router(self_improve_router,prefix="/api/v1",dependencies=[Depends(re
 for module_spec in IMPLEMENTED_SPECS:
     app.include_router(module_spec.router, prefix="/api/v1", dependencies=[Depends(require_tenant)])
 
+class M20CleanAliasMiddleware:
+    """Compat-preserving alias. The legacy doubled path /api/v1/api/modules/20/... (used by the shipped frontend) is
+    unchanged. A request to /api/v1/modules/20/... is rewritten to it BEFORE routing, so it runs the identical handlers
+    and the identical require_tenant / rate-limit dependencies and middleware. Limits: the alias is NOT listed in
+    OpenAPI, and only the m20 prefix is aliased (inner doubled segments such as .../api/modules/20/runtime remain)."""
+    OLD, NEW = "/api/v1/api/modules/20", "/api/v1/modules/20"
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] in ("http", "websocket"):
+            path = scope["path"]
+            if path == self.NEW or path.startswith(self.NEW + "/"):
+                scope = dict(scope)
+                scope["path"] = self.OLD + path[len(self.NEW):]
+                if scope.get("raw_path"):
+                    scope["raw_path"] = scope["path"].encode()
+        await self.app(scope, receive, send)
+
+
+app.add_middleware(M20CleanAliasMiddleware)  # added last = outermost
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}

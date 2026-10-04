@@ -157,3 +157,113 @@ def test_unbound_default_services_are_separate_per_tenant_in_dev_mode():
     finally:
         r._service = saved
         r._default_services.clear()
+
+
+def _fresh_unbound():
+    import app.modules.m20_general_cognitive_worker.routes as r
+    saved = (r._service, dict(r._bound_by_tenant))
+    r._service = None
+    r._default_services.clear()
+    r._bound_by_tenant.clear()
+    return r, saved
+
+
+def test_shared_bound_service_is_refused_in_production_unless_single_tenant(monkeypatch):
+    r, saved = _fresh_unbound()
+    try:
+        from app.modules.m20_general_cognitive_worker.service import CognitiveWorkerService
+        from fastapi import HTTPException
+        r.bind_service(CognitiveWorkerService())
+        tok = r._tenant_var.set("tenant-a")
+        try:
+            assert r.get_service() is r._service  # dev/test mode: shared serves everyone
+            monkeypatch.setenv("ATLAS_ENV", "production")
+            monkeypatch.delenv("ATLAS_GCW_SINGLE_TENANT", raising=False)
+            with pytest.raises(HTTPException) as e:
+                r.get_service()
+            assert e.value.status_code == 503
+            monkeypatch.setenv("ATLAS_GCW_SINGLE_TENANT", "tenant-b")
+            with pytest.raises(HTTPException):
+                r.get_service()
+            monkeypatch.setenv("ATLAS_GCW_SINGLE_TENANT", "tenant-a")
+            assert r.get_service() is r._service
+        finally:
+            r._tenant_var.reset(tok)
+    finally:
+        r._service, bound = saved
+        r._bound_by_tenant.clear(); r._bound_by_tenant.update(bound)
+
+
+def test_per_tenant_binding_serves_only_that_tenant_and_missing_tenant_fails_closed():
+    r, saved = _fresh_unbound()
+    try:
+        from app.modules.m20_general_cognitive_worker.service import CognitiveWorkerService
+        from fastapi import HTTPException
+        svc_a = CognitiveWorkerService()
+        r.bind_service(svc_a, tenant_id="tenant-a")
+        tok = r._tenant_var.set("tenant-a")
+        assert r.get_service() is svc_a
+        r._tenant_var.reset(tok)
+        tok = r._tenant_var.set("tenant-b")
+        assert r.get_service() is not svc_a  # b gets its own default, never a's
+        r._tenant_var.reset(tok)
+        with pytest.raises(HTTPException):  # no request-scoped tenant: no shared bucket
+            r.get_service()
+    finally:
+        r._service, bound = saved
+        r._bound_by_tenant.clear(); r._bound_by_tenant.update(bound)
+
+
+def test_default_service_cap_fails_closed_without_evicting(monkeypatch):
+    r, saved = _fresh_unbound()
+    try:
+        from fastapi import HTTPException
+        monkeypatch.setattr(r, "MAX_DEFAULT_TENANT_SERVICES", 2)
+        made = {}
+        for t in ("t1", "t2"):
+            tok = r._tenant_var.set(t); made[t] = r.get_service(); r._tenant_var.reset(tok)
+        tok = r._tenant_var.set("t3")
+        with pytest.raises(HTTPException) as e:
+            r.get_service()
+        r._tenant_var.reset(tok)
+        assert e.value.status_code == 503 and set(r._default_services) == {"t1", "t2"}
+        tok = r._tenant_var.set("t1"); assert r.get_service() is made["t1"]; r._tenant_var.reset(tok)
+    finally:
+        r._service, bound = saved
+        r._bound_by_tenant.clear(); r._bound_by_tenant.update(bound)
+
+
+def test_concurrent_requests_for_two_tenants_do_not_cross():
+    import threading
+    r, saved = _fresh_unbound()
+    try:
+        from fastapi.testclient import TestClient
+        from app.main import app
+        errors = []
+
+        def work(tenant, n):
+            c = TestClient(app, raise_server_exceptions=False)
+            h = {"x-atlas-tenant": tenant}
+            for i in range(n):
+                if c.post("/api/v1/modules/20/goals", json={"goal": "research topic and send summary"}, headers=h).status_code not in (200, 201):
+                    errors.append((tenant, "post"))
+            got = c.get("/api/v1/modules/20/tasks", headers=h).json()
+            if len(got) != n:
+                errors.append((tenant, len(got), n))
+        ts = [threading.Thread(target=work, args=("tc-a", 3)), threading.Thread(target=work, args=("tc-b", 5))]
+        [t.start() for t in ts]; [t.join() for t in ts]
+        assert not errors, errors
+    finally:
+        r._service, bound = saved
+        r._bound_by_tenant.clear(); r._bound_by_tenant.update(bound)
+        r._default_services.clear()
+
+
+def test_clean_m20_alias_matches_legacy_path_and_is_not_a_prefix_match():
+    from fastapi.testclient import TestClient
+    from app.main import app
+    c = TestClient(app, raise_server_exceptions=False)
+    legacy = c.get("/api/v1/api/modules/20/health")
+    clean = c.get("/api/v1/modules/20/health")
+    assert legacy.status_code == clean.status_code == 200
+    assert c.get("/api/v1/modules/2000/health").status_code == 404
