@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from enum import Enum
 
 from pydantic import BaseModel, Field, model_validator
+from app.core.public_validation import PublicValidationError
 
 _OWNER_RE = re.compile(
     r"\b(?:i(?:'ll| will| can| am going to)|let me|we(?:'ll| will| can))\s+"
@@ -45,7 +46,7 @@ class PromiseTrackerRequest(BaseModel):
     def unique_ids(self):
         ids = [message.message_id for message in self.messages]
         if len(ids) != len(set(ids)):
-            raise ValueError("duplicate message_id")
+            raise PublicValidationError("duplicate message_id")
         return self
 
 
@@ -68,12 +69,12 @@ def _deadline(fragment: str, sent_at: datetime) -> tuple[datetime | None, str | 
 def track_promises(request: PromiseTrackerRequest) -> dict:
     as_of = request.as_of or datetime.now(timezone.utc)
     if as_of.tzinfo is None:
-        raise ValueError("as_of must be timezone-aware")
+        raise PublicValidationError("as_of must be timezone-aware")
     as_of = as_of.astimezone(timezone.utc)
     promises = []
     for message in sorted(request.messages, key=lambda item: (item.sent_at, item.message_id)):
         if message.sent_at.tzinfo is None:
-            raise ValueError(f"sent_at must be timezone-aware: {message.message_id}")
+            raise PublicValidationError("sent_at must be timezone-aware", str(message.message_id))
         if message.direction != MessageDirection.OWNER:
             continue
         for position, match in enumerate(_OWNER_RE.finditer(message.body)):

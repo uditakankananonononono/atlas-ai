@@ -29,9 +29,9 @@ class ContradictionDecision(BaseModel):
     @model_validator(mode="after")
     def preferred_required(self):
         if self.action == "prefer" and not self.preferred_evidence_id:
-            raise ValueError("preferred_evidence_id is required when action is prefer")
+            raise PublicValidationError("preferred_evidence_id is required when action is prefer")
         if self.action == "retain_both" and self.preferred_evidence_id is not None:
-            raise ValueError("retain_both cannot name preferred evidence")
+            raise PublicValidationError("retain_both cannot name preferred evidence")
         return self
 
 
@@ -48,21 +48,21 @@ class ContradictionInboxRequest(BaseModel):
             raise PublicValidationError("duplicate evidence_id")
         keys = [decision.claim_key.casefold().strip() for decision in self.decisions]
         if len(keys) != len(set(keys)):
-            raise ValueError("duplicate decision for claim_key")
+            raise PublicValidationError("duplicate decision for claim_key")
         return self
 
 
 def build_contradiction_inbox(request: ContradictionInboxRequest) -> dict:
     as_of = request.as_of or datetime.now(timezone.utc)
     if as_of.tzinfo is None:
-        raise ValueError("as_of must be timezone-aware")
+        raise PublicValidationError("as_of must be timezone-aware")
     as_of = as_of.astimezone(timezone.utc)
     evidence_by_id = {row.evidence_id: row for row in request.evidence}
     grouped: dict[str, list[ClaimEvidence]] = defaultdict(list)
     display_keys: dict[str, str] = {}
     for row in request.evidence:
         if row.observed_at.tzinfo is None:
-            raise ValueError(f"observed_at must be timezone-aware: {row.evidence_id}")
+            raise PublicValidationError("observed_at must be timezone-aware", str(row.evidence_id))
         key = row.claim_key.casefold().strip()
         display_keys.setdefault(key, row.claim_key.strip())
         grouped[key].append(row)
@@ -70,7 +70,7 @@ def build_contradiction_inbox(request: ContradictionInboxRequest) -> dict:
     decisions = {row.claim_key.casefold().strip(): row for row in request.decisions}
     unknown_decisions = sorted(set(decisions) - set(grouped))
     if unknown_decisions:
-        raise ValueError(f"decision references unknown claim_key: {unknown_decisions[0]}")
+        raise PublicValidationError("decision references unknown claim_key", str(unknown_decisions[0]))
 
     inbox = []
     stale_total = 0
@@ -96,7 +96,7 @@ def build_contradiction_inbox(request: ContradictionInboxRequest) -> dict:
             })
         decision = decisions.get(key)
         if decision and decision.preferred_evidence_id not in row_ids and decision.action == "prefer":
-            raise ValueError(f"preferred evidence is not part of contradiction: {decision.preferred_evidence_id}")
+            raise PublicValidationError("preferred evidence is not part of contradiction", str(decision.preferred_evidence_id))
         inbox.append({
             "claim_key": display_keys[key],
             "evidence": evidence,

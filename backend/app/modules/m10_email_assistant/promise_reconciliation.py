@@ -8,6 +8,7 @@ from datetime import datetime
 from enum import Enum
 
 from pydantic import BaseModel, Field, model_validator
+from app.core.public_validation import PublicValidationError
 
 _EXPLICIT_COMPLETION = re.compile(
     r"\b(?:i|we)\s+(?:have\s+|(?:'ve|'re)\s+)?(?:sent|submitted|uploaded|delivered|finished|completed|resolved|paid|booked|cancelled|canceled)\b",
@@ -53,7 +54,7 @@ class PromiseSnapshot(BaseModel):
     def unique_promises(self):
         ids = [promise.promise_id for promise in self.promises]
         if len(ids) != len(set(ids)):
-            raise ValueError("duplicate promise_id in persisted snapshot")
+            raise PublicValidationError("duplicate promise_id in persisted snapshot")
         return self
 
 
@@ -66,7 +67,7 @@ class UpdateMessage(BaseModel):
     @model_validator(mode="after")
     def aware_time(self):
         if self.sent_at.tzinfo is None:
-            raise ValueError("message sent_at must be timezone-aware")
+            raise PublicValidationError("message sent_at must be timezone-aware")
         return self
 
 
@@ -83,12 +84,12 @@ class ReviewedDecision(BaseModel):
     @model_validator(mode="after")
     def valid_review(self):
         if self.reviewed_at.tzinfo is None:
-            raise ValueError("reviewed_at must be timezone-aware")
+            raise PublicValidationError("reviewed_at must be timezone-aware")
         if self.action == ReconciliationAction.COMPLETE:
             if not self.evidence_message_id or not self.evidence_excerpt:
-                raise ValueError("complete requires message evidence and an exact excerpt")
+                raise PublicValidationError("complete requires message evidence and an exact excerpt")
         elif bool(self.evidence_message_id) != bool(self.evidence_excerpt):
-            raise ValueError("keep_open evidence requires both message id and excerpt")
+            raise PublicValidationError("keep_open evidence requires both message id and excerpt")
         return self
 
 
@@ -104,11 +105,11 @@ class PromiseReconciliationRequest(BaseModel):
         decision_ids = [decision.decision_id for decision in self.reviewed_decisions]
         promise_ids = [decision.promise_id for decision in self.reviewed_decisions]
         if len(message_ids) != len(set(message_ids)):
-            raise ValueError("duplicate update message_id")
+            raise PublicValidationError("duplicate update message_id")
         if len(decision_ids) != len(set(decision_ids)):
-            raise ValueError("duplicate decision_id")
+            raise PublicValidationError("duplicate decision_id")
         if len(promise_ids) != len(set(promise_ids)):
-            raise ValueError("at most one reviewed decision per promise per reconciliation")
+            raise PublicValidationError("at most one reviewed decision per promise per reconciliation")
         return self
 
 
@@ -116,7 +117,7 @@ def reconcile_promise_state(request: PromiseReconciliationRequest) -> dict:
     previous = request.previous_snapshot.model_dump(mode="json")
     actual_snapshot_sha = _sha256(previous)
     if actual_snapshot_sha != request.previous_snapshot_sha256:
-        raise ValueError("previous snapshot hash mismatch")
+        raise PublicValidationError("previous snapshot hash mismatch")
 
     messages = {message.message_id: message for message in request.update_messages}
     promise_rows = {promise.promise_id: promise for promise in request.previous_snapshot.promises}
@@ -126,27 +127,27 @@ def reconcile_promise_state(request: PromiseReconciliationRequest) -> dict:
     for decision in sorted(request.reviewed_decisions, key=lambda item: item.decision_id):
         promise = promise_rows.get(decision.promise_id)
         if promise is None:
-            raise ValueError(f"decision references unknown promise_id: {decision.promise_id}")
+            raise PublicValidationError("decision references unknown promise_id", str(decision.promise_id))
         promise_payload = promise.model_dump(mode="json")
         if _sha256(promise_payload) != decision.previous_promise_sha256:
-            raise ValueError(f"previous promise hash mismatch: {decision.promise_id}")
+            raise PublicValidationError("previous promise hash mismatch", str(decision.promise_id))
         if promise.state == PromiseState.COMPLETED and decision.action == ReconciliationAction.COMPLETE:
-            raise ValueError(f"promise is already completed: {decision.promise_id}")
+            raise PublicValidationError("promise is already completed", str(decision.promise_id))
 
         evidence_sha = None
         if decision.evidence_message_id:
             message = messages.get(decision.evidence_message_id)
             if message is None:
-                raise ValueError(f"review evidence message is absent: {decision.evidence_message_id}")
+                raise PublicValidationError("review evidence message is absent", str(decision.evidence_message_id))
             excerpt = decision.evidence_excerpt or ""
             if excerpt not in message.body:
-                raise ValueError(f"review evidence excerpt is not exact: {decision.decision_id}")
+                raise PublicValidationError("review evidence excerpt is not exact", str(decision.decision_id))
             evidence_sha = _sha256(message.model_dump(mode="json"))
             if decision.action == ReconciliationAction.COMPLETE:
                 if message.direction != Direction.OWNER:
-                    raise ValueError("completion evidence must be owner-authored")
+                    raise PublicValidationError("completion evidence must be owner-authored")
                 if not _EXPLICIT_COMPLETION.search(excerpt):
-                    raise ValueError("completion evidence is ambiguous; keep the promise open")
+                    raise PublicValidationError("completion evidence is ambiguous; keep the promise open")
 
         next_state = PromiseState.COMPLETED if decision.action == ReconciliationAction.COMPLETE else PromiseState.OPEN
         receipt_payload = {

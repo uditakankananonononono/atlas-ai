@@ -7,6 +7,7 @@ from .repository import SqlGraphRepository
 from .schemas import *
 from .service import ConflictError,Service
 from .local_nlp import NLPUnavailable, get_local_nlp
+from app.core.public_validation import public_reason
 router=APIRouter(prefix="/knowledge-workspace",tags=["knowledge-workspace"])
 def get_service(t:TenantContext=Depends(require_tenant)):return Service(SqlGraphRepository(t.tenant_id,t.actor_id))
 @router.post("/nodes",response_model=Node,status_code=status.HTTP_201_CREATED)
@@ -60,13 +61,13 @@ def contradiction_inbox(body: ContradictionInboxRequest, tenant: TenantContext =
     try:
         return {'tenant_id': tenant.tenant_id, **build_contradiction_inbox(body)}
     except ValueError as error:
-        raise HTTPException(422, str(error)) from error
+        raise HTTPException(422, public_reason(error)) from error
 
 from .contradiction_revisions import RevisionChainRequest,verify_revision_chain
 @router.post('/contradiction-revisions/verify')
 def contradiction_revision_chain(body:RevisionChainRequest,tenant:TenantContext=Depends(require_tenant)):
  try:return {'tenant_id':tenant.tenant_id,**verify_revision_chain(body)}
- except ValueError as error:raise HTTPException(422,str(error)) from error
+ except ValueError as error:raise HTTPException(422,public_reason(error)) from error
 
 from pydantic import BaseModel as _RBM, Field as _RF
 from .revision_store import _http_fetch, KeyGovernanceError, RevisionConflict, RevisionRejected, RevisionStore, SourceBlobStore, verify_sources
