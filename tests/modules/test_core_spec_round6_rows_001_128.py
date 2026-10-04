@@ -301,7 +301,7 @@ def test_row_95_skewed_paragraph_sizes_never_exceed_the_part_cap(sizes,mp):
 
 def test_row_95_lone_surrogate_is_422_not_500():
     app=FastAPI();app.include_router(router_3,prefix="/m3")
-    r=TestClient(app,raise_server_exceptions=False).post("/m3/core-spec/capabilities/95",json={"objective":"multipart","inputs":{"text":"a\ud800b"}})
+    r=TestClient(app,raise_server_exceptions=False).post("/m3/core-spec/capabilities/95",content=b'{"objective":"multipart","inputs":{"text":"a\\ud800b"}}',headers={"content-type":"application/json"})
     assert r.status_code==422 and "valid Unicode" in r.text
 
 def test_row_95_titles_skip_blank_lines_and_crlf_is_one_lossless_part_with_the_limit_stated():
