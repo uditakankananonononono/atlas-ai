@@ -116,7 +116,8 @@ def test_mcts_rumination_returns_ordering_without_invented_probability():
     assert "too little recorded evidence" in result["expected_success_status"]
     a.state = b.state = c.state = TaskState.SUCCEEDED
     done = ruminator.ruminate([a, b, c])  # all steps already SUCCEEDED: retrospective status, not a forecast
-    assert done["expected_success"] is None and done["remaining_steps"] == 0 and "no steps remain" in done["expected_success_status"]
+    assert done["expected_success"] is None and done["remaining_steps"] == 0 and done["plan_complete"] is True
+    assert "already succeeded" in done["expected_success_status"]
 
 
 def test_scheduler_priority_and_round_robin():
@@ -141,3 +142,20 @@ def test_scheduler_priority_and_round_robin():
     done = TaskContext(goal="done", state=TaskState.SUCCEEDED)
     scheduler.add(done)
     assert done not in scheduler.active()
+
+
+@pytest.mark.parametrize("state", [s for s in TaskState if s not in (TaskState.PENDING, TaskState.SUCCEEDED)])
+def test_ruminate_with_no_pending_step_never_reports_complete_for_unfinished_states(state):
+    done_node = PlanNode(title="done", risk=Risk.READ)
+    other = PlanNode(title="other", risk=Risk.READ)
+    done_node.state = TaskState.SUCCEEDED
+    other.state = state
+    out = MCTSRuminator(simulations=4).ruminate([done_node, other])
+    assert out["plan_complete"] is False and out["remaining_steps"] == 1 and out["expected_success"] is None
+    assert out["state_counts"] == {"succeeded": 1, state.value: 1}
+    assert "unfinished" in out["expected_success_status"]
+
+
+def test_ruminate_empty_plan_is_not_complete():
+    out = MCTSRuminator(simulations=4).ruminate([])
+    assert out["plan_complete"] is False and out["expected_success"] is None and "no steps" in out["expected_success_status"]

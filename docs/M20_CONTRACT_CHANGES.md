@@ -25,3 +25,15 @@ recovered from the intake record; the "old" column is what the baseline tests as
 3. Use of long-term-memory relevance to rank steps: removed, not replaced.
 4. Independence assumption in the rumination product is unverified.
 Replacement coverage: tests/modules/test_m20_honest_estimates.py (evidence-driven ranking, Wilson intervals, minimum samples).
+
+## Original requirement wording (raw source, WIP22)
+Source: /downloads/m20-planner-gain-cost-ltm-wording-f2e1793b.json (user-pasted spec text in M00604; spec author unverified; archive is research material, not authority).
+Exact wording: "A meta-reasoner selects the next action. It uses a decision tree where each leaf is an executable skill (web_search, write_code, ask_user_clarification). The choice is based on expected information gain, estimated cost, and probability of progress toward the goal."
+The spec also asks for reusable HTN methods, episodic plus semantic/procedural long-term memory, a working memory of about 50 chunks, idle MCTS rumination, and a module/model budget downgrade.
+The spec gives NO formulas or metrics. So information gain, cost, LTM/WM use, rumination quality and budget downgrade are genuinely requested. They are NOT closed by removing bad tests. No authoritative formula is invented here; the current behaviour is evidence-based and honest, and the parts below stay requested-but-unimplemented gaps.
+
+## Wording of observed rates (WIP22)
+An observed success rate (including 1.0) is an observed frequency with a sample-size confidence interval. It is not a calibrated future probability and not proof of independence between steps. No arbitrary rate cap is applied.
+
+## Rumination with no PENDING step (WIP22 fix)
+Previously "no PENDING" was reported as "no steps remain" even for PLANNING/RUNNING/WAITING_*/RUMINATING/FAILED/BLOCKED/CANCELLED. Now ruminate returns state_counts, remaining_steps = every non-SUCCEEDED step, plan_complete True only when every step SUCCEEDED (and the plan is non-empty), expected_success always None, and a status naming the unfinished states. DeliberativeLoop.ruminate also restores the real prior task state (it used to force RUNNING, hiding WAITING_APPROVAL etc.) and traces expected_success=None. Tests: every TaskState case in test_m20_planner_scheduler.py plus a loop test in test_m20_executive.py.

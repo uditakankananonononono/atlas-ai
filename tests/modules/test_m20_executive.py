@@ -121,3 +121,16 @@ def test_rumination_trace():
     assert result["simulations"] > 0
     assert result["best_ordering"]
     assert any(t.phase == "ruminate" for t in loop.traces)
+
+
+def test_loop_ruminate_preserves_real_state_and_traces_none_expected_success():
+    # Previously loop.ruminate forced the task back to RUNNING, hiding WAITING_APPROVAL; and nothing at all was pending.
+    loop, gate, calls = build_loop()
+    ctx = loop.start(TaskContext(goal="research competitors and email the findings", importance=4))
+    assert ctx.state == TaskState.WAITING_APPROVAL
+    result = loop.ruminate(ctx)
+    assert ctx.state == TaskState.WAITING_APPROVAL  # restored, not forced to RUNNING
+    assert result["plan_complete"] is False and result["expected_success"] is None
+    assert result["remaining_steps"] >= 1 and "unfinished" in result["expected_success_status"]
+    trace = [t for t in loop.traces if t.phase == "ruminate"][-1]
+    assert "expected_success=None" in trace.detail and "unfinished" in trace.detail
