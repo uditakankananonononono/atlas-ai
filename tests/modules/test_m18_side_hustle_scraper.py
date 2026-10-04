@@ -5,7 +5,8 @@ async def gen(prompt,*args):return "mock",json.dumps([{"title":"Tutoring","steps
 class C:
  async def collect(self,q,l):return [{"url":"https://example.com/a","text":"Interview students before offering tutoring."}]
 @pytest.mark.asyncio
-async def test_blueprint_keeps_sources():
+async def test_blueprint_keeps_sources(monkeypatch):
+ monkeypatch.setenv('ATLAS_M18_OPERATOR_ACCOUNT_TENANTS','default')  # CONTRACT CHANGE (WIP44): credentialed collectors need a tenant grant
  x=await Service(generate=gen,collectors={"youtube":C()}).discover(DiscoverIn(query="student business",platforms=["youtube"]));assert str(x[0].source_urls[0])=="https://example.com/a"
 @pytest.mark.asyncio
 async def test_rejects_login_instagram():

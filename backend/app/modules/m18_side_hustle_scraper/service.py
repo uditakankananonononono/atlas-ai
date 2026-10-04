@@ -26,6 +26,18 @@ from .schemas import (
 )
 
 GenerateFn = Callable[..., Awaitable[tuple[str, str]]]
+# Collectors that spend the OPERATOR's own third-party account/quota (keys come from process env). Env presence is not a grant
+# for every tenant: a tenant may use them only if listed in ATLAS_M18_OPERATOR_ACCOUNT_TENANTS (exact ids, comma separated;
+# no wildcard). Unlisted tenants fail closed. Credential-free public collectors are unaffected.
+CREDENTIALED_COLLECTORS = frozenset({"youtube", "pinterest", "x", "instagram"})
+
+
+def operator_account_granted(tenant_id: str) -> bool:
+    import os
+    granted = {t.strip() for t in os.getenv("ATLAS_M18_OPERATOR_ACCOUNT_TENANTS", "").split(",") if t.strip()}
+    return tenant_id in granted
+
+
 ALLOWED = {"reddit", "youtube", "pinterest", "public_web"}
 SCAM = ("guaranteed income", "risk free", "pay a fee to unlock", "crypto doubling", "no work required")
 
@@ -100,10 +112,10 @@ class Service:
             raise RuntimeError(f"collector {platform} returned no documents and {len(errors)} error(s)")
         return out
 
-    async def discover(self, request: DiscoverIn) -> list[BlueprintOut]:
-        return (await self.discover_report(request))[0]
+    async def discover(self, request: DiscoverIn, *, tenant_id: Optional[str] = None) -> list[BlueprintOut]:
+        return (await self.discover_report(request, tenant_id=tenant_id))[0]
 
-    async def discover_report(self, request: DiscoverIn):
+    async def discover_report(self, request: DiscoverIn, *, tenant_id: Optional[str] = None):
         """(blueprints, partial_collector_failures): failures are reported per platform as counts even when other docs were collected."""
         sources = []
         partial: list = []
@@ -112,6 +124,8 @@ class Service:
                 raise ValueError(f"unsupported or non-compliant collector: {platform}")
             if platform not in self._collectors:
                 raise RuntimeError(f"collector not configured: {platform}")
+            if platform in CREDENTIALED_COLLECTORS and not operator_account_granted(tenant_id or self._tenant_id):
+                raise PermissionError(f"operator account not granted to this tenant for {platform}")
             for raw in await self._collect_normalized(platform, request.query, request.limit_per_platform, partial):
                 text = " ".join((raw.get("transcript") or raw.get("text") or "").split())[:6000]
                 sources.append({"url": raw["url"], "platform": platform, "text": text,
@@ -141,10 +155,17 @@ class Service:
 
     async def collect(self, request: CollectIn, *, tenant_id: Optional[str] = None) -> CollectReport:
         pipeline = self._require_pipeline()
-        return await asyncio.to_thread(
-            pipeline.run_collection, tenant_id or self._tenant_id,
-            request.query, request.platforms, request.limit_per_platform,
-        )
+        tenant = tenant_id or self._tenant_id
+        denied = [p for p in request.platforms if p in CREDENTIALED_COLLECTORS and not operator_account_granted(tenant)]
+        platforms = [p for p in request.platforms if p not in denied]
+        report = await asyncio.to_thread(pipeline.run_collection, tenant, request.query, platforms, request.limit_per_platform)
+        if not denied:
+            return report
+        from dataclasses import replace
+        from .lane_pipeline import PlatformReport
+        extra = tuple(PlatformReport(platform=p, collected=0, accepted_new=0, accepted_duplicate=0, rejected=0,
+                                     rejection_reasons=(), errors=(f"operator_account_not_granted:{p}",)) for p in denied)
+        return replace(report, platforms=report.platforms + extra)
 
     async def ranked(self, request: RankIn, *, tenant_id: Optional[str] = None) -> list[RankedDocument]:
         pipeline = self._require_pipeline()

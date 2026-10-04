@@ -39,7 +39,7 @@ import os
 router = APIRouter(prefix="/side-hustle-scraper", tags=["side-hustle-scraper"])
 _service = None
 _runner = HustleRunner()
-_run_store=DurableRunStore(os.getenv("ATLAS_M18_RUN_DB","/tmp/atlas-m18-runs.sqlite3"))
+_run_store=DurableRunStore(os.getenv("ATLAS_M18_RUN_DB") or (os.path.join(os.environ["ATLAS_RUNTIME_DATA_DIR"],"m18-runs.sqlite3") if os.getenv("ATLAS_RUNTIME_DATA_DIR") else "/tmp/atlas-m18-runs.sqlite3"))  # /tmp fallback is shared-temp: set ATLAS_RUNTIME_DATA_DIR/ATLAS_M18_RUN_DB in deployments
 def durable_runner(t:TenantContext=Depends(require_tenant)):return DurableHustleRunner(t.tenant_id,_run_store)
 
 
@@ -60,9 +60,11 @@ def get_service() -> Service:
 
 
 @router.post("/blueprints", response_model=list[BlueprintOut])
-async def discover(request: DiscoverIn, response: Response, service: Service = Depends(get_service)):
+async def discover(request: DiscoverIn, response: Response, tenant: TenantContext = Depends(require_tenant), service: Service = Depends(get_service)):
     try:
-        out, partial = await service.discover_report(request)
+        out, partial = await service.discover_report(request, tenant_id=tenant.tenant_id)
+    except PermissionError as e:
+        raise HTTPException(403, str(e))
     except ProviderError:
         raise HTTPException(503, "model provider unavailable")  # fixed text: provider/shared-model wrapper text is not echoed
     except ValueError as e:
@@ -141,30 +143,51 @@ async def freshness(tenant: TenantContext = Depends(require_tenant), service: Se
                                  ("watched", "alive", "dead", "due_now", "by_class", "generated_at")})
 
 
+_run_owner: dict[str, str] = {}  # legacy in-memory runs: run_id -> owning tenant (runs themselves are process memory, lost on restart)
+
+
+def _owned_run(run_id: str, tenant: TenantContext) -> str:
+ """A legacy /runs id is usable only by the tenant that created it; anything else is indistinguishable from unknown (404)."""
+ if _run_owner.get(run_id) != tenant.tenant_id:raise HTTPException(404,"run not found")
+ return run_id
+
+
+def _approval_owner(payload: dict, tenant: TenantContext) -> str:
+ """Approvals are owned by the AUTHENTICATED tenant. A client-supplied payload user_id is never an owner; if present and
+ different it is refused rather than silently ignored."""
+ claimed = payload.get("user_id")
+ if claimed is not None and str(claimed) != tenant.tenant_id:raise HTTPException(422,"user_id in the body does not match the authenticated tenant")
+ return tenant.tenant_id
+
+
 @router.post("/runs")
-def create_run(payload: dict):
- try:return _runner.view(_runner.create(title=str(payload.get("title", "")),first_experiment=str(payload.get("first_experiment", "")),max_budget=float(payload.get("max_budget",0)),source_urls=list(payload.get("source_urls",[]))))
+def create_run(payload: dict, tenant: TenantContext = Depends(require_tenant)):
+ try:
+  run = _runner.create(title=str(payload.get("title", "")),first_experiment=str(payload.get("first_experiment", "")),max_budget=float(payload.get("max_budget",0)),source_urls=list(payload.get("source_urls",[])))
+  _run_owner[run.id] = tenant.tenant_id
+  return _runner.view(run)
  except (ValueError,TypeError) as e:raise HTTPException(422,str(e))
 
 @router.get("/runs/{run_id}")
-def get_run(run_id:str):
+def get_run(run_id:str, tenant: TenantContext = Depends(require_tenant)):
+ _owned_run(run_id, tenant)
  try:return _runner.view(_runner.get(run_id))
  except KeyError:raise HTTPException(404,"run not found")
 
 @router.post("/runs/{run_id}/steps/{step_id}/request-approval")
-def request_step_approval(run_id:str,step_id:str,payload:dict):
- try:return _runner.view(_runner.get(run_id)) | {"requested_step":_runner.view(_runner.get(run_id))["steps"][[x.id for x in _runner.get(run_id).steps].index(step_id)]} if _runner.request_action(run_id,step_id,str(payload.get("user_id","default"))) else {}
+def request_step_approval(run_id:str,step_id:str,payload:dict, tenant: TenantContext = Depends(require_tenant)):
+ _owned_run(run_id, tenant)
+ try:return _runner.view(_runner.get(run_id)) | {"requested_step":_runner.view(_runner.get(run_id))["steps"][[x.id for x in _runner.get(run_id).steps].index(step_id)]} if _runner.request_action(run_id,step_id,_approval_owner(payload,tenant)) else {}
  except KeyError:raise HTTPException(404,"run or step not found")
  except ValueError as e:raise HTTPException(422,str(e))
 
 @router.post('/runs/{run_id}/steps/{step_id}/receipts')
-def record_receipt(run_id:str,step_id:str,payload:dict):
+def record_receipt(run_id:str,step_id:str,payload:dict, tenant: TenantContext = Depends(require_tenant)):
+ _owned_run(run_id, tenant)
  raise HTTPException(409,"Caller receipts cannot prove execution; use login-run adapter readback")
- try:return _runner.record_adapter_receipt(run_id,step_id,adapter=str(payload.get('adapter','')),provider_receipt_id=str(payload.get('provider_receipt_id','')),status=str(payload.get('status','')),observed_at=str(payload.get('observed_at','')),payload_sha256=str(payload.get('payload_sha256','')))
- except KeyError:raise HTTPException(404,'run or step not found')
- except ValueError as error:raise HTTPException(422,str(error)) from error
 @router.post('/runs/{run_id}/outcomes')
-def record_outcome(run_id:str,payload:dict):
+def record_outcome(run_id:str,payload:dict, tenant: TenantContext = Depends(require_tenant)):
+ _owned_run(run_id, tenant)
  try:return _runner.record_outcome(run_id,metric=str(payload.get('metric','')),value=float(payload.get('value')),unit=str(payload.get('unit','')),observed_at=str(payload.get('observed_at','')),source_url=payload.get('source_url'),receipt_sha256=payload.get('receipt_sha256'))
  except KeyError:raise HTTPException(404,'run not found')
  except (ValueError,TypeError) as error:raise HTTPException(422,str(error)) from error
@@ -180,8 +203,8 @@ def get_durable_run(run_id:str,r:DurableHustleRunner=Depends(durable_runner)):
  try:return r.view(r.get(run_id))
  except KeyError:raise HTTPException(404,'run not found')
 @router.post('/durable-runs/{run_id}/steps/{step_id}/request-approval')
-def durable_request_approval(run_id:str,step_id:str,payload:dict,r:DurableHustleRunner=Depends(durable_runner)):
- try:r.request_action(run_id,step_id,str(payload.get('user_id','default')));return r.view(r.get(run_id))
+def durable_request_approval(run_id:str,step_id:str,payload:dict,r:DurableHustleRunner=Depends(durable_runner),t:TenantContext=Depends(require_tenant)):
+ try:r.request_action(run_id,step_id,_approval_owner(payload,t));return r.view(r.get(run_id))
  except KeyError:raise HTTPException(404,'run or step not found')
  except ValueError as error:raise HTTPException(422,str(error)) from error
 @router.post('/durable-runs/{run_id}/steps/{step_id}/receipts')

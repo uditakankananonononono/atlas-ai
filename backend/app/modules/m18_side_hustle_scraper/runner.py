@@ -86,7 +86,11 @@ class DurableRunStore:
  """Tenant-partitioned durable snapshots for runs, receipts and outcomes."""
  def __init__(self,path:str|Path):
   self.path=str(path)
+  import os as _os
+  Path(self.path).parent.mkdir(parents=True,exist_ok=True)
   with self._db() as db:db.execute('CREATE TABLE IF NOT EXISTS hustle_runs(tenant_id TEXT NOT NULL,run_id TEXT NOT NULL,snapshot TEXT NOT NULL,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(tenant_id,run_id))')
+  try:_os.chmod(self.path,0o600)  # owner-only (file is often created under shared temp)
+  except OSError:pass
  def _db(self):
   db=sqlite3.connect(self.path);db.execute('PRAGMA journal_mode=WAL');db.execute('PRAGMA synchronous=FULL');return db
  def save(self,tenant_id:str,run:HustleRun)->None:
