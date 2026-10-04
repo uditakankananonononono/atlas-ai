@@ -47,7 +47,8 @@ async def _post(provider:str,url:str,*,headers:dict[str,str]|None=None,params:di
     except CircuitOpen as exc:raise ProviderError(f"{provider.title()} circuit is open") from exc
     except httpx.HTTPError as exc:raise ProviderError(f"{provider.title()} request failed after retries") from exc
 
-async def generate(prompt: str, provider: str, model: str | None = None) -> tuple[str, str]:
+async def generate(prompt: str, provider: str, model: str | None = None, max_tokens: int | None = None) -> tuple[str, str]:
+    """max_tokens is honoured by the openai_compat/llamacpp branch only; other providers ignore it."""
     provider=provider.lower().strip()
     if not prompt.strip(): raise ProviderError("prompt is empty")
     if provider in {"shared","shared-public"}:
@@ -97,7 +98,7 @@ async def generate(prompt: str, provider: str, model: str | None = None) -> tupl
         provider="openai_compat";base=os.getenv("ATLAS_LOCAL_OPENAI_URL","http://localhost:8080/v1").rstrip("/")
         chosen=_model(model or os.getenv("ATLAS_LOCAL_OPENAI_MODEL","local"))
         headers={"Authorization":f"Bearer {os.getenv('ATLAS_LOCAL_OPENAI_KEY')}"} if os.getenv("ATLAS_LOCAL_OPENAI_KEY") else None
-        data=await _post(provider,f"{base}/chat/completions",headers=headers,payload={"model":chosen,"messages":[{"role":"user","content":prompt}]})
+        data=await _post(provider,f"{base}/chat/completions",headers=headers,payload={"model":chosen,"messages":[{"role":"user","content":prompt}],**({"max_tokens":int(max_tokens)} if max_tokens else {})})
         try:text=data["choices"][0]["message"]["content"]
         except (KeyError,IndexError,TypeError) as exc:raise ProviderError("Local OpenAI-compatible response schema rejected") from exc
     elif provider in {"huggingface","hf"}:
