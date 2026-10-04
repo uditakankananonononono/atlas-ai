@@ -5,11 +5,26 @@ from app.core.approvals import approvals
 from .schemas import BatchDiscoveryIn,BlockValueIn,DiscoveryIn,FeedDiscoverIn,FeedPollIn,InstallIn,OpmlBuildIn,OpmlParseIn
 from .service import Service
 from .collectors import default_collectors
-router=APIRouter(prefix="/tools-hub",tags=["tools-hub"]);_service=None
-def get_service():
- global _service
- if _service is None:_service=Service(approvals,default_collectors())
- return _service
+import threading
+from app.auth.context import TenantContext,require_tenant
+router=APIRouter(prefix="/tools-hub",tags=["tools-hub"])
+# Per-tenant discovery Service (candidate cache, query snapshots/history/diffs, cooldowns, source stats, blocklist are
+# tenant state and must not be shared). The collectors are shared on purpose: they only hold PUBLIC registry data
+# (e.g. the PyPI name index cache) and one 100MB-class index per tenant would be wasteful. In-memory, per process,
+# lost on restart; hard cap on tenants, fail closed (no eviction = no silent deletion of another tenant's state).
+MAX_TENANT_SERVICES=64
+_services:dict[str,Service]={};_shared_collectors:list|None=None;_services_lock=threading.Lock()
+def service_for_tenant(tenant_id:str)->Service:
+ global _shared_collectors
+ with _services_lock:
+  svc=_services.get(tenant_id)
+  if svc is None:
+   if len(_services)>=MAX_TENANT_SERVICES:raise HTTPException(503,"tools-hub in-memory tenant capacity reached; restart or configure persistent per-tenant services")
+   if _shared_collectors is None:_shared_collectors=default_collectors()
+   svc=_services[tenant_id]=Service(approvals,list(_shared_collectors))
+  return svc
+def get_service(tenant:TenantContext=Depends(require_tenant)):
+ return service_for_tenant(tenant.tenant_id)
 @router.post("/discoveries")
 async def discover(req:DiscoveryIn,s:Service=Depends(get_service)):
  try:return await s.discover(req.query,kinds=req.kinds,weights=req.weights)

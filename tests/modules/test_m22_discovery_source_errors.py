@@ -12,8 +12,10 @@ class _FakeService:  # LABELED FIXTURE: stands in for the discovery service, no 
     def __init__(self, found, errors):
         self._found, self.last_errors = found, errors
 
-    async def discover(self, query):
-        return self._found
+    async def discover_report(self, query):
+        n = len(self.last_errors)
+        return {"ranked": self._found, "errors": dict(self.last_errors), "sources_attempted": n + 1,
+                "sources_ok": 0 if (self.last_errors and not self._found) else 1, "sources_failed": n}
 
 
 @pytest.fixture
@@ -172,3 +174,41 @@ def test_real_service_oversize_errors_header_is_valid_bounded_json_and_redacted(
     for secret in ("SECRETTOKEN", "private-query", "10.0.0.5", "h.example"):
         assert secret not in raw
         assert secret not in caplog.text  # nor in server logs
+
+
+# ---- tenant scoping of the in-memory discovery service ----
+def test_discovery_service_state_is_per_tenant_and_collectors_are_shared(monkeypatch):
+    from app.modules.m22_tools_hub import routes as rt
+    monkeypatch.setattr(rt, "_services", {})
+    monkeypatch.setattr(rt, "_shared_collectors", [_Empty("shared-public-source")])
+    a, b = rt.service_for_tenant("tenant-a"), rt.service_for_tenant("tenant-b")
+    assert a is not b and rt.service_for_tenant("tenant-a") is a
+    a.query_history.append({"query": "tenant-a-private-query"})
+    a._query_snapshots["x"] = {"k": "a-only"}
+    a.candidates["id"] = object()
+    assert b.query_history == [] and b._query_snapshots == {} and b.candidates == {}
+    assert a.collectors[0] is b.collectors[0]  # public-data collectors shared by design
+
+
+def test_discovery_service_cap_fails_closed_without_evicting(monkeypatch):
+    from fastapi import HTTPException
+    from app.modules.m22_tools_hub import routes as rt
+    monkeypatch.setattr(rt, "_services", {})
+    monkeypatch.setattr(rt, "_shared_collectors", [])
+    monkeypatch.setattr(rt, "MAX_TENANT_SERVICES", 2)
+    t1, t2 = rt.service_for_tenant("t1"), rt.service_for_tenant("t2")
+    with pytest.raises(HTTPException) as e:
+        rt.service_for_tenant("t3")
+    assert e.value.status_code == 503 and set(rt._services) == {"t1", "t2"}
+    assert rt.service_for_tenant("t1") is t1
+
+
+def test_discovery_history_endpoint_does_not_leak_across_tenants_through_http(monkeypatch):
+    from app.modules.m22_tools_hub import routes as rt
+    monkeypatch.setattr(rt, "_services", {})
+    monkeypatch.setattr(rt, "_shared_collectors", [])
+    c = TestClient(app, raise_server_exceptions=False)
+    rt.service_for_tenant("hist-a").query_history.append({"query": "only-for-a"})
+    ra = c.get("/api/v1/tools-hub/queries", headers={"x-atlas-tenant": "hist-a"}).json()
+    rb = c.get("/api/v1/tools-hub/queries", headers={"x-atlas-tenant": "hist-b"}).json()
+    assert ra["queries"] == [{"query": "only-for-a"}] and rb["queries"] == []

@@ -127,9 +127,9 @@ def portfolio(include_history: bool = False, p: InstallPipeline = Depends(get_pi
     return p.portfolio(include_history)
 
 
-def get_discovery_service():
-    from .routes import get_service
-    return get_service()
+def get_discovery_service(tenant: TenantContext = Depends(require_tenant)):
+    from .routes import service_for_tenant
+    return service_for_tenant(tenant.tenant_id)
 
 
 class DiscoveryQueryIn(BaseModel):
@@ -163,23 +163,20 @@ def _safe_source_errors(raw: dict[str, str]) -> dict[str, str]:
 async def discover_and_persist(body: DiscoveryQueryIn, response: Response, p: InstallPipeline = Depends(get_pipeline),
                                service=Depends(get_discovery_service)):
     """Run the free official-registry collectors and persist ranked candidates for this tenant.
-    Source failures are NOT hidden: if every source failed and nothing was found the answer is 502 with per-source
-    errors (an empty 201 would read as 'no matches'); on partial failure the body stays the candidate list and the
-    X-Atlas-Discovery-Source-Errors header carries the per-source errors as JSON."""
+    Source failures are NOT hidden: if every attempted source failed the answer is 502 with COARSE per-source failure
+    categories (a heuristic classification of the exception text, not a diagnosis; raw text is never returned or
+    logged) and counts. On partial failure the body stays the candidate list and the X-Atlas-Discovery-Source-Errors
+    header carries counts, at most 5 shown categories and an omitted count, as complete JSON."""
     try:
         if not body.query.strip():
             raise PipelineError("query is required")
         q = body.query.strip()
-        if hasattr(service, "discover_report"):
-            rep = await service.discover_report(q)  # call-local result, no shared-state race
-        else:  # test doubles / older services: last_errors is request-global, so only best effort
-            rep = {"ranked": await service.discover(q), "errors": dict(getattr(service, "last_errors", {}) or {})}
-            rep.update(sources_failed=len(rep["errors"]), sources_ok=None, sources_attempted=None)
+        rep = await service.discover_report(q)  # call-local result; services without discover_report are unsupported
         found = p.record_candidates(rep["ranked"], q)
         errors = _safe_source_errors(rep["errors"])
         counts = {"sources_failed": rep["sources_failed"], "sources_ok": rep["sources_ok"],
                   "sources_attempted": rep["sources_attempted"]}
-        all_failed = rep["sources_ok"] == 0 if rep["sources_ok"] is not None else (bool(errors) and not found)
+        all_failed = rep["sources_ok"] == 0
         if all_failed and errors:
             raise HTTPException(502, {"message": "no discovery source answered; zero results is NOT 'no matches'",
                                       "source_errors": errors, **counts})
@@ -187,7 +184,7 @@ async def discover_and_persist(body: DiscoveryQueryIn, response: Response, p: In
             import json as _json
             shown = dict(list(errors.items())[:5])  # complete, valid JSON; never a sliced string
             response.headers["X-Atlas-Discovery-Source-Errors"] = _json.dumps(
-                {**counts, "shown": shown, "omitted": max(0, (rep["sources_failed"] if rep["sources_failed"] is not None else len(errors)) - len(shown))}, separators=(",", ":"))
+                {**counts, "shown": shown, "omitted": max(0, rep["sources_failed"] - len(shown))}, separators=(",", ":"))
         return found
     except ERRORS as exc:
         raise _http(exc) from exc
