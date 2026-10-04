@@ -122,6 +122,7 @@ class Service:
             ok_sources.append(collector.name);found.extend(result)
         dedup={self._key(x):x for x in found};ranked=sorted(dedup.values(),key=lambda x:x.rank_key,reverse=True)
         self.candidates.update({x.id:x for x in ranked})
+        self._bound_caches()
         complete=not errs
         if complete:
             snapshot={self._key(x):x.name for x in ranked}
@@ -132,6 +133,14 @@ class Service:
         else:
             self.last_diffs[query]={"incomplete":True,"reason":"some sources failed or were cooling down; no snapshot/diff committed","failed_sources":sorted(errs)}
         return {"ranked":ranked,"errors":dict(errs),"sources_attempted":len(selected),"sources_ok":len(ok_sources),"sources_failed":len(errs)}
+    MAX_CACHED_CANDIDATES=5000;MAX_QUERY_SNAPSHOTS=500
+    cache_evicted=0
+    def _bound_caches(self)->None:
+        """Per-service in-memory caches are bounded; oldest-inserted entries are dropped and COUNTED in cache_evicted
+        (visible, not silent). Durable candidates live in the pipeline DB; this is only the discovery working cache."""
+        for store,cap in ((self.candidates,self.MAX_CACHED_CANDIDATES),(self._query_snapshots,self.MAX_QUERY_SNAPSHOTS),(self.last_diffs,self.MAX_QUERY_SNAPSHOTS)):
+            while len(store)>cap:
+                store.pop(next(iter(store)));self.cache_evicted+=1
     async def discover_many(self,queries:list[str],kinds:list[str]|None=None,weights:dict[str,float]|None=None)->dict[str,Any]:
         """Batch discovery: one call, one deduped+ranked merge across queries."""
         if len(queries)>20:raise ValueError("at most 20 queries per batch")

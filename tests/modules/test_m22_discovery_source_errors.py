@@ -212,3 +212,19 @@ def test_discovery_history_endpoint_does_not_leak_across_tenants_through_http(mo
     ra = c.get("/api/v1/tools-hub/queries", headers={"x-atlas-tenant": "hist-a"}).json()
     rb = c.get("/api/v1/tools-hub/queries", headers={"x-atlas-tenant": "hist-b"}).json()
     assert ra["queries"] == [{"query": "only-for-a"}] and rb["queries"] == []
+
+
+def test_service_working_caches_are_bounded_and_evictions_are_counted():
+    from app.modules.m22_tools_hub.service import Service, Candidate
+    import inspect
+    sig = inspect.signature(Candidate)
+    svc = _real([_Empty("x")])
+    svc.MAX_CACHED_CANDIDATES, svc.MAX_QUERY_SNAPSHOTS = 3, 2
+    for i in range(5):
+        svc.candidates[f"c{i}"] = object()
+        svc._query_snapshots[f"q{i}"] = {}
+        svc.last_diffs[f"q{i}"] = {}
+    svc._bound_caches()
+    assert len(svc.candidates) == 3 and list(svc.candidates) == ["c2", "c3", "c4"]
+    assert len(svc._query_snapshots) == 2 and len(svc.last_diffs) == 2
+    assert svc.cache_evicted == 2 + 3 + 3
