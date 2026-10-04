@@ -71,11 +71,15 @@ def _budget_table(request:CapabilityRequest)->dict[str,Any]:
     as_of (YYYY-MM-DD), optional indirect_rate. No rate is invented: a missing/expired rate raises ValueError (HTTP 422)."""
     from datetime import date
     from decimal import Decimal, InvalidOperation
-    from .lane_models import BudgetRate, BudgetRequestLine, ValidationError
+    from .lane_models import BudgetRate, BudgetRequestLine
     from .lane_repository import GrantCorpus
     from .lane_service import GrantWriterService
     i=request.inputs
     try:
+        if not isinstance(i["rates"],list) or not isinstance(i["lines"],list) or not i["rates"] or not i["lines"]:
+            raise TypeError("rates and lines must be non-empty lists")
+        if not all(isinstance(x,dict) for x in i["rates"]) or not all(isinstance(x,dict) for x in i["lines"]):
+            raise TypeError("each rate and line must be an object")
         for r in i["rates"]:
             url=r.get("source_url")
             if not _valid_source_url(url):
@@ -87,7 +91,7 @@ def _budget_table(request:CapabilityRequest)->dict[str,Any]:
         lines=[BudgetRequestLine(l["rate_code"],Decimal(str(l["quantity"])),l["description"]) for l in i["lines"]]
         as_of=date.fromisoformat(i["as_of"]); ind=Decimal(str(i.get("indirect_rate","0")))
         b=GrantWriterService(GrantCorpus(),rates).build_budget(lines,as_of=as_of,observed_by=datetime.now(timezone.utc),indirect_rate=ind)
-    except (KeyError,TypeError,InvalidOperation,ValidationError) as exc:  # ValueError from the URL check passes through unchanged
+    except (KeyError,TypeError,AttributeError,ValueError,InvalidOperation) as exc:  # ValidationError and bad ISO dates are ValueErrors
         raise ValueError(f"row 93 budget inputs invalid: {exc}") from exc
     return {"provenance_note":"rates, dates and source URLs are CALLER-ASSERTED; this engine did not fetch or verify them",
             "currency":b.currency,"direct_total":str(b.direct_total),"indirect_total":str(b.indirect_total),
