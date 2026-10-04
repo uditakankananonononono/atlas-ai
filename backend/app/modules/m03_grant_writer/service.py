@@ -135,12 +135,56 @@ class Service:
         proposal_terms = set(self._terms(request.proposal))
         corpus_counts = Counter(term for example in request.funded_examples for term in set(self._terms(example)))
         common = [term for term, count in corpus_counts.most_common(30) if count >= max(1, len(request.funded_examples) // 2)]
+        sims = self._tfidf_cosines(request.proposal, request.funded_examples)
+        nearest = [{"example_index": i, "cosine": round(c, 4)} for i, c in sorted(enumerate(sims), key=lambda x: (-x[1], x[0]))[:5]]
         return SuccessAnalysisResponse(
             comparable_examples=len(request.funded_examples),
             shared_language=sorted(proposal_terms.intersection(common)),
             missing_common_terms=sorted(set(common).difference(proposal_terms)),
             caveat="Language overlap is diagnostic only and does not predict funding success.",
+            similarity_method="tfidf-cosine",
+            nearest_examples=nearest,
+            mean_similarity=round(sum(sims) / len(sims), 4),
+            structure_gaps=self._structure_gaps(request.proposal, request.funded_examples),
+            method_note="Sparse TF-IDF vectors (smoothed idf over the proposal plus the supplied examples) compared by cosine similarity. Local and deterministic; NOT neural embeddings, so synonyms do not match. Similarity is not a funding-success prediction.",
         )
+
+    @classmethod
+    def _tfidf_cosines(cls, proposal: str, examples: list[str]) -> list[float]:
+        import math
+        docs = [Counter(cls._terms(t)) for t in [proposal, *examples]]
+        n = len(docs)
+        df = Counter(term for d in docs for term in d)
+        idf = {t: math.log((1 + n) / (1 + c)) + 1.0 for t, c in df.items()}
+        def vec(d: Counter) -> dict[str, float]:
+            return {t: (1 + math.log(c)) * idf[t] for t, c in d.items()}
+        vs = [vec(d) for d in docs]
+        def norm(v: dict[str, float]) -> float:
+            return math.sqrt(sum(x * x for x in v.values()))
+        p, pn = vs[0], norm(vs[0])
+        out = []
+        for v in vs[1:]:
+            vn = norm(v)
+            out.append(0.0 if not pn or not vn else sum(w * v.get(t, 0.0) for t, w in p.items()) / (pn * vn))
+        return out
+
+    @staticmethod
+    def _headings(text: str) -> set[str]:
+        found = set()
+        for line in text.splitlines():
+            h = line.strip().strip("#*:").strip()
+            if 3 <= len(h) <= 60 and (line.lstrip().startswith("#") or h.isupper() or (line.strip().endswith(":") and len(h.split()) <= 6)):
+                found.add(re.sub(r"\s+", " ", h.lower()))
+        return found
+
+    @classmethod
+    def _structure_gaps(cls, proposal: str, examples: list[str]) -> list[str]:
+        """Headings that at least half of the examples use but the proposal lacks (needs >= 2 examples)."""
+        if len(examples) < 2:
+            return []
+        counts = Counter(h for e in examples for h in cls._headings(e))
+        have = cls._headings(proposal)
+        return sorted(h for h, c in counts.items() if c >= max(2, (len(examples) + 1) // 2) and h not in have)
 
     def propose_export(self, request: ExportRequest) -> ProposedExportResponse:
         """Stage DOCX/PDF generation; no file is created until the approval center allows it."""
