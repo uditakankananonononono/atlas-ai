@@ -1,5 +1,5 @@
 """M15 export through the REAL booted app routes (main.app) and the REAL Module 0 approval routes, temp DB + temp store.
-Dev-mode tenant headers = TEST MODE (production auth not proven). Content is a LABELED FIXTURE. Verifies the delivered
+NOTE: the dependency overrides below swap the SQL session factory/store for temp ones, so this is NOT the production wiring (defaults use the ambient DB and ATLAS_RUNTIME_DATA_DIR). Dev-mode tenant headers = TEST MODE (production auth not proven). Content is a LABELED FIXTURE. Verifies the delivered
 ARTIFACT (hash, OOXML content, LibreOffice round-trip to PDF text), not just status codes. No network."""
 import hashlib
 import io
@@ -78,14 +78,21 @@ def test_docx_export_approve_deliver_download_and_artifact_content(client):
         xml = z.read("word/document.xml").decode("utf8")
     for needle in ("LABELED FIXTURE report", "Method", "Secchi depth", "Second paragraph"):
         assert needle in xml, needle
-    (tmp / "delivered.docx").write_bytes(got.content)
-    if shutil.which("soffice"):  # independent consumer: LibreOffice opens it and produces text
-        r = subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", str(tmp), str(tmp / "delivered.docx")],
-                           capture_output=True, text=True, timeout=100, env={"HOME": str(tmp), "PATH": "/usr/bin:/bin"})
-        assert (tmp / "delivered.pdf").exists(), r.stderr[:300]
-        if shutil.which("pdftotext"):
-            text = subprocess.run(["pdftotext", str(tmp / "delivered.pdf"), "-"], capture_output=True, text=True).stdout
-            assert "Clarity improved." in text and "LABELED FIXTURE report" in text
+
+
+@pytest.mark.skipif(not shutil.which("soffice") or not shutil.which("pdftotext"), reason="LibreOffice (soffice) and pdftotext not installed: round-trip NOT verified")
+def test_docx_artifact_round_trips_through_libreoffice_to_pdf_text(client):
+    """Independent consumer check. Skipped (visibly) when the tools are missing instead of silently passing."""
+    c, tmp = client
+    version, aid = _flow(c, A)
+    assert _approve(c, A, aid).status_code == 200
+    d = c.post(f"{D}/approvals/{aid}/deliver", headers=A)
+    (tmp / "delivered.docx").write_bytes(c.get(d.json()["download_url"], headers=A).content)
+    r = subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", str(tmp), str(tmp / "delivered.docx")],
+                       capture_output=True, text=True, timeout=100, env={"HOME": str(tmp), "PATH": "/usr/bin:/bin"})
+    assert (tmp / "delivered.pdf").exists(), r.stderr[:300]
+    text = subprocess.run(["pdftotext", str(tmp / "delivered.pdf"), "-"], capture_output=True, text=True).stdout
+    assert "Clarity improved." in text and "LABELED FIXTURE report" in text
 
 
 def test_other_tenant_cannot_decide_deliver_or_download_and_one_shot_holds(client):
