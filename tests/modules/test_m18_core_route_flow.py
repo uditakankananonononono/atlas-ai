@@ -85,7 +85,7 @@ def test_partial_failure_header_is_always_valid_json_with_many_long_platform_nam
     cols={}
     class E:
         def collect(self,q,l): return [_doc()],["x"]
-    monkeypatch.setenv('ATLAS_M18_OPERATOR_ACCOUNT_TENANTS','m18a')  # ALLOWED includes credentialed platforms
+    monkeypatch.setenv('ATLAS_OPERATOR_ACCOUNT_TENANTS','m18a')  # ALLOWED includes credentialed platforms
     names=sorted(ALLOWED)[:8]
     for n in names: cols[n]=E()
     _use(monkeypatch, Service(generate=fixture_generate,collectors=cols))
@@ -100,7 +100,7 @@ class _Counting:
     def collect(self,q,l): self.calls+=1; return [_doc()],[]
 
 def test_credentialed_collectors_fail_closed_for_tenants_without_an_operator_account_grant(client,monkeypatch):
-    monkeypatch.delenv("ATLAS_M18_OPERATOR_ACCOUNT_TENANTS",raising=False)
+    monkeypatch.delenv("ATLAS_OPERATOR_ACCOUNT_TENANTS",raising=False)
     yt=_Counting(); pub=_Counting()
     _use(monkeypatch, Service(generate=fixture_generate,collectors={"youtube":yt,"reddit":pub}))
     # /blueprints: 403, collector never called
@@ -120,6 +120,6 @@ def test_credentialed_collectors_fail_closed_for_tenants_without_an_operator_acc
     by={p.platform:p for p in rep.platforms}
     assert by["youtube"].errors==("operator_account_not_granted:youtube",) and yt.calls==0 and pub.calls==1
     # explicit grant (exact tenant id) allows it; a different tenant still does not
-    monkeypatch.setenv("ATLAS_M18_OPERATOR_ACCOUNT_TENANTS","t-granted")
+    monkeypatch.setenv("ATLAS_OPERATOR_ACCOUNT_TENANTS","t-granted")
     asyncio.run(svc.collect(CollectIn(query="student tutoring",platforms=["youtube"]),tenant_id="t-granted")); assert yt.calls==1
     asyncio.run(svc.collect(CollectIn(query="student tutoring",platforms=["youtube"]),tenant_id="t-other")); assert yt.calls==1

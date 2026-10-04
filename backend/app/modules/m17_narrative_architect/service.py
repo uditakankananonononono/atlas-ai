@@ -20,6 +20,9 @@ INJECTION=(r"ignore\s+(all\s+)?previous",r"system prompt",r"reveal\s+.*secret",r
 WORD=re.compile(r"[a-z][a-z'-]{2,}",re.I)
 STOP={"the","and","for","that","with","this","from","your","you","are","was","but","not","essay","into","have","has"}
 
+from app.core.operator_accounts import operator_account_granted
+CREDENTIALED_PLATFORMS=frozenset({'youtube','pinterest'})  # reddit/public_web need no operator credential
+
 class Collector(Protocol):
  async def collect(self,query:str,limit:int)->list[dict[str,Any]]: ...
 
@@ -39,6 +42,8 @@ class Service:
    if platform not in ALLOWED: raise ValueError(f"unsupported or non-compliant collector: {platform}")
    collector=self._collectors.get(platform)
    if collector is None: raise RuntimeError(f"collector not configured: {platform}")
+   if platform in CREDENTIALED_PLATFORMS and not operator_account_granted(request.owner_id):
+    raise PermissionError(f"operator account not granted to this tenant for {platform}")
    for raw in await collector.collect(request.query,request.limit_per_platform):
     text=(raw.get("transcript") or raw.get("text") or "").strip(); url=str(raw.get("url") or "")
     if not text or not url: continue
