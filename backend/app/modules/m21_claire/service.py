@@ -20,7 +20,7 @@ class ClaireGoal:
  goal:str;acceptance:list[str];limits:dict[str,Any];id:str=field(default_factory=lambda:str(uuid.uuid4()));run_id:str|None=None;status:str="draft";artifacts:list[dict[str,Any]]=field(default_factory=list);evidence:list[dict[str,Any]]=field(default_factory=list);escalation:str|None=None
 class Service:
  FORBIDDEN=("self-bot","bot evasion","ban evasion","oceanofpdf","pirated","piracy","fabricate application","invent activity","fake credential","rotating proxy","login scrape","login-driven scraping","disable approval","illegal","lie on my behalf","lie for me","deceive","false statement","impersonate deceptively")
- def __init__(self,cognitive:CognitiveService,approvals:ApprovalStore,local_client:LocalClient|None=None,max_retries:int=3):self.cognitive,self.approvals,self.local_client,self.max_retries=cognitive,approvals,local_client,min(5,max(1,max_retries));self.goals={}
+ def __init__(self,cognitive:CognitiveService,approvals:ApprovalStore,local_client:LocalClient|None=None,max_retries:int=3):self.cognitive,self.approvals,self.local_client,self.max_retries=cognitive,approvals,local_client,min(5,max(1,max_retries));self.goals={};self.tenant_id="default"  # routes set the request tenant; approvals are owned by it
  def intake(self,goal:str,acceptance:list[str],limits:dict[str,Any]):
   if any(x in goal.lower() for x in self.FORBIDDEN):raise ValueError("goal conflicts with Claire's operating boundaries")
   item=ClaireGoal(goal,acceptance,{"environment":"atlas","optional_capabilities":["paired_local_pc"],"max_retries":self.max_retries,**limits});self.goals[item.id]=item;return item
@@ -31,7 +31,7 @@ class Service:
   return item
  def request_environment_change(self,goal_id:str,operation:str,preview:dict[str,Any]):
   if operation not in {"install_package","uninstall_package","write_file","read_file","move_file","copy_file","delete_file","type_text","click","scroll","browser_navigate","browser_download","run_command","run_workflow","deploy_preview","connect_tool","send_message","spend_money"}:raise ValueError("local operation not supported")
-  req=self.approvals.put(ApprovalRequest(id=str(uuid.uuid4()),module_id=MODULE_ID,action_type=f"claire:{operation}",payload={"goal_id":goal_id,"environment":"paired_local_pc","preview":preview,"rollback":"restore pre-change snapshot"}))
+  req=self.approvals.put(ApprovalRequest(id=str(uuid.uuid4()),module_id=MODULE_ID,action_type=f"claire:{operation}",payload={"tenant_id":self.tenant_id,"goal_id":goal_id,"environment":"paired_local_pc","preview":preview,"rollback":"restore pre-change snapshot"}))
   return req
  async def local_action(self,goal_id:str,action:dict[str,Any],approval_token:str|None=None):
   if not self.local_client:raise RuntimeError("no signed local client is paired")

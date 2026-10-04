@@ -45,3 +45,19 @@ def test_tenant_var_is_reset_after_dependency_and_not_reused_across_requests(c):
         assert s2 is not svc  # distinct per tenant, same-context reuse does not leak
         await g2.aclose()
     asyncio.run(run())
+
+
+def test_environment_change_approval_is_owned_by_the_requesting_tenant_and_not_decidable_by_another(c):
+    from app.core.approvals import approvals
+    from app.core.models import ApprovalStatus
+    gid=c.post("/api/v1/claire/goals",json={"goal":"Draft a weekly study plan","acceptance":["5 days"]},headers=A).json()
+    gid=gid.get("id") or gid.get("goal_id")
+    r=c.post(f"/api/v1/claire/goals/{gid}/environment-changes",json={"operation":"write_file","preview":{"path":"FIXTURE.txt"}},headers=A)
+    assert r.status_code==201,r.text
+    aid=r.json()["id"]
+    assert approvals.get(aid,user_id="cl-a") is not None
+    assert approvals.get(aid,user_id="cl-b") is None                       # B cannot read it
+    assert aid not in [x.id for x in approvals.list(user_id="cl-b")]
+    assert approvals.decide(aid,ApprovalStatus.APPROVED,user_id="cl-b") is None   # B cannot decide it
+    assert approvals.get(aid,user_id="cl-a").status!=ApprovalStatus.APPROVED
+    assert approvals.decide(aid,ApprovalStatus.DENIED,user_id="cl-a") is not None  # owner control: works
