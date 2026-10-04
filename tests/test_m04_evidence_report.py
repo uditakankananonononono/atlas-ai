@@ -99,3 +99,27 @@ def test_long_run_gets_break_points_and_short_text_does_not():
     assert er.tex_escape("x" * 200).count(r"\allowbreak{}") == 10
     assert r"\allowbreak" not in er.tex_escape("short words only")
     assert er.tex_escape("x" * 20 + " " + "y" * 20).count(r"\allowbreak{}") == 2  # run resets at spaces
+
+def test_quotes_dashes_and_backticks_are_not_turned_into_ligatures(tmp_path):
+    p = paper(1, abstract="He said \"hi\" and ''quoted'' with `tick` and a--b and c---d and e-f ok.")
+    t = text_of(er.compile_pdf(er.render_latex(result([p])))[0], tmp_path).replace("\n", " ")
+    for frag in ('"hi"', "''quoted''", "`tick`", "a--b", "c---d", "e-f"):
+        assert frag in t, frag
+
+def test_long_abstract_truncated_with_visible_notice(tmp_path):
+    n = er.MAX_ABSTRACT_CHARS + 777
+    p = paper(1, abstract="w" * 10 + (" word" * (n // 5)))
+    tex = er.render_latex(result([p]))
+    assert f"showing {er.MAX_ABSTRACT_CHARS} of {len(p.abstract)} characters" in tex
+    short = paper(2, abstract="short enough abstract for this paper")
+    assert "truncated" not in er.render_latex(result([short]))
+
+def test_concurrent_compiles_are_bounded():
+    held = [er._SLOTS.acquire(blocking=False) for _ in range(er.MAX_CONCURRENT_COMPILES)]
+    try:
+        with pytest.raises(er.ReportBusy):
+            er.compile_pdf(er.render_latex(result([paper(1)])))
+    finally:
+        for h in held:
+            if h: er._SLOTS.release()
+    er.compile_pdf(er.render_latex(result([paper(1)])))  # slot released again after use
