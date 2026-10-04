@@ -5,6 +5,8 @@ import base64
 import binascii
 from typing import Any
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Response
 from pydantic import BaseModel, Field
 
@@ -140,6 +142,23 @@ class CandidateProposalIn(BaseModel):
     permissions: list[str] = Field(default_factory=list)
 
 
+_SAFE_CAP = 12
+
+
+def _safe_source_errors(raw: dict[str, str]) -> dict[str, str]:
+    """Per-source failure CATEGORY only. Raw exception text can carry URLs, query strings, IPs or credentials, so it is
+    neither returned nor logged (only source name and category are logged). Bounded to _SAFE_CAP sources and short names."""
+    out: dict[str, str] = {}
+    for name, text in list(raw.items())[:_SAFE_CAP]:
+        t = str(text).lower()
+        kind = ("cooldown" if "cooldown" in t else "timeout" if "timed out" in t or "timeout" in t
+                else "network_unreachable" if ("urlopen" in t or "network" in t or "connection" in t or "resolve" in t)
+                else "http_error" if "http" in t else "source_failed")
+        out[str(name)[:40]] = kind
+        logging.getLogger(__name__).warning("m22 discovery source %s failed (%s)", str(name)[:40], kind)  # no raw text: may hold secrets
+    return out
+
+
 @router.post("/discoveries", status_code=201)
 async def discover_and_persist(body: DiscoveryQueryIn, response: Response, p: InstallPipeline = Depends(get_pipeline),
                                service=Depends(get_discovery_service)):
@@ -148,14 +167,27 @@ async def discover_and_persist(body: DiscoveryQueryIn, response: Response, p: In
     errors (an empty 201 would read as 'no matches'); on partial failure the body stays the candidate list and the
     X-Atlas-Discovery-Source-Errors header carries the per-source errors as JSON."""
     try:
-        found = await p.discover(body.query, service)
-        errors = dict(getattr(service, "last_errors", {}) or {})
-        if errors and not found:
+        if not body.query.strip():
+            raise PipelineError("query is required")
+        q = body.query.strip()
+        if hasattr(service, "discover_report"):
+            rep = await service.discover_report(q)  # call-local result, no shared-state race
+        else:  # test doubles / older services: last_errors is request-global, so only best effort
+            rep = {"ranked": await service.discover(q), "errors": dict(getattr(service, "last_errors", {}) or {})}
+            rep.update(sources_failed=len(rep["errors"]), sources_ok=None, sources_attempted=None)
+        found = p.record_candidates(rep["ranked"], q)
+        errors = _safe_source_errors(rep["errors"])
+        counts = {"sources_failed": rep["sources_failed"], "sources_ok": rep["sources_ok"],
+                  "sources_attempted": rep["sources_attempted"]}
+        all_failed = rep["sources_ok"] == 0 if rep["sources_ok"] is not None else (bool(errors) and not found)
+        if all_failed and errors:
             raise HTTPException(502, {"message": "no discovery source answered; zero results is NOT 'no matches'",
-                                      "source_errors": errors})
+                                      "source_errors": errors, **counts})
         if errors:
             import json as _json
-            response.headers["X-Atlas-Discovery-Source-Errors"] = _json.dumps(errors)[:4000]
+            shown = dict(list(errors.items())[:5])  # complete, valid JSON; never a sliced string
+            response.headers["X-Atlas-Discovery-Source-Errors"] = _json.dumps(
+                {**counts, "shown": shown, "omitted": max(0, (rep["sources_failed"] if rep["sources_failed"] is not None else len(errors)) - len(shown))}, separators=(",", ":"))
         return found
     except ERRORS as exc:
         raise _http(exc) from exc

@@ -97,26 +97,41 @@ class Service:
         stats["runs"]+=1;stats["candidates"]+=len(found);stats["last_latency_ms"]=round((time.monotonic()-started)*1000,1);stats["last_status"]="ok"
         return found
     async def discover(self,query:str,kinds:list[str]|None=None,weights:dict[str,float]|None=None)->list[Candidate]:
+        ranked,_errors=await self.discover_with_errors(query,kinds,weights)
+        return ranked
+    async def discover_with_errors(self,query:str,kinds:list[str]|None=None,weights:dict[str,float]|None=None)->tuple[list[Candidate],dict[str,str]]:
+        report=await self.discover_report(query,kinds,weights)
+        return report["ranked"],report["errors"]
+    async def discover_report(self,query:str,kinds:list[str]|None=None,weights:dict[str,float]|None=None)->dict[str,Any]:
+        """Discovery with THIS call's own result: {ranked, errors, sources_attempted, sources_ok, sources_failed}.
+        Call-local, so concurrent requests cannot see each other's errors (self.last_errors stays a last-writer-wins
+        convenience copy). A run where a source failed is NOT committed as a real result: the query snapshot, diff
+        'removed' list and history count are only written when every selected source answered, so failures can never
+        be recorded as 'those candidates disappeared'."""
         if weights is not None:self._validate_weights(weights)
         selected=[c for c in self.collectors if not kinds or getattr(c,"kind","tool") in kinds]
-        now=time.time();active=[];self.last_errors={}
+        now=time.time();active=[];errs:dict[str,str]={};self.last_errors=errs
         for c in selected:
             until=self._cooldown_until.get(c.name,0.)
-            if until>now:self.last_errors[c.name]=f"in cooldown after a failure until {datetime.fromtimestamp(until,timezone.utc).isoformat()}"
+            if until>now:errs[c.name]=f"in cooldown after a failure until {datetime.fromtimestamp(until,timezone.utc).isoformat()}"
             else:active.append(c)
         results=await asyncio.gather(*(self._drain_timed(c,query,weights) for c in active),return_exceptions=True)
-        found=[]
+        found=[];ok_sources=[]
         for collector,result in zip(active,results):
-            if isinstance(result,Exception):self.last_errors[collector.name]=str(result);continue
-            found.extend(result)
+            if isinstance(result,Exception):errs[collector.name]=str(result);continue
+            ok_sources.append(collector.name);found.extend(result)
         dedup={self._key(x):x for x in found};ranked=sorted(dedup.values(),key=lambda x:x.rank_key,reverse=True)
         self.candidates.update({x.id:x for x in ranked})
-        snapshot={self._key(x):x.name for x in ranked}
-        previous=self._query_snapshots.get(query)
-        self.last_diffs[query]={"first_run":previous is None,"added":[name for k,name in snapshot.items() if previous is not None and k not in previous],"removed":[name for k,name in (previous or {}).items() if k not in snapshot]}
-        self._query_snapshots[query]=snapshot
-        self.query_history=[*self.query_history[-199:],{"query":query,"kinds":kinds,"at":now_dt().isoformat(),"count":len(ranked)}]
-        return ranked
+        complete=not errs
+        if complete:
+            snapshot={self._key(x):x.name for x in ranked}
+            previous=self._query_snapshots.get(query)
+            self.last_diffs[query]={"first_run":previous is None,"added":[name for k,name in snapshot.items() if previous is not None and k not in previous],"removed":[name for k,name in (previous or {}).items() if k not in snapshot]}
+            self._query_snapshots[query]=snapshot
+            self.query_history=[*self.query_history[-199:],{"query":query,"kinds":kinds,"at":now_dt().isoformat(),"count":len(ranked)}]
+        else:
+            self.last_diffs[query]={"incomplete":True,"reason":"some sources failed or were cooling down; no snapshot/diff committed","failed_sources":sorted(errs)}
+        return {"ranked":ranked,"errors":dict(errs),"sources_attempted":len(selected),"sources_ok":len(ok_sources),"sources_failed":len(errs)}
     async def discover_many(self,queries:list[str],kinds:list[str]|None=None,weights:dict[str,float]|None=None)->dict[str,Any]:
         """Batch discovery: one call, one deduped+ranked merge across queries."""
         if len(queries)>20:raise ValueError("at most 20 queries per batch")

@@ -33,7 +33,7 @@ def test_all_sources_failed_is_502_with_source_errors_not_empty_201(client):
     app.dependency_overrides[get_discovery_service] = lambda: _FakeService([], {"pypi": "boom", "npm": "boom2"})
     r = client.post("/api/v1/tools-hub/pipeline/discoveries", json={"query": "x"}, headers=H)
     assert r.status_code == 502
-    assert r.json()["detail"]["source_errors"] == {"pypi": "boom", "npm": "boom2"}
+    assert r.json()["detail"]["source_errors"] == {"pypi": "source_failed", "npm": "source_failed"}
 
 
 def test_no_errors_and_no_results_is_a_genuine_empty_201(client):
@@ -53,4 +53,122 @@ def test_partial_failure_keeps_list_body_and_reports_errors_in_header(client):
     app.dependency_overrides[get_discovery_service] = lambda: _FakeService([cand], {"npm": "down"})
     r = client.post("/api/v1/tools-hub/pipeline/discoveries", json={"query": "x"}, headers=H)
     assert r.status_code == 201 and isinstance(r.json(), list)
-    assert json.loads(r.headers["x-atlas-discovery-source-errors"]) == {"npm": "down"}
+    assert json.loads(r.headers["x-atlas-discovery-source-errors"])["shown"] == {"npm": "source_failed"}
+
+
+def test_source_errors_never_expose_urls_ips_queries_or_secrets_and_are_bounded(client):
+    leaky = {f"s{i}": "<urlopen error https://user:SECRETTOKEN@host.example/search?q=private-query 10.0.0.5>" for i in range(40)}
+    app.dependency_overrides[get_discovery_service] = lambda: _FakeService([], leaky)
+    r = client.post("/api/v1/tools-hub/pipeline/discoveries", json={"query": "private-query"}, headers=H)
+    body = r.text
+    for secret in ("SECRETTOKEN", "private-query", "10.0.0.5", "host.example", "https://"):
+        assert secret not in body
+    assert len(r.json()["detail"]["source_errors"]) <= 12
+
+
+def test_concurrent_discoveries_do_not_see_each_others_errors():
+    """Real Service, LABELED FIXTURE collectors: overlapping calls each get only their own failures."""
+    import asyncio
+    from app.modules.m22_tools_hub.service import Service
+
+    class Failing:  # LABELED FIXTURE
+        kind = "tool"
+        def __init__(self, name): self.name = name
+        async def collect(self, query):
+            await asyncio.sleep(0.05)
+            raise OSError(f"{self.name} down")
+            yield  # pragma: no cover
+
+    svc_a = Service.__new__(Service)
+    async def run():
+        svc = Service(approval_store=None, collectors=[Failing("src-a"), Failing("src-b")])
+        async def one(kinds_name):
+            svc.collectors = svc.collectors  # same shared service object
+            return await svc.discover_with_errors(kinds_name)
+        (ra, ea), (rb, eb) = await asyncio.gather(one("q1"), one("q2"))
+        return ea, eb
+    ea, eb = asyncio.run(run())
+    assert set(ea) == {"src-a", "src-b"} and set(eb) == {"src-a", "src-b"}
+    assert "src-a down" in ea["src-a"] and "src-b down" in eb["src-b"]
+    # call-local dicts, not the same object
+    assert ea is not eb
+
+
+# ---- end-to-end through the route with the REAL Service and LABELED FIXTURE collectors (no network) ----
+import asyncio  # noqa: E402
+
+
+class _Failing:  # LABELED FIXTURE
+    kind = "tool"
+
+    def __init__(self, name, msg="boom"):
+        self.name, self.msg = name, msg
+
+    async def collect(self, query):
+        raise OSError(self.msg)
+        yield  # pragma: no cover
+
+
+class _Empty:  # LABELED FIXTURE: a source that answers genuinely with nothing
+    kind = "tool"
+
+    def __init__(self, name):
+        self.name = name
+
+    async def collect(self, query):
+        return
+        yield  # pragma: no cover
+
+
+def _real(collectors):
+    from app.modules.m22_tools_hub.service import Service
+    return Service(approval_store=None, collectors=collectors)
+
+
+def test_real_service_all_failed_is_502_with_counts_and_commits_no_snapshot_or_history(client):
+    svc = _real([_Failing("a"), _Failing("b")])
+    svc._query_snapshots["q"] = {"k": "previously-found-tool"}  # a real earlier result that a failed run must not erase
+    app.dependency_overrides[get_discovery_service] = lambda: svc
+    r = client.post("/api/v1/tools-hub/pipeline/discoveries", json={"query": "q"}, headers=H)
+    assert r.status_code == 502
+    d = r.json()["detail"]
+    assert (d["sources_attempted"], d["sources_ok"], d["sources_failed"]) == (2, 0, 2)
+    assert svc._query_snapshots["q"] == {"k": "previously-found-tool"}  # not overwritten with an empty snapshot
+    assert svc.query_history == []
+    assert svc.last_diffs["q"]["incomplete"] is True and "removed" not in svc.last_diffs["q"]
+
+
+def test_real_service_partial_with_genuine_empty_is_201_not_no_source_answered(client):
+    svc = _real([_Empty("ok-src"), _Failing("bad-src")])
+    app.dependency_overrides[get_discovery_service] = lambda: svc
+    r = client.post("/api/v1/tools-hub/pipeline/discoveries", json={"query": "q"}, headers=H)
+    assert r.status_code == 201 and r.json() == []
+    hdr = json.loads(r.headers["x-atlas-discovery-source-errors"])
+    assert (hdr["sources_ok"], hdr["sources_failed"]) == (1, 1) and hdr["shown"] == {"bad-src": "source_failed"}
+    assert svc.query_history == []  # incomplete run is not committed as a real empty result
+
+
+def test_real_service_complete_run_still_commits_snapshot_and_history(client):
+    svc = _real([_Empty("ok-1"), _Empty("ok-2")])
+    app.dependency_overrides[get_discovery_service] = lambda: svc
+    r = client.post("/api/v1/tools-hub/pipeline/discoveries", json={"query": "q"}, headers=H)
+    assert r.status_code == 201 and r.json() == []
+    assert "x-atlas-discovery-source-errors" not in r.headers
+    assert svc._query_snapshots["q"] == {} and svc.query_history[-1]["count"] == 0
+
+
+def test_real_service_oversize_errors_header_is_valid_bounded_json_and_redacted(client, caplog):
+    import logging
+    caplog.set_level(logging.DEBUG)
+    cols = [_Failing(f"s{i}", "https://user:SECRETTOKEN@h.example/x?q=private-query 10.0.0.5") for i in range(40)]
+    cols.append(_Empty("ok"))
+    svc = _real(cols)
+    app.dependency_overrides[get_discovery_service] = lambda: svc
+    r = client.post("/api/v1/tools-hub/pipeline/discoveries", json={"query": "private-query"}, headers=H)
+    assert r.status_code == 201
+    raw = r.headers["x-atlas-discovery-source-errors"]
+    hdr = json.loads(raw)  # valid JSON, not a sliced string
+    assert len(raw) < 1000 and len(hdr["shown"]) == 5 and hdr["omitted"] == 35 and hdr["sources_failed"] == 40
+    for secret in ("SECRETTOKEN", "private-query", "10.0.0.5", "h.example"):
+        assert secret not in raw
+        assert secret not in caplog.text  # nor in server logs
