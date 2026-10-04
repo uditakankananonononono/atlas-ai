@@ -85,6 +85,7 @@ def test_partial_failure_header_is_always_valid_json_with_many_long_platform_nam
     cols={}
     class E:
         def collect(self,q,l): return [_doc()],["x"]
+    monkeypatch.setenv('ATLAS_M18_OPERATOR_ACCOUNT_TENANTS','m18a')  # ALLOWED includes credentialed platforms
     names=sorted(ALLOWED)[:8]
     for n in names: cols[n]=E()
     _use(monkeypatch, Service(generate=fixture_generate,collectors=cols))
@@ -92,3 +93,33 @@ def test_partial_failure_header_is_always_valid_json_with_many_long_platform_nam
     assert r.status_code==200,r.text
     parsed=json.loads(r.headers["X-Atlas-Collection-Partial-Failures"])
     assert len(parsed)==len(names) and len(r.headers["X-Atlas-Collection-Partial-Failures"])<1200
+
+
+class _Counting:
+    def __init__(self): self.calls=0
+    def collect(self,q,l): self.calls+=1; return [_doc()],[]
+
+def test_credentialed_collectors_fail_closed_for_tenants_without_an_operator_account_grant(client,monkeypatch):
+    monkeypatch.delenv("ATLAS_M18_OPERATOR_ACCOUNT_TENANTS",raising=False)
+    yt=_Counting(); pub=_Counting()
+    _use(monkeypatch, Service(generate=fixture_generate,collectors={"youtube":yt,"reddit":pub}))
+    # /blueprints: 403, collector never called
+    r=client.post("/api/v1/side-hustle-scraper/blueprints",json={"query":"student tutoring","platforms":["youtube"]},headers=H)
+    assert r.status_code==403 and yt.calls==0, r.text
+    # service.collect default platform list includes youtube: reported as not granted, never called; public collector still ran
+    import asyncio
+    from app.modules.m18_side_hustle_scraper.schemas import CollectIn
+    from app.modules.m18_side_hustle_scraper.lane_pipeline import CollectionPipeline
+    from app.modules.m18_side_hustle_scraper.lane_repository import SQLiteDocumentRepository
+    from app.modules.m18_side_hustle_scraper.lane_validation import DocumentValidator
+    from app.modules.m18_side_hustle_scraper.lane_ranking import BlueprintRanker
+    from app.modules.m18_side_hustle_scraper.lane_freshness import FreshnessMonitor
+    repo=SQLiteDocumentRepository(":memory:"); cols={"youtube":yt,"reddit":pub}
+    svc=Service(generate=fixture_generate,collectors=cols,pipeline=CollectionPipeline(repository=repo,validator=DocumentValidator(),ranker=BlueprintRanker(),monitor=FreshnessMonitor(repo),collectors=cols))
+    rep=asyncio.run(svc.collect(CollectIn(query="student tutoring",platforms=["reddit","youtube"]),tenant_id="t-no-grant"))
+    by={p.platform:p for p in rep.platforms}
+    assert by["youtube"].errors==("operator_account_not_granted:youtube",) and yt.calls==0 and pub.calls==1
+    # explicit grant (exact tenant id) allows it; a different tenant still does not
+    monkeypatch.setenv("ATLAS_M18_OPERATOR_ACCOUNT_TENANTS","t-granted")
+    asyncio.run(svc.collect(CollectIn(query="student tutoring",platforms=["youtube"]),tenant_id="t-granted")); assert yt.calls==1
+    asyncio.run(svc.collect(CollectIn(query="student tutoring",platforms=["youtube"]),tenant_id="t-other")); assert yt.calls==1

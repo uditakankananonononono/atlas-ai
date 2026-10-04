@@ -14,3 +14,15 @@ Shared across ALL tenants in one process (the module-level Service built by rout
 3. Model provider/model choice (Service._provider/_model): process-wide.
 4. The default document repository is in-memory SQLite (":memory:"): lost on restart; deployments must inject a shared one.
 Not tested: concurrent multi-tenant load on the shared limiter.
+
+## Update WIP44 (UNREVIEWED)
+- Operator credentials: credentialed collectors (youtube, pinterest, x, instagram) now FAIL CLOSED per tenant: usable only if the
+  tenant id is listed exactly in ATLAS_M18_OPERATOR_ACCOUNT_TENANTS (no wildcard). /blueprints -> 403; /collect reports
+  `operator_account_not_granted:<platform>` and never calls the collector. Env key presence is not a grant. Existing tests that
+  used youtube without a grant were changed (contract change, commented in each).
+- Legacy /runs: previously ONE process-global runner with no tenant dependency at all (any caller could read/modify any run id).
+  Now run ownership is recorded at create; other tenants get 404. Receipts route still 409 (unchanged). Runs remain process memory.
+- request-approval (legacy and durable): approval owner was a client body field defaulting to 'default'; now the authenticated
+  tenant, and a differing body user_id is 422. No exploit was executed against the old code; defects are from reading it.
+- Durable run store: file now chmod 0600 and parent dir created; default path honors ATLAS_RUNTIME_DATA_DIR/ATLAS_M18_RUN_DB, with the
+  old shared /tmp path kept only as the fallback (deployment must set one). Not assessed: sqlite file at rest unencrypted.
