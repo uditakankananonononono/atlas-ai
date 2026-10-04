@@ -78,3 +78,17 @@ def test_collected_documents_are_tenant_isolated_through_the_http_routes(client,
     rb=client.post("/api/v1/side-hustle-scraper/rank",json={"query":"student tutoring"},headers=B).json()
     assert len(ra)==1 and rb==[]
     assert client.get("/api/v1/side-hustle-scraper/freshness",headers=B).json()["watched"]==0
+
+
+def test_partial_failure_header_is_always_valid_json_with_many_long_platform_names(client,monkeypatch):
+    from app.modules.m18_side_hustle_scraper.service import ALLOWED
+    cols={}
+    class E:
+        def collect(self,q,l): return [_doc()],["x"]
+    names=sorted(ALLOWED)[:8]
+    for n in names: cols[n]=E()
+    _use(monkeypatch, Service(generate=fixture_generate,collectors=cols))
+    r=client.post("/api/v1/side-hustle-scraper/blueprints",json={"query":"student tutoring","platforms":names},headers=H)
+    assert r.status_code==200,r.text
+    parsed=json.loads(r.headers["X-Atlas-Collection-Partial-Failures"])
+    assert len(parsed)==len(names) and len(r.headers["X-Atlas-Collection-Partial-Failures"])<1200
