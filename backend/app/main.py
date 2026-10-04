@@ -1,4 +1,6 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 import os
 from app.platform.middleware import ProductionBoundaryMiddleware
 from app.platform.telemetry import configure as configure_telemetry
@@ -23,6 +25,14 @@ from app.self_improve.routes import router as self_improve_router
 
 configure_telemetry()
 app = FastAPI(title="Atlas AI", version="0.1.0")
+
+
+@app.exception_handler(RequestValidationError)
+async def _validation_errors_without_input(_request: Request, exc: RequestValidationError) -> JSONResponse:
+    """422 bodies keep field location, message and error type but never echo the rejected input value (it may be large
+    or sensitive) or the validator context. This shapes the response only; request logs and proxies are not covered."""
+    detail = [{"type": str(e.get("type", "")), "loc": list(e.get("loc", ())), "msg": str(e.get("msg", ""))[:200]} for e in exc.errors()[:50]]
+    return JSONResponse(status_code=422, content={"detail": detail})
 app.add_middleware(ProductionBoundaryMiddleware,limit_per_minute=int(os.getenv("ATLAS_RATE_LIMIT_PER_MINUTE","120")))
 app.include_router(router, prefix="/api/v1")
 app.include_router(google_grounding_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
