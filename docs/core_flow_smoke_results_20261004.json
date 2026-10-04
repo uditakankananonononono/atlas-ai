@@ -1,0 +1,90 @@
+[
+ {
+  "step": "m19 intake",
+  "method": "POST",
+  "path": "/api/v1/idea-incubator/ideas",
+  "status": 503,
+  "ms": 1846,
+  "body": "{\"detail\": \"configure ATLAS_M19_MODEL with an installed Ollama model; no canvas fabricated; run_id=adac8cfa-9ad2-4114-a8ce-0137a05538f6\"}"
+ },
+ {
+  "step": "m19 portfolio create",
+  "method": "POST",
+  "path": "/api/v1/idea-incubator/portfolio/ideas",
+  "status": 201,
+  "ms": 456,
+  "body": "{\"title\": \"ESL planner\", \"problem\": \"students lose track of deadlines\", \"proposed_solution\": \"offline planner\", \"tags\": [\"smoke\"], \"metadata\": {}, \"id\": \"021eed56-374d-461b-9989-3f9c024e003f\", \"stage\": \"captured\", \"version\": 1, \"created_at\": \"2026-10-04T02:44:57.188154Z\", \"updated_at\": \"2026-10-04T02:44:57.188154Z\"}"
+ },
+ {
+  "step": "m19 portfolio list",
+  "method": "GET",
+  "path": "/api/v1/idea-incubator/portfolio/ideas",
+  "status": 200,
+  "ms": 17,
+  "body": "[{\"title\": \"ESL planner\", \"problem\": \"students lose track of deadlines\", \"proposed_solution\": \"offline planner\", \"tags\": [\"smoke\"], \"metadata\": {}, \"id\": \"021eed56-374d-461b-9989-3f9c024e003f\", \"stage\": \"captured\", \"version\": 1, \"created_at\": \"2026-10-04T02:44:57.188154\", \"updated_at\": \"2026-10-04T02:44:57.188154\"}]"
+ },
+ {
+  "step": "m19 burn-down",
+  "method": "POST",
+  "path": "/api/v1/idea-incubator/assumption-burn-down",
+  "status": 200,
+  "ms": 12,
+  "body": "{\"ranked_tests\": [{\"test_id\": \"t1\", \"assumption_id\": \"\", \"assumption\": \"\", \"expected_information_bits\": 0, \"cost\": 0.0, \"hours\": 0.0, \"information_per_burden\": 0.0, \"within_budget\": true, \"method\": \"\", \"success_metric\": \"\"}], \"selected_within_budget\": [\"t1\"], \"unallocated_budget\": 0.0, \"boundary\": \"Scores prioritize learning, not business success. Priors and posteriors are caller-supplied assumptions.\"}"
+ },
+ {
+  "step": "m22 discover (network blocked: expect 502 with source errors)",
+  "method": "POST",
+  "path": "/api/v1/tools-hub/pipeline/discoveries",
+  "status": 502,
+  "ms": 584,
+  "body": "{\"detail\": {\"message\": \"no discovery source answered; zero results is NOT 'no matches'\", \"source_errors\": {\"github\": \"<urlopen error outbound network blocked by smoke harness: 20.29.134.17>\", \"pypi\": \"<urlopen error outbound network blocked by smoke harness: 2a04:4e42:400::223>\", \"npm\": \"<urlopen error outbound network blocked by smoke harness: 2606:4700::6810:422>\", \"devto\": \"<urlopen error outbound network blocked by smoke harness: 151.101.66.217>\", \"wordpress\": \"<urlopen error outbound networ"
+ },
+ {
+  "step": "m22 candidates",
+  "method": "GET",
+  "path": "/api/v1/tools-hub/pipeline/candidates",
+  "status": 200,
+  "ms": 11,
+  "body": "[]"
+ },
+ {
+  "step": "m22 export json",
+  "method": "GET",
+  "path": "/api/v1/tools-hub/candidates/export?format=json",
+  "status": 200,
+  "ms": 6,
+  "body": "[]"
+ },
+ {
+  "step": "m22 export csv",
+  "method": "GET",
+  "path": "/api/v1/tools-hub/candidates/export?format=csv",
+  "status": 200,
+  "ms": 5,
+  "body": "name,kind,source,score,score_state,unmeasured_signals,url,summary\r\n"
+ },
+ {
+  "step": "m22 export markdown",
+  "method": "GET",
+  "path": "/api/v1/tools-hub/candidates/export?format=markdown",
+  "status": 200,
+  "ms": 6,
+  "body": "# Tools Hub candidate digest\n\n0 candidates, ranked by score.\n\n"
+ },
+ {
+  "step": "m22 export bogus",
+  "method": "GET",
+  "path": "/api/v1/tools-hub/candidates/export?format=bogus",
+  "status": 422,
+  "ms": 5,
+  "body": "{\"detail\": \"unknown export format 'bogus'; use json, csv or markdown\"}"
+ },
+ {
+  "step": "m22 proposal bad payload",
+  "method": "POST",
+  "path": "/api/v1/tools-hub/pipeline/proposals",
+  "status": 422,
+  "ms": 6,
+  "body": "{\"detail\": \"manifest fields have invalid types\"}"
+ }
+]
