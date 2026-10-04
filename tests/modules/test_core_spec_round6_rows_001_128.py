@@ -272,3 +272,23 @@ def test_row_93_flags_lines_that_round_to_zero_instead_of_hiding_them():
 def test_row_85_is_plan_only_and_points_at_the_real_corpus_operations():
     r=execute_3(85,Request_3(objective="find funded proposals",inputs={"batch_limit":10}))
     assert r.status=="plan_only" and r.executed is False and "corpus/ingest" in r.artifact["real_operation"]["ingest"]
+
+def _doc(n):  return "\n\n".join(f"Section {k}\nBody paragraph {k} " + ("lorem ipsum "*(k%7+1)) for k in range(n))
+
+@pytest.mark.parametrize("n,mp",[(1,20),(5,20),(20,20),(57,20),(57,7),(300,20),(3,1),(40,13)])
+def test_row_95_splits_into_at_most_20_parts_losslessly(n,mp):
+    t=_doc(n); r=execute_3(95,Request_3(objective="multipart",inputs={"text":t,"max_parts":mp,"batch_limit":1}))
+    m=r.artifact["multipart"]
+    assert r.executed is True and 1<=m["part_count"]<=min(mp,20,n)
+    assert "\n\n".join(p["text"] for p in m["parts"])==t
+    assert [p["order"] for p in m["parts"]]==list(range(1,m["part_count"]+1))
+    if n>=mp and mp<=20: assert m["part_count"]>=max(1,mp//2)
+
+@pytest.mark.parametrize("inputs",[{"text":""},{"text":None},{"text":["x"]},{"text":"x"*2_000_001},{"text":"a","max_parts":0},{"text":"a","max_parts":21},{"text":"a","max_parts":True},{"text":"a","max_parts":"5"}])
+def test_row_95_refusals_are_422_over_http(inputs):
+    app=FastAPI();app.include_router(router_3,prefix="/m3")
+    r=TestClient(app,raise_server_exceptions=False).post("/m3/core-spec/capabilities/95",json={"objective":"multipart","inputs":inputs})
+    assert r.status_code==422 and "invalid" in r.text and len(r.text)<300
+
+def test_row_95_without_text_stays_plan_only():
+    assert execute_3(95,Request_3(objective="multipart")).executed is False
