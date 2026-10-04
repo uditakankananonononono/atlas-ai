@@ -193,8 +193,7 @@ def request_step_approval(run_id:str,step_id:str,payload:dict, tenant: TenantCon
 
 @router.post('/runs/{run_id}/steps/{step_id}/receipts')
 def record_receipt(run_id:str,step_id:str,payload:dict, tenant: TenantContext = Depends(require_tenant)):
- _owned_run(run_id, tenant)
- raise HTTPException(409,"Caller receipts cannot prove execution; use login-run adapter readback")
+ raise HTTPException(409,"Caller receipts cannot prove execution; use login-run adapter readback")  # never touches a run: same answer for every caller/id (no existence oracle)
 @router.post('/runs/{run_id}/outcomes')
 def record_outcome(run_id:str,payload:dict, tenant: TenantContext = Depends(require_tenant)):
  _owned_run(run_id, tenant)

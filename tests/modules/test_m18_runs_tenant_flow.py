@@ -19,8 +19,11 @@ def test_legacy_runs_are_owned_by_the_creating_tenant():
     for call in (lambda: c.get(f"{S}/runs/{rid}",headers=B),
                  lambda: c.post(f"{S}/runs/{rid}/steps/{sid}/request-approval",json={},headers=B),
                  lambda: c.post(f"{S}/runs/{rid}/outcomes",json={"metric":"m","value":1,"unit":"u","observed_at":"2026-10-04T00:00:00Z"},headers=B),
-                 lambda: c.post(f"{S}/runs/{rid}/steps/{sid}/receipts",json={},headers=B)):
+                 ):
         assert call().status_code==404
+    # receipts: always 409 for every caller and id, so it is no existence oracle either
+    assert c.post(f"{S}/runs/{rid}/steps/{sid}/receipts",json={},headers=B).status_code==409
+    assert c.post(f"{S}/runs/not-a-run/steps/x/receipts",json={},headers=B).status_code==409
 def test_approval_owner_is_the_authenticated_tenant_and_a_claimed_user_id_is_refused():
     run=c.post(S+"/runs",json=RUN,headers=A).json(); rid=run["id"]; sid=_step(run)
     assert c.post(f"{S}/runs/{rid}/steps/{sid}/request-approval",json={"user_id":"somebody-else"},headers=A).status_code==422
