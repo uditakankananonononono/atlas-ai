@@ -38,8 +38,10 @@ def test_social_task_syncs_before_approved_effect_execution(monkeypatch):
 
     class Repo:
         def __init__(self, tenant): calls.append(("repo", tenant))
-    class Decisions: pass
-    class Adapters: pass
+    class Decisions:
+        def __init__(self, *a): pass
+    class Adapters:
+        def __init__(self, *a): pass
     class Scheduler:
         def __init__(self, **kwargs): pass
         def sync_decisions(self): calls.append(("sync",)); return [1, 2]

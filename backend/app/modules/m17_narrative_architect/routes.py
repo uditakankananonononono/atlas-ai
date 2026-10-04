@@ -19,6 +19,7 @@ def _tenant_copy(request,tenant:TenantContext):
 @router.post("/advice",response_model=list[AdviceOut])
 async def advice(request:CollectIn,tenant:TenantContext=Depends(require_tenant),service:Service=Depends(get_service)):
  try:return await service.collect(_tenant_copy(request,tenant))
+ except PermissionError as e:raise HTTPException(403,str(e))
  except (ValueError,RuntimeError) as e:raise HTTPException(422,str(e))
 
 @router.post("/concepts",response_model=list[ConceptOut])

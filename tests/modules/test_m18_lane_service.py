@@ -66,8 +66,8 @@ class SkeletonCompatTests(unittest.TestCase):
     def test_discover_unchanged_and_keeps_sources(self):
         # CONTRACT CHANGE (WIP44): credentialed collectors (youtube...) need an explicit operator-account grant for the tenant.
         import os
-        os.environ["ATLAS_M18_OPERATOR_ACCOUNT_TENANTS"] = "default"
-        self.addCleanup(os.environ.pop, "ATLAS_M18_OPERATOR_ACCOUNT_TENANTS", None)
+        os.environ["ATLAS_OPERATOR_ACCOUNT_TENANTS"] = "default"
+        self.addCleanup(os.environ.pop, "ATLAS_OPERATOR_ACCOUNT_TENANTS", None)
         service = Service(generate=gen, collectors={"youtube": AsyncCollector()})
         out = asyncio.run(service.discover(DiscoverIn(query="student business", platforms=["youtube"])))
         self.assertEqual(str(out[0].source_urls[0]), "https://example.com/a")

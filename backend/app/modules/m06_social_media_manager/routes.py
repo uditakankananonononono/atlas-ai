@@ -71,8 +71,13 @@ from .sql_repository import SqlSocialRepository
 router = APIRouter(prefix="/social-media-manager", tags=["social-media-manager"])
 
 
-def _env_credentials() -> PlatformCredentials:
-    """Phase-1 stopgap: tenant platform tokens from env (see INTEGRATION.md)."""
+def _env_credentials(tenant_id: str | None = None) -> PlatformCredentials:
+    """Phase-1 stopgap: platform tokens from env (see INTEGRATION.md). These are the OPERATOR's accounts, not per-tenant
+    credentials: a tenant gets them only with an explicit operator-account grant (core.operator_accounts); otherwise empty
+    credentials, so adapters/metrics are unconfigured and fail closed."""
+    from app.core.operator_accounts import operator_account_granted
+    if not operator_account_granted(tenant_id):
+        return PlatformCredentials()
     return PlatformCredentials(
         meta_access_token=os.getenv("ATLAS_META_ACCESS_TOKEN"),
         meta_ig_user_id=os.getenv("ATLAS_META_IG_USER_ID"),
@@ -103,8 +108,11 @@ class _ApprovalCenterLookup:
 class _EnvAdapterFactory:
     """Builds official adapters from the tenant's env-injected credentials."""
 
+    def __init__(self, tenant_id: str | None = None) -> None:
+        self._tenant_id = tenant_id
+
     def for_platform(self, platform) -> object:
-        return build_adapter(platform.value, _env_credentials())
+        return build_adapter(platform.value, _env_credentials(self._tenant_id))
 
 
 def get_repository(tenant: TenantContext = Depends(require_tenant)) -> SqlSocialRepository:
@@ -115,7 +123,7 @@ def get_scheduler(tenant: TenantContext = Depends(require_tenant), repository: S
     return Scheduler(
         repository=repository,
         decisions=_ApprovalCenterLookup(tenant.tenant_id),
-        adapter_factory=_EnvAdapterFactory(),
+        adapter_factory=_EnvAdapterFactory(tenant.tenant_id),
     )
 
 
@@ -132,7 +140,7 @@ def get_service(
     from app.core.approvals import approvals
     from app.core.providers import generate
 
-    credentials = _env_credentials()
+    credentials = _env_credentials(tenant.tenant_id)
     return Service(
         approval_store=approvals,
         generate=generate,

@@ -32,10 +32,7 @@ GenerateFn = Callable[..., Awaitable[tuple[str, str]]]
 CREDENTIALED_COLLECTORS = frozenset({"youtube", "pinterest", "x", "instagram"})
 
 
-def operator_account_granted(tenant_id: str) -> bool:
-    import os
-    granted = {t.strip() for t in os.getenv("ATLAS_M18_OPERATOR_ACCOUNT_TENANTS", "").split(",") if t.strip()}
-    return tenant_id in granted
+from app.core.operator_accounts import operator_account_granted  # noqa: E402
 
 
 ALLOWED = {"reddit", "youtube", "pinterest", "public_web"}

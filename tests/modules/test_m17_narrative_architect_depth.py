@@ -20,7 +20,8 @@ async def test_retrieval_scores_clusters_and_cites_source():
  assert rows[0].source.credibility_score>.7 and rows[0].cluster_id=="topic-01"
  assert "example.edu" in rows[0].citation and "sha256:" in rows[0].citation
 @pytest.mark.asyncio
-async def test_transcript_provenance_has_time_spans():
+async def test_transcript_provenance_has_time_spans(monkeypatch):
+ monkeypatch.setenv('ATLAS_OPERATOR_ACCOUNT_TENANTS','default')  # CONTRACT CHANGE (WIP45): youtube spends an operator account; needs a tenant grant
  class T:
   async def collect(self,q,l): return [{"url":"https://youtube.com/watch?v=x","transcript":"Start with a scene and show your choice.","transcript_spans":[{"start_seconds":12,"end_seconds":18,"text":"Start with a scene"}]}]
  row=(await Service(generate=model,collectors={"youtube":T()}).collect(CollectIn(query="essay",platforms=["youtube"])))[0]

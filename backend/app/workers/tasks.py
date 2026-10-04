@@ -87,8 +87,8 @@ def sync_and_execute_due_social() -> dict[str, int]:
     for tenant_id in tenants:
         scheduler = Scheduler(
             repository=SqlSocialRepository(tenant_id),
-            decisions=_ApprovalCenterLookup(),
-            adapter_factory=_EnvAdapterFactory(),
+            decisions=_ApprovalCenterLookup(tenant_id),
+            adapter_factory=_EnvAdapterFactory(tenant_id),
         )
         synced += len(scheduler.sync_decisions())
         published += len(scheduler.execute_due())
