@@ -106,9 +106,7 @@ async def collect_pubmed_route(request:PubmedCollectRequest,tenant:TenantContext
         raise HTTPException(status_code=503,detail="embedding provider unavailable") from exc
     return {"fetched":len(papers),**out,"source":"pubmed"}
 
-@router.post("/research-loop")
-async def research_loop_route(request:ResearchLoopRequest,tenant:TenantContext=Depends(require_tenant)):
-    """Question-then-research loop: REAL arXiv/PubMed retrieval, HEURISTIC term-expansion planning (no LLM)."""
+async def _run_research_loop(request:ResearchLoopRequest):
     from dataclasses import asdict
     from starlette.concurrency import run_in_threadpool
     from . import arxiv_collector as ac, pubmed_collector as pc, research_loop as rl
@@ -120,9 +118,34 @@ async def research_loop_route(request:ResearchLoopRequest,tenant:TenantContext=D
         logging.getLogger(__name__).warning("research loop failed: %s %s",res.stop_reason,res.error)
         if res.stop_reason=="deadline":raise HTTPException(status_code=504,detail="research loop deadline exceeded before any papers were collected")
         raise HTTPException(status_code=503 if res.error in {"ThrottleBusy","ThrottleStateError"} else 502,detail="literature collection failed")
+    return res
+
+@router.post("/research-loop")
+async def research_loop_route(request:ResearchLoopRequest,tenant:TenantContext=Depends(require_tenant)):
+    """Question-then-research loop: REAL arXiv/PubMed retrieval, HEURISTIC term-expansion planning (no LLM)."""
+    from dataclasses import asdict
+    res=await _run_research_loop(request)
     return {"question":res.question,"status":res.status,"error":res.error,"stop_reason":res.stop_reason,"method":"heuristic term expansion over real retrieval; no language model","caveat":"status partial means the loop stopped early (see stop_reason and error); the papers listed are real but incomplete",
             "steps":[asdict(s) for s in res.steps],
             "papers":[{"paper_id":p.paper_id,"title":p.title,"source":p.source,"url":str(p.url) if p.url else None,"published_at":p.published_at} for p in res.papers.values()]}
+
+
+@router.post("/research-loop/report")
+async def research_loop_report(request:ResearchLoopRequest,tenant:TenantContext=Depends(require_tenant)):
+    """Real pdflatex PDF of the retrieved evidence (metadata and abstracts). Not an authored manuscript."""
+    from types import SimpleNamespace
+    from fastapi.responses import Response
+    from starlette.concurrency import run_in_threadpool
+    from . import evidence_report as er
+    from .surveillance import term_cooccurrence_gaps
+    res=await _run_research_loop(request)
+    rows=[SimpleNamespace(title=p.title,keywords=p.keywords) for p in res.papers.values()]
+    gaps=term_cooccurrence_gaps(rows,min_df=2,limit=20) if rows else []
+    try:pdf,pages=await run_in_threadpool(lambda:er.compile_pdf(er.render_latex(res,gaps)))
+    except er.ReportError as exc:
+        logging.getLogger(__name__).warning("evidence report failed: %s",type(exc).__name__)
+        raise HTTPException(status_code=503,detail="report compilation unavailable") from exc
+    return Response(content=pdf,media_type="application/pdf",headers={"X-Report-Pages":str(pages),"X-Report-Status":res.status,"X-Report-Kind":"retrieved-evidence-compendium-not-authored"})
 
 @router.get("/surveillance/term-gaps")
 def surveillance_term_gaps(min_df:int=2,limit:int=20,tenant:TenantContext=Depends(require_tenant)):
