@@ -3,12 +3,13 @@ import base64,hashlib,json
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from pydantic import BaseModel,Field
+from app.core.public_validation import PublicValidationError
 class SignedRiskSnapshot(BaseModel):
  evidence_id:str=Field(min_length=1);kind:str=Field(pattern=r'^(travel_estimate|cancellation_policy)$');source_uri:str=Field(min_length=1);retrieved_at:str=Field(min_length=1);content_sha256:str=Field(pattern=r'^[0-9a-f]{64}$');provider:str=Field(min_length=1);key_id:str=Field(min_length=1);signature_base64:str=Field(min_length=1)
 class VerifySignedRiskEvidence(BaseModel):snapshots:list[SignedRiskSnapshot]=Field(min_length=1,max_length=2000);trusted_ed25519_public_keys:dict[str,str]=Field(min_length=1)
 def verify_signed_risk_evidence(body:VerifySignedRiskEvidence)->dict:
  ids=[x.evidence_id for x in body.snapshots]
- if len(ids)!=len(set(ids)):raise ValueError('duplicate evidence_id')
+ if len(ids)!=len(set(ids)):raise PublicValidationError('duplicate evidence_id')
  out=[]
  for r in sorted(body.snapshots,key=lambda x:x.evidence_id):
   encoded=body.trusted_ed25519_public_keys.get(r.key_id)
