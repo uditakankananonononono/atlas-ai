@@ -122,11 +122,38 @@ def test_booted_app_m20_routes_are_not_permanently_503_when_no_service_bound():
     import app.modules.m20_general_cognitive_worker.routes as r
     saved = r._service
     r._service = None
+    r._default_services.clear()
     try:
         from fastapi.testclient import TestClient
         from app.main import app
         c = TestClient(app, raise_server_exceptions=False)
         assert c.get("/api/v1/api/modules/20/tasks").status_code == 200
-        assert c.get("/api/v1/api/modules/20/health").json()["healthy"] is True
+        h = c.get("/api/v1/api/modules/20/health").json()
+        assert h["healthy"] is True and "not a model" in h["healthy_meaning"]
+        assert h["capabilities"]["executive_model_configured"] is False
+        assert h["capabilities"]["embedder_configured"] is False
+        assert h["capabilities"]["persistence"].startswith("none")
     finally:
         r._service = saved
+
+
+def test_unbound_default_services_are_separate_per_tenant_in_dev_mode():
+    """Dev-mode (tenant header trusted = TEST MODE) check that default services are not shared across tenants."""
+    import app.modules.m20_general_cognitive_worker.routes as r
+    saved = r._service
+    r._service = None
+    r._default_services.clear()
+    try:
+        from fastapi.testclient import TestClient
+        from app.main import app
+        c = TestClient(app, raise_server_exceptions=False)
+        a = {"x-atlas-tenant": "tenant-a"}
+        b = {"x-atlas-tenant": "tenant-b"}
+        made = c.post("/api/v1/api/modules/20/goals", json={"goal": "research topic and send summary"}, headers=a)
+        assert made.status_code in (200, 201), made.text
+        assert len(c.get("/api/v1/api/modules/20/tasks", headers=a).json()) == 1
+        assert c.get("/api/v1/api/modules/20/tasks", headers=b).json() == []
+        assert set(r._default_services) == {"tenant-a", "tenant-b"}
+    finally:
+        r._service = saved
+        r._default_services.clear()

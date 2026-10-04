@@ -326,7 +326,15 @@ class CognitiveWorkerService:
         tool_failures = sum(1 for r in self.dispatcher.records if not r.succeeded)
         return {
             "module": "m20_general_cognitive_worker",
+            # "healthy" only means: this service object exists and answered. It says nothing about model quality.
             "healthy": True,
+            "healthy_meaning": "service object responding; not a model, persistence or quality check",
+            "capabilities": {
+                "executive_model_configured": self.executive_model is not None,
+                "planner_model_configured": self.planner.model is not None if hasattr(self.planner, "model") else None,
+                "embedder_configured": self.embedder is not None,
+                "persistence": "none: in-memory, per process, lost on restart",
+            },
             "tasks": by_state,
             "working_memory_chunks": len(self.working_memory),
             "episodes": len(self.episodic),
