@@ -11,6 +11,7 @@ the expansion has no new terms.
 from __future__ import annotations
 
 import re
+import time
 from collections import Counter
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -58,22 +59,39 @@ class LoopResult:
     steps: list[Step] = field(default_factory=list)
     papers: dict[str, PaperInput] = field(default_factory=dict)
     stop_reason: str = ""
+    status: str = "complete"  # complete | partial (stopped early with a trail) | failed (nothing collected)
+    error: str | None = None  # fixed category only, never upstream text
 
 
 def run_loop(question: str, collectors: dict[str, Collector], *, max_steps: int = 3,
-             per_step: int = 10) -> LoopResult:
+             per_step: int = 10, deadline_s: float = 60.0,
+             clock: Callable[[], float] = time.monotonic) -> LoopResult:
+    """deadline_s is checked BEFORE each collector call. A call already started can still run
+    up to the collector's own 30 s HTTP timeout (plus throttle waits), so worst-case runtime is
+    about deadline_s + 30 s + 3 s, not deadline_s."""
     if not 1 <= max_steps <= 3 or not 1 <= per_step <= 20:
         raise ValueError("max_steps 1-3 and per_step 1-20")
     base = key_terms(question)[:6]
     if len(base) < 1:
         raise ValueError("question has no usable terms")
+    if not 1 <= deadline_s <= 120:
+        raise ValueError("deadline_s 1-120")
     res = LoopResult(question=question)
+    started = clock()
     extra: list[str] = []
     for i in range(1, max_steps + 1):
         query = " ".join(base + extra)[:280]
         new_total = 0
         for source, collect in collectors.items():
-            got = collect(query, per_step)
+            if clock() - started > deadline_s:
+                res.stop_reason = "deadline"; res.status = "partial" if res.papers else "failed"; return res
+            try:
+                got = collect(query, per_step)
+            except Exception as exc:  # noqa: BLE001 - recorded by type only; a partial trail is kept honestly
+                res.stop_reason = "collector_error"
+                res.error = type(exc).__name__
+                res.status = "partial" if res.papers else "failed"
+                return res
             new = [p.paper_id for p in got if p.paper_id not in res.papers]
             for p in got:
                 res.papers.setdefault(p.paper_id, p)

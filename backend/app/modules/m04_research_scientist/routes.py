@@ -116,13 +116,10 @@ async def research_loop_route(request:ResearchLoopRequest,tenant:TenantContext=D
     cols={s:table[s] for s in dict.fromkeys(request.sources)}
     try:res=await run_in_threadpool(rl.run_loop,request.question,cols,max_steps=request.max_steps,per_step=request.per_step)
     except ValueError as exc:raise HTTPException(status_code=422,detail="invalid research question") from exc
-    except (ThrottleBusy,ThrottleStateError) as exc:
-        logging.getLogger(__name__).warning("research loop collector unavailable: %s",type(exc).__name__)
-        raise HTTPException(status_code=503,detail="collector busy or unavailable") from exc
-    except (ac.ArxivCollectorError,pc.PubmedCollectorError,httpx.HTTPError) as exc:
-        logging.getLogger(__name__).warning("research loop collection failed: %s",type(exc).__name__)
-        raise HTTPException(status_code=502,detail="literature collection failed") from exc
-    return {"question":res.question,"stop_reason":res.stop_reason,"method":"heuristic term expansion over real retrieval; no language model",
+    if res.status=="failed" and res.stop_reason=="collector_error":
+        logging.getLogger(__name__).warning("research loop collection failed: %s",res.error)
+        raise HTTPException(status_code=503 if res.error in {"ThrottleBusy","ThrottleStateError"} else 502,detail="literature collection failed")
+    return {"question":res.question,"status":res.status,"error":res.error,"stop_reason":res.stop_reason,"method":"heuristic term expansion over real retrieval; no language model",
             "steps":[asdict(s) for s in res.steps],
             "papers":[{"paper_id":p.paper_id,"title":p.title,"source":p.source,"url":str(p.url) if p.url else None,"published_at":p.published_at} for p in res.papers.values()]}
 
