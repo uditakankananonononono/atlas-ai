@@ -133,6 +133,30 @@ def _budget_table(request:CapabilityRequest)->dict[str,Any]:
     if zero: out["warnings"]=[{"code":"line_rounds_to_zero","rate_codes":zero,"note":"line total rounds to 0.00 at 2 decimals; quantity or rate is below one cent"}]
     return out
 
+def _multipart_split(request:CapabilityRequest)->dict[str,Any]:
+    """Row 95 REAL path (deterministic, no model): split caller-supplied proposal text into at most max_parts (default 20,
+    hard cap 20: 'MAYBE 20 PARTS OR LESS') ordered parts on paragraph boundaries, balanced by length, nothing dropped or
+    rewritten. inputs: text (str, <=2,000,000 chars), max_parts (int 1..20)."""
+    import hashlib
+    i=request.inputs
+    text=i.get("text"); mp=i.get("max_parts",20)
+    if not isinstance(text,str) or not text.strip() or len(text)>2_000_000:
+        raise ValueError("row 95 inputs invalid: text must be a non-empty string of at most 2,000,000 characters")
+    if isinstance(mp,bool) or not isinstance(mp,int) or not 1<=mp<=20:
+        raise ValueError("row 95 inputs invalid: max_parts must be an integer from 1 to 20")
+    paras=[x for x in text.split("\n\n")]
+    n=min(mp,len(paras)); total=len(text); target=total/n
+    parts=[]; cur=[]; cur_len=0
+    for k,para in enumerate(paras):
+        if cur and len(parts)<n-1 and cur_len>=target:
+            parts.append("\n\n".join(cur)); cur=[]; cur_len=0
+        cur.append(para); cur_len+=len(para)+2
+    if cur: parts.append("\n\n".join(cur))
+    assert "\n\n".join(parts)==text and 1<=len(parts)<=20
+    return {"part_count":len(parts),"max_parts":mp,"source_chars":total,"source_sha256":hashlib.sha256(text.encode()).hexdigest(),
+            "parts":[{"order":k+1,"chars":len(x),"sha256":hashlib.sha256(x.encode()).hexdigest(),"title":(x.strip().splitlines() or [""])[0][:80],"text":x} for k,x in enumerate(parts)],
+            "note":"deterministic paragraph splitter: it does not draft, summarise or rewrite; the 1M-statistics requirement is not addressed here"}
+
 def execute(row:int, request:CapabilityRequest) -> CapabilityResult:
     if row not in ROWS:
         raise KeyError(f"unsupported module-3 core-spec row: {row}")
@@ -165,6 +189,9 @@ def execute(row:int, request:CapabilityRequest) -> CapabilityResult:
     if row==85:
         artifact["real_operation"]={"ingest":"POST /grant-writer/corpus/ingest","search":"GET /grant-writer/corpus/search?query=",
             "note":"The funded-award corpus is real (NIH RePORTER / NSF Awards clients, per-tenant, authenticated). This core-spec row performs none of it; it is plan_only. Corpus size depends on what was ingested for the tenant."}
+    if row==95 and "text" in request.inputs:
+        artifact["multipart"]=_multipart_split(request); executed=True; status="executed"
+        adapter="deterministic-multipart-splitter"; operations[2]="execute_multipart_split"
     if row==93 and {"rates","lines","as_of"}<=request.inputs.keys():
         artifact["budget"]=_budget_table(request); executed=True; status="executed"
         adapter="grant-writer-budget-engine"; operations[2]="execute_build_budget"
