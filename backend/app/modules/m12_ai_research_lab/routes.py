@@ -1,3 +1,4 @@
+from app.core.public_validation import public_reason
 from fastapi import APIRouter,Depends,HTTPException
 from app.auth.context import TenantContext,require_tenant
 from .models import RouteRequest
@@ -21,11 +22,11 @@ def get_dag_engine():
 @router.post("/run")
 async def run(body:RunIn,tenant:TenantContext=Depends(require_tenant),service=Depends(get_service)):
     try:return await service.execute(RouteRequest(body.task_type,body.output_tokens,body.budget_cents,body.latency_tolerance_ms,tenant.tenant_id),body.prompt)
-    except RuntimeError as error: raise HTTPException(422,str(error)) from error
+    except RuntimeError as error: raise HTTPException(422,public_reason(error)) from error
 @router.post("/workflows/run")
 async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tenant),engine=Depends(get_dag_engine)):
     try:return await engine.run(Workflow.from_yaml(body.yaml),{**body.inputs,"tenant_id":tenant.tenant_id})
-    except WorkflowValidationError as error: raise HTTPException(422,str(error)) from error
+    except WorkflowValidationError as error: raise HTTPException(422,public_reason(error)) from error
 
 from pydantic import BaseModel,Field
 from typing import Any,Literal
@@ -36,7 +37,7 @@ class ClinicalSupportIn(BaseModel):
 @router.post('/clinical/support')
 def clinical_support_route(body:ClinicalSupportIn,tenant:TenantContext=Depends(require_tenant)):
     try:return {'tenant_id':tenant.tenant_id,'method':body.method,'result':clinical_support(body.method,body.data),'requires_clinician_review':True}
-    except ValueError as error:raise HTTPException(422,str(error)) from error
+    except ValueError as error:raise HTTPException(422,public_reason(error)) from error
 
 from .legal_support import LEGAL_METHODS,legal_support
 class LegalSupportIn(BaseModel):
@@ -46,7 +47,7 @@ class LegalSupportIn(BaseModel):
 def legal_support_route(body:LegalSupportIn,tenant:TenantContext=Depends(require_tenant)):
     if body.method not in LEGAL_METHODS: raise HTTPException(422,'unsupported legal support method')
     try:return {'tenant_id':tenant.tenant_id,'method':body.method,'result':legal_support(body.method,body.data),'requires_counsel_review':True}
-    except ValueError as error:raise HTTPException(422,str(error)) from error
+    except ValueError as error:raise HTTPException(422,public_reason(error)) from error
 
 from .education_support import education_support
 class EducationSupportIn(BaseModel):
@@ -55,7 +56,7 @@ class EducationSupportIn(BaseModel):
 @router.post('/education/support')
 def education_support_route(body:EducationSupportIn,tenant:TenantContext=Depends(require_tenant)):
     try:return {'tenant_id':tenant.tenant_id,'actor_id':tenant.actor_id,**education_support(body.feature_id,body.data)}
-    except ValueError as error:raise HTTPException(422,str(error)) from error
+    except ValueError as error:raise HTTPException(422,public_reason(error)) from error
 
 from .engineering_support_1560_1609 import engineering_support_1560_1609
 class Engineering1560To1609In(BaseModel):
@@ -64,7 +65,7 @@ class Engineering1560To1609In(BaseModel):
 @router.post('/engineering-1560-1609/support')
 def engineering_1560_1609_route(body:Engineering1560To1609In,tenant:TenantContext=Depends(require_tenant)):
     try:return {'tenant_id':tenant.tenant_id,**engineering_support_1560_1609(body.feature_id,body.data)}
-    except ValueError as error:raise HTTPException(422,str(error)) from error
+    except ValueError as error:raise HTTPException(422,public_reason(error)) from error
 
 # Research and scientific discovery workbench, owner-ledger rows 135-184.
 from .research_methods_routes_135_184 import router as research_methods_router_135_184
@@ -95,44 +96,44 @@ def clinical_rows_catalog():
 @router.post('/clinical/{row_id}/execute')
 def clinical_row_execute(row_id:int,body:ClinicalRowIn,tenant:TenantContext=Depends(require_tenant)):
     try:return {'tenant_id':tenant.tenant_id,**execute_clinical_row(row_id,body.data)}
-    except (ValueError,TypeError,KeyError,ZeroDivisionError) as error:raise HTTPException(422,str(error)) from error
+    except (ValueError,TypeError,KeyError,ZeroDivisionError) as error:raise HTTPException(422,public_reason(error)) from error
 
 from .reproducible_run import ReproducibleRunRequest,checkpoint
 @router.post('/reproducible-run/checkpoint')
 def reproducible_run_checkpoint(body:ReproducibleRunRequest,tenant:TenantContext=Depends(require_tenant)):
  try:return {'tenant_id':tenant.tenant_id,**checkpoint(body)}
- except ValueError as error:raise HTTPException(422,str(error)) from error
+ except ValueError as error:raise HTTPException(422,public_reason(error)) from error
 
 from .resume_verification import ResumeVerificationRequest,verify_resume
 @router.post('/reproducible-run/resume/verify')
 def reproducible_run_resume_verify(body:ResumeVerificationRequest,tenant:TenantContext=Depends(require_tenant)):
  try:return {'tenant_id':tenant.tenant_id,**verify_resume(body)}
- except ValueError as error:raise HTTPException(422,str(error)) from error
+ except ValueError as error:raise HTTPException(422,public_reason(error)) from error
 
 from .asymmetric_resume_verification import AsymmetricResumeVerificationRequest,verify_asymmetric_resume
 @router.post('/reproducible-run/resume/provider-receipts/verify')
 def asymmetric_provider_receipts(body:AsymmetricResumeVerificationRequest,tenant:TenantContext=Depends(require_tenant)):
  try:return {'tenant_id':tenant.tenant_id,**verify_asymmetric_resume(body)}
- except ValueError as error:raise HTTPException(422,str(error)) from error
+ except ValueError as error:raise HTTPException(422,public_reason(error)) from error
 from .checkpoint_persistence import checkpoint_and_enqueue
 from .checkpoint_queue import CheckpointQueue
 def get_checkpoint_queue(tenant:TenantContext=Depends(require_tenant)):return CheckpointQueue(tenant.tenant_id)
 @router.post('/reproducible-run/checkpoint/enqueue')
 def enqueue_reproducible_checkpoint(body:ReproducibleRunRequest,tenant:TenantContext=Depends(require_tenant),queue=Depends(get_checkpoint_queue)):
  try:return {'tenant_id':tenant.tenant_id,**checkpoint_and_enqueue(body,queue)}
- except ValueError as error:raise HTTPException(409,str(error)) from error
+ except ValueError as error:raise HTTPException(409,public_reason(error)) from error
 from .provider_key_registry import ProviderKeyRegistry,RegisterProviderKey
 def get_provider_key_registry(tenant:TenantContext=Depends(require_tenant)):return ProviderKeyRegistry(tenant.tenant_id)
 @router.post('/reproducible-run/provider-keys')
 def register_provider_key(body:RegisterProviderKey,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_provider_key_registry)):
  try:
   row=registry.register(body);return {'tenant_id':tenant.tenant_id,'provider':row.provider,'key_id':row.key_id,'fingerprint_sha256':row.fingerprint_sha256,'active':row.active,'boundary':'Registers public verification-key bytes only; administrative provisioning must establish provider identity and trust.'}
- except ValueError as error:raise HTTPException(409,str(error)) from error
+ except ValueError as error:raise HTTPException(409,public_reason(error)) from error
 @router.post('/reproducible-run/provider-keys/{provider}/{key_id}/retire')
 def retire_provider_key(provider:str,key_id:str,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_provider_key_registry)):
  try:
   row=registry.retire(provider,key_id);return {'tenant_id':tenant.tenant_id,'provider':provider,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
- except ValueError as error:raise HTTPException(404,str(error)) from error
+ except ValueError as error:raise HTTPException(404,public_reason(error)) from error
 from pydantic import BaseModel as _WBM,Field as _WF
 from .checkpoint_worker import CheckpointWorker,LeaseError
 from .asymmetric_resume_verification import SignedProviderReceipt
