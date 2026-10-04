@@ -332,3 +332,32 @@ def test_pypi_collector_is_name_only_over_simple_index_offline_fixture():
     out = asyncio.run(run())
     assert [x["name"] for x in out] == ["Flask", "flask-cors", "my-flask-thing"]
     assert all("name-only" in x["summary"] and x["evidence"][0]["match"] == "name-only" for x in out)
+
+
+def test_pypi_collector_stale_cache_on_failure_oversize_and_no_cache_error(monkeypatch):
+    # FIXTURE-based (no network): failure behaviour of PypiNameCollector.
+    import asyncio
+    import pytest as _pytest
+    from app.modules.m22_tools_hub import collectors as mod
+    state = {"fail": False}
+
+    def fetch(url):
+        if state["fail"]:
+            raise OSError("down")
+        return {"projects": [{"name": "flask"}]}
+
+    async def drain(c):
+        return [x async for x in c.collect("flask")]
+    c = mod.PypiNameCollector(fetch=fetch, ttl=0)
+    assert asyncio.run(drain(c))[0]["evidence"][0]["stale_cache"] is False
+    state["fail"] = True
+    assert asyncio.run(drain(c))[0]["evidence"][0]["stale_cache"] is True  # served stale, flagged
+    with _pytest.raises(OSError):  # no cache -> error, not silent empty
+        asyncio.run(drain(mod.PypiNameCollector(fetch=fetch)))
+    big = mod.PypiNameCollector()
+    big.MAX_BYTES = 10
+    class _R(io.BytesIO):
+        headers = {}
+    monkeypatch.setattr(mod, "urlopen", lambda *a, **k: _R(b"x" * 100))
+    with _pytest.raises(ValueError, match="size cap"):
+        asyncio.run(drain(big))
