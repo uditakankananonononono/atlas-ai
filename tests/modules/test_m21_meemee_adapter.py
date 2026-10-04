@@ -1,3 +1,5 @@
+import pytest as _pt
+_pt.importorskip("meemee", reason="needs the separate Meemee repo: pip install '.[claire-adapter]' (meemee-agent @ 6b8c444); NOT run, not passed")
 import pytest
 from app.core.approvals import ApprovalStore
 from app.core.models import ApprovalStatus
