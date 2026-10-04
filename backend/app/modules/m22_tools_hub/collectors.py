@@ -38,6 +38,7 @@ class _HttpsPypiRedirects:
      raise ValueError(f'refusing redirect to {newurl[:80]}')
     return super().redirect_request(req,fp,code,msg,headers,newurl)
   return build_opener(H)
+MAX_PYPI_NAME=256  # engineering bound, NOT a PyPI rule: longest name observed in the 2026-10-04 index was 188 chars
 class PypiNameCollector:
  """PyPI has NO search API (the /search/ page is HTML only). The supported official interface is the Simple index
  (PEP 691 JSON, all project names, ~44MB raw / ~10MB gzip on 2026-10-04). This collector therefore does NAME-ONLY
@@ -83,13 +84,21 @@ class PypiNameCollector:
    while pos<n and text[pos] in ' \t\r\n,':pos+=1
    if pos>=n:raise ValueError('PyPI simple index projects array is unterminated')
    if text[pos]==']':break
-   item,pos=dec.raw_decode(text,pos)
+   try:item,pos=dec.raw_decode(text,pos)
+   except RecursionError:raise ValueError('PyPI simple index entry is nested too deeply; refusing') from None
    name=item.get('name') if isinstance(item,dict) else None
-   if isinstance(name,str) and _PYPI_NAME.match(name):names.append(name)
+   if isinstance(name,str) and len(name)<=MAX_PYPI_NAME and _PYPI_NAME.match(name):names.append(name)
    else:rejected+=1
+  rest=text[pos+1:].strip()  # outer object must be complete: only '}' or ',"key":value...}' may follow the array
+  if rest!='}':
+   try:json.loads('{"_":0'+rest)
+   except (ValueError,RecursionError):raise ValueError('PyPI simple index has malformed or truncated data after the projects array') from None
   if not names:raise ValueError('PyPI simple index had no valid project names')
   self.rejected_names=rejected
   return '\n'.join(names)
+ def index_stats(self):
+  """Last accepted index: names kept, entries rejected (invalid/over-long/non-object), fetched_at epoch."""
+  return {'names':self._cache[1].count('\n')+1 if self._cache[1] else 0,'rejected_entries':self.rejected_names,'fetched_at':self._cache[0]}
  def _load(self):
   """Returns (names_text, stale, fetched_at). Single-flight (lock). On failure a cached index is served flagged stale;
   with no cache the error is raised and re-raised for FAIL_COOLDOWN seconds without refetching."""
@@ -113,7 +122,7 @@ class PypiNameCollector:
   hits.sort(key=lambda n:(n.lower()!=q,not n.lower().startswith(q),len(n),n.lower()))
   age=int(time.time()-at)
   for n in hits[:20]:
-   yield {'name':n,'url':f"https://pypi.org/project/{n}/",'summary':'PyPI project NAME match from the official Simple index (name-only; descriptions are not searched)'+(f' [STALE cache, age {age}s]' if stale else ''),'maintenance':0.,'security':0.,'fit':0.,'novelty':0.,'evidence':[{'source':'pypi','match':'name-only','stale_cache':stale,'cache_age_s':age,'quality_signals':'unmeasured','rejected_index_entries':self.rejected_names}],'permissions':[],'kind':'package'}
+   yield {'name':n,'url':f"https://pypi.org/project/{n}/",'summary':'PyPI project NAME match from the official Simple index (name-only; descriptions are not searched)'+(f' [STALE cache, age {age}s]' if stale else ''),'maintenance':0.,'security':0.,'fit':0.,'novelty':0.,'unmeasured':['maintenance','security','fit','novelty'],'evidence':[{'source':'pypi','match':'name-only','stale_cache':stale,'cache_age_s':age,'quality_signals':'unmeasured','rejected_index_entries':self.rejected_names}],'permissions':[],'kind':'package'}
 def _npm(p):
  for row in p.get('objects',[])[:20]:
   x=row.get('package',{});yield {'name':x.get('name',''),'url':(x.get('links') or {}).get('npm',f"https://www.npmjs.com/package/{x.get('name','')}"),'summary':x.get('description') or 'npm package','version':x.get('version'),'license':None,'maintenance':float(row.get('score',{}).get('detail',{}).get('maintenance',.5)),'security':float(row.get('score',{}).get('detail',{}).get('quality',.5)),'fit':.6,'novelty':.4,'evidence':[{'source':'npm','score':row.get('score',{}).get('final')}],'permissions':[], 'kind':'package'}

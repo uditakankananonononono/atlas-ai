@@ -206,6 +206,7 @@ def _candidate_view(row: CandidateRow) -> dict[str, Any]:
     return {
         "id": row.id, "name": row.name, "url": row.url, "source": row.source, "summary": row.summary,
         "version": row.version, "license": row.license, "score": row.score, "signals": row.signals_json,
+        "score_complete": not (row.signals_json or {}).get("unmeasured"),
         "evidence": row.evidence_json, "queries": row.queries_json,
         "first_seen_at": _aware(row.first_seen_at).isoformat(), "last_seen_at": _aware(row.last_seen_at).isoformat(),
     }
@@ -336,7 +337,8 @@ class InstallPipeline:
                 key = DiscoveryService._key(c)
                 row = db.scalar(select(CandidateRow).where(CandidateRow.tenant_id == self.tenant_id, CandidateRow.dedup_key == key))
                 signals = {"fit": c.fit, "security": c.security, "maintenance": c.maintenance, "novelty": c.novelty,
-                           "permissions": list(c.permissions), "kind": getattr(c, "kind", "") or "tool"}
+                           "permissions": list(c.permissions), "kind": getattr(c, "kind", "") or "tool",
+                           "unmeasured": list(getattr(c, "unmeasured", []) or [])}
                 if row is None:
                     row = CandidateRow(tenant_id=self.tenant_id, id=str(uuid.uuid4()), dedup_key=key, name=c.name, url=c.url,
                                        source=c.source, summary=c.summary or "", version=c.version, license=c.license,
@@ -350,7 +352,7 @@ class InstallPipeline:
                     if query not in (row.queries_json or []):
                         row.queries_json = [*(row.queries_json or []), query]
                 db.flush(); out.append(_candidate_view(row))
-        return sorted(out, key=lambda x: x["score"], reverse=True)
+        return sorted(out, key=lambda x: (x["score_complete"], x["score"]), reverse=True)
 
     async def discover(self, query: str, service: Any) -> list[dict[str, Any]]:
         if not query or not query.strip():
@@ -362,7 +364,9 @@ class InstallPipeline:
             q = select(CandidateRow).where(CandidateRow.tenant_id == self.tenant_id)
             if source:
                 q = q.where(CandidateRow.source == source)
-            return [_candidate_view(r) for r in db.scalars(q.order_by(CandidateRow.score.desc(), CandidateRow.pk).limit(limit))]
+            views=[_candidate_view(r) for r in db.scalars(q.order_by(CandidateRow.score.desc(), CandidateRow.pk))]
+            views.sort(key=lambda v: (v["score_complete"], v["score"]), reverse=True)  # stable: DB order breaks ties
+            return views[:limit]
 
     def get_candidate(self, candidate_id: str) -> dict[str, Any]:
         with self.sessions() as db:
