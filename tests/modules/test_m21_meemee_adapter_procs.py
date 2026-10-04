@@ -1,3 +1,5 @@
+import pytest as _pt
+_pt.importorskip("meemee", reason="needs the separate Meemee repo: pip install '.[claire-adapter]' (meemee-agent @ 6b8c444); NOT run, not passed")
 import json, os, subprocess, sys, pathlib
 H = str(pathlib.Path(__file__).with_name("meemee_adapter_proc.py"))
 
