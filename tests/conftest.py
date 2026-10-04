@@ -7,12 +7,22 @@ import os
 import time
 
 import pytest
+import atexit, shutil, tempfile
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
 # Tests never reach a public timestamp authority; tests that need timestamps
 # inject a mocked TSA explicitly.
 os.environ.setdefault("ATLAS_M10_TIMESTAMP_SCHEME", "off")
+
+# app.core.database binds its engine at import from ATLAS_DATABASE_URL (default sqlite:///./atlas.db in the cwd).
+# Several modules create tables / write rows through that engine directly, so tests would leave a real atlas.db in the
+# working directory. Point the test session at a throwaway file BEFORE any app import. Respect an explicit
+# ATLAS_DATABASE_URL. Test infrastructure only: the production default is unchanged.
+if "ATLAS_DATABASE_URL" not in os.environ:
+    _test_db_dir = tempfile.mkdtemp(prefix="atlas-tests-db-")
+    atexit.register(shutil.rmtree, _test_db_dir, ignore_errors=True)
+    os.environ["ATLAS_DATABASE_URL"] = f"sqlite:///{_test_db_dir}/tests.db"
 
 from app.auth import context as auth
 
