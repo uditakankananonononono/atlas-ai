@@ -179,7 +179,10 @@ def _call(**over):
     return execute_3(93,Request_3(objective="budget",inputs=inp))
 
 @pytest.mark.parametrize("over,match",[
-    ({"rate":{"source_url":"javascript:alert(1)"}},"http"),({"rate":{"source_url":""}},"http"),
+    ({"rate":{"source_url":"javascript:alert(1)"}},"http"),({"rate":{"source_url":""}},"http"),({"rate":{"source_url":"https://"}},"http"),({"rate":{"source_url":"https:///x"}},"http"),
+    ({"rate":{"source_url":"https://user:pw@example.test/r"}},"http"),({"rate":{"source_url":"https://exa mple.test/r"}},"http"),
+    ({"rate":{"source_url":"https://example.test/r\n"}},"http"),({"rate":{"source_url":"https://example.test:99999/r"}},"http"),({"rate":{"source_url":None}},"http"),
+    ({"rate":{"effective_to":"not-a-date"}},"invalid"),
     ({"rate":{"effective_to":"2026-06-30"}},"no current, observed rate"),            # expired rate
     ({"rate":{"effective_from":"2027-01-01"}},"no current, observed rate"),
     ({"rate":{"observed_at":"2026-09-01T00:00:00"}},"invalid"),                      # naive timestamp
@@ -209,3 +212,22 @@ def test_no_core_spec_row_in_any_module_reports_ready(module,rows,execute,Reques
         r=execute(row,Request(objective="label sweep",inputs={"batch_limit":1}))
         assert r.status!="ready", (module,row)
         assert r.executed is False, (module,row)  # sweep supplies no row-93 budget inputs, so nothing executes
+
+
+@pytest.mark.parametrize("inputs",[
+    {"rates":[None],"lines":[{"rate_code":"gpu","quantity":"1","description":"x"}],"as_of":"2026-10-04"},
+    {"rates":["gpu"],"lines":[{"rate_code":"gpu","quantity":"1","description":"x"}],"as_of":"2026-10-04"},
+    {"rates":_rates(),"lines":[None],"as_of":"2026-10-04"},
+    {"rates":_rates(),"lines":["gpu"],"as_of":"2026-10-04"},
+    {"rates":"gpu","lines":"x","as_of":"2026-10-04"},
+    {"rates":[],"lines":[],"as_of":"2026-10-04"},
+    {"rates":_rates(),"lines":[{"rate_code":"gpu","quantity":"1","description":"x"}],"as_of":"yesterday"},
+    {"rates":_rates(),"lines":[{"rate_code":"gpu","quantity":"abc","description":"x"}],"as_of":"2026-10-04"},
+    {"rates":_rates(),"lines":[{"rate_code":"gpu","quantity":"1","description":"x"}],"as_of":None},
+])
+def test_row_93_malformed_containers_are_422_over_http_never_500(inputs):
+    app=FastAPI();app.include_router(router_3,prefix="/m3")
+    c=TestClient(app,raise_server_exceptions=False)
+    r=c.post("/m3/core-spec/capabilities/93",json={"objective":"budget","inputs":inputs})
+    assert r.status_code==422,(r.status_code,r.text[:200])
+    assert "invalid" in r.text
