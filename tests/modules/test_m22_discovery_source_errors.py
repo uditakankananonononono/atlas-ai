@@ -265,3 +265,35 @@ def test_cache_stats_are_visible_through_the_queries_api(monkeypatch):
     c = TestClient(app, raise_server_exceptions=False)
     body = c.get("/api/v1/tools-hub/queries", headers={"x-atlas-tenant": "stat-t"}).json()
     assert body["cache"]["evicted_total"] == 7
+
+
+def test_baseline_reset_flag_is_one_shot_across_two_complete_runs():
+    svc = _real([_Empty("x")])
+    svc.MAX_QUERY_SNAPSHOTS = 1
+
+    async def go():
+        await svc.discover_report("q1")
+        await svc.discover_report("q2")   # evicts q1's baseline
+        await svc.discover_report("q1")   # run 1 after eviction
+        first = dict(svc.last_diffs["q1"])
+        await svc.discover_report("q1")   # run 2: baseline now exists again
+        return first, dict(svc.last_diffs["q1"])
+    first, second = asyncio.run(go())
+    assert first["first_run"] is True and first["baseline_reset"] is True
+    assert second["first_run"] is False and second["baseline_reset"] is False
+
+
+def test_reset_flag_tracking_overflow_is_counted_not_silent():
+    svc = _real([_Empty("x")])
+    svc.MAX_QUERY_SNAPSHOTS = 1
+    for i in range(1005):
+        svc._query_snapshots[f"q{i}"] = {}
+        svc._bound_caches()
+    assert svc.cache_stats()["baseline_reset_flags_overflowed"] == 1004 - 1000
+
+
+def test_discovery_report_labels_candidates_as_whole_cache_and_gives_query_scoped_names():
+    svc = _real([_Empty("x")])
+    svc._query_snapshots["q"] = {"k": "name-for-q"}
+    rep = svc.discovery_report("q")
+    assert "NOT filtered" in rep["candidates_scope"] and rep["query_snapshot_names"] == ["name-for-q"]

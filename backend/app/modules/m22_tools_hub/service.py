@@ -136,7 +136,7 @@ class Service:
             self.last_diffs[query]={"incomplete":True,"reason":"some sources failed or were cooling down; no snapshot/diff committed","failed_sources":sorted(errs)}
         return {"ranked":ranked,"errors":dict(errs),"sources_attempted":len(selected),"sources_ok":len(ok_sources),"sources_failed":len(errs),"cache":self.cache_stats()}
     MAX_CACHED_CANDIDATES=5000;MAX_QUERY_SNAPSHOTS=500
-    cache_evicted=0;baseline_resets=0
+    cache_evicted=0;baseline_resets=0;baseline_reset_overflow=0
     def _protected_candidate_ids(self)->set:
         """Candidates referenced by an installation proposal or an installed record are never evicted: dropping them would
         break portfolio()/propose paths (KeyError) for something the user already acted on."""
@@ -154,11 +154,13 @@ class Service:
             while len(store)>self.MAX_QUERY_SNAPSHOTS:
                 old=next(iter(store));del store[old];self.cache_evicted+=1
                 if store is self._query_snapshots:
-                    self.baseline_resets+=1;self._reset_baselines=[*getattr(self,"_reset_baselines",[])[-999:],old]
+                    self.baseline_resets+=1;prev=getattr(self,"_reset_baselines",[])
+                    if len(prev)>=1000:self.baseline_reset_overflow+=1  # oldest tracked reset flag forgotten: that query's next run reports plain first_run
+                    self._reset_baselines=[*prev[-999:],old]
     def cache_stats(self)->dict[str,Any]:
         return {"candidates":len(self.candidates),"candidates_cap":self.MAX_CACHED_CANDIDATES,"protected_candidates":len(self._protected_candidate_ids()),
                 "query_snapshots":len(self._query_snapshots),"query_snapshots_cap":self.MAX_QUERY_SNAPSHOTS,
-                "evicted_total":self.cache_evicted,"baseline_resets_total":self.baseline_resets}
+                "evicted_total":self.cache_evicted,"baseline_resets_total":self.baseline_resets,"baseline_reset_flags_overflowed":self.baseline_reset_overflow,"note":"in-memory working cache; protected (proposed/installed) candidates are not capped"}
     async def discover_many(self,queries:list[str],kinds:list[str]|None=None,weights:dict[str,float]|None=None)->dict[str,Any]:
         """Batch discovery: one call, one deduped+ranked merge across queries."""
         if len(queries)>20:raise ValueError("at most 20 queries per batch")
@@ -170,7 +172,7 @@ class Service:
         return {"per_query":per_query,"merged":sorted(merged.values(),key=lambda x:x.rank_key,reverse=True)}
     def discovery_report(self,query:str)->dict[str,Any]:
         ranked=sorted((c for c in self.candidates.values()),key=lambda x:x.rank_key,reverse=True)
-        return {"query":query,"candidates":[asdict(x)|{"score":x.score,"score_complete":x.score_complete,"score_state":x.score_state} for x in ranked],"diff":self.last_diffs.get(query),"errors":dict(self.last_errors),"sources":self.sources(),"cache":self.cache_stats()}
+        return {"query":query,"candidates_scope":"ALL candidates in this tenant service working cache, NOT filtered to this query","query_snapshot_names":sorted((self._query_snapshots.get(query) or {}).values()),"candidates":[asdict(x)|{"score":x.score,"score_complete":x.score_complete,"score_state":x.score_state} for x in ranked],"diff":self.last_diffs.get(query),"errors":dict(self.last_errors),"sources":self.sources(),"cache":self.cache_stats()}
     def export_candidates(self,fmt:str="json")->str:
         """Export the current candidate store as json, csv or markdown."""
         items=sorted(self.candidates.values(),key=lambda x:x.rank_key,reverse=True)
@@ -240,7 +242,7 @@ class Service:
     def _key(c):return hashlib.sha256(f"{c.name.lower()}|{Service._canonical_url(c.url)}".encode()).hexdigest()
     def propose_install(self,candidate_id:str,adapter_type:str,config:dict[str,Any],scopes:list[str]):
         c=self.candidates.get(candidate_id)
-        if not c:raise KeyError("candidate not found")
+        if not c:raise KeyError("candidate not found (unknown, or evicted from the in-memory working cache; re-run discovery)")
         if c.security<.5:raise ValueError("security review failed")
         rollback={"strategy":"snapshot_then_restore","remove_credentials":True,"disable_adapter":True,"candidate":c.name}
         req=self.approvals.put(ApprovalRequest(id=str(uuid.uuid4()),module_id=MODULE_ID,action_type="integrate_tool",payload={"candidate_id":c.id,"name":c.name,"url":c.url,"adapter_type":adapter_type,"config_preview":{k:v for k,v in config.items() if "secret" not in k.lower() and "token" not in k.lower()},"requested_scopes":scopes,"rollback_plan":rollback,"score":c.score}))
