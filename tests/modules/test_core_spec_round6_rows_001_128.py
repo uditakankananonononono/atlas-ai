@@ -262,3 +262,13 @@ def test_row_93_field_type_length_currency_validation(over):
 def test_row_93_legitimate_content_passes_unchanged():
     r=_call(lines=[{"rate_code":"gpu","quantity":"2.5","description":"Training run, 4×A100 (phase 1)"}],rate={"currency":"EUR","label":"GPU hour (A100)"})
     b=r.artifact["budget"]; assert b["currency"]=="EUR" and b["lines"][0]["description"]=="Training run, 4×A100 (phase 1)" and b["direct_total"]=="6.25"
+
+def test_row_93_flags_lines_that_round_to_zero_instead_of_hiding_them():
+    r=_call(lines=[{"rate_code":"gpu","quantity":"0.000001","description":"tiny"}])
+    b=r.artifact["budget"]
+    assert b["lines"][0]["total"]=="0.00" and b["warnings"][0]["code"]=="line_rounds_to_zero" and b["warnings"][0]["rate_codes"]==["gpu"]
+    assert "warnings" not in _call().artifact["budget"]
+
+def test_row_85_is_plan_only_and_points_at_the_real_corpus_operations():
+    r=execute_3(85,Request_3(objective="find funded proposals",inputs={"batch_limit":10}))
+    assert r.status=="plan_only" and r.executed is False and "corpus/ingest" in r.artifact["real_operation"]["ingest"]

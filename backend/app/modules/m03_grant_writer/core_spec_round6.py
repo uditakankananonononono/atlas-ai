@@ -124,11 +124,14 @@ def _budget_table(request:CapabilityRequest)->dict[str,Any]:
         else:
             cat="a field has the wrong type or format"
         raise ValueError(f"row 93 budget inputs invalid: {cat}") from None
-    return {"provenance_note":"rates, dates and source URLs are CALLER-ASSERTED; this engine did not fetch or verify them",
+    zero=[l.rate_code for l in b.lines if l.total==0]
+    out={"provenance_note":"rates, dates and source URLs are CALLER-ASSERTED; this engine did not fetch or verify them",
             "currency":b.currency,"direct_total":str(b.direct_total),"indirect_total":str(b.indirect_total),
             "grand_total":str(b.grand_total),"as_of":b.as_of.isoformat(),
             "lines":[{"rate_code":l.rate_code,"description":l.description,"quantity":str(l.quantity),"unit":l.unit,
                       "unit_amount":str(l.unit_amount),"total":str(l.total),"source_url":l.source_url} for l in b.lines]}
+    if zero: out["warnings"]=[{"code":"line_rounds_to_zero","rate_codes":zero,"note":"line total rounds to 0.00 at 2 decimals; quantity or rate is below one cent"}]
+    return out
 
 def execute(row:int, request:CapabilityRequest) -> CapabilityResult:
     if row not in ROWS:
@@ -159,6 +162,9 @@ def execute(row:int, request:CapabilityRequest) -> CapabilityResult:
         artifact["warning"]="batch_limit required before production execution"
         status="configuration_required"
     executed=False
+    if row==85:
+        artifact["real_operation"]={"ingest":"POST /grant-writer/corpus/ingest","search":"GET /grant-writer/corpus/search?query=",
+            "note":"The funded-award corpus is real (NIH RePORTER / NSF Awards clients, per-tenant, authenticated). This core-spec row performs none of it; it is plan_only. Corpus size depends on what was ingested for the tenant."}
     if row==93 and {"rates","lines","as_of"}<=request.inputs.keys():
         artifact["budget"]=_budget_table(request); executed=True; status="executed"
         adapter="grant-writer-budget-engine"; operations[2]="execute_build_budget"
