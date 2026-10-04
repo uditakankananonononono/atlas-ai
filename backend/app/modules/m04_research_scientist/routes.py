@@ -1,5 +1,8 @@
 """FastAPI routes for the Research Scientist module."""
 
+import logging
+
+import httpx
 from fastapi import APIRouter, HTTPException, Depends
 from app.core.providers import ProviderError
 from app.auth.context import TenantContext, require_tenant
@@ -11,7 +14,7 @@ from .schemas import (
     ProposedAnalysis,
     SurveillanceRequest,
     SurveillanceResponse,
-    SurveillanceIngestRequest, GapEvidenceOut, ArxivCollectRequest,
+    SurveillanceIngestRequest, GapEvidenceOut, ArxivCollectRequest, PubmedCollectRequest,
 )
 from .service import Service
 
@@ -65,12 +68,36 @@ async def collect_arxiv_route(request:ArxivCollectRequest,tenant:TenantContext=D
     from .surveillance import SurveillancePipeline,SurveillanceRepository
     try:papers=await run_in_threadpool(collect_arxiv,request.query,request.max_results)
     except ValueError as exc:raise HTTPException(status_code=422,detail="invalid arXiv query") from exc
-    except (ArxivCollectorError,Exception) as exc:raise HTTPException(status_code=502,detail="arXiv collection failed") from exc
+    except (ArxivCollectorError,httpx.HTTPError) as exc:
+        logging.getLogger(__name__).warning("arxiv collection failed: %s",type(exc).__name__)
+        raise HTTPException(status_code=502,detail="arXiv collection failed") from exc
     if not papers:return {"fetched":0,"received":0,"created":0,"source":"arxiv"}
     from app.core.embeddings import EmbeddingError
     try:out=await SurveillancePipeline(SurveillanceRepository(tenant.tenant_id),get_embedding_provider(request.embedding_provider)).ingest(papers)
-    except Exception as exc:raise HTTPException(status_code=503,detail="embedding provider unavailable") from exc
+    except (EmbeddingError,httpx.HTTPError) as exc:
+        logging.getLogger(__name__).warning("embedding unavailable: %s",type(exc).__name__)
+        raise HTTPException(status_code=503,detail="embedding provider unavailable") from exc
     return {"fetched":len(papers),**out,"source":"arxiv"}
+
+@router.post("/surveillance/collect/pubmed")
+async def collect_pubmed_route(request:PubmedCollectRequest,tenant:TenantContext=Depends(require_tenant)):
+    """REAL fetch from NCBI E-utilities (<=3 req/s, unregistered tool/email), then ingest."""
+    from starlette.concurrency import run_in_threadpool
+    from app.core.embeddings import get_embedding_provider
+    from . import pubmed_collector as pc
+    from app.core.embeddings import EmbeddingError
+    from .surveillance import SurveillancePipeline,SurveillanceRepository
+    try:papers=await run_in_threadpool(pc.collect_pubmed,request.query,request.max_results)
+    except ValueError as exc:raise HTTPException(status_code=422,detail="invalid PubMed query") from exc
+    except (pc.PubmedCollectorError,httpx.HTTPError) as exc:
+        logging.getLogger(__name__).warning("pubmed collection failed: %s",type(exc).__name__)
+        raise HTTPException(status_code=502,detail="PubMed collection failed") from exc
+    if not papers:return {"fetched":0,"received":0,"created":0,"source":"pubmed"}
+    try:out=await SurveillancePipeline(SurveillanceRepository(tenant.tenant_id),get_embedding_provider(request.embedding_provider)).ingest(papers)
+    except (EmbeddingError,httpx.HTTPError) as exc:
+        logging.getLogger(__name__).warning("embedding unavailable: %s",type(exc).__name__)
+        raise HTTPException(status_code=503,detail="embedding provider unavailable") from exc
+    return {"fetched":len(papers),**out,"source":"pubmed"}
 
 @router.get("/surveillance/clusters")
 def surveillance_clusters(threshold:float=.72,tenant:TenantContext=Depends(require_tenant)):

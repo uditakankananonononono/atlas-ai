@@ -89,3 +89,6 @@ class ArxivCollectRequest(BaseModel):
     query:str=Field(min_length=3,max_length=300)
     max_results:int=Field(default=20,ge=1,le=50)
     embedding_provider:Literal["openai","ollama","local","bge","lexical"]="lexical"  # lexical = free offline keyword-overlap vectors, NOT semantic
+
+class PubmedCollectRequest(ArxivCollectRequest):
+    pass
