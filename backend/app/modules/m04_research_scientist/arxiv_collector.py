@@ -15,6 +15,8 @@ from defusedxml import ElementTree as DET
 from defusedxml.common import DefusedXmlException
 from xml.etree.ElementTree import ParseError
 
+from pydantic import ValidationError
+
 from .schemas import PaperInput
 from .source_throttle import THROTTLE
 
@@ -65,10 +67,13 @@ def parse_arxiv_atom(payload: bytes) -> list[PaperInput]:
         if not m or len(title) < 3 or len(abstract) < 20:
             continue  # arXiv error entries and stubs are skipped, not invented
         cats = [c.get("term") for c in entry.findall("a:category", _NS) if c.get("term")]
-        papers.append(PaperInput(
+        try:
+            papers.append(PaperInput(
             paper_id="arxiv:" + m.group(1), title=title[:1000], abstract=abstract[:50_000],
             source="arxiv", url=url, published_at=_clean(entry.findtext("a:published", namespaces=_NS)) or None,
             keywords=cats[:50]))
+        except ValidationError as exc:
+            raise ArxivCollectorError("upstream record failed validation") from exc
     return papers
 
 

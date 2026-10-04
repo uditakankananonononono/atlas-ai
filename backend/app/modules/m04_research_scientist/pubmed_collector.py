@@ -16,6 +16,8 @@ from defusedxml import ElementTree as DET
 from defusedxml.common import DefusedXmlException
 from xml.etree.ElementTree import ParseError
 
+from pydantic import ValidationError
+
 from .schemas import PaperInput
 from .source_throttle import THROTTLE
 
@@ -62,9 +64,12 @@ def parse_pubmed_xml(payload: bytes) -> list[PaperInput]:
             continue  # records without an abstract are skipped, never filled in
         year = _clean(art.findtext("./MedlineCitation/Article/Journal/JournalIssue/PubDate/Year")) or None
         kws = [_clean(m.findtext("./DescriptorName")) for m in art.findall("./MedlineCitation/MeshHeadingList/MeshHeading")]
-        out.append(PaperInput(paper_id="pubmed:" + pmid, title=title[:1000], abstract=abstract[:50_000],
+        try:
+            out.append(PaperInput(paper_id="pubmed:" + pmid, title=title[:1000], abstract=abstract[:50_000],
                               source="pubmed", url=f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
                               published_at=year, keywords=[k for k in kws if k][:50]))
+        except ValidationError as exc:
+            raise PubmedCollectorError("upstream record failed validation") from exc
     return out
 
 
