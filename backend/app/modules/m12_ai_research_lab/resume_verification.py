@@ -2,6 +2,7 @@
 from __future__ import annotations
 import base64,hashlib,hmac,json
 from datetime import datetime
+from app.core.public_validation import PublicValidationError
 from pydantic import BaseModel,Field,model_validator
 
 def digest(v):return hashlib.sha256(json.dumps(v,sort_keys=True,separators=(',',':')).encode()).hexdigest()
@@ -22,23 +23,23 @@ class ResumeVerificationRequest(BaseModel):
  @model_validator(mode='after')
  def unique(self):
   for label,ids in [('dataset_id',[x.dataset_id for x in self.datasets]),('node_id',[x.node_id for x in self.provider_receipts])]:
-   if len(ids)!=len(set(ids)):raise ValueError(f'duplicate {label}')
+   if len(ids)!=len(set(ids)):raise PublicValidationError('duplicate '+label)
   return self
 def verify_resume(body:ResumeVerificationRequest)->dict:
  ds=[]
  for row in sorted(body.datasets,key=lambda x:x.dataset_id):
   try:raw=base64.b64decode(row.content_base64,validate=True)
-  except Exception as exc:raise ValueError(f'invalid dataset base64: {row.dataset_id}') from exc
+  except Exception as exc:raise PublicValidationError('invalid dataset base64',row.dataset_id) from exc
   actual=hashlib.sha256(raw).hexdigest()
-  if actual!=row.expected_sha256:raise ValueError(f'dataset byte hash mismatch: {row.dataset_id}')
+  if actual!=row.expected_sha256:raise PublicValidationError('dataset byte hash mismatch',row.dataset_id)
   ds.append({'dataset_id':row.dataset_id,'sha256':actual,'byte_count':len(raw),'source_ref':row.source_ref,'retrieved_at':row.retrieved_at.isoformat()})
  receipts=[]
  for row in sorted(body.provider_receipts,key=lambda x:x.node_id):
   key=body.trusted_hmac_keys.get(row.key_id)
-  if key is None:raise ValueError(f'untrusted provider receipt key: {row.key_id}')
+  if key is None:raise PublicValidationError('untrusted provider receipt key',row.key_id)
   payload=row.model_dump(mode='json',exclude={'signature_sha256_hmac'})
   expected=hmac.new(key.encode(),json.dumps(payload,sort_keys=True,separators=(',',':')).encode(),hashlib.sha256).hexdigest()
-  if not hmac.compare_digest(expected,row.signature_sha256_hmac):raise ValueError(f'invalid provider receipt signature: {row.node_id}')
+  if not hmac.compare_digest(expected,row.signature_sha256_hmac):raise PublicValidationError('invalid provider receipt signature',row.node_id)
   receipts.append({**payload,'signature_verified':True,'receipt_sha256':digest(row.model_dump(mode='json'))})
  artifact={'checkpoint_sha256':body.checkpoint_sha256,'resume_from_node_id':body.resume_from_node_id,'datasets':ds,'provider_receipts':receipts}
  return {'valid':True,**artifact,'verification_sha256':digest(artifact),'boundary':'This endpoint verifies supplied dataset bytes and HMAC-signed provider receipts against caller-configured trusted keys. It does not persist checkpoints, enqueue or execute work, retrieve datasets, validate provider identity beyond those keys, or resume a run.'}

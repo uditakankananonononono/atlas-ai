@@ -39,3 +39,37 @@ def test_unknown_caller_keys_and_long_or_odd_loc_elements_become_a_placeholder()
     d = r.json()["detail"]
     assert any(e["loc"][-1] == "<field>" for e in d) and all(set(e) == {"type", "loc", "msg"} for e in d)
     assert any(e["type"] == "value_error" and e["msg"] == "invalid value" for e in d)
+
+
+def test_public_reason_is_echoed_but_detail_with_caller_input_is_not():
+    from pydantic import BaseModel, model_validator
+    from fastapi import FastAPI
+    from app.core.public_validation import PublicValidationError
+    import app.main as m
+    class M(BaseModel):
+        key_id: str
+        @model_validator(mode="after")
+        def v(self):
+            raise PublicValidationError("untrusted provider public key", self.key_id)
+    class Plain(BaseModel):
+        key_id: str
+        @model_validator(mode="after")
+        def v(self):
+            raise ValueError(f"untrusted provider public key: {self.key_id}")   # ordinary ValueError stays generic
+    a = FastAPI(); a.add_exception_handler(m.RequestValidationError, m._validation_errors_without_input)
+    a.post("/x")(lambda body: 1)
+    @a.post("/pub")
+    def pub(b: M): return 1
+    @a.post("/plain")
+    def plain(b: Plain): return 1
+    t = TestClient(a)
+    r = t.post("/pub", json={"key_id": "CALLERSECRET"})
+    assert r.status_code == 422 and "untrusted provider public key" in r.text and "CALLERSECRET" not in r.text
+    r = t.post("/plain", json={"key_id": "CALLERSECRET"})
+    assert r.status_code == 422 and "CALLERSECRET" not in r.text and "untrusted" not in r.text
+
+def test_public_validation_error_rejects_overlong_reason():
+    import pytest
+    from app.core.public_validation import PublicValidationError
+    with pytest.raises(ValueError):
+        PublicValidationError("x" * 121)
