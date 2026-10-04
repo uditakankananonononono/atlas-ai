@@ -1,3 +1,4 @@
+import re
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -27,12 +28,32 @@ configure_telemetry()
 app = FastAPI(title="Atlas AI", version="0.1.0")
 
 
+_SAFE_LOC = re.compile(r"[A-Za-z0-9_.-]{1,64}")
+_FIXED_MSG = {
+    "missing": "field required", "string_type": "expected a string", "int_type": "expected an integer",
+    "float_type": "expected a number", "bool_type": "expected a boolean", "list_type": "expected a list",
+    "dict_type": "expected an object", "model_attributes_type": "expected an object", "json_invalid": "invalid JSON",
+    "string_too_short": "value too short", "string_too_long": "value too long", "too_short": "too few items",
+    "too_long": "too many items", "greater_than": "value too small", "greater_than_equal": "value too small",
+    "less_than": "value too large", "less_than_equal": "value too large", "extra_forbidden": "unexpected field",
+    "literal_error": "value not allowed", "enum": "value not allowed", "string_pattern_mismatch": "value has the wrong format",
+}
+
+
 @app.exception_handler(RequestValidationError)
 async def _validation_errors_without_input(_request: Request, exc: RequestValidationError) -> JSONResponse:
-    """422 bodies keep field location, message and error type but never echo the rejected input value (it may be large
-    or sensitive) or the validator context. This shapes the response only; request logs and proxies are not covered."""
-    detail = [{"type": str(e.get("type", "")), "loc": list(e.get("loc", ())), "msg": str(e.get("msg", ""))[:200]} for e in exc.errors()[:50]]
+    """422 bodies carry only a safe field location, the error type and a FIXED message for that type. They never echo the
+    rejected value, the validator's own text (custom validators may include input) or caller-chosen key names (an extra
+    key is shown as "<field>"). Response shaping only: request logs and proxies are not covered."""
+    def loc(parts, kind: str) -> list:
+        out = [x if isinstance(x, int) or (isinstance(x, str) and _SAFE_LOC.fullmatch(x)) else "<field>" for x in parts]
+        if kind in ("extra_forbidden", "dict_key", "unexpected_keyword_argument") and out:
+            out[-1] = "<field>"  # the last element is a caller-chosen key
+        return out
+    detail = [{"type": str(e.get("type", ""))[:60], "loc": loc(e.get("loc", ()), str(e.get("type", ""))), "msg": _FIXED_MSG.get(str(e.get("type", "")), "invalid value")} for e in exc.errors()[:50]]
     return JSONResponse(status_code=422, content={"detail": detail})
+
+
 app.add_middleware(ProductionBoundaryMiddleware,limit_per_minute=int(os.getenv("ATLAS_RATE_LIMIT_PER_MINUTE","120")))
 app.include_router(router, prefix="/api/v1")
 app.include_router(google_grounding_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
