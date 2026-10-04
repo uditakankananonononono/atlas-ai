@@ -99,3 +99,9 @@ class ResearchLoopRequest(BaseModel):
     sources:list[Literal["arxiv","pubmed"]]=Field(default_factory=lambda:["arxiv"],min_length=1,max_length=2)
     max_steps:int=Field(default=2,ge=1,le=3)
     per_step:int=Field(default=8,ge=1,le=20)
+
+
+class SummarizeRequest(BaseModel):
+    title:str=Field(min_length=3,max_length=1000)
+    abstract:str=Field(min_length=20,max_length=50_000)
+    max_sentences:int=Field(default=3,ge=1,le=10)
