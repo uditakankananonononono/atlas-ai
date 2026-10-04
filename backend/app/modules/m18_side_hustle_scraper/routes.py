@@ -6,7 +6,8 @@ the legal-source collectors, validation, ranking and production refresh path.
 The default document repository is process-local SQLite; deployments that need
 cross-process retention inject their shared repository through the dependency.
 """
-from fastapi import APIRouter, Depends, HTTPException
+import json
+from fastapi import APIRouter, Depends, HTTPException, Response
 
 from app.core.providers import generate, ProviderError
 
@@ -59,31 +60,36 @@ def get_service() -> Service:
 
 
 @router.post("/blueprints", response_model=list[BlueprintOut])
-async def discover(request: DiscoverIn, service: Service = Depends(get_service)):
+async def discover(request: DiscoverIn, response: Response, service: Service = Depends(get_service)):
     try:
-        return await service.discover(request)
-    except ProviderError as e:
-        raise HTTPException(503, f"model provider unavailable: {e}")  # no model configured: honest failure, nothing simulated
+        out, partial = await service.discover_report(request)
+    except ProviderError:
+        raise HTTPException(503, "model provider unavailable")  # fixed text: provider/shared-model wrapper text is not echoed
     except ValueError as e:
         raise HTTPException(422, str(e))
     except RuntimeError as e:
-        raise HTTPException(422 if "not configured" in str(e) else 502, str(e))
+        if "not configured" in str(e):
+            raise HTTPException(422, str(e))
+        raise HTTPException(502, "collector returned no documents")
+    if partial:
+        response.headers["X-Atlas-Collection-Partial-Failures"] = json.dumps(partial[:8], separators=(",", ":"))[:600]
+    return out
 
 
 @router.post("/feasibility", response_model=FeasibilityOut)
 async def analyze(request: AnalyzeIn, service: Service = Depends(get_service)):
     try:
         return await service.analyze(request)
-    except ProviderError as e:
-        raise HTTPException(503, f"model provider unavailable: {e}")
+    except ProviderError:
+        raise HTTPException(503, "model provider unavailable")
     except ValueError as e:  # model returned non-schema output
         raise HTTPException(502, "model output rejected by schema")
 
 
 @router.post("/collect", response_model=CollectReportOut)
-async def collect(request: CollectIn, service: Service = Depends(get_service)):
+async def collect(request: CollectIn, tenant: TenantContext = Depends(require_tenant), service: Service = Depends(get_service)):
     try:
-        report = await service.collect(request)
+        report = await service.collect(request, tenant_id=tenant.tenant_id)
     except ValueError as e:
         raise HTTPException(422, str(e))
     return CollectReportOut(
@@ -102,8 +108,8 @@ async def collect(request: CollectIn, service: Service = Depends(get_service)):
 
 
 @router.post("/rank", response_model=list[RankedOut])
-async def rank(request: RankIn, service: Service = Depends(get_service)):
-    ranked = await service.ranked(request)
+async def rank(request: RankIn, tenant: TenantContext = Depends(require_tenant), service: Service = Depends(get_service)):
+    ranked = await service.ranked(request, tenant_id=tenant.tenant_id)
     return [
         RankedOut(
             doc_id=r.doc_id, url=r.url, platform=r.platform, title=r.title,

@@ -28,3 +28,20 @@ def test_tenant_service_cap_fails_closed(c,monkeypatch):
     assert c.post("/api/v1/claire/goals",json={"goal":"Draft a weekly study plan 1","acceptance":["5 days"]},headers=A).status_code==201
     assert c.post("/api/v1/claire/goals",json={"goal":"Draft a weekly study plan 2","acceptance":["5 days"]},headers=B).status_code==503
     assert c.post("/api/v1/claire/goals",json={"goal":"Draft a weekly study plan 3","acceptance":["5 days"]},headers=A).status_code==201
+
+
+def test_tenant_var_is_reset_after_dependency_and_not_reused_across_requests(c):
+    import asyncio
+    from app.modules.m20_general_cognitive_worker.routes import _tenant_var
+    from app.auth.context import TenantContext
+    async def run():
+        assert _tenant_var.get() is None
+        gen=R.get_service(TenantContext("cl-x","x"))
+        svc=await gen.__anext__()
+        assert _tenant_var.get()=="cl-x"
+        with pytest.raises(StopAsyncIteration): await gen.__anext__()
+        assert _tenant_var.get() is None  # reset in finally
+        g2=R.get_service(TenantContext("cl-y","y")); s2=await g2.__anext__()
+        assert s2 is not svc  # distinct per tenant, same-context reuse does not leak
+        await g2.aclose()
+    asyncio.run(run())
