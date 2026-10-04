@@ -151,6 +151,10 @@ async def research_loop_report(request:ResearchLoopRequest,tenant:TenantContext=
 def summarize_paper(request:SummarizeRequest,tenant:TenantContext=Depends(require_tenant)):
     """HEURISTIC extractive summary of the supplied title+abstract (verbatim sentences)."""
     from .extractive_summary import summarize
+    if request.mode=="abstractive":
+        from .abstractive_summary import summarize_abstractive
+        try:return summarize_abstractive(request.title,request.abstract)
+        except ProviderError as exc:raise HTTPException(503,"local model unavailable; nothing was generated") from exc
     try:return summarize(request.title,request.abstract,request.max_sentences)
     except ValueError as exc:raise HTTPException(status_code=422,detail="abstract could not be summarized") from exc
 

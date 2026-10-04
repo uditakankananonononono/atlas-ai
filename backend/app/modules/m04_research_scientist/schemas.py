@@ -105,3 +105,4 @@ class SummarizeRequest(BaseModel):
     title:str=Field(min_length=3,max_length=1000)
     abstract:str=Field(min_length=20,max_length=50_000)
     max_sentences:int=Field(default=3,ge=1,le=10)
+    mode:Literal["extractive","abstractive"]="extractive"  # abstractive = free local llama.cpp server, MODEL-GENERATED, unverified
