@@ -147,8 +147,23 @@ def _isolated_approval_database(tmp_path, monkeypatch):
     from sqlalchemy.orm import sessionmaker
     from app.core.database import Base
     from app.modules.m00_approval_center import service as m00
-    engine = create_engine(f"sqlite:///{tmp_path / 'approvals_test.db'}", connect_args={"check_same_thread": False})
-    Base.metadata.create_all(engine)
-    monkeypatch.setattr(m00, "_default_service", m00.Service(session_factory=sessionmaker(bind=engine, expire_on_commit=False)))
+    class _LazyService:
+        """Builds the temp DB + schema only when a test actually touches the approval service (an eager create_all
+        per test cost ~0.1-0.3s of setup across thousands of tests)."""
+        _real = None
+        _engine = None
+
+        def _build(self):
+            if self._real is None:
+                self._engine = create_engine(f"sqlite:///{tmp_path / 'approvals_test.db'}", connect_args={"check_same_thread": False})
+                Base.metadata.create_all(self._engine)
+                self._real = m00.Service(session_factory=sessionmaker(bind=self._engine, expire_on_commit=False))
+            return self._real
+
+        def __getattr__(self, name):
+            return getattr(self._build(), name)
+    lazy = _LazyService()
+    monkeypatch.setattr(m00, "_default_service", lazy)
     yield
-    engine.dispose()
+    if lazy._engine is not None:
+        lazy._engine.dispose()
