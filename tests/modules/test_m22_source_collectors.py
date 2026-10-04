@@ -318,3 +318,17 @@ async def test_kind_flows_from_raw_candidate_to_candidate():
     s = Service(FakeApprovals(), [WorkingCollector()])
     items = await s.discover("anything")
     assert items[0].kind == "repository"
+
+
+def test_pypi_collector_is_name_only_over_simple_index_offline_fixture():
+    # FIXTURE: a fake PEP 691 payload; no network. Proves ranking + honesty labelling only, not live PyPI.
+    import asyncio
+    from app.modules.m22_tools_hub.collectors import PypiNameCollector
+    fx = {"projects": [{"name": "flask-cors"}, {"name": "Flask"}, {"name": "my-flask-thing"}, {"name": "django"}]}
+    c = PypiNameCollector(fetch=lambda url: fx)
+
+    async def run():
+        return [x async for x in c.collect("flask")]
+    out = asyncio.run(run())
+    assert [x["name"] for x in out] == ["Flask", "flask-cors", "my-flask-thing"]
+    assert all("name-only" in x["summary"] and x["evidence"][0]["match"] == "name-only" for x in out)

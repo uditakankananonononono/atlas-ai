@@ -22,11 +22,36 @@ class JsonCollector:
   for item in self.parse(payload):yield item
 def _github(p):
  for x in p.get('items',[])[:20]:yield {'name':x['full_name'],'url':x['html_url'],'summary':x.get('description') or '', 'version':None,'license':(x.get('license') or {}).get('spdx_id'),'maintenance':.1 if x.get('archived') else _recency_score(x.get('pushed_at') or x.get('updated_at')),'security':.6,'fit':.7,'novelty':.5,'evidence':[{'stars':x.get('stargazers_count',0),'updated_at':x.get('updated_at'),'pushed_at':x.get('pushed_at')}], 'permissions':[], 'kind':'repository'}
-def _pypi(p):
- for x in p.get('projects',[])[:20]:yield {'name':x['name'],'url':f"https://pypi.org/project/{x['name']}/",'summary':'Python package from official PyPI index','maintenance':.5,'security':.5,'fit':.6,'novelty':.4,'evidence':[{'source':'pypi'}],'permissions':[], 'kind':'package'}
+PYPI_SIMPLE_URL='https://pypi.org/simple/'
+class PypiNameCollector:
+ """PyPI has NO search API (the /search/ page is HTML only). The supported official interface is the Simple index
+ (PEP 691 JSON, all project names, ~10MB). This collector therefore does NAME-ONLY matching against that index
+ (exact > prefix > substring > shorter first). It does not search descriptions or keywords; summaries say so."""
+ kind='package'
+ def __init__(self,fetch=None,ttl=3600):
+  self.name='pypi';self.url=PYPI_SIMPLE_URL;self._fetch=fetch;self._ttl=ttl;self._cache=(0.0,[])
+ def _load(self):
+  import time
+  at,names=self._cache
+  if names and time.time()-at<self._ttl:return names
+  if self._fetch:payload=self._fetch(self.url)
+  else:
+   request=Request(self.url,headers={'User-Agent':'AtlasAI-ToolsHub/1.0','Accept':'application/vnd.pypi.simple.v1+json'})
+   with urlopen(request,timeout=30) as r:payload=json.load(r)
+  names=[x['name'] for x in payload.get('projects',[]) if isinstance(x,dict) and x.get('name')]
+  self._cache=(time.time(),names);return names
+ async def collect(self,query):
+  import asyncio
+  names=await asyncio.to_thread(self._load)
+  q=(query or '').strip().lower().replace('_','-')
+  if not q:return
+  hits=[n for n in names if q in n.lower()]
+  hits.sort(key=lambda n:(n.lower()!=q,not n.lower().startswith(q),len(n),n.lower()))
+  for n in hits[:20]:
+   yield {'name':n,'url':f"https://pypi.org/project/{n}/",'summary':'PyPI project NAME match from the official Simple index (name-only; descriptions are not searched)','maintenance':.5,'security':.5,'fit':.6,'novelty':.4,'evidence':[{'source':'pypi','match':'name-only'}],'permissions':[],'kind':'package'}
 def _npm(p):
  for row in p.get('objects',[])[:20]:
   x=row.get('package',{});yield {'name':x.get('name',''),'url':(x.get('links') or {}).get('npm',f"https://www.npmjs.com/package/{x.get('name','')}"),'summary':x.get('description') or 'npm package','version':x.get('version'),'license':None,'maintenance':float(row.get('score',{}).get('detail',{}).get('maintenance',.5)),'security':float(row.get('score',{}).get('detail',{}).get('quality',.5)),'fit':.6,'novelty':.4,'evidence':[{'source':'npm','score':row.get('score',{}).get('final')}],'permissions':[], 'kind':'package'}
 def default_collectors():
- base=[JsonCollector('github','https://api.github.com/search/repositories?q={query}&per_page=20',_github,kind='repository'),JsonCollector('pypi','https://pypi.org/search/?q={query}&format=application/vnd.pypi.simple.v1+json',_pypi),JsonCollector('npm','https://registry.npmjs.org/-/v1/search?text={query}&size=20',_npm)]
+ base=[JsonCollector('github','https://api.github.com/search/repositories?q={query}&per_page=20',_github,kind='repository'),PypiNameCollector(),JsonCollector('npm','https://registry.npmjs.org/-/v1/search?text={query}&size=20',_npm)]
  return base+default_source_collectors()
