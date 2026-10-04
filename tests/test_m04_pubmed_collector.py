@@ -159,6 +159,5 @@ def test_non_numeric_pmid_skipped():
 def test_programming_errors_are_not_masked_as_502(monkeypatch):
     def bug(q, n): raise KeyError("programming bug")
     c = _client(monkeypatch, bug)
-    c.raise_server_exceptions = False
-    r = c.post("/research-scientist/surveillance/collect/pubmed", json={"query": "tumor niches"})
-    assert r.status_code == 500
+    with pytest.raises(KeyError):  # propagates (server would return 500), not a masked 502
+        c.post("/research-scientist/surveillance/collect/pubmed", json={"query": "tumor niches"})
