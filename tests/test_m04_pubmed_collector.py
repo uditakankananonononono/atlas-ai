@@ -63,7 +63,7 @@ def test_throttle_records_time_even_when_call_fails(tmp_path):
     t.run("pubmed", lambda: 1)
     assert slept == [0.4]
 
-@pytest.mark.parametrize("stamp", ["99999999999", "garbage", "nan", "-5x"])
+@pytest.mark.parametrize("stamp", ["99999999999", "garbage", "nan", "-5x", "-inf", "inf"])
 def test_future_or_corrupt_stamp_waits_conservatively(tmp_path, stamp):
     d = tmp_path / "st"; d.mkdir(mode=0o700)
     (d / "arxiv.stamp").write_text(stamp); os.chmod(d / "arxiv.stamp", 0o600)
@@ -212,3 +212,19 @@ def test_programming_errors_are_not_masked_as_502(monkeypatch):
     c = _client(monkeypatch, bug)
     with pytest.raises(KeyError):  # propagates (server would return 500), not a masked 502
         c.post("/research-scientist/surveillance/collect/pubmed", json={"query": "tumor niches"})
+
+def test_uncreatable_state_dir_is_throttle_error_and_route_503_no_outbound(monkeypatch):
+    from app.modules.m04_research_scientist import arxiv_collector as ac
+    from app.modules.m04_research_scientist.source_throttle import ThrottleStateError
+    from app.auth.context import TenantContext, require_tenant
+    import httpx
+    bad = SourceThrottle(state_dir="/proc/zzz/x")
+    with pytest.raises(ThrottleStateError):
+        bad.run("arxiv", lambda: 1)
+    sent = []
+    monkeypatch.setattr(ac, "THROTTLE", bad)
+    monkeypatch.setattr(httpx, "Client", lambda **kw: sent.append(1))
+    app = FastAPI(); app.include_router(routes.router)
+    app.dependency_overrides[require_tenant] = lambda: TenantContext(tenant_id="t", actor_id="u")
+    r = TestClient(app).post("/research-scientist/surveillance/collect/arxiv", json={"query": "tumor niches"})
+    assert r.status_code == 503 and sent == []

@@ -15,6 +15,7 @@ exist here. Until then, run exactly one collector host. No scheduler uses this y
 from __future__ import annotations
 
 import fcntl
+import math
 import os
 import stat
 import tempfile
@@ -39,8 +40,11 @@ MAX_QUEUED = 3  # callers allowed to wait per source in this process; more are r
 
 def _private_dir(base: Path) -> Path:
     path = base
-    path.mkdir(mode=0o700, parents=True, exist_ok=True)
-    st = os.lstat(path)
+    try:
+        path.mkdir(mode=0o700, parents=True, exist_ok=True)
+        st = os.lstat(path)
+    except OSError as exc:
+        raise ThrottleStateError("state dir cannot be created or inspected") from exc
     if stat.S_ISLNK(st.st_mode) or not stat.S_ISDIR(st.st_mode):
         raise ThrottleStateError("state dir is not a plain directory")
     if st.st_uid != os.getuid() or st.st_mode & 0o077:
@@ -80,7 +84,10 @@ class SourceThrottle:
         except OSError as exc:
             raise ThrottleStateError("cannot open stamp file safely") from exc
         try:
-            st = os.fstat(fd)
+            try:
+                st = os.fstat(fd)
+            except OSError as exc:
+                raise ThrottleStateError("cannot inspect stamp file") from exc
             if not stat.S_ISREG(st.st_mode) or st.st_uid != os.getuid() or st.st_mode & 0o077:
                 raise ThrottleStateError("stamp file must be a private regular file owned by this user")
             fcntl.flock(fd, fcntl.LOCK_EX)  # blocks other processes: one in-flight request per source
@@ -90,7 +97,7 @@ class SourceThrottle:
                 last = float(raw) if raw else None
             except ValueError:
                 last = now  # corrupt stamp: assume a request just happened, wait a full interval
-            if last is not None and (last > now or last != last):
+            if last is not None and (not math.isfinite(last) or last > now):
                 last = now  # future/NaN stamp: conservative full wait, never zero
             if last is not None:
                 wait = interval - (now - last)
