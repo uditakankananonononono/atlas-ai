@@ -57,3 +57,22 @@ def test_a_heading_used_by_only_one_of_three_examples_is_not_a_gap():
     ONE="# Abstract\nx\n# Unique Section\ny"
     assert "unique section" not in run([NEAR,FAR,ONE]).structure_gaps
     assert "approach" in run([NEAR,FAR,ONE]).structure_gaps
+
+def _post(body):
+    from fastapi import FastAPI; from fastapi.testclient import TestClient
+    from app.modules.m03_grant_writer.routes import router, get_service
+    app=FastAPI(); app.include_router(router,prefix="/api"); app.dependency_overrides[get_service]=lambda:S
+    return TestClient(app,raise_server_exceptions=False).post("/api/grant-writer/success-analysis",json=body)
+
+def test_per_example_and_total_size_ceilings_are_422_over_http():
+    assert _post({"proposal":P,"funded_examples":["word "*40_001]}).status_code==422          # 200,005 chars
+    assert _post({"proposal":P,"funded_examples":["word "*39_000]*11}).status_code==422        # 11 x 195k = 2.1M total
+    ok=_post({"proposal":P,"funded_examples":["word "*39_000]*10})                              # 10 x 195k = 1.95M
+    assert ok.status_code==200
+    assert _post({"proposal":P,"funded_examples":["x"]*51}).status_code==422
+
+def test_permissioned_caller_content_below_the_ceilings_is_accepted_unchanged():
+    assert _post({"proposal":P,"funded_examples":[NEAR,FAR]}).json()["comparable_examples"]==2
+
+def test_accented_text_limit_is_stated():
+    assert "ASCII" in run([FAR]).method_note

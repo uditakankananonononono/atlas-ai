@@ -1,7 +1,7 @@
 """Pydantic contracts for the Grant & Fellowship Writer module."""
 
 from typing import Literal
-from pydantic import BaseModel, Field
+from pydantic import model_validator, BaseModel, Field
 
 
 class EvidenceItem(BaseModel):
@@ -83,6 +83,15 @@ class SuccessAnalysisRequest(BaseModel):
 
     proposal: str = Field(min_length=20, max_length=100_000)
     funded_examples: list[str] = Field(default_factory=list, max_length=50)
+
+    @model_validator(mode="after")
+    def _bound_example_sizes(self) -> "SuccessAnalysisRequest":
+        # Explicit ceilings so 50 large examples cannot burn CPU (measured ~15 s at ~3.4 MB each before this cap).
+        if any(len(x) > 200_000 for x in self.funded_examples):
+            raise ValueError("each funded example must be at most 200,000 characters")
+        if sum(len(x) for x in self.funded_examples) > 2_000_000:
+            raise ValueError("funded examples total at most 2,000,000 characters")
+        return self
 
 
 class SuccessAnalysisResponse(BaseModel):
