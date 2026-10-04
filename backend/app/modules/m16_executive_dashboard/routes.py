@@ -52,11 +52,22 @@ def drilldown(kind:str,ref_id:str,service:Service=Depends(get_service)):
 def heartbeat(data:AgentHeartbeat,service:Service=Depends(get_service)):
     try:return service.heartbeat(data)
     except RuntimeError as e:raise HTTPException(501,str(e))
+def _check_timeline_event(data):
+    """A timeline.upsert event whose payload.item is not a valid TimelineItem used to be accepted (201) and silently dropped
+    by the projector, so the timeline stayed empty with no signal. Refuse it at intake instead."""
+    from .projector import TIMELINE_UPSERT_TOPIC
+    from .schemas import TimelineItem
+    if data.topic!=TIMELINE_UPSERT_TOPIC:return
+    try:TimelineItem(**data.payload["item"])
+    except Exception as e:raise HTTPException(422,"timeline.upsert needs payload.item as a valid timeline item (id,title,start,end[,progress,dependencies])") from e
 @router.post("/events",response_model=Event,status_code=201)
-def intake(data:EventIn,service:Service=Depends(get_service)):return service.intake(data)
+def intake(data:EventIn,service:Service=Depends(get_service)):
+    _check_timeline_event(data)
+    return service.intake(data)
 @router.post("/events/batch",response_model=list[Event],status_code=201)
 def intake_batch(items:list[EventIn],service:Service=Depends(get_service)):
     if len(items)>500:raise HTTPException(413,"batch too large (max 500)")
+    for it in items:_check_timeline_event(it)
     return service.intake_batch(items)
 @router.get("/kpi-definitions",response_model=list[KpiDefinitionOut])
 def list_kpi_definitions(service:Service=Depends(get_service)):return service.list_kpi_definitions()
