@@ -83,3 +83,9 @@ class SurveillanceIngestRequest(BaseModel):
 
 class GapEvidenceOut(BaseModel):
     left_paper_id:str;right_paper_id:str;similarity:float;shared_keywords:list[str];gap:str
+
+
+class ArxivCollectRequest(BaseModel):
+    query:str=Field(min_length=3,max_length=300)
+    max_results:int=Field(default=20,ge=1,le=50)
+    embedding_provider:Literal["openai","ollama","local","bge","lexical"]="lexical"  # lexical = free offline keyword-overlap vectors, NOT semantic
