@@ -5,7 +5,7 @@ Status words: REAL = runs and produces the real thing (evidence named). HEURISTI
 | Rows / feature | Status | Evidence and limits |
 |---|---|---|
 | 211 PubMed surveillance | REAL (collector) | `pubmed_collector.py`, POST `/surveillance/collect/pubmed`. A live manual call returned real records. No scheduler. NCBI tool/email not registered. |
-| 212 arXiv surveillance | REAL (collector) | `arxiv_collector.py`, POST `/surveillance/collect/arxiv`. Live manual calls. Throttle covers one host only (`source_throttle.py`). |
+| 212 arXiv surveillance | REAL (collector) | `arxiv_collector.py`, POST `/surveillance/collect/arxiv`. Live manual calls (observed in my sandbox; not independently reproduced by the reviewer). Throttle covers one host only (`source_throttle.py`). |
 | 213-216 bioRxiv, Nature, Science, custom journals | MISSING (collector) | `lane_surveillance.parse_syndication_feed` parses RSS/Atom offline. I did not verify any fetch or route wiring. |
 | Continuous polling / scheduler | MISSING | Needs a shared cross-host lock and a verified cadence. |
 | 217-221 summaries, embeddings, clustering, gap candidates, hypotheses (expanded rows 217-222) | STUBBED (read and checked) | `_summary` echoes caller sections; `_embedding` only checks the dimensions of caller vectors; `_clusters` echoes caller assignments; `_gaps` thresholds caller counts; `_hyp` echoes caller hypotheses. |
@@ -19,7 +19,8 @@ Status words: REAL = runs and produces the real thing (evidence named). HEURISTI
 | 226-227 HF/Kaggle datasets | STUBBED | Echo, `executed: False`. Dataset fetch for approved analyses is separate (below). |
 | 228-229 code generation (Python/R) | STUBBED (read) | `_code` echoes caller-supplied code, `executed: False`. Generating code needs a model: MISSING under the free/local constraint. |
 | 230, 240-242, 248-250 scanpy, simulation, docking, AlphaFold, Galaxy, PyMOL | STUBBED | Adapter echoes with `credentials_present: False`; `tools/adapters.py` has command wrappers, untested here. |
-| 231 sandboxed execution | REAL (bubblewrap) | `approved_sandbox.py` executes approved code in bwrap here (27 tests, none skipped). The Docker backend is untested (docker absent). Not the Dell target. |
+| 231 sandboxed execution (expanded row itself) | STUBBED | The row echoes image_digest, command and resource_limits with `executed: False`. |
+| Approved-code sandbox executor (`approved_sandbox.py`, a separate operation from row 231) | REAL (bubblewrap) | `approved_sandbox.py` executes approved code in bwrap here (27 tests, none skipped). The Docker backend is untested (docker absent). Not the Dell target. |
 | 234 LaTeX manuscript (expanded row) | STUBBED | Echo. Separately: `/research-loop/report` makes a REAL pdflatex PDF of retrieved metadata and abstracts. It is an evidence compendium, NOT an authored paper. |
 | "40 page" authored research output | MISSING | Needs LLM prose; conflicts with the free/local constraint unless a local model is available. |
 | "Think like a human, then research" | MISSING | Heuristic query expansion only. |
