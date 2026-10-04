@@ -1,4 +1,4 @@
-import json, os
+import json, os, time
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -63,11 +63,62 @@ def test_throttle_records_time_even_when_call_fails(tmp_path):
     t.run("pubmed", lambda: 1)
     assert slept == [0.4]
 
-def test_throttle_ignores_future_stamp(tmp_path):
-    (tmp_path / "atlas-collector-arxiv.stamp").write_text("99999999999")
+@pytest.mark.parametrize("stamp", ["99999999999", "garbage", "nan", "-5x"])
+def test_future_or_corrupt_stamp_waits_conservatively(tmp_path, stamp):
+    d = tmp_path / "st"; d.mkdir(mode=0o700)
+    (d / "arxiv.stamp").write_text(stamp); os.chmod(d / "arxiv.stamp", 0o600)
     slept = []
-    SourceThrottle(clock=lambda: 100.0, sleep=slept.append, state_dir=tmp_path).run("arxiv", lambda: 1)
-    assert slept == []
+    SourceThrottle(clock=lambda: 100.0, sleep=slept.append, state_dir=d).run("arxiv", lambda: 1)
+    assert slept == [3.0]
+
+def test_unsafe_state_is_refused_not_ignored(tmp_path):
+    from app.modules.m04_research_scientist.source_throttle import ThrottleStateError
+    called = []
+    open_dir = tmp_path / "open"; open_dir.mkdir(); os.chmod(open_dir, 0o755)
+    with pytest.raises(ThrottleStateError):
+        SourceThrottle(state_dir=open_dir).run("arxiv", lambda: called.append(1))
+    real = tmp_path / "real"; real.mkdir(mode=0o700)
+    link = tmp_path / "link"; link.symlink_to(real)
+    with pytest.raises(ThrottleStateError):
+        SourceThrottle(state_dir=link).run("arxiv", lambda: called.append(1))
+    d = tmp_path / "d"; d.mkdir(mode=0o700)
+    (d / "arxiv.stamp").symlink_to(tmp_path / "victim")
+    with pytest.raises(ThrottleStateError):
+        SourceThrottle(state_dir=d).run("arxiv", lambda: called.append(1))
+    assert not (tmp_path / "victim").exists() and called == []
+    (d / "arxiv.stamp").unlink(); (d / "arxiv.stamp").write_text("1"); os.chmod(d / "arxiv.stamp", 0o644)
+    with pytest.raises(ThrottleStateError):
+        SourceThrottle(state_dir=d).run("arxiv", lambda: called.append(1))
+    assert called == []
+
+def test_queue_is_bounded(tmp_path):
+    import threading
+    from app.modules.m04_research_scientist.source_throttle import ThrottleBusy, MAX_QUEUED
+    t = SourceThrottle(sleep=lambda s: None, state_dir=tmp_path / "q")
+    gate = threading.Event(); started = threading.Event(); errs = []
+    def worker():
+        try: t.run("pubmed", lambda: (started.set(), gate.wait(5)))
+        except ThrottleBusy: errs.append(1)
+    ths = [threading.Thread(target=worker) for _ in range(MAX_QUEUED + 3)]
+    ths[0].start(); started.wait(5)
+    for th in ths[1:]: th.start()
+    time.sleep(0.5); gate.set()
+    for th in ths: th.join(10)
+    assert len(errs) == 2  # 1 running + MAX_QUEUED waiting allowed, the rest refused
+
+def test_routes_return_503_for_unsafe_state_without_outbound(monkeypatch, tmp_path):
+    from app.modules.m04_research_scientist import arxiv_collector as ac
+    from app.modules.m04_research_scientist.source_throttle import ThrottleStateError
+    from app.auth.context import TenantContext, require_tenant
+    sent = []
+    monkeypatch.setattr(ac, "THROTTLE", SourceThrottle(state_dir=tmp_path / "x"))
+    os.chmod(tmp_path, 0o700); (tmp_path / "x").mkdir(); os.chmod(tmp_path / "x", 0o755)
+    app = FastAPI(); app.include_router(routes.router)
+    app.dependency_overrides[require_tenant] = lambda: TenantContext(tenant_id="t", actor_id="u")
+    import httpx
+    monkeypatch.setattr(httpx, "Client", lambda **kw: sent.append(1))
+    r = TestClient(app).post("/research-scientist/surveillance/collect/arxiv", json={"query": "tumor niches"})
+    assert r.status_code == 503 and "state" not in r.text and sent == []
 
 def test_throttle_spaces_across_processes(tmp_path):
     import subprocess, sys, textwrap
