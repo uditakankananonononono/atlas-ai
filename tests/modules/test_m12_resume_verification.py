@@ -14,3 +14,10 @@ def test_fails_closed_on_dataset_or_signature_mismatch():
 def test_rejects_untrusted_key_and_duplicate_evidence():
  p=payload();p['trusted_hmac_keys']={'other':KEY};r=C.post(U,json=p,headers=H);assert r.status_code==422 and 'untrusted' in r.text
  p=payload();p['datasets']*=2;r=C.post(U,json=p,headers=H);assert r.status_code==422 and 'duplicate dataset_id' in r.text
+
+
+def test_http_422_keeps_fixed_reason_but_never_echoes_caller_ids():
+ p=payload();p['datasets'][0]['dataset_id']='CALLERSECRET_DS';p['datasets'][0]['content_base64']=base64.b64encode(b'tampered').decode()
+ r=C.post(U,json=p,headers=H);assert r.status_code==422 and 'byte hash mismatch' in r.text and 'CALLERSECRET' not in r.text
+ p=payload();p['provider_receipts'][0]['key_id']='CALLERSECRET_KEY'
+ r=C.post(U,json=p,headers=H);assert r.status_code==422 and 'untrusted' in r.text and 'CALLERSECRET' not in r.text
