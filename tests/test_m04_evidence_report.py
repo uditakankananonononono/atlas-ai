@@ -81,3 +81,16 @@ def test_route_503_when_pdflatex_missing(monkeypatch):
 def test_unbalanced_braces_are_escaped_not_a_compile_failure(tmp_path):
     pdf, _ = er.compile_pdf(er.render_latex(result([paper(1, title="open { brace", abstract="close } brace and { again here")])))
     assert "open { brace" in text_of(pdf, tmp_path)
+
+def test_long_tokens_wrap_instead_of_overflowing(tmp_path):
+    p = paper(1, abstract="start " + "x" * 200 + " https://example.org/" + "a" * 150 + " end")
+    pdf, _ = er.compile_pdf(er.render_latex(result([p])))
+    f = tmp_path / "w.pdf"; f.write_bytes(pdf)
+    out = subprocess.run(["pdftotext", "-layout", str(f), "-"], capture_output=True, text=True).stdout
+    assert max(len(line) for line in out.splitlines()) < 140  # an unwrapped 200-char token would exceed this
+
+def test_incomplete_banner_only_when_not_complete(tmp_path):
+    r = result([paper(1)])
+    assert "INCOMPLETE" not in er.render_latex(r)
+    r.status = "partial"
+    assert "INCOMPLETE" in er.render_latex(r)

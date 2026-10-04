@@ -31,16 +31,23 @@ class ReportError(RuntimeError):
 def tex_escape(text: str) -> str:
     ascii_text = unicodedata.normalize("NFKD", text or "").encode("ascii", "ignore").decode("ascii")
     ascii_text = "".join(c if c in "\n\t" or 32 <= ord(c) < 127 else " " for c in ascii_text)
-    return "".join(_SPECIAL.get(c, c) for c in ascii_text)
+    out, run = [], 0
+    for c in ascii_text:
+        run = 0 if c.isspace() else run + 1
+        out.append(_SPECIAL.get(c, c))
+        if run and run % 20 == 0:
+            out.append(r"\allowbreak{}")  # lets very long tokens and URLs wrap instead of overflowing
+    return "".join(out)
 
 
 def render_latex(res: LoopResult, gaps: list[dict] | None = None) -> str:
     out = [r"\documentclass[11pt]{article}", r"\usepackage[margin=1in]{geometry}",
-           r"\usepackage[T1]{fontenc}", r"\setlength{\parindent}{0pt}\setlength{\parskip}{6pt}",
+           r"\usepackage[T1]{fontenc}", r"\setlength{\parindent}{0pt}\setlength{\parskip}{6pt}\sloppy\emergencystretch=3em",
            r"\begin{document}",
            r"\section*{Literature evidence compendium}",
            r"\textbf{Question:} " + tex_escape(res.question),
            r"\par\textbf{Status:} " + tex_escape(res.status) + " (" + tex_escape(res.stop_reason or "n/a") + r")",
+           *([r"\par\textbf{INCOMPLETE:} the loop stopped early, so this list is partial."] if res.status != "complete" else []),
            r"\par This document lists retrieved records only. No text in it was written by a language model "
            r"and it contains no analysis, review or conclusion. Non-ASCII characters were transliterated or dropped.",
            r"\section*{Query trail}"]
