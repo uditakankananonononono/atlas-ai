@@ -247,3 +247,18 @@ def test_row_93_errors_never_echo_caller_input_over_http(bad):
     r=TestClient(app,raise_server_exceptions=False).post("/m3/core-spec/capabilities/93",json={"objective":"budget","inputs":inp})
     assert r.status_code==422,(r.status_code,r.text[:200])
     assert "SECRET" not in r.text and "sk-live" not in r.text and len(r.text)<400
+
+@pytest.mark.parametrize("over",[
+    {"rate":{"currency":"sk-live-C"}},{"rate":{"currency":"usd"}},{"rate":{"currency":"USDX"}},{"rate":{"currency":1}},
+    {"rate":{"unit":["hour"]}},{"rate":{"unit":""}},{"rate":{"unit":"u"*41}},{"rate":{"label":{"a":1}}},{"rate":{"label":"l"*121}},
+    {"rate":{"code":"has space"}},{"rate":{"code":"c"*65}},{"rate":{"amount":"NaN"}},{"rate":{"amount":"Infinity"}},{"rate":{"amount":True}},{"rate":{"amount":"1e13"}},
+    {"lines":[{"rate_code":"gpu","quantity":"1","description":"d"*501}]},{"lines":[{"rate_code":"gpu","quantity":"1","description":"bad\x00ctl"}]},
+    {"lines":[{"rate_code":"gpu","quantity":"1","description":["x"]}]},{"lines":[{"rate_code":"gpu","quantity":"NaN","description":"d"}]},
+    {"lines":[{"rate_code":"gpu","quantity":"1","description":"d"}]*201},{"indirect_rate":"NaN"},
+])
+def test_row_93_field_type_length_currency_validation(over):
+    with pytest.raises(ValueError,match="invalid"): _call(**over)
+
+def test_row_93_legitimate_content_passes_unchanged():
+    r=_call(lines=[{"rate_code":"gpu","quantity":"2.5","description":"Training run, 4×A100 (phase 1)"}],rate={"currency":"EUR","label":"GPU hour (A100)"})
+    b=r.artifact["budget"]; assert b["currency"]=="EUR" and b["lines"][0]["description"]=="Training run, 4×A100 (phase 1)" and b["direct_total"]=="6.25"

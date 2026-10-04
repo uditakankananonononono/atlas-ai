@@ -80,6 +80,22 @@ def _budget_table(request:CapabilityRequest)->dict[str,Any]:
             raise TypeError("rates and lines must be non-empty lists")
         if not all(isinstance(x,dict) for x in i["rates"]) or not all(isinstance(x,dict) for x in i["lines"]):
             raise TypeError("each rate and line must be an object")
+        import re
+        from decimal import Decimal as _D
+        if len(i["rates"])>200 or len(i["lines"])>200:
+            raise TypeError("too many rates or lines")
+        code_ok=lambda v:isinstance(v,str) and re.fullmatch(r"[A-Za-z0-9_.-]{1,64}",v) is not None
+        text_ok=lambda v,n:isinstance(v,str) and 1<=len(v)<=n and all(c.isprintable() for c in v)
+        num_ok=lambda v:isinstance(v,(str,int,float)) and not isinstance(v,bool) and _D(str(v)).is_finite() and abs(_D(str(v)))<_D("1e12")
+        for r in i["rates"]:
+            if not (code_ok(r.get("code")) and text_ok(r.get("label"),120) and text_ok(r.get("unit"),40)
+                    and isinstance(r.get("currency"),str) and re.fullmatch(r"[A-Z]{3}",r["currency"]) and num_ok(r.get("amount"))):
+                raise TypeError("rate field format")
+        for l in i["lines"]:
+            if not (code_ok(l.get("rate_code")) and text_ok(l.get("description"),500) and num_ok(l.get("quantity"))):
+                raise TypeError("line field format")
+        if "indirect_rate" in i and not num_ok(i["indirect_rate"]):
+            raise TypeError("indirect_rate format")
         for r in i["rates"]:
             url=r.get("source_url")
             if not _valid_source_url(url):
