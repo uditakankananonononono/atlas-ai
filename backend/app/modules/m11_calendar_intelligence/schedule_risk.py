@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from enum import Enum
 
 from pydantic import BaseModel, Field, model_validator
+from app.core.public_validation import PublicValidationError
 
 
 class CancellationTerms(BaseModel):
@@ -18,7 +19,7 @@ class CancellationTerms(BaseModel):
     @model_validator(mode="after")
     def validate_money(self):
         if (self.cancellation_fee is None) != (self.currency is None):
-            raise ValueError("cancellation_fee and currency must be supplied together")
+            raise PublicValidationError("cancellation_fee and currency must be supplied together")
         return self
 
 
@@ -36,9 +37,9 @@ class ScheduleItem(BaseModel):
     @model_validator(mode="after")
     def valid_window(self):
         if self.start.tzinfo is None or self.end.tzinfo is None:
-            raise ValueError("start and end must be timezone-aware")
+            raise PublicValidationError("start and end must be timezone-aware")
         if self.end <= self.start:
-            raise ValueError("end must be after start")
+            raise PublicValidationError("end must be after start")
         return self
 
 
@@ -51,14 +52,14 @@ class ScheduleRiskRequest(BaseModel):
     def unique_items(self):
         ids = [item.item_id for item in self.items]
         if len(ids) != len(set(ids)):
-            raise ValueError("duplicate item_id")
+            raise PublicValidationError("duplicate item_id")
         return self
 
 
 def analyze_schedule_risk(request: ScheduleRiskRequest) -> dict:
     as_of = request.as_of or datetime.now(timezone.utc)
     if as_of.tzinfo is None:
-        raise ValueError("as_of must be timezone-aware")
+        raise PublicValidationError("as_of must be timezone-aware")
     as_of = as_of.astimezone(timezone.utc)
     by_id = {item.item_id: item for item in request.items}
     risks = []
@@ -83,7 +84,7 @@ def analyze_schedule_risk(request: ScheduleRiskRequest) -> dict:
         terms = item.cancellation
         if terms:
             if terms.free_cancel_until is not None and terms.free_cancel_until.tzinfo is None:
-                raise ValueError(f"free_cancel_until must be timezone-aware: {item.item_id}")
+                raise PublicValidationError("free_cancel_until must be timezone-aware", str(item.item_id))
             deadline = terms.free_cancel_until.astimezone(timezone.utc) if terms.free_cancel_until else None
             if deadline and deadline < as_of:
                 state = "free_window_expired"
