@@ -54,6 +54,17 @@ class CapabilityResult(BaseModel):
     requires_approval: bool
     artifact: dict[str, Any]
 
+def _valid_source_url(url)->bool:
+    """Format check only (scheme, hostname, no userinfo, no whitespace/control chars). It does not prove the source exists."""
+    from urllib.parse import urlsplit
+    if not isinstance(url,str) or len(url)>2048 or any(ord(c)<=32 or ord(c)==127 for c in url):
+        return False
+    try:
+        u=urlsplit(url); host=u.hostname; u.port
+    except ValueError:
+        return False
+    return u.scheme in ("http","https") and bool(host) and u.username is None and u.password is None
+
 def _budget_table(request:CapabilityRequest)->dict[str,Any]:
     """Row 93 REAL path: runs GrantWriterService.build_budget over caller-supplied, dated, sourced rates.
     inputs: rates=[{code,label,unit,amount,currency,effective_from,[effective_to],source_url (http/https),observed_at}], lines=[{rate_code,quantity,description}],
@@ -67,8 +78,8 @@ def _budget_table(request:CapabilityRequest)->dict[str,Any]:
     try:
         for r in i["rates"]:
             url=r.get("source_url")
-            if not isinstance(url,str) or not url.startswith(("https://","http://")) or len(url)<12:
-                raise ValueError("row 93 rate source_url must be an http(s) URL")
+            if not _valid_source_url(url):
+                raise ValueError("row 93 rate source_url must be an http(s) URL with a hostname, no credentials or control characters")
         rates=[BudgetRate(code=r["code"],label=r["label"],unit=r["unit"],amount=Decimal(str(r["amount"])),currency=r["currency"],
                           effective_from=date.fromisoformat(r["effective_from"]),source_url=r["source_url"],
                           effective_to=date.fromisoformat(r["effective_to"]) if r.get("effective_to") else None,
