@@ -146,7 +146,7 @@ class Service:
             nearest_examples=nearest,
             mean_similarity=round(sum(sims) / len(sims), 4),
             structure_gaps=self._structure_gaps(request.proposal, request.funded_examples),
-            method_note="Sparse TF-IDF vectors (smoothed idf over the proposal plus the supplied examples) compared by cosine similarity. Local and deterministic; NOT neural embeddings, so synonyms do not match. Similarity is not a funding-success prediction.",
+            method_note="Sparse TF-IDF vectors (smoothed idf over the proposal plus the supplied examples) compared by cosine similarity. Local and deterministic; NOT neural embeddings, so synonyms do not match; terms are ASCII a-z words of 4+ letters (accented or non-Latin text is mostly ignored). Similarity is not a funding-success prediction.",
         )
 
     @classmethod
