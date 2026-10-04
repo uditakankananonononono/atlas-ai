@@ -267,3 +267,67 @@ def test_clean_m20_alias_matches_legacy_path_and_is_not_a_prefix_match():
     clean = c.get("/api/v1/modules/20/health")
     assert legacy.status_code == clean.status_code == 200
     assert c.get("/api/v1/modules/2000/health").status_code == 404
+
+
+def test_tenant_scope_dependency_restores_context_directly():
+    """Direct generator-dependency test: the tenant contextvar is set inside and restored after, even on error."""
+    import asyncio
+    from app.auth.context import TenantContext
+    import app.modules.m20_general_cognitive_worker.routes as r
+
+    async def run():
+        assert r._tenant_var.get() is None
+        gen = r._tenant_scope(TenantContext("tenant-x", "u"))
+        await gen.__anext__()
+        assert r._tenant_var.get() == "tenant-x"
+        with pytest.raises(RuntimeError):
+            await gen.athrow(RuntimeError("handler failed"))
+        assert r._tenant_var.get() is None
+        gen2 = r._tenant_scope(TenantContext("tenant-y", "u"))
+        await gen2.__anext__()
+        with pytest.raises(StopAsyncIteration):
+            await gen2.__anext__()
+        assert r._tenant_var.get() is None
+    asyncio.run(run())
+
+
+def test_alias_and_legacy_paths_both_fail_closed_unauthenticated_in_production(monkeypatch):
+    from fastapi.testclient import TestClient
+    from app.main import app
+    c = TestClient(app, raise_server_exceptions=False)
+    monkeypatch.setenv("ATLAS_ENV", "production")
+    for path in ("/api/v1/api/modules/20/tasks", "/api/v1/modules/20/tasks"):
+        r = c.get(path)  # no bearer token
+        assert r.status_code == 401, (path, r.status_code, r.text[:100])
+        r = c.get(path, headers={"x-atlas-tenant": "tenant-a"})  # header alone must not authenticate in production
+        assert r.status_code == 401, (path, r.status_code)
+
+
+def test_alias_and_legacy_share_one_rate_bucket_no_bypass_by_alternate_path():
+    from fastapi.testclient import TestClient
+    from app.main import app
+    from app.platform.middleware import ProductionBoundaryMiddleware
+    c = TestClient(app, raise_server_exceptions=False)
+    c.get("/health")  # builds the middleware stack
+    m = app.middleware_stack
+    mw = None
+    while m is not None:
+        if isinstance(m, ProductionBoundaryMiddleware):
+            mw = m
+            break
+        m = getattr(m, "app", None)
+    assert mw is not None
+    old_limit = mw.limiter.limit
+    mw.limiter.limit = 3
+    mw.limiter._hits.clear()
+    try:
+        h = {"x-atlas-tenant": "rl-tenant", "x-atlas-actor": "rl-actor"}
+        codes = [c.get("/api/v1/api/modules/20/health", headers=h).status_code,
+                 c.get("/api/v1/modules/20/health", headers=h).status_code,
+                 c.get("/api/v1/api/modules/20/health", headers=h).status_code]
+        assert codes == [200, 200, 200]
+        assert c.get("/api/v1/modules/20/health", headers=h).status_code == 429  # 4th, via the alias, same bucket
+        assert c.get("/api/v1/api/modules/20/health", headers=h).status_code == 429
+    finally:
+        mw.limiter.limit = old_limit
+        mw.limiter._hits.clear()
