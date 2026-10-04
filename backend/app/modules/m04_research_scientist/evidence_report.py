@@ -53,14 +53,16 @@ def tex_escape(text: str) -> str:
 
 def render_latex(res: LoopResult, gaps: list[dict] | None = None) -> str:
     out = [r"\documentclass[11pt]{article}", r"\usepackage[margin=1in]{geometry}",
-           r"\usepackage[T1]{fontenc}", r"\setlength{\parindent}{0pt}\setlength{\parskip}{6pt}\sloppy\emergencystretch=3em",
+           r"\usepackage[T1]{fontenc}",
+           r"\IfFileExists{lmodern.sty}{\usepackage{lmodern}\IfFileExists{glyphtounicode.tex}{\input{glyphtounicode}\pdfgentounicode=1}{}}{}",
+           r"\setlength{\parindent}{0pt}\setlength{\parskip}{6pt}\sloppy\emergencystretch=3em",
            r"\begin{document}",
            r"\section*{Literature evidence compendium}",
            r"\textbf{Question:} " + tex_escape(res.question),
            r"\par\textbf{Status:} " + tex_escape(res.status) + " (" + tex_escape(res.stop_reason or "n/a") + r")",
            *([r"\par\textbf{INCOMPLETE:} the loop stopped early, so this list is partial."] if res.status != "complete" else []),
            r"\par This document lists retrieved records only. No text in it was written by a language model "
-           r"and it contains no analysis, review or conclusion. Non-ASCII characters were transliterated or dropped. Text is typeset, not byte-faithful: the font may substitute ligatures such as fi and fl, and long words may be split.",
+           r"and it contains no analysis, review or conclusion. Non-ASCII characters were transliterated or dropped. Text is typeset, not byte-faithful: the font may substitute ligatures such as fi and fl, and long words may be split. Copy and search extraction maps ligatures back to letters only when the lmodern font package is installed; without it, ff, fi and fl can be lost.",
            r"\section*{Query trail}"]
     out.append(r"\begin{itemize}" if res.steps else "No query steps were recorded.")
     for s in res.steps:

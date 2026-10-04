@@ -149,3 +149,10 @@ def test_route_gap_counts_match_the_papers_in_the_report(monkeypatch, tmp_path):
         assert g["papers_with_a"] == sum(a in d for d in docs) and g["papers_with_b"] == sum(b in d for d in docs)
         assert sum(a in d and b in d for d in docs) == 0
         assert f"corpus of {n_papers} papers" in g["statement"]
+
+@pytest.mark.skipif(not shutil.which("kpsewhich") or not subprocess.run(["kpsewhich", "lmodern.sty"], capture_output=True, text=True).stdout.strip(),
+                    reason="lmodern not installed")
+def test_ligature_letters_survive_text_extraction(tmp_path):
+    p = paper(1, abstract="diffusion office afflict first flow efficient fluid")
+    t = text_of(er.compile_pdf(er.render_latex(result([p])))[0], tmp_path).replace("\n", " ")
+    assert "diffusion office afflict first flow efficient fluid" in t
