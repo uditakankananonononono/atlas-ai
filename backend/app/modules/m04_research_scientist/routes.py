@@ -15,7 +15,7 @@ from .schemas import (
     ProposedAnalysis,
     SurveillanceRequest,
     SurveillanceResponse,
-    SurveillanceIngestRequest, GapEvidenceOut, ArxivCollectRequest, PubmedCollectRequest, ResearchLoopRequest,
+    SurveillanceIngestRequest, GapEvidenceOut, ArxivCollectRequest, PubmedCollectRequest, ResearchLoopRequest, SummarizeRequest,
 )
 from .service import Service
 
@@ -146,6 +146,13 @@ async def research_loop_report(request:ResearchLoopRequest,tenant:TenantContext=
         logging.getLogger(__name__).warning("evidence report failed: %s",type(exc).__name__)
         raise HTTPException(status_code=503,detail="report compilation unavailable") from exc
     return Response(content=pdf,media_type="application/pdf",headers={"X-Report-Pages":str(pages),"X-Report-Status":res.status,"X-Report-Kind":"retrieved-evidence-compendium-not-authored"})
+
+@router.post("/papers/summarize")
+def summarize_paper(request:SummarizeRequest,tenant:TenantContext=Depends(require_tenant)):
+    """HEURISTIC extractive summary of the supplied title+abstract (verbatim sentences)."""
+    from .extractive_summary import summarize
+    try:return summarize(request.title,request.abstract,request.max_sentences)
+    except ValueError as exc:raise HTTPException(status_code=422,detail="abstract could not be summarized") from exc
 
 @router.get("/surveillance/term-gaps")
 def surveillance_term_gaps(min_df:int=2,limit:int=20,tenant:TenantContext=Depends(require_tenant)):
