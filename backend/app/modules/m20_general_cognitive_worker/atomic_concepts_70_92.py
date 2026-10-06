@@ -39,7 +39,7 @@ def run(r:str,d:dict[str,Any])->dict[str,Any]:
   else:
    criteria=d.get('criteria',[])
    if not criteria:raise AtomicError('criteria required')
-   scores={x['id']:sum(float(x.get('scores',{}).get(c['id'],0))*float(c.get('weight',1)) for c in criteria) for x in opts};best=max(scores,key=scores.get);o['result']={'intuition_candidate':fast['id'],'analytic_scores':scores,'validated_choice':best,'intuition_confirmed':best==fast['id']}
+   scores={x['id']:sum(float(x.get('scores',{}).get(c['id'],0))*float(c.get('weight',1)) for c in criteria) for x in opts};best=max(scores,key=scores.get);o['result']={'intuition_candidate':fast['id'],'analytic_scores':scores,'caller_weight_ranked_choice':best,'same_as_salience_candidate':best==fast['id'],'choice_independently_validated':False}
  elif r in ('21.1','21.2'):
   models=d.get('models',[])
   if len(models)<2:raise AtomicError('competing models required')
@@ -63,8 +63,11 @@ def run(r:str,d:dict[str,Any])->dict[str,Any]:
   if not beliefs:raise AtomicError('beliefs required')
   rows=[]
   for b in beliefs:
-   formed=date.fromisoformat(b['formed_at']);vol=float(b.get('volatility',.2));conf=float(b.get('confidence',.5));interval=max(1,round(180*(1-vol)*(0.5+conf)));review=formed+timedelta(days=interval);stale=1-exp(-max(0,(today-formed).days)*max(vol,.01)/180);rows.append({'id':b['id'],'formed_at':str(formed),'predicted_staleness':round(stale,4),'review_on':str(review),'overdue':today>=review})
-  o['result']={'beliefs':rows,'schedule_generated':r in ('32.2','33.2'),'model':'volatility/confidence interval heuristic','source_url':SOURCES['spacing']}
+   formed=date.fromisoformat(b['formed_at'])
+   age=(today-formed).days
+   if age<0:raise AtomicError('formation date must not be after observation date')
+   rows.append({'id':b['id'],'formed_at':str(formed),'observed_age_days':age,'predicted_staleness':None,'review_on':None,'overdue':None})
+  o['result']={'beliefs':rows,'schedule_generated':False,'model':'staleness_and_review_model_unavailable','source_url':SOURCES['spacing'],'status':'observed_age_only'}
  elif r in ('36.1','36.2'):
   text=str(d.get('idea','')).strip()
   if len(text)<3:raise AtomicError('nontrivial idea required')

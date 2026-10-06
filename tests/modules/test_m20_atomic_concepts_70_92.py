@@ -23,13 +23,13 @@ def test_flow_picks_challenge_skill_match_and_protects_bounded_block():
 def test_bias_is_signal_not_diagnosis_and_mitigation_does_not_rewrite():
  x=run('19.1',D('19.1'))['result']['flags'][0];assert {'confirmation-risk','base-rate-omission','small-sample-risk'}<=set(x['signals']) and x['not_a_bias_diagnosis'];assert not run('19.3',D('19.3'))['result']['automatic_rewrite']
 def test_fast_intuition_is_unvalidated_then_slow_check_can_disagree():
- assert run('20.1',D('20.1'))['result']['candidate']=='a';x=run('20.2',D('20.2'))['result'];assert x['validated_choice']=='b' and not x['intuition_confirmed']
+ assert run('20.1',D('20.1'))['result']['candidate']=='a';x=run('20.2',D('20.2'))['result'];assert x['caller_weight_ranked_choice']=='b' and not x['same_as_salience_candidate'] and not x['choice_independently_validated']
 def test_bayesian_model_update_retains_competitors():
  x=run('21.2',D('21.2'))['result'];assert x['posteriors']['b']==.8 and x['models_retained']
 def test_terminal_values_are_not_rewritten_and_proposals_not_applied():
  assert run('22.1',D('22.1'))['result']['terminal_values_immutable_by_engine'];assert not run('22.2',D('22.2'))['result']['applied']
 def test_epistemic_calendar_staleness_and_review_are_explicit_heuristics():
- x=run('33.2',D('33.2'))['result'];assert x['schedule_generated'] and x['beliefs'][0]['predicted_staleness']>0 and 'heuristic' in x['model']
+ x=run('33.2',D('33.2'))['result'];assert not x['schedule_generated'] and x['beliefs'][0]['predicted_staleness'] is None and x['model']=='staleness_and_review_model_unavailable'
 def test_scenario_matrix_has_four_nonprobabilistic_futures_and_strategies():
  assert len(run('46.1',D('46.1'))['result']['scenarios'])==4;assert len(run('46.2',D('46.2'))['result']['strategies'])==4
 def test_premortem_preventions_have_owner_indicator_due_and_are_unapplied():
@@ -42,3 +42,9 @@ def test_every_atomic_concept_fails_closed_on_empty_input(r):
 def test_mounted_http_success_and_failure():
  c=TestClient(app);ok=c.post('/api/v1/api/modules/20/atomic-concepts-70-92',json={'atomic_row_id':'46.1','data':D('46.1')});assert ok.status_code==200 and len(ok.json()['result']['scenarios'])==4
  assert c.post('/api/v1/api/modules/20/atomic-concepts-70-92',json={'atomic_row_id':'46.1','data':{}}).status_code==422
+
+@pytest.mark.parametrize('row',['32.1','32.2','33.1','33.2'])
+def test_atomic_belief_age_does_not_imply_fitted_staleness_or_schedule(row):
+ out=run(row,{'today':'2026-10-07','beliefs':[{'id':'b','formed_at':'2026-10-01','volatility':.9,'confidence':.99}]})['result']
+ assert out['beliefs'][0]['observed_age_days']==6 and out['beliefs'][0]['review_on'] is None
+ assert out['beliefs'][0]['predicted_staleness'] is None and not out['schedule_generated']
