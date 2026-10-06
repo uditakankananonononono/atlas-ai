@@ -1,7 +1,8 @@
 """Executable optimization and narrative analysis for ledger rows 235-280.
 
-The workbench is deliberately deterministic: it analyses caller-supplied observations and
-never claims to have run an external solver or generated evidence it was not given.
+The rebuilt numerical operators run actual restricted algorithms and free solvers.
+Observed learning uses caller feedback; narrative branches remain supplied-text
+analysis/templates, not generated-model breadth. No invented observation evidence.
 """
 from __future__ import annotations
 

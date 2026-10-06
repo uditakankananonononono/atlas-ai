@@ -5,7 +5,14 @@ an open-source numerical solver for the stated mathematical program.
 """
 from __future__ import annotations
 import numpy as np
-import cvxpy as cp
+
+
+def cvxpy_module():
+    try:
+        import cvxpy
+    except ImportError as exc:
+        raise ValueError('CVXPY is unavailable; install the declared cvxpy dependency for conic/geometric solving') from exc
+    return cvxpy
 
 
 def finite(value,name,ndim=None):
@@ -28,6 +35,7 @@ def controls(p):
 
 
 def solve(problem,variable,p,scope):
+    cp=cvxpy_module()
     tol,limit=controls(p)
     try:problem.solve(solver='SCS',eps=tol,max_iters=limit,verbose=False)
     except cp.error.SolverError as exc:raise ValueError('conic solver failed: '+str(exc)) from exc
@@ -45,6 +53,7 @@ def solve(problem,variable,p,scope):
 
 def semidefinite(p):
     """min trace(C*X), X PSD, trace(A_i*X)=b_i."""
+    cp=cvxpy_module()
     C=symmetric(p['matrix_objective'],'matrix_objective')
     matrices=[symmetric(v,'equality_matrix') for v in p['equality_matrices']]
     rhs=finite(p['equality_rhs'],'equality_rhs',1)
@@ -64,6 +73,7 @@ def semidefinite(p):
 
 def second_order(p):
     """min c*x with ||A_i*x+b_i||_2 <= d_i*x+e_i, box bounds."""
+    cp=cvxpy_module()
     c=finite(p['objective'],'objective',1);n=c.size
     box=finite(p['box_bounds'],'box_bounds',2)
     if box.shape!=(n,2) or np.any(box[:,0]>box[:,1]):raise ValueError('box dimensions differ')
@@ -87,6 +97,7 @@ def geometric(p):
     Monomial term = coefficient * product_j(x_j**exponent_j), coefficient>0.
     Uses CVXPY's explicit log-log convex transformation, not a log label.
     """
+    cp=cvxpy_module()
     box=finite(p['box_bounds'],'positive box bounds',2)
     if box.shape[1]!=2 or np.any(box<=0) or np.any(box[:,0]>=box[:,1]):raise ValueError('strictly positive nonempty box required')
     n=box.shape[0];x=cp.Variable(n,pos=True)
@@ -106,6 +117,7 @@ def geometric(p):
     expressions=[posynomial(terms) for terms in restrictions]
     prog=cp.Problem(cp.Minimize(objective),[x>=box[:,0],x<=box[:,1],*(e<=1 for e in expressions)])
     if not prog.is_dgp():raise ValueError('program does not satisfy geometric convexity rules')
+    cp=cvxpy_module()
     tol,limit=controls(p)
     try:prog.solve(gp=True,solver='SCS',eps=tol,max_iters=limit,verbose=False)
     except cp.error.SolverError as exc:raise ValueError('geometric solver failed: '+str(exc)) from exc
