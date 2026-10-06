@@ -28,3 +28,18 @@ def test_narrative_checkpoint_counts_match_machine_ledger():
     counts=Counter(row["status"] for row in AUDIT["rows"])
     assert counts == {"verified-pushed":139, "UNSUPPORTED":1}
     assert [r["row"] for r in AUDIT["rows"] if r["status"]=="UNSUPPORTED"] == [43]
+
+
+def test_row_43_unsupported_verdict_is_explicit_and_unmounted():
+    row = next(r for r in AUDIT["rows"] if r["row"] == 43)
+    assert row["status"] == "UNSUPPORTED" and row["mounted_route"] is False
+    assert "UNSUPPORTED" in row["audit_note"] and "unmounted" in row["audit_note"]
+    assert Path(row["implementation_path"]).exists() and Path(row["test_evidence"]).exists()
+
+
+def test_row_127_unsupported_verdict_names_deterministic_interface():
+    import json as _json
+    rows = _json.loads(Path("audits/expanded-owner-spec.json").read_text())["rows"]
+    row = next(r for r in rows if r["id"] == 127)
+    assert row["status"] == "UNSUPPORTED"
+    assert "deterministic interface" in row["claim_audit"] and "UNSUPPORTED" in row["claim_audit"]
