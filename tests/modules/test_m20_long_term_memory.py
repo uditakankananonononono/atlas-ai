@@ -98,3 +98,20 @@ def test_skill_learning_proposals_from_episodes():
     assert lib.propose_from_episodes(list(mem._episodes.values()), min_occurrences=2) == []
     lib.activate(skill.id)
     assert lib.find_by_name(skill.name) is not None
+
+
+def test_signature_proposals_exclude_failed_actions_outcomes_and_duplicates():
+ from app.modules.m20_general_cognitive_worker.schemas import Episode,EpisodeOutcome
+ lib=SkillLibrary()
+ good=Episode(task_id='a',goal='fixture',actions=actions('read','summarize'),outcome=EpisodeOutcome.SUCCEEDED)
+ failed=Episode(task_id='b',goal='fixture',actions=actions('read','summarize'),outcome=EpisodeOutcome.FAILED)
+ bad_action=Episode(task_id='c',goal='fixture',actions=actions('read','summarize'),outcome=EpisodeOutcome.SUCCEEDED)
+ bad_action.actions[-1].succeeded=False
+ assert lib.propose_from_episodes([good,good,failed,bad_action],min_occurrences=2)==[]
+ good2=good.model_copy(deep=True,update={'id':'distinct','task_id':'d'})
+ proposal=lib.propose_from_episodes([good,good2,failed,bad_action],min_occurrences=2)[0]
+ assert proposal.evidence['occurrences']==2
+ assert set(proposal.evidence['episode_ids'])=={good.id,good2.id}
+ assert proposal.evidence['generalizable_skill_verified'] is False
+ good.actions[0].arguments['changed']=True
+ assert 'changed' not in proposal.steps[0].arguments
