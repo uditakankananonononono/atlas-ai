@@ -10,9 +10,13 @@ def test_owner_additional_doc_is_fully_rowized():
  assert all(x['status']=='removed' and 'owner instruction' in x['removal_note'] for x in AUDIT['removed_rows'])
  assert Counter(x['category_id'] for x in AUDIT['rows'])==Counter({0:10,1:100,2:150,3:100,4:146,5:200,6:100,7:100,8:100,9:100,10:900})
 def test_feature_counts_match_current_verified_evidence():
- assert AUDIT['counts']=={'verified-pushed':2006,'thin':0,'missing':0,'removed':4}
+ expected=dict(Counter(x['status'] for x in AUDIT['rows']))
+ expected.update(removed=len(AUDIT['removed_rows']),thin=expected.get('thin',0),missing=expected.get('missing',0))
+ assert AUDIT['counts']==expected
+ assert sum(expected.values())==2010
+ assert AUDIT['historical_counts']=={'verified-pushed':2006,'thin':0,'missing':0,'removed':4}
  assert all(x['requirement'] and x['boundary'] for x in AUDIT['rows'])
- assert {x['status'] for x in AUDIT['rows']} <= {'verified-pushed','thin','missing'}
+ assert {x['status'] for x in AUDIT['rows']} <= {'verified-pushed','thin','missing','SCOPED','PARTIAL'}
 
 def test_live_doc_delta_is_exact_and_chain_of_thought_is_bounded():
  assert AUDIT['delta_from_schema_version_1']=={'added':9,'removed':0,'changed':0,'unchanged':2000}
@@ -35,3 +39,13 @@ def test_latest_live_doc_delta_and_application_boundary():
  assert "signs me up for competitions" in universal["description"]
  assert "exact-preview human review" in universal["boundary"]
  assert "never evade detection" in universal["boundary"]
+
+
+def test_rebuilt_rows_preserve_original_claim_without_promoting_scope():
+ for row in AUDIT['rows']:
+  if row['status'] in {'SCOPED','PARTIAL'}:
+   assert row['historical_claim']['status']=='verified-pushed'
+   assert row['historical_claim']['evidence']==row['evidence']
+   assert row['current_scope'] and row['current_evidence']['test_path']
+   assert Path(row['current_evidence']['test_path'].split('::')[0]).exists()
+ assert 'historical' in AUDIT['counts_notice']

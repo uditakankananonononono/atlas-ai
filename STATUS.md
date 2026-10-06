@@ -135,3 +135,10 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - All durable runtime adapters now select an explicitly owner-bound runtime via authenticated dependency. Binding must match repository tenant. Unknown owner fails503; runtime repository mismatch fails closed. Explicit insecure local development retains the legacy local fixture binding only.
 - Signed canaries exercise separate repositories on the same SQL engine: facts/tasks remain tenant-scoped, foreign task detail/step/close404, wrong binding rejected, own task accessible. Does not independently verify all sandbox filesystem/client namespaces or fix duplicated URL prefixes.
 - Focused31 passed; M20/auth1579 passed. Root/platform after installing missing declared free dependencies:814 passed,2 failed (obsolete all-verified ledger test and Next14 version test). These failures remain open; no full-suite passing claim.
+
+## Eighteenth repair: ledger count reconciliation and stale test contracts
+
+- Ledger top-level counts now match actual row labels:1972 historical verified-pushed,33 SCOPED,1 PARTIAL,4 removed. Preserved the original all2006 verified-pushed count as historical_counts. This is row-label reconciliation, not independent verification of1972 untouched historical claims.
+- Named test computes counts from rows, checks total2010 including removed, and checks original claim/evidence retention for every rebuilt row. It no longer demands that honest scoped/partial annotations disappear.
+- Frontend version fixture now checks existing declared16.3.6 against package-lock, retaining app-router source checks. Frontend package/version unchanged; test previously pinned obsolete14.2.32. This is not a build/security compatibility proof.
+- Root/platform suite817 passed after local declared dependency installation. Full module and remaining integration suites still open.

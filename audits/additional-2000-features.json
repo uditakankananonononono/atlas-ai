@@ -4,10 +4,12 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 2006,
+    "verified-pushed": 1972,
+    "SCOPED": 33,
+    "PARTIAL": 1,
+    "removed": 4,
     "thin": 0,
-    "missing": 0,
-    "removed": 4
+    "missing": 0
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -30557,5 +30559,12 @@
     "unchanged": 2006,
     "reason": "Owner instruction removed customer-services/accounts-type rows 446, 447, 448, and 450 from the expanded target."
   },
-  "verification_notice": "Legacy builder ledger. verified-pushed is historical attribution, not current proof. See STATUS.md for independent audit snapshots. Only explicitly rebuilt rows carry current scope annotations."
+  "verification_notice": "Legacy builder ledger. verified-pushed is historical attribution, not current proof. See STATUS.md for independent audit snapshots. Only explicitly rebuilt rows carry current scope annotations.",
+  "historical_counts": {
+    "verified-pushed": 2006,
+    "thin": 0,
+    "missing": 0,
+    "removed": 4
+  },
+  "counts_notice": "Counts reflect current row labels only. verified-pushed rows retain historical builder attribution, not fresh verification. historical_counts preserves the prior snapshot."
 }
