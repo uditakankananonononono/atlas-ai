@@ -1,0 +1,1 @@
+Current whole-repo run at8cde270: 9561 passed, 14 skipped, 3 warnings over495files/19isolated batches. First7batch fan-out hit120s timeout with incomplete2/4/6 logs; those three re-run to completion, no orphan pytest processes remained. All final batch results pass. Frontend16components/typecheck pass. No full-spec/model/deployment certification.
