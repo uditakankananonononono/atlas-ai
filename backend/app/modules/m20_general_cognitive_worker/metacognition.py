@@ -309,31 +309,31 @@ class Claim:
     text: str
     confidence: float
     evidence_count: int
-    flagged: bool
+    flagged: bool | None
     flag_reason: str
     resolved: bool = False
     correct: bool | None = None
     created_at: datetime = field(default_factory=_now)
+    status: str = "observed_calibration_only"
+    capability_executed: bool = False
 
 
 class CalibrationEngine:
-    """Row 13: estimate knowledge boundaries, flag overconfident claims,
-    and shrink reported confidence toward observed accuracy."""
+    """Observed confidence/outcome metrics only. Knowledge boundaries and
+    predictive confidence correction are unavailable, not invented."""
 
     def __init__(self, *, max_confidence_without_evidence: float = 0.55) -> None:
         self.max_confidence_without_evidence = max_confidence_without_evidence
         self.claims: dict[str, Claim] = {}
 
-    def _confidence_ceiling(self, evidence_count: int) -> float:
-        return min(0.97, self.max_confidence_without_evidence + 0.14 * max(0, evidence_count))
+    def _confidence_ceiling(self, evidence_count: int) -> None:
+        return None  # Counts alone do not establish evidence-supported odds.
 
     def assess_claim(self, text: str, confidence: float, *, evidence_count: int = 0) -> Claim:
-        ceiling = self._confidence_ceiling(evidence_count)
-        flagged = confidence > ceiling
-        reason = ""
-        if flagged:
-            reason = (f"confidence {confidence:.2f} exceeds evidence-supported ceiling "
-                      f"{ceiling:.2f} (evidence_count={evidence_count})")
+        if not math.isfinite(confidence) or not 0 <= confidence <= 1 or evidence_count < 0:
+            raise ValueError("finite confidence in [0,1] and nonnegative count required")
+        flagged = None
+        reason = "Knowledge-boundary assessment unavailable; confidence and evidence count are caller supplied"
         claim = Claim(id=_uid(), text=text, confidence=confidence,
                       evidence_count=evidence_count, flagged=flagged, flag_reason=reason)
         self.claims[claim.id] = claim
@@ -369,13 +369,9 @@ class CalibrationEngine:
             b["count"] * abs(b["mean_confidence"] - b["observed_accuracy"]) for b in curve
         ) / total
 
-    def adjusted_confidence(self, raw_confidence: float) -> float:
-        """Shrink toward observed accuracy; identity when no history."""
-        resolved = [c for c in self.claims.values() if c.resolved]
-        if len(resolved) < 5:
-            return raw_confidence
-        observed = mean(1.0 if c.correct else 0.0 for c in resolved)
-        return max(0.0, min(1.0, 0.5 * raw_confidence + 0.5 * observed))
+    def adjusted_confidence(self, raw_confidence: float) -> None:
+        """No trained predictive calibration model; observed metrics stay separate."""
+        return None
 
 
 # ---------------------------------------------------------------- row 14 --
@@ -384,15 +380,6 @@ class CalibrationEngine:
 @runtime_checkable
 class OutcomeModel(Protocol):
     def estimate(self, action_description: str, risk: Risk) -> float: ...
-
-
-class HeuristicOutcomeModel:
-    """Default counterfactual estimator: success odds fall with risk tier."""
-
-    BASE = {Risk.READ: 0.9, Risk.REVERSIBLE: 0.75, Risk.EXTERNAL: 0.55, Risk.IRREVERSIBLE: 0.4}
-
-    def estimate(self, action_description: str, risk: Risk) -> float:
-        return self.BASE.get(risk, 0.5)
 
 
 class CounterfactualEngine:
@@ -1251,13 +1238,15 @@ class KnowledgeDecayModeler:
 class ExplorationItem:
     gap: str
     frequency: int
-    expected_learning_value: float
+    expected_learning_value: float | None
     allocated_budget: float = 0.0
+    status: str = "frequency_budget_policy_only"
+    capability_executed: bool = False
 
 
 class CuriosityEngine:
-    """Row 34: detect knowledge gaps and spend idle budget investigating
-    them even without immediate utility."""
+    """Lexical missing-token frequency and proposed frequency budget.
+    Does not investigate gaps or estimate their learning value."""
 
     def __init__(self, seed: int | None = None) -> None:
         self.random = random.Random(seed)
@@ -1283,16 +1272,16 @@ class CuriosityEngine:
             freq = self._gap_counts.get(gap, 1)
             items.append(ExplorationItem(
                 gap=gap, frequency=freq,
-                expected_learning_value=round(min(1.0, 0.3 + 0.2 * freq), 3),
+                expected_learning_value=None,
             ))
-        items.sort(key=lambda i: i.expected_learning_value, reverse=True)
+        items.sort(key=lambda i: (-i.frequency, i.gap))
         remaining = max(0.0, idle_budget)
         for item in items:
             if remaining <= 0:
                 break
-            share = min(remaining, idle_budget * item.expected_learning_value /
-                        max(1e-9, sum(i.expected_learning_value for i in items)))
-            item.allocated_budget = round(share, 3)
+            share = min(remaining, idle_budget * item.frequency /
+                        max(1, sum(i.frequency for i in items)))
+            item.allocated_budget = share
             remaining -= share
         return items
 

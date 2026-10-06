@@ -68,7 +68,7 @@ def test_row13_routes(client):
     c, _ = client
     claim = c.post("/api/modules/20/meta/calibration/claims",
                    json={"text": "deadline is friday", "confidence": 0.95, "evidence_count": 0})
-    assert claim.status_code == 201 and claim.json()["flagged"] is True
+    assert claim.status_code == 201 and claim.json()["flagged"] is None
     cid = claim.json()["claim_id"]
     assert c.post(f"/api/modules/20/meta/calibration/claims/{cid}/resolve",
                   json={"correct": False}).json()["resolved"] is True
@@ -245,3 +245,12 @@ def test_row34_routes(client):
     assert "quantum" in gaps.json()["gaps"]
     explore = c.post("/api/modules/20/meta/curiosity/explore", json={"idle_budget": 5.0})
     assert explore.json()["exploration"]
+
+
+def test_retracted_meta_http_outputs_carry_nonexecution_status(client):
+ c,_=client
+ for path,body in [('bias-scan',{'text':'success is guaranteed'}),('intuition',{'question':'unknown'}),('devils-advocate',{'claim':'win','assumptions':['x'],'evidence':[]}),('steelman',{'opposing_position':'x','known_facts':['x']})]:
+  r=c.post('/api/modules/20/meta/'+path,json=body)
+  assert r.status_code==200 and r.json()['status'] and r.json()['capability_executed'] is False
+ r=c.post('/api/modules/20/meta/perspectives',json={'proposal':{}})
+ assert all(v['status'] and not v['capability_executed'] for v in r.json()['perspectives'])
