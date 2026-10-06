@@ -533,4 +533,4 @@ Cognitive-learning, education and finance routes now derive scope from require_t
 
 ## Current auth/gateway regression and scheduler fixture race
 
-Current M20+atomic+ledger+gateway/default-auth2009pass after sibling principal repair. Warnings: expected SCS plus APScheduler JobLookupError on its background thread because the fixture shut down after callback append but before APScheduler removed its date job. Fixed fixture waits for both callback and job removal before shutdown; separate gateway suite15pass with no warning. No scheduler production implementation changed; the wider2009 run was not warning-clean.
+Current M20+atomic+ledger+gateway/default-auth2009pass after sibling principal repair. Warnings: expected SCS plus APScheduler JobLookupError on its background thread because the fixture shut down after callback append but before APScheduler removed its date job. Fixed fixture waits for both callback and job removal before shutdown; separate gateway suite6pass with no warning. No scheduler production implementation changed; the wider2009 run was not warning-clean.
