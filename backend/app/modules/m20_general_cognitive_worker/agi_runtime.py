@@ -219,7 +219,7 @@ class SynthesizedTool:
 
 
 class ToolSynthesisLab:
-    """Admits generated pure functions only after static and executable tests."""
+    """Static candidate inspection only. Generated execution/admission unavailable."""
 
     def __init__(self, registry: ToolRegistry, approval_gate: ApprovalGate) -> None:
         self.registry, self.approvals, self.proposals = registry, approval_gate, {}
@@ -242,50 +242,18 @@ class ToolSynthesisLab:
         return tool
 
     def test(self, name: str) -> dict[str, Any]:
-        tool = self.proposals[name]
-        env = {"__builtins__": {x: getattr(__builtins__, x) if not isinstance(__builtins__, dict)
-                                else __builtins__[x] for x in _ALLOWED_CALLS}}
-        exec(compile(ast.parse(tool.source), f"<synthesized:{name}>", "exec"), env)
-        failures = []
-        for i, case in enumerate(tool.cases):
-            try:
-                actual = env["run"](case["input"])
-                if actual != case["expected"]:
-                    failures.append({"case": i, "expected": case["expected"], "actual": actual})
-            except Exception as exc:
-                failures.append({"case": i, "error": f"{type(exc).__name__}: {exc}"})
-        tool.test_report = {"total": len(tool.cases), "passed": len(tool.cases)-len(failures), "failures": failures}
-        tool.status = "tested" if not failures and tool.cases else "rejected"
-        return tool.test_report
+        # AST allowlists do not isolate CPU/memory or prevent mutated source.
+        # Do not execute untrusted generated code inside the service process.
+        self.proposals[name]
+        raise PermissionError('synthesized code execution unavailable: OS-isolated bounded worker required')
 
     def request_admission(self, name: str) -> str:
-        tool = self.proposals[name]
-        if tool.status != "tested":
-            raise PermissionError("tool must pass admission tests before review")
-        request = ApprovalGateRequest(action_type="admit_synthesized_tool", risk=Risk.EXTERNAL,
-                                      summary=f"Admit synthesized tool {name}",
-                                      payload={"name": name, "source_hash": tool.source_hash,
-                                               "test_report": tool.test_report})
-        approval_id = self.approvals.request(request)
-        self.admission_approvals[name] = approval_id
-        return approval_id
+        self.proposals[name]
+        raise PermissionError('synthesized tool admission unavailable until isolated execution and exact-source review are implemented')
 
     def admit(self, name: str, *, approval_id: str) -> SynthesizedTool:
-        tool = self.proposals[name]
-        if (tool.status != "tested" or self.admission_approvals.get(name) != approval_id or
-                self.approvals.decision(approval_id) != ApprovalGateDecision.APPROVED):
-            raise PermissionError("tested tool and exact admission approval are required")
-        env = {"__builtins__": {x: getattr(__builtins__, x) if not isinstance(__builtins__, dict)
-                                else __builtins__[x] for x in _ALLOWED_CALLS}}
-        exec(compile(ast.parse(tool.source), f"<synthesized:{name}>", "exec"), env)
-        run = env["run"]
-        async def handler(arguments):
-            return run(arguments)
-        self.registry.register(ToolSpec(name=tool.name, description=tool.description,
-                                       parameters=tool.parameters, risk=Risk.READ,
-                                       capabilities=["synthesized", "pure_transform"]), handler)
-        tool.status = "admitted"
-        return tool
+        self.proposals[name]
+        raise PermissionError('synthesized tool admission unavailable until isolated execution and exact-source review are implemented')
 
 
 @dataclass(frozen=True)

@@ -560,3 +560,7 @@ PersistentWorldModel normalized caller reliability*weight into confidence withou
 ## Autonomous goal exact-review binding
 
 AutonomousGoalEngine activated mutable goal objects using only approval id/decision: changing objective/evidence/rationale after review still activated. Now records canonical reviewed binding covering id/objective/rationale/evidence/heuristic priority/risk, includes all in review payload, rejects changes and spends activation token atomically under a lock. Resetting status cannot reuse the token.17 focused runtime/evaluation/routes pass. This is process-local goal-state activation, not deployed external execution or durable distributed approval lifecycle; goal proposals remain heuristic.
+
+## Synthesis execution safety retraction
+
+ToolSynthesisLab executed generated Python in the service process during test/admit. AST proposal checks offered no CPU/memory isolation, and mutating source afterward bypassed those earlier checks and reviewed source hash. Removed in-process execution/registration: test/request_admission/admit fail closed with clear requirement for bounded OS-isolated execution and exact-source review. Static proposal AST inspection remains; no tool execution/admission capability now claimed. Regression covers manually forged tested status and changed source without tool registration.17 focused pass, one deprecation warning. Full replacement isolated synthesis worker remains unfinished, not silently approximated.
