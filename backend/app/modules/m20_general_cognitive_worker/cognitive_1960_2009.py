@@ -174,11 +174,21 @@ def run(method,data,seed=0):
   out={"trajectory":vals,"terminal":vals[-1],"model":"discrete_exponential"}
  elif method in {"optimization","operations_research"}:
   values=_vec(data,"values");costs=_vec(data,"costs");budget=_num(data,"budget")
-  if len(values)!=len(costs):raise ValueError("values and costs align")
-  chosen=[];remaining=budget
-  for i in sorted(range(len(values)),key=lambda i:values[i]/costs[i],reverse=True):
-   if costs[i]<=remaining:chosen.append(i);remaining-=costs[i]
-  out={"chosen_indices":chosen,"objective_value":sum(values[i] for i in chosen),"used_budget":budget-remaining,"method":"greedy_integer_knapsack"};limits += ["Greedy solution is feasible but not guaranteed globally optimal."]
+  if len(values)!=len(costs) or len(values)>20:raise ValueError("aligned arrays of at most20 items required")
+  if budget<0 or any(x<0 for x in values+costs):raise ValueError("nonnegative values, costs and budget required")
+  best_value=0.;best_cost=0.;chosen=[];evaluated=0
+  # Finite exact enumeration, no ratio heuristic or silently rounded costs.
+  def visit(index,used,value,indices):
+   nonlocal best_value,best_cost,chosen,evaluated
+   if used>budget:return
+   if index==len(values):
+    evaluated+=1
+    if value>best_value or (value==best_value and used<best_cost):best_value=value;best_cost=used;chosen=indices[:]
+    return
+   visit(index+1,used,value,indices)
+   visit(index+1,used+costs[index],value+values[index],indices+[index])
+  visit(0,0.,0.,[])
+  out={"chosen_indices":chosen,"objective_value":best_value,"used_budget":best_cost,"method":"finite_binary_knapsack_enumeration","feasible_subsets_evaluated":evaluated,"optimal_within_supplied_float_arithmetic":True};limits += ["Exact finite0/1 subset search up to20 items using supplied floating-point values/costs, not general operations research or continuous optimization."]
  elif method=="decision_science":
   options=data.get("options");weights=_vec(data,"weights")
   if not isinstance(options,list) or not options or any(not isinstance(x,dict) or "name" not in x or not isinstance(x.get("criteria"),list) for x in options):raise ValueError("options require name and criteria list")
