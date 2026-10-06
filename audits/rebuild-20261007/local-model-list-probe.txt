@@ -1,0 +1,2 @@
+ollama ConnectError
+openai_compat HTTP 404
