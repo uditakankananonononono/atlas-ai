@@ -11,7 +11,8 @@ from datetime import datetime
 import os
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from app.auth.context import TenantContext, require_tenant
 from pydantic import BaseModel, Field
 
 from .foresight import SystemsModel
@@ -20,18 +21,33 @@ from .schemas import Risk, ToolSpec
 
 router = APIRouter(prefix="/api/modules/20", tags=["m20_general_cognitive_worker"])
 
-_service = None
+_service = None  # Legacy local development binding only.
+_services = {}
 
 
-def bind_service(service) -> None:
+def bind_service(service, *, tenant_id: str = "local") -> None:
+    """Bind an independently configured service to one tenant only.
+
+    Never bind the same mutable instance for two tenants. Persistence, tools,
+    model clients and approval gates must also be configured for that tenant.
+    """
     global _service
-    _service = service
+    if not tenant_id or not isinstance(tenant_id,str):
+        raise ValueError("nonempty tenant_id required")
+    if any(key != tenant_id and value is service for key,value in _services.items()):
+        raise ValueError("service instance already bound to another tenant")
+    _services[tenant_id] = service
+    if tenant_id == "local":
+        _service = service
 
 
-def get_service():
-    if _service is None:
-        raise HTTPException(status_code=503, detail="GCW service not bound yet")
-    return _service
+def get_service(tenant: TenantContext = Depends(require_tenant)):
+    service = _services.get(tenant.tenant_id)
+    if tenant.tenant_id == "local" and os.getenv("ATLAS_DEV_NO_AUTH") == "1" and os.getenv("ATLAS_ENV", "").lower() != "production":
+        service = _service
+    if service is None:
+        raise HTTPException(status_code=503, detail="GCW service not bound for authenticated tenant")
+    return service
 
 
 class GoalRequest(BaseModel):
@@ -75,8 +91,7 @@ class RetrospectiveRequest(BaseModel):
 
 
 @router.post("/goals", status_code=201)
-def submit_goal(request: GoalRequest) -> dict[str, Any]:
-    service = get_service()
+def submit_goal(request: GoalRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     context = service.submit_goal(
         request.goal, importance=request.importance,
         deadline=request.deadline, run_immediately=request.run_immediately,
@@ -86,8 +101,7 @@ def submit_goal(request: GoalRequest) -> dict[str, Any]:
 
 
 @router.get("/tasks")
-def list_tasks() -> list[dict[str, Any]]:
-    service = get_service()
+def list_tasks(service: Any = Depends(get_service)) -> list[dict[str, Any]]:
     return [
         {"id": c.id, "goal": c.goal, "state": c.state.value,
          "importance": c.importance, "deadline": c.deadline,
@@ -98,8 +112,7 @@ def list_tasks() -> list[dict[str, Any]]:
 
 
 @router.get("/tasks/{task_id}")
-def get_task(task_id: str) -> dict[str, Any]:
-    service = get_service()
+def get_task(task_id: str, service: Any = Depends(get_service)) -> dict[str, Any]:
     context = service.scheduler.get(task_id)
     if context is None:
         raise HTTPException(status_code=404, detail="task not found")
@@ -111,8 +124,7 @@ def get_task(task_id: str) -> dict[str, Any]:
 
 
 @router.post("/tasks/{task_id}/resume")
-def resume_task(task_id: str, request: ResumeRequest) -> dict[str, Any]:
-    service = get_service()
+def resume_task(task_id: str, request: ResumeRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     context = service.resume(task_id, request.node_id, approved=request.approved)
     if context is None:
         raise HTTPException(status_code=404, detail="task not found")
@@ -120,8 +132,7 @@ def resume_task(task_id: str, request: ResumeRequest) -> dict[str, Any]:
 
 
 @router.post("/tasks/{task_id}/ruminate")
-def ruminate_task(task_id: str) -> dict[str, Any]:
-    service = get_service()
+def ruminate_task(task_id: str, service: Any = Depends(get_service)) -> dict[str, Any]:
     result = service.ruminate(task_id)
     if result is None:
         raise HTTPException(status_code=404, detail="task not found")
@@ -129,8 +140,7 @@ def ruminate_task(task_id: str) -> dict[str, Any]:
 
 
 @router.post("/tasks/{task_id}/retrospective")
-def close_task(task_id: str, request: RetrospectiveRequest) -> dict[str, str]:
-    service = get_service()
+def close_task(task_id: str, request: RetrospectiveRequest, service: Any = Depends(get_service)) -> dict[str, str]:
     if service.scheduler.get(task_id) is None:
         raise HTTPException(status_code=404, detail="task not found")
     service.close_task(
@@ -141,8 +151,9 @@ def close_task(task_id: str, request: RetrospectiveRequest) -> dict[str, str]:
 
 
 @router.post("/ingest/text", status_code=201)
-def ingest_text(request: TextIngestRequest) -> dict[str, Any]:
-    service = get_service()
+def ingest_text(request: TextIngestRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    if request.context_id is not None and service.scheduler.get(request.context_id) is None:
+        raise HTTPException(404, "task context not found for authenticated tenant")
     event = service.sensory.ingest_text(
         request.text, source=request.source, external_id=request.external_id,
     )
@@ -153,8 +164,9 @@ def ingest_text(request: TextIngestRequest) -> dict[str, Any]:
 
 
 @router.post("/ingest/email", status_code=201)
-def ingest_email(request: EmailIngestRequest) -> dict[str, Any]:
-    service = get_service()
+def ingest_email(request: EmailIngestRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    if request.context_id is not None and service.scheduler.get(request.context_id) is None:
+        raise HTTPException(404, "task context not found for authenticated tenant")
     event = service.sensory.ingest_email(
         subject=request.subject, body=request.body, sender=request.sender,
         external_id=request.external_id,
@@ -166,8 +178,7 @@ def ingest_email(request: EmailIngestRequest) -> dict[str, Any]:
 
 
 @router.post("/memory/facts", status_code=201)
-def remember_fact(request: RememberRequest) -> dict[str, str]:
-    service = get_service()
+def remember_fact(request: RememberRequest, service: Any = Depends(get_service)) -> dict[str, str]:
     fact = service.semantic.remember(
         request.content, kind=request.kind,
         confidence=request.confidence, decay_rate=request.decay_rate,
@@ -176,8 +187,7 @@ def remember_fact(request: RememberRequest) -> dict[str, str]:
 
 
 @router.get("/memory/facts")
-def query_facts(query: str = "", limit: int = 5) -> list[dict[str, Any]]:
-    service = get_service()
+def query_facts(query: str = "", limit: int = 5, service: Any = Depends(get_service)) -> list[dict[str, Any]]:
     if not query:
         raise HTTPException(status_code=400, detail="query required")
     return [
@@ -187,8 +197,7 @@ def query_facts(query: str = "", limit: int = 5) -> list[dict[str, Any]]:
 
 
 @router.get("/memory/episodes")
-def recall_episodes(query: str = "", limit: int = 5) -> list[dict[str, Any]]:
-    service = get_service()
+def recall_episodes(query: str = "", limit: int = 5, service: Any = Depends(get_service)) -> list[dict[str, Any]]:
     if not query:
         raise HTTPException(status_code=400, detail="query required")
     return [
@@ -198,8 +207,7 @@ def recall_episodes(query: str = "", limit: int = 5) -> list[dict[str, Any]]:
 
 
 @router.get("/skills")
-def list_skills() -> list[dict[str, Any]]:
-    service = get_service()
+def list_skills(service: Any = Depends(get_service)) -> list[dict[str, Any]]:
     return [
         {"id": s.id, "name": s.name, "version": s.version, "status": s.status.value}
         for s in service.skills.list()
@@ -207,23 +215,23 @@ def list_skills() -> list[dict[str, Any]]:
 
 
 @router.get("/tools")
-def list_tools() -> list[dict[str, Any]]:
-    return get_service().tools.describe()
+def list_tools(service: Any = Depends(get_service)) -> list[dict[str, Any]]:
+    return service.tools.describe()
 
 
 @router.get("/standup")
-def standup() -> dict[str, str]:
-    return {"standup": get_service().standup()}
+def standup(service: Any = Depends(get_service)) -> dict[str, str]:
+    return {"standup": service.standup()}
 
 
 @router.get("/traces")
-def traces(task_id: str | None = None) -> list[dict[str, Any]]:
-    return [t.model_dump(mode="json") for t in get_service().traces(task_id=task_id)]
+def traces(task_id: str | None = None, service: Any = Depends(get_service)) -> list[dict[str, Any]]:
+    return [t.model_dump(mode="json") for t in service.traces(task_id=task_id)]
 
 
 @router.get("/health")
-def health() -> dict[str, Any]:
-    return get_service().supervise()
+def health(service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.supervise()
 
 
 # ------------------------------------------------- rows 10-34: meta-cognition
@@ -373,8 +381,7 @@ class CuriosityExploreRequest(BaseModel):
 
 
 @router.post("/meta/improvement/proposals", status_code=201)
-def row10_propose_improvement(request: ImprovementProposalRequest) -> dict[str, Any]:
-    service = get_service()
+def row10_propose_improvement(request: ImprovementProposalRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     metrics = service.improvement.analyze(
         tool_records=service.dispatcher.records,
         episodes=list(service.episodic._episodes.values()),
@@ -394,8 +401,7 @@ def row10_propose_improvement(request: ImprovementProposalRequest) -> dict[str, 
 
 
 @router.post("/meta/improvement/proposals/{proposal_id}/apply")
-def row10_apply_improvement(proposal_id: str, request: ImprovementApplyRequest) -> dict[str, Any]:
-    service = get_service()
+def row10_apply_improvement(proposal_id: str, request: ImprovementApplyRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     if proposal_id not in service.improvement.proposals:
         raise HTTPException(status_code=404, detail="proposal not found")
     try:
@@ -408,16 +414,14 @@ def row10_apply_improvement(proposal_id: str, request: ImprovementApplyRequest) 
 
 
 @router.post("/meta/meta-learning/transfer")
-def row11_meta_learning_transfer(request: TransferRequest) -> dict[str, Any]:
-    service = get_service()
+def row11_meta_learning_transfer(request: TransferRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     for episode in service.episodic._episodes.values():
         service.meta_learner.abstract(episode)
     return {"transfers": service.meta_learner.transfer(request.goal)}
 
 
 @router.post("/meta/load-allocation")
-def row12_load_balancing(total_ticks: float = 100.0) -> dict[str, Any]:
-    service = get_service()
+def row12_load_balancing(total_ticks: float = 100.0, service: Any = Depends(get_service)) -> dict[str, Any]:
     allocation = service.load_balancer.allocate(
         list(service.scheduler._contexts.values()), total_ticks=total_ticks,
     )
@@ -425,16 +429,15 @@ def row12_load_balancing(total_ticks: float = 100.0) -> dict[str, Any]:
 
 
 @router.post("/meta/calibration/claims", status_code=201)
-def row13_assess_claim(request: ClaimRequest) -> dict[str, Any]:
-    claim = get_service().calibration.assess_claim(
+def row13_assess_claim(request: ClaimRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    claim = service.calibration.assess_claim(
         request.text, request.confidence, evidence_count=request.evidence_count,
     )
     return {"claim_id": claim.id, "flagged": claim.flagged, "flag_reason": claim.flag_reason}
 
 
 @router.post("/meta/calibration/claims/{claim_id}/resolve")
-def row13_resolve_claim(claim_id: str, request: ClaimResolveRequest) -> dict[str, Any]:
-    service = get_service()
+def row13_resolve_claim(claim_id: str, request: ClaimResolveRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     if claim_id not in service.calibration.claims:
         raise HTTPException(status_code=404, detail="claim not found")
     claim = service.calibration.resolve(claim_id, request.correct)
@@ -442,15 +445,13 @@ def row13_resolve_claim(claim_id: str, request: ClaimResolveRequest) -> dict[str
 
 
 @router.get("/meta/calibration/curve")
-def row13_calibration_curve() -> dict[str, Any]:
-    service = get_service()
+def row13_calibration_curve(service: Any = Depends(get_service)) -> dict[str, Any]:
     return {"curve": service.calibration.calibration_curve(),
             "calibration_error": service.calibration.calibration_error()}
 
 
 @router.post("/meta/counterfactuals")
-def row14_counterfactual(request: CounterfactualRequest) -> dict[str, Any]:
-    service = get_service()
+def row14_counterfactual(request: CounterfactualRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     episode = service.episodic.get(request.episode_id)
     if episode is None:
         raise HTTPException(status_code=404, detail="episode not found")
@@ -458,16 +459,15 @@ def row14_counterfactual(request: CounterfactualRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/temporal/compare")
-def row15_temporal_compare(request: TemporalCompareRequest) -> dict[str, Any]:
-    return get_service().temporal.compare(
+def row15_temporal_compare(request: TemporalCompareRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.temporal.compare(
         immediate_value=request.immediate_value, delayed_value=request.delayed_value,
         delay_days=request.delay_days, k=request.k,
     )
 
 
 @router.post("/meta/context-switch")
-def row16_context_switch(request: ContextSwitchRequest) -> dict[str, Any]:
-    service = get_service()
+def row16_context_switch(request: ContextSwitchRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     report = service.residue.switch(
         service.working_memory, from_partition=request.from_partition,
         to_partition=request.to_partition, active_goal=request.active_goal,
@@ -476,29 +476,28 @@ def row16_context_switch(request: ContextSwitchRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/flow/assess")
-def row17_flow_assess(request: FlowAssessRequest) -> dict[str, Any]:
-    return get_service().flow.assess(challenge=request.challenge, skill=request.skill)
+def row17_flow_assess(request: FlowAssessRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.flow.assess(challenge=request.challenge, skill=request.skill)
 
 
 @router.post("/meta/flow/structure")
-def row17_flow_structure(request: FlowStructureRequest) -> dict[str, Any]:
-    return {"structured": get_service().flow.structure_work(request.tasks, skill=request.skill)}
+def row17_flow_structure(request: FlowStructureRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return {"structured": service.flow.structure_work(request.tasks, skill=request.skill)}
 
 
 @router.post("/meta/reframe")
-def row18_reframe(request: ReframeRequest) -> dict[str, Any]:
-    reframe = get_service().reframing.reframe(request.setback)
+def row18_reframe(request: ReframeRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    reframe = service.reframing.reframe(request.setback)
     return reframe.__dict__
 
 
 @router.post("/meta/bias-scan")
-def row19_bias_scan(request: BiasScanRequest) -> dict[str, Any]:
-    return get_service().bias_detector.scan_with_correction(request.text)
+def row19_bias_scan(request: BiasScanRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.bias_detector.scan_with_correction(request.text)
 
 
 @router.post("/meta/intuition")
-def row20_intuition(request: IntuitionRequest) -> dict[str, Any]:
-    service = get_service()
+def row20_intuition(request: IntuitionRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     gut = service.intuition.gut(
         request.question,
         skill_matches=service.skills.match(request.question),
@@ -509,14 +508,13 @@ def row20_intuition(request: IntuitionRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/world-models", status_code=201)
-def row21_register_world_model(request: WorldModelRequest) -> dict[str, Any]:
-    model = get_service().world_models.register(request.name, request.assumptions)
+def row21_register_world_model(request: WorldModelRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    model = service.world_models.register(request.name, request.assumptions)
     return {"name": model.name, "version": model.version, "posterior": model.posterior}
 
 
 @router.post("/meta/world-models/{name}/evidence")
-def row21_world_model_evidence(name: str, request: WorldModelEvidenceRequest) -> dict[str, Any]:
-    service = get_service()
+def row21_world_model_evidence(name: str, request: WorldModelEvidenceRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     if name not in service.world_models.models:
         raise HTTPException(status_code=404, detail="model not found")
     model = service.world_models.apply_evidence(name, supported=request.supported, weight=request.weight)
@@ -524,8 +522,7 @@ def row21_world_model_evidence(name: str, request: WorldModelEvidenceRequest) ->
 
 
 @router.post("/meta/world-models/{name}/revise")
-def row21_revise_world_model(name: str, request: WorldModelReviseRequest) -> dict[str, Any]:
-    service = get_service()
+def row21_revise_world_model(name: str, request: WorldModelReviseRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     if name not in service.world_models.models:
         raise HTTPException(status_code=404, detail="model not found")
     model = service.world_models.revise(name, request.assumptions)
@@ -533,8 +530,7 @@ def row21_revise_world_model(name: str, request: WorldModelReviseRequest) -> dic
 
 
 @router.get("/meta/world-models")
-def row21_list_world_models() -> dict[str, Any]:
-    service = get_service()
+def row21_list_world_models(service: Any = Depends(get_service)) -> dict[str, Any]:
     best = service.world_models.current_best()
     return {
         "models": [{"name": m.name, "version": m.version, "posterior": m.posterior}
@@ -544,9 +540,8 @@ def row21_list_world_models() -> dict[str, Any]:
 
 
 @router.post("/meta/goals/check-conflicts")
-def row22_goal_conflicts(request: GoalConflictRequest) -> dict[str, Any]:
+def row22_goal_conflicts(request: GoalConflictRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     from .schemas import PlanNode as _PlanNode
-    service = get_service()
     if request.terminal_values is not None:
         service.goal_hierarchy.terminal_values = [v.lower() for v in request.terminal_values]
     plan = [_PlanNode(**n) for n in request.plan]
@@ -554,9 +549,8 @@ def row22_goal_conflicts(request: GoalConflictRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/decisions/routine")
-def row23_routine_decision(request: RoutineDecisionRequest) -> dict[str, Any]:
+def row23_routine_decision(request: RoutineDecisionRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     from .metacognition import RoutinePolicy as _RoutinePolicy
-    service = get_service()
     if request.decision_type not in service.decision_guard.policies and request.options:
         service.decision_guard.add_policy(_RoutinePolicy(
             decision_type=request.decision_type, default_choice=request.options[0],
@@ -592,9 +586,9 @@ def row26_sunk_cost(request: SunkCostRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/planning-horizon")
-def row27_horizon(request: HorizonRequest) -> dict[str, Any]:
+def row27_horizon(request: HorizonRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().horizon.horizon(
+        return service.horizon.horizon(
             uncertainty=request.uncertainty,
             time_available_minutes=request.time_available_minutes,
         )
@@ -603,67 +597,64 @@ def row27_horizon(request: HorizonRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/abstraction/rollup")
-def row28_rollup(request: RollupRequest) -> dict[str, Any]:
+def row28_rollup(request: RollupRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     from .schemas import PlanNode as _PlanNode
     plan = [_PlanNode(**n) for n in request.plan]
     try:
-        return get_service().abstraction.rollup(request.goal, plan, level=request.level)
+        return service.abstraction.rollup(request.goal, plan, level=request.level)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/perspectives")
-def row29_perspectives(request: PerspectivesRequest) -> dict[str, Any]:
-    views = get_service().perspectives.evaluate(request.proposal)
+def row29_perspectives(request: PerspectivesRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    views = service.perspectives.evaluate(request.proposal)
     return {"perspectives": [v.__dict__ for v in views]}
 
 
 @router.post("/meta/devils-advocate")
-def row30_devils_advocate(request: StressTestRequest) -> dict[str, Any]:
-    report = get_service().devils_advocate.stress_test(
+def row30_devils_advocate(request: StressTestRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    report = service.devils_advocate.stress_test(
         claim=request.claim, assumptions=request.assumptions, evidence=request.evidence,
     )
     return report.__dict__
 
 
 @router.post("/meta/steelman")
-def row31_steelman(request: SteelmanRequest) -> dict[str, Any]:
-    report = get_service().steelman.strengthen(
+def row31_steelman(request: SteelmanRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    report = service.steelman.strengthen(
         opposing_position=request.opposing_position, known_facts=request.known_facts,
     )
     return report.__dict__
 
 
 @router.post("/meta/epistemic-calendar/beliefs", status_code=201)
-def row32_register_belief(request: BeliefRequest) -> dict[str, Any]:
-    entry = get_service().epistemic_calendar.register(
+def row32_register_belief(request: BeliefRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    entry = service.epistemic_calendar.register(
         request.content, review_interval_days=request.review_interval_days,
     )
     return {"belief_id": entry.belief_id, "next_review": entry.next_review().isoformat()}
 
 
 @router.get("/meta/epistemic-calendar/due")
-def row32_due_beliefs() -> dict[str, Any]:
-    return {"due": get_service().epistemic_calendar.due()}
+def row32_due_beliefs(service: Any = Depends(get_service)) -> dict[str, Any]:
+    return {"due": service.epistemic_calendar.due()}
 
 
 @router.get("/meta/knowledge-decay/forecast")
-def row33_decay_forecast(days_ahead: float = 30.0, threshold: float = 0.5) -> dict[str, Any]:
-    service = get_service()
+def row33_decay_forecast(days_ahead: float = 30.0, threshold: float = 0.5, service: Any = Depends(get_service)) -> dict[str, Any]:
     return {"forecast": service.decay_modeler.forecast(
         service.semantic, days_ahead=days_ahead, threshold=threshold,
     )}
 
 
 @router.post("/meta/curiosity/gaps")
-def row34_detect_gaps(request: CuriosityGapsRequest) -> dict[str, Any]:
-    service = get_service()
+def row34_detect_gaps(request: CuriosityGapsRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     return {"gaps": service.curiosity.detect_gaps(request.text, service.semantic)}
 
 
 @router.post("/meta/curiosity/explore")
-def row34_explore(request: CuriosityExploreRequest) -> dict[str, Any]:
-    service = get_service()
+def row34_explore(request: CuriosityExploreRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     items = service.curiosity.allocate(idle_budget=request.idle_budget)
     return {"exploration": [i.__dict__ for i in items]}
 
@@ -840,8 +831,7 @@ class KellyRequest(BaseModel):
 
 
 @router.post("/meta/serendipity/plan")
-def row35_serendipity(request: SerendipityRequest) -> dict[str, Any]:
-    service = get_service()
+def row35_serendipity(request: SerendipityRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     gaps = service.curiosity.detect_gaps(request.text, service.semantic)
     engine = service.serendipity if request.epsilon is None else type(service.serendipity)(epsilon=request.epsilon)
     topics = [f.content for f, _ in service.semantic.query(request.text, limit=6, min_score=0.05)]
@@ -852,8 +842,7 @@ def row35_serendipity(request: SerendipityRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/insights", status_code=201)
-def row36_capture_insight(request: InsightRequest) -> dict[str, Any]:
-    service = get_service()
+def row36_capture_insight(request: InsightRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     insight = service.insights.capture(request.text, context=request.context,
                                        semantic_memory=service.semantic)
     return {"insight_id": insight.insight_id, "links": insight.links,
@@ -861,8 +850,7 @@ def row36_capture_insight(request: InsightRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/insights/{insight_id}/develop")
-def row36_develop_insight(insight_id: str, request: InsightDevelopRequest) -> dict[str, Any]:
-    service = get_service()
+def row36_develop_insight(insight_id: str, request: InsightDevelopRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
         insight = service.insights.develop(insight_id, request.note)
     except KeyError:
@@ -872,22 +860,21 @@ def row36_develop_insight(insight_id: str, request: InsightDevelopRequest) -> di
 
 
 @router.get("/meta/insights/stale")
-def row36_stale_insights(older_than_days: float = 7.0) -> dict[str, Any]:
-    stale = get_service().insights.stale(older_than_days=older_than_days)
+def row36_stale_insights(older_than_days: float = 7.0, service: Any = Depends(get_service)) -> dict[str, Any]:
+    stale = service.insights.stale(older_than_days=older_than_days)
     return {"stale": [{"insight_id": i.insight_id, "text": i.text,
                        "captured_at": i.captured_at.isoformat()} for i in stale]}
 
 
 @router.post("/meta/simulations", status_code=201)
-def row37_record_simulation(request: SimulationPredictRequest) -> dict[str, Any]:
-    rec = get_service().sim_fidelity.record_prediction(
+def row37_record_simulation(request: SimulationPredictRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    rec = service.sim_fidelity.record_prediction(
         request.domain, request.predicted, confidence=request.confidence)
     return {"record_id": rec.record_id}
 
 
 @router.post("/meta/simulations/{record_id}/resolve")
-def row37_resolve_simulation(record_id: str, request: SimulationResolveRequest) -> dict[str, Any]:
-    service = get_service()
+def row37_resolve_simulation(record_id: str, request: SimulationResolveRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
         rec = service.sim_fidelity.resolve(record_id, request.actual)
     except KeyError:
@@ -898,14 +885,13 @@ def row37_resolve_simulation(record_id: str, request: SimulationResolveRequest) 
 
 
 @router.post("/meta/hypotheses", status_code=201)
-def row38_add_hypothesis(request: HypothesisRequest) -> dict[str, Any]:
-    h = get_service().hypotheses.add(request.statement, prior=request.prior)
+def row38_add_hypothesis(request: HypothesisRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    h = service.hypotheses.add(request.statement, prior=request.prior)
     return {"hypothesis_id": h.hypothesis_id}
 
 
 @router.post("/meta/hypotheses/evidence")
-def row38_update_hypotheses(request: HypothesisEvidenceRequest) -> dict[str, Any]:
-    service = get_service()
+def row38_update_hypotheses(request: HypothesisEvidenceRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
         ranking = service.hypotheses.update(request.likelihood_ratios)
     except KeyError as exc:
@@ -916,46 +902,43 @@ def row38_update_hypotheses(request: HypothesisEvidenceRequest) -> dict[str, Any
 
 
 @router.post("/meta/bayes/update")
-def row39_bayesian_update(request: BayesianRequest) -> dict[str, Any]:
-    service = get_service()
+def row39_bayesian_update(request: BayesianRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     posterior = service.bayes.update(request.prior, request.likelihood_ratio)
     return {"prior": request.prior, "likelihood_ratio": request.likelihood_ratio,
             "posterior": posterior}
 
 
 @router.post("/meta/causal/assess")
-def row40_causal_assess(request: CausalRequest) -> dict[str, Any]:
-    report = get_service().causal.assess(cause=request.cause, effect=request.effect,
+def row40_causal_assess(request: CausalRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    report = service.causal.assess(cause=request.cause, effect=request.effect,
                                          evidence=request.evidence)
     return report.__dict__
 
 
 @router.post("/meta/base-rate/integrate")
-def row41_base_rate(request: BaseRateRequest) -> dict[str, Any]:
-    estimate = get_service().base_rates.integrate(
+def row41_base_rate(request: BaseRateRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    estimate = service.base_rates.integrate(
         base_rate=request.base_rate, case_estimate=request.case_estimate,
         evidence_reliability=request.evidence_reliability, sample_size=request.sample_size)
     return estimate.__dict__
 
 
 @router.post("/meta/reference-class/cases", status_code=201)
-def row42_add_case(request: ReferenceCaseRequest) -> dict[str, Any]:
-    service = get_service()
+def row42_add_case(request: ReferenceCaseRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     service.reference_class.add_case(request.features, request.outcome, label=request.label)
     return {"cases": len(service.reference_class.cases)}
 
 
 @router.post("/meta/reference-class/forecast")
-def row42_forecast(request: ReferenceForecastRequest) -> dict[str, Any]:
-    forecast = get_service().reference_class.forecast(request.features)
+def row42_forecast(request: ReferenceForecastRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    forecast = service.reference_class.forecast(request.features)
     if forecast is None:
         return {"forecast": None, "reason": "no reference cases recorded yet"}
     return {"forecast": forecast.__dict__}
 
 
 @router.post("/meta/outside-view")
-def row43_outside_view(request: OutsideViewRequest) -> dict[str, Any]:
-    service = get_service()
+def row43_outside_view(request: OutsideViewRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     forecast = service.reference_class.forecast(request.subject)
     report = service.outside_view.adopt(inside_estimate=request.inside_estimate,
                                         reference_forecast=forecast,
@@ -965,8 +948,7 @@ def row43_outside_view(request: OutsideViewRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/planning-fallacy/records", status_code=201)
-def row44_record_overrun(request: OverrunRecordRequest) -> dict[str, Any]:
-    service = get_service()
+def row44_record_overrun(request: OverrunRecordRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     service.planning_fallacy.record(kind=request.kind, estimated=request.estimated,
                                     actual=request.actual)
     mult, n = service.planning_fallacy.multiplier(request.kind)
@@ -974,13 +956,12 @@ def row44_record_overrun(request: OverrunRecordRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/planning-fallacy/correct")
-def row44_correct_estimate(request: OverrunCorrectRequest) -> dict[str, Any]:
-    return get_service().planning_fallacy.correct(kind=request.kind, estimate=request.estimate)
+def row44_correct_estimate(request: OverrunCorrectRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.planning_fallacy.correct(kind=request.kind, estimate=request.estimate)
 
 
 @router.post("/meta/optimism/records", status_code=201)
-def row45_record_outcome(request: OptimismRecordRequest) -> dict[str, Any]:
-    service = get_service()
+def row45_record_outcome(request: OptimismRecordRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     service.optimism.record(domain=request.domain,
                             predicted_confidence=request.predicted_confidence,
                             succeeded=request.succeeded)
@@ -989,30 +970,30 @@ def row45_record_outcome(request: OptimismRecordRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/optimism/adjust")
-def row45_adjust_confidence(request: OptimismAdjustRequest) -> dict[str, Any]:
-    return get_service().optimism.adjust(domain=request.domain, confidence=request.confidence)
+def row45_adjust_confidence(request: OptimismAdjustRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.optimism.adjust(domain=request.domain, confidence=request.confidence)
 
 
 @router.post("/meta/scenarios")
-def row46_scenarios(request: ScenarioRequest) -> dict[str, Any]:
-    return get_service().scenarios.plan(objective=request.objective, drivers=request.drivers,
+def row46_scenarios(request: ScenarioRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.scenarios.plan(objective=request.objective, drivers=request.drivers,
                                         probabilities=request.probabilities)
 
 
 @router.post("/meta/premortem")
-def row47_premortem(request: PremortemRequest) -> dict[str, Any]:
-    return get_service().premortem.analyze(goal=request.goal, risks=request.risks,
+def row47_premortem(request: PremortemRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.premortem.analyze(goal=request.goal, risks=request.risks,
                                            failure_date=request.failure_date)
 
 
 @router.post("/meta/red-team")
-def row48_red_team(request: RedTeamRequest) -> dict[str, Any]:
-    return get_service().red_team.probe(plan=request.plan, assets=request.assets)
+def row48_red_team(request: RedTeamRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.red_team.probe(plan=request.plan, assets=request.assets)
 
 
 @router.post("/meta/second-order")
-def row49_second_order(request: SecondOrderRequest) -> dict[str, Any]:
-    return get_service().second_order.trace(action=request.action,
+def row49_second_order(request: SecondOrderRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.second_order.trace(action=request.action,
                                             first_order=request.first_order,
                                             depth=request.depth)
 
@@ -1027,58 +1008,58 @@ def row50_systems_loops(request: SystemsModelRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/systems/leverage")
-def row51_leverage(request: SystemsModelRequest) -> dict[str, Any]:
+def row51_leverage(request: SystemsModelRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     model = SystemsModel()
     for link in request.links:
         model.add_link(link.source, link.target, sign=link.sign, delay=link.delay)
-    points = get_service().leverage.rank(model)
+    points = service.leverage.rank(model)
     return {"leverage_points": [p.__dict__ for p in points]}
 
 
 @router.post("/meta/constraints/analyze")
-def row52_constraints(request: ConstraintRequest) -> dict[str, Any]:
-    return get_service().constraints.analyze(stages=request.stages)
+def row52_constraints(request: ConstraintRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.constraints.analyze(stages=request.stages)
 
 
 @router.post("/meta/antifragility/assess")
-def row53_antifragility(request: AntifragilityRequest) -> dict[str, Any]:
-    return get_service().antifragility.assess(components=request.components)
+def row53_antifragility(request: AntifragilityRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.antifragility.assess(components=request.components)
 
 
 @router.post("/meta/optionality/assess")
-def row54_optionality(request: OptionalityRequest) -> dict[str, Any]:
-    return get_service().optionality.assess(
+def row54_optionality(request: OptionalityRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.optionality.assess(
         decision=request.decision, options_kept=request.options_kept,
         options_closed=request.options_closed, reversible=request.reversible)
 
 
 @router.post("/meta/reversibility/assess")
-def row55_reversibility(request: ReversibilityRequest) -> dict[str, Any]:
-    return get_service().reversibility.assess(
+def row55_reversibility(request: ReversibilityRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.reversibility.assess(
         decision=request.decision, undo_cost=request.undo_cost,
         undo_days=request.undo_days, blast_radius=request.blast_radius)
 
 
 @router.post("/meta/asymmetry/evaluate")
-def row56_asymmetry(request: AsymmetryRequest) -> dict[str, Any]:
-    return get_service().asymmetry.evaluate(options=request.options)
+def row56_asymmetry(request: AsymmetryRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.asymmetry.evaluate(options=request.options)
 
 
 @router.post("/meta/ev/compute")
-def row57_expected_value(request: EVRequest) -> dict[str, Any]:
-    return get_service().ev_calculator.compute(options=request.options)
+def row57_expected_value(request: EVRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.ev_calculator.compute(options=request.options)
 
 
 @router.post("/meta/risk-of-ruin")
-def row58_risk_of_ruin(request: RiskOfRuinRequest) -> dict[str, Any]:
-    return get_service().risk_of_ruin.analyze(
+def row58_risk_of_ruin(request: RiskOfRuinRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.risk_of_ruin.analyze(
         capital=request.capital, bet_size=request.bet_size, win_prob=request.win_prob,
         payoff_ratio=request.payoff_ratio, trials=request.trials)
 
 
 @router.post("/meta/kelly/size")
-def row59_kelly(request: KellyRequest) -> dict[str, Any]:
-    return get_service().kelly.size(win_prob=request.win_prob, payoff_ratio=request.payoff_ratio)
+def row59_kelly(request: KellyRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.kelly.size(win_prob=request.win_prob, payoff_ratio=request.payoff_ratio)
 
 
 # ----------------------------------------------------------- rows 60-84 --
@@ -1219,26 +1200,26 @@ class PrincipalAgentRequest(BaseModel):
 
 
 @router.post("/meta/ergodicity")
-def row60_ergodicity(request: ErgodicityRequest) -> dict[str, Any]:
+def row60_ergodicity(request: ErgodicityRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().ergodicity.analyze(
+        return service.ergodicity.analyze(
             outcomes=[(float(p), float(m)) for p, m in request.outcomes])
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/nonlinear/classify")
-def row61_nonlinear_classify(request: NonLinearRequest) -> dict[str, Any]:
+def row61_nonlinear_classify(request: NonLinearRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().nonlinear.classify(xs=request.xs, ys=request.ys)
+        return service.nonlinear.classify(xs=request.xs, ys=request.ys)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/nonlinear/extrapolate")
-def row61_nonlinear_extrapolate(request: NonLinearExtrapolateRequest) -> dict[str, Any]:
+def row61_nonlinear_extrapolate(request: NonLinearExtrapolateRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        value = get_service().nonlinear.extrapolate(
+        value = service.nonlinear.extrapolate(
             model=request.model, slope=request.slope, intercept=request.intercept, x=request.x)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
@@ -1247,39 +1228,39 @@ def row61_nonlinear_extrapolate(request: NonLinearExtrapolateRequest) -> dict[st
 
 
 @router.post("/meta/tipping-point")
-def row62_tipping_point(request: TippingPointRequest) -> dict[str, Any]:
+def row62_tipping_point(request: TippingPointRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().tipping_points.analyze(series=request.series,
+        return service.tipping_points.analyze(series=request.series,
                                                     threshold=request.threshold)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/network-effects")
-def row63_network_effects(request: NetworkEffectRequest) -> dict[str, Any]:
-    return get_service().network_effects.analyze(
+def row63_network_effects(request: NetworkEffectRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.network_effects.analyze(
         n_users=request.n_users, two_sided=request.two_sided, same_side=request.same_side)
 
 
 @router.post("/meta/flywheels")
-def row64_flywheels(request: SystemsModelRequest) -> dict[str, Any]:
+def row64_flywheels(request: SystemsModelRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     model = SystemsModel()
     for link in request.links:
         model.add_link(link.source, link.target, sign=link.sign, delay=link.delay)
-    return get_service().flywheels.find(model)
+    return service.flywheels.find(model)
 
 
 @router.post("/meta/moats")
-def row65_moats(request: MoatRequest) -> dict[str, Any]:
+def row65_moats(request: MoatRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().moats.assess(ratings=request.ratings)
+        return service.moats.assess(ratings=request.ratings)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/disruption")
-def row66_disruption(request: DisruptionRequest) -> dict[str, Any]:
-    return get_service().disruption.assess(
+def row66_disruption(request: DisruptionRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.disruption.assess(
         entrant_improvement_rate=request.entrant_improvement_rate,
         incumbent_improvement_rate=request.incumbent_improvement_rate,
         entrant_targets_underserved=request.entrant_targets_underserved,
@@ -1288,38 +1269,37 @@ def row66_disruption(request: DisruptionRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/jtbd")
-def row67_jtbd(request: JTBDRequest) -> dict[str, Any]:
-    return get_service().jtbd.frame(product=request.product, statements=request.statements)
+def row67_jtbd(request: JTBDRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
+    return service.jtbd.frame(product=request.product, statements=request.statements)
 
 
 @router.post("/meta/value-chain")
-def row68_value_chain(request: ValueChainRequest) -> dict[str, Any]:
+def row68_value_chain(request: ValueChainRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().value_chain.map(stages=request.stages)
+        return service.value_chain.map(stages=request.stages)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/pareto")
-def row69_pareto(request: ParetoRequest) -> dict[str, Any]:
+def row69_pareto(request: ParetoRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().pareto.analyze(items=request.items,
+        return service.pareto.analyze(items=request.items,
                                             target_share=request.target_share)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/toc/observe")
-def row70_toc(request: TOCRequest) -> dict[str, Any]:
+def row70_toc(request: TOCRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().toc.observe(stages=request.stages)
+        return service.toc.observe(stages=request.stages)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/queue")
-def row71_queue(request: QueueRequest) -> dict[str, Any]:
-    service = get_service()
+def row71_queue(request: QueueRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
         if request.servers == 1:
             return service.queues.mm1(arrival_rate=request.arrival_rate,
@@ -1332,61 +1312,61 @@ def row71_queue(request: QueueRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/littles-law")
-def row72_littles_law(request: LittlesLawRequest) -> dict[str, Any]:
+def row72_littles_law(request: LittlesLawRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().littles.relate(wip=request.wip, throughput=request.throughput,
+        return service.littles.relate(wip=request.wip, throughput=request.throughput,
                                             cycle_time=request.cycle_time)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/critical-path")
-def row73_critical_path(request: CriticalPathRequest) -> dict[str, Any]:
+def row73_critical_path(request: CriticalPathRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().critical_paths.analyze(tasks=request.tasks)
+        return service.critical_paths.analyze(tasks=request.tasks)
     except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/monte-carlo")
-def row74_monte_carlo(request: MonteCarloRequest) -> dict[str, Any]:
+def row74_monte_carlo(request: MonteCarloRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().monte_carlo.simulate(tasks=request.tasks,
+        return service.monte_carlo.simulate(tasks=request.tasks,
                                                   trials=request.trials, seed=request.seed)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/sensitivity")
-def row75_sensitivity(request: SensitivityRequest) -> dict[str, Any]:
+def row75_sensitivity(request: SensitivityRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().sensitivity.analyze(expression=request.expression,
+        return service.sensitivity.analyze(expression=request.expression,
                                                  params=request.params, swing=request.swing)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/tornado")
-def row76_tornado(request: SensitivityRequest) -> dict[str, Any]:
+def row76_tornado(request: SensitivityRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().tornado.build(expression=request.expression,
+        return service.tornado.build(expression=request.expression,
                                            params=request.params, swing=request.swing)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/decision-tree")
-def row77_decision_tree(request: DecisionTreeRequest) -> dict[str, Any]:
+def row77_decision_tree(request: DecisionTreeRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().decision_trees.build(spec=request.spec)
+        return service.decision_trees.build(spec=request.spec)
     except (ValueError, KeyError, TypeError) as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/real-options")
-def row78_real_options(request: RealOptionsRequest) -> dict[str, Any]:
+def row78_real_options(request: RealOptionsRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().real_options.value(
+        return service.real_options.value(
             underlying=request.underlying, up=request.up, down=request.down,
             exercise_cost=request.exercise_cost, kind=request.kind,
             steps=request.steps, risk_free=request.risk_free)
@@ -1395,35 +1375,35 @@ def row78_real_options(request: RealOptionsRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/game")
-def row79_game(request: GameRequest) -> dict[str, Any]:
+def row79_game(request: GameRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().game_theory.analyze(row_payoffs=request.row_payoffs,
+        return service.game_theory.analyze(row_payoffs=request.row_payoffs,
                                                  col_payoffs=request.col_payoffs)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/nash")
-def row80_nash(request: GameRequest) -> dict[str, Any]:
+def row80_nash(request: GameRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().nash.find(row_payoffs=request.row_payoffs,
+        return service.nash.find(row_payoffs=request.row_payoffs,
                                        col_payoffs=request.col_payoffs)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/mechanism/vcg")
-def row81_vcg(request: VCGRequest) -> dict[str, Any]:
+def row81_vcg(request: VCGRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().mechanisms.vcg(agents=request.agents)
+        return service.mechanisms.vcg(agents=request.agents)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/mechanism/check-incentives")
-def row81_check_incentives(request: ICCheckRequest) -> dict[str, Any]:
+def row81_check_incentives(request: ICCheckRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().mechanisms.check_incentives(
+        return service.mechanisms.check_incentives(
             agent=request.agent, true_values=request.true_values,
             others=request.others, deviations=request.deviations)
     except ValueError as exc:
@@ -1431,9 +1411,9 @@ def row81_check_incentives(request: ICCheckRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/auction")
-def row82_auction(request: AuctionRequest) -> dict[str, Any]:
+def row82_auction(request: AuctionRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().auctions.recommend(
+        return service.auctions.recommend(
             auction_type=request.auction_type, value=request.value,
             n_bidders=request.n_bidders, common_value=request.common_value)
     except ValueError as exc:
@@ -1441,9 +1421,9 @@ def row82_auction(request: AuctionRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/signaling")
-def row83_signaling(request: SignalingRequest) -> dict[str, Any]:
+def row83_signaling(request: SignalingRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().signaling.assess(benefit=request.benefit,
+        return service.signaling.assess(benefit=request.benefit,
                                               cost_high_type=request.cost_high_type,
                                               cost_low_type=request.cost_low_type)
     except ValueError as exc:
@@ -1451,9 +1431,9 @@ def row83_signaling(request: SignalingRequest) -> dict[str, Any]:
 
 
 @router.post("/meta/principal-agent")
-def row84_principal_agent(request: PrincipalAgentRequest) -> dict[str, Any]:
+def row84_principal_agent(request: PrincipalAgentRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     try:
-        return get_service().principal_agent.design(efforts=request.efforts,
+        return service.principal_agent.design(efforts=request.efforts,
                                                     target_effort=request.target_effort,
                                                     shares=request.shares)
     except ValueError as exc:

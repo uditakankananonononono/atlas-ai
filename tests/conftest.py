@@ -53,3 +53,10 @@ def oidc_auth_headers(monkeypatch: pytest.MonkeyPatch):
         return {"Authorization": f"Bearer {header}.{payload}.{signature}"}
 
     return headers
+
+
+@pytest.fixture(autouse=True)
+def explicit_local_auth_opt_in(monkeypatch):
+    # Legacy local-only fixtures intentionally use insecure development auth.
+    # Tests of deployment defaults remove this explicit opt-in.
+    monkeypatch.setenv("ATLAS_DEV_NO_AUTH", "1")

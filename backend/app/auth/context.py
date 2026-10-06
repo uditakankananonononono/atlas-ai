@@ -1,13 +1,14 @@
 """Authenticated tenant context.
 
-Development accepts explicit headers for local work. Production accepts only a
-verified OIDC bearer token; client-supplied tenant/actor headers are ignored.
+OIDC authentication is required by default. Explicit ATLAS_DEV_NO_AUTH=1
+permits insecure local headers outside production and logs a warning.
 """
 from __future__ import annotations
 import asyncio
 import base64
 import json
 import os
+import logging
 import time
 from dataclasses import dataclass
 from typing import Any
@@ -139,7 +140,8 @@ async def require_tenant(
     x_atlas_tenant: str | None = Header(default=None),
     x_atlas_actor: str | None = Header(default=None),
 ) -> TenantContext:
-    if os.getenv("ATLAS_ENV", "development") != "production":
+    if os.getenv("ATLAS_DEV_NO_AUTH") == "1" and os.getenv("ATLAS_ENV", "").lower() != "production":
+        logging.getLogger(__name__).warning("INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode")
         return TenantContext(x_atlas_tenant or "local", x_atlas_actor or "local-user")
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(401, "OIDC bearer token required")

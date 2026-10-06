@@ -13,7 +13,7 @@ Atlas never ships real credentials. Copy the relevant names into the deployment 
 | `POSTGRES_PASSWORD` | Bundled PostgreSQL container | Deployment-generated database password. |
 | `REDIS_PASSWORD` | Bundled Redis container | Deployment-generated Redis password. |
 
-Set `ATLAS_ENV=production` outside local development. Set worker concurrency and API worker counts to the deployment's capacity; these are tuning values, not secrets.
+OIDC authentication is required by default even when `ATLAS_ENV` is unset. Configure `ATLAS_OIDC_ISSUER` and `ATLAS_OIDC_AUDIENCE` for authenticated operation. Insecure local header authentication requires explicitly setting `ATLAS_DEV_NO_AUTH=1`; it logs a warning and is ignored when `ATLAS_ENV=production`. Never enable that opt-in in a deployed service. Set `ATLAS_ENV=production` outside local development. Set worker concurrency and API worker counts to the deployment's capacity; these are tuning values, not secrets.
 
 ## Model and embedding providers
 
