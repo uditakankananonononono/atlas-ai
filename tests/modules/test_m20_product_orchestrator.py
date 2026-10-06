@@ -260,3 +260,35 @@ def test_product_approval_expiry_is_enforced_even_if_injected_gate_says_approved
  token=service.request_approval(goal.id)['approval_id'];gate.decide(token,ApprovalGateDecision.APPROVED)
  service._approval_expiries[token]=datetime.now(timezone.utc)-timedelta(seconds=1)
  with pytest.raises(PermissionError,match='expired'):service.execute(goal.id,approval_id=token)
+
+
+@pytest.mark.parametrize('ttl',[0,-1,10**12,True,1.5])
+def test_invalid_product_ttl_rejected_at_construction(ttl):
+ with pytest.raises(ValueError,match='ttl'):ProductOrchestrator('a',approval_gate=InMemoryApprovalGate(),approval_ttl_seconds=ttl)
+
+
+def test_executor_runs_without_global_execution_lock_and_reentrant_replay_blocks():
+ service,gate=make_orchestrator();goal=registered_goal(service);service.build_plan(goal.id,plan_steps(goal))
+ token=service.request_approval(goal.id)['approval_id'];gate.decide(token,ApprovalGateDecision.APPROVED)
+ calls=[]
+ def handler(step,ctx):
+  assert service._execution_lock.acquire(blocking=False)
+  service._execution_lock.release()
+  with pytest.raises(OrchestrationConflictError):service.execute(goal.id,approval_id=token)
+  calls.append(step.id);return {'state':'simulated'}
+ service.executors['draft_document']=handler
+ assert service.execute(goal.id,approval_id=token)['status']=='executed' and len(calls)==1
+
+
+def test_product_claim_is_atomic_under_lock_before_handler():
+ service,gate=make_orchestrator();goal=registered_goal(service);service.build_plan(goal.id,plan_steps(goal))
+ token=service.request_approval(goal.id)['approval_id'];gate.decide(token,ApprovalGateDecision.APPROVED)
+ class CheckingSet(set):
+  def __contains__(self,value):
+   assert service._execution_lock.locked()
+   return super().__contains__(value)
+  def add(self,value):
+   assert service._execution_lock.locked()
+   return super().add(value)
+ service._spent_approvals=CheckingSet()
+ assert service.execute(goal.id,approval_id=token)['status']=='executed'
