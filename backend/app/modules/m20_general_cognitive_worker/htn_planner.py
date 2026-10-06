@@ -7,6 +7,7 @@ Plans are DAGs of PlanNode with explicit dependencies and risk tiers.
 """
 from __future__ import annotations
 
+import hashlib
 from typing import Any, Protocol, runtime_checkable
 
 from .embeddings import tokenize
@@ -37,12 +38,15 @@ class HTNPlanner:
         self.methods[method.name] = method
         return method
 
-    def _match_method(self, goal: str) -> HTNMethod | None:
+    def _match_method(self, goal: str, *, context: str = "") -> HTNMethod | None:
         goal_tokens = set(tokenize(goal))
         if not goal_tokens:
             return None
         best: tuple[float, HTNMethod] | None = None
         for method in self.methods.values():
+            if method.source == MethodSource.LEARNED:
+                if method.generated_goal != goal or method.generated_context_sha256 != hashlib.sha256(context.encode()).hexdigest():
+                    continue
             pattern_tokens = set(tokenize(method.goal_pattern))
             if not pattern_tokens:
                 continue
@@ -52,7 +56,7 @@ class HTNPlanner:
         return best[1] if best else None
 
     def decompose(self, goal: str, *, context: str = "") -> list[PlanNode]:
-        method = self._match_method(goal)
+        method = self._match_method(goal, context=context)
         if method is not None:
             method.times_used += 1
             return self._instantiate(method)
@@ -61,10 +65,11 @@ class HTNPlanner:
         raw_steps = self.model.decompose(goal, context=context)
         nodes = self._validate(raw_steps)
         learned = HTNMethod(
-            name=f"learned:{goal[:48]}",
+            name=f"learned:{goal[:48]}:{hashlib.sha256((goal + chr(0) + context).encode()).hexdigest()[:16]}",
             goal_pattern=goal,
             subtasks=[n.model_copy(deep=True) for n in nodes],
             source=MethodSource.LEARNED,
+            generated_goal=goal, generated_context_sha256=hashlib.sha256(context.encode()).hexdigest(),
         )
         self.register_method(learned)
         return nodes

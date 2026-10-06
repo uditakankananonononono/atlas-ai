@@ -187,6 +187,8 @@ class HTNMethod(BaseModel):
     subtasks: list[PlanNode] = Field(default_factory=list)
     constraints: list[str] = Field(default_factory=list)
     source: MethodSource = MethodSource.LIBRARY
+    generated_goal: str | None = None
+    generated_context_sha256: str | None = None
     times_used: int = 0
     success_rate: float = 0.0
 

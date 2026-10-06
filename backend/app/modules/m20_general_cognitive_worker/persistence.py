@@ -190,8 +190,8 @@ class DurableHTNPlanner(HTNPlanner):
         self.repo.save_method(method, status=status)
         return super().register_method(method)
 
-    def _match_method(self, goal: str) -> HTNMethod | None:
-        match = super()._match_method(goal)
+    def _match_method(self, goal: str, *, context: str = "") -> HTNMethod | None:
+        match = super()._match_method(goal, context=context)
         if match is not None and self.method_status(match.name) != "active":
             return None
         return match
