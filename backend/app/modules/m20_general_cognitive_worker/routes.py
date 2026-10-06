@@ -436,7 +436,8 @@ def row13_assess_claim(request: ClaimRequest, service: Any = Depends(get_service
     claim = service.calibration.assess_claim(
         request.text, request.confidence, evidence_count=request.evidence_count,
     )
-    return {"claim_id": claim.id, "flagged": claim.flagged, "flag_reason": claim.flag_reason}
+    return {"claim_id": claim.id, "flagged": claim.flagged, "flag_reason": claim.flag_reason,
+            "status": claim.status, "capability_executed": claim.capability_executed}
 
 
 @router.post("/meta/calibration/claims/{claim_id}/resolve")

@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1903,
-    "PARTIAL": 55,
+    "verified-pushed": 1901,
+    "PARTIAL": 57,
     "SCOPED": 48,
     "removed": 4,
     "thin": 0,
@@ -199,7 +199,7 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Epistemic Humility Calibration",
       "description": "Accurately estimates own knowledge boundaries and flags uncertainty before making claims",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
@@ -207,7 +207,23 @@
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
         "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+          "test_path": "tests/modules/test_m20_metacognition.py",
+          "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        }
+      },
+      "current_scope": "Observed confidence/outcome calibration curve and error only; no inferred knowledge boundary or predictive confidence adjustment.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_meta_scope_retractions.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+        "verification": "Self-inspected; numeric fabrication removed; independent review pending."
+      }
     },
     {
       "id": 14,
@@ -679,7 +695,7 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Curiosity-Driven Exploration",
       "description": "Allocates resources to investigate knowledge gaps even without immediate utility",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
@@ -687,7 +703,23 @@
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
         "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+          "test_path": "tests/modules/test_m20_metacognition.py",
+          "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        }
+      },
+      "current_scope": "Lexical missing-token frequency tracking and frequency-weighted budget policy; no measured expected learning value or autonomous investigation.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_meta_scope_retractions.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+        "verification": "Self-inspected; numeric fabrication removed; independent review pending."
+      }
     },
     {
       "id": 35,

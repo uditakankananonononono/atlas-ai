@@ -508,7 +508,7 @@ def test_m20_30_calibration_curve_and_shrinkage():
     curve = runtime.calibration.calibration_curve()
     assert curve and abs(curve[0]["observed_accuracy"] - 0.5) < 1e-9
     assert runtime.calibration.calibration_error() is not None
-    assert runtime.calibration.adjusted_confidence(0.9) < 0.9
+    assert runtime.calibration.adjusted_confidence(0.9) is None
 
 
 def test_m20_14_surprise_triggers_reflection(mounted):

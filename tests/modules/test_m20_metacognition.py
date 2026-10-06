@@ -80,9 +80,9 @@ def test_row12_load_balancing_by_complexity_and_deadline():
 def test_row13_calibration_flags_overconfidence_and_shrinks():
     engine = CalibrationEngine()
     flagged = engine.assess_claim("the deadline is Friday", 0.95, evidence_count=0)
-    assert flagged.flagged and "ceiling" in flagged.flag_reason
+    assert flagged.flagged is None and "unavailable" in flagged.flag_reason
     ok = engine.assess_claim("water is wet", 0.6, evidence_count=3)
-    assert not ok.flagged
+    assert ok.flagged is None
     for i in range(10):
         c = engine.assess_claim(f"claim {i}", 0.8, evidence_count=3)
         engine.resolve(c.id, correct=(i < 6))
@@ -90,7 +90,7 @@ def test_row13_calibration_flags_overconfidence_and_shrinks():
     assert curve and curve[0]["observed_accuracy"] == pytest.approx(0.6)
     assert engine.calibration_error() is not None
     adjusted = engine.adjusted_confidence(0.95)
-    assert adjusted < 0.95  # shrunk toward 60% observed accuracy
+    assert adjusted is None  # no learned predictive calibration
 
 
 def test_row14_counterfactual_simulation():
