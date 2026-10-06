@@ -54,7 +54,7 @@ def test_690_review_blocks_unresolved_finding():
 @pytest.mark.parametrize('m,mode',[('pair_programming','pair'),('mob_programming','mob')])
 def test_691_692_collaboration_modes(m,mode):assert S(m,data(m))['result']['mode']==mode
 def test_693_debt_priority():assert S('technical_debt_management',data('technical_debt_management'))['result']['items'][0]['priority_score']==4
-def test_694_legacy_slice_ready():assert S('legacy_code_modernization',data('legacy_code_modernization'))['result']['slices'][0]['ready']
+def test_694_legacy_slice_ready():assert S('legacy_code_modernization',data('legacy_code_modernization'))['result']['slices'][0]['caller_diagnostic_ready']
 def test_695_strangler_route_migration():assert S('strangler_fig_pattern',data('strangler_fig_pattern'))['result']['migrated_routes']==['/a']
 def test_696_branch_abstraction_removal_gate():
  d=data('branch_by_abstraction');assert not S('branch_by_abstraction',d)['result']['caller_diagnostic_old_removal_allowed']
