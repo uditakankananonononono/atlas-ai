@@ -5,6 +5,7 @@ from math import exp,log
 import re
 from typing import Any
 from .learning_calibration import calibrate_attempts
+from .spaced_review import schedule_reviews
 from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
@@ -25,11 +26,8 @@ def src(p):
 def learning(row,p):
  objective=req(p,'objective',str);out={'objective':objective,'learner_control':True,'feedback_is_actionable':True}
  if row==810:
-  cards=req(p,'items',list);now=datetime.fromisoformat(p.get('as_of','2026-01-01T00:00:00+00:00'));schedule=[]
-  for i,c in enumerate(cards):
-   quality=int(c.get('quality',0));interval=max(1,int(c.get('interval_days',1)));ease=max(1.3,float(c.get('ease',2.5))+(0.1-(5-quality)*(0.08+(5-quality)*0.02)));interval=1 if quality<3 else round(interval*ease)
-   schedule.append({'id':c.get('id',i),'interval_days':interval,'ease':round(ease,2),'due_at':(now+timedelta(days=interval)).isoformat(),'lapse':quality<3})
-  out['schedule']=schedule
+  try:out.update(schedule_reviews(p))
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==811:
   skills=req(p,'skills',list);blocks=int(p.get('blocks',len(skills)*2));out['sequence']=[skills[(i+(i//len(skills)))%len(skills)] for i in range(blocks)];out['avoids_same_skill_runs']=len(set(skills))>1
  if row==812:

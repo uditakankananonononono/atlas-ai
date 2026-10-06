@@ -163,3 +163,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 
 - CVXPY is loaded only when conic/geometric solving is requested. A fresh-process test intercepts every CVXPY import, proves workbench ADMM still computes1.8 and SDP reports explicit missing-dependency failure. No fallback fake conic result. Existing conic/geometric numerical tests still exercise actual installed CVXPY.
 - Updated stale workbench module description to distinguish real repaired algorithms/free solvers from remaining narrative analysis/templates.
+
+## Observed-review spaced repetition (row810)
+
+- Replaced arbitrary ease-multiplied first intervals and fixed default calendar anchor with source-grounded SM-2 state transitions: first interval1 day, second6 days, later ceil(previous interval*prior ease), grade-based ease update/floor, failure count reset, same-session repeat flag. Exact reference inspected: https://super-memory.com/english/ol/sm2.htm . Grades/times are evidence-linked caller inputs, not fabricated observations.
+- Requires timezone-aware review timestamp and actual prior repetition state. No missing dates defaulted to January2026. Computed due timestamps are plans, not scheduled notifications, and heuristically derived SM-2 does not prove user retention or optimal timing.
+- Exact interval/state/failure/quality tests reject bad grades, nonfinite ease, naive timestamps and missing evidence. Focused229 passed; M20/ledger1578 passed. Row810SCOPED pending independent review. Current row counts1971 historical verified-pushed,34 SCOPED,1 PARTIAL,4 removed.
