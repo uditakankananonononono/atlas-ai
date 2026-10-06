@@ -39,7 +39,7 @@ def test_155_writing_selection_never_claims_connection():assert source('2010.1',
 def test_156_essay_selection_is_owner_confirmed():assert source('2010.2','essay')['selected_sources'][0]['kind']=='essay'
 def test_157_activity_selection_is_distinct_source_kind():assert source('2010.3','activity')['selected_sources'][0]['kind']=='activity'
 def test_158_indexing_hashes_and_chunks_owner_corpus():
- c=Corpus();o=execute('2010.4',{'owner_id':'u','documents':[{'source_id':'d1','kind':'essay','text':'Tai Ahom heritage and woven faa sin are central to my story.'}]},c)['result'];assert len(o['indexed'][0]['content_sha256'])==64 and o['source_of_truth'] and not o['embedding_claimed']
+ c=Corpus();o=execute('2010.4',{'owner_id':'u','documents':[{'source_id':'d1','kind':'essay','text':'Tai Ahom heritage and woven faa sin are central to my story.'}]},c)['result'];assert len(o['indexed'][0]['content_sha256'])==64 and not o['source_of_truth'] and o['corpus_contains_supplied_text'] and not o['embedding_claimed']
 def test_159_retrieval_is_tenant_scoped_and_cited_without_fake_draft():
  c=Corpus();execute('2010.4',{'owner_id':'u','documents':[{'source_id':'d1','kind':'essay','text':'Tai Ahom heritage and woven faa sin are central to my story.'}]},c);execute('2010.4',{'owner_id':'other','documents':[{'source_id':'d2','kind':'essay','text':'Tai Ahom content belonging to someone else entirely.'}]},c)
  o=execute('2010.5',{'owner_id':'u','query':'Tai Ahom'},c)['result'];assert len(o['citations'])==1 and o['citations'][0]['source_id']=='d1' and not o['draft_generated']
@@ -51,3 +51,11 @@ def test_mounted_http_boundary_and_unknown_concept():
  assert len(c.get('/m20/atomic-concepts/139-160').json())==22
  good=c.post('/m20/atomic-concepts/139-160/1106.1',json={'payload':{'log_likelihood':-100,'parameter_count':5,'sample_size':100}});assert good.status_code==200 and good.json()['result']['aic']==210
  assert c.post('/m20/atomic-concepts/139-160/nope',json={'payload':{}}).status_code==422
+
+
+def test_source_selection_never_verifies_connection_from_caller_true():
+ payload={'owner_id':'u','sources':[{'source_id':'fake','title':'Fake','owner_confirmed':True,'connected':True}]}
+ out=execute('2010.1',payload)['result']
+ assert out['caller_all_connected_claim'] and not out['connection_claimed'] and not out['integration_state_verified']
+ payload['sources'][0]['owner_confirmed']='false'
+ with pytest.raises(ConceptError):execute('2010.1',payload)

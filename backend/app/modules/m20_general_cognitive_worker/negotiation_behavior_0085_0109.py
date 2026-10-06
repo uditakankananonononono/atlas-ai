@@ -537,12 +537,12 @@ def _consistency_commitment(d: dict) -> dict:
 def _liking(d: dict) -> dict:
     common=set(_strings(d,'genuine_commonalities',0)); claimed=set(d.get('claimed_commonalities',common))
     false=sorted(claimed-common); precision=len(common&claimed)/len(claimed) if claimed else 1.; coverage=len(common&claimed)/len(common) if common else 0.
-    return {'genuine_commonalities':sorted(common),'unsupported_claims':false,'authenticity_precision':round(precision,6),'rapport_coverage':round(coverage,6),'rapport_score':round(math.sqrt(precision*coverage),6),'usable':bool(common) and not false,'fabricated_affinity_blocked':bool(false),'uncertainty_interval':[round(max(0,precision-.15),4),round(min(1,precision+.15),4)],'method_limits':[BASE_LIMIT]}
+    return {'caller_declared_commonalities':sorted(common),'unsupported_claims':false,'authenticity_precision':round(precision,6),'rapport_coverage':round(coverage,6),'rapport_score':round(math.sqrt(precision*coverage),6),'usable':bool(common) and not false,'fabricated_affinity_blocked':bool(false),'uncertainty_interval':[round(max(0,precision-.15),4),round(min(1,precision+.15),4)],'method_limits':[BASE_LIMIT]}
 
 def _unity(d: dict) -> dict:
     common=set(_strings(d,'genuine_commonalities',0)); goals=set(d.get('shared_goals',common)); conflicts=set(d.get('conflicting_goals',[])); overlap=goals-conflicts
     alignment=len(overlap)/max(1,len(goals|conflicts)); conflict=len(conflicts)/max(1,len(goals|conflicts))
-    return {'genuine_commonalities':sorted(common),'shared_goals':sorted(goals),'conflicting_goals':sorted(conflicts),'identity_alignment_score':round(alignment,6),'conflict_risk_score':round(conflict,6),'usable':bool(common) and alignment>conflict,'fabricated_affinity_blocked':True,'uncertainty_interval':[round(max(0,alignment-.2),4),round(min(1,alignment+.2),4)],'method_limits':[BASE_LIMIT,'Shared identity may not erase conflicts or individual choice.']}
+    return {'caller_declared_commonalities':sorted(common),'shared_goals':sorted(goals),'conflicting_goals':sorted(conflicts),'identity_alignment_score':round(alignment,6),'conflict_risk_score':round(conflict,6),'usable':bool(common) and alignment>conflict,'fabricated_affinity_blocked':True,'uncertainty_interval':[round(max(0,alignment-.2),4),round(min(1,alignment+.2),4)],'method_limits':[BASE_LIMIT,'Shared identity may not erase conflicts or individual choice.']}
 
 def _pre_suasion(d: dict) -> dict:
     context=d.get('context'); disclosed=bool(d.get('disclosed')); weights=d.get('attention_weights',[1.])
