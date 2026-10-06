@@ -1,0 +1,14 @@
+.......F                                                                 [100%]
+=================================== FAILURES ===================================
+___ test_biconditional_rejects_or_truth_assignment_and_accepts_equal_values ____
+
+    def test_biconditional_rejects_or_truth_assignment_and_accepts_equal_values():
+     # Iff(P,Q) entails equal truth values. Or(P,Q) does not entail P.
+     r=argument_validity({'formulas':[{'iff':['P','Q']},'Q'],'conclusion':'P'})
+>    assert r['validity'] and r['premise_model_count']==1
+E    assert (False)
+
+tests/modules/test_m20_formal_reasoning.py:50: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_formal_reasoning.py::test_biconditional_rejects_or_truth_assignment_and_accepts_equal_values
+1 failed, 7 passed in 1.94s

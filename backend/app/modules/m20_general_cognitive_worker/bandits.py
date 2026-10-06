@@ -35,8 +35,10 @@ def epsilon_greedy(p):
     arms,rows=feedback(p);counts,means,history=summarize(arms,rows)
     epsilon=float(p.get('epsilon',.1))
     if not np.isfinite(epsilon) or not 0<=epsilon<=1:raise ValueError('epsilon must be in [0,1]')
-    probabilities=np.full(len(arms),epsilon/len(arms));best=int(means.argmax());probabilities[best]+=1-epsilon
-    return {'arms':arms,'counts':counts.tolist(),'arm_means':means.tolist(),'action_probabilities':probabilities.tolist(),'greedy_arm':arms[best],
+    best=int(means.argmax()) if rows else None
+    probabilities=np.full(len(arms),epsilon/len(arms)) if rows else np.full(len(arms),1/len(arms))
+    if best is not None:probabilities[best]+=1-epsilon
+    return {'arms':arms,'counts':counts.tolist(),'arm_means':means.tolist(),'action_probabilities':probabilities.tolist(),'greedy_arm':arms[best] if best is not None else None,'has_feedback':bool(rows),
             'history':history,'uncertainty':{'solver_executed':True,'scope':'epsilon-greedy reward policy from bounded observed arm feedback; probabilities only, not invented deployment rewards or guarantee'}}
 
 
