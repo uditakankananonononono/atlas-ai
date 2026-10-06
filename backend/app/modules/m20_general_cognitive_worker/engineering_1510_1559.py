@@ -97,8 +97,8 @@ def _failure(d):
     ev=set(d.get('evidence_ids',[])); hs=[]
     for h in d.get('hypotheses',[]):
         sup=[x for x in h.get('supporting_evidence_ids',[]) if x in ev]; con=[x for x in h.get('contrary_evidence_ids',[]) if x in ev]
-        hs.append({**h,'verified_support_count':len(sup),'verified_contrary_count':len(con),'status':'candidate_not_root_cause'})
-    return {'problem_statement':d.get('problem_statement'),'timeline':d.get('timeline',[]),'hypotheses':hs,'preservation_actions':d.get('preservation_actions',[]),'root_cause_claimed':False}
+        hs.append({**h,'supplied_reference_support_count':len(sup),'supplied_reference_contrary_count':len(con),'status':'candidate_not_root_cause'})
+    return {'problem_statement':d.get('problem_statement'),'timeline':d.get('timeline',[]),'hypotheses':hs,'preservation_actions':d.get('preservation_actions',[]),'root_cause_claimed':False,'evidence_verified':False}
 
 def _reliability(d):
     vals=[float(x) for x in d.get('component_reliabilities',[])];
@@ -195,10 +195,12 @@ def _robust(d):
     scenarios=d.get('scenarios',[]); ys=[float(x['response']) for x in scenarios]; return {'scenario_summary':_summary(ys),'worst_case_response':min(ys) if d.get('objective','maximize')=='maximize' else max(ys),'noise_factors':d.get('noise_factors',[]),'objective':d.get('objective','maximize')}
 
 def _reltest(d):
-    n=int(_num(d,'units',positive=True)); failures=int(_num(d,'failures',nonnegative=True)); conf=float(d.get('confidence',.9));
-    if failures>n or not 0<conf<1: raise ValueError('invalid failures or confidence')
+    raw_n=_num(d,'units',positive=True);raw_failures=_num(d,'failures',nonnegative=True)
+    if isinstance(d['units'],bool) or isinstance(d['failures'],bool) or not raw_n.is_integer() or not raw_failures.is_integer():raise ValueError('integer observation counts required')
+    n=int(raw_n);failures=int(raw_failures);conf=_num({'confidence':d.get('confidence',.9)},'confidence')
+    if failures>n or not 0<conf<1:raise ValueError('invalid failures or confidence')
     r0=(1-conf)**(1/n) if failures==0 else None
-    return {'units':n,'failures':failures,'confidence':conf,'zero_failure_reliability_lower_bound':r0,'equation':'R_lower=(1-confidence)^(1/n), zero-failure case only'}
+    return {'units':n,'failures':failures,'confidence':conf,'zero_failure_reliability_lower_bound':r0,'equation':'R_lower=(1-confidence)^(1/n), zero-failure case only','assumptions':['independent identical Bernoulli trials','common stated test duration and conditions','complete supplied failures and sample counts'],'test_executed':False,'observations_independently_verified':False}
 
 def _alt(d):
     ea=_num(d,'activation_energy_ev',positive=True); tuse=_num(d,'use_temperature_k',positive=True); ttest=_num(d,'test_temperature_k',positive=True); kb=8.617333262e-5; af=math.exp(ea/kb*(1/tuse-1/ttest))
