@@ -83,3 +83,32 @@ def test_actual_mounted_runtime_route_isolates_host_and_same_project_across_owne
  monkeypatch.setenv('ATLAS_SANDBOX_BACKEND','missing')
  r=c.post(base,headers=a,json={'project_id':'same','code':'print(4)'})
  assert r.status_code==403 and 'execution refused' in r.text
+
+
+def test_os_network_namespace_blocks_raw_socket_bypass_to_host_listener(tmp_path,monkeypatch):
+ import socket
+ monkeypatch.setenv('ATLAS_SANDBOX_BACKEND','bubblewrap')
+ with socket.socket() as listener:
+  listener.bind(('127.0.0.1',0));listener.listen()
+  port=listener.getsockname()[1]
+  code=f'''import socket
+# Python guard is bypassable; only the OS namespace counts.
+s=socket.socket.__mro__[1]()
+s.settimeout(1)
+try:
+ s.connect(('127.0.0.1',{port})); print('HOST_NETWORK_REACHED')
+except OSError: print('OS_NETWORK_BLOCKED')
+'''
+  r=SandboxRunner(workspace_root=str(tmp_path/'volumes')).run_python('a',code)
+  assert r.returncode==0,r.stderr
+  assert r.stdout=='OS_NETWORK_BLOCKED\n'
+
+
+def test_output_symlinks_removed_and_run_refused_before_future_host_reader(tmp_path,monkeypatch):
+ monkeypatch.setenv('ATLAS_SANDBOX_BACKEND','bubblewrap')
+ secret=tmp_path/'host-secret';secret.write_text('private')
+ runner=SandboxRunner(workspace_root=str(tmp_path/'volumes'))
+ with pytest.raises(SandboxViolation,match='symlink'):
+  runner.run_python('a',f'import os;os.symlink({str(secret)!r},"host-link")')
+ assert not (tmp_path/'volumes'/'a'/'host-link').is_symlink()
+ assert secret.read_text()=='private'

@@ -1,0 +1,19 @@
+.......F                                                                 [100%]
+=================================== FAILURES ===================================
+____ test_output_symlinks_removed_and_run_refused_before_future_host_reader ____
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-80/test_output_symlinks_removed_a0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f76ba245ee0>
+
+    def test_output_symlinks_removed_and_run_refused_before_future_host_reader(tmp_path,monkeypatch):
+     monkeypatch.setenv('ATLAS_SANDBOX_BACKEND','bubblewrap')
+     secret=tmp_path/'host-secret';secret.write_text('private')
+     runner=SandboxRunner(workspace_root=str(tmp_path/'volumes'))
+>    with pytest.raises(SandboxViolation,match='symlink'):
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.sandbox.SandboxViolation'>
+
+tests/modules/test_m20_sandbox_isolation.py:111: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_sandbox_isolation.py::test_output_symlinks_removed_and_run_refused_before_future_host_reader
+1 failed, 7 passed in 6.56s

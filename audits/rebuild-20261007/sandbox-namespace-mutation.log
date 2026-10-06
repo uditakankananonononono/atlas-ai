@@ -1,0 +1,35 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_os_network_namespace_blocks_raw_socket_bypass_to_host_listener ______
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-82/test_os_network_namespace_bloc0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f97b58f9490>
+
+    def test_os_network_namespace_blocks_raw_socket_bypass_to_host_listener(tmp_path,monkeypatch):
+     import socket
+     monkeypatch.setenv('ATLAS_SANDBOX_BACKEND','bubblewrap')
+     with socket.socket() as listener:
+      listener.bind(('127.0.0.1',0));listener.listen()
+      port=listener.getsockname()[1]
+      code=f'''import socket
+    # Python guard is bypassable; only the OS namespace counts.
+    s=socket.socket.__mro__[1]()
+    s.settimeout(1)
+    try:
+     s.connect(('127.0.0.1',{port})); print('HOST_NETWORK_REACHED')
+    except OSError: print('OS_NETWORK_BLOCKED')
+    '''
+      r=SandboxRunner(workspace_root=str(tmp_path/'volumes')).run_python('a',code)
+      assert r.returncode==0,r.stderr
+>     assert r.stdout=='OS_NETWORK_BLOCKED\n'
+E     AssertionError: assert 'HOST_NETWORK_REACHED\n' == 'OS_NETWORK_BLOCKED\n'
+E       
+E       - OS_NETWORK_BLOCKED
+E       ?            ^^^ ^
+E       + HOST_NETWORK_REACHED
+E       ? +  +         ^^^ ^
+
+tests/modules/test_m20_sandbox_isolation.py:104: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_sandbox_isolation.py::test_os_network_namespace_blocks_raw_socket_bypass_to_host_listener
+1 failed in 1.77s
