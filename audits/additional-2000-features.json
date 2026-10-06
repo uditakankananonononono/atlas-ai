@@ -4006,14 +4006,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Bandit Algorithms",
       "description": "Balances exploration and exploitation",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_252_bandit_algorithms_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_252_bandit_algorithms_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Epsilon-greedy finite arm action probabilities updated from bounded evidence-linked observed feedback. No generated rewards, on-policy performance or stationary reward claim.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_bandit_feedback.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 253,
@@ -4021,14 +4035,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Contextual Bandits",
       "description": "Uses side information",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_253_contextual_bandits_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_253_contextual_bandits_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Disjoint ridge LinUCB with actual per-arm sufficient-statistic updates from contextual observed feedback, preupdate trace, learned weights and exploration bonus.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_bandit_feedback.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 254,
@@ -4036,14 +4064,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Thompson Sampling",
       "description": "Bayesian approach to bandits",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_254_thompson_sampling_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_254_thompson_sampling_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Actual Beta-Bernoulli posterior updates and stochastic Thompson posterior draws. Draws are policy uncertainty samples, not fabricated rewards or neural model weights.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_bandit_feedback.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 255,
@@ -4051,14 +4093,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Upper Confidence Bound",
       "description": "Optimistic exploration",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_255_upper_confidence_bound_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_255_upper_confidence_bound_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "UCB1 on bounded observed arm feedback with actual counts, learned means, optimistic exploration, explicit untried-arm priority and JSON-safe null scores.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_bandit_feedback.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 256,
