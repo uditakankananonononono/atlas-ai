@@ -136,3 +136,12 @@ def test_knapsack_matches_independent_integer_budget_dynamic_program():
    old=dp[:];dp=[max(old[b],old[b-c]+v) if b>=c else old[b] for b in range(budget+1)]
   out=run('optimization',{'values':values,'costs':costs,'budget':budget})['output']
   assert out['objective_value']==dp[budget] and out['used_budget']<=budget
+
+
+def test_reference_substitutes_never_certify_named_capability():
+ from app.modules.m20_general_cognitive_worker.cognitive_1960_2009 import REFERENCE_SUBSTITUTES
+ for method,operator in REFERENCE_SUBSTITUTES.items():
+  out=run(method,C[method])['output']
+  assert out['reference_operator']==operator and out['named_capability_executed'] is False
+  assert out['status']=='reference_substitute_only'
+ assert run('retrieval_augmented_generation',C['retrieval_augmented_generation'])['output'].get('generated_answer') is None

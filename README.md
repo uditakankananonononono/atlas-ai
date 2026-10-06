@@ -158,3 +158,5 @@ Ground-Horn proof correction rows1970/1971 now SCOPED; labels1818historical/52SC
 Cognition/affect1975-1977/2009 PARTIAL supplied calibration/quadrant rubrics. Latest labels1814historical/52SCOPED/140PARTIAL/4removed.
 
 Finite knapsack1992/1993 SCOPED to at most20 items. Latest labels1812historical/54SCOPED/140PARTIAL/4removed.
+
+21 cognitive reference substitutes now PARTIAL with explicit reference_operator/named_capability_executed=false. Latest labels1791historical/54SCOPED/161PARTIAL/4removed.
