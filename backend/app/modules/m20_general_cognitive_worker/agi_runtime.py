@@ -15,6 +15,7 @@ import math
 import sqlite3
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
+from threading import RLock
 from pathlib import Path
 from typing import Any, Callable
 from uuid import uuid4
@@ -152,6 +153,7 @@ class AutonomousGoalEngine:
 
     def __init__(self, approval_gate: ApprovalGate) -> None:
         self.approvals, self.proposals = approval_gate, {}
+        self._reviewed_goals={};self._spent_goal_approvals=set();self._goal_lock=RLock()
 
     def propose_from_gaps(self, world: PersistentWorldModel, *, mission: str,
                           max_goals: int = 5) -> list[GoalProposal]:
@@ -171,21 +173,28 @@ class AutonomousGoalEngine:
             self.proposals[goal.id] = goal; goals.append(goal)
         return goals
 
+    @staticmethod
+    def _goal_binding(goal):
+        return _hash({'id':goal.id,'objective':goal.objective,'rationale':goal.rationale,'evidence':goal.evidence,'heuristic_gap_priority':goal.heuristic_gap_priority,'risk':goal.risk.value})
+
     def request_activation(self, proposal_id: str) -> str:
-        goal = self.proposals[proposal_id]
-        request = ApprovalGateRequest(action_type="activate_autonomous_goal", risk=Risk.EXTERNAL,
-                                      summary=goal.objective, payload={"proposal_id": goal.id,
-                                      "objective": goal.objective, "evidence": goal.evidence})
-        goal.approval_id = self.approvals.request(request)
-        goal.status = "waiting_approval"
-        return goal.approval_id
+        with self._goal_lock:
+            goal=self.proposals[proposal_id]
+            if goal.status!='proposed':raise PermissionError('goal already reviewed or activated')
+            binding=self._goal_binding(goal)
+            request=ApprovalGateRequest(action_type='activate_autonomous_goal',risk=Risk.EXTERNAL,summary=goal.objective,payload={'proposal_id':goal.id,'objective':goal.objective,'rationale':goal.rationale,'evidence':list(goal.evidence),'heuristic_gap_priority':goal.heuristic_gap_priority,'goal_risk':goal.risk.value,'goal_hash':binding})
+            approval_id=self.approvals.request(request)
+            self._reviewed_goals[approval_id]=binding
+            goal.approval_id=approval_id;goal.status='waiting_approval'
+            return approval_id
 
     def activate(self, proposal_id: str, approval_id: str) -> GoalProposal:
-        goal = self.proposals[proposal_id]
-        if goal.approval_id != approval_id or self.approvals.decision(approval_id) != ApprovalGateDecision.APPROVED:
-            raise PermissionError("exact goal activation approval is required")
-        goal.status = "active"
-        return goal
+        with self._goal_lock:
+            goal=self.proposals[proposal_id]
+            if goal.approval_id!=approval_id or approval_id in self._spent_goal_approvals or self._reviewed_goals.get(approval_id)!=self._goal_binding(goal) or self.approvals.decision(approval_id)!=ApprovalGateDecision.APPROVED:
+                raise PermissionError('exact unchanged unspent goal activation approval is required')
+            self._spent_goal_approvals.add(approval_id);goal.status='active'
+            return goal
 
 
 _ALLOWED_NODES = {ast.Module, ast.FunctionDef, ast.arguments, ast.arg, ast.Return, ast.Assign, ast.Name,
