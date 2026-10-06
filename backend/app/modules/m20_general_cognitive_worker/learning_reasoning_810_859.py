@@ -7,6 +7,7 @@ from typing import Any
 from .learning_calibration import calibrate_attempts
 from .spaced_review import schedule_reviews
 from .support_progression import progress_support
+from .keyed_assessment import assess
 from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
@@ -60,7 +61,8 @@ def learning(row,p):
  if row in (827,828):
   criteria=req(p,'criteria',list);ratings=req(p,'ratings',dict);out['assessment']=[{'criterion':c,'rating':ratings.get(c),'evidence':p.get('evidence',{}).get(c),'missing_evidence':not bool(p.get('evidence',{}).get(c))} for c in criteria];out['bias_check']=('compare self-rating to artifact/rubric' if row==827 else 'anonymous where practical; train/calibrate raters; author can respond')
  if row in (829,830,831):
-  items=req(p,'items',list);out['assessment_design']={'purpose':{829:'feedback during learning',830:'judgment after instruction',831:'prerequisite and misconception diagnosis'}[row],'items':items,'alignment_to_objective':all(bool(x.get('objective_id')) for x in items),'consequence':('revise teaching and learner next step' if row!=830 else 'report achievement with rubric and uncertainty')}
+  try:out['assessment_design']=assess(row,p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==832:out['activation']=['quick prediction','concept map or free recall','surface relevant experience','flag misconceptions without grading']
  return out
 def transfer(row,p):

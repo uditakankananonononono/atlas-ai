@@ -31,7 +31,7 @@ def test_826_progress_monitoring_computes_change():assert L('progress_monitoring
 @pytest.mark.parametrize('n',['self_assessment','peer_assessment'])
 def test_827_828_assessment_requires_evidence_and_bias_check(n):assert L(n,criteria=['reasoning'],ratings={'reasoning':3})['assessment'][0]['missing_evidence']
 @pytest.mark.parametrize('n,purpose',[('formative_assessment','feedback during learning'),('summative_assessment','judgment after instruction'),('diagnostic_assessment','prerequisite and misconception diagnosis')])
-def test_829_831_assessment_purposes(n,purpose):assert L(n,items=[{'objective_id':'o'}])['assessment_design']['purpose']==purpose
+def test_829_831_assessment_purposes(n,purpose):assert L(n,assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']==purpose
 def test_832_prior_knowledge_not_graded():assert 'flag misconceptions without grading' in L('prior_knowledge_activation')['activation']
 def T(n,**x):
  p={'source_case':{'features':['structure','red']},'target_case':{'features':['structure','blue']},'source':SRC};p.update(x);return execute(n,p)['result']
@@ -82,9 +82,9 @@ def test_821_scaffolding_support_fades_on_evidence(): assert L('scaffolding',sup
 def test_822_fading_support_fades_on_evidence(): assert L('fading',support_catalog=[{'id':'1','task':'example','support_level':'model'}],support_attempts=[])['support_levels'][-1]['support']==0 and L('fading',support_catalog=[{'id':'1','task':'example','support_level':'model'}],support_attempts=[])['fade_on_evidence_not_time']
 def test_827_self_assessment_requires_evidence(): assert L('self_assessment',criteria=['reasoning'],ratings={'reasoning':3})['assessment'][0]['missing_evidence']
 def test_828_peer_assessment_requires_evidence(): assert L('peer_assessment',criteria=['reasoning'],ratings={'reasoning':3})['assessment'][0]['missing_evidence']
-def test_829_formative_assessment_purpose(): assert L('formative_assessment',items=[{'objective_id':'o'}])['assessment_design']['purpose']=='feedback during learning'
-def test_830_summative_assessment_purpose(): assert L('summative_assessment',items=[{'objective_id':'o'}])['assessment_design']['purpose']=='judgment after instruction'
-def test_831_diagnostic_assessment_purpose(): assert L('diagnostic_assessment',items=[{'objective_id':'o'}])['assessment_design']['purpose']=='prerequisite and misconception diagnosis'
+def test_829_formative_assessment_purpose(): assert L('formative_assessment',assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']=='feedback during learning'
+def test_830_summative_assessment_purpose(): assert L('summative_assessment',assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']=='judgment after instruction'
+def test_831_diagnostic_assessment_purpose(): assert L('diagnostic_assessment',assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']=='prerequisite and misconception diagnosis'
 def test_833_transfer_requires_independent_target_performance(): assert T('transfer')['transfer_type']=='unspecified' and T('transfer')['requires_independent_target_performance']
 def test_834_near_transfer_requires_independent_target_performance(): assert T('near_transfer')['transfer_type']=='near' and T('near_transfer')['requires_independent_target_performance']
 def test_835_far_transfer_requires_independent_target_performance(): assert T('far_transfer')['transfer_type']=='far' and T('far_transfer')['requires_independent_target_performance']
