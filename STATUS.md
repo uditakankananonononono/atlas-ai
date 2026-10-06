@@ -596,3 +596,7 @@ Base HTN planner previously fuzzy-matched generated plans to different goals and
 ## Skill-signature evidence filter
 
 Skill proposal grouping previously counted failed episodes/actions and repeated copies of a single episode despite claiming successful repetition. It now requires successful outcome and all actions successful, distinct episode IDs and positive exact integer min_occurrences, and detaches proposed action snapshot. Output includes episode_ids and successful_tool_signature_grouping_only/generalizable_skill_verified=false. This groups tool-name sequences from caller records, not training, causal success proof, semantic transferable skills or authorization to execute copied arguments.36 memory/runtime focused pass1warning. Distinct task provenance should be retained by upstream records; independently authenticated receipts remain unfinished.
+
+## Strict HTN model output fields
+
+HTN validation previously coerced float/bool retry counts, numbers as titles/IDs, iterable arguments/dependencies and silently chose last repeated title for dependency references. It now rejects those malformed fields, bounds decomposition to128steps and retries1..100, and requires unique ID references when dependency title is ambiguous. This is safety/parser validation of supplied model output, not real plan correctness.58 focused planner/runtime/adapter fixture tests pass1warning.

@@ -96,13 +96,27 @@ class HTNPlanner:
         return copies
 
     def _validate(self, raw_steps: list[dict[str, Any]]) -> list[PlanNode]:
-        if not raw_steps:
-            raise PlanError("planner model returned an empty decomposition")
+        if not isinstance(raw_steps, list) or not 1 <= len(raw_steps) <= 128:
+            raise PlanError("planner decomposition must be a list of 1..128 steps")
         nodes: list[PlanNode] = []
         ids: set[str] = set()
         for raw in raw_steps:
             if not isinstance(raw, dict) or not raw.get("title"):
                 raise PlanError(f"invalid step: {raw!r}")
+            if not isinstance(raw["title"], str) or not raw["title"].strip():
+                raise PlanError("step title must be nonempty text")
+            if raw.get("tool") is not None and (not isinstance(raw["tool"], str) or not raw["tool"].strip()):
+                raise PlanError("step tool must be null or nonempty text")
+            if "arguments" in raw and not isinstance(raw["arguments"], dict):
+                raise PlanError("step arguments must be an object")
+            deps = raw.get("depends_on", [])
+            if not isinstance(deps, list) or any(not isinstance(dep,str) or not dep for dep in deps):
+                raise PlanError("dependencies must be a list of nonempty step identifiers")
+            attempts = raw.get("max_attempts", 3)
+            if type(attempts) is not int or not 1 <= attempts <= 100:
+                raise PlanError("max_attempts must be an integer in 1..100")
+            if "id" in raw and (not isinstance(raw["id"], str) or not raw["id"].strip()):
+                raise PlanError("step id must be nonempty text")
             risk = raw.get("risk", Risk.READ.value)
             if risk not in VALID_RISKS:
                 raise PlanError(f"invalid risk tier {risk!r} in step {raw.get('title')!r}")
@@ -122,9 +136,12 @@ class HTNPlanner:
             nodes.append(node)
         by_id = {n.id: n for n in nodes}
         by_title = {n.title: n.id for n in nodes}
+        duplicate_titles = {n.title for n in nodes if sum(x.title == n.title for x in nodes) > 1}
         for node in nodes:
             resolved = []
             for dep in node.depends_on:
+                if dep not in by_id and dep in duplicate_titles:
+                    raise PlanError("ambiguous dependency title; use unique step id")
                 dep_id = dep if dep in by_id else by_title.get(dep)
                 if dep_id is None:
                     raise PlanError(f"step {node.title!r} depends on unknown step {dep!r}")
