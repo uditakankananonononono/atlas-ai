@@ -42,8 +42,10 @@ def test_row10_routes(client):
     assert rejected.status_code == 403
     created2 = c.post("/api/modules/20/meta/improvement/proposals",
                       json={"target_name": "orient_prompt", "proposed_content": "v2 content"})
+    from app.modules.m20_general_cognitive_worker.schemas import ApprovalGateDecision
+    service.safety.approvals.decide(created2.json()["approval_id"],ApprovalGateDecision.APPROVED)
     applied = c.post(f"/api/modules/20/meta/improvement/proposals/{created2.json()['proposal_id']}/apply",
-                     json={"approved": True, "approval_id": "appr-9"})
+                     json={"approved": True, "approval_id": created2.json()["approval_id"]})
     assert applied.json()["version"] == 2
     assert c.post("/api/modules/20/meta/improvement/proposals",
                   json={"target_name": "ghost", "proposed_content": "x"}).status_code == 404
