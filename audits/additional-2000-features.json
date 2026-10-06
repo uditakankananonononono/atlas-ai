@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1818,
-    "PARTIAL": 136,
+    "verified-pushed": 1814,
+    "PARTIAL": 140,
     "SCOPED": 52,
     "removed": 4,
     "thin": 0,
@@ -32246,13 +32246,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Cognitive Computing",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion."
+      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+          "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        }
+      },
+      "current_scope": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      }
     },
     {
       "id": 1976,
@@ -32260,13 +32273,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Affective Computing",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion."
+      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+          "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        }
+      },
+      "current_scope": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      }
     },
     {
       "id": 1977,
@@ -32274,13 +32300,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Emotion Recognition",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion."
+      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+          "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        }
+      },
+      "current_scope": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      }
     },
     {
       "id": 1978,
@@ -32722,13 +32761,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Metacognition",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion."
+      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+          "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        }
+      },
+      "current_scope": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      }
     },
     {
       "id": 2010,
