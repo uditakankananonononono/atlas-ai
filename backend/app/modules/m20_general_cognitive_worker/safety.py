@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 from typing import Any, Callable, Protocol, runtime_checkable
 
 import json
+import os
 import threading
 from .schemas import ApprovalGateDecision, ApprovalGateRequest, Risk
 
@@ -170,11 +171,15 @@ class SandboxPolicy:
         return host in self.allowed_hosts
 
     def allows_path(self, path: str) -> bool:
-        if not self.filesystem_root:
+        if not self.filesystem_root or not path or not os.path.isabs(path) or not os.path.isabs(self.filesystem_root):
             return False
-        normalized = path.rstrip("/")
-        root = self.filesystem_root.rstrip("/")
-        return normalized == root or normalized.startswith(root + "/")
+        try:
+            root = os.path.realpath(self.filesystem_root)
+            candidate = os.path.realpath(path)
+            return os.path.commonpath([root, candidate]) == root
+        except (ValueError, OSError):
+            return False
+
 
 
 class SafetyGate:

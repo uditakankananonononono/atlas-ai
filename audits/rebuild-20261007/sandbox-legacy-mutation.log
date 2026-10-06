@@ -1,0 +1,108 @@
+.FFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_______ test_actual_execution_cannot_read_or_write_host_outside_project ________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-77/test_actual_execution_cannot_r0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa62fc8c7d0>
+
+    def test_actual_execution_cannot_read_or_write_host_outside_project(tmp_path,monkeypatch):
+     monkeypatch.setenv('ATLAS_SANDBOX_BACKEND','bubblewrap')
+     outside=tmp_path/'private.txt';outside.write_text('host-secret-canary')
+     target=tmp_path/'written-outside.txt'
+     code=f'''from pathlib import Path
+    for name in [{str(outside)!r},{str(target)!r}]:
+     try:
+      if name.endswith('private.txt'): print(Path(name).read_text())
+      else: Path(name).write_text('escape')
+     except OSError: print('blocked')
+    print(2+2)
+    '''
+     result=SandboxRunner(workspace_root=str(tmp_path/'volumes')).run_python('a',code)
+     assert result.returncode==0,result.stderr
+>    assert result.stdout=='blocked\nblocked\n4\n'
+E    AssertionError: assert 'host-secret-canary\n4\n' == 'blocked\nblocked\n4\n'
+E      
+E      + host-secret-canary
+E      - blocked
+E      - blocked
+E        4
+
+tests/modules/test_m20_sandbox_isolation.py:31: AssertionError
+______________ test_no_backend_fails_closed_without_running_code _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-77/test_no_backend_fails_closed_w0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa62fc8c650>
+
+    def test_no_backend_fails_closed_without_running_code(tmp_path,monkeypatch):
+     monkeypatch.setenv('ATLAS_SANDBOX_BACKEND','missing')
+>    with pytest.raises(SandboxViolation,match='execution refused'):
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.sandbox.SandboxViolation'>
+
+tests/modules/test_m20_sandbox_isolation.py:38: Failed
+_______________ test_project_ids_and_symlink_volume_never_alias ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-77/test_project_ids_and_symlink_v0')
+
+    def test_project_ids_and_symlink_volume_never_alias(tmp_path):
+     runner=SandboxRunner(workspace_root=str(tmp_path/'volumes'))
+>    with pytest.raises(SandboxViolation):runner.project_volume('owner/a')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.sandbox.SandboxViolation'>
+
+tests/modules/test_m20_sandbox_isolation.py:44: Failed
+___________ test_network_permission_does_not_enable_unsafe_execution ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-77/test_network_permission_does_n0')
+
+    def test_network_permission_does_not_enable_unsafe_execution(tmp_path):
+     runner=SandboxRunner(SandboxPolicy(network_enabled=True,allowed_hosts=frozenset({'example.com'})),workspace_root=str(tmp_path))
+>    with pytest.raises(SandboxViolation,match='unsupported'):
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.sandbox.SandboxViolation'>
+
+tests/modules/test_m20_sandbox_isolation.py:52: Failed
+_ test_actual_mounted_runtime_route_isolates_host_and_same_project_across_owners _
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-77/test_actual_mounted_runtime_ro0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa62faf70e0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7fa62fadac00>
+
+    def test_actual_mounted_runtime_route_isolates_host_and_same_project_across_owners(tmp_path,monkeypatch,oidc_auth_headers):
+     from fastapi.testclient import TestClient
+     from sqlalchemy import create_engine
+     from app.main import app
+     from app.modules.m20_general_cognitive_worker import runtime_routes as routes
+     from app.modules.m20_general_cognitive_worker.sql_repository import GCWRepository
+     from app.modules.m20_general_cognitive_worker.runtime import GCWRuntime
+     import app.modules.m20_general_cognitive_worker.runtime as runtime_module
+     monkeypatch.setenv('ATLAS_ENV','production');monkeypatch.setenv('ATLAS_SANDBOX_BACKEND','bubblewrap')
+     monkeypatch.setattr(routes,'_runtimes',{})
+     monkeypatch.setattr(runtime_module.tempfile,'gettempdir',lambda:str(tmp_path))
+     engine=create_engine('sqlite:///'+str(tmp_path/'shared.db'))
+     for owner in ('a','b'):
+      repo=GCWRepository(engine,tenant_id=owner);repo.create_schema();routes.bind_runtime(GCWRuntime(repo))
+     assert routes._runtimes['a'].sandbox.workspace_root!=routes._runtimes['b'].sandbox.workspace_root
+     c=TestClient(app);base='/api/v1/api/modules/20/api/modules/20/runtime/sandbox/run'
+     a=oidc_auth_headers('a');b=oidc_auth_headers('b')
+     r=c.post(base,headers=a,json={'project_id':'same','code':"open('owner-canary.txt','w').write('a-secret');print(4)"})
+     assert r.status_code==200,r.text
+     assert r.json()['returncode']==0,r.json()
+     code="from pathlib import Path; print(Path('owner-canary.txt').exists())"
+     r=c.post(base,headers=b,json={'project_id':'same','code':code})
+     assert r.status_code==200 and r.json()['stdout']=='False\n',r.text
+     outside=tmp_path/'hostsecret';outside.write_text('outside-project-canary')
+     r=c.post(base,headers=a,json={'project_id':'same','code':f'print(open({str(outside)!r}).read())'})
+>    assert r.status_code==200 and r.json()['returncode']!=0,r.text
+E    AssertionError: {"returncode":0,"stdout":"outside-project-canary\n","stderr":"","timed_out":false,"duration_seconds":0.0335,"network_used":false}
+E    assert (200 == 200 and 0 != 0)
+E     +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_m20_sandbox_isolation.py:81: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_sandbox_isolation.py::test_actual_execution_cannot_read_or_write_host_outside_project
+FAILED tests/modules/test_m20_sandbox_isolation.py::test_no_backend_fails_closed_without_running_code
+FAILED tests/modules/test_m20_sandbox_isolation.py::test_project_ids_and_symlink_volume_never_alias
+FAILED tests/modules/test_m20_sandbox_isolation.py::test_network_permission_does_not_enable_unsafe_execution
+FAILED tests/modules/test_m20_sandbox_isolation.py::test_actual_mounted_runtime_route_isolates_host_and_same_project_across_owners
+5 failed, 1 passed in 6.55s

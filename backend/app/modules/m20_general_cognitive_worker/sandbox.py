@@ -1,22 +1,14 @@
-"""Sandbox policy evaluation and ephemeral code execution (rows M20-18,
-M20-21, M20-35).
+"""GCW execution through an OS isolation backend, never plain subprocess.
 
-The policy is deny-by-default: no network, no filesystem access outside the
-calling project's volume, and third-party APIs only through an explicit
-(method, host, path-prefix) allowlist. Path checks canonicalise through
-``os.path.realpath`` so ``..`` segments and symlink escapes both fail.
-Execution runs in a fresh subprocess with scrubbed environment, isolated
-flags, and RLIMIT_CPU / RLIMIT_AS / RLIMIT_NOFILE resource ceilings; a
-preamble disables the socket layer unless the policy grants network access
-to the requested host.
+Reuses M4 bubblewrap/Docker no-network isolation. Project output is the
+only writable host mount. Missing/unusable backends fail closed. Host and
+API policy checks are planning checks, not permission for sandbox egress;
+networked sandbox execution is deliberately unsupported.
 """
 from __future__ import annotations
 
 import os
-import subprocess
-import sys
 import tempfile
-import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -123,12 +115,17 @@ class SandboxRunner:
 
     def project_volume(self, project_id: str) -> str:
         """Per-project volume (row M20-35), created on demand."""
-        safe = "".join(c for c in project_id if c.isalnum() or c in "-_")
-        if not safe:
-            raise SandboxViolation(["project id has no usable characters"])
+        safe = project_id
+        if not safe or any(not (c.isascii() and (c.isalnum() or c in "-_")) for c in safe):
+            raise SandboxViolation(["project id must contain only ASCII letters, numbers, dash or underscore"])
         volume = os.path.join(self.workspace_root, safe)
+        if os.path.lexists(volume) and os.path.islink(volume):
+            raise SandboxViolation(["project volume must not be a symlink"])
         os.makedirs(volume, exist_ok=True)
-        return os.path.realpath(volume)
+        resolved = os.path.realpath(volume)
+        if os.path.commonpath([self.workspace_root, resolved]) != self.workspace_root:
+            raise SandboxViolation(["project volume escapes workspace"])
+        return resolved
 
     def resolve_path(self, project_id: str, path: str) -> str:
         """Canonical containment check: rejects ``..`` and symlink escapes."""
@@ -163,62 +160,32 @@ class SandboxRunner:
         timeout_seconds: int | None = None,
         allowed_hosts: list[str] | None = None,
     ) -> SandboxRunResult:
-        """Run Python in an ephemeral, resource-bounded subprocess."""
+        """Run Python with OS isolation and no network, or refuse execution."""
+        from app.modules.m04_research_scientist.approved_sandbox import (
+            select_backend, ExecutionLimits, BackendUnavailableError,
+        )
         if not code.strip():
             raise SandboxViolation(["empty program"])
-        hosts = sorted(set(allowed_hosts or []))
-        for host in hosts:
-            reasons = self.check_host(host)
-            if reasons:
-                raise SandboxViolation(reasons)
-        network = self.policy.network_enabled and bool(hosts)
-        timeout = min(
-            timeout_seconds or self.policy.max_runtime_seconds,
-            self.policy.max_runtime_seconds,
-        )
-        volume = self.project_volume(project_id)
-        preamble = _NETWORK_GUARD % {
-            "hosts": tuple(hosts),
-            "enable": _NETWORK_ENABLE if network else _NETWORK_DISABLE,
-        }
-        start = time.monotonic()
-        with tempfile.NamedTemporaryFile(
-            "w", suffix=".py", dir=volume, delete=False, encoding="utf-8",
-        ) as handle:
-            handle.write(preamble + "\n" + code)
-            program = handle.name
+        if allowed_hosts:
+            raise SandboxViolation(["networked sandbox execution is unsupported; no egress granted"])
+        timeout = min(timeout_seconds or self.policy.max_runtime_seconds, self.policy.max_runtime_seconds)
+        if timeout <= 0:
+            raise SandboxViolation(["timeout must be positive"])
+        volume = Path(self.project_volume(project_id))
+        # No Python-only guards count as isolation. The legacy preamble is
+        # retained for clear network errors, with the OS namespace enforcing it.
+        preamble = _NETWORK_GUARD % {"hosts": (), "enable": _NETWORK_DISABLE}
         try:
-            process = subprocess.Popen(
-                [sys.executable, "-I", "-S", program],
-                cwd=volume,
-                env={"PATH": os.environ.get("PATH", ""), "PYTHONHASHSEED": "0"},
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                text=True, preexec_fn=self._limits if os.name == "posix" else None,
-            )
-            try:
-                stdout, stderr = process.communicate(timeout=timeout)
-                timed_out = False
-            except subprocess.TimeoutExpired:
-                process.kill()
-                stdout, stderr = process.communicate()
-                timed_out = True
-            return SandboxRunResult(
-                returncode=process.returncode if process.returncode is not None else -1,
-                stdout=(stdout or "")[: self.max_output_bytes],
-                stderr=(stderr or "")[: self.max_output_bytes],
-                timed_out=timed_out,
-                duration_seconds=round(time.monotonic() - start, 4),
-                network_used=network,
-            )
-        finally:
-            os.unlink(program)
-
-    @staticmethod
-    def _limits() -> None:
-        """preexec_fn: resource ceilings inside the child."""
-        import resource
-
-        resource.setrlimit(resource.RLIMIT_CPU, (30, 30))
-        resource.setrlimit(resource.RLIMIT_AS, (512 * 1024 * 1024, 512 * 1024 * 1024))
-        resource.setrlimit(resource.RLIMIT_NOFILE, (64, 64))
-        resource.setrlimit(resource.RLIMIT_FSIZE, (8 * 1024 * 1024, 8 * 1024 * 1024))
+            backend = select_backend()
+            with tempfile.TemporaryDirectory(prefix="atlas-gcw-input-") as td:
+                input_dir = Path(td)
+                (input_dir / "analysis.py").write_text(preamble + "\n" + code, encoding="utf-8")
+                result = backend.run(language="python", input_dir=input_dir, output_dir=volume,
+                    limits=ExecutionLimits(timeout_seconds=timeout, memory_mb=512,
+                        max_file_mb=8, max_log_bytes=self.max_output_bytes))
+        except (BackendUnavailableError, OSError) as exc:
+            raise SandboxViolation(["OS isolation backend unavailable; execution refused"]) from exc
+        return SandboxRunResult(returncode=result.exit_code if result.exit_code is not None else -1,
+            stdout=result.stdout.decode("utf-8", errors="replace"),
+            stderr=result.stderr.decode("utf-8", errors="replace"),
+            timed_out=result.timed_out, duration_seconds=result.duration_seconds, network_used=False)

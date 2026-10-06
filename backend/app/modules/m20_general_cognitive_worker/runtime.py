@@ -17,6 +17,9 @@ chain-of-thought (row M20-26).
 from __future__ import annotations
 
 import time
+import hashlib
+import os
+import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
@@ -135,7 +138,9 @@ class GCWRuntime:
         self.scheduler = FairContextScheduler()
         self.selector = ToolSelector(self.tools, embedder=embedder)
         self.mcts = BoundedMCTS(seed=seed)
-        self.sandbox = SandboxRunner(policy=sandbox_policy)
+        owner_volume = hashlib.sha256(self.tenant_id.encode("utf-8")).hexdigest()
+        self.sandbox = SandboxRunner(policy=sandbox_policy, workspace_root=os.path.join(
+            tempfile.gettempdir(), "atlas-gcw-sandbox", owner_volume))
         self.meta = MetaReasoner()
         self.loop.before_run = self._register_expectations
         self._persisted_traces = 0
