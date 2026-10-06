@@ -66,3 +66,14 @@ def test_role_patterns_dedup_failures_and_no_probabilistic_world_or_decay_claim(
  forecast=KnowledgeDecayModeler().forecast(memory)
  assert forecast[0]['age_days']>=0 and forecast[0]['predicted_freshness'] is None
  assert forecast[0]['refresh_by'] is None and not forecast[0]['capability_executed']
+
+
+def test_conflict_pruning_never_detaches_or_runs_descendant_effects():
+ from app.modules.m20_general_cognitive_worker.metacognition import GoalHierarchyManager
+ from app.modules.m20_general_cognitive_worker.schemas import PlanNode,TaskState
+ bad=PlanNode(title='fake review');send=PlanNode(title='send review',depends_on=[bad.id]);share=PlanNode(title='share it',depends_on=[send.id]);free=PlanNode(title='read public docs')
+ out=GoalHierarchyManager().restructure([bad,send,share,free])
+ assert all(n.state==TaskState.CANCELLED for n in [bad,send,share])
+ assert send.depends_on==[bad.id] and share.depends_on==[send.id]
+ assert out['remaining_steps']==['read public docs'] and not out['capability_executed']
+ assert set(out['blocked_by_cancelled_prerequisite'])=={send.id,share.id}

@@ -208,7 +208,7 @@ def test_row22_goal_conflict_detection_and_restructure():
     result = manager.restructure([bad, good, free])
     assert result["restructured"] is True
     assert bad.state == TaskState.CANCELLED
-    assert good.depends_on == []  # re-linked after parent removal
+    assert good.depends_on == [bad.id] and good.state == TaskState.CANCELLED
     assert "research competitor features" in result["remaining_steps"]
 
 

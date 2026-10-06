@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1898,
-    "PARTIAL": 60,
+    "verified-pushed": 1897,
+    "PARTIAL": 61,
     "SCOPED": 48,
     "removed": 4,
     "thin": 0,
@@ -471,7 +471,7 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Goal Hierarchy Rewriting",
       "description": "Detects when sub-goals conflict with terminal values and restructures",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
@@ -479,7 +479,23 @@
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
         "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+          "test_path": "tests/modules/test_m20_metacognition.py",
+          "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        }
+      },
+      "current_scope": "Literal value-conflict marker pruning only; cancels all transitive dependents without dropping prerequisite references. No semantic terminal-value reasoning or substitute goal generation.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_meta_scope_retractions.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+        "verification": "Descendant pruning negative test, independent review pending."
+      }
     },
     {
       "id": 23,

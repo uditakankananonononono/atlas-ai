@@ -827,21 +827,27 @@ class GoalHierarchyManager:
         return conflicts
 
     def restructure(self, plan: list[PlanNode]) -> dict[str, Any]:
+        ids = {n.id for n in plan}
+        if len(ids) != len(plan) or any(d not in ids for n in plan for d in n.depends_on):
+            raise ValueError("unique plan ids and existing dependency references required")
         conflicts = self.check(plan)
         conflicted_ids = {c.node_id for c in conflicts}
-        kept: list[PlanNode] = []
+        # Removing a prerequisite cannot authorize its dependent effects.
+        blocked = set(conflicted_ids)
+        while True:
+            additions = {n.id for n in plan if any(d in blocked for d in n.depends_on)} - blocked
+            if not additions:
+                break
+            blocked.update(additions)
         for node in plan:
-            if node.id in conflicted_ids:
+            if node.id in blocked:
                 node.state = TaskState.CANCELLED
-            elif any(dep in conflicted_ids for dep in node.depends_on):
-                node.depends_on = [d for d in node.depends_on if d not in conflicted_ids]
-                kept.append(node)
-            else:
-                kept.append(node)
         return {
-            "cancelled": [c.node_title for c in conflicts],
+            "status": "marker_conflict_pruning_only", "capability_executed": False,
+            "cancelled": [n.title for n in plan if n.id in blocked],
+            "blocked_by_cancelled_prerequisite": [n.id for n in plan if n.id in blocked - conflicted_ids],
             "conflicts": [c.__dict__ for c in conflicts],
-            "remaining_steps": [n.title for n in kept],
+            "remaining_steps": [n.title for n in plan if n.id not in blocked],
             "restructured": bool(conflicts),
         }
 

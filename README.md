@@ -146,3 +146,5 @@ GCW meta rows14/17/18/27 are also PARTIAL. The default counterfactual outcome mo
 Meta row13 reports observed confidence/outcome calibration curves only, not knowledge boundaries or predictive adjusted confidence. Row34 proposes a missing-token frequency budget, not expected learning value or executed exploration. Unmeasured outputs are null. Latest additional-feature labels1901 historical verified-pushed/48SCOPED/57PARTIAL/4removed remain non-certification bookkeeping.
 
 Meta rows11/21/33 are PARTIAL: fixed role-sequence retrieval, versioned caller assumptions/weight scores and observed knowledge age only. No learned cross-domain execution, posterior model truth, fitted obsolescence or scheduled refresh is demonstrated. Latest labels1898 historical verified-pushed/48SCOPED/60PARTIAL/4removed are not verified-capability counts.
+
+Row22 is literal value-marker conflict pruning only, PARTIAL. Cancelled prerequisites now cancel all transitive dependents without removing dependency references. It is not semantic goal rewriting or generated replacement goals. Latest ledger labels1897 historical/48SCOPED/61PARTIAL/4removed.
