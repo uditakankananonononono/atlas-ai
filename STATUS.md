@@ -182,3 +182,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Replaced purpose-only templates with scored evidence: unique supplied items/keys, explicit positive weights, one evidence-linked response per known item, exact normalized answer matching, earned/possible points and per-objective observed scores/coverage.
 - Formative assessment returns error-specific answer feedback and next-step review. Summative final score exists only for a complete response set; missing responses are unknown, not zero or mastery. Diagnostic needs derive from measured per-objective score under an explicit threshold, with unassessed objectives separate. Not semantic essay grading, psychometric validity, independent grading provenance or award/pass-fail authority.
 - Tests change weighted scores/needs with actual answers, distinguish incomplete from failing, reject duplicate/unknown evidence and nonfinite weights. Focused225 passed; M20/ledger1600 passed. All three rowsSCOPED pending review. Historical labels1966,SCOPED39,PARTIAL1,removed4 remain label counts, not verified capability counts.
+
+## Measured progress (row826)
+
+- Requires actual dated evidence, strict chronology and a declared measurement unit/direction. Computes observed delta and endpoint rate; separates target_reached from on_track. Decreasing goals are handled correctly rather than always latest>=target.
+- A future deadline plus multiple observations permits explicitly uncalibrated endpoint linear extrapolation; no deadline/no rate means unknown on_track, not a guessed forecast. Rejects mixed units, nonfinite values/overflow, duplicate evidence and naive/out-of-order times. No predictive model or evidence-verification claim.
+- Focused226 passed; M20/ledger1607 passed. Row826SCOPED pending review. Current row labels1965 historical,40SCOPED,1PARTIAL,4removed.

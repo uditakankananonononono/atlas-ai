@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1966,
-    "SCOPED": 39,
+    "verified-pushed": 1965,
+    "SCOPED": 40,
     "PARTIAL": 1,
     "removed": 4,
     "thin": 0,
@@ -13127,14 +13127,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Progress Monitoring",
       "description": "Tracks advancement",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_826_progress_monitoring_computes_change",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_826_progress_monitoring_computes_change",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Chronological evidence-linked scalar measurement with declared units/direction, observed delta/rate, target reach and explicit uncalibrated endpoint linear extrapolation. No forecast/model accuracy claim.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_progress_measurement.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 827,
