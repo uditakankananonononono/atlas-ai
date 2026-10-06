@@ -139,11 +139,11 @@ def test_row21_routes(client):
     assert c.post("/api/modules/20/meta/world-models",
                   json={"name": "growth", "assumptions": {"m": "up"}}).status_code == 201
     assert c.post("/api/modules/20/meta/world-models/growth/evidence",
-                  json={"supported": True, "weight": 2.0}).json()["posterior"] > 0.5
+                  json={"supported": True, "weight": 2.0}).json()["posterior"] is None
     assert c.post("/api/modules/20/meta/world-models/growth/revise",
                   json={"assumptions": {"m": "up", "moat": "brand"}}).json()["version"] == 2
     listing = c.get("/api/modules/20/meta/world-models").json()
-    assert listing["current_best"] == "growth"
+    assert listing["current_best"] is None and listing["highest_supplied_weight_model"] == "growth"
     assert c.post("/api/modules/20/meta/world-models/ghost/evidence",
                   json={"supported": True}).status_code == 404
 
