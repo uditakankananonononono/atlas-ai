@@ -212,3 +212,43 @@ def test_goals_are_scoped_to_their_tenant():
     service_b.goals[goal.id] = goal  # same store, different tenant facade
     with pytest.raises(KeyError):
         service_b.describe(goal.id)
+
+
+def test_changed_reviewed_plan_and_failed_execution_never_reuse_approval():
+ calls=[]
+ def effect(step,context):calls.append(step.detail);raise RuntimeError('effect may have happened')
+ service,gate=make_orchestrator({'draft_document':effect});goal=registered_goal(service)
+ service.build_plan(goal.id,plan_steps(goal));token=service.request_approval(goal.id)['approval_id']
+ gate.decide(token,ApprovalGateDecision.APPROVED);goal.steps[0].detail='unreviewed payload'
+ with pytest.raises(PermissionError):service.execute(goal.id,approval_id=token)
+ assert not calls
+ goal.steps[0].detail=''
+ assert service.execute(goal.id,approval_id=token)['status']=='failed'
+ with pytest.raises(OrchestrationConflictError):service.execute(goal.id,approval_id=token)
+ assert len(calls)==1
+
+
+@pytest.mark.parametrize('change',['statement','source_uri','risk','action','detail','citation'])
+def test_reviewed_snapshot_covers_every_executor_relevant_field(change):
+ service,gate=make_orchestrator();goal=registered_goal(service);service.build_plan(goal.id,plan_steps(goal))
+ token=service.request_approval(goal.id)['approval_id'];gate.decide(token,ApprovalGateDecision.APPROVED)
+ if change=='statement':goal.statement='changed'
+ if change=='source_uri':next(iter(goal.sources.values())).uri='https://changed.test'
+ if change=='risk':goal.steps[0].risk=__import__('app.modules.m20_general_cognitive_worker.schemas',fromlist=['Risk']).Risk.EXTERNAL
+ if change=='action':goal.steps[0].action_type='different'
+ if change=='detail':goal.steps[0].detail='changed'
+ if change=='citation':goal.steps[0].citations=[]
+ with pytest.raises(PermissionError):service.execute(goal.id,approval_id=token)
+
+
+def test_parallel_product_plan_consumers_execute_only_once():
+ from concurrent.futures import ThreadPoolExecutor
+ calls=[]
+ def handler(step,ctx):calls.append(step.id);return {'state':'simulated'}
+ service,gate=make_orchestrator({'draft_document':handler});goal=registered_goal(service);service.build_plan(goal.id,plan_steps(goal))
+ token=service.request_approval(goal.id)['approval_id'];gate.decide(token,ApprovalGateDecision.APPROVED)
+ def execute(_):
+  try:service.execute(goal.id,approval_id=token);return True
+  except OrchestrationConflictError:return False
+ with ThreadPoolExecutor(max_workers=8) as pool:assert sum(pool.map(execute,range(32)))==1
+ assert len(calls)==1

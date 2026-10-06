@@ -398,3 +398,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 
 - Reviewer found that string false was truthy and counted as a correct attempt. Eight negative tests reproduced string/number/null/container/missing correctness acceptance. Attempt events now require type(correct) is bool; invalid/missing values reject before analytics or tracing. Non-attempt check-ins do not become attempts or observed grades.
 - Mixed supplied/default BKT parameters now say partial_caller, not wholly default. Focused111 and M20+ledger1783 pass with expected SCS warning. Before-fail log retained. Conditional unfitted model scope and no verified learner-mastery claim remain. Independent re-attack pending.
+
+## ProductOrchestrator exact-plan boundary repair
+
+- Separate orchestration path accepted changed step.detail after review and allowed a failed plan to rerun the same token. Retained failing fake-executor reproduction; no external effects. Approval payload now includes goal statement, source metadata and step detail; immutable canonical plan binding checks id/tenant/statement/sources/step fields before dispatch.
+- Locked execution consumes the process-local approval before any executor, including failure, and executes steps reconstructed from the reviewed snapshot.32 parallel calls produce one execution. A failed attempt cannot request/reuse approval without a fresh plan. Default execution remains simulated, not real effects.
+- M20+ledger1791 pass with expected SCS warning; independent review pending. In-process only, not durable/distributed transactions. Executors and evidence ids remain caller-supplied assertions, not independent proof of actual execution or verification; source citation membership is not source-content validation. Production owner gate/expiry enforcement and evidence attestation remain integration work.

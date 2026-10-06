@@ -13,6 +13,9 @@ The contract, in order:
 """
 from __future__ import annotations
 
+import json
+import copy
+import threading
 from dataclasses import dataclass, field
 from datetime import timedelta
 from typing import Any, Callable, Mapping
@@ -108,6 +111,9 @@ class ProductOrchestrator:
         self.executors: dict[str, StepExecutor] = dict(executors or {})
         self.approval_ttl_seconds = approval_ttl_seconds
         self.goals: dict[str, OrchestratedGoal] = {}
+        self._reviewed_plans = {}
+        self._spent_approvals = set()
+        self._execution_lock = threading.Lock()
 
     # -- 1. goal + sources -------------------------------------------------
 
@@ -178,6 +184,8 @@ class ProductOrchestrator:
         if goal.approval_id is not None:
             if self.gate.decision(goal.approval_id) == ApprovalGateDecision.PENDING:
                 raise OrchestrationConflictError("an approval request for this goal is already pending")
+        if goal.approval_id in self._spent_approvals:
+            raise OrchestrationConflictError("already executed or attempted; fresh plan required")
         risk = max((step.risk for step in goal.steps), key=lambda r: RISK_ORDER[r])
         request = ApprovalGateRequest(
             action_type="execute_product_plan",
@@ -187,12 +195,15 @@ class ProductOrchestrator:
             payload={
                 "goal_id": goal.id,
                 "tenant_id": self.tenant_id,
+                "statement": goal.statement,
+                "sources": [vars(v).copy() for v in goal.sources.values()],
                 "steps": [
                     {
                         "step_id": step.id,
                         "title": step.title,
                         "action_type": step.action_type,
                         "risk": step.risk.value,
+                        "detail": step.detail,
                         "citations": [
                             {"source_id": c, "uri": goal.sources[c].uri} for c in step.citations
                         ],
@@ -202,26 +213,45 @@ class ProductOrchestrator:
             },
         )
         goal.approval_id = self.gate.request(request)
+        self._reviewed_plans[goal.approval_id] = self._plan_binding(goal)
         goal.status = "waiting_approval"
         return {"goal_id": goal.id, "approval_id": goal.approval_id}
 
     # -- 4. execution + readback ---------------------------------------------
 
+    @staticmethod
+    def _plan_binding(goal):
+        return json.dumps({"id":goal.id,"tenant":goal.tenant_id,"statement":goal.statement,
+            "sources":{k:vars(v) for k,v in goal.sources.items()},
+            "steps":[{**vars(step),"risk":step.risk.value} for step in goal.steps]},
+            sort_keys=True, separators=(",",":"), allow_nan=False)
+
     def execute(self, goal_id: str, *, approval_id: str) -> dict[str, Any]:
+        with self._execution_lock:
+            return self._execute_locked(goal_id, approval_id=approval_id)
+
+    def _execute_locked(self, goal_id: str, *, approval_id: str) -> dict[str, Any]:
         goal = self._goal(goal_id)
         if goal.approval_id is None or approval_id != goal.approval_id:
             raise PermissionError("execution requires this goal's own approval request")
+        if approval_id in self._spent_approvals:
+            raise OrchestrationConflictError("already executed or attempted; approval spent")
+        if self._reviewed_plans.get(approval_id) != self._plan_binding(goal):
+            raise PermissionError("reviewed plan changed or unknown; fresh review required")
         decision = self.gate.decision(approval_id)
         if decision != ApprovalGateDecision.APPROVED:
             raise PermissionError(f"plan execution is not approved (decision: {decision.value})")
         if goal.status == "executed":
             raise OrchestrationConflictError("this approved plan was already executed; re-plan for another run")
+        self._spent_approvals.add(approval_id)
+        reviewed = json.loads(self._reviewed_plans[approval_id])
+        execution_steps = [PlanStep(**{**raw,"risk":Risk(raw["risk"])}) for raw in reviewed["steps"]]
         failures = 0
-        for step in goal.steps:
+        for step in execution_steps:
             record = goal.executions[step.id]
             executor = self.executors.get(step.action_type, _simulation_executor)
             try:
-                outcome = dict(executor(step, {"goal_id": goal.id, "tenant_id": self.tenant_id}))
+                outcome = dict(executor(step, {"goal_id": reviewed["id"], "tenant_id": reviewed["tenant"]}))
                 state = str(outcome.get("state", ""))
                 # Validate the claim against the execution-truth vocabulary
                 # before anything is recorded.

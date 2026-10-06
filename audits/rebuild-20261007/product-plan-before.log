@@ -1,0 +1,18 @@
+.........F                                                               [100%]
+=================================== FAILURES ===================================
+_____ test_changed_reviewed_plan_and_failed_execution_never_reuse_approval _____
+
+    def test_changed_reviewed_plan_and_failed_execution_never_reuse_approval():
+     calls=[]
+     def effect(step,context):calls.append(step.detail);raise RuntimeError('effect may have happened')
+     service,gate=make_orchestrator({'draft_document':effect});goal=registered_goal(service)
+     service.build_plan(goal.id,plan_steps(goal));token=service.request_approval(goal.id)['approval_id']
+     gate.decide(token,ApprovalGateDecision.APPROVED);goal.steps[0].detail='unreviewed payload'
+>    with pytest.raises(PermissionError):service.execute(goal.id,approval_id=token)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'PermissionError'>
+
+tests/modules/test_m20_product_orchestrator.py:223: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_product_orchestrator.py::test_changed_reviewed_plan_and_failed_execution_never_reuse_approval
+1 failed, 9 passed in 4.67s
