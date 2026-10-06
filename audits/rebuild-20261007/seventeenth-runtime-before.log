@@ -1,0 +1,23 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_signed_runtime_owner_cannot_read_other_tenant_repo ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f8e1d61aab0>
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-24/test_signed_runtime_owner_cann0')
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f8e1d613b00>
+
+    def test_signed_runtime_owner_cannot_read_other_tenant_repo(monkeypatch,tmp_path,oidc_auth_headers):
+     monkeypatch.setenv('ATLAS_ENV','production')
+     repo=GCWRepository(create_engine('sqlite:///'+str(tmp_path/'canary.db')),tenant_id='a');repo.create_schema()
+     repo.save_fact(SemanticFact(content='durable-private-canary'))
+     monkeypatch.setattr(routes,'_runtime',GCWRuntime(repo))
+     r=TestClient(app).get(BASE+'/memory/facts',headers=oidc_auth_headers('b'))
+>    assert r.status_code in (404,503) or not any(f['content']=='durable-private-canary' for f in r.json())
+E    assert (200 in (404, 503) or not True)
+E     +  where 200 = <Response [200 OK]>.status_code
+E     +  and   True = any(<generator object test_signed_runtime_owner_cannot_read_other_tenant_repo.<locals>.<genexpr> at 0x7f8e1d6f85f0>)
+
+tests/modules/test_m20_durable_owner_http.py:17: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_durable_owner_http.py::test_signed_runtime_owner_cannot_read_other_tenant_repo
+1 failed in 6.81s
