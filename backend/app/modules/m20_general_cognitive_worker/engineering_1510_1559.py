@@ -265,9 +265,26 @@ def _torsion(d):
 
 DISPATCH={'mechanical_design':_mechanical,'cad_modeling':_cad,'finite_element_analysis':_fea,'computational_fluid_dynamics':_cfd,'thermal_analysis':_thermal,'stress_analysis':_stress,'fatigue_analysis':_fatigue,'fracture_mechanics':_fracture,'materials_selection':_materials,'material_properties':_properties,'failure_analysis':_failure,'reliability_engineering':_reliability,'maintainability_engineering':_maintain,'safety_engineering':_safety,'human_factors_engineering':_human,'ergonomics':_ergo,'industrial_design':lambda d:_design(d,'industrial'),'design_for_manufacturing':_dfm,'design_for_assembly':_dfa,'design_for_sustainability':_sustain,'design_for_six_sigma':_dfss,'tolerance_analysis':_tol,'gdt':_gdt,'metrology':_metrology,'quality_control':_qc,'quality_assurance':_qa,'statistical_process_control':_spc,'process_capability':_capability,'measurement_systems_analysis':_msa,'design_of_experiments':_doe,'taguchi_methods':_taguchi,'response_surface_methodology':_rsm,'robust_design':_robust,'reliability_testing':_reltest,'accelerated_life_testing':_alt,'environmental_testing':lambda d:_env(d,'environmental'),'vibration_testing':_vibration,'shock_testing':_shock,'thermal_cycling':lambda d:_env(d,'thermal_cycling'),'humidity_testing':lambda d:_env(d,'humidity'),'corrosion_testing':_corrosion,'wear_testing':_wear,'fatigue_testing':_fatigue_test,'creep_testing':_creep,'impact_testing':_impact,'hardness_testing':_hardness,'tensile_testing':_tensile,'compression_testing':_compression,'shear_testing':_shear,'torsion_testing':_torsion}
 
+REFERENCE_DIAGNOSTICS={
+ 'mechanical_design':'supplied_requirement_field_coverage',
+ 'cad_modeling':'supplied_feature_reference_order_check',
+ 'finite_element_analysis':'supplied_mesh_result_difference',
+ 'computational_fluid_dynamics':'supplied_mass_flow_balance',
+ 'failure_analysis':'supplied_reference_hypothesis_bookkeeping',
+ 'human_factors_engineering':'supplied_task_safety_marker',
+ 'ergonomics':'supplied_assessment_fields',
+ 'industrial_design':'supplied_concept_template',
+ 'design_for_six_sigma':'supplied_CTQ_verification_plan',
+ 'gdt':'supplied_frame_field_presence',
+ 'quality_assurance':'supplied_requirement_reference_coverage',
+ **{name:'supplied_test_profile_template' for name in ('environmental_testing','vibration_testing','thermal_cycling','humidity_testing')},
+}
+
 def engineering_support_1510_1559(method:str,data:dict[str,Any])->dict[str,Any]:
     if method not in DISPATCH: raise ValueError(f'unsupported engineering method: {method}')
     out=_base(method,data); out['result']=DISPATCH[method](data)
-    out['evaluation']={'checks_performed':sorted(out['result']),'acceptance_criteria':data.get('acceptance_criteria',[]),'verification_plan':data.get('verification_plan',[]),'qualified_review_required':True}
+    if method in REFERENCE_DIAGNOSTICS:
+        out['status']='supplied_diagnostics_or_template_only';out['reference_operator']=REFERENCE_DIAGNOSTICS[method];out['named_capability_executed']=False
+    out['evaluation']={'diagnostic_output_fields':sorted(out['result']),'acceptance_criteria':data.get('acceptance_criteria',[]),'verification_plan':data.get('verification_plan',[]),'qualified_review_required':True}
     out['uncertainty']={'level':'not_quantified','drivers':['caller-supplied geometry, loads and material data','model-form and boundary-condition choices','measurement and manufacturing variation'],'physical_test_or_solver_execution_claimed':False}
     return out
