@@ -522,3 +522,7 @@ Mechanical requirement coverage, CAD reference ordering, submitted FEA mesh diff
 ## Engineering facade propagation repair
 
 Specialized-domain facade had discarded engineering status/reference_operator/named_capability_executed and ignored its boundary. Now preserves these in result and retains the engineering boundary in limits. Uniform facade evaluation checks renamed diagnostic_fields, with the HTTP response schema and tests changed together; engineering source uses diagnostic_output_fields rather than manufacturing performed checks from key names.82 focused facade/engineering tests pass, including HTTP response validation and row1512 retraction propagation. Does not promote original solver capability.
+
+## Specialized facade principal binding
+
+Specialized facade previously took tenant/actor readback from raw headers even when the outer app authenticated a different principal. Pure calculation route, not stored-corpus disclosure, but false scope attribution. Now derives both from require_tenant; signed production-path test sends spoof headers alongside a valid token and confirms verified tenant/actor binding, no-token401.8 focused pass. Explicit dev header bypass remains development-only. Latest M20+atomic+ledger1987pass before this binding.
