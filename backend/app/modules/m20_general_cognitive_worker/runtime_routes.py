@@ -9,7 +9,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from app.auth.context import TenantContext,require_tenant
+from app.auth.environment import insecure_development_auth_enabled
 from pydantic import BaseModel, Field
 
 from .runtime import GCWRuntime
@@ -17,18 +19,30 @@ from .sandbox import SandboxViolation
 
 router = APIRouter(prefix="/api/modules/20/runtime", tags=["m20_runtime"])
 
-_runtime: GCWRuntime | None = None
+_runtime: GCWRuntime | None = None  # explicit insecure local test binding
+_runtimes: dict[str, GCWRuntime] = {}
 
 
-def bind_runtime(runtime: GCWRuntime) -> None:
+def bind_runtime(runtime: GCWRuntime, *, tenant_id: str | None = None) -> None:
     global _runtime
-    _runtime = runtime
+    owner=runtime.repo.tenant_id if tenant_id is None else tenant_id
+    if not owner or owner != runtime.repo.tenant_id:
+        raise ValueError("runtime binding must match repository tenant")
+    if any(k!=owner and r is runtime for k,r in _runtimes.items()):
+        raise ValueError("runtime instance already bound to another tenant")
+    _runtimes[owner]=runtime
+    _runtime=runtime
 
 
-def get_runtime() -> GCWRuntime:
-    if _runtime is None:
-        raise HTTPException(status_code=503, detail="GCW runtime not bound yet")
-    return _runtime
+def get_runtime(tenant: TenantContext = Depends(require_tenant)) -> GCWRuntime:
+    runtime=_runtimes.get(tenant.tenant_id)
+    if tenant.tenant_id == "local" and insecure_development_auth_enabled():
+        runtime=_runtime
+    if runtime is None:
+        raise HTTPException(status_code=503, detail="GCW runtime not bound for authenticated tenant")
+    if not insecure_development_auth_enabled() and runtime.repo.tenant_id!=tenant.tenant_id:
+        raise HTTPException(503,"runtime repository owner mismatch")
+    return runtime
 
 
 def _task_dict(context) -> dict[str, Any]:
@@ -62,8 +76,7 @@ class SandboxRunRequest(BaseModel):
 
 
 @router.post("/tasks", status_code=201)
-def submit_task(request: GoalRequest) -> dict[str, Any]:
-    runtime = get_runtime()
+def submit_task(request: GoalRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     context = runtime.submit_goal(
         request.goal, importance=request.importance,
         deadline=request.deadline, run_immediately=request.run_immediately,
@@ -72,21 +85,20 @@ def submit_task(request: GoalRequest) -> dict[str, Any]:
 
 
 @router.get("/tasks")
-def list_tasks() -> list[dict[str, Any]]:
-    return [_task_dict(c) for c in get_runtime().list_tasks()]
+def list_tasks( runtime: Any = Depends(get_runtime)) -> list[dict[str, Any]]:
+    return [_task_dict(c) for c in runtime.list_tasks()]
 
 
 @router.get("/tasks/{task_id}")
-def get_task(task_id: str) -> dict[str, Any]:
-    context = get_runtime().get_task(task_id)
+def get_task(task_id: str, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
+    context = runtime.get_task(task_id)
     if context is None:
         raise HTTPException(status_code=404, detail="unknown task")
     return _task_dict(context)
 
 
 @router.post("/tasks/{task_id}/step")
-def step_task(task_id: str, request: StepRequest) -> dict[str, Any]:
-    runtime = get_runtime()
+def step_task(task_id: str, request: StepRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     if runtime.get_task(task_id) is None:
         raise HTTPException(status_code=404, detail="unknown task")
     context = runtime.run_task(task_id, max_ticks=request.max_ticks)
@@ -94,47 +106,46 @@ def step_task(task_id: str, request: StepRequest) -> dict[str, Any]:
 
 
 @router.post("/step")
-def step_once(request: StepRequest) -> dict[str, Any]:
-    report = get_runtime().step(
+def step_once(request: StepRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
+    report = runtime.step(
         quantum_seconds=request.quantum_seconds, max_ticks=request.max_ticks,
     )
     return vars(report)
 
 
 @router.get("/tasks/{task_id}/decision")
-def decision(task_id: str) -> dict[str, Any]:
-    artifact = get_runtime().decision_artifact(task_id)
+def decision(task_id: str, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
+    artifact = runtime.decision_artifact(task_id)
     if artifact is None:
         raise HTTPException(status_code=404, detail="unknown task")
     return artifact.as_dict()
 
 
 @router.get("/tasks/{task_id}/mcts")
-def mcts(task_id: str, simulations: int = 32) -> dict[str, Any]:
+def mcts(task_id: str, simulations: int = 32, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     if simulations < 1 or simulations > 512:
         raise HTTPException(status_code=422, detail="simulations must be 1..512")
-    result = get_runtime().run_mcts(task_id, max_simulations=simulations)
+    result = runtime.run_mcts(task_id, max_simulations=simulations)
     if result is None:
         raise HTTPException(status_code=404, detail="unknown task")
     return result.as_dict()
 
 
 @router.post("/tasks/{task_id}/close")
-def close_task(task_id: str) -> dict[str, Any]:
-    result = get_runtime().close(task_id)
+def close_task(task_id: str, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
+    result = runtime.close(task_id)
     if result is None:
         raise HTTPException(status_code=404, detail="unknown task")
     return result
 
 
 @router.post("/tools/select")
-def select_tool(request: SelectToolRequest) -> dict[str, Any]:
-    return get_runtime().select_tool(request.description, context=request.context).as_dict()
+def select_tool(request: SelectToolRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
+    return runtime.select_tool(request.description, context=request.context).as_dict()
 
 
 @router.post("/sandbox/run")
-def sandbox_run(request: SandboxRunRequest) -> dict[str, Any]:
-    runtime = get_runtime()
+def sandbox_run(request: SandboxRunRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     try:
         result = runtime.sandbox.run_python(
             request.project_id, request.code,
@@ -147,26 +158,22 @@ def sandbox_run(request: SandboxRunRequest) -> dict[str, Any]:
 
 
 @router.get("/memory/facts")
-def facts() -> list[dict[str, Any]]:
-    runtime = get_runtime()
+def facts( runtime: Any = Depends(get_runtime)) -> list[dict[str, Any]]:
     return [f.model_dump(mode="json") for f in runtime.repo.list_facts()]
 
 
 @router.get("/memory/episodes")
-def episodes(task_id: str | None = None) -> list[dict[str, Any]]:
-    runtime = get_runtime()
+def episodes(task_id: str | None = None, runtime: Any = Depends(get_runtime)) -> list[dict[str, Any]]:
     return [e.model_dump(mode="json") for e in runtime.repo.list_episodes(task_id=task_id)]
 
 
 @router.get("/retrospectives")
-def retrospectives(task_id: str | None = None) -> list[dict[str, Any]]:
-    runtime = get_runtime()
+def retrospectives(task_id: str | None = None, runtime: Any = Depends(get_runtime)) -> list[dict[str, Any]]:
     return [r.model_dump(mode="json") for r in runtime.repo.list_retrospectives(task_id=task_id)]
 
 
 @router.get("/calibration")
-def calibration() -> dict[str, Any]:
-    runtime = get_runtime()
+def calibration( runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     return {
         "claims": len(runtime.calibration.claims),
         "resolved": sum(1 for c in runtime.calibration.claims.values() if c.resolved),
@@ -176,8 +183,7 @@ def calibration() -> dict[str, Any]:
 
 
 @router.get("/methods")
-def methods(status: str | None = None) -> list[dict[str, Any]]:
-    runtime = get_runtime()
+def methods(status: str | None = None, runtime: Any = Depends(get_runtime)) -> list[dict[str, Any]]:
     out = []
     for method, status_value in runtime.repo.list_methods(status=status):
         data = method.model_dump(mode="json")
@@ -187,8 +193,7 @@ def methods(status: str | None = None) -> list[dict[str, Any]]:
 
 
 @router.post("/methods/{name}/activate")
-def activate_method(name: str) -> dict[str, Any]:
-    runtime = get_runtime()
+def activate_method(name: str, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     if not runtime.planner.activate_method(name):
         raise HTTPException(status_code=404, detail="unknown method")
     return {"name": name, "review_status": "active"}
