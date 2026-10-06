@@ -16,6 +16,24 @@ def _cos(a,b):
  if len(a)!=len(b) or not a:raise ValueError("vectors must be non-empty and aligned")
  den=math.sqrt(sum(x*x for x in a)*sum(x*x for x in b));return sum(x*y for x,y in zip(a,b))/den if den else 0
 
+REFERENCE_SUBSTITUTES={
+ 'graph_of_thought':'supplied_graph_shortest_path',
+ 'self_consistency':'supplied_answer_plurality',
+ 'retrieval_augmented_generation':'supplied_vector_context_selection_only',
+ 'vector_databases':'in_memory_supplied_vector_scan',
+ 'embeddings':'character_hash_vectors',
+ 'semantic_search':'supplied_vector_cosine_ranking',
+ 'swarm_intelligence':'scalar_elite_gaussian_mutation',
+ 'evolutionary_computation':'scalar_elite_gaussian_mutation',
+ 'genetic_algorithms':'scalar_elite_gaussian_mutation',
+ 'genetic_programming':'supplied_polynomial_candidate_selection',
+ **{name:'scalar_mean_coupling_toy_dynamics' for name in ('artificial_life','self_organization','emergence','adaptation','evolution','co_evolution','symbiosis','autopoiesis')},
+ 'digital_twins':'supplied_series_residual_diagnostics',
+ 'systems_science':'supplied_graph_degree_diagnostics',
+ 'complexity_science':'supplied_graph_degree_diagnostics',
+ 'second_order_cybernetics':'hand_written_gain_adjustment_simulation',
+}
+
 def run(method,data,seed=0):
  if method not in ROWS:raise ValueError(f"unsupported cognitive method {method}")
  rng=random.Random(seed); limits=["Reference-scale, deterministic decision support on supplied data; no external retrieval, execution, or claim of human cognition."]
@@ -216,5 +234,10 @@ def run(method,data,seed=0):
    err=target-state;state+=gain*err;gain=max(0,min(1,gain+learn*abs(err)/(1+abs(err))));traj.append({"state":state,"gain":gain,"error":target-state})
   out={"trajectory":traj,"observer_adjusted_gain":gain,"final_error":target-state};limits += ["Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness."]
  else:raise AssertionError(method)
+ if method in REFERENCE_SUBSTITUTES:
+  out['reference_operator']=REFERENCE_SUBSTITUTES[method]
+  out['named_capability_executed']=False
+  out['status']='reference_substitute_only'
+  limits.append('Named cognitive/AI/life-science capability is not implemented by this reference substitute. Caller inputs are not independently verified; no generation, learned model or deployed integration demonstrated.')
  out["method_limits"]=limits
  return {"method":method,"feature_row":ROWS[method],"inputs":data,"seed":seed,"output":out}
