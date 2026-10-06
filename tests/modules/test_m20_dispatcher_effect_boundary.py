@@ -72,3 +72,15 @@ async def test_named_money_aliases_gate_even_with_read_risk_and_never_retry(name
  g.decide(exc.value.approval_id,ApprovalGateDecision.APPROVED)
  out=await d.dispatch(name,{},granted_approval_id=exc.value.approval_id)
  assert len(calls)==1 and 'outcome unknown' in out.result_summary
+
+
+@pytest.mark.parametrize('name',['pay_invoice','buy','wire','payout','pay-now','transfer_funds','checkout_cart','withdraw','send_payment','ＰＡＹ','p\u200bay','рау','subscribe_monthly','donate_now','settle_invoice','tip_driver','upgrade_plan'])
+def test_segmented_and_unicode_money_names_gate(name):
+ from app.modules.m20_general_cognitive_worker.safety import requires_approval
+ assert requires_approval(name,Risk.READ,{})
+
+
+@pytest.mark.parametrize('name',['payload','orderly','repayment_notes','wireframe','player','research'])
+def test_token_matching_does_not_mistake_substrings_for_money(name):
+ from app.modules.m20_general_cognitive_worker.safety import requires_approval
+ assert not requires_approval(name,Risk.READ,{})
