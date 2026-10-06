@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1894,
-    "PARTIAL": 62,
+    "verified-pushed": 1845,
+    "PARTIAL": 111,
     "SCOPED": 50,
     "removed": 4,
     "thin": 0,
@@ -14760,14 +14760,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Historical Thinking",
       "description": "Contextualizes",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_860_historical_thinking_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_860_historical_thinking_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Historical Thinking. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 861,
@@ -14775,14 +14790,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Critical Thinking",
       "description": "Evaluates arguments",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_861_critical_thinking_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_861_critical_thinking_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Critical Thinking. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 862,
@@ -14790,14 +14820,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Creative Thinking",
       "description": "Generates novel ideas",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_862_creative_thinking_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_862_creative_thinking_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Creative Thinking. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 863,
@@ -14805,14 +14850,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Lateral Thinking",
       "description": "Approaches indirectly",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_863_lateral_thinking_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_863_lateral_thinking_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Lateral Thinking. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 864,
@@ -14820,14 +14880,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Divergent Thinking",
       "description": "Generates many ideas",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_864_divergent_thinking_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_864_divergent_thinking_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Divergent Thinking. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 865,
@@ -14835,14 +14910,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Convergent Thinking",
       "description": "Narrows to best",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_865_convergent_thinking_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_865_convergent_thinking_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Convergent Thinking. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 866,
@@ -14850,14 +14940,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Associative Thinking",
       "description": "Connects concepts",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_866_associative_thinking_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_866_associative_thinking_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Associative Thinking. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 867,
@@ -14865,14 +14970,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Reframing",
       "description": "Changes perspective",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_867_reframing_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_867_reframing_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Reframing. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 868,
@@ -14880,14 +15000,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Perspective Shifting",
       "description": "Sees differently",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_868_perspective_shifting_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_868_perspective_shifting_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Perspective Shifting. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 869,
@@ -14895,14 +15030,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Paradigm Shifting",
       "description": "Changes fundamental assumptions",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_869_paradigm_shifting_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_869_paradigm_shifting_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Paradigm Shifting. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 870,
@@ -14910,14 +15060,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Concept Formation",
       "description": "Creates categories",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_870_concept_formation_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_870_concept_formation_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Concept Formation. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 871,
@@ -14925,14 +15090,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Concept Mapping",
       "description": "Visualizes relationships",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_871_concept_mapping_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_871_concept_mapping_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Concept Mapping. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 872,
@@ -14940,14 +15120,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Mind Mapping",
       "description": "Radiates associations",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_872_mind_mapping_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_872_mind_mapping_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Mind Mapping. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 873,
@@ -14955,14 +15150,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Knowledge Organization",
       "description": "Structures information",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_873_knowledge_organization_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_873_knowledge_organization_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Knowledge Organization. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 874,
@@ -14970,14 +15180,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Taxonomy Creation",
       "description": "Classifies",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_874_taxonomy_creation_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_874_taxonomy_creation_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Taxonomy Creation. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 875,
@@ -14985,14 +15210,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Ontology Development",
       "description": "Formalizes concepts",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_875_ontology_development_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_875_ontology_development_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Ontology Development. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 876,
@@ -15000,14 +15240,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Semantic Networks",
       "description": "Links meanings",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_876_semantic_networks_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_876_semantic_networks_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Semantic Networks. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 877,
@@ -15015,14 +15270,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Schema Development",
       "description": "Builds frameworks",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_877_schema_development_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_877_schema_development_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Schema Development. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 878,
@@ -15030,14 +15300,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Mental Model Construction",
       "description": "Creates representations",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_878_mental_model_construction_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_878_mental_model_construction_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Mental Model Construction. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 879,
@@ -15045,14 +15330,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Model Updating",
       "description": "Revises understanding",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_879_model_updating_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_879_model_updating_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Model Updating. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 880,
@@ -15090,14 +15390,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Theory Change",
       "description": "Shifts paradigms",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_881_theory_change_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_881_theory_change_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Theory Change. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 882,
@@ -15105,14 +15420,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Conceptual Change",
       "description": "Transforms understanding",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_882_conceptual_change_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_882_conceptual_change_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Conceptual Change. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 883,
@@ -15120,14 +15450,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Learning by Teaching",
       "description": "Teaches to learn",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_883_learning_by_teaching_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_883_learning_by_teaching_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Learning by Teaching. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 884,
@@ -15135,14 +15480,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Learning by Doing",
       "description": "Practices actively",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_884_learning_by_doing_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_884_learning_by_doing_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Learning by Doing. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 885,
@@ -15150,14 +15510,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Learning by Observing",
       "description": "Watches others",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_885_learning_by_observing_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_885_learning_by_observing_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Learning by Observing. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 886,
@@ -15165,14 +15540,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Learning by Imitating",
       "description": "Copies behavior",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_886_learning_by_imitating_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_886_learning_by_imitating_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Learning by Imitating. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 887,
@@ -15180,14 +15570,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Learning by Trial and Error",
       "description": "Experiments",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_887_learning_by_trial_and_error_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_887_learning_by_trial_and_error_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Learning by Trial and Error. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 888,
@@ -15195,14 +15600,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Learning by Insight",
       "description": "Sudden understanding",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_888_learning_by_insight_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_888_learning_by_insight_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Learning by Insight. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 889,
@@ -15210,14 +15630,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Learning by Association",
       "description": "Connects stimuli",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_889_learning_by_association_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_889_learning_by_association_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Learning by Association. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 890,
@@ -15225,14 +15660,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Classical Conditioning",
       "description": "Associates stimuli",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_890_classical_conditioning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_890_classical_conditioning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Classical Conditioning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 891,
@@ -15240,14 +15690,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Operant Conditioning",
       "description": "Associates behavior and consequence",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_891_operant_conditioning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_891_operant_conditioning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Operant Conditioning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 892,
@@ -15255,14 +15720,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Observational Learning",
       "description": "Learns from models",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_892_observational_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_892_observational_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Observational Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 893,
@@ -15270,14 +15750,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Social Learning",
       "description": "Learns from others",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_893_social_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_893_social_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Social Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 894,
@@ -15285,14 +15780,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Vicarious Learning",
       "description": "Learns from others' experience",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_894_vicarious_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_894_vicarious_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Vicarious Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 895,
@@ -15300,14 +15810,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Experiential Learning",
       "description": "Learns from experience",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_895_experiential_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_895_experiential_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Experiential Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 896,
@@ -15315,14 +15840,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Reflective Practice",
       "description": "Learns from reflection",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_896_reflective_practice_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_896_reflective_practice_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Reflective Practice. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 897,
@@ -15330,14 +15870,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Action Learning",
       "description": "Learns while solving",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_897_action_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_897_action_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Action Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 898,
@@ -15345,14 +15900,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Project-Based Learning",
       "description": "Learns through projects",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_898_project_based_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_898_project_based_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Project-Based Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 899,
@@ -15360,14 +15930,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Problem-Based Learning",
       "description": "Learns through problems",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_899_problem_based_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_899_problem_based_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Problem-Based Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 900,
@@ -15375,14 +15960,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Inquiry-Based Learning",
       "description": "Learns through questions",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_900_inquiry_based_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_900_inquiry_based_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Inquiry-Based Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 901,
@@ -15390,14 +15990,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Discovery Learning",
       "description": "Learns through exploration",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_901_discovery_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_901_discovery_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Discovery Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 902,
@@ -15405,14 +16020,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Guided Discovery",
       "description": "Learns with support",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_902_guided_discovery_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_902_guided_discovery_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Guided Discovery. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 903,
@@ -15420,14 +16050,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Direct Instruction",
       "description": "Learns from teaching",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_903_direct_instruction_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_903_direct_instruction_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Direct Instruction. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 904,
@@ -15435,14 +16080,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Explicit Instruction",
       "description": "Learns from clear explanation",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_904_explicit_instruction_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_904_explicit_instruction_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Explicit Instruction. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 905,
@@ -15450,14 +16110,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Implicit Learning",
       "description": "Learns without awareness",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_905_implicit_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_905_implicit_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Implicit Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 906,
@@ -15465,14 +16140,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Incidental Learning",
       "description": "Learns by accident",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_906_incidental_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_906_incidental_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Incidental Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 907,
@@ -15480,14 +16170,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Intentional Learning",
       "description": "Learns deliberately",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_907_intentional_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_907_intentional_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Intentional Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 908,
@@ -15495,14 +16200,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Formal Learning",
       "description": "Learns in institutions",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_908_formal_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_908_formal_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Formal Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 909,
@@ -15510,14 +16230,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Informal Learning",
       "description": "Learns in daily life",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_909_informal_learning_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_909_informal_learning_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Supplied-input diagnostic transforms, arithmetic, hand-written heuristic or template only. No execution or independent verification of Informal Learning. Stage coverage is input coverage, never completion.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "All50 nonexecution contracts tested; independent review pending."
+      }
     },
     {
       "id": 910,

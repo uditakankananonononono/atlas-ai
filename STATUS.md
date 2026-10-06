@@ -387,3 +387,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 ## Final money-name defense pass
 
 - Per reviewer, one final bounded pass adds acronym camelCase split, digit-free segments, charges/payments/purchases/billing/invoice/buyer and exact compact topUp/cashOut forms. Focused64 pass. Stopped denylist expansion here: names cannot prove side-effect behavior, and trusted correct registry risk/visibility declarations are the real control. No universal alias/confusable guarantee.
+
+## Cognitive-learning rows860-909 honest scope
+
+- Read all50 operations. They sort/echo supplied data, compute supplied-score arithmetic, return fixed stages or hand-written heuristics; they do not run the named thinking/learning abilities. Complete=true previously meant nonempty input stages. Now complete=false/capability_executed=false with supplied_input_diagnostics_only; separate input_stage_coverage_complete retains honest input coverage. No bounded uncertainty from filled fields.
+- Critical-thinking quality-risk product is explicitly heuristic and has no supported verdict. An insight's caller verification boolean is preserved only as caller_verification_claim; verified=false. Existing diagnostics stay available with the same caveats, not promoted to cognition.49 more historical rows PARTIAL (880 already retracted). Labels1845 historical/50SCOPED/111PARTIAL/4removed.
+- All50 negative nonexecution contracts and prior exact-transform tests pass; M20+ledger1775 pass with expected SCS warning. Independent review pending. Actual learned cognitive pipelines/model execution remain unfinished, not made complete by honest output labels.

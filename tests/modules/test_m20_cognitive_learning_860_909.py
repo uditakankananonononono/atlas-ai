@@ -11,7 +11,7 @@ def data(i):
 def payload(i):return {'tenant_id':'tenant-a','actor_id':'actor-a','sources':[dict(S[0])],'inputs':data(i),'ethical_review':i in (890,891),'learner_goals':['learn']}
 
 def _assert_row(i):
- o=execute(i,payload(i));assert o['row_id']==i and o['mechanism']==KEYS[i] and (o['complete'] is (i!=880));assert o['result'] and o['scope']=={'tenant_id':'tenant-a','actor_id':'actor-a'};assert o['actions_taken']==[]
+ o=execute(i,payload(i));assert o['row_id']==i and o['mechanism']==KEYS[i] and o['complete'] is False and o['input_stage_coverage_complete'];assert o['result'] and o['scope']=={'tenant_id':'tenant-a','actor_id':'actor-a'};assert o['actions_taken']==[]
 for _i in range(860,910):
  globals()[f'test_row_{_i}_{KEYS[_i]}_computes_specific_result']=(lambda i=_i:_assert_row(i))
 
@@ -51,7 +51,7 @@ def test_capabilities_lists_exact_rows():
 def test_exact_row_860_historical_thinking_transformation():
  assert execute(860,payload(860))['result']=={'changes': [], 'chronology': ['early', 'later'], 'continuities': []}
 def test_exact_row_861_critical_thinking_transformation():
- assert execute(861,payload(861))['result']=={'argument_score': 0.6, 'verdict': 'supported'}
+ assert execute(861,payload(861))['result']=={'argument_score': 0.6, 'verdict': None,'score_kind':'hand_written_quality_risk_product_not_argument_validation'}
 def test_exact_row_862_creative_thinking_transformation():
  assert execute(862,payload(862))['result']=={'ideas': ['new-a', 'new-b'], 'novelty_score': 1.0}
 def test_exact_row_863_lateral_thinking_transformation():
@@ -107,7 +107,7 @@ def test_exact_row_886_learning_by_imitating_transformation():
 def test_exact_row_887_learning_by_trial_and_error_transformation():
  assert execute(887,payload(887))['result']=={'best_attempt': '2', 'error_reduction': 0.6000000000000001, 'next_experiment': 'vary one factor'}
 def test_exact_row_888_learning_by_insight_transformation():
- assert execute(888,payload(888))['result']=={'impasse_restructured_as': 'diagram', 'insight': 'pattern', 'verified': True}
+ assert execute(888,payload(888))['result']=={'impasse_restructured_as': 'diagram', 'insight': 'pattern', 'verified': False,'caller_verification_claim':True}
 def test_exact_row_889_learning_by_association_transformation():
  assert execute(889,payload(889))['result']=={'prediction_error': 0.8, 'prior_strength': 0.2, 'updated_strength': 0.6}
 def test_exact_row_890_classical_conditioning_transformation():
@@ -161,3 +161,14 @@ def test_belief_revision_does_not_fabricate_probability_from_reliability_knob():
   o=execute(880,p)
   assert not o['complete'] and o['result']['revised_confidence'] is None
   assert o['result']['status']=='belief_revision_model_unavailable'
+
+
+def test_all_fifty_named_abilities_remain_nonexecuted_even_with_all_stages_supplied():
+ for i in range(860,910):
+  p=payload(i);p['inputs'].update({k:'junk nonempty' for k in STAGES[i] if k not in p['inputs']})
+  o=execute(i,p)
+  assert o['status']=='supplied_input_diagnostics_only' and o['capability_executed'] is False and o['complete'] is False
+  assert o['uncertainty']['level']=='unquantified'
+ assert execute(888,payload(888))['result']['verified'] is False
+ assert execute(861,payload(861))['result']['verdict'] is None
+ assert all(not x['capability_executed'] for x in capabilities())
