@@ -42,7 +42,7 @@ def test_837_case_reasoning_retrieve_reuse_revise_retain():assert len(T('case_ba
 def R(n,**x):
  p={'source':SRC};p.update(x);return execute(n,p)['result']
 def test_838_rules_have_forward_trace():assert R('rule_based_reasoning',facts=['a'],rules=[{'id':'r','if':['a'],'then':'b'}])['rule_trace']==[{'rule':'r','fact':'b'}]
-def test_839_model_has_entities_relations_constraints_predictions_validation():assert set(R('model_based_reasoning')['model'])>={'entities','relations','constraints','predictions','validation_observations'}
+def test_839_model_checks_finite_assignments():assert R('model_based_reasoning',model_domains={'a':[0,1]},model_constraints=[])['model']['feasible_model_count']==2
 def test_840_qualitative_preserves_ambiguous_successors():assert R('qualitative_reasoning')['qualitative_states']['ambiguous_successors_preserved']
 def test_841_quantitative_computes_mean_range_units():assert R('quantitative_reasoning',values=[1,3],units='m')['quantitative']['mean']==2
 def test_842_spatial_requires_frame_and_scale():assert 'frame_of_reference' in R('spatial_reasoning',frame_of_reference='Cartesian',spatial_objects=[{'id':'a','bounds':[[0,1],[0,1]]}],spatial_relations=[])['spatial']

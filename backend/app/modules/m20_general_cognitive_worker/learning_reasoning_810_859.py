@@ -14,6 +14,7 @@ from .boolean_induction import induce
 from .interleaved_practice import interleave
 from .spatial_constraints import solve_spatial
 from .temporal_network import temporal
+from .finite_model_reasoning import models
 from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
@@ -89,7 +90,9 @@ def reasoning(row,p):
    for r in rules:
     if set(map(str,r.get('if',[])))<=facts and str(r.get('then')) not in facts:facts.add(str(r['then']));derived.append({'rule':r.get('id'),'fact':str(r['then'])});changed=True
   out['rule_trace']=derived;out['facts']=sorted(facts)
- if row==839:out['model']={'entities':p.get('entities',[]),'relations':p.get('relations',[]),'constraints':p.get('constraints',[]),'predictions':p.get('predictions',[]),'validation_observations':p.get('validation_observations',[])}
+ if row==839:
+  try:out['model']=models(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==840:out['qualitative_states']={'variables':p.get('variables',{}),'landmarks':p.get('landmarks',{}),'influences':p.get('influences',[]),'ambiguous_successors_preserved':True}
  if row==841:
   vals=req(p,'values',list);nums=[float(x) for x in vals];out['quantitative']={'count':len(nums),'sum':sum(nums),'mean':sum(nums)/len(nums),'range':max(nums)-min(nums),'units':p.get('units'),'significant_digits_not_invented':True}

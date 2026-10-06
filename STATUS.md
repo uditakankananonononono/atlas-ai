@@ -218,3 +218,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Replaced event sorting/relation echo with finite simple temporal network difference constraints, all-pairs closure, negative-cycle consistency detection, implied minimum/maximum gaps and validated feasible relative-time witness. Queries distinguish guaranteed from possible separation. Disconnected event bounds stay null/unbounded, not fabricated dates.
 - Restricted to declared-unit relative scalar time gaps, not calendar scheduling/timezone conversion or verified real-world events. Tolerance1e-9, witness checked within1e-8. No absolute anchor or notification effect.
 - Tests prove transitive ranges, positive/zero cycles, unknown ordering and reverse negative gaps; reject nonfinite/unknown bounds. Focused224; M20/ledger1632 passed. Row843SCOPED pending review. Current labels1960 historical,45SCOPED,1PARTIAL,4removed.
+
+## Actual finite model reasoning (row839)
+
+- Replaced copied entities/predictions with finite-domain constraint model enumeration. Explicit typed scalar domains and comparison predicates yield actual feasible assignment count, possible values and query entailment/supporting/countermodels across all supplied models. Inconsistent premises report unknown entailment, not vacuous real-world certainty.
+- Maximum65536 assignments,10 variables. Not continuous simulation, scientific model learning, natural-language reasoning or independent premise validation. Literal-versus-variable right operands explicit; ordered comparisons require numerical operands.
+- Tests compute unique transitive model, ambiguous supported/countermodel query, contradiction, literal/name distinction and size rejection. Focused224; M20/ledger1637 passed. Row839SCOPED pending review; labels1959 historical,46SCOPED,1PARTIAL,4removed.
