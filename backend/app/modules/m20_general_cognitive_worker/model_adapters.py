@@ -130,6 +130,16 @@ class FreeFirstExecutiveModel:
             return {"available":False,"error":"executive model returned invalid JSON","route":f"{provider}/{model}"}
         if not isinstance(data, dict):
             return {"available":False,"error":"executive model must return JSON object","route":f"{provider}/{model}"}
+        valid = True
+        if purpose == "reason":
+            valid = isinstance(data.get("result"), str) and bool(data["result"].strip())
+        elif purpose == "reflect":
+            valid = (isinstance(data.get("cause"), str) and bool(data["cause"].strip())
+                     and isinstance(data.get("fix"), str) and bool(data["fix"].strip())
+                     and type(data.get("retry")) is bool)
+        if not valid:
+            return {"available": False, "error": "executive model purpose schema mismatch",
+                    "route": f"{provider}/{model}"}
         data.setdefault("route", f"{provider}/{model}")
         return data
 

@@ -23,3 +23,22 @@ def test_invalid_executive_output_not_relabelled_as_reasoning(monkeypatch):
  reply(monkeypatch,'I think it is fine')
  r=ma.FreeFirstExecutiveModel().complete('reflect',{})
  assert not r['available'] and 'invalid JSON' in r['error'] and 'text' not in r
+
+@pytest.mark.parametrize('purpose,body',[
+ ('reason','{"reason":"correct summary"}'),('reason','{"result":" "}'),('reason','{"result":12}'),
+ ('reflect','{"reason":"empty fixture","fix":"check fixture","retry":false}'),
+ ('reflect','{"cause":"timeout","fix":"retry","retry":"false"}'),
+ ('reflect','{"cause":"","fix":"retry","retry":false}'),
+ ('reflect','{"cause":"timeout","retry":false}'),
+])
+def test_executive_rejects_invalid_purpose_schema(monkeypatch,purpose,body):
+ reply(monkeypatch,body)
+ out=ma.FreeFirstExecutiveModel().complete(purpose,{})
+ assert out['available'] is False and 'schema mismatch' in out['error']
+ assert 'result' not in out and 'cause' not in out
+
+@pytest.mark.parametrize('purpose,body',[('reason','{"result":"Three colors."}'),('reflect','{"cause":"timeout","fix":"retry","retry":false}')])
+def test_executive_accepts_exact_purpose_schema(monkeypatch,purpose,body):
+ reply(monkeypatch,body)
+ out=ma.FreeFirstExecutiveModel().complete(purpose,{})
+ assert out.get('available') is not False and out['route']=='local/fixture'
