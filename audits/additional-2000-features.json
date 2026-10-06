@@ -4,12 +4,12 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1912,
+    "verified-pushed": 1907,
+    "PARTIAL": 51,
     "SCOPED": 48,
-    "PARTIAL": 46,
-    "removed": 4,
     "thin": 0,
-    "missing": 0
+    "missing": 0,
+    "removed": 4
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -37,7 +37,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Decision Journaling + Retrieval (Most Powerful, Easiest)",
-      "description": "What it is: Every time you make a decision \u2014 \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" \u2014 you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
+      "description": "What it is: Every time you make a decision — \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" — you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -51,7 +51,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Correction Loop (Reinforcement From You)",
-      "description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output \u2192 your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
+      "description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output → your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -65,7 +65,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Voice Fine-Tuning (Style Transfer to You)",
-      "description": "What it is: You collect 50\u2013200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
+      "description": "What it is: You collect 50–200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "93c65c5c4e2bbdf91632d10a1433de8e114c87bc",
@@ -79,7 +79,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Chain-of-Thought Capture",
-      "description": "What it is: When you solve a hard problem, you record your reasoning step by step \u2014 not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
+      "description": "What it is: When you solve a hard problem, you record your reasoning step by step — not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -94,7 +94,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Preference Ranking",
-      "description": "What it is: Claire generates 3\u20135 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
+      "description": "What it is: Claire generates 3–5 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "93c65c5c4e2bbdf91632d10a1433de8e114c87bc",
@@ -108,7 +108,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Behavioral Telemetry (What You Actually Do)",
-      "description": "What it is: Silently log your real actions \u2014 which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
+      "description": "What it is: Silently log your real actions — which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -157,7 +157,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -173,7 +173,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -189,7 +189,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -205,7 +205,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -221,7 +221,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -237,7 +237,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -253,7 +253,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -269,7 +269,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -285,7 +285,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -295,15 +295,31 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Bias Detection & Mitigation",
       "description": "Identifies cognitive biases in own reasoning and user inputs, then corrects",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+          "test_path": "tests/modules/test_m20_metacognition.py",
+          "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        }
+      },
+      "current_scope": "Literal marker scan with mitigation review templates; no diagnosed bias, measured severity or corrected reasoning.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+        "test_path": "tests/modules/test_m20_meta_scope_retractions.py",
+        "verification": "Self-inspected actual methods; fixed numerical scores removed, nonexecution statuses pinned. Independent review pending."
+      }
     },
     {
       "id": 20,
@@ -311,15 +327,31 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Intuition Simulation",
       "description": "Generates fast, gut-level responses for time-critical decisions, then validates with slow reasoning",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+          "test_path": "tests/modules/test_m20_metacognition.py",
+          "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        }
+      },
+      "current_scope": "Skill/fact cache lookup and substring comparison to supplied text; no calibrated confidence or validated intuition.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+        "test_path": "tests/modules/test_m20_meta_scope_retractions.py",
+        "verification": "Self-inspected actual methods; fixed numerical scores removed, nonexecution statuses pinned. Independent review pending."
+      }
     },
     {
       "id": 21,
@@ -333,7 +365,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -349,7 +381,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -365,7 +397,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -381,7 +413,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -397,7 +429,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -413,7 +445,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -429,7 +461,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -445,7 +477,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -455,15 +487,31 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Cognitive Diversity Simulation",
       "description": "Models how different personality types would approach a problem",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+          "test_path": "tests/modules/test_m20_metacognition.py",
+          "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        }
+      },
+      "current_scope": "Five deterministic persona checklists over supplied metadata; no personality model or scored cognitive diversity.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+        "test_path": "tests/modules/test_m20_meta_scope_retractions.py",
+        "verification": "Self-inspected actual methods; fixed numerical scores removed, nonexecution statuses pinned. Independent review pending."
+      }
     },
     {
       "id": 30,
@@ -471,15 +519,31 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Devil's Advocate Protocol",
       "description": "Systematically argues against own conclusions to stress-test",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+          "test_path": "tests/modules/test_m20_metacognition.py",
+          "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        }
+      },
+      "current_scope": "Assumption review templates and evidence-count diagnostics; no generated defensible alternatives or residual confidence.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+        "test_path": "tests/modules/test_m20_meta_scope_retractions.py",
+        "verification": "Self-inspected actual methods; fixed numerical scores removed, nonexecution statuses pinned. Independent review pending."
+      }
     },
     {
       "id": 31,
@@ -487,15 +551,31 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Steel-manning",
       "description": "Constructs strongest version of opposing arguments before responding",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
-      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
+      "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "a99ca93987670db88f8515a9772524b314ed1fba",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+          "test_path": "tests/modules/test_m20_metacognition.py",
+          "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        }
+      },
+      "current_scope": "Lexical overlap selection of supplied facts and response skeleton; no strongest opposing argument generated or verified.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
+        "test_path": "tests/modules/test_m20_meta_scope_retractions.py",
+        "verification": "Self-inspected actual methods; fixed numerical scores removed, nonexecution statuses pinned. Independent review pending."
+      }
     },
     {
       "id": 32,
@@ -509,7 +589,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -525,7 +605,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -541,7 +621,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },

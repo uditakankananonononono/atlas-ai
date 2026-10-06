@@ -507,7 +507,8 @@ def row20_intuition(request: IntuitionRequest, service: Any = Depends(get_servic
         fact_hits=service.semantic.query(request.question, limit=1),
     )
     return {"answer": gut.answer, "confidence": gut.confidence, "basis": gut.basis,
-            "latency_class": gut.latency_class}
+            "latency_class": gut.latency_class, "status": gut.status,
+            "capability_executed": gut.capability_executed}
 
 
 @router.post("/meta/world-models", status_code=201)
