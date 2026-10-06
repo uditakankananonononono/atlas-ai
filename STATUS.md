@@ -408,3 +408,7 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 ## Cognitive diagnostic label follow-up
 
 - Reviewer confirmed05e6e7d and ebce40a. Renamed row885's echoed confidence to supplied_inference_confidence, row894's multiplication to supplied_outcome_similarity_product, and row905's awareness threshold to low_supplied_awareness_threshold_flag. These labels do not claim inferred confidence, vicarious learning value or evidence of implicit learning. Focused112 pass; scopes/counts unchanged.
+
+## Product-plan expiry fail-closed follow-up
+
+- The orchestration class now retains request expiry separately and enforces it before dispatch even if an injected gate still says APPROVED. Missing expiry fails closed. Focused18 pass, including an expired approved token. Process-local snapshot/expiry/consumption remains non-durable; production center behavior is not substituted by these tests.
