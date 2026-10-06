@@ -101,7 +101,7 @@ def test_exact_row_883_learning_by_teaching_transformation():
 def test_exact_row_884_learning_by_doing_transformation():
  assert execute(884,payload(884))['result']=={'attempt_delta': 0.5, 'next_task': 'harder'}
 def test_exact_row_885_learning_by_observing_transformation():
- assert execute(885,payload(885))['result']=={'check_required': True, 'inference_confidence': 0.7, 'observed_steps': ['step']}
+ assert execute(885,payload(885))['result']=={'check_required': True, 'supplied_inference_confidence': 0.7, 'observed_steps': ['step']}
 def test_exact_row_886_learning_by_imitating_transformation():
  assert execute(886,payload(886))['result']=={'adaptations': [], 'fidelity': 0.8, 'sequence': ['a']}
 def test_exact_row_887_learning_by_trial_and_error_transformation():
@@ -119,7 +119,7 @@ def test_exact_row_892_observational_learning_transformation():
 def test_exact_row_893_social_learning_transformation():
  assert execute(893,payload(893))['result']=={'identity_safety': 0.9, 'participation_change': 0.49999999999999994, 'shared_artifacts': 'shared_artifacts evidence'}
 def test_exact_row_894_vicarious_learning_transformation():
- assert execute(894,payload(894))['result']=={'direct_practice_needed': True, 'similarity_limits': 'similarity_limits evidence', 'vicarious_value': 0.4}
+ assert execute(894,payload(894))['result']=={'direct_practice_needed': True, 'similarity_limits': 'similarity_limits evidence', 'supplied_outcome_similarity_product': 0.4}
 def test_exact_row_895_experiential_learning_transformation():
  assert execute(895,payload(895))['result']=={'cycle': ['concrete_experience', 'reflective_observation', 'abstract_conceptualization', 'active_experimentation'],
  'next_experiment': 'test'}
@@ -144,7 +144,7 @@ def test_exact_row_903_direct_instruction_transformation():
 def test_exact_row_904_explicit_instruction_transformation():
  assert execute(904,payload(904))['result']=={'clarity_check': 0.9, 'feedback': 'retry', 'guided_accuracy': 0.8, 'independent_accuracy': 0.75}
 def test_exact_row_905_implicit_learning_transformation():
- assert execute(905,payload(905))['result']=={'awareness': 0.2, 'implicit_evidence': True, 'performance_change': 0.39999999999999997}
+ assert execute(905,payload(905))['result']=={'awareness': 0.2, 'low_supplied_awareness_threshold_flag': True, 'performance_change': 0.39999999999999997}
 def test_exact_row_906_incidental_learning_transformation():
  assert execute(906,payload(906))['result']=={'incidental_gain': 0.49999999999999994, 'transfer': 'use', 'unplanned_learning': 'fact'}
 def test_exact_row_907_intentional_learning_transformation():

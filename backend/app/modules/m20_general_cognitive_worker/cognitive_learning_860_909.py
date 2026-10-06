@@ -70,7 +70,7 @@ def _operation(row, x):
  if row==882:return {'initial_conception':x['initial_conception'],'reconstructed_conception':x['reconstructed_conception'],'transfer_accuracy':_score(x,'transfer_accuracy')}
  if row==883:return {'explanation_gaps':x.get('audience_questions',[]),'teach_back_revision':x.get('revised_explanation'),'comprehension_gain':_score(x,'post_score')-_score(x,'pre_score')}
  if row==884:return {'attempt_delta':_score(x,'later_score')-_score(x,'first_score'),'next_task':x.get('next_attempt')}
- if row==885:return {'observed_steps':x.get('observations',[]),'inference_confidence':_score(x,'inference_confidence'),'check_required':_score(x,'inference_confidence')<.8}
+ if row==885:return {'observed_steps':x.get('observations',[]),'supplied_inference_confidence':_score(x,'inference_confidence'),'check_required':_score(x,'inference_confidence')<.8}
  if row==886:return {'fidelity':_score(x,'matched_steps'),'adaptations':x.get('adaptations',[]),'sequence':x.get('target_sequence',[])}
  if row==887:
   attempts=_items(x,'attempts');best=max(attempts,key=lambda a:a['score']);return {'best_attempt':best['id'],'error_reduction':attempts[-1]['score']-attempts[0]['score'],'next_experiment':x.get('next_experiment')}
@@ -83,7 +83,7 @@ def _operation(row, x):
   q=_score(x,'behavior_probability');reward=_number(x.get('consequence',1),'consequence',-1,1);alpha=_number(x.get('learning_rate',.2),'learning_rate',0,1);return {'prior_probability':q,'updated_probability':max(0,min(1,q+alpha*reward*(1-q if reward>=0 else q))),'schedule':x.get('schedule')}
  if row==892:return {'attention':_score(x,'attention'),'retention':_score(x,'retention'),'reproduction_readiness':round(_score(x,'attention')*_score(x,'retention')*_score(x,'motivation'),4)}
  if row==893:return {'participation_change':_score(x,'later_participation')-_score(x,'initial_participation'),'shared_artifacts':x.get('shared_artifacts',[]),'identity_safety':_score(x,'identity_safety')}
- if row==894:return {'vicarious_value':round(_score(x,'model_outcome')*_score(x,'observer_similarity'),4),'similarity_limits':x.get('similarity_limits',[]),'direct_practice_needed':True}
+ if row==894:return {'supplied_outcome_similarity_product':round(_score(x,'model_outcome')*_score(x,'observer_similarity'),4),'similarity_limits':x.get('similarity_limits',[]),'direct_practice_needed':True}
  if row==895:return {'cycle':['concrete_experience','reflective_observation','abstract_conceptualization','active_experimentation'],'next_experiment':x.get('active_experimentation')}
  if row==896:return {'lesson':x.get('analysis'),'action_plan':x.get('action_plan'),'reflection_depth':len(x.get('evidence_considered',[]))}
  if row==897:return {'problem':x.get('real_problem'),'question_count':len(x.get('questions',[])),'action':x.get('action'),'reflection':x.get('reflection')}
@@ -94,7 +94,7 @@ def _operation(row, x):
  if row==902:return {'hint_level':int(_number(x.get('hint_level',1),'hint_level',0,5)),'faded_to':int(_number(x.get('faded_to',0),'faded_to',0,5)),'transfer_score':_score(x,'transfer_score')}
  if row==903:return {'instruction_sequence':['review','model','guided_practice','independent_practice','check'],'mastery':_score(x,'check_score'),'reteach':_score(x,'check_score')<.8}
  if row==904:return {'clarity_check':_score(x,'clarity_score'),'guided_accuracy':_score(x,'guided_accuracy'),'independent_accuracy':_score(x,'independent_accuracy'),'feedback':x.get('feedback')}
- if row==905:return {'performance_change':_score(x,'post_exposure')-_score(x,'pre_exposure'),'awareness':_score(x,'awareness'),'implicit_evidence':_score(x,'awareness')<.5}
+ if row==905:return {'performance_change':_score(x,'post_exposure')-_score(x,'pre_exposure'),'awareness':_score(x,'awareness'),'low_supplied_awareness_threshold_flag':_score(x,'awareness')<.5}
  if row==906:return {'incidental_gain':_score(x,'post_score')-_score(x,'pre_score'),'unplanned_learning':x.get('unplanned_learning'),'transfer':x.get('transfer')}
  if row==907:return {'goal_progress':_score(x,'current_score')-_score(x,'baseline_score'),'strategy':x.get('strategy'),'monitoring_points':x.get('monitoring',[])}
  if row==908:return {'curriculum_progress':round(sum(bool(u.get('complete')) for u in x.get('units',[]))/max(1,len(x.get('units',[]))),4),'assessment_score':_score(x,'assessment_score'),'credential_awarded':False}
