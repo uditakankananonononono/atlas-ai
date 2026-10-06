@@ -206,3 +206,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Replaced repeated skill-index cycling and constant variety flag with a largest-remaining-count scheduler over actual supplied exercise records. Defers previous skill, uses every exercise exactly once; impossible imbalanced catalogs preserve unavoidable adjacent repeats and report that status rather than claiming success.
 - Named tests verify exact catalog conservation, no adjacent repeats, impossible-case visibility and64 small count combinations against the exact multiset feasibility inequality. No generated exercises, curriculum optimum or learning-gain claim. Row811SCOPED pending review.
 - Focused223 passed; M20/ledger1622 passed. Labels1962 historical,43SCOPED,1PARTIAL,4removed. Broad original breadth remains unfinished.
+
+## Actual finite spatial constraints (row842)
+
+- Replaced objects/relation/frame echo with bounded2D axis-order linear constraints, genuine LP feasibility and query min/max signed separation. Queries return universal satisfaction within the supplied feasible set, possible layout or actual violating counterexample. Positive-gap cycles are inconsistent, not quietly retained as output labels.
+- Caller explicitly supplies frame and coordinate boxes. Restricted to non-strict east/west/north/south minimum-separation constraints, not vision, metric/rotation geometry, maps or physical current location. Numerical tolerance1e-8; witnesses are feasible layouts, not unique object placements. No diagram/visual-output claim.
+- Tests prove transitive separation, concrete counterexample/supporting assignments and positive/zero-gap cycle distinctions. Focused224 passed; M20/ledger1627 passed. Row842SCOPED pending review; labels1961 historical,44SCOPED,1PARTIAL,4removed.

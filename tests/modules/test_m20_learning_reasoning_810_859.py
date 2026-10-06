@@ -45,7 +45,7 @@ def test_838_rules_have_forward_trace():assert R('rule_based_reasoning',facts=['
 def test_839_model_has_entities_relations_constraints_predictions_validation():assert set(R('model_based_reasoning')['model'])>={'entities','relations','constraints','predictions','validation_observations'}
 def test_840_qualitative_preserves_ambiguous_successors():assert R('qualitative_reasoning')['qualitative_states']['ambiguous_successors_preserved']
 def test_841_quantitative_computes_mean_range_units():assert R('quantitative_reasoning',values=[1,3],units='m')['quantitative']['mean']==2
-def test_842_spatial_requires_frame_and_scale():assert 'frame_of_reference' in R('spatial_reasoning')['spatial']
+def test_842_spatial_requires_frame_and_scale():assert 'frame_of_reference' in R('spatial_reasoning',frame_of_reference='Cartesian',spatial_objects=[{'id':'a','bounds':[[0,1],[0,1]]}],spatial_relations=[])['spatial']
 def test_843_temporal_orders_events():assert [x['time'] for x in R('temporal_reasoning',events=[{'time':2},{'time':1}])['temporal']['ordered']]==[1,2]
 def test_844_causal_has_dag_roles_and_identification():assert R('causal_reasoning',equations={'X':{},'Y':{'parents':{'X':2}}},exposure='X',outcome='Y',intervention_values=[0,1])['causal']['effect']==2
 def test_845_counterfactual_exposes_held_constant():assert R('counterfactual_reasoning',equations={'X':{},'Y':{'parents':{'X':2}}},factual={'X':1,'Y':3},intervention={'X':2})['counterfactual']['result']['Y']==5

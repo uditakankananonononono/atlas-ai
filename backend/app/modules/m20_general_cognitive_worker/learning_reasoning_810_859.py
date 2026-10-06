@@ -12,6 +12,7 @@ from .progress_measurement import measure_progress
 from .graph_transduction import transduce
 from .boolean_induction import induce
 from .interleaved_practice import interleave
+from .spatial_constraints import solve_spatial
 from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
@@ -91,7 +92,9 @@ def reasoning(row,p):
  if row==840:out['qualitative_states']={'variables':p.get('variables',{}),'landmarks':p.get('landmarks',{}),'influences':p.get('influences',[]),'ambiguous_successors_preserved':True}
  if row==841:
   vals=req(p,'values',list);nums=[float(x) for x in vals];out['quantitative']={'count':len(nums),'sum':sum(nums),'mean':sum(nums)/len(nums),'range':max(nums)-min(nums),'units':p.get('units'),'significant_digits_not_invented':True}
- if row==842:out['spatial']={'objects':p.get('objects',[]),'relations':p.get('relations',[]),'frame_of_reference':p.get('frame_of_reference','must be specified'),'scale':p.get('scale'),'diagram_recommended':True}
+ if row==842:
+  try:out['spatial']=solve_spatial(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==843:
   events=req(p,'events',list);out['temporal']={'ordered':sorted(events,key=lambda x:x['time']),'relations':p.get('relations',[]),'timezone':p.get('timezone'),'uncertain_intervals_preserved':True}
  if row==844:
