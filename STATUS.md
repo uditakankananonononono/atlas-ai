@@ -484,3 +484,7 @@ Reviewed atomic70-92 and round9_139-160 for nonempty-field verification. No dire
 ## Atomic staleness/validation correction
 
 Atomic70-92 review dates/staleness odds used fixed180-day coefficients and default volatility/confidence, not fitted belief-decay or review timing. Retracted predicted_staleness/review_on/overdue to null, schedule_generated=false; observed formation age only, future formation date rejected. Also caller-weighted ranking no longer validated_choice/intuition_confirmed: caller_weight_ranked_choice/same_as_salience_candidate with choice_independently_validated=false. Focused60 pass. Separate atomic denominator; register counts unchanged.
+
+## Priority corpus IDOR repair
+
+Reviewer reproduced a confidentiality bug: the mounted round9 corpus endpoint trusted body owner_id to filter the shared default corpus, so another authenticated caller could request a victim's text. Route now binds owner_id to authenticated immutable actor_id, rejects body mismatches403, and uses a distinct corpus keyed by (tenant_id,actor_id), never the default corpus. Mutation/retrieval share a lock. Actual app-mounted RS256 tests use production verifier path: same-tenant different-subject spoof403, different tenant same subject empty, rightful subject receives its own text, unauthenticated401.33 focused pass. Corpus remains process-local and owner_confirmed a caller attestation, not a separate authenticated consent workflow. Insecure explicit dev mode remains header-trusting and must not be deployed.
