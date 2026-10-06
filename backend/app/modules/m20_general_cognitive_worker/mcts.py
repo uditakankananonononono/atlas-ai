@@ -52,6 +52,9 @@ class MCTSResult:
 
     def as_dict(self) -> dict[str, Any]:
         return {
+            "status": "uct_search_over_heuristic_rollout",
+            "assumptions": {"success_probability":"max(0.05,0.9-0.1*attempts), unfitted", "risk_costs":"hand-written", "standard_error":"Monte Carlo internal reward only, not correctness uncertainty"},
+            "predictive_model_available": False,
             "best_action_id": self.best_action_id,
             "best_action_title": self.best_action_title,
             "simulations_run": self.simulations_run,

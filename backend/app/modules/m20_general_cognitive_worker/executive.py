@@ -45,15 +45,15 @@ class ExecutiveModel(Protocol):
 @dataclass
 class CandidateAction:
     node: PlanNode
-    information_gain: float
+    heuristic_information_weight: float
     cost: float
-    progress_probability: float
+    heuristic_progress_weight: float
 
     @property
     def score(self) -> float:
         if self.cost <= 0:
             return 0.0
-        return (0.5 * self.information_gain + 0.5 * self.progress_probability) / self.cost
+        return (0.5 * self.heuristic_information_weight + 0.5 * self.heuristic_progress_weight) / self.cost
 
 
 RISK_COST = {Risk.READ: 1.0, Risk.REVERSIBLE: 2.0, Risk.EXTERNAL: 4.0, Risk.IRREVERSIBLE: 8.0}
@@ -75,9 +75,9 @@ class MetaReasoner:
             progress = 0.5 + 0.1 * min(ltm_hits, 3) - 0.1 * node.attempts
             candidates.append(CandidateAction(
                 node=node,
-                information_gain=max(0.0, min(1.0, info_gain)),
+                heuristic_information_weight=max(0.0, min(1.0, info_gain)),
                 cost=RISK_COST.get(node.risk, 1.0),
-                progress_probability=max(0.05, min(0.95, progress)),
+                heuristic_progress_weight=max(0.05, min(0.95, progress)),
             ))
         candidates.sort(key=lambda c: c.score, reverse=True)
         return candidates
@@ -111,7 +111,7 @@ class MCTSRuminator:
 
     def ruminate(self, plan: list[PlanNode]) -> dict[str, Any]:
         if not any(n.state == TaskState.PENDING for n in plan):
-            return {"simulations": 0, "best_ordering": [], "expected_success": 1.0}
+            return {"simulations": 0, "best_ordering": [], "expected_success": None, "status":"random_ordering_heuristic_only", "predictive_model_available":False}
         best_order: list[str] = []
         best_score = -1.0
         for _ in range(self.simulations):
@@ -132,7 +132,8 @@ class MCTSRuminator:
         return {
             "simulations": self.simulations,
             "best_ordering": best_order,
-            "expected_success": round(expected, 4),
+            "expected_success": None, "heuristic_order_score": round(expected, 4),
+            "status":"random_ordering_heuristic_only", "predictive_model_available":False,
         }
 
 

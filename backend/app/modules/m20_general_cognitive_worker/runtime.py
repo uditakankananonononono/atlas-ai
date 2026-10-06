@@ -50,9 +50,9 @@ class AlternativeEvaluated:
 
     node_id: str
     title: str
-    information_gain: float
+    heuristic_information_weight: float
     cost: float
-    progress_probability: float
+    heuristic_progress_weight: float
     score: float
 
 
@@ -74,6 +74,7 @@ class DecisionArtifact:
             "alternatives": [vars(a) for a in self.alternatives],
             "decided_at": self.decided_at,
             "basis": self.basis,
+            "status":"hand_written_candidate_ranking", "predictive_model_available":False,
         }
 
 
@@ -252,27 +253,18 @@ class GCWRuntime:
         self._persisted_traces += len(new_traces)
 
     def _register_expectations(self, context: TaskContext) -> None:
-        """Before dispatch, record predicted success per ready step as a
-        calibration claim (row M20-30)."""
-        ready = HTNPlanner.ready_nodes(context.plan)
-        wm_context = self.working_memory.context(partition=context.id)
-        ltm_hits = len(self.semantic.query(context.goal, limit=3))
-        for candidate in self.meta.score_candidates(ready, wm_context=wm_context, ltm_hits=ltm_hits):
-            claim = self.calibration.assess_claim(
-                f"step succeeds: {candidate.node.title}",
-                candidate.progress_probability,
-                evidence_count=ltm_hits,
-            )
-            candidate.node.arguments.setdefault("_expectation_claim_id", claim.id)
+        """No fitted success predictor; heuristic weights are not probabilities."""
+        return
 
     def _evaluate_expectations(self, context: TaskContext) -> list[str]:
         """Resolve expectation claims against observed outcomes; a large miss
         is a surprise that triggers reflection and replanning (row M20-14)."""
         surprises: list[str] = []
         for node in context.plan:
-            claim_id = node.arguments.pop("_expectation_claim_id", None)
+            claim_id = node.arguments.get("_expectation_claim_id")
             if claim_id is None or node.state not in (TaskState.SUCCEEDED, TaskState.FAILED):
                 continue
+            node.arguments.pop("_expectation_claim_id", None)
             claim = self.calibration.claims.get(claim_id)
             if claim is None or claim.resolved:
                 continue
@@ -312,9 +304,9 @@ class GCWRuntime:
         alternatives = [
             AlternativeEvaluated(
                 node_id=c.node.id, title=c.node.title,
-                information_gain=round(c.information_gain, 4),
+                heuristic_information_weight=round(c.heuristic_information_weight, 4),
                 cost=c.cost,
-                progress_probability=round(c.progress_probability, 4),
+                heuristic_progress_weight=round(c.heuristic_progress_weight, 4),
                 score=round(c.score, 4),
             )
             for c in candidates
