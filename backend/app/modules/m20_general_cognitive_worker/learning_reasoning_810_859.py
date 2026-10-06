@@ -5,6 +5,7 @@ from math import exp,log
 import re
 from typing import Any
 from .learning_calibration import calibrate_attempts
+from .formal_reasoning import argument_validity, causal_effect, counterfactual
 class LearningReasoningError(ValueError):pass
 ROWS={810:'Spaced Repetition',811:'Interleaving',812:'Retrieval Practice',813:'Elaborative Interrogation',814:'Self-Explanation',815:'Dual Coding',816:'Concrete Examples',817:'Worked Examples',818:'Problem Solving',819:'Deliberate Practice',820:'Chunking',821:'Scaffolding',822:'Fading',823:'Metacognition',824:'Self-Regulated Learning',825:'Goal Setting',826:'Progress Monitoring',827:'Self-Assessment',828:'Peer Assessment',829:'Formative Assessment',830:'Summative Assessment',831:'Diagnostic Assessment',832:'Prior Knowledge Activation',833:'Transfer',834:'Near Transfer',835:'Far Transfer',836:'Analogical Reasoning',837:'Case-Based Reasoning',838:'Rule-Based Reasoning',839:'Model-Based Reasoning',840:'Qualitative Reasoning',841:'Quantitative Reasoning',842:'Spatial Reasoning',843:'Temporal Reasoning',844:'Causal Reasoning',845:'Counterfactual Reasoning',846:'Probabilistic Reasoning',847:'Fuzzy Logic',848:'Default Reasoning',849:'Non-Monotonic Reasoning',850:'Abductive Reasoning',851:'Inductive Reasoning',852:'Deductive Reasoning',853:'Transductive Reasoning',854:'Dialectical Reasoning',855:'Integrative Thinking',856:'Systems Thinking',857:'Design Thinking',858:'Computational Thinking',859:'Scientific Thinking'}
 def slug(x):return re.sub(r'[^a-z0-9]+','_',x.lower()).strip('_')
@@ -78,8 +79,12 @@ def reasoning(row,p):
  if row==842:out['spatial']={'objects':p.get('objects',[]),'relations':p.get('relations',[]),'frame_of_reference':p.get('frame_of_reference','must be specified'),'scale':p.get('scale'),'diagram_recommended':True}
  if row==843:
   events=req(p,'events',list);out['temporal']={'ordered':sorted(events,key=lambda x:x['time']),'relations':p.get('relations',[]),'timezone':p.get('timezone'),'uncertain_intervals_preserved':True}
- if row==844:out['causal']={'exposure':p.get('exposure'),'outcome':p.get('outcome'),'dag_edges':p.get('dag_edges',[]),'confounders':p.get('confounders',[]),'mediators':p.get('mediators',[]),'colliders':p.get('colliders',[]),'identification_strategy':p.get('identification_strategy'),'association_is_not_causation':True}
- if row==845:out['counterfactual']={'factual':p.get('factual'),'intervention':p.get('intervention'),'changed_factors':p.get('changed_factors',[]),'held_constant':p.get('held_constant',[]),'result':p.get('result'),'structural_assumptions_required':True}
+ if row==844:
+  try:out['causal']=causal_effect(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+ if row==845:
+  try:out['counterfactual']=counterfactual(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==846:
   prior=float(p.get('prior',.5));likelihood=float(p.get('likelihood_given_h',.5));alt=float(p.get('likelihood_given_not_h',.5));den=prior*likelihood+(1-prior)*alt
   if not all(0<=x<=1 for x in (prior,likelihood,alt)) or not den:raise LearningReasoningError('invalid probabilities')
@@ -91,7 +96,9 @@ def reasoning(row,p):
  if row in (848,849):out['defaults']={'rules':p.get('defaults',[]),'exceptions':p.get('exceptions',[]),'beliefs_revisable':True,'retraction_log_required':row==849,'open_world_boundary':True}
  if row==850:out['abduction']={'observations':p.get('observations',[]),'candidate_explanations':p.get('candidate_explanations',[]),'ranking_criteria':['fit','simplicity','prior plausibility','testability'],'best_explanation_is_not_proof':True}
  if row==851:out['induction']={'observations':p.get('observations',[]),'pattern':p.get('pattern'),'sample_scope':p.get('sample_scope'),'exceptions':p.get('exceptions',[]),'generalization_strength':p.get('strength','uncalibrated')}
- if row==852:out['deduction']={'argument_form':p.get('argument_form'),'validity':p.get('validity'),'premises_true':p.get('premises_true'),'soundness':(bool(p.get('validity')) and bool(p.get('premises_true'))),'validity_does_not_establish_premise_truth':True}
+ if row==852:
+  try:out['deduction']=argument_validity(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==853:out['transduction']={'source_instance':p.get('source_instance'),'target_instance':p.get('target_instance'),'local_similarity':p.get('local_similarity'),'scope':'target instance only; no population rule'}
  if row==854:out['dialectic']={'thesis':p.get('thesis'),'antithesis':p.get('antithesis'),'tensions':p.get('tensions',[]),'synthesis':p.get('synthesis'),'synthesis_must_preserve_unresolved_conflict':True}
  if row==855:out['integration']={'frames':p.get('frames',[]),'salient_tensions':p.get('tensions',[]),'shared_values':p.get('shared_values',[]),'novel_resolution':p.get('resolution'),'tradeoffs_visible':True}
@@ -104,6 +111,7 @@ def inquiry(row,p):
  if row==859:out['science']={'question':p.get('question'),'hypothesis':p.get('hypothesis'),'prediction':p.get('prediction'),'design':p.get('design'),'controls':p.get('controls',[]),'measurements':p.get('measurements',[]),'analysis_plan':p.get('analysis_plan'),'falsification_condition':p.get('falsification_condition'),'replication_and_open_materials':True}
  return out
 def execute(method,payload):
+ if not isinstance(payload,dict):raise LearningReasoningError('payload must be an object')
  tenant=str(payload.get('tenant_id','default')).strip() if isinstance(payload,dict) else ''
  if not tenant:raise LearningReasoningError('tenant_id must not be empty')
  for ref in payload.get('resource_refs',[]):
