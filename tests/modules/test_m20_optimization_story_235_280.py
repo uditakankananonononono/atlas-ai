@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from app.modules.m20_general_cognitive_worker.optimization_story_235_280 import WorkbenchError, capabilities, execute
 from app.modules.m20_general_cognitive_worker.optimization_story_routes_235_280 import router
 SRC={"title":"Owner supplied reference","url":"https://example.org/input"}
-OPT={"source":SRC,"objective":[1.0,2.0],"initial":[0.5,1.5],"constraint_matrix":[[1.0,1.0]],"bounds":[1.0],"iteration":4,"blocks":[[0],[1]],"duals":[0.2],"denominator":2.0,"historical_losses":[1.2,0.8],"arm_rewards":[[1,0],[0.4,0.5]],"model_weights":[[1,0],[0,1]],"propensities":[0.5,0.5],"priors":[[1,1],[2,1]],"outcomes":[[2,1],[1,2]],"means":[0.5,0.7],"counts":[2,3],"expert_losses":[0.2,0.9],"learner_losses":[1,2],"comparator_losses":[0.5,1.5],"payoff_matrix":[[1,0],[0,2]],"action_counts":[2,3]}
+OPT={"quadratic":[[1.,0.],[0.,1.]],"linear":[1.,2.],"l1_penalty":0.2,"source":SRC,"objective":[1.0,2.0],"initial":[0.5,1.5],"constraint_matrix":[[1.0,1.0]],"bounds":[1.0],"iteration":4,"blocks":[[0],[1]],"duals":[0.2],"denominator":2.0,"historical_losses":[1.2,0.8],"arm_rewards":[[1,0],[0.4,0.5]],"model_weights":[[1,0],[0,1]],"propensities":[0.5,0.5],"priors":[[1,1],[2,1]],"outcomes":[[2,1],[1,2]],"means":[0.5,0.7],"counts":[2,3],"expert_losses":[0.2,0.9],"learner_losses":[1,2],"comparator_losses":[0.5,1.5],"payoff_matrix":[[1,0],[0,2]],"action_counts":[2,3]}
 STORY={"source":SRC,"premise":"A mapmaker finds a changing city","source_domain":"tide","target_domain":"memory","shared_structure":"returns changed","genres":["mystery"],"trope":"map","hook":"bell","acts":3,"scenes":[{"text":"The bell calls the mapmaker home.","tension":1,"duration":2,"character":"Ila","goal":"enter","outcome":"gate opens","location":"gate"},{"text":"A hidden map shifts and the bell breaks.","tension":5,"duration":1,"character":"Ila","goal":"decode","outcome":"truth found","location":"archive"},{"text":"The mapmaker returns home with the map.","tension":2,"duration":3,"character":"Ila","goal":"restore","outcome":"city settles","location":"gate"}],"choices":[{"from":0,"to":1},{"from":1,"to":2}]}
 def run(row):
  name=next(x["key"] for x in capabilities() if x["row_id"]==row)
@@ -19,7 +19,7 @@ def test_row_235_dual_decomposition_computes_from_inputs():
  r=run(235); assert "coupling_residual_norm" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
 
 def test_row_236_admm_computes_from_inputs():
- r=run(236); assert "primal_residual_norm" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(236); assert r["converged"] and r["solution"]==pytest.approx([.8,1.8],abs=1e-5) and r["kkt_violation"]<1e-5
 
 def test_row_237_coordinate_descent_computes_from_inputs():
  r=run(237); assert "selected_coordinate" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
@@ -154,7 +154,7 @@ def test_row_280_visual_storyboarding_computes_from_inputs():
  r=run(280); assert "shots" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
 
 def test_metrics_change_with_inputs():
- a=run(236); p=dict(OPT); p["initial"]=[0.5,0.5]; b=execute("admm",p)["result"]; assert a["primal_residual_norm"]!=b["primal_residual_norm"]
+ a=run(236); p=dict(OPT); p["linear"]=[2.,3.]; b=execute("admm",p)["result"]; assert a["solution"]!=b["solution"] and b["solution"]==pytest.approx([1.8,2.8],abs=1e-5)
  a=run(267); p=dict(STORY); p["scenes"]=[dict(s) for s in STORY["scenes"]]; p["scenes"][1]["tension"]=2; b=execute("tension_building",p)["result"]; assert a["peak"]!=b["peak"]
 
 def test_degenerate_and_infeasible_diagnostics():

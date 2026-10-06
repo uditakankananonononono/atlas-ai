@@ -11,9 +11,20 @@ class Adapter:
  def __init__(self,result=None):self.calls=0;self.result=result or {"ok":True}
  async def __call__(self,args,key):self.calls+=1;return self.result
 
+@pytest.fixture
+def initialized_approvals(tmp_path,monkeypatch):
+ from sqlalchemy import create_engine
+ from sqlalchemy.orm import sessionmaker
+ from app.core.database import Base
+ import app.modules.m00_approval_center.service as module
+ engine=create_engine(f"sqlite:///{tmp_path}/approvals.db")
+ Base.metadata.create_all(engine)
+ monkeypatch.setattr(module,'_default_service',ApprovalService(session_factory=sessionmaker(bind=engine,expire_on_commit=False)))
+ return shared_approvals
+
 @pytest.mark.asyncio
-async def test_full_loop_pauses_for_external_approval():
- approvals=shared_approvals;service=Service(approvals,Model());reader=Adapter();sender=Adapter()
+async def test_full_loop_pauses_for_external_approval(initialized_approvals):
+ approvals=initialized_approvals;service=Service(approvals,Model());reader=Adapter();sender=Adapter()
  service.tools.register(Tool("reader","read",Risk.READ,{"read"},reader))
  service.tools.register(Tool("sender","send",Risk.EXTERNAL,{"send"},sender))
  run=await service.start("research then send",{}, {"seconds":10,"tokens":100,"money":0})
@@ -32,3 +43,17 @@ def test_memory_sensory_skill_and_supervision():
  ltm=LongTermMemory();ltm.remember(Memory("semantic",{"statement":"grant deadline"},{"source":"official"},.9));assert ltm.recall("grant")
  skills=SkillLibrary();skills.register(Skill("research","research",[{"title":"read"}]));assert skills.match("research this")
  run=Run("x",{},Plan("x",[],{}),status=State.BLOCKED);assert AtlasSupervisor().assess([run],1)["action"]=="pause_and_escalate"
+
+@pytest.mark.asyncio
+async def test_approval_infrastructure_failure_blocks_instead_of_silent_pending():
+ class BrokenStore:
+  def put(self,item):raise RuntimeError('approval database unavailable')
+  def list(self):return []
+ service=Service(BrokenStore(),Model());reader=Adapter();sender=Adapter()
+ service.tools.register(Tool('reader','read',Risk.READ,{'read'},reader))
+ service.tools.register(Tool('sender','send',Risk.EXTERNAL,{'send'},sender))
+ run=await service.start('research then send',{}, {'seconds':10,'tokens':100,'money':0})
+ assert run.status==State.BLOCKED and run.plan.steps[1].state==State.BLOCKED
+ assert 'approval database unavailable' in run.plan.steps[1].error
+ assert sender.calls==0
+ assert run.traces[-1].decision=='escalate'

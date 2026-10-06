@@ -9,6 +9,7 @@ from collections import Counter, defaultdict, deque
 from math import exp, log, sqrt
 import re
 from typing import Any, Callable
+from .admm import solve_quadratic_l1
 
 class WorkbenchError(ValueError):
     pass
@@ -56,13 +57,15 @@ def _problem(p):
     return c,x,A,b,sense,{'objective_value':_dot(c,x),'max_violation':max(violations,default=0.0),'violation_count':sum(v>1e-9 for v in violations),'feasible':not any(v>1e-9 for v in violations),'constraint_residuals':residual}
 
 def _opt(row,p):
+    if row==236:
+        try:return solve_quadratic_l1(p)
+        except ValueError as exc:raise WorkbenchError(str(exc)) from exc
     c,x,A,b,sense,d=_problem(p); step=float(p.get('step_size',0.1)); it=int(p.get('iteration',1))
     if step<=0 or it<1:raise WorkbenchError('step_size must be positive and iteration must be >= 1')
     r=[_dot(a,x)-z for a,z in zip(A,b)]; grad=[c[j]+sum(max(0,q)*a[j] for q,a in zip(r,A)) for j in range(len(x))]
     common={'diagnostics':d,'metrics':{'gradient_norm':sqrt(_dot(grad,grad)),'confidence':_confidence(r or c)},'uncertainty':{'kind':'deterministic_input_diagnostic','solver_executed':False}}
     H={
 235:lambda:{'block_values':[sum(c[j]*x[j] for j in block) for block in p.get('blocks',[list(range(len(x)))])],'dual_multipliers':[max(0,q*step) for q in r],'coupling_residual_norm':sqrt(_dot(r,r))},
-236:lambda:{'x_update':[v-step*g for v,g in zip(x,grad)],'z_update':[max(0,v-step*g) for v,g in zip(x,grad)],'primal_residual_norm':sqrt(_dot(r,r)),'dual_residual_norm':step*sqrt(_dot(grad,grad)),'rho':float(p.get('rho',1.0))},
 237:lambda:{'selected_coordinate':(it-1)%len(x),'coordinate_gradient':grad[(it-1)%len(x)],'next_value':x[(it-1)%len(x)]-step*grad[(it-1)%len(x)]},
 238:lambda:{'proximal_point':[max(0,v-step*g) for v,g in zip(x,grad)],'gradient_mapping_norm':sqrt(sum((min(v/step,g))**2 for v,g in zip(x,grad)))},
 239:lambda:{'oracle_vertex':min(range(len(c)),key=c.__getitem__),'duality_gap':max(0,_dot(grad,x)-min(grad)),'step_fraction':2/(it+2)},

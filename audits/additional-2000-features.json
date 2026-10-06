@@ -3528,14 +3528,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "ADMM",
       "description": "Alternates between subproblems",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_236_admm_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_236_admm_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_admm_solver.py",
+        "independent_review": "pending"
+      },
+      "current_scope": "Real iterative ADMM for convex quadratic plus L1 regularization; finite convex inputs, primal/dual stopping conditions, explicit nonconvergence, KKT residual; not an arbitrary distributed solver."
     },
     {
       "id": 237,
@@ -12645,14 +12659,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Metacognition",
       "description": "Thinks about thinking",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_823_metacognition_calibrates",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_823_metacognition_calibrates",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_calibration_behavior.py",
+        "independent_review": "pending"
+      },
+      "current_scope": "Measured calibration from scored attempts; not autonomous self-awareness or complete metacognition."
     },
     {
       "id": 824,
@@ -30080,5 +30108,6 @@
     "changed": 0,
     "unchanged": 2006,
     "reason": "Owner instruction removed customer-services/accounts-type rows 446, 447, 448, and 450 from the expanded target."
-  }
+  },
+  "verification_notice": "Legacy builder ledger. verified-pushed is historical attribution, not current proof. See STATUS.md for independent audit snapshots. Only explicitly rebuilt rows carry current scope annotations."
 }
