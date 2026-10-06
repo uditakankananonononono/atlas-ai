@@ -188,3 +188,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Requires actual dated evidence, strict chronology and a declared measurement unit/direction. Computes observed delta and endpoint rate; separates target_reached from on_track. Decreasing goals are handled correctly rather than always latest>=target.
 - A future deadline plus multiple observations permits explicitly uncalibrated endpoint linear extrapolation; no deadline/no rate means unknown on_track, not a guessed forecast. Rejects mixed units, nonfinite values/overflow, duplicate evidence and naive/out-of-order times. No predictive model or evidence-verification claim.
 - Focused226 passed; M20/ledger1607 passed. Row826SCOPED pending review. Current row labels1965 historical,40SCOPED,1PARTIAL,4removed.
+
+## Actual graph transduction (row853)
+
+- Replaced copied source/target/similarity labels with actual harmonic graph label propagation. Finite supplied symmetric nonnegative graph and evidence-linked pinned class labels yield a constrained Laplacian linear solve, harmonic residual and energy. Explicit connected-label reachability and condition checks reject unsupported targets; ties remain null predicted_label with all candidate labels.
+- Similarities/labels are caller assumptions, not independently learned or verified. Class scores are harmonic weights, not calibrated probabilities. Restricted to the supplied instance graph, not population generalization or semantic/causal inference. Source inspected: https://aaai.org/papers/icml03-118-semi-supervised-learning-using-gaussian-fields-and-harmonic-functions/ .
+- Weighted-edge changes alter predicted labels; exact chain interpolation and energy checked; missing anchor/negative/asymmetric graph rejected. Focused225 passed; M20/ledger1613 passed. Row853SCOPED pending review; historical1964,SCOPED41,PARTIAL1,removed4 labels remain scope bookkeeping.
