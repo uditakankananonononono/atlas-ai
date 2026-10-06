@@ -92,3 +92,13 @@ def test_tenant_boundary_enforced_on_mounted_surface(monkeypatch, oidc_auth_head
  h=oidc_auth_headers("tenant-a", "tester")
  assert c.get("/api/v1/api/modules/20/cognitive-1960-2009/methods",headers=h).status_code==200
  assert c.post("/api/v1/api/modules/20/cognitive-1960-2009/analyze",headers=h,json={"method":"self_consistency","data":{"answers":["a","a"]}}).status_code==200
+
+@pytest.mark.parametrize('method',['automated_reasoning','theorem_proving'])
+def test_horn_proof_requires_antecedents_not_just_rule_consequent(method):
+ missing=run(method,{'clauses':[['a']],'query':'z','rules':[{'if':['b'],'then':'z'}]})['output']
+ assert missing['proved'] is False and missing['derivations']==[]
+ derived=run(method,{'clauses':[['a']],'query':'z','rules':[{'if':['b'],'then':'z'},{'if':['a'],'then':'b'}]})['output']
+ assert derived['proved'] and derived['closure']==['a','b','z'] and len(derived['derivations'])==2
+ assert derived['real_world_truth_verified'] is False
+ with pytest.raises(ValueError,match='unit facts'):
+  run(method,{'clauses':[['a','b']],'query':'a'})

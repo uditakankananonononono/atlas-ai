@@ -87,9 +87,19 @@ def run(method,data,seed=0):
     if set(r["if"])<=facts and r["then"] not in facts:facts.add(r["then"]);changed=True
   out={"closure":sorted(facts),"inferred_count":len(facts)-len(data.get("facts",[]))}
  elif method in {"automated_reasoning","theorem_proving"}:
-  clauses=[set(x) for x in data.get("clauses",[])];query=data.get("query")
-  if not clauses or not query:raise ValueError("clauses and query required")
-  known=set().union(*clauses);out={"query":query,"proved":query in known or any({"if","then"}<=set(r) and query in r for r in data.get("rules",[])),"proof_basis":[sorted(x) for x in clauses]};limits += ["Finite propositional proof check, not complete first-order theorem proving."]
+  clauses=data.get("clauses");query=data.get("query");rules=data.get("rules",[])
+  if not isinstance(clauses,list) or not clauses or not isinstance(query,str) or not query:raise ValueError("unit clauses and query required")
+  if any(not isinstance(c,list) or len(c)!=1 or not isinstance(c[0],str) or not c[0] for c in clauses):raise ValueError("restricted Horn solver accepts unit facts only, not disjunctive clauses")
+  if not isinstance(rules,list):raise ValueError("rules must be a list")
+  for r in rules:
+   if not isinstance(r,dict) or not isinstance(r.get('if'),list) or not all(isinstance(x,str) and x for x in r['if']) or not isinstance(r.get('then'),str) or not r['then']:raise ValueError("Horn rules require string antecedents and consequent")
+  known={c[0] for c in clauses};proof=[];changed=True
+  while changed:
+   changed=False
+   for index,r in enumerate(rules):
+    if set(r['if'])<=known and r['then'] not in known:
+     known.add(r['then']);proof.append({'rule_index':index,'premises':r['if'],'conclusion':r['then']});changed=True
+  out={"query":query,"proved":query in known,"closure":sorted(known),"derivations":proof,"proof_basis":clauses,"proof_scope":"positive_ground_Horn_forward_chaining","real_world_truth_verified":False};limits += ["Restricted positive ground Horn entailment over caller axioms. Rejects multi-literal clauses; strings are uninterpreted atomic labels, not parsed negation, variables or first-order logic; no independent axiom verification."]
  elif method in {"neuro_symbolic_ai","hybrid_ai"}:
   probs=data.get("probabilities");rules=data.get("rules")
   if not isinstance(probs,dict) or not isinstance(rules,list):raise ValueError("probabilities and rules required")
