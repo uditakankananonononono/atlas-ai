@@ -42,3 +42,13 @@ def test_intervening_on_mediator_cuts_original_parent_edge():
 def test_cyclic_model_and_missing_factual_data_rejected():
  with pytest.raises(ValueError,match='acyclic'):causal_effect({'equations':{'X':{'parents':{'Y':1}},'Y':{'parents':{'X':1}}}})
  with pytest.raises(ValueError,match='complete'):counterfactual({'equations':{'X':{},'Y':{}},'factual':{'X':1},'intervention':{'X':2}})
+
+
+def test_biconditional_rejects_or_truth_assignment_and_accepts_equal_values():
+ # Iff(P,Q) entails equal truth values. Or(P,Q) does not entail P.
+ r=argument_validity({'formulas':[{'iff':['P','Q']},'Q'],'conclusion':'P'})
+ assert r['validity'] and r['premise_model_count']==1
+ r=argument_validity({'formulas':[{'iff':['P','Q']},{'not':'P'}],'conclusion':{'not':'Q'}})
+ assert r['validity'] and r['premise_model_count']==1
+ r=argument_validity({'formulas':[{'iff':['P','Q']}],'conclusion':'P'})
+ assert not r['validity'] and r['countermodel']=={'P':False,'Q':False}
