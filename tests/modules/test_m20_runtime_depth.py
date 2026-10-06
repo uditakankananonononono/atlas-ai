@@ -136,7 +136,7 @@ def test_m20_07_facts_edges_and_decay_survive_reload():
     reloaded = DurableSemanticMemory.load(repo)
     neighbours = reloaded.neighbors(fact.id, relation="about")
     assert len(neighbours) == 1 and neighbours[0].to_id == concept.id
-    assert reloaded.freshness(fact.id) < 0.9
+    assert reloaded.freshness(fact.id) is None
     reloaded.confirm(fact.id)
     assert repo.list_facts()
 

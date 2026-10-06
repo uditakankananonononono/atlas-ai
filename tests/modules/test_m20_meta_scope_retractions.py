@@ -91,3 +91,12 @@ def test_conflict_pruning_preserves_terminal_history_and_rejects_self_dependency
  assert set(out['already_executed_dependents'])=={done.id,failed.id}
  selfnode=PlanNode(title='x');selfnode.depends_on=[selfnode.id]
  with pytest.raises(ValueError):m.restructure([selfnode])
+
+
+def test_semantic_memory_no_fixed_freshness_even_at_extreme_caller_decay():
+ from app.modules.m20_general_cognitive_worker.semantic_memory import SemanticMemory
+ m=SemanticMemory()
+ for rate in (0,1,10000):
+  f=m.remember('unverified',decay_rate=rate)
+  assert m.freshness(f.id) is None
+ assert m.due_for_refresh()==[]

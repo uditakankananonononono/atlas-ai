@@ -152,3 +152,16 @@ def test_invalid_or_unavailable_reasoning_response_never_marks_success(response)
  loop,_,_=build_loop();loop.model=Model()
  out=loop.start(TaskContext(goal='x',plan=[PlanNode(title='think')]))
  assert out.state==TaskState.BLOCKED and out.plan[0].state==TaskState.BLOCKED
+
+
+@pytest.mark.parametrize('state',[TaskState.SUCCEEDED,TaskState.CANCELLED])
+def test_start_does_not_trust_incoming_terminal_state_without_execution(state):
+ loop,_,_=build_loop()
+ out=loop.start(TaskContext(goal='x',plan=[PlanNode(title='think',state=state)]))
+ assert out.state==TaskState.BLOCKED and out.plan[0].state==TaskState.BLOCKED
+
+
+def test_run_all_cancelled_plan_never_reports_success():
+ loop,_,_=build_loop()
+ out=loop.run(TaskContext(goal='x',plan=[PlanNode(title='cancelled',state=TaskState.CANCELLED)]))
+ assert out.state==TaskState.BLOCKED

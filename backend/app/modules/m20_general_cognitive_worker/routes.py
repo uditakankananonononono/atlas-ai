@@ -656,7 +656,9 @@ def row32_due_beliefs(service: Any = Depends(get_service)) -> dict[str, Any]:
 
 @router.get("/meta/knowledge-decay/forecast")
 def row33_decay_forecast(days_ahead: float = 30.0, threshold: float = 0.5, service: Any = Depends(get_service)) -> dict[str, Any]:
-    return {"forecast": service.decay_modeler.forecast(
+    return {"status": "obsolescence_model_unavailable", "capability_executed": False,
+            "ignored_prediction_parameters": ["days_ahead", "threshold"],
+            "forecast": service.decay_modeler.forecast(
         service.semantic, days_ahead=days_ahead, threshold=threshold,
     )}
 

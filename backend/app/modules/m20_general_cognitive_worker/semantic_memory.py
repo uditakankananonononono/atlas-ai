@@ -70,21 +70,15 @@ class SemanticMemory:
             and (relation is None or e.relation == relation)
         ]
 
-    def freshness(self, fact_id: str, *, now: datetime | None = None) -> float:
-        """Estimated current reliability of a fact under knowledge decay."""
-        fact = self._facts[fact_id]
-        if fact.decay_rate <= 0.0:
-            return fact.confidence
-        now = now or datetime.now(timezone.utc)
-        age_days = max(0.0, (now - fact.last_confirmed_at).total_seconds() / 86400.0)
-        return fact.confidence * (0.5 ** (fact.decay_rate * age_days / 30.0))
+    def freshness(self, fact_id: str, *, now: datetime | None = None) -> None:
+        """No fitted reliability/obsolescence model. Caller confidence is not freshness."""
+        if fact_id not in self._facts:
+            raise KeyError(fact_id)
+        return None
 
     def due_for_refresh(self, *, threshold: float = 0.5, now: datetime | None = None) -> list[SemanticFact]:
-        """Facts whose freshness fell below threshold: schedule re-verification."""
-        return [
-            fact for fact in self._facts.values()
-            if fact.decay_rate > 0.0 and self.freshness(fact.id, now=now) < threshold
-        ]
+        """No model-driven refresh schedule. Explicit re-verification is still needed."""
+        return []
 
     def confirm(self, fact_id: str, *, now: datetime | None = None) -> SemanticFact:
         fact = self._facts[fact_id]
