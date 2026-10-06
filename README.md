@@ -154,3 +154,5 @@ All cognitive-learning rows860-909 are PARTIAL supplied-input diagnostics only, 
 Negotiation rows85-109 now PARTIAL supplied-input arithmetic/rubrics/templates only; fabricated confidence/bands removed, rubric flags do not authorize effects, priming counts not causal. Latest ledger labels1820 historical verified-pushed/50SCOPED/136PARTIAL/4removed, not capability certification.
 
 Ground-Horn proof correction rows1970/1971 now SCOPED; labels1818historical/52SCOPED/136PARTIAL/4removed. Restricted unit-fact entailment, not complete theorem proving.
+
+Cognition/affect1975-1977/2009 PARTIAL supplied calibration/quadrant rubrics. Latest labels1814historical/52SCOPED/140PARTIAL/4removed.

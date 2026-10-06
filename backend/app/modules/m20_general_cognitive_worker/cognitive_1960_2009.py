@@ -109,11 +109,23 @@ def run(method,data,seed=0):
  elif method in {"cognitive_computing","metacognition"}:
   tasks=data.get("tasks")
   if not isinstance(tasks,list) or not tasks:raise ValueError("tasks required")
-  rows=[{"task":x["task"],"confidence":float(x["confidence"]),"correct":bool(x.get("correct"))} for x in tasks];brier=sum((r["confidence"]-int(r["correct"]))**2 for r in rows)/len(rows);out={"calibration_brier":brier,"mean_confidence":statistics.mean(x["confidence"] for x in rows),"accuracy":statistics.mean(x["correct"] for x in rows),"review_tasks":[x["task"] for x in rows if x["confidence"]<_num(data,"review_threshold",.6)]}
+  rows=[]
+  for x in tasks:
+   if not isinstance(x,dict) or not isinstance(x.get('task'),str) or not x['task'] or type(x.get('correct')) is not bool:raise ValueError("task and exact boolean scored outcome required")
+   confidence=_num(x,'confidence')
+   if not 0<=confidence<=1:raise ValueError('confidence must be in [0,1]')
+   rows.append({'task':x['task'],'confidence':confidence,'correct':x['correct']})
+  if len({x['task'] for x in rows})!=len(rows):raise ValueError('duplicate task observations')
+  threshold=_num(data,'review_threshold',.6)
+  if not 0<=threshold<=1:raise ValueError('review_threshold must be in [0,1]')
+  brier=sum((r['confidence']-int(r['correct']))**2 for r in rows)/len(rows);out={"calibration_brier":brier,"mean_confidence":statistics.mean(x["confidence"] for x in rows),"accuracy":statistics.mean(x["correct"] for x in rows),"review_tasks":[x["task"] for x in rows if x["confidence"]<threshold],"status":"supplied_scored_attempt_calibration_only","cognition_executed":False,"outcome_truth_verified":False}
  elif method in {"affective_computing","emotion_recognition"}:
   signals=data.get("signals")
   if not isinstance(signals,dict):raise ValueError("signals required")
-  arousal=float(signals.get("arousal",0));valence=float(signals.get("valence",0));label=("excited" if valence>=0 else "distressed") if arousal>=.5 else ("content" if valence>=0 else "sad");out={"valence":valence,"arousal":arousal,"quadrant":label,"confidence":min(1,(abs(valence)+abs(arousal-.5))/1.5)};limits += ["Signal quadrant is not a diagnosis or certain reading of emotion."]
+  arousal=_num(signals,'arousal');valence=_num(signals,'valence')
+  if not 0<=arousal<=1 or not -1<=valence<=1:raise ValueError('arousal must be [0,1] and valence [-1,1]')
+  label=("excited" if valence>=0 else "distressed") if arousal>=.5 else ("content" if valence>=0 else "sad")
+  out={"valence":valence,"arousal":arousal,"heuristic_quadrant_label":label,"confidence":None,"status":"supplied_signal_quadrant_rubric_only","emotion_recognized":False};limits += ["Caller valence/arousal quadrant rubric only, no sensor/text emotion recognition, trained affective model or calibrated confidence."]
  elif method in {"sentiment_analysis","opinion_mining"}:
   texts=data.get("texts");pos=set(data.get("positive_words",["good","love","great"]));neg=set(data.get("negative_words",["bad","hate","poor"]))
   if not isinstance(texts,list):raise ValueError("texts required")

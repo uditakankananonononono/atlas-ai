@@ -46,7 +46,7 @@ def test_distinctive_value_per_row():
  assert _out("symbolic_ai")["closure"]==["a","b"]
  assert _out("neuro_symbolic_ai")["accepted"]==["a","b"] and _out("hybrid_ai")["combined_scores"]["b"]==pytest.approx(.9)
  assert _out("cognitive_computing")["calibration_brier"]==pytest.approx(.04)
- assert _out("affective_computing")["quadrant"]=="excited" and _out("emotion_recognition")["quadrant"]=="sad"
+ assert _out("affective_computing")["heuristic_quadrant_label"]=="excited" and _out("emotion_recognition")["heuristic_quadrant_label"]=="sad"
  s=_out("sentiment_analysis");assert s["net_sentiment"]==1 and [x["label"] for x in s["opinions"]]==["positive","negative"]
  assert _out("opinion_mining")["opinions"][0]["label"]=="positive"
  assert _out("social_computing")["most_connected"]=="a" and _out("social_computing")["edge_count"]==2
@@ -102,3 +102,16 @@ def test_horn_proof_requires_antecedents_not_just_rule_consequent(method):
  assert derived['real_world_truth_verified'] is False
  with pytest.raises(ValueError,match='unit facts'):
   run(method,{'clauses':[['a','b']],'query':'a'})
+
+@pytest.mark.parametrize('method',['cognitive_computing','metacognition'])
+@pytest.mark.parametrize('bad',[{'task':'a','confidence':.8,'correct':'false'},{'task':'a','confidence':.8},{'task':'a','confidence':float('nan'),'correct':True},{'task':'a','confidence':1.1,'correct':False}])
+def test_supplied_calibration_does_not_invent_or_coerce_outcomes(method,bad):
+ with pytest.raises(ValueError):run(method,{'tasks':[bad]})
+
+@pytest.mark.parametrize('method',['affective_computing','emotion_recognition'])
+def test_signal_quadrant_is_not_recognized_emotion_or_confidence(method):
+ out=run(method,{'signals':{'valence':.7,'arousal':.8}})['output']
+ assert out['emotion_recognized'] is False and out['confidence'] is None
+ assert 'quadrant' not in out
+ with pytest.raises(ValueError):run(method,{'signals':{'valence':2,'arousal':.8}})
+ with pytest.raises(ValueError):run(method,{'signals':{}})
