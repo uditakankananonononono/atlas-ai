@@ -71,14 +71,15 @@ def test_scope_and_input_failures_are_loud_and_do_not_cross_tenants():
     assert left.result == right.result and left.tenant_id != right.tenant_id
 
 
-def test_http_boundary_requires_tenant_and_actor_and_returns_typed_envelope():
+def test_http_boundary_requires_tenant_and_actor_and_returns_typed_envelope(monkeypatch,oidc_auth_headers):
+    monkeypatch.delenv("ATLAS_DEV_NO_AUTH",raising=False)
     app = FastAPI(); app.include_router(router, prefix="/api/modules/20")
     client = TestClient(app)
     body = {"row_id": 1514, "data": {"heat_w": 10, "ambient_c": 20, "thermal_resistances_k_per_w": [.2, .3]}}
-    assert client.post("/api/modules/20/specialized-domain/analyze", json=body).status_code == 422
+    assert client.post("/api/modules/20/specialized-domain/analyze", json=body).status_code == 401
     response = client.post(
         "/api/modules/20/specialized-domain/analyze", json=body,
-        headers={"x-atlas-tenant": "tenant-1", "x-atlas-actor": "engineer-1"},
+        headers={**oidc_auth_headers("tenant-1","engineer-1"),"x-atlas-tenant":"spoof","x-atlas-actor":"spoof"},
     )
     assert response.status_code == 200
     value = response.json()

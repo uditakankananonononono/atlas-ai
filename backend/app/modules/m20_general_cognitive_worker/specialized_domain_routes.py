@@ -2,7 +2,8 @@
 from __future__ import annotations
 from typing import Any
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from app.auth.context import TenantContext,require_tenant
 from pydantic import BaseModel, ConfigDict, Field
 
 from .specialized_domain import SpecializedDomainError, analyze_specialized_domain
@@ -47,16 +48,15 @@ class SpecializedDomainResponse(BaseModel):
 @router.post("/analyze", response_model=SpecializedDomainResponse)
 def analyze(
     body: SpecializedDomainRequest,
-    x_atlas_tenant: str = Header(min_length=1),
-    x_atlas_actor: str = Header(min_length=1),
+    principal: TenantContext = Depends(require_tenant),
 ):
     try:
         return analyze_specialized_domain(
             row_id=body.row_id,
             data=body.data,
             options=body.options,
-            tenant_id=x_atlas_tenant,
-            actor_id=x_atlas_actor,
+            tenant_id=principal.tenant_id,
+            actor_id=principal.actor_id,
         ).to_dict()
     except (SpecializedDomainError, ValueError, KeyError, TypeError, ZeroDivisionError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
