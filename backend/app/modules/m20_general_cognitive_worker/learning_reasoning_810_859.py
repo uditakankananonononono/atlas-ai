@@ -4,6 +4,7 @@ from datetime import datetime,timedelta,timezone
 from math import exp,log
 import re
 from typing import Any
+from .learning_calibration import calibrate_attempts
 class LearningReasoningError(ValueError):pass
 ROWS={810:'Spaced Repetition',811:'Interleaving',812:'Retrieval Practice',813:'Elaborative Interrogation',814:'Self-Explanation',815:'Dual Coding',816:'Concrete Examples',817:'Worked Examples',818:'Problem Solving',819:'Deliberate Practice',820:'Chunking',821:'Scaffolding',822:'Fading',823:'Metacognition',824:'Self-Regulated Learning',825:'Goal Setting',826:'Progress Monitoring',827:'Self-Assessment',828:'Peer Assessment',829:'Formative Assessment',830:'Summative Assessment',831:'Diagnostic Assessment',832:'Prior Knowledge Activation',833:'Transfer',834:'Near Transfer',835:'Far Transfer',836:'Analogical Reasoning',837:'Case-Based Reasoning',838:'Rule-Based Reasoning',839:'Model-Based Reasoning',840:'Qualitative Reasoning',841:'Quantitative Reasoning',842:'Spatial Reasoning',843:'Temporal Reasoning',844:'Causal Reasoning',845:'Counterfactual Reasoning',846:'Probabilistic Reasoning',847:'Fuzzy Logic',848:'Default Reasoning',849:'Non-Monotonic Reasoning',850:'Abductive Reasoning',851:'Inductive Reasoning',852:'Deductive Reasoning',853:'Transductive Reasoning',854:'Dialectical Reasoning',855:'Integrative Thinking',856:'Systems Thinking',857:'Design Thinking',858:'Computational Thinking',859:'Scientific Thinking'}
 def slug(x):return re.sub(r'[^a-z0-9]+','_',x.lower()).strip('_')
@@ -38,7 +39,11 @@ def learning(row,p):
  if row==819:out['practice_plan']={'target_subskill':p.get('target_subskill'),'stretch_level':p.get('stretch_level','just beyond current consistency'),'repetitions':p.get('repetitions',5),'immediate_specific_feedback':True,'rest_and_recovery':True}
  if row==820:out['chunks']=[{'label':c.get('label'),'elements':c.get('elements',[]),'organizing_principle':c.get('principle')} for c in req(p,'chunks',list)]
  if row in (821,822):out['support_levels']=[{'phase':'model','support':1.0},{'phase':'guided','support':.66},{'phase':'prompted','support':.33},{'phase':'independent','support':0.0}];out['fade_on_evidence_not_time']=True
- if row==823:out['metacognitive_loop']=['plan strategy','predict performance','monitor understanding','evaluate evidence','adjust strategy'];out['calibration_required']=True
+ if row==823:
+  try:out['calibration']=calibrate_attempts(req(p,'attempts',list))
+  except ValueError as exc:raise LearningReasoningError(str(exc)) from exc
+  out['calibration_required']=True
+  out['scope']='Measured strategy calibration, not full metacognition'
  if row==824:out['srl_cycle']=['forethought','performance monitoring','self-reflection'];out['choice_of_strategy']=p.get('strategy')
  if row==825:
   goal=req(p,'goal',dict);out['goal']={'specific':goal.get('specific'),'metric':goal.get('metric'),'target':goal.get('target'),'deadline':goal.get('deadline'),'feasibility_evidence':goal.get('feasibility_evidence'),'implementation_intention':goal.get('if_then')}

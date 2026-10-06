@@ -29,7 +29,7 @@ def manifest():
   row=x['id']
   if not 862<=row<=1148:continue
   a,b,impl,test,route=_family(row);e=x.get('evidence') or {};actual_impl=e.get('implementation_path')
-  out.append({'row':row,'requirement':x['requirement'],'status':'pass' if actual_impl==impl else 'fail','implementation_path':impl,'ledger_implementation_path':actual_impl,'named_test_path':e.get('test_path') or test,'mounted_route':route,'distinctive_invariant':_invariant(row,x['requirement']),'honest_caveat':'Reference/design support only; row-specific implementation owns detailed assumptions and safety boundary.'})
+  out.append({'row':row,'requirement':x['requirement'],'status':'unverified','artifact_path_matches':actual_impl==impl,'implementation_path':impl,'ledger_implementation_path':actual_impl,'named_test_path':e.get('test_path') or test,'mounted_route':route,'distinctive_invariant':_invariant(row,x['requirement']),'honest_caveat':'Reference/design support only; row-specific implementation owns detailed assumptions and safety boundary.'})
  return out
 def validate():
  rows=manifest();errors=[]
@@ -38,5 +38,7 @@ def validate():
   if not (ROOT/x['implementation_path']).is_file():errors.append(f"{x['row']}: missing implementation")
   test=x['named_test_path'];test_file=test.split('::',1)[0]
   if '{range}' not in test_file and not (ROOT/test_file).is_file():errors.append(f"{x['row']}: missing named test")
-  if x['status']!='pass':errors.append(f"{x['row']}: ledger evidence path mismatch")
- return {'rows':rows,'errors':errors,'passed':not errors,'counts':{'pass':sum(x['status']=='pass' for x in rows),'fail':sum(x['status']=='fail' for x in rows),'fixed':50}}
+  if not x['artifact_path_matches']:errors.append(f"{x['row']}: ledger evidence path mismatch")
+ return {'rows':rows,'errors':errors,'passed':False,'artifact_checks_passed':not errors,
+         'counts':{'pass':0,'fail':0,'unverified':len(rows),'fixed':0},
+         'verification_boundary':'Artifact inventory only. No behavior was executed; no feature is certified.'}

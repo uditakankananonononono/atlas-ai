@@ -5,13 +5,13 @@ from app.semantic_verification_862_1148 import manifest,validate
 from app.modules.m16_executive_dashboard.emerging_capabilities_0910_0959 import ROWS
 
 def test_manifest_covers_every_row_and_real_evidence():
- v=validate();assert v['passed'] and not v['errors'] and v['counts']['pass']==287
+ v=validate();assert not v['passed'] and not v['errors'] and v['counts']['pass']==0 and v['counts']['unverified']==287
  assert [x['row'] for x in v['rows']]==list(range(862,1149))
 def test_each_row_has_named_artifact_route_invariant_and_caveat():
  for x in manifest():
   assert x['implementation_path'].endswith('.py') and x['named_test_path'].startswith('tests/') and x['mounted_route'].startswith('/api/') and len(x['distinctive_invariant'])>30 and 'only' in x['honest_caveat']
 def test_wave_route_is_mounted():
- r=TestClient(app).get('/api/v1/semantic-verification/862-1148');assert r.status_code==200 and r.json()['passed'] and len(r.json()['rows'])==287
+ r=TestClient(app).get('/api/v1/semantic-verification/862-1148');assert r.status_code==200 and not r.json()['passed'] and len(r.json()['rows'])==287
 def test_emerging_direct_http_surface_now_mounted():
  c=TestClient(app);r=c.post('/api/v1/executive-dashboard/emerging-910-959/analyze',json={'method':'quantum_error_correction','data':{'physical_error_rate':.001,'threshold':.01,'code_distance':5}});assert r.status_code==200 and r.json()['feature_row']==912 and r.json()['output']['below_threshold']
 def test_emerging_http_invalid_input_failure():
