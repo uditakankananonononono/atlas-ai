@@ -1,0 +1,16 @@
+...F...                                                                  [100%]
+=================================== FAILURES ===================================
+__ test_changed_proposal_content_after_review_cannot_apply_unreviewed_prompt ___
+
+    def test_changed_proposal_content_after_review_cannot_apply_unreviewed_prompt():
+     r,g,loop=setup();a=propose(loop)
+     g.decide(a.approval_id,ApprovalGateDecision.APPROVED)
+     a.proposed_content='unreviewed changed prompt'
+>    with pytest.raises(PermissionError):loop.apply(a.id,approved=True,approval_id=a.approval_id)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'PermissionError'>
+
+tests/modules/test_m20_exact_improvement_gate.py:39: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_exact_improvement_gate.py::test_changed_proposal_content_after_review_cannot_apply_unreviewed_prompt
+1 failed, 6 passed in 1.65s

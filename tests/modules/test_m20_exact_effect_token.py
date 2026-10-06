@@ -20,3 +20,13 @@ def test_exact_effect_token_works_once_and_replay_does_not():
  _,token,_=safety.preflight('send_email',Risk.EXTERNAL,payload,task_id='a');gate.decide(token,ApprovalGateDecision.APPROVED)
  assert safety.preflight('send_email',Risk.EXTERNAL,payload,task_id='a',granted_approval_id=token)[0]
  assert not safety.preflight('send_email',Risk.EXTERNAL,payload,task_id='a',granted_approval_id=token)[0]
+
+
+def test_concurrent_replay_only_one_consumer_and_restart_unknown_fails_closed():
+ from concurrent.futures import ThreadPoolExecutor
+ gate=InMemoryApprovalGate();safety=SafetyGate(approvals=gate);payload={'to':'a@example.org','body':'reviewed'}
+ _,token,_=safety.preflight('send_email',Risk.EXTERNAL,payload,task_id='a');gate.decide(token,ApprovalGateDecision.APPROVED)
+ fresh=SafetyGate(approvals=gate)
+ assert not fresh.preflight('send_email',Risk.EXTERNAL,payload,task_id='a',granted_approval_id=token)[0]
+ def use(_):return safety.preflight('send_email',Risk.EXTERNAL,payload,task_id='a',granted_approval_id=token)[0]
+ with ThreadPoolExecutor(max_workers=8) as pool:assert sum(pool.map(use,range(32)))==1
