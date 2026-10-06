@@ -599,13 +599,27 @@ def run(method: str, data: dict) -> dict:
         out = DEEP_85_100[method](data)
     else:
         out = DEEP_101_109[method](data)
-    # Fixed confidence values and arbitrary +/- bands were not estimated.
-    if 'confidence' in out: out['confidence'] = None
-    for key in ('uncertainty_interval', 'credibility_interval'):
-        if key in out: out[key] = None
-    # These are declared-input rubric decisions, never permission to communicate.
-    for key in ('deployment_allowed','may_communicate','may_reference','allowed'):
-        if key in out: out['caller_rubric_'+key] = out.pop(key)
+    def label_claims(value):
+        if isinstance(value,list): return [label_claims(x) for x in value]
+        if not isinstance(value,dict): return value
+        result={}
+        for key,v in value.items():
+            # Keep actual Wilson and normal difference-proportion intervals.
+            if key in {'confidence','uncertainty_interval','credibility_interval','score_interval','interval_80pct','estimated_adjustment_band','expected_settlement_zone'}:
+                result[key]=None
+                continue
+            if key=='adherence_support_estimate':
+                result['adherence_prediction']=None
+                continue
+            if key=='verified': key='evidence_supplied'
+            elif key=='authorized': key='caller_authorized_claim'
+            elif key=='lawful': key='caller_lawful_claim'
+            elif key=='proportionate': key='caller_proportionate_claim'
+            elif (key in {'credible','allowed','may_communicate','may_reference'} or key.endswith(('_allowed','_blocked'))):
+                key='caller_rubric_'+key
+            result[key]=label_claims(v)
+        return result
+    out=label_claims(out)
     out['external_action_authorized'] = False
     out['predictive_model_available'] = False
     out['evidence_independently_verified'] = False
