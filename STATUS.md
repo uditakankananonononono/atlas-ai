@@ -480,3 +480,7 @@ Separate atomic-concept surface0093-0115 called nonempty URI/issuer/timestamp fi
 ## Remaining atomic source-claim scan
 
 Reviewed atomic70-92 and round9_139-160 for nonempty-field verification. No direct verified-from-presence found in70-92; its fitted staleness/review scheduling claim remains an unrelated heuristic retraction candidate. Round9 corpus had caller connected=true becoming connection_claimed and indexed text source_of_truth=true. Now connection_claimed=false/integration_state_verified=false with separate caller flags; source_of_truth=false/external_source_verified=false, explicitly supplied text corpus. Owner-confirmed must be exactTrue, not string truthiness. Emotion confidence now supplied_confidence. Negotiation genuine_commonalities output renamed caller_declared_commonalities, retaining legacy input key unchanged.
+
+## Atomic staleness/validation correction
+
+Atomic70-92 review dates/staleness odds used fixed180-day coefficients and default volatility/confidence, not fitted belief-decay or review timing. Retracted predicted_staleness/review_on/overdue to null, schedule_generated=false; observed formation age only, future formation date rejected. Also caller-weighted ranking no longer validated_choice/intuition_confirmed: caller_weight_ranked_choice/same_as_salience_candidate with choice_independently_validated=false. Focused60 pass. Separate atomic denominator; register counts unchanged.
