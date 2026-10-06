@@ -278,3 +278,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Old ImprovementLoop.apply treated caller approved=true/arbitrary approval_id as approval while claiming a Module0 token. Proposal now creates an exact revision request through configured approval gate; apply requires that proposal's id and approved gate decision. No bound gate means fail closed.
 - Replay and changed-target version/content reject before mutation. Request includes exact current/proposed prompt content. Only prompt registry changes, not deployed code/safety rules/tool specs. Caller expected_gain remains unvalidated prediction; this is not actual autonomous self-improvement efficacy.
 - Named pending/foreign/made-up-token, replay and stale-version tests; existing route tests use real test-gate approval. Focused50 passed; M20 result retained in improvement-gate-m20.log. Production exact owner approval gate still must be bound per tenant by integrator.
+
+## Exact-effect safety token binding
+
+- Reproduced approved token authorizing changed recipient/body/action/task and replay in SafetyGate. Fixed by binding each requested token to canonical finite JSON action/risk/task/payload and locked single-use consumption when the gate approves. Unknown/changed/replayed tokens remain blocked. No external effects executed in tests.
+- Scope is one live SafetyGate process. Binding/consumption is not durable across restart; unknown restored tokens fail closed and require new review. A crash/handler failure after consumption cannot silently replay the token. Durable owner-bound atomic effect-token lifecycle remains integration work; no exactly-once distributed-effect guarantee.
+- Before-fix2 failures retained. Focused46 passed; M20 result retained. Approval center identity/grants and per-tenant wiring remain separate from this payload binding.
