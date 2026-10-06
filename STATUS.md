@@ -158,3 +158,8 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Updated M22 wiring fixture to preserve required GitHub/PyPI/npm collectors while admitting the existing source-collector set, checking unique names. HTTPS checks remain on the three URL-bearing base collectors; separate source-parser tests exercise the added collectors. No collector implementation changed.
 - All nine module-file batches completed passing after named legacy-contract repairs and local installation of declared free dependencies. Results are split-process suite evidence, not a single-process full-suite run. Exact file manifest and each batch log retained under audits/rebuild-20261007/suite-batches.
 - Root/platform817 passed; other integration/runtime/migration/commercial/self-improve suites58 passed. Skipped tests remain skipped, not verified. Passing legacy tests do not upgrade historical feature claims.
+
+## Missing conic dependency boundary
+
+- CVXPY is loaded only when conic/geometric solving is requested. A fresh-process test intercepts every CVXPY import, proves workbench ADMM still computes1.8 and SDP reports explicit missing-dependency failure. No fallback fake conic result. Existing conic/geometric numerical tests still exercise actual installed CVXPY.
+- Updated stale workbench module description to distinguish real repaired algorithms/free solvers from remaining narrative analysis/templates.
