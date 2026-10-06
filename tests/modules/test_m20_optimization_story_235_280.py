@@ -10,6 +10,9 @@ def run(row):
  name=next(x["key"] for x in capabilities() if x["row_id"]==row)
  p=dict(OPT if row<260 else STORY)
  if row==239:p["initial"]=[.5,.5]
+ if row==249:p.update(leader_choices=[{'id':'one','follower_cost':[1.],'follower_bounds':[[0.,2.]],'leader_response_cost':[1.]}])
+ if row==250:p.update(observations=[{'evidence_id':'observed-1','value':[1.,2.]},{'evidence_id':'observed-2','value':[3.,4.]}])
+ if row==251:p.update(initial_weights=[0.],observations=[{'evidence_id':'observed-1','features':[1.],'target':2.}])
  if row==247:p.update(box_bounds=[[.1,10.]],posynomial_objective=[{'coefficient':1.,'exponents':[1.]},{'coefficient':1.,'exponents':[-1.]}])
  if row==248:p.update(box_bounds=[[0.,2.]],numerator=[2.],denominator_coefficients=[1.],denominator_constant=1.)
  if row==245:p.update(matrix_objective=[[1.,0.],[0.,2.]],equality_matrices=[[[1.,0.],[0.,1.]]],equality_rhs=[1.])
@@ -66,13 +69,13 @@ def test_row_248_fractional_programming_computes_from_inputs():
  r=run(248); assert r["converged"] and r["ratio"]==pytest.approx(4/3,abs=1e-7)
 
 def test_row_249_bilevel_optimization_computes_from_inputs():
- r=run(249); assert "stationarity_residual" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(249); assert r["converged"] and r["selected_choice"]=="one"
 
 def test_row_250_stochastic_approximation_computes_from_inputs():
- r=run(250); assert "sample_variance" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(250); assert r["estimate"]==pytest.approx([2.,3.]) and r["sample_variance"]==pytest.approx([2.,2.])
 
 def test_row_251_online_learning_computes_from_inputs():
- r=run(251); assert "regret" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(251); assert r["weights"]==pytest.approx([.2]) and r["history"][0]["prediction_before_update"]==0.
 
 def test_row_252_bandit_algorithms_computes_from_inputs():
  r=run(252); assert "arm_means" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]

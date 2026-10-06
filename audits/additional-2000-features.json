@@ -3919,14 +3919,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Bilevel Optimization",
       "description": "Handles hierarchical decisions",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_249_bilevel_optimization_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_249_bilevel_optimization_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Exact finite leader enumeration with bounded affine LP followers, second LP optimistic follower-optimal tie resolution and explicit infeasible choices. Not continuous/nonconvex general bilevel.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_observed_learning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 250,
@@ -3934,14 +3948,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Stochastic Approximation",
       "description": "Learns from noisy observations",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_250_stochastic_approximation_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_250_stochastic_approximation_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Robbins-Monro mean-root approximation over evidence-linked observed vectors, 1/t updates and observed sample variance. No synthetic observations or generic stochastic optimizer claim.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_observed_learning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 251,
@@ -3949,14 +3977,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Online Learning",
       "description": "Adapts to streaming data",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_251_online_learning_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_251_online_learning_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Prequential observed-data online linear regression, squared-loss gradient updates with 1/sqrt(t) rate and prediction-before-update trace. No future accuracy claim.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_observed_learning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 252,
