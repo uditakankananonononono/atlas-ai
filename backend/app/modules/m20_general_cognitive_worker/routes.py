@@ -555,7 +555,10 @@ def row22_goal_conflicts(request: GoalConflictRequest, service: Any = Depends(ge
     if request.terminal_values is not None:
         service.goal_hierarchy.terminal_values = [v.lower() for v in request.terminal_values]
     plan = [_PlanNode(**n) for n in request.plan]
-    return service.goal_hierarchy.restructure(plan)
+    try:
+        return service.goal_hierarchy.restructure(plan)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc))
 
 
 @router.post("/meta/decisions/routine")
