@@ -550,3 +550,5 @@ All50 legal branches share a supplied-field review template with different outpu
 ## Legal body-principal scope repair
 
 Legal facade previously attributed a valid authenticated caller's request to body tenant/actor, even if unrelated. Now requires body and nested data scope to match verified principal403, executes/readbacks verified identity. Signed actual-app test pins ta/alice vs tb/bob403, rightful200, nested spoof403/no-token401.61 focused tests pass after workspace recovery, one Starlette/AnyIO deprecation warning in newly built environment. Scanned central routes.py for request/body actor/tenant use: this was its remaining direct body-scope path. No production provider deployment claim.
+
+Recovered environment regression: M20+atomic+ledger1990pass with two warnings (Starlette/AnyIO deprecation and expected SCS inaccurate-result test warning). Initial recovery lacked pytest-asyncio and failed17async cases before installing declared dev plugin; no behavioral code changed to address those environment failures. Counts do not include gateway suite and must not be compared as the same denominator to2009.
