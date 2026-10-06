@@ -19,7 +19,7 @@ class SpecializedDomainRequest(BaseModel):
 
 class EvaluationResponse(BaseModel):
     status: str
-    checks: list[str]
+    diagnostic_fields: list[str]
     human_review_required: bool
     externally_verified: bool
 

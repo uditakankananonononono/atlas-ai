@@ -55,7 +55,7 @@ class TenantScope:
 @dataclass(frozen=True)
 class Evaluation:
     status: Literal["computed", "draft_for_review"]
-    checks: tuple[str, ...]
+    diagnostic_fields: tuple[str, ...]
     human_review_required: bool
     externally_verified: bool
 
@@ -143,10 +143,12 @@ def analyze_specialized_domain(
     else:
         domain = "engineering"
         capability, raw = _engineering(row_id, payload, opts)
-        result = _mapping(raw.get("result"), "engineering result")
-        checks = tuple(raw.get("evaluation", {}).get("checks_performed", sorted(result)))
+        result = dict(_mapping(raw.get("result"), "engineering result"))
+        for key in ('status','reference_operator','named_capability_executed'):
+            if key in raw: result[key]=raw[key]
+        checks = tuple(raw.get("evaluation", {}).get("diagnostic_output_fields", ()))
         assumptions = tuple(raw.get("assumptions", ()))
-        limits = tuple(raw.get("limits", ()))
+        limits = (str(raw.get("boundary", "Supplied engineering diagnostics only; no physical or solver execution.")),) + tuple(raw.get("limits", ()))
         drivers = tuple(raw.get("uncertainty", {}).get("drivers", ("model form", "measurement variation")))
 
     return SpecializedDomainResult(
@@ -158,7 +160,7 @@ def analyze_specialized_domain(
         result=result,
         evaluation=Evaluation(
             status="computed" if domain == "finance" else "draft_for_review",
-            checks=checks,
+            diagnostic_fields=checks,
             human_review_required=True,
             externally_verified=False,
         ),
