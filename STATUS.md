@@ -586,3 +586,5 @@ Executive previously called semantic.confirm on title-similar low-confidence fac
 ## Task-scoped episode provenance correction
 
 Shared executive previously copied the entire dispatcher's action history into each episode, falsely attributing earlier tasks' actions to later tasks. ActionRecord now carries dispatch task_id; closed episode selects matching task records and deep-copies them. Regression uses two tasks through one loop with distinct arguments, excludes earlier task actions and verifies later dispatcher mutation cannot rewrite stored episode actions. This fixes local task attribution, not authenticated effect receipts, outcome correctness or durable distributed lifecycle.
+
+Post-small-model/schema/episode regression after40a802d:90 M20/atomic/ledger named files2185pass2warnings36.08s. Warnings are Starlette deprecation and deliberately bounded SCS fixture. These named tests do not prove entire repo or original spec depth. Evidence: audits/rebuild-20261007/post-small-model-episode-regression.log.
