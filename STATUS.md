@@ -542,3 +542,7 @@ Middleware authentication intentionally covers every path except /health and /re
 ## Root gateway/auth regression
 
 Root-level tests786pass after principal-bound limiter and authenticated-docs changes, no warning in this run. Wider earlier whole-repo9561 result predates these changes; current M20+atomic+gateway/auth2009 result predates the docs test only. Counts remain separate overlapping runs, not summed.
+
+## Legal1260-1309 template/reference retraction
+
+All50 legal branches share a supplied-field review template with different output keys/mechanism descriptions; no substantive named legal reasoning, actual authority retrieval/treatment/currency verification or evidentiary verification. Explicit supplied_legal_review_template_only/named_capability_executed=false/evidence_verified=false. Reference-field completeness no longer provenance_complete, and a matching authority id no longer sourced fact: supplied_reference_linked_unverified. Existing no-conclusion/no-effect/counsel-review limits retained. Ledger PARTIAL with history.66 focused+ledger pass. Labels1696historical54SCOPED256PARTIAL4removed.
