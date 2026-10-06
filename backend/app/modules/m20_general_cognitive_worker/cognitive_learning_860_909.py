@@ -41,7 +41,7 @@ def _operation(row, x):
  if row==860:
   dated=sorted(_items(x,'events'),key=lambda e:e['year']);return {'chronology':[e['event'] for e in dated],'continuities':x.get('continuities',[]),'changes':x.get('changes',[])}
  if row==861:
-  q=_score(x,'evidence_quality');a=_score(x,'assumption_risk');return {'argument_score':round(q*(1-a),4),'verdict':'supported' if q*(1-a)>=.6 else 'revise'}
+  q=_score(x,'evidence_quality');a=_score(x,'assumption_risk');return {'argument_score':round(q*(1-a),4),'verdict':None,'score_kind':'hand_written_quality_risk_product_not_argument_validation'}
  if row==862:return {'novelty_score':round(1-len(set(x.get('ideas',[])) & set(x.get('known_ideas',[])))/max(1,len(set(x.get('ideas',[])))),4),'ideas':list(dict.fromkeys(x.get('ideas',[])))}
  if row==863:return {'provocation':f"What if {x['dominant_pattern']} were reversed?",'indirect_candidate':x['candidate']}
  if row==864:
@@ -74,7 +74,7 @@ def _operation(row, x):
  if row==886:return {'fidelity':_score(x,'matched_steps'),'adaptations':x.get('adaptations',[]),'sequence':x.get('target_sequence',[])}
  if row==887:
   attempts=_items(x,'attempts');best=max(attempts,key=lambda a:a['score']);return {'best_attempt':best['id'],'error_reduction':attempts[-1]['score']-attempts[0]['score'],'next_experiment':x.get('next_experiment')}
- if row==888:return {'impasse_restructured_as':x.get('new_representation'),'insight':x.get('insight'),'verified':bool(x.get('verification'))}
+ if row==888:return {'impasse_restructured_as':x.get('new_representation'),'insight':x.get('insight'),'verified':False,'caller_verification_claim':bool(x.get('verification'))}
  if row==889:
   old=_score(x,'association_strength');rate=_number(x.get('learning_rate',.2),'learning_rate',0,1);outcome=_number(x.get('outcome',1),'outcome',0,1);return {'prior_strength':old,'updated_strength':round(old+rate*(outcome-old),4),'prediction_error':outcome-old}
  if row==890:
@@ -116,5 +116,5 @@ def execute(row:int,payload:dict[str,Any])->dict[str,Any]:
  if row in (890,891) and not payload.get('ethical_review',False):raise CognitiveLearningError('conditioning design requires ethical_review=true')
  if row==908 and inputs.get('credential_boundary') is True:raise CognitiveLearningError('credential_boundary must describe limits, not claim a credential')
  result=_operation(row,inputs);gaps=[x['stage'] for x in artifacts if x['status']=='evidence_gap']
- return {'row_id':row,'capability':ROWS[row],'key':KEYS[row],'family':FAMILY[row],'scope':{'tenant_id':tenant,'actor_id':actor},'mechanism':KEYS[row],'result':result,'workflow':artifacts,'complete':False if row==880 else not gaps,'evidence_gaps':gaps,'sources':sources,'learner_agency':{'opt_out':payload.get('opt_out',True),'goals':payload.get('learner_goals',[]),'access_needs':payload.get('access_needs',[])},'assessment':{'criteria':payload.get('criteria',[]),'results':payload.get('results',[]),'grade_or_credential_awarded':False},'evaluation':{'stage_coverage':round((len(artifacts)-len(gaps))/max(1,len(artifacts)),4),'independent_verification_required':True},'uncertainty':{'level':'high' if gaps else 'bounded','unresolved_stages':gaps,'confidence_claimed':False},'status':'draft_for_learner_and_educator_review','actions_taken':[],'boundary':'Learning support only. No hidden-state inference, credentials, enrollment, external effects, or education-record changes.'}
-def capabilities():return [{'row_id':i,'key':KEYS[i],'name':ROWS[i],'family':FAMILY[i],'stages':STAGES[i]} for i in ROWS]
+ return {'row_id':row,'capability':ROWS[row],'key':KEYS[row],'family':FAMILY[row],'scope':{'tenant_id':tenant,'actor_id':actor},'mechanism':KEYS[row],'result':result,'workflow':artifacts,'complete':False,'input_stage_coverage_complete':not gaps,'capability_executed':False,'evidence_gaps':gaps,'sources':sources,'learner_agency':{'opt_out':payload.get('opt_out',True),'goals':payload.get('learner_goals',[]),'access_needs':payload.get('access_needs',[])},'assessment':{'criteria':payload.get('criteria',[]),'results':payload.get('results',[]),'grade_or_credential_awarded':False},'evaluation':{'stage_coverage':round((len(artifacts)-len(gaps))/max(1,len(artifacts)),4),'independent_verification_required':True},'uncertainty':{'level':'unquantified','unresolved_stages':gaps,'confidence_claimed':False},'status':'supplied_input_diagnostics_only','method_limitations':'Deterministic transforms, supplied-score arithmetic, hand-written heuristics or templates. No execution or verification of the named cognitive/learning ability.','actions_taken':[],'boundary':'Learning support only. No hidden-state inference, credentials, enrollment, external effects, or education-record changes.'}
+def capabilities():return [{'row_id':i,'key':KEYS[i],'name':ROWS[i],'family':FAMILY[i],'stages':STAGES[i],'status':'supplied_input_diagnostics_only','capability_executed':False} for i in ROWS]

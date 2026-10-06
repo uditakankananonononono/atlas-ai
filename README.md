@@ -148,3 +148,5 @@ Meta row13 reports observed confidence/outcome calibration curves only, not know
 Meta rows11/21/33 are PARTIAL: fixed role-sequence retrieval, versioned caller assumptions/weight scores and observed knowledge age only. No learned cross-domain execution, posterior model truth, fitted obsolescence or scheduled refresh is demonstrated. Latest labels1898 historical verified-pushed/48SCOPED/60PARTIAL/4removed are not verified-capability counts.
 
 Row22 is literal value-marker conflict pruning only, PARTIAL. Cancelled prerequisites now cancel all transitive dependents without removing dependency references. It is not semantic goal rewriting or generated replacement goals. Latest ledger labels1897 historical/48SCOPED/61PARTIAL/4removed.
+
+All cognitive-learning rows860-909 are PARTIAL supplied-input diagnostics only, not named thinking/learning execution. Nonempty workflow input coverage never means feature completion. Latest label counts1845 historical verified-pushed/50SCOPED/111PARTIAL/4removed; labels are not verified capabilities.
