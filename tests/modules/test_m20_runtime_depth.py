@@ -308,7 +308,7 @@ def test_m20_16_mcts_bounded_typed_and_deterministic(mounted):
     assert body["stopped_by"] in {"simulation_budget", "time_budget"}
     assert body["best_action_title"] == "research competitors"  # only ready step
     assert body["action_stats"][0]["visits"] > 0
-    assert 0.0 <= body["root_value"] <= 1.0
+    assert 0.0 <= body["heuristic_root_value"] <= 1.0
     again = client.get(f"/api/modules/20/runtime/tasks/{task_id}/mcts?simulations=0")
     assert again.status_code == 422
 
@@ -317,7 +317,7 @@ def test_m20_16_mcts_terminal_plan_returns_no_action():
     plan = [PlanNode(title="done", state=TaskState.SUCCEEDED)]
     result = BoundedMCTS(max_simulations=8, seed=1).search(plan)
     assert result.best_action_id is None and result.simulations_run == 0
-    assert result.root_value == 1.0
+    assert result.heuristic_root_value == 1.0
 
 
 # -- M20-17: tool selection with uncertainty -------------------------------------

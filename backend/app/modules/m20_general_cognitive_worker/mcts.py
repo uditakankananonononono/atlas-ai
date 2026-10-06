@@ -47,8 +47,8 @@ class MCTSResult:
     stopped_by: str  # "simulation_budget" | "time_budget" | "terminal"
     principal_variation: list[str]
     action_stats: list[ActionStat]
-    root_value: float
-    root_standard_error: float
+    heuristic_root_value: float
+    heuristic_root_standard_error: float
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -61,8 +61,8 @@ class MCTSResult:
             "stopped_by": self.stopped_by,
             "principal_variation": list(self.principal_variation),
             "action_stats": [vars(s) for s in self.action_stats],
-            "root_value": self.root_value,
-            "root_standard_error": self.root_standard_error,
+            "heuristic_root_value": self.heuristic_root_value,
+            "heuristic_root_standard_error": self.heuristic_root_standard_error,
         }
 
 
@@ -144,8 +144,8 @@ class BoundedMCTS:
             return MCTSResult(
                 best_action_id=None, best_action_title=None, simulations_run=0,
                 stopped_by="terminal", principal_variation=[], action_stats=[],
-                root_value=1.0 if not self._pending(plan, frozenset()) else 0.0,
-                root_standard_error=0.0,
+                heuristic_root_value=1.0 if not self._pending(plan, frozenset()) else 0.0,
+                heuristic_root_standard_error=0.0,
             )
         root = _TreeNode(completed=frozenset(), untried=[n.id for n in ready])
         by_id = {n.id: n for n in plan}
@@ -207,8 +207,8 @@ class BoundedMCTS:
             stopped_by=stopped_by if simulations else "terminal",
             principal_variation=self._principal_variation(root, by_id),
             action_stats=stats,
-            root_value=round(root.mean_value, 4),
-            root_standard_error=round(root.standard_error(), 4),
+            heuristic_root_value=round(root.mean_value, 4),
+            heuristic_root_standard_error=round(root.standard_error(), 4),
         )
 
     def _uct_select(self, node: _TreeNode) -> _TreeNode:
