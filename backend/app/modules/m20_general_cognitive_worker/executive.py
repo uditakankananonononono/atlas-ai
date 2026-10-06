@@ -364,7 +364,7 @@ class DeliberativeLoop:
             self._trace("reflect", f"model reflection: {str(analysis)[:200]}", task_id=context.id)
 
     def _close_episode(self, context: TaskContext, outcome: EpisodeOutcome) -> None:
-        actions = [r for r in self.dispatcher.records]
+        actions = [r.model_copy(deep=True) for r in self.dispatcher.records if r.task_id == context.id]
         self.episodic.log_execution(
             task_id=context.id, goal=context.goal,
             start_state=context.goal, actions=actions,

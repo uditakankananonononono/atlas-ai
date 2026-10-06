@@ -144,7 +144,7 @@ class ToolDispatcher:
             if approval_id is not None:
                 raise ApprovalPending(name, approval_id)
             raise ToolBlockedError(name, ["safety gate denied execution"])
-        record = ActionRecord(tool=name, arguments=copy.deepcopy(arguments), started_at=datetime.now(timezone.utc))
+        record = ActionRecord(tool=name, task_id=task_id, arguments=copy.deepcopy(arguments), started_at=datetime.now(timezone.utc))
         effectful = requires_approval(name, tool.spec.risk, arguments)
         # A timeout/error may follow a completed effect. Retrying under one
         # reviewed token can duplicate that effect; require reconciliation.
