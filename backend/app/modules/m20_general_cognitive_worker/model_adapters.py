@@ -78,7 +78,7 @@ class FreeFirstPlannerModel:
 
     def decompose(self, goal: str, *, context: str = "") -> list[dict[str, Any]]:
         try:
-            provider, model, text = _run(model_catalog.generate_free_first(self._prompt(goal, context), self.model_name))
+            provider, model, text = _run(model_catalog.generate_free_first(self._prompt(goal, context), self.model_name, private=True))
         except ProviderError as exc:
             raise PlanError(f"planner model unavailable: {exc}") from exc
         self.last_route = (provider, model)
@@ -113,7 +113,7 @@ class FreeFirstExecutiveModel:
             f"Input: {json.dumps(payload, default=str)[:6000]}"
         )
         try:
-            provider, model, text = _run(model_catalog.generate_free_first(prompt, self.model_name))
+            provider, model, text = _run(model_catalog.generate_free_first(prompt, self.model_name, private=True))
         except ProviderError as exc:
             return {"available": False, "error": str(exc)}
         try:
