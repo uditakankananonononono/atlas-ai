@@ -7,7 +7,7 @@ from __future__ import annotations
 from collections import Counter
 
 from .embeddings import tokenize
-from .schemas import ActionRecord, Episode, Skill, SkillStatus
+from .schemas import ActionRecord, Episode, EpisodeOutcome, Skill, SkillStatus
 
 
 def _signature(actions: list[ActionRecord]) -> tuple[str, ...]:
@@ -84,13 +84,20 @@ class SkillLibrary:
         successful episodes and propose them as new skills (status=proposed).
         A human (or the approval center) activates them.
         """
+        if type(min_occurrences) is not int or min_occurrences < 1:
+            raise ValueError("min_occurrences must be a positive integer")
         counts: Counter[tuple[str, ...]] = Counter()
+        seen = set()
+        evidence_ids: dict[tuple[str, ...], list[str]] = {}
         examples: dict[tuple[str, ...], Episode] = {}
         for episode in episodes:
-            if len(episode.actions) < 2:
+            if (episode.id in seen or episode.outcome != EpisodeOutcome.SUCCEEDED
+                    or len(episode.actions) < 2 or any(not action.succeeded for action in episode.actions)):
                 continue
+            seen.add(episode.id)
             sig = _signature(episode.actions)
             counts[sig] += 1
+            evidence_ids.setdefault(sig, []).append(episode.id)
             examples.setdefault(sig, episode)
         proposals: list[Skill] = []
         for sig, count in counts.items():
@@ -107,9 +114,12 @@ class SkillLibrary:
             skill = Skill(
                 name=name,
                 goal_pattern=example.goal,
-                steps=example.actions,
+                steps=[action.model_copy(deep=True) for action in example.actions],
                 status=SkillStatus.PROPOSED,
-                evidence={"occurrences": count, "example_episode_id": example.id},
+                evidence={"occurrences": count, "example_episode_id": example.id,
+                          "episode_ids": list(evidence_ids[sig]),
+                          "status": "successful_tool_signature_grouping_only",
+                          "generalizable_skill_verified": False},
             )
             self._skills[skill.id] = skill
             proposals.append(skill)
