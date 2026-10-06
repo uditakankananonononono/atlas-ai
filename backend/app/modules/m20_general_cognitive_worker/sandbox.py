@@ -185,6 +185,17 @@ class SandboxRunner:
                         max_file_mb=8, max_log_bytes=self.max_output_bytes))
         except (BackendUnavailableError, OSError) as exc:
             raise SandboxViolation(["OS isolation backend unavailable; execution refused"]) from exc
+        # Output links can be dangling inside the namespace but valid on
+        # the host. Never leave them for a future host-side artifact reader.
+        links_removed = False
+        for root, dirs, files in os.walk(volume, followlinks=False):
+            for name in dirs + files:
+                candidate = Path(root) / name
+                if candidate.is_symlink():
+                    candidate.unlink()
+                    links_removed = True
+        if links_removed:
+            raise SandboxViolation(["sandbox output symlinks removed; run refused"])
         return SandboxRunResult(returncode=result.exit_code if result.exit_code is not None else -1,
             stdout=result.stdout.decode("utf-8", errors="replace"),
             stderr=result.stderr.decode("utf-8", errors="replace"),
