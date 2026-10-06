@@ -9,6 +9,7 @@ from .spaced_review import schedule_reviews
 from .support_progression import progress_support
 from .keyed_assessment import assess
 from .progress_measurement import measure_progress
+from .graph_transduction import transduce
 from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
@@ -114,7 +115,9 @@ def reasoning(row,p):
  if row==852:
   try:out['deduction']=argument_validity(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
- if row==853:out['transduction']={'source_instance':p.get('source_instance'),'target_instance':p.get('target_instance'),'local_similarity':p.get('local_similarity'),'scope':'target instance only; no population rule'}
+ if row==853:
+  try:out['transduction']=transduce(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==854:out['dialectic']={'thesis':p.get('thesis'),'antithesis':p.get('antithesis'),'tensions':p.get('tensions',[]),'synthesis':p.get('synthesis'),'synthesis_must_preserve_unresolved_conflict':True}
  if row==855:out['integration']={'frames':p.get('frames',[]),'salient_tensions':p.get('tensions',[]),'shared_values':p.get('shared_values',[]),'novel_resolution':p.get('resolution'),'tradeoffs_visible':True}
  return out
