@@ -248,3 +248,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Old rule loop had real closure but silently stringified malformed/missing conclusions and ignored negation. Now validates positive symbolic rule/atom structure, rejects unless rather than silently treating defaults as unconditional, returns rule/premise proof links and query entailment.
 - Unsupported cycles derive nothing; not entailed does not mean false in the real world. Supplied facts/rules remain unverified premises. Restricted <=1000 facts/rules, no natural-language rule extraction or negation semantics.
 - Named multi-step conjunctive proof, unsupported cycle, fact-change and bad-rule rejection tests. Focused225; M20/ledger1662 passed. Row838SCOPED pending review;1957historical,48SCOPED,1PARTIAL,4removed labels.
+
+## Learning/reasoning scaffold claim retraction
+
+- The remaining24 learning/reasoning branches are now explicitly planning_scaffold_only in API evaluation/catalog. capability_executed=false; named capability not executed, copied fields/static prompts are not reasoning evidence. Arbitrary nonempty inputs cannot turn them into executed capability claims.
+- Retracted their ledger historical verified-pushed status to PARTIAL with original claims/evidence preserved. This removes overstated claims, not missing implementation work. Complete input metric remains a nonempty-field ratio only, explicitly not validity or evidence quality.
+- Restricted computed rows remain marked as such, not full capability. Focused222; M20/ledger1665 passed. Current labels1933 historical,48SCOPED,25PARTIAL,4removed. Independent review and full original-spec breadth remain open.
