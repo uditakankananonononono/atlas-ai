@@ -10,6 +10,7 @@ from math import exp, log, sqrt
 import re
 from typing import Any, Callable
 from .admm import solve_quadratic_l1
+from .strategic_learning import hedge, regret_matching, game_regret_matching, fictitious_play
 from .bandits import epsilon_greedy, contextual_ucb, thompson, ucb
 from .learning_optimization import bilevel, stochastic_approximation, online_regression
 from .conic_solvers import semidefinite, second_order, geometric
@@ -62,25 +63,14 @@ def _problem(p):
     return c,x,A,b,sense,{'objective_value':_dot(c,x),'max_violation':max(violations,default=0.0),'violation_count':sum(v>1e-9 for v in violations),'feasible':not any(v>1e-9 for v in violations),'constraint_residuals':residual}
 
 def _opt(row,p):
-    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe,240:cutting_planes,241:branch_and_bound,242:column_generation,243:benders,244:lagrangian_binary_knapsack,245:semidefinite,246:second_order,247:geometric,248:fractional_linear,249:bilevel,250:stochastic_approximation,251:online_regression,252:epsilon_greedy,253:contextual_ucb,254:thompson,255:ucb}
+    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe,240:cutting_planes,241:branch_and_bound,242:column_generation,243:benders,244:lagrangian_binary_knapsack,245:semidefinite,246:second_order,247:geometric,248:fractional_linear,249:bilevel,250:stochastic_approximation,251:online_regression,252:epsilon_greedy,253:contextual_ucb,254:thompson,255:ucb,256:hedge,257:regret_matching,258:game_regret_matching,259:fictitious_play}
     if row in solvers:
         try:return solvers[row](p)
         except (ValueError,KeyError,TypeError) as exc:raise WorkbenchError(str(exc)) from exc
     if row==236:
         try:return solve_quadratic_l1(p)
         except ValueError as exc:raise WorkbenchError(str(exc)) from exc
-    c,x,A,b,sense,d=_problem(p); step=float(p.get('step_size',0.1)); it=int(p.get('iteration',1))
-    if step<=0 or it<1:raise WorkbenchError('step_size must be positive and iteration must be >= 1')
-    r=[_dot(a,x)-z for a,z in zip(A,b)]; grad=[c[j]+sum(max(0,q)*a[j] for q,a in zip(r,A)) for j in range(len(x))]
-    common={'diagnostics':d,'metrics':{'gradient_norm':sqrt(_dot(grad,grad)),'confidence':_confidence(r or c)},'uncertainty':{'kind':'deterministic_input_diagnostic','solver_executed':False}}
-    H={
-256:lambda:{'normalized_weights':(lambda ws:[w/sum(ws) for w in ws])([exp(-step*v) for v in _nums(p.get('expert_losses',[0]),'expert_losses')]),'aggregate_loss':_mean(_nums(p.get('expert_losses',[0]),'expert_losses'))},
-257:lambda:{'cumulative_regret':sum(_nums(p.get('learner_losses',[0]),'learner_losses'))-sum(_nums(p.get('comparator_losses',[0]),'comparator_losses')),'average_regret':(sum(p.get('learner_losses',[0]))-sum(p.get('comparator_losses',[0])))/len(p.get('learner_losses',[0]))},
-258:lambda:{'best_response_gaps':[max(row)-_mean(row) for row in _matrix(p.get('payoff_matrix',[[0]]),'payoff_matrix')],'equilibrium_gap':max((max(row)-_mean(row) for row in p.get('payoff_matrix',[[0]])),default=0)},
-259:lambda:{'empirical_frequencies':[(v+1)/(sum(_nums(p.get('action_counts',[0]),'action_counts'))+len(p.get('action_counts',[0]))) for v in _nums(p.get('action_counts',[0]),'action_counts')],'best_response':max(range(len(c)),key=lambda i:c[i]),'exploitability':max(c)-_mean(c)},
-    }
-    if row==257 and len(p.get('learner_losses',[0]))!=len(p.get('comparator_losses',[0])):raise WorkbenchError('loss histories must align')
-    out=H[row]();out.update(common);return out
+    raise WorkbenchError('unsupported optimizer row')
 
 def _scenes(p):
     premise=p.get('premise')

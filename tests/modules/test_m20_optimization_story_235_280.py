@@ -10,6 +10,9 @@ def run(row):
  name=next(x["key"] for x in capabilities() if x["row_id"]==row)
  p=dict(OPT if row<260 else STORY)
  if row==239:p["initial"]=[.5,.5]
+ if row==256:p.update(observations=[{'evidence_id':'one','expert_losses':[0.,1.]},{'evidence_id':'two','expert_losses':[0.,1.]}])
+ if row==257:p.update(observations=[{'evidence_id':'one','action_payoffs':[1.,0.]},{'evidence_id':'two','action_payoffs':[1.,0.]}])
+ if row in (258,259):p.update(payoff_matrix=[[1.,-1.],[-1.,1.]])
  if row in (252,253,254,255):p.update(arms=['a','b'],feedback=[{'evidence_id':'a1','arm':'a','reward':1,'context':[1.]}],context=[1.],seed=1)
  if row==249:p.update(leader_choices=[{'id':'one','follower_cost':[1.],'follower_bounds':[[0.,2.]],'leader_response_cost':[1.]}])
  if row==250:p.update(observations=[{'evidence_id':'observed-1','value':[1.,2.]},{'evidence_id':'observed-2','value':[3.,4.]}])
@@ -91,16 +94,16 @@ def test_row_255_upper_confidence_bound_computes_from_inputs():
  r=run(255); assert "ucb_scores" in r and r["uncertainty"]["solver_executed"]
 
 def test_row_256_expert_advice_aggregation_computes_from_inputs():
- r=run(256); assert "normalized_weights" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(256); assert "normalized_weights" in r and r["uncertainty"]["solver_executed"]
 
 def test_row_257_regret_minimization_computes_from_inputs():
- r=run(257); assert "cumulative_regret" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(257); assert "cumulative_regret" in r and r["uncertainty"]["solver_executed"]
 
 def test_row_258_game_theoretic_learning_computes_from_inputs():
- r=run(258); assert "equilibrium_gap" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(258); assert "equilibrium_gap" in r and r["uncertainty"]["solver_executed"]
 
 def test_row_259_fictitious_play_computes_from_inputs():
- r=run(259); assert "exploitability" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(259); assert "exploitability" in r and r["uncertainty"]["solver_executed"]
 
 def test_row_260_novel_metaphor_generation_computes_from_inputs():
  r=run(260); assert "metaphors" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]

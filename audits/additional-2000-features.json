@@ -4122,14 +4122,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Expert Advice Aggregation",
       "description": "Combines predictions",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_256_expert_advice_aggregation_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_256_expert_advice_aggregation_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Sequential Hedge expert-mixture learning from full-information bounded observed losses; prior-round weights, stable updates and exact fixed-expert regret.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_strategic_learning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 257,
@@ -4137,14 +4151,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Regret Minimization",
       "description": "Learns optimal strategies",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_257_regret_minimization_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_257_regret_minimization_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Full-information sequential regret matching of finite bounded observed action payoffs. Actual regret accumulation, policy update and expected mixture payoff; not real-world outcome claim.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_strategic_learning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 258,
@@ -4152,14 +4180,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Game-Theoretic Learning",
       "description": "Converges to equilibria",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_258_game_theoretic_learning_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_258_game_theoretic_learning_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Two-sided regret-matching average strategies for finite two-player zero-sum matrix game. Actual repeated updates and max/min response exploitability certificate; not general-sum game claim.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_strategic_learning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 259,
@@ -4167,14 +4209,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Fictitious Play",
       "description": "Models learning in games",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_259_fictitious_play_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_259_fictitious_play_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Actual simultaneous fictitious-play best-response and empirical-frequency updates for finite zero-sum matrix game. Explicit exploitability and iteration-limit status; computed trajectory, not invented external interactions.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_strategic_learning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 260,
