@@ -5,6 +5,7 @@ from math import exp,log
 import re
 from typing import Any
 from .learning_calibration import calibrate_attempts
+from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
 class LearningReasoningError(ValueError):pass
 ROWS={810:'Spaced Repetition',811:'Interleaving',812:'Retrieval Practice',813:'Elaborative Interrogation',814:'Self-Explanation',815:'Dual Coding',816:'Concrete Examples',817:'Worked Examples',818:'Problem Solving',819:'Deliberate Practice',820:'Chunking',821:'Scaffolding',822:'Fading',823:'Metacognition',824:'Self-Regulated Learning',825:'Goal Setting',826:'Progress Monitoring',827:'Self-Assessment',828:'Peer Assessment',829:'Formative Assessment',830:'Summative Assessment',831:'Diagnostic Assessment',832:'Prior Knowledge Activation',833:'Transfer',834:'Near Transfer',835:'Far Transfer',836:'Analogical Reasoning',837:'Case-Based Reasoning',838:'Rule-Based Reasoning',839:'Model-Based Reasoning',840:'Qualitative Reasoning',841:'Quantitative Reasoning',842:'Spatial Reasoning',843:'Temporal Reasoning',844:'Causal Reasoning',845:'Counterfactual Reasoning',846:'Probabilistic Reasoning',847:'Fuzzy Logic',848:'Default Reasoning',849:'Non-Monotonic Reasoning',850:'Abductive Reasoning',851:'Inductive Reasoning',852:'Deductive Reasoning',853:'Transductive Reasoning',854:'Dialectical Reasoning',855:'Integrative Thinking',856:'Systems Thinking',857:'Design Thinking',858:'Computational Thinking',859:'Scientific Thinking'}
@@ -93,8 +94,12 @@ def reasoning(row,p):
   memberships=req(p,'memberships',dict)
   if not all(0<=float(v)<=1 for v in memberships.values()):raise LearningReasoningError('memberships must be in [0,1]')
   out['fuzzy']={'memberships':memberships,'and':min(map(float,memberships.values())),'or':max(map(float,memberships.values())),'not':{k:1-float(v) for k,v in memberships.items()}}
- if row in (848,849):out['defaults']={'rules':p.get('defaults',[]),'exceptions':p.get('exceptions',[]),'beliefs_revisable':True,'retraction_log_required':row==849,'open_world_boundary':True}
- if row==850:out['abduction']={'observations':p.get('observations',[]),'candidate_explanations':p.get('candidate_explanations',[]),'ranking_criteria':['fit','simplicity','prior plausibility','testability'],'best_explanation_is_not_proof':True}
+ if row in (848,849):
+  try:out['defaults']=default_inference(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+ if row==850:
+  try:out['abduction']=abductive_search(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==851:out['induction']={'observations':p.get('observations',[]),'pattern':p.get('pattern'),'sample_scope':p.get('sample_scope'),'exceptions':p.get('exceptions',[]),'generalization_strength':p.get('strength','uncalibrated')}
  if row==852:
   try:out['deduction']=argument_validity(p)
