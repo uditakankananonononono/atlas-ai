@@ -32,7 +32,7 @@ def run(method,d):
  elif r==95:
   names=d.get('stages');cap=_v(d,'capacities');demand=_f(d['demand_rate'],'demand_rate');_same(names,cap);util=[demand/x if x>0 else math.inf for x in cap];m=max(util);o={'constraint':names[util.index(m)],'utilizations':dict(zip(names,util)),'system_capacity':min(cap),'throughput_gap':max(0,demand-min(cap))}
  elif r==96:
-  names=d.get('stages');cap=_v(d,'capacities');_same(names,cap);i=min(range(len(cap)),key=cap.__getitem__);uplift=_f(d['proposed_uplift'],'proposed_uplift');new=cap[:];new[i]+=uplift;o={'constraint':names[i],'exploit':['protect constraint from idle time','feed only quality work','buffer constraint'],'subordinate':'pace upstream release to constraint','before_capacity':min(cap),'after_capacity':min(new),'verified_gain':min(new)-min(cap),'next_constraint':names[min(range(len(new)),key=new.__getitem__)]}
+  names=d.get('stages');cap=_v(d,'capacities');_same(names,cap);i=min(range(len(cap)),key=cap.__getitem__);uplift=_f(d['proposed_uplift'],'proposed_uplift');new=cap[:];new[i]+=uplift;o={'constraint':names[i],'exploit':['protect constraint from idle time','feed only quality work','buffer constraint'],'subordinate':'pace upstream release to constraint','before_capacity':min(cap),'after_capacity':min(new),'supplied_capacity_difference':min(new)-min(cap),'next_constraint':names[min(range(len(new)),key=new.__getitem__)]}
  elif r in {97,98,99}:
   x=_v(d,'x',3);y=_v(d,'y',3);_same(x,y)
   if r==97:
@@ -73,11 +73,11 @@ def run(method,d):
  elif r in {108,109}:
   claims=d.get('claims');
   if not isinstance(claims,list) or not claims:raise ValueError('claims required')
-  verified=[x for x in claims if x.get('evidence_uri') and x.get('issuer') and x.get('checked_at')];o={'verified_claims':verified,'unsupported_claims':[x for x in claims if x not in verified],'positioning_allowed':bool(verified),'evidence_plan':[{'claim':x.get('claim'),'needed':['issuer','evidence_uri','checked_at']} for x in claims if x not in verified]};limits+=['No fabricated credentials or implied authority.']
+  verified=[x for x in claims if x.get('evidence_uri') and x.get('issuer') and x.get('checked_at')];o={'claims_with_supplied_reference_fields':verified,'unsupported_claims':[x for x in claims if x not in verified],'caller_reference_fields_complete':bool(verified),'evidence_plan':[{'claim':x.get('claim'),'needed':['issuer','evidence_uri','checked_at']} for x in claims if x not in verified]};limits+=['No fabricated credentials or implied authority.']
  elif r in {110,111}:
-  mine=set(d.get('my_facts',[]));theirs=set(d.get('their_verified_facts',[]));shared=sorted(mine&theirs);o={'genuine_commonalities':shared,'open_questions':d.get('open_questions',[]),'rapport_steps':['listen','reflect accurately','ask permission','share only genuine common ground'],'fabricated_similarity_blocked':True,'usable_shared_count':len(shared)}
+  mine=set(d.get('my_facts',[]));theirs=set(d.get('their_verified_facts',[]));shared=sorted(mine&theirs);o={'caller_claimed_commonalities':shared,'open_questions':d.get('open_questions',[]),'rapport_steps':['listen','reflect accurately','ask permission','share only genuine common ground'],'fabricated_similarity_blocked':True,'usable_shared_count':len(shared)}
  elif r in {112,113}:
-  mine=set(d.get('my_groups' if r==112 else 'my_goals',[]));theirs=set(d.get('their_verified_groups' if r==112 else 'their_verified_goals',[]));shared=sorted(mine&theirs);o={'shared':shared,'frame':('We share '+', '.join(shared)) if shared else None,'frame_allowed':bool(shared),'difference_preserved':True,'fabricated_unity_blocked':True}
+  mine=set(d.get('my_groups' if r==112 else 'my_goals',[]));theirs=set(d.get('their_verified_groups' if r==112 else 'their_verified_goals',[]));shared=sorted(mine&theirs);o={'shared':shared,'frame':('We share '+', '.join(shared)) if shared else None,'caller_overlap_found':bool(shared),'difference_preserved':True,'fabricated_unity_blocked':True}
  elif r in {114,115}:
   papers=d.get('papers');edges=d.get('citations');
   if not isinstance(papers,list) or not isinstance(edges,list):raise ValueError('papers and citations required')
@@ -86,4 +86,7 @@ def run(method,d):
   if r==114:o={'in_degree':incoming,'most_influential':max(incoming,key=incoming.get) if incoming else None,'valid_edge_count':len(valid),'invalid_edge_count':len(edges)-len(valid)}
   else:
    years={x['id']:x.get('year') for x in papers};viol=[{'citing':a,'cited':b} for a,b in valid if years.get(a) and years.get(b) and years[a]<years[b]];roots=[i for i in ids if incoming[i]==0];o={'idea_flow_edges':[{'from':b,'to':a} for a,b in valid],'chronology_violations':viol,'uncited_roots':sorted(roots),'valid':not viol}
+ if r in {108,109,110,111,112,113}:
+  o['status']='supplied_claim_structure_only';o['evidence_verified']=False;o['external_action_authorized']=False
+  limits.append('Reference URLs, issuers, timestamps and counterpart facts/groups/goals are caller declarations, not retrieved or authenticated evidence. Overlap and nonempty references do not verify credentials or genuine shared identity.')
  o['method_limits']=limits;return {'atomic_row':r,'atomic_row_id':aid,'method':method,'inputs':d,'output':o}

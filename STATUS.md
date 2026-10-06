@@ -472,3 +472,7 @@ Explicitly named and retracted22 reference substitutes within1960-2009: shortest
 ## Remaining same-family reviewer retraction
 
 Added sentiment_analysis/opinion_mining (literal lexicon token counts) and neuro_symbolic_ai/hybrid_ai (supplied rule-weight propagation without neural model) to explicit reference substitutes. Four further rows PARTIAL with history preserved; now26 reference substitutes,1786historical/54SCOPED/166PARTIAL/4removed. Remaining arithmetic branches unchanged per review. Focused+ledger29 pass.
+
+## Atomic credential/reference honesty
+
+Separate atomic-concept surface0093-0115 called nonempty URI/issuer/timestamp fields verified_claims and allowed positioning. Renamed claims_with_supplied_reference_fields/caller_reference_fields_complete; credential/rapport/identity branches now supplied_claim_structure_only, evidence_verified=false/external_action_authorized=false. Caller counterpart facts remain declarations even under legacy their_verified_* input keys; output caller_claimed_commonalities/caller_overlap_found no longer implies verification. Capacity arithmetic verified_gain renamed supplied_capacity_difference. Fake reference/timestamp and claimed overlap regressions pin the boundary.30 focused pass. These atomic ids are a separate denominator from the2009-row register; no register count changed. Latest M20+ledger1872 passed before this atomic correction.
