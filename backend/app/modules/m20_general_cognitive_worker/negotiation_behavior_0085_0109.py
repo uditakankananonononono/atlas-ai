@@ -1,8 +1,7 @@
 """Transparent negotiation and choice-support analysis for ledger rows 85-109.
 
-Rows 85-100 are executable decision algorithms with typed outputs and explicit
-uncertainty reporting. Rows 101-109 are transparency gates for influence
-techniques. The surface diagnoses incentives and designs user-autonomy-preserving
+Rows 85-109 are supplied-input arithmetic, hand-written rubrics and templates.
+There is no fitted behavioral or predictive model and no external authority gate. The surface diagnoses incentives and designs user-autonomy-preserving
 options. It never fabricates scarcity, authority, social proof, threats, or
 hidden priming.
 """
@@ -561,7 +560,7 @@ def _priming(d: dict) -> dict:
     if en or cn:
         if min(en,cn)<=0 or not (0<=ec<=en and 0<=cc<=cn): raise ValueError('valid exposed/control counts required')
         effect=ec/en-cc/cn; se=math.sqrt((ec/en)*(1-ec/en)/en+(cc/cn)*(1-cc/cn)/cn); ci=[round(effect-1.96*se,6),round(effect+1.96*se,6)]
-    return {'context':context,'disclosed':disclosed,'absolute_effect':None if effect is None else round(effect,6),'effect_interval_95':ci,'causal_estimate_available':effect is not None,'covert_influence_blocked':not disclosed,'allowed':disclosed and effect is not None,'method_limits':[BASE_LIMIT,'Only randomized or controlled, disclosed priming analysis is supported.']}
+    return {'context':context,'disclosed':disclosed,'absolute_effect':None if effect is None else round(effect,6),'effect_interval_95':ci,'causal_estimate_available':False,'descriptive_difference_available':effect is not None,'covert_influence_blocked':not disclosed,'allowed':disclosed and effect is not None,'method_limits':[BASE_LIMIT,'Caller counts support only an unadjusted difference of proportions. Assignment, confounding and measurement are not verified; no causal conclusion.']}
 
 def _nudge(d: dict) -> dict:
     options=d.get('options'); default=d.get('default')
@@ -600,9 +599,20 @@ def run(method: str, data: dict) -> dict:
         out = DEEP_85_100[method](data)
     else:
         out = DEEP_101_109[method](data)
+    # Fixed confidence values and arbitrary +/- bands were not estimated.
+    if 'confidence' in out: out['confidence'] = None
+    for key in ('uncertainty_interval', 'credibility_interval'):
+        if key in out: out[key] = None
+    # These are declared-input rubric decisions, never permission to communicate.
+    for key in ('deployment_allowed','may_communicate','may_reference','allowed'):
+        if key in out: out['caller_rubric_'+key] = out.pop(key)
+    out['external_action_authorized'] = False
+    out['predictive_model_available'] = False
+    out['evidence_independently_verified'] = False
     evidence = [k for k, v in data.items() if v not in (None, '', [], {})]
     return {'method': method, 'feature_row': ROWS[method], 'inputs': data, 'output': out,
-            'evaluation': {'executable': True, 'method_specific': True,
+            'status':'supplied_input_arithmetic_and_rubrics_only','capability_executed':False,
+            'evaluation': {'diagnostic_executable': True, 'method_specific': True,
                            'evidence_fields_observed': evidence,
                            'review_checks': ['truthfulness', 'voluntary choice', 'reversibility', 'outcome monitoring']},
             'uncertainty': {'level': 'bounded-not-quantified',

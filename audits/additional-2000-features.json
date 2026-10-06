@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1845,
-    "PARTIAL": 111,
+    "verified-pushed": 1820,
+    "PARTIAL": 136,
     "SCOPED": 50,
     "removed": 4,
     "thin": 0,
@@ -37,7 +37,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Decision Journaling + Retrieval (Most Powerful, Easiest)",
-      "description": "What it is: Every time you make a decision — \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" — you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
+      "description": "What it is: Every time you make a decision \u2014 \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" \u2014 you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -51,7 +51,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Correction Loop (Reinforcement From You)",
-      "description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output → your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
+      "description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output \u2192 your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -65,7 +65,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Voice Fine-Tuning (Style Transfer to You)",
-      "description": "What it is: You collect 50–200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
+      "description": "What it is: You collect 50\u2013200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "93c65c5c4e2bbdf91632d10a1433de8e114c87bc",
@@ -79,7 +79,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Chain-of-Thought Capture",
-      "description": "What it is: When you solve a hard problem, you record your reasoning step by step — not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
+      "description": "What it is: When you solve a hard problem, you record your reasoning step by step \u2014 not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -94,7 +94,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Preference Ranking",
-      "description": "What it is: Claire generates 3–5 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
+      "description": "What it is: Claire generates 3\u20135 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "93c65c5c4e2bbdf91632d10a1433de8e114c87bc",
@@ -108,7 +108,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Behavioral Telemetry (What You Actually Do)",
-      "description": "What it is: Silently log your real actions — which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
+      "description": "What it is: Silently log your real actions \u2014 which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -157,7 +157,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -173,7 +173,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -183,7 +183,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Successful episode tool-role sequence retrieval with lexical domain filtering; no learned cross-domain task execution. Deduplicates source episodes and excludes failed outcomes.",
@@ -205,7 +205,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -221,7 +221,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -231,7 +231,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Observed confidence/outcome calibration curve and error only; no inferred knowledge boundary or predictive confidence adjustment.",
@@ -253,7 +253,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -263,7 +263,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Default outcome model unavailable; no risk-tier fixed success odds or alternative-history lesson. Optional injected estimates are unvalidated, not causal counterfactuals.",
@@ -285,7 +285,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -301,7 +301,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -317,7 +317,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -327,7 +327,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Self-reported challenge/skill threshold rubric and difficulty sort only; no measured flow induction or invented skill gain.",
@@ -349,7 +349,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -359,7 +359,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Setback marker classification and prewritten review templates, not generated grounded cognitive reframing.",
@@ -381,7 +381,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -391,7 +391,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Literal marker scan with mitigation review templates; no diagnosed bias, measured severity or corrected reasoning.",
@@ -413,7 +413,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -423,7 +423,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Skill/fact cache lookup and substring comparison to supplied text; no calibrated confidence or validated intuition.",
@@ -445,7 +445,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -455,7 +455,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Versioned supplied-assumption registry and signed supplied-weight score only; no posterior probability, truth assessment or actual best world model.",
@@ -477,7 +477,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -487,7 +487,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Literal value-conflict marker pruning only; cancels all transitive dependents without dropping prerequisite references. No semantic terminal-value reasoning or substitute goal generation.",
@@ -509,7 +509,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -525,7 +525,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -541,7 +541,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -557,7 +557,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -573,7 +573,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -583,7 +583,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Hand-written uncertainty/time-to-planning-depth policy, not learned cognitive planning-horizon adaptation.",
@@ -605,7 +605,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -621,7 +621,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -631,7 +631,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Five deterministic persona checklists over supplied metadata; no personality model or scored cognitive diversity.",
@@ -653,7 +653,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -663,7 +663,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Assumption review templates and evidence-count diagnostics; no generated defensible alternatives or residual confidence.",
@@ -685,7 +685,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -695,7 +695,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Lexical overlap selection of supplied facts and response skeleton; no strongest opposing argument generated or verified.",
@@ -717,7 +717,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -733,7 +733,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -743,7 +743,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Observed fact age only; fitted obsolescence model and refresh scheduling unavailable, no invented decay/freshness odds.",
@@ -765,7 +765,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -775,7 +775,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Lexical missing-token frequency tracking and frequency-weighted budget policy; no measured expected learning value or autonomous investigation.",
@@ -1591,13 +1591,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Information Asymmetry Exploitation",
       "description": "Profits from knowledge differences",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 86,
@@ -1605,13 +1619,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Adverse Selection Detection",
       "description": "Identifies when bad actors self-select",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 87,
@@ -1619,13 +1647,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Moral Hazard Prevention",
       "description": "Structures deals to prevent reckless behavior",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 88,
@@ -1633,13 +1675,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Screening Mechanism Design",
       "description": "Creates self-selection filters",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 89,
@@ -1647,13 +1703,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Commitment Device Creation",
       "description": "Locks in future behavior",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 90,
@@ -1661,13 +1731,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Credible Threat Construction",
       "description": "Makes threats believable",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 91,
@@ -1675,13 +1759,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Bargaining Power Assessment",
       "description": "Evaluates negotiating positions",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 92,
@@ -1689,13 +1787,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "BATNA Identification",
       "description": "Knows best alternative to negotiated agreement",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 93,
@@ -1703,13 +1815,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "ZOPA Mapping",
       "description": "Finds zone of possible agreement",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 94,
@@ -1717,13 +1843,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Integrative Bargaining",
       "description": "Creates win-win solutions",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 95,
@@ -1731,13 +1871,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Anchoring Strategy",
       "description": "Sets negotiation reference points",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 96,
@@ -1745,13 +1899,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Framing Effects Utilization",
       "description": "Presents options to influence choices",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 97,
@@ -1759,13 +1927,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Loss Aversion Leverage",
       "description": "Uses fear of loss to motivate",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 98,
@@ -1773,13 +1955,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Social Proof Deployment",
       "description": "Leverages herd behavior",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 99,
@@ -1787,13 +1983,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Scarcity Creation",
       "description": "Manufactures urgency through limited availability",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 100,
@@ -1801,13 +2011,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Reciprocity Triggers",
       "description": "Gives first to create obligation",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 101,
@@ -1815,13 +2039,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Authority Positioning",
       "description": "Establishes expertise and credibility",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 102,
@@ -1829,13 +2067,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Consistency Commitment",
       "description": "Uses small yeses to build to large yeses",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 103,
@@ -1843,13 +2095,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Liking Enhancement",
       "description": "Builds rapport and similarity",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 104,
@@ -1857,13 +2123,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Unity Building",
       "description": "Creates shared identity and purpose",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 105,
@@ -1871,13 +2151,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Pre-Suasion",
       "description": "Primes attention before persuasion attempt",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 106,
@@ -1885,13 +2179,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Priming Effects",
       "description": "Activates related concepts unconsciously",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 107,
@@ -1899,13 +2207,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Nudge Design",
       "description": "Structures choices to guide behavior",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 108,
@@ -1913,13 +2235,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Choice Architecture",
       "description": "Organizes options to influence decisions",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 109,
@@ -1927,13 +2263,27 @@
       "category": "Executive Function & Meta-Cognition",
       "requirement": "Libertarian Paternalism",
       "description": "Guides without restricting freedom",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
         "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "current_scope": "Supplied-input arithmetic, hand-written behavioral rubrics and templates only. No fitted behavior/prediction, independent evidence verification, external action authority or named influence capability execution. Arbitrary confidence and uncertainty bands removed; priming counts descriptive, not causal.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "b769f6bff5c35e5b28c5c00884af7513e7c69b6d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+          "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py"
+        }
+      },
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_negotiation_behavior_0085_0109.py",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/negotiation_behavior_0085_0109.py",
+        "test_result": "80 focused tests passed; independent review pending"
+      }
     },
     {
       "id": 110,
