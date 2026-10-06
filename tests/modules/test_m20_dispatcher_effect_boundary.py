@@ -90,3 +90,9 @@ def test_token_matching_does_not_mistake_substrings_for_money(name):
 def test_camelcase_and_common_money_aliases_gate(name):
  from app.modules.m20_general_cognitive_worker.safety import requires_approval
  assert requires_approval(name,Risk.READ,{})
+
+
+@pytest.mark.parametrize('name',['PAYInvoice','pay2','placeOrder2','charges','payments','purchases','billing','invoice','buyer','topUp','cashOut'])
+def test_final_name_defense_pass_acronym_digits_and_compounds(name):
+ from app.modules.m20_general_cognitive_worker.safety import requires_approval
+ assert requires_approval(name,Risk.READ,{})

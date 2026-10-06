@@ -122,17 +122,20 @@ def requires_approval(action_type: str, risk: Risk, payload: dict[str, Any]) -> 
     if risk in (Risk.EXTERNAL, Risk.IRREVERSIBLE):
         return True
     normalized_action = unicodedata.normalize("NFKC", action_type)
+    normalized_action = re.sub(r"(?<=[A-Z])(?=[A-Z][a-z])", "_", normalized_action)
     normalized_action = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", normalized_action).casefold()
     normalized_action = "".join(c for c in normalized_action if unicodedata.category(c) != "Cf")
     # Small, explicit Cyrillic confusable map is defense-in-depth, not a
     # promise to recognize every script or semantic alias.
     normalized_action = normalized_action.translate(str.maketrans(
         {"а":"a", "е":"e", "о":"o", "р":"p", "с":"c", "у":"y", "х":"x", "і":"i", "ј":"j", "ѕ":"s"}))
-    tokens = set(re.findall(r"[^\W_]+", normalized_action, flags=re.UNICODE))
+    tokens = set(re.findall(r"[^\W_\d]+", normalized_action, flags=re.UNICODE))
     money_tokens = {"pay", "payment", "buy", "purchase", "checkout", "order", "wire", "transfer",
                     "charge", "refund", "payout", "withdraw", "donate", "subscribe", "settle", "tip", "upgrade",
-                    "orders", "refunds", "bill", "topup", "cashout", "deposit", "funds", "money"}
-    if tokens & money_tokens or normalized_action in FINANCIAL_ACTION_TYPES or normalized_action in PRIVATE_DATA_ACTION_TYPES:
+                    "orders", "refunds", "bill", "topup", "cashout", "deposit", "funds", "money",
+                    "charges", "payments", "purchases", "billing", "invoice", "buyer"}
+    compact_tokens = "".join(re.findall(r"[^\W_\d]+", normalized_action, flags=re.UNICODE))
+    if tokens & money_tokens or compact_tokens in {"topup", "cashout"} or normalized_action in FINANCIAL_ACTION_TYPES or normalized_action in PRIVATE_DATA_ACTION_TYPES:
         return True
     if payload.get("externally_visible"):
         return True
