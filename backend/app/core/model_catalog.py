@@ -107,11 +107,14 @@ def default_chain() -> list[Route]:
     return chain
 
 
-async def generate_free_first(prompt: str, model_name: str | None = None) -> tuple[str, str, str]:
+async def generate_free_first(prompt: str, model_name: str | None = None, *, private: bool = False) -> tuple[str, str, str]:
     """Return (provider, model, text). Tries free routes; paid only when explicitly allowed."""
     routes = list(resolve(model_name).routes) if model_name else default_chain()
     errors: list[str] = []
     for route in routes:
+        if private and route.kind not in {LOCAL, SELF_HOSTED}:
+            errors.append(f"{route.provider}: skipped (private context requires local/self-hosted route)")
+            continue
         if route.kind == HOSTED_PAID and not paid_allowed():
             errors.append(f"{route.provider}: skipped (paid, ATLAS_ALLOW_PAID not set)")
             continue

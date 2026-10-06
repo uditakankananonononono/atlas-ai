@@ -230,3 +230,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Replaced membership min/max summaries with zero-order Sugeno rule inference: nested min/max/complement antecedents, explicit weights, per-rule firing/contribution trace and weighted numerical output. No-firing rule set produces null rather than invented fallback.
 - Memberships/consequents are supplied assumptions, not learned or independently verified probabilities/truth. Restricted finite scalar rule inference, no live control deployment. Rejects invalid/boolean/nonfinite memberships, unknown atoms and duplicate rules.
 - Tests alter memberships, weights and consequents to change measured output and pin nested logic. Focused226; M20/ledger1644 passed. Row847SCOPED pending review; labels1958 historical,47SCOPED,1PARTIAL,4removed.
+
+## GCW private model context boundary
+
+- GCW planner/executive now explicitly request private routing. General named-model chain skips all hosted-free/hosted-paid routes for private tasks, regardless of token/paid flag, and stops if configured local/self-hosted routes fail. Other public callers retain their existing routing semantics.
+- Tests intercept provider calls: configured HF token plus paid flag does not receive private goal/context or reflection data; named Inkling uses only its self-hosted route. Local unavailable becomes honest planner error/executive unavailable, not a stub answer. Focused25 passed; combined M20/catalog/shared-layer result retained in private-model-m20.log.
+- These tests use transport fixtures and do not prove a live local model is installed or running. LOCAL/SELF_HOSTED are configuration labels; integrators must point endpoints at their owner-controlled infrastructure. No hosted model called in this repair, no keys collected or credits spent.

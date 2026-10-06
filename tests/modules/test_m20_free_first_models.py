@@ -13,7 +13,8 @@ from app.modules.m20_general_cognitive_worker.schemas import Risk
 
 
 def _reply(monkeypatch, text=None, exc=None, seen=None):
-    async def fake(prompt, model_name=None):
+    async def fake(prompt, model_name=None, *, private=False):
+        assert private is True, "GCW private context must never enter hosted fallback"
         if seen is not None:
             seen.append((prompt, model_name))
         if exc:
