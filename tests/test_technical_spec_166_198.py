@@ -147,3 +147,9 @@ def test_mounted_boundary():
  assert len(c.get(base+"/capabilities").json())==33
  r=c.post(base+"/execute",json={"row":198,"data":{'alternatives': [{'name': 'a', 'scores': {'c': 1}}], 'criteria': [{'name': 'c', 'weight': 1}]}});assert r.status_code==200 and r.json()["requirement_id"]=="M20-26"
  assert c.post(base+"/execute",json={"row":190,"data":{"expression":"open('x')"}}).status_code==422
+
+
+def test_row185_ranking_is_explicit_supplied_input_arithmetic_not_prediction():
+ out=execute(185,{'actions':[{'name':'a','information_gain':1,'progress_probability':.8,'cost':.1}]})['result']
+ assert out['status']=='supplied_input_scoring_only' and not out['predictive_model_available']
+ assert 'caller_' in out['formula'] and out['ranked_actions'][0]['score']==pytest.approx(.7)

@@ -423,3 +423,8 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 
 - Review consumption checks and insert remain in one lock-held claim operation, now pinned by a checking-set test. Executors run after that lock is released, so a slow handler does not serialize all goals and a reentrant same-token call blocks instead of deadlocking.32-thread consumption test remains. Goal records are still process-local; concurrent operator mutation/readback is not a transaction guarantee.
 - Constructor validates integer TTL1-86400 seconds, rejecting huge/bool/fractional values before datetime overflow. Focused25 pass. No spending, real external executor or distributed guarantee.
+
+## Remaining heuristic number labels
+
+- Renamed UCT root_value/root_standard_error to heuristic_root_value/heuristic_root_standard_error at the typed object and HTTP output, so bare keys do not imply predictive value. Technical-spec row185 explicitly labels supplied-input scoring and its caller-information-gain * caller-progress-probability - caller-cost arithmetic, not fitted prediction.
+- Expectation claim ids in node arguments remain caller/model-controlled metadata. They cannot establish confidence provenance; callers could associate an existing claim with a step. This affects descriptive calibration/reflection, not execution approval. Production provenance binding is not completed. Focused80 pass; independent review pending.

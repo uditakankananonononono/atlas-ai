@@ -63,7 +63,7 @@ def execute(row,d):
  if row==185:
   opts=d.get('actions');
   if not isinstance(opts,list) or not opts:raise ValueError('actions required')
-  scored=[{'name':x['name'],'score':float(x['information_gain'])*float(x['progress_probability'])-float(x['cost'])} for x in opts];return _base(row,{'ranked_actions':sorted(scored,key=lambda x:x['score'],reverse=True)})
+  scored=[{'name':x['name'],'score':float(x['information_gain'])*float(x['progress_probability'])-float(x['cost'])} for x in opts];return _base(row,{'ranked_actions':sorted(scored,key=lambda x:x['score'],reverse=True),'status':'supplied_input_scoring_only','predictive_model_available':False,'formula':'caller_information_gain * caller_progress_probability - caller_cost'})
  if row==186:
   surprise=abs(float(d.get('observed',0))-float(d.get('expected',0)));threshold=float(d.get('threshold',.2));return _base(row,{'surprise':surprise,'reflection_triggered':surprise>threshold,'replan':surprise>threshold})
  if row==187:
