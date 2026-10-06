@@ -74,3 +74,15 @@ def test_production_rate_limit_cannot_rotate_scope_headers(monkeypatch,oidc_auth
  assert c.get('/private',headers={**token,'x-atlas-tenant':'fake2','x-atlas-actor':'fake2'}).status_code==429
  assert c.get('/private',headers=oidc_auth_headers('tb','alice')).status_code==200
  assert c.get('/private').status_code==401
+
+
+def test_locked_down_gateway_requires_auth_for_api_docs(monkeypatch,oidc_auth_headers):
+ monkeypatch.delenv('ATLAS_DEV_NO_AUTH',raising=False)
+ app=FastAPI();app.add_middleware(ProductionBoundaryMiddleware)
+ @app.get('/health')
+ def health():return {'ok':True}
+ c=TestClient(app)
+ assert c.get('/health').status_code==200
+ for path in ('/docs','/openapi.json'):
+  assert c.get(path).status_code==401
+  assert c.get(path,headers=oidc_auth_headers('docs-tenant','reader')).status_code==200
