@@ -266,3 +266,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Selector no longer chooses a sole unrelated registered tool solely from its Beta prior/risk score and lack of a competitor. Zero capability-token match and zero supplied embedding similarity causes abstention even after100 successful outcomes. Existing eligible related-tool selection remains.
 - Score/margin explicitly heuristic, not calibrated statistical confidence or probability. Default embedder is hashed bag-of-words and can collide; positive similarity is not independently verified semantic relevance, and this repair does not make tool selection a learned language model. Approval/dispatcher gates remain separate.
 - Focused31 passed; M20 result logged. No external tool executed by these tests.
+
+## Independent review catch-up
+
+- Parent relayed reviewer confirmation through88c24dd for temporal constraints (400-network HiGHS oracle, zero mismatches), Horn closure (300-program oracle, zero mismatches), strict model output and both claim-retraction batches. These scoped confirmations do not establish original-spec completion.
+- Private-routing boundary confirmed with configuration caveat: declared LOCAL/SELF_HOSTED route kind does not verify actual destination. README now names configurable OpenAI-compatible/Ollama endpoints and owner-controlled infrastructure requirement; URL ownership/locality remains unchecked.
+- Fuzzy, finite model, spatial, boolean induction, graph transduction, interleaving, keyed assessment and progress had test-pass confirmation only, not independent oracle/mutation attack. They retain SCOPED/pending review annotations.
