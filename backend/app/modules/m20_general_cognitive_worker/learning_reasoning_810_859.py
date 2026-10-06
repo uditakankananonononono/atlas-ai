@@ -8,6 +8,7 @@ from .learning_calibration import calibrate_attempts
 from .spaced_review import schedule_reviews
 from .support_progression import progress_support
 from .keyed_assessment import assess
+from .progress_measurement import measure_progress
 from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
@@ -57,7 +58,8 @@ def learning(row,p):
  if row==825:
   goal=req(p,'goal',dict);out['goal']={'specific':goal.get('specific'),'metric':goal.get('metric'),'target':goal.get('target'),'deadline':goal.get('deadline'),'feasibility_evidence':goal.get('feasibility_evidence'),'implementation_intention':goal.get('if_then')}
  if row==826:
-  records=req(p,'records',list);vals=[float(x['value']) for x in records];out['progress']={'latest':vals[-1],'change':vals[-1]-vals[0],'target':p.get('target'),'on_track':(vals[-1]>=float(p['target']) if p.get('target') is not None else None),'records':records}
+  try:out['progress']=measure_progress(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row in (827,828):
   criteria=req(p,'criteria',list);ratings=req(p,'ratings',dict);out['assessment']=[{'criterion':c,'rating':ratings.get(c),'evidence':p.get('evidence',{}).get(c),'missing_evidence':not bool(p.get('evidence',{}).get(c))} for c in criteria];out['bias_check']=('compare self-rating to artifact/rubric' if row==827 else 'anonymous where practical; train/calibrate raters; author can respond')
  if row in (829,830,831):
