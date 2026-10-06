@@ -1,0 +1,56 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 32%]
+........................................................................ [ 35%]
+........................................................................ [ 39%]
+........................................................................ [ 43%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+........................................................................ [ 53%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 75%]
+........................................................................ [ 78%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 93%]
+........................................................................ [ 96%]
+.................................................................        [100%]
+=============================== warnings summary ===============================
+tests/modules/test_m20_conic_solvers.py::test_conic_iteration_limit_does_not_promote_inaccurate_result
+  /home/sandbox/atlas-ai/backend/app/modules/m20_general_cognitive_worker/conic_solvers.py:40: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+    try:problem.solve(solver='SCS',eps=tol,max_iters=limit,verbose=False)
+
+tests/test_technical_architecture_real_control_plane.py::test_a25_real_apscheduler_executes_registered_date_job
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/_pytest/threadexception.py:58: PytestUnhandledThreadExceptionWarning: Exception in thread APScheduler
+  
+  Traceback (most recent call last):
+    File "/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+      self.run()
+    File "/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/threading.py", line 1012, in run
+      self._target(*self._args, **self._kwargs)
+    File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/apscheduler/schedulers/blocking.py", line 30, in _main_loop
+      wait_seconds = self._process_jobs()
+                     ^^^^^^^^^^^^^^^^^^^^
+    File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/apscheduler/schedulers/base.py", line 1233, in _process_jobs
+      self.remove_job(job.id, jobstore_alias)
+    File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/apscheduler/schedulers/base.py", line 722, in remove_job
+      raise JobLookupError(job_id)
+  apscheduler.jobstores.base.JobLookupError: 'No job by the id of once was found'
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2009 passed, 2 warnings in 44.31s

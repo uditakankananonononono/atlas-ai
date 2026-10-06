@@ -530,3 +530,7 @@ Specialized facade previously took tenant/actor readback from raw headers even w
 ## Sibling principal attribution and rate-limit repair
 
 Cognitive-learning, education and finance routes now derive scope from require_tenant; mismatching legacy scope headers/body rejected403 rather than attributing calculations to another owner. Middleware rate-limit keys now verified tenant/actor, never spoofable x-atlas scope headers under production auth; invalid/missing authentication rejected before private routes. Signed RS256 tests cover all three spoof headers/no-token outcomes and repeated rotating x-atlas header requests reaching429 under the same token, with different tenant allowed.177 focused pass. Explicit development bypass still trusts headers; process-local rate-limit counters remain unbounded/not distributed and authentication is verified again at route boundaries. This does not prove production identity-provider deployment.
+
+## Current auth/gateway regression and scheduler fixture race
+
+Current M20+atomic+ledger+gateway/default-auth2009pass after sibling principal repair. Warnings: expected SCS plus APScheduler JobLookupError on its background thread because the fixture shut down after callback append but before APScheduler removed its date job. Fixed fixture waits for both callback and job removal before shutdown; separate gateway suite15pass with no warning. No scheduler production implementation changed; the wider2009 run was not warning-clean.

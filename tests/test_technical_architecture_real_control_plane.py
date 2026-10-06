@@ -40,7 +40,7 @@ def test_a25_real_apscheduler_executes_registered_date_job():
     scheduler.start()
     import time
     deadline=time.time()+2
-    while not ran and time.time()<deadline: time.sleep(.02)
+    while (not ran or scheduler.get_job("once") is not None) and time.time()<deadline: time.sleep(.02)
     scheduler.shutdown(wait=True)
     assert ran==['done'] and scheduler.get_job('once') is None
 
