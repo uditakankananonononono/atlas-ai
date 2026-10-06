@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1958,
-    "SCOPED": 47,
+    "verified-pushed": 1957,
+    "SCOPED": 48,
     "PARTIAL": 1,
     "removed": 4,
     "thin": 0,
@@ -13377,14 +13377,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Rule-Based Reasoning",
       "description": "Applies rules",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_838_rules_have_forward_trace",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_838_rules_have_forward_trace",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Validated finite positive Horn fixed-point inference with rule/premise proof links and explicit unsupported-query unknown truth boundary. No negation or natural-language rule extraction claim.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_horn_inference.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 839,

@@ -16,6 +16,7 @@ from .spatial_constraints import solve_spatial
 from .temporal_network import temporal
 from .finite_model_reasoning import models
 from .fuzzy_inference import infer
+from .horn_inference import forward
 from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
@@ -84,13 +85,8 @@ def transfer(row,p):
 def reasoning(row,p):
  premises=p.get('premises',[]);out={'premises':premises,'assumptions':p.get('assumptions',[]),'uncertainties':p.get('uncertainties',[]),'conclusion_status':'candidate until checked'}
  if row==838:
-  rules=req(p,'rules',list);facts=set(map(str,p.get('facts',[])));derived=[]
-  changed=True
-  while changed:
-   changed=False
-   for r in rules:
-    if set(map(str,r.get('if',[])))<=facts and str(r.get('then')) not in facts:facts.add(str(r['then']));derived.append({'rule':r.get('id'),'fact':str(r['then'])});changed=True
-  out['rule_trace']=derived;out['facts']=sorted(facts)
+  try:out.update(forward(p))
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==839:
   try:out['model']=models(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
