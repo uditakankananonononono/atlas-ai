@@ -23,3 +23,45 @@ test('knowledge graph minimap renders node rectangles and fits all nodes',async(
  await page.locator('.react-flow').screenshot({path:'test-results/knowledge-graph.png'});
  expect(rects).toBe(12);
 });
+
+test('minimap and controls do not cover any node card (desktop and mobile)',async({page})=>{
+ for(const vp of [{width:1280,height:800},{width:390,height:844}]){
+  await page.setViewportSize(vp);
+  await signedIn(page);
+  const nodes=Array.from({length:12},(_,i)=>({id:'n'+i,node_type:i%2?'note':'source',title:'Node '+i,metadata:{}}));
+  await page.route('**/api/v1/knowledge-workspace/nodes/**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({nodes,edges:[]})}));
+  await page.getByLabel('Knowledge node ID').fill('seed-1');
+  await expect(page.locator('.react-flow__minimap')).toBeVisible();
+  await page.waitForTimeout(800);
+  const overlaps=await page.evaluate(()=>{
+   const boxes=['.react-flow__minimap','.react-flow__controls'].map(q=>document.querySelector(q)!.getBoundingClientRect());
+   return Array.from(document.querySelectorAll('.react-flow__node')).filter(n=>{const r=n.getBoundingClientRect();return boxes.some(b=>r.left<b.right&&r.right>b.left&&r.top<b.bottom&&r.bottom>b.top)}).map(n=>n.textContent);
+  });
+  await page.locator('.react-flow').screenshot({path:`test-results/knowledge-graph-${vp.width}.png`});
+  expect(overlaps).toEqual([]);
+ }
+});
+
+test('dragged positions survive a type filter toggle and a stale seed response is ignored',async({page})=>{
+ await signedIn(page);
+ const mk=(p:string)=>Array.from({length:4},(_,i)=>({id:p+i,node_type:i%2?'note':'source',title:p+' '+i,metadata:{}}));
+ await page.route('**/api/v1/knowledge-workspace/nodes/**',async route=>{
+  const slow=route.request().url().includes('/slow/');
+  if(slow)await new Promise(r=>setTimeout(r,1500));
+  await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({nodes:mk(slow?'S':'F'),edges:[]})});
+ });
+ const seed=page.getByLabel('Knowledge node ID');
+ await seed.fill('slow');await seed.fill('fast');
+ await expect(page.getByText('F 0')).toBeVisible();
+ await page.waitForTimeout(2200);
+ await expect(page.getByText('S 0')).toHaveCount(0);
+ const card=page.locator('.react-flow__node',{hasText:'F 0'});
+ const before=await card.boundingBox();
+ await page.mouse.move(before!.x+20,before!.y+20);await page.mouse.down();await page.mouse.move(before!.x+20,before!.y+90,{steps:5});await page.mouse.up();
+ const dragged=await card.boundingBox();
+ expect(Math.abs(dragged!.y-before!.y)).toBeGreaterThan(40);
+ await page.getByRole('button',{name:'note'}).click();await page.getByRole('button',{name:'note'}).click();
+ await expect(page.locator('.react-flow__node',{hasText:'F 0'})).toBeVisible();
+ const after=await page.locator('.react-flow__node',{hasText:'F 0'}).boundingBox();
+ expect(Math.abs(after!.y-dragged!.y)).toBeLessThan(5);
+});
