@@ -2,8 +2,7 @@
 
 This module does not label the system AGI. It implements properties that can
 be tested: a persistent evidence-backed world model, self-directed *proposal*
-of goals (activation remains authority-gated), synthesis and adversarial
-admission of narrowly sandboxed tools, and benchmark-bound improvement with
+of goals (activation remains authority-gated), static synthesis candidate inspection (execution/admission unavailable), and caller-evaluator-bound improvement with
 immutable baselines and rollback.
 """
 from __future__ import annotations
@@ -268,81 +267,108 @@ class ImmutableBaseline:
 
 
 class SelfImprovementLab:
-    """Evaluates candidates against immutable baselines before approval/apply."""
+    """Caller-evaluator scores, exact-review local versioning. No learned improvement proof."""
 
     def __init__(self, approval_gate: ApprovalGate) -> None:
         self.approvals = approval_gate
         self.history: dict[str, list[ImmutableBaseline]] = {}
         self.candidates: dict[str, dict[str, Any]] = {}
         self.change_approvals: dict[str, str] = {}
+        self._improvement_lock = RLock()
+        self._evaluated = {}
+        self._reviewed = {}
+        self._spent = set()
 
     def establish(self, name: str, content: str, evaluator: Callable[[str], float]) -> ImmutableBaseline:
-        if name in self.history:
-            raise ValueError("baseline already exists")
-        baseline = self._version(name, content, evaluator(content), "GENESIS", 1)
-        self.history[name] = [baseline]
-        return baseline
+        with self._improvement_lock:
+            if name in self.history:
+                raise ValueError("baseline already exists")
+            baseline = self._version(name, content, self._score(evaluator(content)), "GENESIS", 1)
+            self.history[name] = [baseline]
+            return baseline
 
     def evaluate(self, name: str, candidate: str, evaluator: Callable[[str], float], *, min_gain: float = 0.0) -> dict[str, Any]:
-        baseline = self.history[name][-1]
-        score = evaluator(candidate)
-        report = {"id": str(uuid4()), "name": name, "candidate": candidate,
-                  "candidate_hash": hashlib.sha256(candidate.encode()).hexdigest(),
-                  "baseline_hash": baseline.content_hash, "baseline_score": baseline.benchmark_score,
-                  "candidate_score": score, "gain": score-baseline.benchmark_score,
-                  "passed": score-baseline.benchmark_score >= min_gain}
-        self.candidates[report["id"]] = report
-        return report
+        with self._improvement_lock:
+            baseline = self.history[name][-1]
+            score = self._score(evaluator(candidate))
+            min_gain = self._score(min_gain)
+            report = {"id": str(uuid4()), "name": name, "candidate": candidate,
+                      "candidate_hash": hashlib.sha256(candidate.encode()).hexdigest(),
+                      "baseline_hash": baseline.content_hash, "baseline_version": baseline.version, "baseline_score": baseline.benchmark_score,
+                      "candidate_score": score, "gain": self._score(score-baseline.benchmark_score),
+                      "passed": score-baseline.benchmark_score >= min_gain}
+            self.candidates[report["id"]] = dict(report)
+            self._evaluated[report["id"]] = _hash(report)
+            return dict(report)
 
     def request_apply(self, candidate_id: str) -> str:
-        report = self.candidates[candidate_id]
-        if not report["passed"]:
-            raise PermissionError("candidate did not pass its benchmark gate")
-        request = ApprovalGateRequest(action_type="apply_self_improvement", risk=Risk.EXTERNAL,
-                                      summary=f"Apply measured improvement to {report['name']}",
-                                      payload={k: report[k] for k in ("id", "name", "candidate_hash",
-                                                                       "baseline_hash", "baseline_score",
-                                                                       "candidate_score", "gain")})
-        approval_id = self.approvals.request(request)
-        self.change_approvals[candidate_id] = approval_id
-        return approval_id
+        with self._improvement_lock:
+            report = self.candidates[candidate_id]
+            if not report["passed"] or self._evaluated.get(candidate_id) != _hash(report):
+                raise PermissionError("candidate did not pass its benchmark gate")
+            request = ApprovalGateRequest(action_type="apply_self_improvement", risk=Risk.EXTERNAL,
+                                          summary=f"Apply caller-evaluated candidate to {report['name']}",
+                                          payload={k: report[k] for k in ("id", "name", "candidate_hash",
+                                                                           "baseline_hash", "baseline_score",
+                                                                           "candidate_score", "gain", "baseline_version")})
+            approval_id = self.approvals.request(request)
+            self.change_approvals[candidate_id] = approval_id
+            self._reviewed[approval_id] = _hash(report)
+            return approval_id
 
     def apply(self, candidate_id: str, *, approval_id: str) -> ImmutableBaseline:
-        report = self.candidates[candidate_id]
-        current = self.history[report["name"]][-1]
-        if (self.change_approvals.get(candidate_id) != approval_id or
-                self.approvals.decision(approval_id) != ApprovalGateDecision.APPROVED or
-                not report["passed"] or current.content_hash != report["baseline_hash"]):
-            raise PermissionError("approved, passing candidate against current baseline required")
-        version = self._version(report["name"], report["candidate"], report["candidate_score"],
-                                current.content_hash, current.version+1)
-        self.history[report["name"]].append(version)
-        return version
+        with self._improvement_lock:
+            report = self.candidates[candidate_id]
+            current = self.history[report["name"]][-1]
+            if (self.change_approvals.get(candidate_id) != approval_id or
+                    self.approvals.decision(approval_id) != ApprovalGateDecision.APPROVED or
+                    approval_id in self._spent or self._reviewed.get(approval_id) != _hash(report) or
+                    self._evaluated.get(candidate_id) != _hash(report) or
+                    not report["passed"] or current.content_hash != report["baseline_hash"] or
+                    current.version != report["baseline_version"]):
+                raise PermissionError("approved, passing candidate against current baseline required")
+            version = self._version(report["name"], report["candidate"], report["candidate_score"],
+                                    current.content_hash, current.version+1)
+            self._spent.add(approval_id)
+            self.history[report["name"]].append(version)
+            return version
 
     def request_rollback(self, name: str, version: int) -> str:
-        target = next(v for v in self.history[name] if v.version == version)
-        current = self.history[name][-1]
-        request = ApprovalGateRequest(action_type="rollback_self_improvement", risk=Risk.EXTERNAL,
-                                      summary=f"Rollback {name} to content from version {version}",
-                                      payload={"name": name, "target_version": version,
-                                               "target_hash": target.content_hash,
-                                               "current_hash": current.content_hash})
-        approval_id = self.approvals.request(request)
-        self.change_approvals[f"rollback:{name}:{version}:{current.content_hash}"] = approval_id
-        return approval_id
+        with self._improvement_lock:
+            target = next(v for v in self.history[name] if v.version == version)
+            current = self.history[name][-1]
+            request = ApprovalGateRequest(action_type="rollback_self_improvement", risk=Risk.EXTERNAL,
+                                          summary=f"Rollback {name} to content from version {version}",
+                                          payload={"name": name, "target_version": version,
+                                                   "target_hash": target.content_hash,
+                                                   "current_hash": current.content_hash, "current_version": current.version})
+            approval_id = self.approvals.request(request)
+            self.change_approvals[f"rollback:{name}:{version}:{current.content_hash}"] = approval_id
+            self._reviewed[approval_id] = _hash({"target":asdict(target), "current":asdict(current)})
+            return approval_id
 
     def rollback(self, name: str, version: int, *, approval_id: str) -> ImmutableBaseline:
-        target = next(v for v in self.history[name] if v.version == version)
-        current = self.history[name][-1]
-        key = f"rollback:{name}:{version}:{current.content_hash}"
-        if (self.change_approvals.get(key) != approval_id or
-                self.approvals.decision(approval_id) != ApprovalGateDecision.APPROVED):
-            raise PermissionError("exact rollback approval required")
-        current = self.history[name][-1]
-        restored = self._version(name, target.content, target.benchmark_score,
-                                 current.content_hash, current.version+1)
-        self.history[name].append(restored)
-        return restored
+        with self._improvement_lock:
+            target = next(v for v in self.history[name] if v.version == version)
+            current = self.history[name][-1]
+            key = f"rollback:{name}:{version}:{current.content_hash}"
+            if (self.change_approvals.get(key) != approval_id or
+                    self.approvals.decision(approval_id) != ApprovalGateDecision.APPROVED or
+                    approval_id in self._spent or
+                    self._reviewed.get(approval_id) != _hash({"target":asdict(target), "current":asdict(current)})):
+                raise PermissionError("exact rollback approval required")
+            current = self.history[name][-1]
+            restored = self._version(name, target.content, target.benchmark_score,
+                                     current.content_hash, current.version+1)
+            self._spent.add(approval_id)
+            self.history[name].append(restored)
+            return restored
+
+    @staticmethod
+    def _score(value):
+        if isinstance(value, bool) or not isinstance(value, (float,int)) or not math.isfinite(value):
+            raise ValueError("finite numeric evaluator score/minimum gain required")
+        return value
 
     @staticmethod
     def _version(name: str, content: str, score: float, parent: str, version: int) -> ImmutableBaseline:

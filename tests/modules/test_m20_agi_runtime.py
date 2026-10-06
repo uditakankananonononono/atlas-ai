@@ -98,3 +98,37 @@ def test_autonomous_goal_activation_is_single_consumption(tmp_path):
  assert engine.activate(goal.id,approval).status=='active'
  goal.status='waiting_approval'
  with pytest.raises(PermissionError):engine.activate(goal.id,approval)
+
+@pytest.mark.parametrize('field,value', [('candidate','unreviewed'),('candidate_score',900),('passed',False),('baseline_version',99),('name','other'),('gain',900)])
+def test_improvement_rejects_changed_reviewed_or_evaluated_candidate(field,value):
+ gate=InMemoryApprovalGate();lab=SelfImprovementLab(gate)
+ lab.establish('p','a',len);lab.establish('other','x',len)
+ report=lab.evaluate('p','aaa',len)
+ report['candidate']='caller copy changed'
+ approval=lab.request_apply(report['id']);gate.decide(approval,ApprovalGateDecision.APPROVED)
+ lab.candidates[report['id']][field]=value
+ with pytest.raises(PermissionError):lab.apply(report['id'],approval_id=approval)
+ assert len(lab.history['p'])==1
+ with pytest.raises(PermissionError):lab.request_apply(report['id'])
+
+@pytest.mark.parametrize('value',[float('nan'),float('inf'),True,'1'])
+def test_improvement_rejects_invalid_evaluator_scores(value):
+ lab=SelfImprovementLab(InMemoryApprovalGate())
+ with pytest.raises(ValueError):lab.establish('p','a',lambda _:value)
+ lab.establish('p','a',len)
+ with pytest.raises(ValueError):lab.evaluate('p','b',lambda _:value)
+ with pytest.raises(ValueError):lab.evaluate('p','b',len,min_gain=value)
+
+
+def test_improvement_apply_and_rollback_cannot_reuse_approvals_for_equal_content():
+ from concurrent.futures import ThreadPoolExecutor
+ gate=InMemoryApprovalGate();lab=SelfImprovementLab(gate);lab.establish('p','same',len)
+ report=lab.evaluate('p','same',len);approval=lab.request_apply(report['id']);gate.decide(approval,ApprovalGateDecision.APPROVED)
+ def apply(_):
+  try:lab.apply(report['id'],approval_id=approval);return True
+  except PermissionError:return False
+ with ThreadPoolExecutor(max_workers=8) as pool:assert sum(pool.map(apply,range(16)))==1
+ rollback=lab.request_rollback('p',1);gate.decide(rollback,ApprovalGateDecision.APPROVED)
+ lab.rollback('p',1,approval_id=rollback)
+ with pytest.raises(PermissionError):lab.rollback('p',1,approval_id=rollback)
+ assert len(lab.history['p'])==3
