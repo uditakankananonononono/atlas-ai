@@ -52,8 +52,8 @@ def test_845_counterfactual_exposes_held_constant():assert R('counterfactual_rea
 def test_846_probability_bayes():assert R('probabilistic_reasoning',prior=.5,likelihood_given_h=.8,likelihood_given_not_h=.2)['bayes']['posterior']==pytest.approx(.8)
 def test_847_fuzzy_operators():assert R('fuzzy_logic',memberships={'a':.2,'b':.7})['fuzzy']['and']==.2
 @pytest.mark.parametrize('n',['default_reasoning','non_monotonic_reasoning'])
-def test_848_849_defaults_are_revisable(n):assert R(n)['defaults']['beliefs_revisable']
-def test_850_abduction_not_proof():assert R('abductive_reasoning')['abduction']['best_explanation_is_not_proof']
+def test_848_849_defaults_are_revisable(n):assert R(n,facts=['bird'],defaults=[{'if':['bird'],'unless':['abnormal'],'then':'flies'}])['defaults']['cautious_conclusions']==['bird','flies']
+def test_850_abduction_not_proof():assert R('abductive_reasoning',observations=['wet'],rules=[{'if':['rain'],'then':'wet'}],hypotheses=[{'atom':'rain','cost':1}])['abduction']['best_explanations'][0]['hypotheses']==['rain']
 def test_851_induction_records_scope_exceptions_strength():assert set(R('inductive_reasoning')['induction'])>={'sample_scope','exceptions','generalization_strength'}
 def test_852_deduction_separates_validity_truth():assert R('deductive_reasoning',formulas=['P',{'implies':['P','Q']}],conclusion='Q')['deduction']['validity'] and R('deductive_reasoning',formulas=['P'],conclusion='Q')['deduction']['soundness'] is None
 def test_853_transduction_scope_one_target():assert 'target instance only' in R('transductive_reasoning')['transduction']['scope']
@@ -88,5 +88,5 @@ def test_831_diagnostic_assessment_purpose(): assert L('diagnostic_assessment',i
 def test_833_transfer_requires_independent_target_performance(): assert T('transfer')['transfer_type']=='unspecified' and T('transfer')['requires_independent_target_performance']
 def test_834_near_transfer_requires_independent_target_performance(): assert T('near_transfer')['transfer_type']=='near' and T('near_transfer')['requires_independent_target_performance']
 def test_835_far_transfer_requires_independent_target_performance(): assert T('far_transfer')['transfer_type']=='far' and T('far_transfer')['requires_independent_target_performance']
-def test_848_default_reasoning_is_revisable(): assert R('default_reasoning')['defaults']['beliefs_revisable']
-def test_849_nonmonotonic_reasoning_is_revisable(): assert R('non_monotonic_reasoning')['defaults']['beliefs_revisable']
+def test_848_default_reasoning_is_revisable(): assert R('default_reasoning',facts=['bird'],defaults=[{'if':['bird'],'unless':['abnormal'],'then':'flies'}])['defaults']['beliefs_revisable']
+def test_849_nonmonotonic_reasoning_is_revisable(): assert R('non_monotonic_reasoning',facts=['bird'],defaults=[{'if':['bird'],'unless':['abnormal'],'then':'flies'}])['defaults']['beliefs_revisable']

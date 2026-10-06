@@ -13412,14 +13412,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Default Reasoning",
       "description": "Assumes unless contradicted",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_848_default_reasoning_is_revisable",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_848_default_reasoning_is_revisable",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Exact finite stable-model inference for symbolic normal rules with explicit unless atoms; multiple models and inconsistency preserved, at most12 optional atoms.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_defeasible_reasoning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 849,
@@ -13427,14 +13441,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Non-Monotonic Reasoning",
       "description": "Revises conclusions",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_849_nonmonotonic_reasoning_is_revisable",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_849_nonmonotonic_reasoning_is_revisable",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Recompute exact stable models after explicit fact additions/removals, returning cautious conclusion retractions and new conclusions. No arbitrary prioritized default or real-world truth claim.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_defeasible_reasoning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 850,
@@ -13442,14 +13470,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Abductive Reasoning",
       "description": "Infers best explanation",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_850_abduction_not_proof",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_850_abduction_not_proof",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Exact subset-minimal finite Horn abductive explanation search and supplied-cost ranking with derivation proof trace and forbidden-consequence rejection. Up to16 hypotheses; not natural-language or causal truth claim.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_defeasible_reasoning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 851,
