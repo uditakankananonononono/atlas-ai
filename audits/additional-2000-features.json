@@ -4,9 +4,9 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1820,
+    "verified-pushed": 1818,
     "PARTIAL": 136,
-    "SCOPED": 50,
+    "SCOPED": 52,
     "removed": 4,
     "thin": 0,
     "missing": 0
@@ -32150,13 +32150,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Automated Reasoning",
       "description": "",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion."
+      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+          "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        }
+      },
+      "current_scope": "Restricted positive ground Horn forward chaining over supplied unit facts and rules. Multi-literal clauses rejected. No complete first-order theorem proving or independent truth of axioms.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      }
     },
     {
       "id": 1971,
@@ -32164,13 +32177,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Theorem Proving",
       "description": "",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion."
+      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+          "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        }
+      },
+      "current_scope": "Restricted positive ground Horn forward chaining over supplied unit facts and rules. Multi-literal clauses rejected. No complete first-order theorem proving or independent truth of axioms.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      }
     },
     {
       "id": 1972,

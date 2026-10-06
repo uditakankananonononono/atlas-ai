@@ -152,3 +152,5 @@ Row22 is literal value-marker conflict pruning only, PARTIAL. Cancelled prerequi
 All cognitive-learning rows860-909 are PARTIAL supplied-input diagnostics only, not named thinking/learning execution. Nonempty workflow input coverage never means feature completion. Earlier label counts1845 historical verified-pushed/50SCOPED/111PARTIAL/4removed; labels are not verified capabilities.
 
 Negotiation rows85-109 now PARTIAL supplied-input arithmetic/rubrics/templates only; fabricated confidence/bands removed, rubric flags do not authorize effects, priming counts not causal. Latest ledger labels1820 historical verified-pushed/50SCOPED/136PARTIAL/4removed, not capability certification.
+
+Ground-Horn proof correction rows1970/1971 now SCOPED; labels1818historical/52SCOPED/136PARTIAL/4removed. Restricted unit-fact entailment, not complete theorem proving.
