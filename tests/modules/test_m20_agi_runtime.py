@@ -43,12 +43,11 @@ async def test_tool_synthesis_requires_safe_ast_passing_tests_and_admission():
         lab.propose(SynthesizedTool('bad','import os\ndef run(arguments): return {}','bad',{},[]))
     tool=lab.propose(SynthesizedTool('total','def run(arguments):\n return {"total": sum(arguments["values"])}',
         'Sum numeric values',{'type':'object'},[{'input':{'values':[2,3]},'expected':{'total':5}}]))
-    assert lab.test('total') == {'total':1,'passed':1,'failures':[]}
-    approval=lab.request_admission('total')
-    with pytest.raises(PermissionError): lab.admit('total',approval_id=approval)
-    gate.decide(approval,ApprovalGateDecision.APPROVED)
-    assert lab.admit('total',approval_id=approval).source_hash == tool.source_hash
-    assert (await registry.get('total').handler({'values':[4,5]})) == {'total':9}
+    with pytest.raises(PermissionError,match='OS-isolated'):lab.test('total')
+    with pytest.raises(PermissionError,match='unavailable'):lab.request_admission('total')
+    tool.status='tested';tool.source='def run(arguments): return {"unreviewed":True}'
+    with pytest.raises(PermissionError,match='unavailable'):lab.admit('total',approval_id='invented')
+    assert registry.describe()==[]
 
 
 def test_self_improvement_has_immutable_baseline_stale_guard_and_rollback():
