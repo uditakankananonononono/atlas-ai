@@ -50,7 +50,7 @@ def test_843_temporal_computes_gap_bounds():assert R('temporal_reasoning',tempor
 def test_844_causal_has_dag_roles_and_identification():assert R('causal_reasoning',equations={'X':{},'Y':{'parents':{'X':2}}},exposure='X',outcome='Y',intervention_values=[0,1])['causal']['effect']==2
 def test_845_counterfactual_exposes_held_constant():assert R('counterfactual_reasoning',equations={'X':{},'Y':{'parents':{'X':2}}},factual={'X':1,'Y':3},intervention={'X':2})['counterfactual']['result']['Y']==5
 def test_846_probability_bayes():assert R('probabilistic_reasoning',prior=.5,likelihood_given_h=.8,likelihood_given_not_h=.2)['bayes']['posterior']==pytest.approx(.8)
-def test_847_fuzzy_operators():assert R('fuzzy_logic',memberships={'a':.2,'b':.7})['fuzzy']['and']==.2
+def test_847_fuzzy_infers_rule_output():assert R('fuzzy_logic',memberships={'a':.2,'b':.7},fuzzy_rules=[{'id':'one','if':{'and':['a','b']},'consequent':3}])['fuzzy']['rules'][0]['firing_strength']==.2
 @pytest.mark.parametrize('n',['default_reasoning','non_monotonic_reasoning'])
 def test_848_849_defaults_are_revisable(n):assert R(n,facts=['bird'],defaults=[{'if':['bird'],'unless':['abnormal'],'then':'flies'}])['defaults']['cautious_conclusions']==['bird','flies']
 def test_850_abduction_not_proof():assert R('abductive_reasoning',observations=['wet'],rules=[{'if':['rain'],'then':'wet'}],hypotheses=[{'atom':'rain','cost':1}])['abduction']['best_explanations'][0]['hypotheses']==['rain']

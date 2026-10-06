@@ -15,6 +15,7 @@ from .interleaved_practice import interleave
 from .spatial_constraints import solve_spatial
 from .temporal_network import temporal
 from .finite_model_reasoning import models
+from .fuzzy_inference import infer
 from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
@@ -113,9 +114,8 @@ def reasoning(row,p):
   if not all(0<=x<=1 for x in (prior,likelihood,alt)) or not den:raise LearningReasoningError('invalid probabilities')
   out['bayes']={'prior':prior,'posterior':prior*likelihood/den,'likelihoods':[likelihood,alt]}
  if row==847:
-  memberships=req(p,'memberships',dict)
-  if not all(0<=float(v)<=1 for v in memberships.values()):raise LearningReasoningError('memberships must be in [0,1]')
-  out['fuzzy']={'memberships':memberships,'and':min(map(float,memberships.values())),'or':max(map(float,memberships.values())),'not':{k:1-float(v) for k,v in memberships.items()}}
+  try:out['fuzzy']=infer(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row in (848,849):
   try:out['defaults']=default_inference(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc

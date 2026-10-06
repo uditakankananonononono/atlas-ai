@@ -224,3 +224,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Replaced copied entities/predictions with finite-domain constraint model enumeration. Explicit typed scalar domains and comparison predicates yield actual feasible assignment count, possible values and query entailment/supporting/countermodels across all supplied models. Inconsistent premises report unknown entailment, not vacuous real-world certainty.
 - Maximum65536 assignments,10 variables. Not continuous simulation, scientific model learning, natural-language reasoning or independent premise validation. Literal-versus-variable right operands explicit; ordered comparisons require numerical operands.
 - Tests compute unique transitive model, ambiguous supported/countermodel query, contradiction, literal/name distinction and size rejection. Focused224; M20/ledger1637 passed. Row839SCOPED pending review; labels1959 historical,46SCOPED,1PARTIAL,4removed.
+
+## Actual finite fuzzy inference (row847)
+
+- Replaced membership min/max summaries with zero-order Sugeno rule inference: nested min/max/complement antecedents, explicit weights, per-rule firing/contribution trace and weighted numerical output. No-firing rule set produces null rather than invented fallback.
+- Memberships/consequents are supplied assumptions, not learned or independently verified probabilities/truth. Restricted finite scalar rule inference, no live control deployment. Rejects invalid/boolean/nonfinite memberships, unknown atoms and duplicate rules.
+- Tests alter memberships, weights and consequents to change measured output and pin nested logic. Focused226; M20/ledger1644 passed. Row847SCOPED pending review; labels1958 historical,47SCOPED,1PARTIAL,4removed.
