@@ -4,9 +4,9 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1897,
-    "PARTIAL": 61,
-    "SCOPED": 48,
+    "verified-pushed": 1894,
+    "PARTIAL": 62,
+    "SCOPED": 50,
     "removed": 4,
     "thin": 0,
     "missing": 0
@@ -15060,14 +15060,29 @@
       "category": "Learning & Knowledge",
       "requirement": "Belief Revision",
       "description": "Changes mind",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
         "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_880_belief_revision_transformation",
         "evidence_kind": "exact-row-distinctive-transformation-node"
       },
-      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes."
+      "boundary": "Transparent learning and cognitive-science support using explicit inputs, evidence, uncertainty and learner control. Never infer hidden traits, fabricate mastery, expose hidden chain-of-thought or autonomously determine education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "07517a97903fcfe69e83acd8631a5738f017544c",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+          "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_880_belief_revision_transformation",
+          "evidence_kind": "exact-row-distinctive-transformation-node"
+        }
+      },
+      "current_scope": "Belief revision model unavailable; prior is caller supplied, no heuristic revised probability.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_cognitive_learning_860_909.py::test_exact_row_880_belief_revision_transformation",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_learning_860_909.py",
+        "verification": "Model assumptions labeled and source-read; independent review pending."
+      }
     },
     {
       "id": 881,
@@ -23593,14 +23608,29 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Student Modeling",
       "description": "",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
         "test_path": "tests/modules/test_m20_education_1410_1459.py::test_1457_student_modeling_distinctive_computation_moves",
         "evidence_kind": "exact-distinctive-education-input-sensitive-computation-node"
       },
-      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+          "test_path": "tests/modules/test_m20_education_1410_1459.py::test_1457_student_modeling_distinctive_computation_moves",
+          "evidence_kind": "exact-distinctive-education-input-sensitive-computation-node"
+        }
+      },
+      "current_scope": "Sequential Bayesian knowledge tracing with explicit caller or unfitted example parameters; conditional arithmetic only, not fitted or independently verified learner mastery.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_education_1410_1459.py::test_1457_student_modeling_distinctive_computation_moves",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "verification": "Model assumptions labeled and source-read; independent review pending."
+      }
     },
     {
       "id": 1458,
@@ -23608,14 +23638,29 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Knowledge Tracing",
       "description": "",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
         "test_path": "tests/modules/test_m20_education_1410_1459.py::test_1458_knowledge_tracing_distinctive_computation_moves",
         "evidence_kind": "exact-distinctive-education-input-sensitive-computation-node"
       },
-      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action."
+      "boundary": "Learner-centered education decision support with explicit evidence, accessibility and educator review. Never infer hidden traits, replace educators, fabricate mastery or take irreversible education action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "a5f2fe0b6292f43956da8b85c986622a49ddfb65",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+          "test_path": "tests/modules/test_m20_education_1410_1459.py::test_1458_knowledge_tracing_distinctive_computation_moves",
+          "evidence_kind": "exact-distinctive-education-input-sensitive-computation-node"
+        }
+      },
+      "current_scope": "Sequential Bayesian knowledge tracing with explicit caller or unfitted example parameters; conditional arithmetic only, not fitted or independently verified learner mastery.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_education_1410_1459.py::test_1458_knowledge_tracing_distinctive_computation_moves",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/education.py",
+        "verification": "Model assumptions labeled and source-read; independent review pending."
+      }
     },
     {
       "id": 1459,

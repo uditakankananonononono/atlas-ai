@@ -11,14 +11,14 @@ def data(i):
 def payload(i):return {'tenant_id':'tenant-a','actor_id':'actor-a','sources':[dict(S[0])],'inputs':data(i),'ethical_review':i in (890,891),'learner_goals':['learn']}
 
 def _assert_row(i):
- o=execute(i,payload(i));assert o['row_id']==i and o['mechanism']==KEYS[i] and o['complete'];assert o['result'] and o['scope']=={'tenant_id':'tenant-a','actor_id':'actor-a'};assert o['actions_taken']==[]
+ o=execute(i,payload(i));assert o['row_id']==i and o['mechanism']==KEYS[i] and (o['complete'] is (i!=880));assert o['result'] and o['scope']=={'tenant_id':'tenant-a','actor_id':'actor-a'};assert o['actions_taken']==[]
 for _i in range(860,910):
  globals()[f'test_row_{_i}_{KEYS[_i]}_computes_specific_result']=(lambda i=_i:_assert_row(i))
 
 def test_model_update_prediction_error_and_transition():
  r=execute(879,payload(879))['result'];assert r['prediction_error']==pytest.approx(.6) and r['revised_estimate']==pytest.approx(.5)
 def test_belief_revision_updates_confidence():
- r=execute(880,payload(880))['result'];assert r['revised_confidence']>.4 and r['revision']>0
+ r=execute(880,payload(880))['result'];assert r['revised_confidence'] is None and r['revision'] is None
 def test_association_and_conditioning_use_prediction_error_updates():
  assert execute(889,payload(889))['result']['updated_strength']==pytest.approx(.6)
  assert execute(890,payload(890))['result']['conditioned_strength']==pytest.approx(.6)
@@ -91,7 +91,7 @@ def test_exact_row_879_model_updating_transformation():
  'revised_estimate': 0.5,
  'transition': 'prior_model->evidence_checked->revised_model'}
 def test_exact_row_880_belief_revision_transformation():
- assert execute(880,payload(880))['result']=={'prior_confidence': 0.4, 'revised_confidence': 0.7, 'revision': 0.29999999999999993}
+ assert execute(880,payload(880))['result']=={'prior_confidence': 0.4, 'revised_confidence': None, 'revision': None, 'status':'belief_revision_model_unavailable','capability_executed':False}
 def test_exact_row_881_theory_change_transformation():
  assert execute(881,payload(881))['result']=={'comparative_fit': {'t1': 0.85, 't2': 0.3}, 'preferred_theory': 't1'}
 def test_exact_row_882_conceptual_change_transformation():
@@ -153,3 +153,11 @@ def test_exact_row_908_formal_learning_transformation():
  assert execute(908,payload(908))['result']=={'assessment_score': 0.8, 'credential_awarded': False, 'curriculum_progress': 0.5}
 def test_exact_row_909_informal_learning_transformation():
  assert execute(909,payload(909))['result']=={'community': 'peer', 'daily_learning_evidence': ['artifact'], 'self_direction': 0.9}
+
+
+def test_belief_revision_does_not_fabricate_probability_from_reliability_knob():
+ for value in (0,.5,1):
+  p=payload(880);p['inputs']['evidence_reliability']=value
+  o=execute(880,p)
+  assert not o['complete'] and o['result']['revised_confidence'] is None
+  assert o['result']['status']=='belief_revision_model_unavailable'
