@@ -17,9 +17,9 @@ def test_toc_little_and_auction_invariants():
  assert run('bidding_optimization',C[106])['output']['recommended_bid']==80
  assert run('selling_optimization',C[107])['output']['recommended_reserve']==40
 def test_no_fabricated_credibility_similarity_or_unity():
- a=run('expertise_positioning',C[108])['output'];assert len(a['verified_claims'])==1 and a['unsupported_claims'][0]['claim']=='expert'
- assert run('similarity_grounding',C[111])['output']['genuine_commonalities']==['artist']
- assert not run('shared_identity',{'my_groups':['a'],'their_verified_groups':['b']})['output']['frame_allowed']
+ a=run('expertise_positioning',C[108])['output'];assert len(a['claims_with_supplied_reference_fields'])==1 and a['unsupported_claims'][0]['claim']=='expert'
+ assert run('similarity_grounding',C[111])['output']['caller_claimed_commonalities']==['artist']
+ assert not run('shared_identity',{'my_groups':['a'],'their_verified_groups':['b']})['output']['caller_overlap_found']
 def test_citation_direction_and_chronology():
  assert run('citation_influence',C[114])['output']['in_degree']['a']==2
  assert run('academic_idea_flow',C[115])['output']['idea_flow_edges']==[{'from':'a','to':'b'}]
@@ -31,3 +31,16 @@ def test_negative_paths_and_http_mount():
  assert len(c.get('/api/v1/api/modules/20/atomic-concepts-93-115/methods',headers=h).json())==23
  r=c.post('/api/v1/api/modules/20/atomic-concepts-93-115/analyze',headers=h,json={'method':'power_law_model','data':C[99]});assert r.status_code==200 and r.json()['output']['exponent']==pytest.approx(2)
  assert c.post('/api/v1/api/modules/20/atomic-concepts-93-115/analyze',headers=h,json={'method':'bad'}).status_code==422
+
+
+def test_fake_credential_reference_fields_do_not_verify_or_authorize_positioning():
+ out=run('expertise_positioning',{'claims':[{'claim':'invented credential','issuer':'fake','evidence_uri':'https://fake.invalid','checked_at':'nonsense'}]})['output']
+ assert len(out['claims_with_supplied_reference_fields'])==1
+ assert out['evidence_verified'] is False and out['external_action_authorized'] is False
+ assert 'verified_claims' not in out and 'positioning_allowed' not in out
+
+
+def test_counterpart_claimed_facts_are_not_verified_common_ground():
+ out=run('similarity_grounding',{'my_facts':['art'],'their_verified_facts':['art']})['output']
+ assert out['caller_claimed_commonalities']==['art'] and out['evidence_verified'] is False
+ assert 'genuine_commonalities' not in out
