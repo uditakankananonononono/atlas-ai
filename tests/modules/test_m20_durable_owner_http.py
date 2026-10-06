@@ -38,3 +38,8 @@ def test_shared_db_signed_owners_are_isolated_and_wrong_binding_rejected(monkeyp
  assert c.get(BASE+'/tasks',headers=hb).json()==[]
  assert c.get(BASE+'/tasks/'+task,headers=ha).status_code==200
  assert rb.load_task(task) is None
+
+
+def test_real_oidc_local_tenant_cannot_access_default_runtime(monkeypatch,oidc_auth_headers):
+ monkeypatch.setenv('ATLAS_ENV','production')
+ assert TestClient(app).get(BASE+'/tasks',headers=oidc_auth_headers('local')).status_code==403

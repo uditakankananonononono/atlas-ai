@@ -118,3 +118,12 @@ and `tests/modules/test_m20_metacognition_routes.py` (mounted routes).
   limits are stated in the response assumptions.
 - Row 70 is the ongoing TOC management loop (release pacing, WIP cap,
   migration), distinct from row 52's one-shot bottleneck analysis.
+
+## Current binding deployment boundary
+
+Production does not auto-provision per-tenant service/runtime bindings. An
+integrator must bind each authenticated tenant and its tenant-keyed stores;
+unbound real tenants return503. The initial local runtime is development-only.
+The reserved tenant name local is rejected for authenticated GCW access, even
+with a valid OIDC token. A configured temporary multi-tenant test is not evidence
+that this deployment integration is live.

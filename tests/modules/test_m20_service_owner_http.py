@@ -51,3 +51,8 @@ def test_separate_owner_tasks_ingestion_traces_standup(monkeypatch,oidc_auth_hea
  assert c.post(BASE+'/ingest/text',headers=b,json={'text':'b-private-input','external_id':'shared-id'}).json()['ingested']
  assert 'ownerasecretgoal' not in c.get(BASE+'/standup',headers=b).text
  assert c.get(BASE+'/traces',headers=b,params={'task_id':task}).json()==[]
+
+
+def test_real_oidc_local_tenant_cannot_access_default_service(monkeypatch,oidc_auth_headers):
+ monkeypatch.setenv('ATLAS_ENV','production')
+ assert TestClient(app).get(BASE+'/tasks',headers=oidc_auth_headers('local')).status_code==403
