@@ -654,11 +654,11 @@
       "module": "1",
       "requirement": "DeBERTa eligibility classifier",
       "status": "UNSUPPORTED",
-      "mounted_route": true,
-      "implementation_path": "backend/app/modules/m01_opportunity_discovery",
-      "implementation_commit": "65cf274af8609b8742f1a1f02742176fba49cac4",
-      "test_evidence": "tests/modules/test_m01_opportunity_discovery.py",
-      "audit_note": "Re-audited on recon-482 from e6a55a7 (code read, no model run): classifier.py has a zero-shot DeBERTa wrapper (EligibilityClassifier, default MoritzLaurer/deberta-v3-large-zeroshot-v2.0, lazy transformers pipeline) and fine_tune_ready() gate (500 labels, 100 per class); tests/test_full_fidelity_models.py covers only fine_tune_ready. grep finds no caller of EligibilityClassifier in backend/app outside classifier.py, so no mounted route/service uses it; no fine-tuned checkpoint or labelled dataset in the repo; docs/MODEL_ACTIVATION.md states zero-shot first, fine-tune only after 500+ real human-reviewed labels, no synthetic labels. Original verified-pushed label cited tests/modules/test_m01_opportunity_discovery.py, which has no classifier hit. Determination: fine-tuned DeBERTa eligibility classifier UNSUPPORTED; zero-shot wrapper exists but is unmounted and unexecuted here. No labels or training fabricated."
+      "mounted_route": false,
+      "implementation_path": "backend/app/modules/m01_opportunity_discovery/classifier.py",
+      "implementation_commit": "",
+      "test_evidence": "tests/test_full_fidelity_models.py",
+      "audit_note": "Re-audited on recon-482 from e6a55a7 (code read, no model run): classifier.py has a zero-shot DeBERTa wrapper (EligibilityClassifier, default MoritzLaurer/deberta-v3-large-zeroshot-v2.0, lazy transformers pipeline) and fine_tune_ready() gate (500 labels, 100 per class); tests/test_full_fidelity_models.py covers only fine_tune_ready. grep finds no caller of EligibilityClassifier in backend/app outside classifier.py, so no mounted route/service uses it; no fine-tuned checkpoint or labelled dataset in the repo; docs/MODEL_ACTIVATION.md states zero-shot first, fine-tune only after 500+ real human-reviewed labels, no synthetic labels. Original verified-pushed label cited tests/modules/test_m01_opportunity_discovery.py, which has no classifier hit. Determination: fine-tuned DeBERTa eligibility classifier UNSUPPORTED; zero-shot wrapper exists but is unmounted and unexecuted here. No labels or training fabricated. Fields corrected on recon-482: mounted_route False (no route or service calls the classifier), implementation_path points at the unmounted wrapper, test_evidence at the only test that touches it (fine_tune_ready gate only), implementation_commit cleared because the old hash was not verified on this lineage."
     },
     {
       "row": 44,
