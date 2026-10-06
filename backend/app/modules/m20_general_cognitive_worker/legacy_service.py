@@ -124,7 +124,12 @@ class DeliberativeLoop:
             ready=[s for s in run.plan.steps if s.state in {State.PENDING,State.WAITING_APPROVAL} and all(by_id[d].state==State.SUCCEEDED for d in s.depends_on)]
             if not ready:run.status=State.BLOCKED;break
             before=[(s.id,s.state,s.attempts) for s in ready]
-            await self.scheduler.run(ready,lambda s:self._step(run,s))
+            outcomes=await self.scheduler.run(ready,lambda s:self._step(run,s))
+            for step,outcome in zip(ready,outcomes):
+                if isinstance(outcome,BaseException):
+                    step.error=f"{type(outcome).__name__}: {outcome}"
+                    step.state=State.BLOCKED
+                    run.traces.append(Trace("execution",f"Infrastructure blocked {step.title}",[],["fix infrastructure"],"escalate",["fail closed; no hidden scheduler exception"]))
             after=[(s.id,s.state,s.attempts) for s in ready]
             if before==after:break
         return run
