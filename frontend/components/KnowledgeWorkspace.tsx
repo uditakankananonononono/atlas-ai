@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useMemo,useState} from "react";
+import {useEffect,useMemo,useRef,useState} from "react";
 import {authFetch} from "../lib/supabase";
 import {Background,Controls,Handle,MiniMap,Position,ReactFlow,applyNodeChanges,type Edge as FlowEdge,type Node as FlowNode,type NodeChange} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -9,17 +9,21 @@ function Card({data}:{data:any}){return <div className="min-w-44 rounded-xl bord
 const nodeTypes={card:Card};
 export default function KnowledgeWorkspace({seedId,apiBase="/api/v1"}:{seedId:string;apiBase?:string}){
  const [nodes,setNodes]=useState<GraphNode[]>([]),[edges,setEdges]=useState<GraphEdge[]>([]),[types,setTypes]=useState<Set<string>>(new Set()),[selected,setSelected]=useState<GraphNode|null>(null),[error,setError]=useState("");
- useEffect(()=>{authFetch(`${apiBase}/knowledge-workspace/nodes/${seedId}/neighborhood?depth=2`).then(r=>{if(!r.ok)throw Error("Could not load graph");return r.json()}).then(d=>{setNodes(d.nodes);setEdges(d.edges);setTypes(new Set(d.nodes.map((n:GraphNode)=>n.node_type)))}).catch(e=>setError(e.message))},[seedId,apiBase]);
+ useEffect(()=>{let stale=false;setNodes([]);setEdges([]);setTypes(new Set());setSelected(null);setError("");authFetch(`${apiBase}/knowledge-workspace/nodes/${seedId}/neighborhood?depth=2`).then(r=>{if(!r.ok)throw Error("Could not load graph");return r.json()}).then(d=>{if(stale)return;setNodes(d.nodes);setEdges(d.edges);setTypes(new Set(d.nodes.map((n:GraphNode)=>n.node_type)))}).catch(e=>{if(!stale)setError(e.message)});return()=>{stale=true}},[seedId,apiBase]);
  const shown=useMemo(()=>nodes.filter(n=>types.has(n.node_type)),[nodes,types]),visible=new Set(shown.map(n=>n.id));
- const baseNodes:FlowNode[]=useMemo(()=>shown.map((n,i)=>({id:n.id,type:"card",data:n,position:{x:(i%4)*240,y:Math.floor(i/4)*140}})),[shown]);
+ const [wide,setWide]=useState(true);
+ useEffect(()=>{const q=window.matchMedia("(min-width: 640px)");const f=()=>setWide(q.matches);f();q.addEventListener("change",f);return()=>q.removeEventListener("change",f)},[]);
+ const cols=wide?4:2;
+ const baseNodes:FlowNode[]=useMemo(()=>shown.map((n,i)=>({id:n.id,type:"card",data:n,position:{x:(i%cols)*240,y:Math.floor(i/cols)*140}})),[shown,cols]);
  // Controlled nodes must feed React Flow's measured sizes back, otherwise the MiniMap has no node dimensions to draw.
  const [flowNodes,setFlowNodes]=useState<FlowNode[]>([]);
- useEffect(()=>{setFlowNodes(baseNodes)},[baseNodes]);
+ const lastCols=useRef(cols);
+ useEffect(()=>{const relayout=lastCols.current!==cols;lastCols.current=cols;setFlowNodes(old=>baseNodes.map(n=>{const o=relayout?undefined:old.find(x=>x.id===n.id);return o?{...n,position:o.position,measured:o.measured,width:o.width,height:o.height}:n}))},[baseNodes,cols]);
  const onNodesChange=(changes:NodeChange[])=>setFlowNodes(old=>applyNodeChanges(changes,old));
  const flowEdges:FlowEdge[]=edges.filter(e=>visible.has(e.source_id)&&visible.has(e.target_id)).map(e=>({id:e.id,source:e.source_id,target:e.target_id,label:e.relationship,animated:e.confidence<1,style:{stroke:"#22d3ee"}}));
  function toggle(t:string){setTypes(old=>{const n=new Set(old);n.has(t)?n.delete(t):n.add(t);return n})}
  return <section className="rounded-2xl border border-slate-700 bg-slate-950 p-5 text-white" aria-label="Knowledge graph"><header className="flex items-center justify-between"><div><p className="text-xs text-cyan-400">MODULE 9</p><h2 className="text-xl font-semibold">Knowledge Workspace</h2></div><p className="text-xs text-slate-400">{shown.length} nodes · {flowEdges.length} links</p></header>
  {error&&<p role="alert" className="mt-4 text-red-300">{error}</p>}<div className="mt-4 flex flex-wrap gap-2">{[...new Set(nodes.map(n=>n.node_type))].map(t=><button key={t} aria-pressed={types.has(t)} onClick={()=>toggle(t)} className={`rounded-full px-3 py-1 text-xs ${types.has(t)?"bg-cyan-500 text-slate-950":"bg-slate-800"}`}>{t}</button>)}</div>
- <div className="mt-4 h-[560px] overflow-hidden rounded-xl border border-slate-800"><ReactFlow nodes={flowNodes} edges={flowEdges} nodeTypes={nodeTypes} onNodesChange={onNodesChange} minZoom={0.1} fitView onNodeDoubleClick={(_,n)=>setSelected(n.data as GraphNode)}><Background/><MiniMap/><Controls/></ReactFlow></div>
+ <div className="mt-4 h-[560px] overflow-hidden rounded-xl border border-slate-800"><ReactFlow nodes={flowNodes} edges={flowEdges} nodeTypes={nodeTypes} onNodesChange={onNodesChange} minZoom={0.1} fitView fitViewOptions={{padding:wide?{top:"24px",left:"24px",right:"190px",bottom:"110px"}:{top:"16px",left:"16px",right:"16px",bottom:"130px"}}} onNodeDoubleClick={(_,n)=>setSelected(n.data as GraphNode)}><Background/><MiniMap pannable zoomable ariaLabel="Graph overview" nodeColor="#22d3ee" nodeStrokeColor="#0e7490" maskColor="rgba(2,6,23,0.7)" style={{width:wide?160:96,height:wide?100:64,background:"#0f172a",border:"1px solid #334155",borderRadius:8}}/><Controls showInteractive={false} className="[&_button]:!border-slate-700 [&_button]:!bg-slate-800 [&_button]:!text-slate-100 [&_svg]:!fill-slate-100"/></ReactFlow></div>
  {selected&&<aside className="mt-4 rounded-xl bg-slate-900 p-4"><div className="flex justify-between"><h3 className="font-semibold">{selected.title}</h3><button onClick={()=>setSelected(null)}>Close</button></div><p className="mt-2 whitespace-pre-wrap text-sm text-slate-300">{selected.body||"No notes"}</p><p className="mt-3 text-xs text-slate-500">Edits use the versioned node API so stale tabs cannot overwrite newer work.</p></aside>}</section>
 }
