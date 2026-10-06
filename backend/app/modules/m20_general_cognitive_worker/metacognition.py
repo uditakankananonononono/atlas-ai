@@ -828,7 +828,7 @@ class GoalHierarchyManager:
 
     def restructure(self, plan: list[PlanNode]) -> dict[str, Any]:
         ids = {n.id for n in plan}
-        if len(ids) != len(plan) or any(d not in ids for n in plan for d in n.depends_on):
+        if len(ids) != len(plan) or any(d not in ids or d == n.id for n in plan for d in n.depends_on):
             raise ValueError("unique plan ids and existing dependency references required")
         conflicts = self.check(plan)
         conflicted_ids = {c.node_id for c in conflicts}
@@ -840,11 +840,12 @@ class GoalHierarchyManager:
                 break
             blocked.update(additions)
         for node in plan:
-            if node.id in blocked:
+            if node.id in blocked and node.state not in (TaskState.SUCCEEDED, TaskState.FAILED, TaskState.CANCELLED):
                 node.state = TaskState.CANCELLED
         return {
             "status": "marker_conflict_pruning_only", "capability_executed": False,
             "cancelled": [n.title for n in plan if n.id in blocked],
+            "already_executed_dependents": [n.id for n in plan if n.id in blocked and n.state in (TaskState.SUCCEEDED, TaskState.FAILED)],
             "blocked_by_cancelled_prerequisite": [n.id for n in plan if n.id in blocked - conflicted_ids],
             "conflicts": [c.__dict__ for c in conflicts],
             "remaining_steps": [n.title for n in plan if n.id not in blocked],

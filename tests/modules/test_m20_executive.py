@@ -121,3 +121,34 @@ def test_rumination_trace():
     assert result["simulations"] > 0
     assert result["best_ordering"]
     assert any(t.phase == "ruminate" for t in loop.traces)
+
+
+def test_untooled_plan_node_never_succeeds_without_actual_reasoning_model():
+ loop,_,_=build_loop()
+ ctx=TaskContext(goal='prove unsolved claim',plan=[PlanNode(title='derive a proof')])
+ out=loop.start(ctx)
+ assert out.state==TaskState.BLOCKED
+ assert out.plan[0].state==TaskState.BLOCKED
+ assert 'unavailable' in out.plan[0].result_summary
+ assert not any(e.outcome.value=='succeeded' for e in loop.episodic.for_task(ctx.id))
+
+
+def test_model_reasoning_requires_nonempty_result_and_retains_actual_output():
+ class Model:
+  def complete(self,purpose,payload):
+   assert purpose=='reason' and payload['step']=='compute a simple answer'
+   return {'available':True,'result':'The requested arithmetic result is 4.'}
+ loop,_,_=build_loop();loop.model=Model()
+ ctx=TaskContext(goal='arithmetic',plan=[PlanNode(title='compute a simple answer')])
+ out=loop.start(ctx)
+ assert out.state==TaskState.SUCCEEDED
+ assert out.plan[0].result_summary=='The requested arithmetic result is 4.'
+
+
+@pytest.mark.parametrize('response',[{'available':False,'result':'text'}, {'available':True}, {'result':''}, {'result':None}, 'plausible prose'])
+def test_invalid_or_unavailable_reasoning_response_never_marks_success(response):
+ class Model:
+  def complete(self,*args,**kwargs):return response
+ loop,_,_=build_loop();loop.model=Model()
+ out=loop.start(TaskContext(goal='x',plan=[PlanNode(title='think')]))
+ assert out.state==TaskState.BLOCKED and out.plan[0].state==TaskState.BLOCKED

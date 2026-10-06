@@ -1,0 +1,37 @@
+.....FF                                                                  [100%]
+=================================== FAILURES ===================================
+____ test_untooled_plan_node_never_succeeds_without_actual_reasoning_model _____
+
+    def test_untooled_plan_node_never_succeeds_without_actual_reasoning_model():
+     loop,_,_=build_loop()
+     ctx=TaskContext(goal='prove unsolved claim',plan=[PlanNode(title='derive a proof')])
+     out=loop.start(ctx)
+>    assert out.state==TaskState.BLOCKED
+E    AssertionError: assert <TaskState.SU...: 'succeeded'> == <TaskState.BLOCKED: 'blocked'>
+E      
+E      - blocked
+E      + succeeded
+
+tests/modules/test_m20_executive.py:130: AssertionError
+___ test_model_reasoning_requires_nonempty_result_and_retains_actual_output ____
+
+    def test_model_reasoning_requires_nonempty_result_and_retains_actual_output():
+     class Model:
+      def complete(self,purpose,payload):
+       assert purpose=='reason' and payload['step']=='compute a simple answer'
+       return {'available':True,'result':'The requested arithmetic result is 4.'}
+     loop,_,_=build_loop();loop.model=Model()
+     ctx=TaskContext(goal='arithmetic',plan=[PlanNode(title='compute a simple answer')])
+     out=loop.start(ctx)
+     assert out.state==TaskState.SUCCEEDED
+>    assert out.plan[0].result_summary=='The requested arithmetic result is 4.'
+E    AssertionError: assert 'reasoning step (no tool)' == 'The requeste... result is 4.'
+E      
+E      - The requested arithmetic result is 4.
+E      + reasoning step (no tool)
+
+tests/modules/test_m20_executive.py:145: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_executive.py::test_untooled_plan_node_never_succeeds_without_actual_reasoning_model
+FAILED tests/modules/test_m20_executive.py::test_model_reasoning_requires_nonempty_result_and_retains_actual_output
+2 failed, 5 passed in 1.83s

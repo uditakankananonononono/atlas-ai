@@ -242,9 +242,26 @@ class DeliberativeLoop:
             node.attempts += 1
             node.state = TaskState.RUNNING
             if node.tool is None:
+                result = None
+                if self.model is not None:
+                    try:
+                        response = self.model.complete("reason", {"goal": context.goal,
+                            "step": node.title, "arguments": node.arguments, "context": wm_context})
+                        if isinstance(response, dict) and response.get("available") is not False:
+                            candidate = response.get("result")
+                            if isinstance(candidate, str) and candidate.strip():
+                                result = candidate
+                    except Exception as exc:
+                        self._trace("act", f"reasoning model error: {type(exc).__name__}", task_id=context.id)
+                if result is None:
+                    node.state = TaskState.BLOCKED
+                    node.result_summary = "reasoning executor unavailable or returned no result; step not executed"
+                    context.state = TaskState.BLOCKED
+                    self._trace("act", node.result_summary, task_id=context.id)
+                    return context
                 node.state = TaskState.SUCCEEDED
-                node.result_summary = "reasoning step (no tool)"
-                self._trace("act", f"reasoned step: {node.title}", task_id=context.id)
+                node.result_summary = result
+                self._trace("act", f"model returned reasoning output: {node.title}; correctness unverified", task_id=context.id)
                 continue
             try:
                 import asyncio

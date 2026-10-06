@@ -77,3 +77,17 @@ def test_conflict_pruning_never_detaches_or_runs_descendant_effects():
  assert send.depends_on==[bad.id] and share.depends_on==[send.id]
  assert out['remaining_steps']==['read public docs'] and not out['capability_executed']
  assert set(out['blocked_by_cancelled_prerequisite'])=={send.id,share.id}
+
+
+def test_conflict_pruning_preserves_terminal_history_and_rejects_self_dependency():
+ import pytest
+ from app.modules.m20_general_cognitive_worker.metacognition import GoalHierarchyManager
+ from app.modules.m20_general_cognitive_worker.schemas import PlanNode,TaskState
+ m=GoalHierarchyManager();bad=PlanNode(title='fake review')
+ done=PlanNode(title='already sent',depends_on=[bad.id],state=TaskState.SUCCEEDED)
+ failed=PlanNode(title='failed send',depends_on=[bad.id],state=TaskState.FAILED)
+ out=m.restructure([bad,done,failed])
+ assert done.state==TaskState.SUCCEEDED and failed.state==TaskState.FAILED
+ assert set(out['already_executed_dependents'])=={done.id,failed.id}
+ selfnode=PlanNode(title='x');selfnode.depends_on=[selfnode.id]
+ with pytest.raises(ValueError):m.restructure([selfnode])
