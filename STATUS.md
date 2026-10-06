@@ -468,3 +468,7 @@ The prior ratio-greedy branch missed the best of its own two-item fixture (value
 ## Cognitive reference substitutes22-row correction
 
 Explicitly named and retracted22 reference substitutes within1960-2009: shortest-path graph vs graph-of-thought, supplied-answer plurality vs self-consistency generation, context selection vs RAG generation, in-memory vector scan vs database, character hashing vs learned embeddings, supplied cosine scores vs semantic retrieval, scalar elite mutations vs swarm/GA, polynomial candidate selection vs genetic programming, eight mean-coupling toy trajectories vs life/emergence/evolution abilities, supplied residuals vs a synchronized twin, graph degrees vs systems/complexity science, hand-written controller vs second-order cybernetics. Each output now reference_operator/reference_substitute_only/named_capability_executed=false; original rows PARTIAL, preserved history.23 focused pass. Labels1790historical54SCOPED162PARTIAL4removed. Numerical reference outputs remain usable only within their actual narrow operator, not capability certification.
+
+## Remaining same-family reviewer retraction
+
+Added sentiment_analysis/opinion_mining (literal lexicon token counts) and neuro_symbolic_ai/hybrid_ai (supplied rule-weight propagation without neural model) to explicit reference substitutes. Four further rows PARTIAL with history preserved; now26 reference substitutes,1786historical/54SCOPED/166PARTIAL/4removed. Remaining arithmetic branches unchanged per review. Focused+ledger29 pass.
