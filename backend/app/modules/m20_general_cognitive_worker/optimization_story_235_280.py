@@ -10,6 +10,7 @@ from math import exp, log, sqrt
 import re
 from typing import Any, Callable
 from .admm import solve_quadratic_l1
+from .convex_solvers import dual_decomposition, coordinate_descent, proximal_gradient, frank_wolfe
 
 class WorkbenchError(ValueError):
     pass
@@ -57,6 +58,10 @@ def _problem(p):
     return c,x,A,b,sense,{'objective_value':_dot(c,x),'max_violation':max(violations,default=0.0),'violation_count':sum(v>1e-9 for v in violations),'feasible':not any(v>1e-9 for v in violations),'constraint_residuals':residual}
 
 def _opt(row,p):
+    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe}
+    if row in solvers:
+        try:return solvers[row](p)
+        except (ValueError,KeyError,TypeError) as exc:raise WorkbenchError(str(exc)) from exc
     if row==236:
         try:return solve_quadratic_l1(p)
         except ValueError as exc:raise WorkbenchError(str(exc)) from exc
@@ -65,10 +70,6 @@ def _opt(row,p):
     r=[_dot(a,x)-z for a,z in zip(A,b)]; grad=[c[j]+sum(max(0,q)*a[j] for q,a in zip(r,A)) for j in range(len(x))]
     common={'diagnostics':d,'metrics':{'gradient_norm':sqrt(_dot(grad,grad)),'confidence':_confidence(r or c)},'uncertainty':{'kind':'deterministic_input_diagnostic','solver_executed':False}}
     H={
-235:lambda:{'block_values':[sum(c[j]*x[j] for j in block) for block in p.get('blocks',[list(range(len(x)))])],'dual_multipliers':[max(0,q*step) for q in r],'coupling_residual_norm':sqrt(_dot(r,r))},
-237:lambda:{'selected_coordinate':(it-1)%len(x),'coordinate_gradient':grad[(it-1)%len(x)],'next_value':x[(it-1)%len(x)]-step*grad[(it-1)%len(x)]},
-238:lambda:{'proximal_point':[max(0,v-step*g) for v,g in zip(x,grad)],'gradient_mapping_norm':sqrt(sum((min(v/step,g))**2 for v,g in zip(x,grad)))},
-239:lambda:{'oracle_vertex':min(range(len(c)),key=c.__getitem__),'duality_gap':max(0,_dot(grad,x)-min(grad)),'step_fraction':2/(it+2)},
 240:lambda:{'most_violated_constraint':(max(range(len(r)),key=r.__getitem__) if r else None),'cut_violation':max(r,default=0.0),'cut_added':bool(r and max(r)>0)},
 241:lambda:{'fractional_indices':[i for i,v in enumerate(x) if abs(v-round(v))>1e-9],'branch_index':next((i for i,v in enumerate(x) if abs(v-round(v))>1e-9),None),'relaxation_bound':_dot(c,x),'pruned_infeasible':not d['feasible']},
 242:lambda:{'reduced_costs':[c[j]-sum((p.get('duals') or [0]*len(A))[i]*A[i][j] for i in range(len(A))) for j in range(len(c))],'entering_column':min(range(len(c)),key=lambda j:c[j]-sum((p.get('duals') or [0]*len(A))[i]*A[i][j] for i in range(len(A))))},
