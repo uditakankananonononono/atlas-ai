@@ -242,3 +242,20 @@ def test_bkt_outputs_expose_unfitted_parameters_and_conditional_scope():
  assert supplied['model_assumptions']['fitted_to_data'] is False
  for name in ('prior_mastery','learn_rate','slip','guess'):
   with pytest.raises(EducationError):analytics('knowledge_tracing',**{name:float('nan')})
+
+
+@pytest.mark.parametrize('value',['false','true',0,1,None,[],{}])
+def test_attempt_correctness_requires_exact_boolean(value):
+ ev=[{'learner_id':'p','skill':'x','event_type':'attempt','correct':value}]
+ with pytest.raises(EducationError,match='correct'):analytics('knowledge_tracing',ev)
+
+
+def test_missing_correctness_rejected_and_non_attempt_not_graded():
+ with pytest.raises(EducationError,match='correct'):
+  analytics('learning_analytics',[{'learner_id':'p','skill':'x','event_type':'attempt'}])
+ ev=[{'learner_id':'p','skill':'x','event_type':'voluntary_check_in','value':'ok'}]
+ o=analytics('knowledge_tracing',ev)['result']
+ assert o['summaries'][0]['attempts']==0 and o['summaries'][0]['accuracy'] is None
+ assert o['knowledge_state'][0]['mastery_probability']==.2
+ partial=analytics('knowledge_tracing',prior_mastery=.4)['result']
+ assert partial['model_assumptions']['parameter_source']=='partial_caller'
