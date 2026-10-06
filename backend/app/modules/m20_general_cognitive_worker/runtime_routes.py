@@ -35,6 +35,8 @@ def bind_runtime(runtime: GCWRuntime, *, tenant_id: str | None = None) -> None:
 
 
 def get_runtime(tenant: TenantContext = Depends(require_tenant)) -> GCWRuntime:
+    if tenant.tenant_id == "local" and not insecure_development_auth_enabled():
+        raise HTTPException(403,"local is reserved for insecure development, not an authenticated tenant")
     runtime=_runtimes.get(tenant.tenant_id)
     if tenant.tenant_id == "local" and insecure_development_auth_enabled():
         runtime=_runtime

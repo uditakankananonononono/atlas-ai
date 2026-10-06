@@ -43,6 +43,8 @@ def bind_service(service, *, tenant_id: str = "local") -> None:
 
 
 def get_service(tenant: TenantContext = Depends(require_tenant)):
+    if tenant.tenant_id == "local" and not insecure_development_auth_enabled():
+        raise HTTPException(403,"local is reserved for insecure development, not an authenticated tenant")
     service = _services.get(tenant.tenant_id)
     if tenant.tenant_id == "local" and insecure_development_auth_enabled():
         service = _service
