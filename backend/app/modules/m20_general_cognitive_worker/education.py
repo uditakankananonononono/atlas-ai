@@ -179,6 +179,8 @@ def _events(p:dict[str,Any])->list[dict[str,Any]]:
     clean=[]
     for i,e in enumerate(events):
         if not isinstance(e,dict) or not e.get("learner_id") or not e.get("skill") or not e.get("event_type"): raise EducationError(f"events[{i}] missing learner_id, skill, or event_type")
+        if e["event_type"]=="attempt" and type(e.get("correct")) is not bool:
+            raise EducationError(f"events[{i}].correct must be an explicit boolean for an attempt")
         clean.append(e)
     return clean
 
@@ -202,7 +204,8 @@ def _analytics(cap:Capability,p:dict[str,Any])->dict[str,Any]:
         prior=float(p.get("prior_mastery",.2)); learn=float(p.get("learn_rate",.1)); slip=float(p.get("slip",.1)); guess=float(p.get("guess",.2))
         if not all(math.isfinite(x) and 0<=x<=1 for x in (prior,learn,slip,guess)): raise EducationError("BKT probabilities must be in [0,1]")
         out["model_assumptions"]={"prior_mastery":prior,"learn_rate":learn,"slip":slip,"guess":guess,
-            "parameter_source":"caller" if all(k in p for k in ("prior_mastery","learn_rate","slip","guess")) else "unfitted_example_defaults",
+            "parameter_source":("caller" if all(k in p for k in ("prior_mastery","learn_rate","slip","guess")) else
+                "partial_caller" if any(k in p for k in ("prior_mastery","learn_rate","slip","guess")) else "unfitted_example_defaults"),
             "fitted_to_data":False,"learner_mastery_verified":False}
         traces=[]
         for key in sorted(grouped):

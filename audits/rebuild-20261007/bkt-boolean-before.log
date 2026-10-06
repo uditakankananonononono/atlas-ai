@@ -1,0 +1,105 @@
+........................................................................ [ 64%]
+...............................FFFFFFFF                                  [100%]
+=================================== FAILURES ===================================
+____________ test_attempt_correctness_requires_exact_boolean[false] ____________
+
+value = 'false'
+
+    @pytest.mark.parametrize('value',['false','true',0,1,None,[],{}])
+    def test_attempt_correctness_requires_exact_boolean(value):
+     ev=[{'learner_id':'p','skill':'x','event_type':'attempt','correct':value}]
+>    with pytest.raises(EducationError,match='correct'):analytics('knowledge_tracing',ev)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.education.EducationError'>
+
+tests/modules/test_m20_education_1410_1459.py:250: Failed
+____________ test_attempt_correctness_requires_exact_boolean[true] _____________
+
+value = 'true'
+
+    @pytest.mark.parametrize('value',['false','true',0,1,None,[],{}])
+    def test_attempt_correctness_requires_exact_boolean(value):
+     ev=[{'learner_id':'p','skill':'x','event_type':'attempt','correct':value}]
+>    with pytest.raises(EducationError,match='correct'):analytics('knowledge_tracing',ev)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.education.EducationError'>
+
+tests/modules/test_m20_education_1410_1459.py:250: Failed
+______________ test_attempt_correctness_requires_exact_boolean[0] ______________
+
+value = 0
+
+    @pytest.mark.parametrize('value',['false','true',0,1,None,[],{}])
+    def test_attempt_correctness_requires_exact_boolean(value):
+     ev=[{'learner_id':'p','skill':'x','event_type':'attempt','correct':value}]
+>    with pytest.raises(EducationError,match='correct'):analytics('knowledge_tracing',ev)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.education.EducationError'>
+
+tests/modules/test_m20_education_1410_1459.py:250: Failed
+______________ test_attempt_correctness_requires_exact_boolean[1] ______________
+
+value = 1
+
+    @pytest.mark.parametrize('value',['false','true',0,1,None,[],{}])
+    def test_attempt_correctness_requires_exact_boolean(value):
+     ev=[{'learner_id':'p','skill':'x','event_type':'attempt','correct':value}]
+>    with pytest.raises(EducationError,match='correct'):analytics('knowledge_tracing',ev)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.education.EducationError'>
+
+tests/modules/test_m20_education_1410_1459.py:250: Failed
+____________ test_attempt_correctness_requires_exact_boolean[None] _____________
+
+value = None
+
+    @pytest.mark.parametrize('value',['false','true',0,1,None,[],{}])
+    def test_attempt_correctness_requires_exact_boolean(value):
+     ev=[{'learner_id':'p','skill':'x','event_type':'attempt','correct':value}]
+>    with pytest.raises(EducationError,match='correct'):analytics('knowledge_tracing',ev)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.education.EducationError'>
+
+tests/modules/test_m20_education_1410_1459.py:250: Failed
+___________ test_attempt_correctness_requires_exact_boolean[value5] ____________
+
+value = []
+
+    @pytest.mark.parametrize('value',['false','true',0,1,None,[],{}])
+    def test_attempt_correctness_requires_exact_boolean(value):
+     ev=[{'learner_id':'p','skill':'x','event_type':'attempt','correct':value}]
+>    with pytest.raises(EducationError,match='correct'):analytics('knowledge_tracing',ev)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.education.EducationError'>
+
+tests/modules/test_m20_education_1410_1459.py:250: Failed
+___________ test_attempt_correctness_requires_exact_boolean[value6] ____________
+
+value = {}
+
+    @pytest.mark.parametrize('value',['false','true',0,1,None,[],{}])
+    def test_attempt_correctness_requires_exact_boolean(value):
+     ev=[{'learner_id':'p','skill':'x','event_type':'attempt','correct':value}]
+>    with pytest.raises(EducationError,match='correct'):analytics('knowledge_tracing',ev)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.education.EducationError'>
+
+tests/modules/test_m20_education_1410_1459.py:250: Failed
+_________ test_missing_correctness_rejected_and_non_attempt_not_graded _________
+
+    def test_missing_correctness_rejected_and_non_attempt_not_graded():
+>    with pytest.raises(EducationError,match='correct'):
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.education.EducationError'>
+
+tests/modules/test_m20_education_1410_1459.py:254: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_education_1410_1459.py::test_attempt_correctness_requires_exact_boolean[false]
+FAILED tests/modules/test_m20_education_1410_1459.py::test_attempt_correctness_requires_exact_boolean[true]
+FAILED tests/modules/test_m20_education_1410_1459.py::test_attempt_correctness_requires_exact_boolean[0]
+FAILED tests/modules/test_m20_education_1410_1459.py::test_attempt_correctness_requires_exact_boolean[1]
+FAILED tests/modules/test_m20_education_1410_1459.py::test_attempt_correctness_requires_exact_boolean[None]
+FAILED tests/modules/test_m20_education_1410_1459.py::test_attempt_correctness_requires_exact_boolean[value5]
+FAILED tests/modules/test_m20_education_1410_1459.py::test_attempt_correctness_requires_exact_boolean[value6]
+FAILED tests/modules/test_m20_education_1410_1459.py::test_missing_correctness_rejected_and_non_attempt_not_graded
+8 failed, 103 passed in 1.89s
