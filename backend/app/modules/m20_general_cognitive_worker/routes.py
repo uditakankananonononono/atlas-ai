@@ -420,7 +420,8 @@ def row10_apply_improvement(proposal_id: str, request: ImprovementApplyRequest, 
 def row11_meta_learning_transfer(request: TransferRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     for episode in service.episodic._episodes.values():
         service.meta_learner.abstract(episode)
-    return {"transfers": service.meta_learner.transfer(request.goal)}
+    return {"transfers": service.meta_learner.transfer(request.goal),
+            "status": "role_sequence_retrieval_only", "capability_executed": False}
 
 
 @router.post("/meta/load-allocation")
@@ -515,7 +516,8 @@ def row20_intuition(request: IntuitionRequest, service: Any = Depends(get_servic
 @router.post("/meta/world-models", status_code=201)
 def row21_register_world_model(request: WorldModelRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     model = service.world_models.register(request.name, request.assumptions)
-    return {"name": model.name, "version": model.version, "posterior": model.posterior}
+    return {"name": model.name, "version": model.version, "posterior": model.posterior, "supplied_weight_score": model.log_odds,
+            "status": "assumption_registry_only", "capability_executed": False}
 
 
 @router.post("/meta/world-models/{name}/evidence")
@@ -523,7 +525,8 @@ def row21_world_model_evidence(name: str, request: WorldModelEvidenceRequest, se
     if name not in service.world_models.models:
         raise HTTPException(status_code=404, detail="model not found")
     model = service.world_models.apply_evidence(name, supported=request.supported, weight=request.weight)
-    return {"name": model.name, "posterior": model.posterior}
+    return {"name": model.name, "posterior": model.posterior, "supplied_weight_score": model.log_odds,
+            "status": "assumption_registry_only", "capability_executed": False}
 
 
 @router.post("/meta/world-models/{name}/revise")
@@ -538,9 +541,11 @@ def row21_revise_world_model(name: str, request: WorldModelReviseRequest, servic
 def row21_list_world_models(service: Any = Depends(get_service)) -> dict[str, Any]:
     best = service.world_models.current_best()
     return {
-        "models": [{"name": m.name, "version": m.version, "posterior": m.posterior}
+        "status": "assumption_registry_only", "capability_executed": False,
+        "models": [{"name": m.name, "version": m.version, "posterior": m.posterior,
+                    "supplied_weight_score": m.log_odds}
                    for m in service.world_models.models.values()],
-        "current_best": best.name if best else None,
+        "current_best": None, "highest_supplied_weight_model": best.name if best else None,
     }
 
 

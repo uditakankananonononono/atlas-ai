@@ -221,6 +221,8 @@ class MetaLearner:
         return frozenset(t for t in tokenize(goal) if t not in _DOMAIN_STOPWORDS)
 
     def abstract(self, episode: Episode) -> AbstractPattern | None:
+        if episode.outcome.value != "succeeded" or any(not a.succeeded for a in episode.actions):
+            return None
         roles = tuple(ACTION_ROLES.get(a.tool) for a in episode.actions)
         if len(roles) < 2 or any(r is None for r in roles):
             return None
@@ -228,6 +230,8 @@ class MetaLearner:
         domains = self._domain_tokens(episode.goal)
         existing = self.patterns.get(key)
         if existing is not None:
+            if episode.id in existing.source_episode_ids:
+                return existing
             existing.successes += 1
             existing.source_episode_ids.append(episode.id)
             existing.domain_tokens = existing.domain_tokens | domains
@@ -251,6 +255,7 @@ class MetaLearner:
                 continue  # same domain: not meta-learning
             foreign = sorted(pattern.domain_tokens)[:3]
             transferred.append({
+                "status": "role_sequence_retrieval_only", "capability_executed": False,
                 "role_sequence": list(pattern.role_sequence),
                 "learned_in_domains": foreign,
                 "successes": pattern.successes,
@@ -322,8 +327,7 @@ class CalibrationEngine:
     """Observed confidence/outcome metrics only. Knowledge boundaries and
     predictive confidence correction are unavailable, not invented."""
 
-    def __init__(self, *, max_confidence_without_evidence: float = 0.55) -> None:
-        self.max_confidence_without_evidence = max_confidence_without_evidence
+    def __init__(self) -> None:
         self.claims: dict[str, Claim] = {}
 
     def _confidence_ceiling(self, evidence_count: int) -> None:
@@ -744,8 +748,8 @@ class WorldModel:
     history: list[dict[str, Any]] = field(default_factory=list)
 
     @property
-    def posterior(self) -> float:
-        return 1.0 / (1.0 + math.exp(-self.log_odds))
+    def posterior(self) -> None:
+        return None  # Supplied signed weights are not measured likelihood ratios.
 
 
 class WorldModelRegistry:
@@ -770,6 +774,8 @@ class WorldModelRegistry:
 
     def apply_evidence(self, name: str, *, supported: bool, weight: float = 1.0) -> WorldModel:
         model = self.models[name]
+        if not math.isfinite(weight) or weight < 0:
+            raise ValueError("finite nonnegative supplied weight required")
         model.log_odds += (weight if supported else -weight)
         model.updated_at = _now()
         return model
@@ -777,7 +783,7 @@ class WorldModelRegistry:
     def current_best(self) -> WorldModel | None:
         if not self.models:
             return None
-        return max(self.models.values(), key=lambda m: m.posterior)
+        return max(self.models.values(), key=lambda m: m.log_odds)
 
 
 # ---------------------------------------------------------------- row 22 --
@@ -1197,38 +1203,22 @@ class EpistemicCalendar:
 # ---------------------------------------------------------------- row 33 --
 # Knowledge Decay Modeling (extends semantic_memory's freshness model).
 
-KIND_DECAY_DEFAULTS: dict[str, float] = {
-    "fact": 0.5, "price": 2.0, "deadline": 3.0, "contact": 1.0,
-    "concept": 0.1, "opinion": 1.0, "regulation": 0.8, "tool_version": 1.5,
-}
-
-
 class KnowledgeDecayModeler:
-    """Row 33: predict which facts will be outdated and schedule refreshes."""
+    """No fitted obsolescence model. Ages are observed, predictions unavailable."""
 
-    def default_decay(self, kind: str) -> float:
-        return KIND_DECAY_DEFAULTS.get(kind, 0.5)
+    def default_decay(self, kind: str) -> None:
+        return None
 
     def forecast(self, semantic_memory: Any, *, days_ahead: float = 30.0,
                  threshold: float = 0.5) -> list[dict[str, Any]]:
+        if not math.isfinite(days_ahead) or days_ahead < 0 or not 0 <= threshold <= 1:
+            raise ValueError("finite nonnegative horizon and threshold in [0,1] required")
         now = _now()
-        future = now + timedelta(days=days_ahead)
-        forecasts = []
-        for fact in semantic_memory._facts.values():
-            decay = fact.decay_rate or self.default_decay(fact.kind)
-            if decay <= 0:
-                continue
-            current = fact.confidence * (0.5 ** (decay * max(0.0, (now - fact.last_confirmed_at).total_seconds() / 86400.0) / 30.0))
-            predicted = fact.confidence * (0.5 ** (decay * max(0.0, (future - fact.last_confirmed_at).total_seconds() / 86400.0) / 30.0))
-            if predicted < threshold:
-                forecasts.append({
-                    "fact_id": fact.id, "content": fact.content, "kind": fact.kind,
-                    "current_freshness": round(current, 3),
-                    "predicted_freshness": round(predicted, 3),
-                    "refresh_by": (fact.last_confirmed_at + timedelta(days=30.0 / decay)).isoformat(),
-                })
-        forecasts.sort(key=lambda f: f["predicted_freshness"])
-        return forecasts
+        return [{"fact_id": fact.id, "content": fact.content, "kind": fact.kind,
+                 "age_days": max(0.0, (now - fact.last_confirmed_at).total_seconds()/86400),
+                 "current_freshness": None, "predicted_freshness": None, "refresh_by": None,
+                 "status": "obsolescence_model_unavailable", "capability_executed": False}
+                for fact in semantic_memory._facts.values()]
 
 
 # ---------------------------------------------------------------- row 34 --

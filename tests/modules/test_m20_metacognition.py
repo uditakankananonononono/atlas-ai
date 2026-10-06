@@ -77,7 +77,7 @@ def test_row12_load_balancing_by_complexity_and_deadline():
     assert LoadBalancer().allocate([], total_ticks=10) == {}
 
 
-def test_row13_calibration_flags_overconfidence_and_shrinks():
+def test_row13_observed_calibration_without_predictive_claim():
     engine = CalibrationEngine()
     flagged = engine.assess_claim("the deadline is Friday", 0.95, evidence_count=0)
     assert flagged.flagged is None and "unavailable" in flagged.flag_reason
@@ -195,7 +195,7 @@ def test_row21_world_model_versioning_and_evidence():
     assert registry.current_best().name == "growth"
     model = registry.revise("growth", {"market": "expanding", "moat": "network effects"})
     assert model.version == 2 and model.history[0]["version"] == 1
-    assert 0.0 < model.posterior < 1.0
+    assert model.posterior is None
 
 
 def test_row22_goal_conflict_detection_and_restructure():
@@ -342,10 +342,10 @@ def test_row33_knowledge_decay_forecast():
     fact = memory.remember("competitor price is $10/mo", kind="price", decay_rate=0.0)
     fact.last_confirmed_at = datetime.now(timezone.utc) - timedelta(days=45)
     modeler = KnowledgeDecayModeler()
-    assert modeler.default_decay("price") == 2.0
+    assert modeler.default_decay("price") is None
     forecasts = modeler.forecast(memory, days_ahead=60, threshold=0.6)
     assert any(f["fact_id"] == fact.id for f in forecasts)
-    assert forecasts[0]["predicted_freshness"] < forecasts[0]["current_freshness"]
+    assert forecasts[0]["predicted_freshness"] is None and forecasts[0]["current_freshness"] is None
     assert "refresh_by" in forecasts[0]
 
 
