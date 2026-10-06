@@ -399,7 +399,7 @@ class CounterfactualEngine:
     """Row 14: simulate alternative histories over a finished episode."""
 
     def __init__(self, outcome_model: OutcomeModel | None = None) -> None:
-        self.outcome_model = outcome_model or HeuristicOutcomeModel()
+        self.outcome_model = outcome_model
 
     def simulate(
         self,
@@ -412,19 +412,20 @@ class CounterfactualEngine:
         results = []
         for alt in alternatives:
             risk = Risk(alt.get("risk", Risk.REVERSIBLE.value))
-            estimated = self.outcome_model.estimate(str(alt.get("action", "")), risk)
+            estimated = self.outcome_model.estimate(str(alt.get("action", "")), risk) if self.outcome_model else None
             results.append({
                 "replaces_step": alt.get("replaces_step"),
                 "alternative_action": alt.get("action"),
-                "estimated_success_probability": round(estimated, 3),
+                "estimated_success_probability": round(estimated, 3) if estimated is not None else None,
                 "actual_outcome_succeeded": actual_success,
-                "lesson": (
-                    f"alternative {alt.get('action')!r} had estimated success "
-                    f"{estimated:.0%} vs actual {'success' if actual_success else 'failure'}"
-                ),
+                "status": "supplied_estimator_only" if self.outcome_model else "outcome_model_unavailable",
+                "capability_executed": False,
+                "lesson": "No validated counterfactual outcome or lesson inferred.",
             })
-        best = max(results, key=lambda r: r["estimated_success_probability"], default=None)
+        best = None  # Unvalidated supplied estimates do not establish the best history.
         return {
+            "status": "supplied_estimator_only" if self.outcome_model else "outcome_model_unavailable",
+            "capability_executed": False,
             "episode_id": episode.id,
             "actual_outcome": episode.outcome.value,
             "alternatives": results,
@@ -538,6 +539,7 @@ class FlowStateManager:
         else:
             zone = FlowZone.BOREDOM
         return {"zone": zone.value, "delta": round(delta, 3),
+                "status": "self_reported_balance_rubric", "capability_executed": False,
                 "advice": {
                     FlowZone.FLOW: "maintain current difficulty",
                     FlowZone.BOREDOM: "raise difficulty or add constraints",
@@ -554,11 +556,12 @@ class FlowStateManager:
         for task in ordered:
             difficulty = float(task.get("difficulty", 0.5))
             zone = self.assess(challenge=difficulty, skill=current_skill)
-            entry = {**task, "zone": zone["zone"]}
+            entry = {**task, "zone": zone["zone"], "status": "difficulty_sort_only",
+                     "capability_executed": False, "skill_assumption": skill}
             if zone["zone"] == "anxiety":
                 entry["recommendation"] = "split into smaller steps before scheduling"
             result.append(entry)
-            current_skill = min(1.0, current_skill + 0.05)
+            # No invented skill gain from merely listing a task.
         return result
 
 
@@ -593,6 +596,8 @@ class Reframe:
     lesson: str
     actionable_steps: list[str]
     growth_statement: str
+    status: str = "marker_template_only"
+    capability_executed: bool = False
 
 
 class ReframingEngine:
@@ -962,6 +967,7 @@ class PlanningHorizonController:
         max_steps = depth * 3
         replan = max(15.0, min(240.0, 30.0 + uncertainty * 180.0))
         return {
+            "status": "hand_written_planning_policy", "capability_executed": False,
             "max_depth": max(1, min(5, depth)),
             "max_steps": max_steps,
             "replan_interval_minutes": replan,

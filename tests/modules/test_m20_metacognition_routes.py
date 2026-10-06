@@ -83,7 +83,7 @@ def test_row14_route(client):
     r = c.post("/api/modules/20/meta/counterfactuals",
                json={"episode_id": episode_id,
                      "alternatives": [{"replaces_step": 0, "action": "dry run", "risk": "read"}]})
-    assert r.json()["best_alternative"]["alternative_action"] == "dry run"
+    assert r.json()["best_alternative"] is None and not r.json()["capability_executed"]
     assert c.post("/api/modules/20/meta/counterfactuals",
                   json={"episode_id": "nope", "alternatives": []}).status_code == 404
 

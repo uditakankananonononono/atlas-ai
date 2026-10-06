@@ -103,7 +103,7 @@ def test_row14_counterfactual_simulation():
         {"replaces_step": 0, "action": "read-only dry run", "risk": "read"},
     ])
     assert result["actual_outcome"] == "failed"
-    assert result["best_alternative"]["alternative_action"] == "read-only dry run"
+    assert result["best_alternative"] is None and result["capability_executed"] is False
     assert all("lesson" in a for a in result["alternatives"])
 
 
