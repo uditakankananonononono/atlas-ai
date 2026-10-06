@@ -17,6 +17,7 @@ NAMES = {
 
 def _num(d:dict,k:str, *, positive:bool=False, nonnegative:bool=False)->float:
     if k not in d: raise ValueError(f"missing numeric input: {k}")
+    if isinstance(d[k],bool) or not isinstance(d[k],(int,float)):raise ValueError(f"{k} must be a numeric value")
     v=float(d[k])
     if not math.isfinite(v): raise ValueError(f"{k} must be finite")
     if positive and v<=0: raise ValueError(f"{k} must be > 0")
@@ -171,10 +172,22 @@ def _msa(d):
     repeat=_num(d,'repeatability_variance',nonnegative=True); repro=_num(d,'reproducibility_variance',nonnegative=True); part=_num(d,'part_variance',nonnegative=True); grr=repeat+repro; total=grr+part
     return {'gage_rr_variance':grr,'total_variance':total,'gage_rr_percent_contribution':100*grr/total if total else None,'components':{'repeatability':repeat,'reproducibility':repro,'part_to_part':part}}
 
+def _positive_integer(value,name,maximum=10000):
+    if type(value) is not int or not 1<=value<=maximum:raise ValueError(f'{name} requires an integer in1..{maximum}')
+    return value
+
 def _doe(d):
-    factors=d.get('factors',{}); runs=[{}]
-    for name,levels in factors.items(): runs=[{**r,name:v} for r in runs for v in levels]
-    return {'design':'full_factorial','run_matrix':runs,'run_count':len(runs),'randomization_required':True,'replicates':int(d.get('replicates',1))}
+    factors=d.get('factors',{})
+    if not isinstance(factors,dict) or not factors or len(factors)>12:raise ValueError('1..12 factors required')
+    replicates=_positive_integer(d.get('replicates',1),'replicates')
+    count=1
+    for name,levels in factors.items():
+        if not isinstance(name,str) or not name or not isinstance(levels,list) or not levels or any(type(x) not in (str,int,float,bool) or (isinstance(x,float) and not math.isfinite(x)) for x in levels):raise ValueError('each factor needs nonempty scalar level list')
+        count*=len(levels)
+        if count*replicates>10000:raise ValueError('factorial design limited to10000 total replicated runs')
+    runs=[{}]
+    for name,levels in factors.items():runs=[{**r,name:v} for r in runs for v in levels]
+    return {'design':'full_factorial','run_matrix':runs,'run_count':count,'total_replicated_run_count':count*replicates,'randomization_required':True,'replicates':replicates,'experiment_executed':False}
 
 def _taguchi(d):
     vals=_values(d,'responses'); goal=d.get('goal','larger');
@@ -243,7 +256,9 @@ def _tensile(d):
 
 def _compression(d): return {'compressive_stress_mpa':_num(d,'force_n',nonnegative=True)/_num(d,'area_mm2',positive=True),'compressive_strain':_num(d,'shortening_mm',nonnegative=True)/_num(d,'original_length_mm',positive=True),'test_executed':False}
 
-def _shear(d): return {'average_shear_stress_mpa':_num(d,'force_n',nonnegative=True)/(_num(d,'shear_area_mm2',positive=True)*int(d.get('shear_planes',1))),'shear_planes':int(d.get('shear_planes',1)),'test_executed':False}
+def _shear(d):
+    planes=_positive_integer(d.get('shear_planes',1),'shear_planes')
+    return {'average_shear_stress_mpa':_num(d,'force_n',nonnegative=True)/(_num(d,'shear_area_mm2',positive=True)*planes),'shear_planes':planes,'test_executed':False}
 
 def _torsion(d):
     torque=_num(d,'torque_n_mm',nonnegative=True); radius=_num(d,'outer_radius_mm',positive=True); j=_num(d,'polar_moment_mm4',positive=True); length=_num(d,'gauge_length_mm',positive=True); angle=_num(d,'angle_rad',nonnegative=True); return {'maximum_shear_stress_mpa':torque*radius/j,'shear_modulus_mpa':torque*length/(j*angle) if angle else None,'test_executed':False}

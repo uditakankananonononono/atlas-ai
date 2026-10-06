@@ -105,3 +105,17 @@ def test_failure_reference_membership_is_not_evidence_verification():
 @pytest.mark.parametrize('units,failures',[(.5,0),(2, .5),(True,0),(2,False)])
 def test_reliability_bound_rejects_fractional_or_bool_trial_counts(units,failures):
  with pytest.raises(ValueError):E('reliability_testing',{'units':units,'failures':failures,'confidence':.9})
+
+@pytest.mark.parametrize('planes',[.5,1.9,-1,0,True,'2'])
+def test_shear_planes_are_positive_integral_not_truncated(planes):
+ with pytest.raises(ValueError):E('shear_testing',{'force_n':100,'shear_area_mm2':10,'shear_planes':planes})
+
+@pytest.mark.parametrize('payload',[{'factors':{'a':'xyz'}},{'factors':{'a':[]}},{'factors':{str(i):list(range(10)) for i in range(5)}},{'factors':{'a':[1,2]},'replicates':.5},{'factors':{'a':[1,2]},'replicates':-3},{'factors':{'a':[1,2]},'replicates':6000}])
+def test_doe_rejects_malformed_levels_or_excessive_matrix_before_generation(payload):
+ with pytest.raises(ValueError):E('design_of_experiments',payload)
+
+
+def test_doe_replication_budget_and_strict_numeric_inputs():
+ out=E('design_of_experiments',{'factors':{'a':[1,2],'b':['x','y']},'replicates':3})['result']
+ assert out['run_count']==4 and out['total_replicated_run_count']==12
+ with pytest.raises(ValueError):E('thermal_analysis',{'heat_w':'10','ambient_c':20,'thermal_resistances_k_per_w':[1]})
