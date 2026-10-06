@@ -510,3 +510,7 @@ Current whole-repo run at8cde270: 9561 passed, 14 skipped, 3 warnings over495fil
 ## Engineering reference/count correction
 
 Failure analysis counted matching supplied evidence ids as verified_support_count/verified_contrary_count without artifact retrieval. Renamed supplied_reference_* with evidence_verified=false, preserving candidate-not-root-cause. Zero-failure reliability bound truncated fractional trial counts (units0.5 could divide by0; failures0.5 became zero failures). Requires integral nonboolean counts now, finite unit confidence; states independent identical Bernoulli/common-duration/complete-count assumptions and no executed/verified test. Formula remains valid within those supplied assumptions.60 focused tests pass. Broad original failure/reliability capability not certified; no ledger count promotion.
+
+## Engineering integer/design limits review
+
+Shear planes now positive exact integers1..10000 rather than truncated fractions/negative/zero; DOE replicates same integer domain, factors1..12 with nonempty scalar level lists, product*replicates<=10000 checked before constructing the matrix. String levels no longer iterate character-by-character. Reports total replicated count/experiment_executed=false. Shared _num rejects boolean/string coercion and nonfinite inputs; finite extreme magnitudes remain permitted, and other branch-local float coercions/overflow guards are not comprehensively hardened.73 focused pass. These limits bound this matrix constructor only, not complete API resource governance.
