@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1969,
-    "SCOPED": 36,
+    "verified-pushed": 1966,
+    "SCOPED": 39,
     "PARTIAL": 1,
     "removed": 4,
     "thin": 0,
@@ -13172,14 +13172,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Formative Assessment",
       "description": "Assesses for learning",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_829_formative_assessment_purpose",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_829_formative_assessment_purpose",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Exact normalized answer-key grading of evidence-linked responses, explicit weighted scores and per-objective coverage; formative feedback, complete-only summative scores and observed diagnostic needs. Not semantic grading or psychometric validation.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_keyed_assessment.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 830,
@@ -13187,14 +13201,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Summative Assessment",
       "description": "Assesses learning",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_830_summative_assessment_purpose",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_830_summative_assessment_purpose",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Exact normalized answer-key grading of evidence-linked responses, explicit weighted scores and per-objective coverage; formative feedback, complete-only summative scores and observed diagnostic needs. Not semantic grading or psychometric validation.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_keyed_assessment.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 831,
@@ -13202,14 +13230,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Diagnostic Assessment",
       "description": "Identifies needs",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_831_diagnostic_assessment_purpose",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_831_diagnostic_assessment_purpose",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Exact normalized answer-key grading of evidence-linked responses, explicit weighted scores and per-objective coverage; formative feedback, complete-only summative scores and observed diagnostic needs. Not semantic grading or psychometric validation.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_keyed_assessment.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 832,
