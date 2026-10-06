@@ -146,3 +146,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 ## Reserved local owner guard
 
 - Signed OIDC tenant named local now receives403 on both service and durable-runtime selectors; it cannot resolve development bindings. Production per-tenant runtimes are not auto-provisioned or claimed live. Unbound tenants fail503 until an integrator binds them. Focused owner HTTP8 passed.
+
+## Legacy test contract repair
+
+- Old depth-sweep tests submitted placeholder objectives/source labels to repaired measured/formal algorithms and expected support envelopes. They now explicitly require rejection for missing real observations/formulas/models on rows812/819/823/844/845/848/849/850/852. Actual named computation and mutation tests remain in their focused files. ADMM envelope test now supplies a real quadratic/L1 problem rather than unrelated generic optimization fields.
+- Clean-database migration test compares the upgraded revision with the actual Alembic graph head, retaining its required table/column checks. No migration changed to satisfy a stale historical head string.
+- Contract tests159 passed. First module batch had1402 passes,12 skipped and10 stale-contract failures before these changes; second independent module batch590 passed. Full module coverage still incomplete.
