@@ -88,7 +88,8 @@ def _check_scraping(action_type: str, payload: dict[str, Any]) -> str | None:
     return None
 
 
-FINANCIAL_ACTION_TYPES = {"payment", "purchase", "transfer", "book_paid", "subscribe_paid"}
+FINANCIAL_ACTION_TYPES = {"pay", "payment", "purchase", "transfer", "book_paid", "subscribe_paid",
+                          "checkout", "order", "place_order", "send_money", "refund", "charge"}
 PRIVATE_DATA_ACTION_TYPES = {"share_private_data", "export_contacts", "send_private_document"}
 
 
@@ -118,7 +119,8 @@ def requires_approval(action_type: str, risk: Risk, payload: dict[str, Any]) -> 
     data gate even when a caller mislabels their risk tier."""
     if risk in (Risk.EXTERNAL, Risk.IRREVERSIBLE):
         return True
-    if action_type in FINANCIAL_ACTION_TYPES or action_type in PRIVATE_DATA_ACTION_TYPES:
+    normalized_action = action_type.strip().casefold()
+    if normalized_action in FINANCIAL_ACTION_TYPES or normalized_action in PRIVATE_DATA_ACTION_TYPES:
         return True
     if payload.get("externally_visible"):
         return True
@@ -225,7 +227,9 @@ class SafetyGate:
             return False,None,[RuleViolation("effect_payload","effect payload must be canonical finite JSON")]
         if granted_approval_id is not None:
             with self._token_lock:
-                if self._effect_tokens.get(granted_approval_id) != effect or granted_approval_id in self._consumed_tokens:
+                if granted_approval_id in self._consumed_tokens:
+                    return False,granted_approval_id,[RuleViolation("approval_consumed", "approval already used; reconcile effect outcome before fresh review")]
+                if self._effect_tokens.get(granted_approval_id) != effect:
                     return False,granted_approval_id,[]
                 decision = self.approvals.decision(granted_approval_id)
                 if decision == ApprovalGateDecision.APPROVED:

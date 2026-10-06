@@ -42,3 +42,33 @@ async def test_handler_sees_snapshot_not_mutated_caller_payload():
  args['nested']['to']='changed';resume.set();await task
  assert seen==['reviewed']
  assert d.records[0].arguments['nested']['to']=='reviewed'
+
+
+@pytest.mark.asyncio
+async def test_consumed_token_is_distinct_blocked_error_not_pending():
+ from app.modules.m20_general_cognitive_worker.tools import ApprovalConsumed,ApprovalPending
+ calls=[]
+ async def handler(args):calls.append(args);return {}
+ r=ToolRegistry();r.register(ToolSpec(name='send_email',description='send',risk=Risk.EXTERNAL),handler)
+ g=InMemoryApprovalGate();s=SafetyGate(approvals=g);d=ToolDispatcher(r,s)
+ _,token,_=s.preflight('send_email',Risk.EXTERNAL,{},task_id='a');g.decide(token,ApprovalGateDecision.APPROVED)
+ await d.dispatch('send_email',{},task_id='a',granted_approval_id=token)
+ with pytest.raises(ApprovalConsumed) as exc:
+  await d.dispatch('send_email',{},task_id='a',granted_approval_id=token)
+ assert not isinstance(exc.value,ApprovalPending)
+ assert exc.value.approval_id==token and len(calls)==1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('name',['pay','PAY',' checkout ','order','place_order','send_money','refund','charge'])
+async def test_named_money_aliases_gate_even_with_read_risk_and_never_retry(name):
+ from app.modules.m20_general_cognitive_worker.tools import ApprovalPending
+ calls=[]
+ async def handler(args):calls.append(args);raise RuntimeError('ack lost')
+ r=ToolRegistry();r.register(ToolSpec(name=name,description='money',risk=Risk.READ,max_retries=4),handler)
+ g=InMemoryApprovalGate();s=SafetyGate(approvals=g);d=ToolDispatcher(r,s)
+ with pytest.raises(ApprovalPending) as exc:await d.dispatch(name,{})
+ assert not calls
+ g.decide(exc.value.approval_id,ApprovalGateDecision.APPROVED)
+ out=await d.dispatch(name,{},granted_approval_id=exc.value.approval_id)
+ assert len(calls)==1 and 'outcome unknown' in out.result_summary

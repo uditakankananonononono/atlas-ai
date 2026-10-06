@@ -30,6 +30,13 @@ class ToolBlockedError(ToolError):
         self.reasons = reasons
 
 
+class ApprovalConsumed(ToolBlockedError):
+    """A spent approval is blocked, never represented as pending."""
+    def __init__(self, name: str, approval_id: str) -> None:
+        super().__init__(name, ["approval already used; reconcile effect outcome before fresh review"])
+        self.approval_id = approval_id
+
+
 class ApprovalPending(ToolError):
     def __init__(self, name: str, approval_id: str) -> None:
         super().__init__(f"tool {name!r} waiting on approval {approval_id}")
@@ -129,6 +136,8 @@ class ToolDispatcher:
             summary=tool.spec.description,
             granted_approval_id=granted_approval_id,
         )
+        if any(v.rule_id == "approval_consumed" for v in violations):
+            raise ApprovalConsumed(name, approval_id)
         if violations:
             raise ToolBlockedError(name, [f"{v.rule_id}: {v.reason}" for v in violations])
         if not may_proceed:
