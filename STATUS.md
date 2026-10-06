@@ -412,3 +412,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 ## Product-plan expiry fail-closed follow-up
 
 - The orchestration class now retains request expiry separately and enforces it before dispatch even if an injected gate still says APPROVED. Missing expiry fails closed. Focused18 pass, including an expired approved token. Process-local snapshot/expiry/consumption remains non-durable; production center behavior is not substituted by these tests.
+
+## Executive ranking and rumination prediction correction
+
+- MetaReasoner's fixed risk/title/memory-count ranking weights are now heuristic_information_weight/heuristic_progress_weight, not information gain or success probability. Decision HTTP artifacts explicitly label hand-written ranking with no predictive model. Default runtime expectation registration no longer converts those knobs into calibration predictions; supplied outcome/confidence claims still support descriptive metrics and explicitly caller-predicted surprise checks.
+- Legacy random-order ruminator expected_success is null, with random_ordering_heuristic_only. The separate real UCT tree search retains its internal simulated reward/value standard errors, but reports unfitted risk/attempt assumptions and no predictive model. Monte Carlo error over a fabricated rollout is not correctness uncertainty or real execution confidence.
+- Updated surprise test to provide an explicit caller prediction rather than rely on invented defaults. Negative tests pin non-predictive labels. M20+ledger1793 pass with expected SCS warning; independent review pending. No full cognitive or goal-quality verification claimed.

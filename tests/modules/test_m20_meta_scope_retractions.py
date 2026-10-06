@@ -100,3 +100,16 @@ def test_semantic_memory_no_fixed_freshness_even_at_extreme_caller_decay():
   f=m.remember('unverified',decay_rate=rate)
   assert m.freshness(f.id) is None
  assert m.due_for_refresh()==[]
+
+
+def test_rumination_and_candidate_weights_not_predictive_confidence():
+ from app.modules.m20_general_cognitive_worker.executive import MetaReasoner,MCTSRuminator
+ from app.modules.m20_general_cognitive_worker.mcts import BoundedMCTS
+ from app.modules.m20_general_cognitive_worker.schemas import PlanNode
+ n=PlanNode(title='read')
+ candidate=MetaReasoner().score_candidates([n],wm_context='',ltm_hits=3)[0]
+ assert not hasattr(candidate,'progress_probability') and not hasattr(candidate,'information_gain')
+ assert MCTSRuminator(seed=1).ruminate([n])['expected_success'] is None
+ r=BoundedMCTS(seed=1,max_simulations=4).search([n]).as_dict()
+ assert r['status']=='uct_search_over_heuristic_rollout' and not r['predictive_model_available']
+ assert 'unfitted' in r['assumptions']['success_probability']

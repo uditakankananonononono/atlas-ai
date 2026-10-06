@@ -108,9 +108,9 @@ def test_mcts_rumination_returns_ordering():
     result = ruminator.ruminate([a, b, c])
     assert result["simulations"] == 16
     assert result["best_ordering"] == ["research", "draft", "publish"]
-    assert 0 < result["expected_success"] <= 1.0
+    assert result["expected_success"] is None and result["status"]=="random_ordering_heuristic_only"
     a.state = b.state = c.state = TaskState.SUCCEEDED
-    assert ruminator.ruminate([a, b, c])["expected_success"] == 1.0
+    assert ruminator.ruminate([a, b, c])["expected_success"] is None
 
 
 def test_scheduler_priority_and_round_robin():

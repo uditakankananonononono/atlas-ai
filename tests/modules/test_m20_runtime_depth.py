@@ -289,7 +289,7 @@ def test_m20_13_26_decision_artifact_lists_alternatives_no_cot(mounted):
     body = artifact.json()
     assert body["alternatives"], "expected evaluated alternatives"
     top = body["chosen"]
-    assert {"information_gain", "cost", "progress_probability", "score"} <= set(top)
+    assert {"heuristic_information_weight", "cost", "heuristic_progress_weight", "score"} <= set(top)
     assert "chain_of_thought" not in body and "chain" not in body["basis"]
 
 
@@ -500,7 +500,7 @@ def test_m20_30_expectations_resolve_and_calibration_persists(mounted):
     task_id = created.json()["task_id"]
     runtime.close(task_id)
     resolved = [c for c in runtime.calibration.claims.values() if c.resolved]
-    assert resolved, "expectations should resolve at close"
+    assert resolved==[], "no fitted success predictor; no invented expectation claims"
     report = client.get("/api/modules/20/runtime/calibration").json()
     assert report["resolved"] == len(resolved)
     restored = GCWRuntime(repo)
@@ -533,8 +533,12 @@ def test_m20_14_surprise_triggers_reflection(mounted):
                            max_attempts=1)],
     ))
     created = client.post("/api/modules/20/runtime/tasks",
-                          json={"goal": "run the flaky step"})
-    assert created.json()["state"] == "failed"
+                          json={"goal": "run the flaky step", "run_immediately": False})
+    ctx=runtime.get_task(created.json()["task_id"])
+    claim=runtime.calibration.assess_claim("caller prediction: flaky step succeeds", .9)
+    ctx.plan[0].arguments["_expectation_claim_id"]=claim.id
+    client.post(f"/api/modules/20/runtime/tasks/{ctx.id}/step",json={})
+    assert runtime.get_task(ctx.id).state==TaskState.FAILED
     traces = [t for t in repo.list_traces(task_id=created.json()["task_id"])
               if t.phase == "reflect"]
     assert any("surprise" in t.detail for t in traces)
