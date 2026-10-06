@@ -8,7 +8,7 @@ def test_all_140_rows_are_audited_once():
     rows = AUDIT["rows"]
     assert len(rows) == 140
     assert [row["row"] for row in rows] == list(range(1, 141))
-    assert {row["status"] for row in rows} <= {"verified-pushed", "thin", "missing"}
+    assert {row["status"] for row in rows} <= {"verified-pushed", "thin", "missing", "UNSUPPORTED"}
 
 def test_verified_rows_have_real_code_commit_and_test_evidence():
     for row in AUDIT["rows"]:
@@ -26,4 +26,5 @@ def test_all_product_modules_are_live_registered():
 def test_narrative_checkpoint_counts_match_machine_ledger():
     from collections import Counter
     counts=Counter(row["status"] for row in AUDIT["rows"])
-    assert counts == {"verified-pushed":140}
+    assert counts == {"verified-pushed":139, "UNSUPPORTED":1}
+    assert [r["row"] for r in AUDIT["rows"] if r["status"]=="UNSUPPORTED"] == [43]

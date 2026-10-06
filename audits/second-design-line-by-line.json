@@ -46,7 +46,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Requires atomic decomposition and behavior evidence before status can change. Schema comparison on PostgreSQL 16.2 after `alembic upgrade head` (2026-10-07, local scratch PG): m00_approval_requests is an ordinary table (not partitioned; pg_inherits empty); id is varchar (not uuid); payload is json (not jsonb); status is varchar (not a native enum); no m00 database triggers exist; no tenant_id column on the requests table (the route stores tenant.tenant_id in user_id); only m00_approval_policies has tenant_id; no previous_hash-style chain column on m00_approval_events (the audit log table) or elsewhere in m00; hash-like columns that do exist are request_hash (effects, idempotency) and state_hash (review state), which are not an audit chain. Hash chains elsewhere in the repo were not checked. callback_url/callback_payload, per-action-type approval_policies TTL, dead-letter retry and the Vault key derivation were not checked. Status stays unverified; these are divergences from the document, not a verdict that the shipped design is wrong. Provenance: the live-PG facts came from a local scratch PG16.2 run of an earlier local lineage; on recon-482 (remote e6a55a7) only the model-level facts were re-read in service.py (m00_approval_requests: String(36) id, JSON payload, String status, user_id, no tenant_id/previous_hash column; tenant_id only on the policies table; request_hash/state_hash exist), and the probe script and pinning test are not present on this branch (migrations not re-run)."
     },
     {
       "row": 4,
@@ -57,7 +57,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Requires atomic decomposition and behavior evidence before status can change. Code read 2026-10-07 (m00_approval_center routes.py/service.py/INTEGRATION.md, no execution): submission is POST /api/v1/approval-center/requests (not /submit), returns 201 after the row is written (not a pre-persistence request_id with a Celery background insert); no poll_url field found (status is GET /requests/{id}); real-time delivery is an in-process SSE stream at GET /events with heartbeat, and the module docs say cross-process Redis Streams fan-out and Celery beat expiry are left to the integrator; no Node.js push-service, Email Assistant notification trigger, or SDK request_approval(payload, timeout) with Vault-derived encryption was found in the module. Not run, not verified."
     },
     {
       "row": 5,
@@ -68,7 +68,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Requires atomic decomposition and behavior evidence before status can change. Code-read/grep only, 2026-10-07 (m00 routes.py, service.py, schemas.py, impact.py; not exhaustive, nothing executed): no /pending endpoint, ETag/If-None-Match handling, 2-second polling, approve-with-modification patch workflow, request-more-information reverse stream, callback retry/circuit-breaker or dead-letter terms found in the module. Present: list/get/decision/audit/events(SSE)/policies/gate/consume/review-state/impact-preview routes, with priority and impact code (impact.py). Frontend has executive-dashboard OutreachApprovalPanel and RerunApprovalPanel, which were not read; the described single approval interface with three detail panels was not located. Divergence from the document, not a verdict on the shipped design."
     },
     {
       "row": 6,
@@ -79,7 +79,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Requires atomic decomposition and behavior evidence before status can change. Code read 2026-10-07 (m00 service.py/routes.py/INTEGRATION.md; not executed, not exhaustive): in-process expiry exists - lazy expiry, POST /expire and Service.expire_overdue, which publishes approval_expired on the in-process broadcaster (service.py ~270) and fires registered in-process callbacks (_fire_callbacks, register_callback ~290, wait_for_decision). Not verified: a Celery Beat schedule running it every minute (INTEGRATION.md leaves wiring to the integrator), durable cross-process publication/Redis Streams, a 410 Gone status-check response for waiting workers, and the worker-side backoff polling loop with local timeout. Negative greps are not whole-repo coverage."
     },
     {
       "row": 7,
@@ -90,7 +90,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Requires atomic decomposition and behavior evidence before status can change. Code read 2026-10-07: no materialised view, Redis Pub/Sub SSE scaling, Redis policy cache or batch approval was found in m00 by reading and targeted grep (in-process broadcaster only per INTEGRATION.md; not whole-repo coverage). Scale targets (10,000 requests/second, p99 under 200 ms submission, under 500 ms decision) are unverified: the repo's celery_scaling_benchmark.py (root and scripts/, identical) measures dispatch_due_collection_sources throughput, not approval submission or decision latency, so it does not apply to this claim."
     },
     {
       "row": 8,
@@ -101,7 +101,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Overview paragraph; depends on rows 9-14 (see their notes). Module is mounted with routes /opportunity-discovery/{sources,scans,opportunities,digests}. Scope: code read plus keyword grep over m01 module and runtime, not whole-repo or behavioural proof. Status stays unverified."
     },
     {
       "row": 9,
@@ -112,7 +112,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Divergence (not asserted bug): INTEGRATION.md sec.4 documents deliberate source replacements for ToS/compliance (e.g. Unstop HTML scraping not implemented). Grep found no feedparser/lxml hit in m01 or runtime; BeautifulSoup/playwright references exist in expanded_spec_67_131, core_spec_round6, student_platforms (depth unverified); 'stealth' hit is in runtime technical_architecture_a01_a33 and schemas. Rotating residential proxies, Browserless, GCS 7-day staging lifecycle, and Beat rate-limit/blackout override: no implementation located; those are external paid/account items and remain held. Scope: code read plus keyword grep over m01 module and runtime, not whole-repo or behavioural proof. Status stays unverified."
     },
     {
       "row": 10,
@@ -123,7 +123,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Grep found no feedparser, lxml, or wrapper-induction hit; 'unstructured' appears only in runtime technical_architecture_a01_a33. Layout analysis via Unstructured.io partition and ML wrapper induction not located. Scope: code read plus keyword grep over m01 module and runtime, not whole-repo or behavioural proof. Status stays unverified."
     },
     {
       "row": 11,
@@ -134,7 +134,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located: dateparser (nlp_stack, schemas, expanded_spec_67_131), spaCy references (nlp_stack, INTEGRATION.md), zero-shot DeBERTa classifier (classifier.py, default MoritzLaurer/deberta-v3-large-zeroshot-v2.0) with a real-label fine-tune gate. Divergences: spec says fine-tuned DeBERTa on 50,000 manual labels and spaCy NER fine-tuned on a proprietary corpus; code is zero-shot and no such corpus/labels exist (no labels fabricated). No langdetect hit; Google Translate API not located in m01 (external account, held). Scope: code read plus keyword grep over m01 module and runtime, not whole-repo or behavioural proof. Status stays unverified."
     },
     {
       "row": 12,
@@ -145,7 +145,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Two embedding paths exist (code read, not exercised; no key/external calls made, BYOK hold). (a) service.py ~118-128 embedding adapter: ATLAS_EMBEDDING_PROVIDER defaults to openai; model ATLAS_OPENAI_EMBEDDING_MODEL default text-embedding-3-large, dimensions=1024, raises RuntimeError if OPENAI_API_KEY unset; ollama branch uses ATLAS_OLLAMA_EMBEDDING_MODEL default bge-m3. (b) nlp_stack.py: default in-process fastembed BAAI/bge-small-en-v1.5, plus OpenAIBackend (text-embedding-3-large, key-gated, EmbeddingBackendError without OPENAI_API_KEY), OllamaBackend bge-m3, token-cosine fallback with engine provenance. Which path the shipped scan actually takes is not verified. Divergence from spec: spec has a single text-embedding-3-large path; spec dimensionality/weighted profile embedding not checked. No LogisticRegression or priority_score hit in m01 by grep (not whole-repo); an impact concept exists in schemas/service/INTEGRATION.md; weekly retraining on win/accept labels not located and no labels fabricated. Status stays unverified."
     },
     {
       "row": 13,
@@ -156,7 +156,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Divergence (not asserted bug), code read of service.py OpportunityRow, scope limited, not whole-repo: persisted table is named m01_opportunities (not opportunities); columns include tenant_id, source_id, url, deadline, opportunity_type, match_score, match/deadline engine provenance. Indexes seen: tenant_id, source_id, url, opportunity_type, match_score (index=True); no index on deadline seen; no priority_score column seen (match_score is the indexed score). No pgvector embedding column seen on this table (separate core/vector_store.py uses Vector(EMBEDDING_DIMENSIONS)). grep for opportunity_interactions / OpportunityInteraction / archive-table in backend *.py found nothing; outcome_ledger.purge_expired exists but is a different ledger. Daily purge-to-cold-storage job not verified. Status stays unverified."
     },
     {
       "row": 14,
@@ -167,7 +167,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Digest: routes.py docstring/code read says POST /opportunity-discovery/digests drafts and gates send behind an ApprovalRequest; 'never sends' is an inference from code read, not endpoint behaviour verified here (external email held). No Web Push API or Jinja2 hit in m01; SSE references exist in expanded_spec files and lane_service (wiring depth unverified). Thresholds 0.85/0.6 and a notifications table not verified by grep. Scope: code read plus keyword grep over m01 module and runtime, not whole-repo or behavioural proof. Status stays unverified."
     },
     {
       "row": 15,
@@ -178,7 +178,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Divergence (not asserted bug, no real-data performance judgment). Code read of normalization.py: duplicate_score returns 1.0 for a shared (source, source_id) provenance pair or equal canonical_url (canonical_url() normalised); otherwise 0.55*SequenceMatcher(title) + 0.25*token Jaccard(title) + 0.20*SequenceMatcher(sponsor), multiplied by 0.75 when close dates differ by more than 7 days. No embedding is used in this function. deduplicate() merges on the first existing item with score >= threshold (default 0.84, lane_service) via _merge and breaks; it does not flag for manual resolution, and the spec's embedding cosine >0.95 flag path was not found by grep (not whole-repo). Default-keep-most-recent policy: _merge prefers the longer description and latest updated_at, not verified as equivalent. Status stays unverified."
     },
     {
       "row": 16,
@@ -189,7 +189,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "routes.py list endpoint exposes min_score, opportunity_type, limit, offset, deadline_from, deadline_before, include_unknown_deadline, query (code read). Eligibility and category filters and Redis 5-minute response cache: no redis/cache hit in routes.py or lane_api.py by grep; not located. Competition Manager/Planner consumption not verified here. Scope: code read plus grep, not whole-repo, not behavioural proof. Status stays unverified."
     },
     {
       "row": 17,
@@ -200,7 +200,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Overview of Module 2; depends on rows 18-20 and later. Module has m02_competition_manager package incl. service, review, onboarding, profile_corpus, sql_repository; approval-gate behaviour not verified in this pass. Scope: code read plus grep, not whole-repo, not behavioural proof. Status stays unverified."
     },
     {
       "row": 18,
@@ -211,7 +211,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Divergence: persisted table is m02_competitions (sql_repository.py), not an extension of an opportunity table; schemas.py has required_materials list. Field-by-field comparison against spec (structured_rules JSONB, judging dates, status enum, feedback) not done. service.py builds a rules prompt asking for summary, eligibility_criteria, required_materials, deadlines; spec's two-stage GPT-4o flow appears named in core_spec_round6 row labels; whether an LLM call actually runs needs a key (BYOK hold, no calls made). Scope: code read plus grep, not whole-repo, not behavioural proof. Status stays unverified."
     },
     {
       "row": 19,
@@ -222,7 +222,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located: required_materials-driven subtasks in service.py (~line 80). Template library, per-subtask effort from user history, critical-path backward scheduling and push to Planner not verified. Scope: code read plus grep, not whole-repo, not behavioural proof. Status stays unverified."
     },
     {
       "row": 20,
@@ -233,7 +233,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "expanded_owner_132_179 lists 'Per-field specialized drafting agent', 'Past successful application example retrieval', 'Past project snippet retrieval', 'Grounded application drafting', 'No fabricated applicant activities' as row labels; label presence is not implementation evidence. Self-critique loop up to 3 revisions, document_artifact storage and Approval Center queue not verified. Scope: code read plus grep, not whole-repo, not behavioural proof. Status stays unverified."
     },
     {
       "row": 21,
