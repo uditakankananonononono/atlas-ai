@@ -159,4 +159,4 @@ Cognition/affect1975-1977/2009 PARTIAL supplied calibration/quadrant rubrics. La
 
 Finite knapsack1992/1993 SCOPED to at most20 items. Latest labels1812historical/54SCOPED/140PARTIAL/4removed.
 
-21 cognitive reference substitutes now PARTIAL with explicit reference_operator/named_capability_executed=false. Latest labels1791historical/54SCOPED/161PARTIAL/4removed.
+22 cognitive reference substitutes now PARTIAL with explicit reference_operator/named_capability_executed=false. Latest labels1790historical/54SCOPED/162PARTIAL/4removed.
