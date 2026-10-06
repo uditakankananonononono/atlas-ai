@@ -171,6 +171,13 @@ class DeliberativeLoop:
 
     def start(self, context: TaskContext) -> TaskContext:
         """Plan the goal, seed working memory, and run the loop."""
+        # start is a fresh execution, not a resume. Incoming states are not
+        # execution evidence. Continuations must use run/resume.
+        for node in context.plan:
+            node.state = TaskState.PENDING
+            node.attempts = 0
+            node.approval_id = None
+            node.result_summary = ""
         self._trace("observe", f"goal accepted: {context.goal}", task_id=context.id)
         analogies = self.episodic.recall_similar(context.goal, limit=3)
         for episode, score in analogies:
@@ -212,6 +219,10 @@ class DeliberativeLoop:
         while ticks < self.max_ticks and ticks < budget.seconds:
             ticks += 1
             if HTNPlanner.is_complete(context.plan):
+                if not context.plan or all(n.state == TaskState.CANCELLED for n in context.plan):
+                    context.state = TaskState.BLOCKED
+                    self._trace("evaluate", "no executed steps; cancelled/empty plan is not success", task_id=context.id)
+                    return context
                 context.state = TaskState.SUCCEEDED
                 self._trace("evaluate", "plan complete", task_id=context.id)
                 self._close_episode(context, EpisodeOutcome.SUCCEEDED)

@@ -230,7 +230,7 @@ def test_row32_route(client):
     assert due[0]["overdue_days"] > 0
 
 
-def test_row33_route(client):
+def test_row33_route_reports_age_without_prediction(client):
     c, service = client
     from datetime import datetime, timedelta, timezone
     fact = service.semantic.remember("competitor price is $10", kind="price")

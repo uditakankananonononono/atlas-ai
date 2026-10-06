@@ -52,19 +52,19 @@ def test_semantic_store_query_and_graph():
         mem.link(f1.id, "rel", "nonexistent-node")
 
 
-def test_knowledge_decay_and_refresh():
+def test_no_unfitted_knowledge_freshness_or_refresh_prediction():
     mem = SemanticMemory()
     fact = mem.remember(" competitor pricing is $10/mo", decay_rate=2.0, confidence=1.0)
     past = datetime.now(timezone.utc) - timedelta(days=60)
     fact.last_confirmed_at = past
     fresh = mem.freshness(fact.id)
-    assert fresh < 0.4
+    assert fresh is None
     due = mem.due_for_refresh(threshold=0.5)
-    assert fact in due
+    assert due == []
     mem.confirm(fact.id)
     assert mem.due_for_refresh(threshold=0.5) == []
     stable = mem.remember("water boils at 100C at sea level", decay_rate=0.0)
-    assert mem.freshness(stable.id) == 1.0
+    assert mem.freshness(stable.id) is None
 
 
 def test_skill_registration_versioning_and_match():
