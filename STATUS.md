@@ -506,3 +506,7 @@ Correction to nested review evidence: the first committed run actually111passed/
 ## Latest regression after review corrections
 
 Current whole-repo run at8cde270: 9561 passed, 14 skipped, 3 warnings over495files/19isolated batches. First7batch fan-out hit120s timeout with incomplete2/4/6 logs; those three re-run to completion, no orphan pytest processes remained. All final batch results pass. Frontend16components/typecheck pass. No full-spec/model/deployment certification.
+
+## Engineering reference/count correction
+
+Failure analysis counted matching supplied evidence ids as verified_support_count/verified_contrary_count without artifact retrieval. Renamed supplied_reference_* with evidence_verified=false, preserving candidate-not-root-cause. Zero-failure reliability bound truncated fractional trial counts (units0.5 could divide by0; failures0.5 became zero failures). Requires integral nonboolean counts now, finite unit confidence; states independent identical Bernoulli/common-duration/complete-count assumptions and no executed/verified test. Formula remains valid within those supplied assumptions.60 focused tests pass. Broad original failure/reliability capability not certified; no ledger count promotion.

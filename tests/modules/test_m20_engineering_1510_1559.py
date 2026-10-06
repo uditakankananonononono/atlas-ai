@@ -95,3 +95,13 @@ def test_1548_thermal_cycling_plan_not_fake_result():
  r=E('thermal_cycling',{'profiles':[{'level':1}]})['result'];assert r['test_type']=='thermal_cycling' and not r['test_executed']
 def test_1549_humidity_plan_not_fake_result():
  r=E('humidity_testing',{'profiles':[{'level':1}]})['result'];assert r['test_type']=='humidity' and not r['test_executed']
+
+
+def test_failure_reference_membership_is_not_evidence_verification():
+ out=E('failure_analysis',{'evidence_ids':['fake'],'hypotheses':[{'supporting_evidence_ids':['fake'],'contrary_evidence_ids':['missing']}]})['result']
+ assert out['hypotheses'][0]['supplied_reference_support_count']==1 and out['evidence_verified'] is False
+ assert 'verified_support_count' not in out['hypotheses'][0]
+
+@pytest.mark.parametrize('units,failures',[(.5,0),(2, .5),(True,0),(2,False)])
+def test_reliability_bound_rejects_fractional_or_bool_trial_counts(units,failures):
+ with pytest.raises(ValueError):E('reliability_testing',{'units':units,'failures':failures,'confidence':.9})
