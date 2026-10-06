@@ -1,0 +1,57 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_______ test_external_partial_failure_is_not_retried_under_one_approval ________
+
+    @pytest.mark.asyncio
+    async def test_external_partial_failure_is_not_retried_under_one_approval():
+     calls=[]
+     async def effect(args):
+      calls.append(args.copy());raise RuntimeError('effect happened, acknowledgement lost')
+     r=ToolRegistry();r.register(ToolSpec(name='send_email',description='send',risk=Risk.EXTERNAL,max_retries=5),effect)
+     g=InMemoryApprovalGate();s=SafetyGate(approvals=g);args={'to':'a@example.org'}
+     _,token,_=s.preflight('send_email',Risk.EXTERNAL,args,task_id='a');g.decide(token,ApprovalGateDecision.APPROVED)
+     out=await ToolDispatcher(r,s).dispatch('send_email',args,task_id='a',granted_approval_id=token)
+>    assert len(calls)==1
+E    AssertionError: assert 5 == 1
+E     +  where 5 = len([{'to': 'a@example.org'}, {'to': 'a@example.org'}, {'to': 'a@example.org'}, {'to': 'a@example.org'}, {'to': 'a@example.org'}])
+
+tests/modules/test_m20_dispatcher_effect_boundary.py:16: AssertionError
+_________ test_denial_without_token_or_violation_still_blocks_handler __________
+
+    @pytest.mark.asyncio
+    async def test_denial_without_token_or_violation_still_blocks_handler():
+     class DenyingGate:
+      def preflight(self,*args,**kwargs):return False,None,[]
+     calls=[]
+     async def handler(args):calls.append(args);return {}
+     r=ToolRegistry();r.register(ToolSpec(name='read',description='read',risk=Risk.READ),handler)
+>    with pytest.raises(ToolBlockedError):await ToolDispatcher(r,DenyingGate()).dispatch('read',{})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE <class 'app.modules.m20_general_cognitive_worker.tools.ToolBlockedError'>
+
+tests/modules/test_m20_dispatcher_effect_boundary.py:28: Failed
+____________ test_handler_sees_snapshot_not_mutated_caller_payload _____________
+
+    @pytest.mark.asyncio
+    async def test_handler_sees_snapshot_not_mutated_caller_payload():
+     import asyncio
+     entered=asyncio.Event();resume=asyncio.Event();seen=[]
+     async def handler(args):
+      entered.set();await resume.wait();seen.append(args['nested']['to']);return {}
+     r=ToolRegistry();r.register(ToolSpec(name='send_email',description='send',risk=Risk.EXTERNAL),handler)
+     g=InMemoryApprovalGate(auto_decision=ApprovalGateDecision.APPROVED)
+     d=ToolDispatcher(r,SafetyGate(approvals=g));args={'nested':{'to':'reviewed'}}
+     task=asyncio.create_task(d.dispatch('send_email',args));await entered.wait()
+     args['nested']['to']='changed';resume.set();await task
+>    assert seen==['reviewed']
+E    AssertionError: assert ['changed'] == ['reviewed']
+E      
+E      At index 0 diff: 'changed' != 'reviewed'
+E      Use -v to get more diff
+
+tests/modules/test_m20_dispatcher_effect_boundary.py:43: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_dispatcher_effect_boundary.py::test_external_partial_failure_is_not_retried_under_one_approval
+FAILED tests/modules/test_m20_dispatcher_effect_boundary.py::test_denial_without_token_or_violation_still_blocks_handler
+FAILED tests/modules/test_m20_dispatcher_effect_boundary.py::test_handler_sees_snapshot_not_mutated_caller_payload
+3 failed in 1.54s
