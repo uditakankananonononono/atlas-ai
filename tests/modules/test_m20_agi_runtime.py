@@ -80,3 +80,22 @@ def test_world_weight_share_not_confidence_and_goal_priority_not_expected_value(
  goals=AutonomousGoalEngine(InMemoryApprovalGate()).propose_from_gaps(world,mission='review')
  assert goals[0].heuristic_gap_priority==.5 and not hasattr(goals[0],'expected_value')
  with pytest.raises(ValueError):world.observe(subject='x',predicate='p',value='a',source='fake',weight=float('inf'))
+
+@pytest.mark.parametrize('field,value',[('objective','unreviewed goal'),('evidence',['invented']),('heuristic_gap_priority',99),('rationale','new rationale')])
+def test_autonomous_activation_rejects_mutated_reviewed_goal(tmp_path,field,value):
+ world=PersistentWorldModel(str(tmp_path/'g.sqlite'),'t')
+ for v in ('a','b'):world.observe(subject='s',predicate='p',value=v,source=v)
+ gate=InMemoryApprovalGate();engine=AutonomousGoalEngine(gate);goal=engine.propose_from_gaps(world,mission='m')[0]
+ approval=engine.request_activation(goal.id);gate.decide(approval,ApprovalGateDecision.APPROVED)
+ setattr(goal,field,value)
+ with pytest.raises(PermissionError):engine.activate(goal.id,approval)
+
+
+def test_autonomous_goal_activation_is_single_consumption(tmp_path):
+ world=PersistentWorldModel(str(tmp_path/'g.sqlite'),'t')
+ for v in ('a','b'):world.observe(subject='s',predicate='p',value=v,source=v)
+ gate=InMemoryApprovalGate();engine=AutonomousGoalEngine(gate);goal=engine.propose_from_gaps(world,mission='m')[0]
+ approval=engine.request_activation(goal.id);gate.decide(approval,ApprovalGateDecision.APPROVED)
+ assert engine.activate(goal.id,approval).status=='active'
+ goal.status='waiting_approval'
+ with pytest.raises(PermissionError):engine.activate(goal.id,approval)

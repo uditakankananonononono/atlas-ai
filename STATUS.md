@@ -556,3 +556,7 @@ Recovered environment regression: M20+atomic+ledger1990pass with two warnings (S
 ## Autonomy world/evaluation numeric honesty
 
 PersistentWorldModel normalized caller reliability*weight into confidence without calibration; renamed supplied_support_share/status supplied_weight_rollup_only/evidence_verified=false/predictive_confidence_available=false. Goal expected_value was simply1-share, now heuristic_gap_priority with supplied-share rationale, not expected utility. Reliability/weight nonfinite/bool rejection added. Transfer benchmark scores a supplied callable against caller expected answers/domain labels, not necessarily learned strategies or held-out real domains; explicit no verified learning/holdout/real-world-transfer flags added and doc corrected.12 focused runtime/evaluation/service-route pass. Hash snapshots protect stored content consistency, not evidence truth or source authentication. No register promotion.
+
+## Autonomous goal exact-review binding
+
+AutonomousGoalEngine activated mutable goal objects using only approval id/decision: changing objective/evidence/rationale after review still activated. Now records canonical reviewed binding covering id/objective/rationale/evidence/heuristic priority/risk, includes all in review payload, rejects changes and spends activation token atomically under a lock. Resetting status cannot reuse the token.17 focused runtime/evaluation/routes pass. This is process-local goal-state activation, not deployed external execution or durable distributed approval lifecycle; goal proposals remain heuristic.
