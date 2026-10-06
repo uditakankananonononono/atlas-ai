@@ -4,9 +4,9 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1957,
+    "verified-pushed": 1933,
     "SCOPED": 48,
-    "PARTIAL": 1,
+    "PARTIAL": 25,
     "removed": 4,
     "thin": 0,
     "missing": 0
@@ -12890,14 +12890,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Elaborative Interrogation",
       "description": "Asks why",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_813_elaborative_why_and_conditions",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_813_elaborative_why_and_conditions",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 814,
@@ -12905,14 +12919,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Self-Explanation",
       "description": "Explains to self",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_814_self_explanation_checks_steps",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_814_self_explanation_checks_steps",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 815,
@@ -12920,14 +12948,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Dual Coding",
       "description": "Combines verbal and visual",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_815_dual_coding_requires_mapping_not_decoration",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_815_dual_coding_requires_mapping_not_decoration",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 816,
@@ -12935,14 +12977,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Concrete Examples",
       "description": "Illustrates abstract",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_816_examples_mark_boundary_cases",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_816_examples_mark_boundary_cases",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 817,
@@ -12950,14 +13006,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Worked Examples",
       "description": "Shows solutions",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_817_worked_example_requires_rationales_and_completion",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_817_worked_example_requires_rationales_and_completion",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 818,
@@ -12965,14 +13035,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Problem Solving",
       "description": "Practices application",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_818_problem_solving_represents_then_verifies",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_818_problem_solving_represents_then_verifies",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 819,
@@ -13009,14 +13093,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Chunking",
       "description": "Groups information",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_820_chunking_preserves_principle",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_820_chunking_preserves_principle",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 821,
@@ -13111,14 +13209,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Self-Regulated Learning",
       "description": "Manages own learning",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_824_self_regulated_cycle",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_824_self_regulated_cycle",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 825,
@@ -13126,14 +13238,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Goal Setting",
       "description": "Defines objectives",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_825_goal_setting_is_measurable_and_has_if_then",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_825_goal_setting_is_measurable_and_has_if_then",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 826,
@@ -13170,14 +13296,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Self-Assessment",
       "description": "Evaluates own work",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_827_self_assessment_requires_evidence",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_827_self_assessment_requires_evidence",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 828,
@@ -13185,14 +13325,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Peer Assessment",
       "description": "Evaluates others",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_828_peer_assessment_requires_evidence",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_828_peer_assessment_requires_evidence",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 829,
@@ -13287,14 +13441,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Prior Knowledge Activation",
       "description": "Connects to existing",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_832_prior_knowledge_not_graded",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_832_prior_knowledge_not_graded",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 833,
@@ -13302,14 +13470,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Transfer",
       "description": "Applies to new contexts",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_833_transfer_requires_independent_target_performance",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_833_transfer_requires_independent_target_performance",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 834,
@@ -13317,14 +13499,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Near Transfer",
       "description": "Applies to similar",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_834_near_transfer_requires_independent_target_performance",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_834_near_transfer_requires_independent_target_performance",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 835,
@@ -13332,14 +13528,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Far Transfer",
       "description": "Applies to different",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_835_far_transfer_requires_independent_target_performance",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_835_far_transfer_requires_independent_target_performance",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 836,
@@ -13347,14 +13557,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Analogical Reasoning",
       "description": "Reasons by analogy",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_836_analogy_rejects_surface_similarity",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_836_analogy_rejects_surface_similarity",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 837,
@@ -13362,14 +13586,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Case-Based Reasoning",
       "description": "Uses precedents",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_837_case_reasoning_retrieve_reuse_revise_retain",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_837_case_reasoning_retrieve_reuse_revise_retain",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 838,
@@ -13435,14 +13673,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Qualitative Reasoning",
       "description": "Reasons about qualities",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_840_qualitative_preserves_ambiguous_successors",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_840_qualitative_preserves_ambiguous_successors",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 841,
@@ -13800,14 +14052,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Dialectical Reasoning",
       "description": "Resolves contradictions",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_854_dialectic_keeps_unresolved_conflict",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_854_dialectic_keeps_unresolved_conflict",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 855,
@@ -13815,14 +14081,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Integrative Thinking",
       "description": "Holds tensions",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_855_integration_keeps_tradeoffs",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_855_integration_keeps_tradeoffs",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 856,
@@ -13830,14 +14110,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Systems Thinking",
       "description": "Sees wholes",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_856_systems_has_stocks_flows_feedback_delays",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_856_systems_has_stocks_flows_feedback_delays",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 857,
@@ -13845,14 +14139,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Design Thinking",
       "description": "Creates solutions",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_857_design_thinking_tests_with_participants",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_857_design_thinking_tests_with_participants",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 858,
@@ -13860,14 +14168,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Computational Thinking",
       "description": "Thinks algorithmically",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_858_computational_has_decomposition_algorithm_tests_complexity",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_858_computational_has_decomposition_algorithm_tests_complexity",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 859,
@@ -13875,14 +14197,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Scientific Thinking",
       "description": "Tests hypotheses",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_859_science_is_falsifiable_and_replicable",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_859_science_is_falsifiable_and_replicable",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Static planning prompts or copied caller fields only; named learning/reasoning capability not executed. Honest scaffold surface, full original implementation still open.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_scaffold_honesty.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 860,
