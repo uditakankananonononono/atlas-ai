@@ -4,12 +4,13 @@ from fastapi.testclient import TestClient
 from app.modules.m20_general_cognitive_worker.optimization_story_235_280 import WorkbenchError, capabilities, execute
 from app.modules.m20_general_cognitive_worker.optimization_story_routes_235_280 import router
 SRC={"title":"Owner supplied reference","url":"https://example.org/input"}
-OPT={"quadratic":[[1.,0.],[0.,1.]],"linear":[1.,2.],"l1_penalty":0.2,"equality_total":1.,"source":SRC,"objective":[1.0,2.0],"initial":[0.5,1.5],"constraint_matrix":[[1.0,1.0]],"bounds":[1.0],"iteration":4,"blocks":[[0],[1]],"duals":[0.2],"denominator":2.0,"historical_losses":[1.2,0.8],"arm_rewards":[[1,0],[0.4,0.5]],"model_weights":[[1,0],[0,1]],"propensities":[0.5,0.5],"priors":[[1,1],[2,1]],"outcomes":[[2,1],[1,2]],"means":[0.5,0.7],"counts":[2,3],"expert_losses":[0.2,0.9],"learner_losses":[1,2],"comparator_losses":[0.5,1.5],"payoff_matrix":[[1,0],[0,2]],"action_counts":[2,3]}
+OPT={"quadratic":[[1.,0.],[0.,1.]],"linear":[1.,2.],"l1_penalty":0.2,"equality_total":1.,"box_bounds":[[0,3],[0,3]],"initial_columns":[0],"source":SRC,"objective":[1.0,2.0],"initial":[0.5,1.5],"constraint_matrix":[[1.0,1.0]],"bounds":[1.0],"iteration":4,"blocks":[[0],[1]],"duals":[0.2],"denominator":2.0,"historical_losses":[1.2,0.8],"arm_rewards":[[1,0],[0.4,0.5]],"model_weights":[[1,0],[0,1]],"propensities":[0.5,0.5],"priors":[[1,1],[2,1]],"outcomes":[[2,1],[1,2]],"means":[0.5,0.7],"counts":[2,3],"expert_losses":[0.2,0.9],"learner_losses":[1,2],"comparator_losses":[0.5,1.5],"payoff_matrix":[[1,0],[0,2]],"action_counts":[2,3]}
 STORY={"source":SRC,"premise":"A mapmaker finds a changing city","source_domain":"tide","target_domain":"memory","shared_structure":"returns changed","genres":["mystery"],"trope":"map","hook":"bell","acts":3,"scenes":[{"text":"The bell calls the mapmaker home.","tension":1,"duration":2,"character":"Ila","goal":"enter","outcome":"gate opens","location":"gate"},{"text":"A hidden map shifts and the bell breaks.","tension":5,"duration":1,"character":"Ila","goal":"decode","outcome":"truth found","location":"archive"},{"text":"The mapmaker returns home with the map.","tension":2,"duration":3,"character":"Ila","goal":"restore","outcome":"city settles","location":"gate"}],"choices":[{"from":0,"to":1},{"from":1,"to":2}]}
 def run(row):
  name=next(x["key"] for x in capabilities() if x["row_id"]==row)
  p=dict(OPT if row<260 else STORY)
  if row==239:p["initial"]=[.5,.5]
+ if row==242:p["constraint_matrix"]=[[1.,1.]];p["bounds"]=[1.]
  return execute(name,p)["result"]
 
 def test_catalog_and_exact_mount():
@@ -33,13 +34,13 @@ def test_row_239_frank_wolfe_algorithm_computes_from_inputs():
  r=run(239); assert r["converged"] and "duality_gap" in r and r["uncertainty"]["solver_executed"]
 
 def test_row_240_cutting_plane_methods_computes_from_inputs():
- r=run(240); assert "cut_added" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(240); assert r["converged"] and "cut_added" in r and r["uncertainty"]["solver_executed"]
 
 def test_row_241_branch_and_bound_computes_from_inputs():
- r=run(241); assert "fractional_indices" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(241); assert r["converged"] and "solution" in r and r["uncertainty"]["solver_executed"]
 
 def test_row_242_column_generation_computes_from_inputs():
- r=run(242); assert "reduced_costs" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(242); assert r["converged"] and "reduced_costs" in r and r["uncertainty"]["solver_executed"]
 
 def test_row_243_benders_decomposition_computes_from_inputs():
  r=run(243); assert "cut_type" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
@@ -160,8 +161,8 @@ def test_metrics_change_with_inputs():
  a=run(267); p=dict(STORY); p["scenes"]=[dict(s) for s in STORY["scenes"]]; p["scenes"][1]["tension"]=2; b=execute("tension_building",p)["result"]; assert a["peak"]!=b["peak"]
 
 def test_degenerate_and_infeasible_diagnostics():
- p=dict(OPT); p["initial"]=[0,0]; assert execute("branch_and_bound",p)["result"]["diagnostics"]["feasible"]
- p["initial"]=[2,2]; r=execute("cutting_plane_methods",p)["result"]; assert not r["diagnostics"]["feasible"] and r["cut_added"]
+ p=dict(OPT); p["initial"]=[0,0]; assert execute("branch_and_bound",p)["result"]["status"]=="optimal"
+ p["initial"]=[2,2]; r=execute("cutting_plane_methods",p)["result"]; assert r["converged"] and r["cut_added"] and r["solution"]==pytest.approx([1.,2.],abs=.001)
  with pytest.raises(WorkbenchError,match="strictly positive"): execute("geometric_programming",{**OPT,"initial":[0,1]})
  with pytest.raises(WorkbenchError,match="denominator"): execute("fractional_programming",{**OPT,"denominator":0})
  with pytest.raises(WorkbenchError,match="outside scenes"): execute("interactive_fiction",{**STORY,"choices":[{"from":0,"to":9}]})
