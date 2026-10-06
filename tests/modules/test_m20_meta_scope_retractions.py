@@ -16,3 +16,16 @@ def test_templates_and_cache_never_claim_bias_correction_intuition_or_probabilit
   assert r.residual_confidence is None and r.alternative_explanations==[] and not r.capability_executed
  steel=SteelmanEngine().strengthen(opposing_position='x',known_facts=['x']*100)
  assert steel.strongest_form=='' and not steel.capability_executed
+
+
+def test_no_default_risk_probabilities_or_invented_skill_gain():
+ from app.modules.m20_general_cognitive_worker.metacognition import CounterfactualEngine,FlowStateManager,ReframingEngine,PlanningHorizonController
+ from app.modules.m20_general_cognitive_worker.schemas import Episode,EpisodeOutcome
+ ep=Episode(task_id='t',goal='x',actions=[],outcome=EpisodeOutcome.FAILED)
+ out=CounterfactualEngine().simulate(ep,[{'action':'anything','risk':'read'},{'action':'other','risk':'irreversible'}])
+ assert out['status']=='outcome_model_unavailable' and out['best_alternative'] is None
+ assert all(a['estimated_success_probability'] is None for a in out['alternatives'])
+ tasks=FlowStateManager().structure_work([{'difficulty':.6}]*20,skill=.4)
+ assert all(t['zone']=='anxiety' and t['skill_assumption']==.4 and not t['capability_executed'] for t in tasks)
+ assert not ReframingEngine().reframe('failed').capability_executed
+ assert not PlanningHorizonController().horizon(uncertainty=.2,time_available_minutes=90)['capability_executed']
