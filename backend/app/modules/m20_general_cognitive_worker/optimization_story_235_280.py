@@ -10,6 +10,7 @@ from math import exp, log, sqrt
 import re
 from typing import Any, Callable
 from .admm import solve_quadratic_l1
+from .learning_optimization import bilevel, stochastic_approximation, online_regression
 from .conic_solvers import semidefinite, second_order, geometric
 from .lp_solvers import cutting_planes, branch_and_bound, column_generation, benders, lagrangian_binary_knapsack, fractional_linear
 from .convex_solvers import dual_decomposition, coordinate_descent, proximal_gradient, frank_wolfe
@@ -60,7 +61,7 @@ def _problem(p):
     return c,x,A,b,sense,{'objective_value':_dot(c,x),'max_violation':max(violations,default=0.0),'violation_count':sum(v>1e-9 for v in violations),'feasible':not any(v>1e-9 for v in violations),'constraint_residuals':residual}
 
 def _opt(row,p):
-    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe,240:cutting_planes,241:branch_and_bound,242:column_generation,243:benders,244:lagrangian_binary_knapsack,245:semidefinite,246:second_order,247:geometric,248:fractional_linear}
+    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe,240:cutting_planes,241:branch_and_bound,242:column_generation,243:benders,244:lagrangian_binary_knapsack,245:semidefinite,246:second_order,247:geometric,248:fractional_linear,249:bilevel,250:stochastic_approximation,251:online_regression}
     if row in solvers:
         try:return solvers[row](p)
         except (ValueError,KeyError,TypeError) as exc:raise WorkbenchError(str(exc)) from exc
@@ -72,9 +73,6 @@ def _opt(row,p):
     r=[_dot(a,x)-z for a,z in zip(A,b)]; grad=[c[j]+sum(max(0,q)*a[j] for q,a in zip(r,A)) for j in range(len(x))]
     common={'diagnostics':d,'metrics':{'gradient_norm':sqrt(_dot(grad,grad)),'confidence':_confidence(r or c)},'uncertainty':{'kind':'deterministic_input_diagnostic','solver_executed':False}}
     H={
-249:lambda:{'leader_value':_dot(c,x),'follower_best_index':min(range(len(x)),key=lambda i:x[i]),'stationarity_residual':sqrt(_dot(grad,grad))},
-250:lambda:{'noisy_gradient_mean':[_mean(list(v)) for v in zip(*p.get('gradient_samples',[grad]))],'robbins_monro_step':step/sqrt(it),'sample_variance':_variance([z for q in p.get('gradient_samples',[grad]) for z in q])},
-251:lambda:{'round_loss':_dot(c,x),'best_fixed_loss':min(_nums(p.get('historical_losses',[0]),'historical_losses')),'regret':_dot(c,x)-min(_nums(p.get('historical_losses',[0]),'historical_losses'))},
 252:lambda:{'arm_means':[_mean(_nums(v,'arm_rewards',nonempty=False)) for v in p.get('arm_rewards',[])],'selected_arm':max(range(len(p.get('arm_rewards',[]))),key=lambda i:_mean(p['arm_rewards'][i])) if p.get('arm_rewards') else None},
 253:lambda:{'context_score':[_dot(_nums(w,'model_weights'),x) for w in p.get('model_weights',[])],'overlap_ok':all(float(q)>0 for q in p.get('propensities',[]))},
 254:lambda:{'posterior_means':[(a+s)/(a+b+s+f) for (a,b),(s,f) in zip(p.get('priors',[]),p.get('outcomes',[]))],'selected_arm':max(range(len(p.get('priors',[]))),key=lambda i:(p['priors'][i][0]+p['outcomes'][i][0])/sum(p['priors'][i]+p['outcomes'][i])) if p.get('priors') else None},
