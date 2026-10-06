@@ -496,3 +496,7 @@ Independent re-attack of91fd918 confirms victim read/write spoof403, cross-tenan
 ## Software practice685-709 diagnostic retraction
 
 These branches organize submitted practice evidence but do not run tests, transform code, format/lint a repository, protect a branch, review actual behavior, or perform a release.25 rows now PARTIAL with history preserved. Outputs explicitly supplied_input_practice_diagnostics_only/capability_executed=false/evidence_verified=false/repository_behavior_verified=false/release_authorized=false. Pass/complete/executable/safety names now caller_diagnostic_* rather than verified repository facts, preserving arbitrary echoed caller metadata; uncertainty unquantified instead of fixed medium. Semver arithmetic, change grouping and evidence structural checks remain narrow support, not execution of the original named practice. Focused+ledger110 pass. Latest labels1761historical54SCOPED191PARTIAL4removed.
+
+## Software nested review correction
+
+Renamed computed modernization slices[].ready to caller_diagnostic_ready; TDD red_evidence/green_change to caller_declared_red_evidence/caller_declared_green_change; refactoring new_behavior_allowed to caller_diagnostic_new_behavior_allowed. Direct construction labels rather than generic recursive echo rewriting preserve caller text/metadata. New regressions pin all three residuals. Focused+ledger112 pass. No capability promotion.

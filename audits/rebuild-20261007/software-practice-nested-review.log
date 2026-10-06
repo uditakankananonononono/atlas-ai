@@ -1,0 +1,13 @@
+............................................................F........... [ 64%]
+........................................                                 [100%]
+=================================== FAILURES ===================================
+_________________________ test_694_legacy_slice_ready __________________________
+
+>   def test_694_legacy_slice_ready():assert S('legacy_code_modernization',data('legacy_code_modernization'))['result']['slices'][0]['ready']
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'ready'
+
+tests/modules/test_m20_software_practice_685_709.py:57: KeyError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_software_practice_685_709.py::test_694_legacy_slice_ready
+1 failed, 111 passed in 1.82s

@@ -100,3 +100,17 @@ def test_caller_test_pass_claims_do_not_prove_behavior_preserved():
  out=S('refactoring',d)['result']
  assert out['caller_diagnostic_behavior_preserved'] and not out['repository_behavior_verified']
  assert 'behavior_preserved' not in out
+
+
+def test_nested_modernization_fields_are_readiness_claim_not_behavior_proof():
+ out=S('legacy_code_modernization',data('legacy_code_modernization'))['result']
+ assert out['slices'][0]['caller_diagnostic_ready'] and 'ready' not in out['slices'][0]
+ assert out['repository_behavior_verified'] is False
+
+
+def test_tdd_strings_are_declared_not_observed_evidence():
+ out=S('test_driven_development',data('test_driven_development'))['result']
+ assert out['caller_declared_red_evidence']=='fails' and out['caller_declared_green_change']=='return x'
+ assert 'red_evidence' not in out and 'green_change' not in out
+ out=S('refactoring',data('refactoring'))['result']
+ assert out['caller_diagnostic_new_behavior_allowed'] is False and 'new_behavior_allowed' not in out
