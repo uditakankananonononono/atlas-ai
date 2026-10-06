@@ -11,6 +11,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import math
 import sqlite3
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
@@ -34,8 +35,8 @@ def _hash(value: Any) -> str:
 class PersistentWorldModel:
     """Tenant-scoped beliefs, evidence and tamper-evident snapshots.
 
-    Conflicting values coexist as hypotheses. Confidence is recomputed from
-    source reliability and evidence weight, so updating the model never erases
+    Conflicting values coexist as hypotheses. A supplied support-share is recomputed from
+    caller reliability and weight, not predictive confidence, so updating the model never erases
     inconvenient evidence.
     """
 
@@ -64,7 +65,7 @@ class PersistentWorldModel:
                 reliability: float = 1.0, weight: float = 1.0, observed_at: str | None = None) -> str:
         if not subject.strip() or not predicate.strip() or not source.strip():
             raise ValueError("subject, predicate and source are required")
-        if not 0 <= reliability <= 1 or weight <= 0:
+        if isinstance(reliability,bool) or isinstance(weight,bool) or not isinstance(reliability,(int,float)) or not isinstance(weight,(int,float)) or not math.isfinite(reliability) or not math.isfinite(weight) or not 0 <= reliability <= 1 or weight <= 0:
             raise ValueError("reliability must be [0,1] and weight positive")
         at, eid = observed_at or _now(), str(uuid4())
         payload = {"tenant": self.tenant_id, "subject": subject, "predicate": predicate,
@@ -91,10 +92,11 @@ class PersistentWorldModel:
         total = sum(x["support"] for x in grouped.values())
         result = []
         for item in grouped.values():
-            item["confidence"] = round(item["support"] / total, 6) if total else 0.0
+            item["supplied_support_share"] = round(item["support"] / total, 6) if total else 0.0
             item["sources"] = sorted(set(item["sources"]))
+            item["status"]="supplied_weight_rollup_only";item["evidence_verified"]=False;item["predictive_confidence_available"]=False
             result.append(item)
-        return sorted(result, key=lambda x: (-x["confidence"], json.dumps(x["value"], sort_keys=True)))
+        return sorted(result, key=lambda x: (-x["supplied_support_share"], json.dumps(x["value"], sort_keys=True)))
 
     def state(self) -> dict[str, Any]:
         with self._db() as db:
@@ -139,7 +141,7 @@ class GoalProposal:
     objective: str
     rationale: str
     evidence: list[str]
-    expected_value: float
+    heuristic_gap_priority: float
     risk: Risk
     status: str = "proposed"
     approval_id: str | None = None
@@ -157,13 +159,13 @@ class AutonomousGoalEngine:
             raise ValueError("mission is required")
         candidates = []
         for key, hypotheses in world.state().items():
-            confidence = hypotheses[0]["confidence"] if hypotheses else 0.0
+            confidence = hypotheses[0]["supplied_support_share"] if hypotheses else 0.0
             if len(hypotheses) > 1 or confidence < .8:
                 candidates.append((confidence, key, hypotheses))
         goals = []
         for confidence, key, hypotheses in sorted(candidates)[:max_goals]:
             goal = GoalProposal(str(uuid4()), f"Resolve uncertainty about {key}",
-                                f"Supports mission: {mission}; current confidence {confidence:.2f}",
+                                f"Supports mission: {mission}; supplied support share {confidence:.2f}",
                                 [h for x in hypotheses for h in x["evidence_hashes"]],
                                 round(1 - confidence, 6), Risk.READ)
             self.proposals[goal.id] = goal; goals.append(goal)

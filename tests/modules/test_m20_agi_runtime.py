@@ -69,3 +69,14 @@ def test_self_improvement_has_immutable_baseline_stale_guard_and_rollback():
     rollback_approval=lab.request_rollback('planner',1); gate.decide(rollback_approval,ApprovalGateDecision.APPROVED)
     restored=lab.rollback('planner',1,approval_id=rollback_approval)
     assert restored.content == v1.content and restored.version == 4
+
+
+def test_world_weight_share_not_confidence_and_goal_priority_not_expected_value(tmp_path):
+ world=PersistentWorldModel(str(tmp_path/'claim.sqlite'),'t')
+ world.observe(subject='x',predicate='p',value='a',source='fake',reliability=.01)
+ world.observe(subject='x',predicate='p',value='b',source='other',reliability=.01)
+ item=world.hypotheses('x','p')[0]
+ assert item['supplied_support_share']==.5 and item['evidence_verified'] is False and 'confidence' not in item
+ goals=AutonomousGoalEngine(InMemoryApprovalGate()).propose_from_gaps(world,mission='review')
+ assert goals[0].heuristic_gap_priority==.5 and not hasattr(goals[0],'expected_value')
+ with pytest.raises(ValueError):world.observe(subject='x',predicate='p',value='a',source='fake',weight=float('inf'))

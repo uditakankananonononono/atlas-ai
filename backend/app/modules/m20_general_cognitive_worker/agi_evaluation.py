@@ -33,7 +33,7 @@ class TransferResult:
 
 
 class CrossDomainTransferBenchmark:
-    """Scores one learned strategy on held-out domains.
+    """Scores a supplied callable against caller case labels and expected outputs.
 
     A benchmark must contain at least two domains and at least one explicitly
     transferred case. Coverage, accuracy and worst-domain accuracy are exposed
@@ -69,7 +69,7 @@ class CrossDomainTransferBenchmark:
             selected = [r.score for r in results if r.domain == domain]
             by_domain[domain] = sum(selected) / len(selected)
         transfers = [r.score for r in results if r.source_domain and r.source_domain != r.domain]
-        return {"case_count": len(results), "domain_count": len(by_domain),
+        return {"status":"supplied_callable_case_evaluation_only","learned_strategy_verified":False,"held_out_domains_verified":False,"real_world_transfer_verified":False,"case_count": len(results), "domain_count": len(by_domain),
                 "accuracy": sum(r.score for r in results) / len(results),
                 "transfer_accuracy": sum(transfers) / len(transfers),
                 "worst_domain_accuracy": min(by_domain.values()), "by_domain": by_domain,
