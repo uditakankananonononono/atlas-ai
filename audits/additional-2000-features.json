@@ -13324,14 +13324,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Causal Reasoning",
       "description": "Reasons about causes",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_844_causal_has_dag_roles_and_identification",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_844_causal_has_dag_roles_and_identification",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Computed do-intervention effect using explicitly supplied acyclic additive linear structural equations. Not causal discovery or empirically identified causal effect.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_formal_reasoning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 845,
@@ -13339,14 +13353,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Counterfactual Reasoning",
       "description": "Reasons about alternatives",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_845_counterfactual_exposes_held_constant",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_845_counterfactual_exposes_held_constant",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Actual abduction-intervention-prediction with fully observed factual unit in acyclic additive linear structural model; abduced exogenous noise held fixed. Assumptions unverified.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_formal_reasoning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 846,
@@ -13444,14 +13472,28 @@
       "category": "Learning & Knowledge",
       "requirement": "Deductive Reasoning",
       "description": "Derives from general",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
         "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_852_deduction_separates_validity_truth",
         "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
       },
-      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes."
+      "boundary": "Transparent learning and reasoning support with explicit inputs, assumptions, uncertainty, evidence and review. Preserve learner agency and accessibility; never fabricate mastery, expose hidden chain-of-thought, or autonomously decide education outcomes.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "45d0443e5c43f9cef5b8271c553513f1d416772d",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/learning_reasoning_810_859.py",
+          "test_path": "tests/modules/test_m20_learning_reasoning_810_859.py::test_852_deduction_separates_validity_truth",
+          "evidence_kind": "exact-distinctive-learning-and-reasoning-node"
+        }
+      },
+      "current_scope": "Exhaustive finite propositional entailment with countermodel, satisfiability and vacuity checks; at most12 atoms. Not caller validity echo, not real-world premise truth or universal natural-language reasoning.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_formal_reasoning.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 853,
