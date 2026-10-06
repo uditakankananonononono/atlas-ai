@@ -17,6 +17,10 @@ def _cos(a,b):
  den=math.sqrt(sum(x*x for x in a)*sum(x*x for x in b));return sum(x*y for x,y in zip(a,b))/den if den else 0
 
 REFERENCE_SUBSTITUTES={
+ 'sentiment_analysis':'literal_lexicon_token_count',
+ 'opinion_mining':'literal_lexicon_token_count',
+ 'neuro_symbolic_ai':'supplied_rule_weight_score_propagation',
+ 'hybrid_ai':'supplied_rule_weight_score_propagation',
  'graph_of_thought':'supplied_graph_shortest_path',
  'self_consistency':'supplied_answer_plurality',
  'retrieval_augmented_generation':'supplied_vector_context_selection_only',

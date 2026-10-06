@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1790,
-    "PARTIAL": 162,
+    "verified-pushed": 1786,
+    "PARTIAL": 166,
     "SCOPED": 54,
     "removed": 4,
     "thin": 0,
@@ -32296,13 +32296,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Neuro-Symbolic AI",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion."
+      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+          "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        }
+      },
+      "current_scope": "Reference substitute only: supplied_rule_weight_score_propagation. No execution of original named capability, neural model or independent evidence verification.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      }
     },
     {
       "id": 1974,
@@ -32310,13 +32323,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Hybrid AI",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion."
+      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+          "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        }
+      },
+      "current_scope": "Reference substitute only: supplied_rule_weight_score_propagation. No execution of original named capability, neural model or independent evidence verification.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      }
     },
     {
       "id": 1975,
@@ -32405,13 +32431,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Sentiment Analysis",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion."
+      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+          "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        }
+      },
+      "current_scope": "Reference substitute only: literal_lexicon_token_count. No execution of original named capability, neural model or independent evidence verification.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      }
     },
     {
       "id": 1979,
@@ -32419,13 +32458,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Opinion Mining",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion."
+      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+          "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        }
+      },
+      "current_scope": "Reference substitute only: literal_lexicon_token_count. No execution of original named capability, neural model or independent evidence verification.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
+        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      }
     },
     {
       "id": 1980,
