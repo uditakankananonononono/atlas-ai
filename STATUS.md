@@ -212,3 +212,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Replaced objects/relation/frame echo with bounded2D axis-order linear constraints, genuine LP feasibility and query min/max signed separation. Queries return universal satisfaction within the supplied feasible set, possible layout or actual violating counterexample. Positive-gap cycles are inconsistent, not quietly retained as output labels.
 - Caller explicitly supplies frame and coordinate boxes. Restricted to non-strict east/west/north/south minimum-separation constraints, not vision, metric/rotation geometry, maps or physical current location. Numerical tolerance1e-8; witnesses are feasible layouts, not unique object placements. No diagram/visual-output claim.
 - Tests prove transitive separation, concrete counterexample/supporting assignments and positive/zero-gap cycle distinctions. Focused224 passed; M20/ledger1627 passed. Row842SCOPED pending review; labels1961 historical,44SCOPED,1PARTIAL,4removed.
+
+## Actual temporal constraint reasoning (row843)
+
+- Replaced event sorting/relation echo with finite simple temporal network difference constraints, all-pairs closure, negative-cycle consistency detection, implied minimum/maximum gaps and validated feasible relative-time witness. Queries distinguish guaranteed from possible separation. Disconnected event bounds stay null/unbounded, not fabricated dates.
+- Restricted to declared-unit relative scalar time gaps, not calendar scheduling/timezone conversion or verified real-world events. Tolerance1e-9, witness checked within1e-8. No absolute anchor or notification effect.
+- Tests prove transitive ranges, positive/zero cycles, unknown ordering and reverse negative gaps; reject nonfinite/unknown bounds. Focused224; M20/ledger1632 passed. Row843SCOPED pending review. Current labels1960 historical,45SCOPED,1PARTIAL,4removed.

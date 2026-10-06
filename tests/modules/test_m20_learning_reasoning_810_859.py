@@ -46,7 +46,7 @@ def test_839_model_has_entities_relations_constraints_predictions_validation():a
 def test_840_qualitative_preserves_ambiguous_successors():assert R('qualitative_reasoning')['qualitative_states']['ambiguous_successors_preserved']
 def test_841_quantitative_computes_mean_range_units():assert R('quantitative_reasoning',values=[1,3],units='m')['quantitative']['mean']==2
 def test_842_spatial_requires_frame_and_scale():assert 'frame_of_reference' in R('spatial_reasoning',frame_of_reference='Cartesian',spatial_objects=[{'id':'a','bounds':[[0,1],[0,1]]}],spatial_relations=[])['spatial']
-def test_843_temporal_orders_events():assert [x['time'] for x in R('temporal_reasoning',events=[{'time':2},{'time':1}])['temporal']['ordered']]==[1,2]
+def test_843_temporal_computes_gap_bounds():assert R('temporal_reasoning',temporal_events=['a','b'],time_unit='hours',time_constraints=[{'from':'a','to':'b','minimum_gap':2,'maximum_gap':3}],time_queries=[{'from':'a','to':'b'}])['temporal']['queries'][0]['minimum_implied_gap']==2
 def test_844_causal_has_dag_roles_and_identification():assert R('causal_reasoning',equations={'X':{},'Y':{'parents':{'X':2}}},exposure='X',outcome='Y',intervention_values=[0,1])['causal']['effect']==2
 def test_845_counterfactual_exposes_held_constant():assert R('counterfactual_reasoning',equations={'X':{},'Y':{'parents':{'X':2}}},factual={'X':1,'Y':3},intervention={'X':2})['counterfactual']['result']['Y']==5
 def test_846_probability_bayes():assert R('probabilistic_reasoning',prior=.5,likelihood_given_h=.8,likelihood_given_not_h=.2)['bayes']['posterior']==pytest.approx(.8)

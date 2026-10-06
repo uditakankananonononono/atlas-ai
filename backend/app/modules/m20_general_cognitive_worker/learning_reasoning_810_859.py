@@ -13,6 +13,7 @@ from .graph_transduction import transduce
 from .boolean_induction import induce
 from .interleaved_practice import interleave
 from .spatial_constraints import solve_spatial
+from .temporal_network import temporal
 from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
@@ -96,7 +97,8 @@ def reasoning(row,p):
   try:out['spatial']=solve_spatial(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==843:
-  events=req(p,'events',list);out['temporal']={'ordered':sorted(events,key=lambda x:x['time']),'relations':p.get('relations',[]),'timezone':p.get('timezone'),'uncertain_intervals_preserved':True}
+  try:out['temporal']=temporal(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==844:
   try:out['causal']=causal_effect(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
