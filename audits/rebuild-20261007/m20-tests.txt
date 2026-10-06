@@ -1,0 +1,51 @@
+........................................................................ [  4%]
+........................................................................ [  9%]
+........................................................................ [ 14%]
+........................................................................ [ 19%]
+........................................................................ [ 24%]
+.......................................................F................ [ 29%]
+........................................................................ [ 34%]
+........................................................................ [ 39%]
+........................................................................ [ 44%]
+........................................................................ [ 49%]
+........................................................................ [ 54%]
+........................................................................ [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+........................................................................ [ 89%]
+........................................................................ [ 94%]
+........................................................................ [ 99%]
+.........                                                                [100%]
+=================================== FAILURES ===================================
+_________________ test_full_loop_pauses_for_external_approval __________________
+
+    @pytest.mark.asyncio
+    async def test_full_loop_pauses_for_external_approval():
+     approvals=shared_approvals;service=Service(approvals,Model());reader=Adapter();sender=Adapter()
+     service.tools.register(Tool("reader","read",Risk.READ,{"read"},reader))
+     service.tools.register(Tool("sender","send",Risk.EXTERNAL,{"send"},sender))
+     run=await service.start("research then send",{}, {"seconds":10,"tokens":100,"money":0})
+     assert run.plan.steps[0].state==State.SUCCEEDED
+>    assert run.plan.steps[1].state==State.WAITING_APPROVAL
+E    AssertionError: assert <State.PENDING: 'pending'> == <State.WAITIN...ing_approval'>
+E      
+E      - waiting_approval
+E      + pending
+
+tests/modules/test_m20_general_cognitive_worker.py:21: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/modules/test_m20_political_social_1760_1809.py:113
+  /home/sandbox/atlas-ai/tests/modules/test_m20_political_social_1760_1809.py:113: SyntaxWarning: invalid escape sequence '\+'
+    with pytest.raises(AnalysisError,match='2\+ non-empty'):analyze(1794,{'group_positions':{'a':[1]},'sources':S})
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_general_cognitive_worker.py::test_full_loop_pauses_for_external_approval
+1 failed, 1448 passed, 2 warnings in 26.06s

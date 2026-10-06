@@ -21,7 +21,10 @@ def test_819_deliberate_targets_subskill_feedback_rest():
 def test_820_chunking_preserves_principle():assert L('chunking',chunks=[{'label':'x','elements':[1,2],'principle':'cause'}])['chunks'][0]['organizing_principle']=='cause'
 @pytest.mark.parametrize('n',['scaffolding','fading'])
 def test_821_822_support_fades_on_evidence(n):assert L(n)['support_levels'][-1]['support']==0 and L(n)['fade_on_evidence_not_time']
-def test_823_metacognition_calibrates():assert L('metacognition')['calibration_required']
+def test_823_metacognition_calibrates():
+ o=L('metacognition',attempts=[{'id':'1','strategy':'retrieval','evidence_id':'scored-1','predicted_success':.8,'succeeded':False}])
+ assert o['calibration']['brier_loss']==pytest.approx(.64)
+ assert o['calibration']['overconfidence']==pytest.approx(.8)
 def test_824_self_regulated_cycle():assert L('self_regulated_learning')['srl_cycle']==['forethought','performance monitoring','self-reflection']
 def test_825_goal_setting_is_measurable_and_has_if_then():assert 'implementation_intention' in L('goal_setting',goal={'specific':'x','metric':'m'})['goal']
 def test_826_progress_monitoring_computes_change():assert L('progress_monitoring',records=[{'value':1},{'value':4}])['progress']['change']==3

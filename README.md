@@ -1,3 +1,5 @@
+> **October 7 correction: Atlas is not complete.** The old `verified-pushed` ledger and semantic-report pass flags did not verify behavior. See [STATUS.md](STATUS.md) for both independent audit baselines, their different evidence strengths, and the current rebuild. The old claims below are historical and must not be used as completion evidence. Row 823 now provides measured strategy calibration only, not full metacognition.
+
 # Atlas AI
 
 Atlas AI is a human-controlled modular work platform owned by Udita. This repository contains a FastAPI API, Next.js dashboard, tenant-scoped persistence, worker/queue configuration, source and provider adapters, approval-gated effects, document renderers, billing test-mode wiring, and production container definitions.

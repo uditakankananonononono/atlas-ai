@@ -1151,7 +1151,7 @@ def test_semantic_row_1435_has_exact_current_implementation_test_and_mount():
  assert x["row"]==1435 and not x["missing_paths"] and x["exact_row_named_in_test"] and x["mounted_boundary"].startswith("/api/v1/")
 
 def test_semantic_report_is_exact_and_mounted():
- x=report();assert x["row_count"]==287 and x["passed"]==287 and x["failed"]==0
+ x=report();assert x["row_count"]==287 and x["passed"]==0 and x["failed"]==0 and x["unverified"]==287
  c=TestClient(app);base="/api/v1/runtime/semantic-verification-1149-1435"
  assert c.get(base+"/report").status_code==200 and len(c.get(base+"/report").json()["rows"])==287
  assert c.get(base+"/rows/1148").status_code==404

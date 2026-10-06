@@ -27,8 +27,10 @@ def report(rows:list[dict[str,Any]])->list[dict[str,Any]]:
   if row_id not in by:raise ValueError(f'missing ledger row {row_id}')
   ledger=by[row_id]
   if row_id==2010:
-   result.append({'row_id':2010,'requirement':ledger['requirement'],'outcome':'pass','fixed':False,'implementation_path':'backend/app/modules/m02_competition_manager/onboarding.py','test_path':'tests/modules/test_m02_onboarding.py','mounted_route':'competition-manager/profile-corpus/onboarding/launch-step','distinctive_invariant':'proactively offers writings, essays and activity descriptions; optional skip blocks drafting; completion requires indexed source IDs','provenance':'later_owner_input','source_document':'owner conversation, not the 2,000-feature Google Doc'})
+   result.append({'row_id':2010,'requirement':ledger['requirement'],'outcome':'unverified','fixed':False,'implementation_path':'backend/app/modules/m02_competition_manager/onboarding.py','test_path':'tests/modules/test_m02_onboarding.py','mounted_route':'competition-manager/profile-corpus/onboarding/launch-step','distinctive_invariant':'proactively offers writings, essays and activity descriptions; optional skip blocks drafting; completion requires indexed source IDs','provenance':'later_owner_input','source_document':'owner conversation, not the 2,000-feature Google Doc'})
    continue
   spec=next(x for x in RANGES if x[0]<=row_id<=x[1]);key=(spec[0],spec[1])
-  result.append({'row_id':row_id,'requirement':ledger['requirement'],'outcome':'pass','fixed':1910<=row_id<=1959,'implementation_path':spec[3],'test_path':spec[4],'mounted_route':spec[2],'distinctive_invariant':DISTINCTIVE[key],'provenance':'additional_2000_feature_doc'})
+  result.append({'row_id':row_id,'requirement':ledger['requirement'],'outcome':'unverified','fixed':False,'implementation_path':spec[3],'test_path':spec[4],'mounted_route':spec[2],'distinctive_invariant':DISTINCTIVE[key],'provenance':'additional_2000_feature_doc'})
+ for entry in result:
+  entry['verification_boundary']='Artifact inventory only. No behavior was executed; no feature is certified.'
  return result
