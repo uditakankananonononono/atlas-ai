@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1746,
-    "PARTIAL": 206,
+    "verified-pushed": 1696,
+    "PARTIAL": 256,
     "SCOPED": 54,
     "removed": 4,
     "thin": 0,
@@ -22113,13 +22113,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Sentencing Guidelines",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1261,
@@ -22127,13 +22140,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Criminal Appeals",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1262,
@@ -22141,13 +22167,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Constitutional Law",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1263,
@@ -22155,13 +22194,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "First Amendment",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1264,
@@ -22169,13 +22221,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Fourth Amendment",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1265,
@@ -22183,13 +22248,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Due Process",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1266,
@@ -22197,13 +22275,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Equal Protection",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1267,
@@ -22211,13 +22302,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Administrative Law",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1268,
@@ -22225,13 +22329,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Regulatory Practice",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1269,
@@ -22239,13 +22356,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Agency Proceedings",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1270,
@@ -22253,13 +22383,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Judicial Review",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1271,
@@ -22267,13 +22410,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "International Law",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1272,
@@ -22281,13 +22437,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Treaties",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1273,
@@ -22295,13 +22464,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Human Rights",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1274,
@@ -22309,13 +22491,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "International Trade",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1275,
@@ -22323,13 +22518,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Arbitration",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1276,
@@ -22337,13 +22545,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Mediation",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1277,
@@ -22351,13 +22572,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Dispute Resolution",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1278,
@@ -22365,13 +22599,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Litigation Strategy",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1279,
@@ -22379,13 +22626,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Discovery",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1280,
@@ -22393,13 +22653,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Depositions",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1281,
@@ -22407,13 +22680,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Trial Preparation",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1282,
@@ -22421,13 +22707,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Evidence Analysis",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1283,
@@ -22435,13 +22734,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Witness Preparation",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1284,
@@ -22449,13 +22761,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Jury Selection",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1285,
@@ -22463,13 +22788,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Appellate Practice",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1286,
@@ -22477,13 +22815,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Writing",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1287,
@@ -22491,13 +22842,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Citations",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1288,
@@ -22505,13 +22869,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Brief Writing",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1289,
@@ -22519,13 +22896,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Oral Argument",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1290,
@@ -22533,13 +22923,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Ethics",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1291,
@@ -22547,13 +22950,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Professional Responsibility",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1292,
@@ -22561,13 +22977,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Conflicts of Interest",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1293,
@@ -22575,13 +23004,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Attorney-Client Privilege",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1294,
@@ -22589,13 +23031,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Malpractice",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1295,
@@ -22603,13 +23058,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Pro Bono Practice",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1296,
@@ -22617,13 +23085,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Aid",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1297,
@@ -22631,13 +23112,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Access to Justice",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1298,
@@ -22645,13 +23139,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Technology",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1299,
@@ -22659,13 +23166,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "E-Discovery",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1300,
@@ -22673,13 +23193,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Analytics",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1301,
@@ -22687,13 +23220,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Predictive Coding",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1302,
@@ -22701,13 +23247,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Document Review",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1303,
@@ -22715,13 +23274,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Operations",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1304,
@@ -22729,13 +23301,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Law Firm Management",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1305,
@@ -22743,13 +23328,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Billing",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1306,
@@ -22757,13 +23355,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Alternative Fee Arrangements",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1307,
@@ -22771,13 +23382,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Project Management",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1308,
@@ -22785,13 +23409,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Knowledge Management",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1309,
@@ -22799,13 +23436,26 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Legal Education",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
         "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
         "test_path": "tests/modules/test_m12_legal_1260_1309.py"
       },
-      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action."
+      "boundary": "Jurisdiction/date-aware legal workbench only. Preserve sources, adverse authority, unknown facts, privilege candidates, validation metrics and pending approvals. Licensed counsel controls deadlines, filings, service, settlement, witness work, privilege/conflicts, production, fees and operational changes; no endpoint executes legal action.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "e1d0dd21db94a7f99dff236c26e00df7a51a4542",
+          "implementation_path": "backend/app/modules/m12_ai_research_lab/legal_support.py",
+          "test_path": "tests/modules/test_m12_legal_1260_1309.py"
+        }
+      },
+      "current_scope": "Supplied legal-review templates/reference structure only. No authority retrieval, source currency/treatment verification, substantive named legal analysis or independent verification of linked assertions.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/legal_support_1260_1309.py",
+        "test_path": "tests/modules/test_m20_legal_1260_1309.py"
+      }
     },
     {
       "id": 1310,

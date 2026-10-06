@@ -1,8 +1,8 @@
-"""Tenant-neutral, source-grounded legal analysis for owner rows 1260-1309.
+"""Supplied-input legal-review templates for owner rows 1260-1309.
 
 Each ledger row has a distinct analysis specification and result key. The engine only
 organizes supplied material for counsel: it never reaches a legal conclusion, files,
-serves, contacts anyone, changes a matter, or treats a user assertion as evidence.
+serves, contacts anyone, changes a matter, or verifies supplied assertions or authority references.
 """
 from __future__ import annotations
 
@@ -89,7 +89,7 @@ def _authority(raw: dict[str, Any], expected_jurisdiction: str) -> dict[str, Any
         "pinpoint":raw.get("pinpoint"),"issuer":raw.get("issuer"),"treatment":raw.get("treatment","unverified"),
         "contrary":bool(raw.get("contrary")),"jurisdiction_match":raw["jurisdiction"]==expected_jurisdiction,
         "stale":(date.fromisoformat(raw.get("valid_through",raw["effective_date"])) < checked),
-        "provenance_complete":True,
+        "supplied_reference_fields_complete":True,"authority_independently_verified":False,
     }
 
 
@@ -114,7 +114,7 @@ def analyze_legal_feature(feature_id: int, data: dict[str, Any], *, tenant_id: s
         text=_text(fact.get("text"),"sourced fact text"); refs=fact.get("source_ids",[])
         if not isinstance(refs,list) or not refs: raise ValueError("sourced fact requires source_ids")
         unknown=[x for x in refs if x not in authority_ids]
-        sourced_facts.append({"text":text,"source_ids":refs,"missing_source_ids":unknown,"status":"unsupported" if unknown else "sourced"})
+        sourced_facts.append({"text":text,"source_ids":refs,"missing_source_ids":unknown,"status":"missing_supplied_reference" if unknown else "supplied_reference_linked_unverified"})
     analysis=[]
     for item in data.get("analysis",[]):
         if not isinstance(item,dict): raise ValueError("each analysis item must be an object")
@@ -131,9 +131,9 @@ def analyze_legal_feature(feature_id: int, data: dict[str, Any], *, tenant_id: s
         "mechanism":spec["mechanism"],"inputs":data.get("row_inputs",{}),"sourced_facts":sourced_facts,
         "user_assertions":user_assertions,"analysis":analysis,"unknowns":data.get("unknowns",[]),
         "conflicts":conflicts,"missing_authority":missing,"stale_source_ids":stale,
-        "review_state":"blocked" if conflicts or missing or stale or any(x["status"]=="unsupported" for x in sourced_facts) else "counsel_review_required",
+        "review_state":"blocked" if conflicts or missing or stale or any(x["status"]=="missing_supplied_reference" for x in sourced_facts) else "counsel_review_required",
     }
-    return {"feature_id":feature_id,"method":spec["method"],"jurisdiction":jurisdiction,"as_of":as_of_text,
+    return {"status":"supplied_legal_review_template_only","named_capability_executed":False,"evidence_verified":False,"feature_id":feature_id,"method":spec["method"],"jurisdiction":jurisdiction,"as_of":as_of_text,
             "provenance":{"authority_count":len(authorities),"authorities":authorities},spec["output_key"]:artifact,
             "isolation":{"tenant_id":tenant,"actor_id":actor,"cross_tenant_data":False},
             "legal_conclusion":None,"filing_or_external_effect":False,"requires_licensed_counsel":True,"disclaimer":DISCLAIMER}

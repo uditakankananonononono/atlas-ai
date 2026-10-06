@@ -25,7 +25,7 @@ def test_every_row_1260_1309_has_distinct_keyed_behavior_and_provenance():
 
 def test_1260_sentencing_guidelines_keeps_assertions_separate_from_sourced_facts():
  o=run(1260); a=o["guideline_calculation_map"]
- assert a["sourced_facts"][0]["status"]=="sourced"
+ assert a["sourced_facts"][0]["status"]=="supplied_reference_linked_unverified"
  assert a["user_assertions"]==["Client says Y"] and "sentence" in a["mechanism"]
 
 def test_1275_arbitration_surfaces_contrary_and_foreign_authority_conflicts():
@@ -78,3 +78,10 @@ def _row_case(fid):
  return case
 for _fid in range(1260,1310): globals()[f"test_row_{_fid}_{SPECS[_fid]['method']}"]=_row_case(_fid)
 del _fid
+
+
+def test_reference_presence_is_not_verified_legal_authority_or_fact():
+ d=BASE
+ out=analyze_legal_feature(1260,d,tenant_id='t',actor_id='a')
+ assert out['status']=='supplied_legal_review_template_only' and not out['named_capability_executed'] and not out['evidence_verified']
+ assert all(not x['authority_independently_verified'] for x in out['provenance']['authorities'])
