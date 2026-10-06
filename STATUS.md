@@ -526,3 +526,7 @@ Specialized-domain facade had discarded engineering status/reference_operator/na
 ## Specialized facade principal binding
 
 Specialized facade previously took tenant/actor readback from raw headers even when the outer app authenticated a different principal. Pure calculation route, not stored-corpus disclosure, but false scope attribution. Now derives both from require_tenant; signed production-path test sends spoof headers alongside a valid token and confirms verified tenant/actor binding, no-token401.8 focused pass. Explicit dev header bypass remains development-only. Latest M20+atomic+ledger1987pass before this binding.
+
+## Sibling principal attribution and rate-limit repair
+
+Cognitive-learning, education and finance routes now derive scope from require_tenant; mismatching legacy scope headers/body rejected403 rather than attributing calculations to another owner. Middleware rate-limit keys now verified tenant/actor, never spoofable x-atlas scope headers under production auth; invalid/missing authentication rejected before private routes. Signed RS256 tests cover all three spoof headers/no-token outcomes and repeated rotating x-atlas header requests reaching429 under the same token, with different tenant allowed.177 focused pass. Explicit development bypass still trusts headers; process-local rate-limit counters remain unbounded/not distributed and authentication is verified again at route boundaries. This does not prove production identity-provider deployment.

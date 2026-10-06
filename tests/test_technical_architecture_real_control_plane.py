@@ -62,3 +62,15 @@ def test_a32_real_approval_sse_route_has_streaming_media_and_proxy_headers():
     assert 'StreamingResponse' in source and 'media_type="text/event-stream"' in source
     assert 'Cache-Control": "no-cache"' in source and 'X-Accel-Buffering": "no"' in source
     assert ': heartbeat\\n\\n' in source and 'data: {json.dumps(event)}\\n\\n' in source
+
+
+def test_production_rate_limit_cannot_rotate_scope_headers(monkeypatch,oidc_auth_headers):
+ monkeypatch.delenv('ATLAS_DEV_NO_AUTH',raising=False)
+ app=FastAPI();app.add_middleware(ProductionBoundaryMiddleware,limit_per_minute=1)
+ @app.get('/private')
+ def private():return {'ok':True}
+ c=TestClient(app);token=oidc_auth_headers('ta','alice')
+ assert c.get('/private',headers={**token,'x-atlas-tenant':'fake1','x-atlas-actor':'fake1'}).status_code==200
+ assert c.get('/private',headers={**token,'x-atlas-tenant':'fake2','x-atlas-actor':'fake2'}).status_code==429
+ assert c.get('/private',headers=oidc_auth_headers('tb','alice')).status_code==200
+ assert c.get('/private').status_code==401
