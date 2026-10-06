@@ -164,3 +164,5 @@ Finite knapsack1992/1993 SCOPED to at most20 items. Latest labels1812historical/
 Reviewer follow-up:26 cognitive reference substitutes, latest labels1786historical/54SCOPED/166PARTIAL/4removed.
 
 Software practice685-709 PARTIAL supplied diagnostics/templates, no repository/test execution. Latest labels1761historical/54SCOPED/191PARTIAL/4removed.
+
+15 engineering diagnostic/template branches now PARTIAL (no CAD/FEA/CFD/physical execution). Latest labels1746historical/54SCOPED/206PARTIAL/4removed.

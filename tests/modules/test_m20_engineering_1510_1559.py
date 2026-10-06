@@ -119,3 +119,11 @@ def test_doe_replication_budget_and_strict_numeric_inputs():
  out=E('design_of_experiments',{'factors':{'a':[1,2],'b':['x','y']},'replicates':3})['result']
  assert out['run_count']==4 and out['total_replicated_run_count']==12
  with pytest.raises(ValueError):E('thermal_analysis',{'heat_w':'10','ambient_c':20,'thermal_resistances_k_per_w':[1]})
+
+
+def test_engineering_reference_diagnostics_do_not_execute_named_ability():
+ from app.modules.m20_general_cognitive_worker.engineering_1510_1559 import REFERENCE_DIAGNOSTICS
+ for method in REFERENCE_DIAGNOSTICS:
+  out=E(method,{})
+  assert out['status']=='supplied_diagnostics_or_template_only' and out['named_capability_executed'] is False
+  assert 'checks_performed' not in out['evaluation']

@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1761,
-    "PARTIAL": 191,
+    "verified-pushed": 1746,
+    "PARTIAL": 206,
     "SCOPED": 54,
     "removed": 4,
     "thin": 0,
@@ -25882,14 +25882,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Mechanical Design",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1510_mechanical_design_traceability",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1510_mechanical_design_traceability",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_requirement_field_coverage. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1511,
@@ -25897,14 +25911,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "CAD Modeling",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1511_cad_reference_order",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1511_cad_reference_order",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_feature_reference_order_check. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1512,
@@ -25912,14 +25940,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Finite Element Analysis",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1512_fea_mesh_convergence_without_claiming_solver_run",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1512_fea_mesh_convergence_without_claiming_solver_run",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_mesh_result_difference. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1513,
@@ -25927,14 +25969,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Computational Fluid Dynamics",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1513_cfd_mass_balance",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1513_cfd_mass_balance",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_mass_flow_balance. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1514,
@@ -26032,14 +26088,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Failure Analysis",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1520_failure_analysis_does_not_invent_root_cause",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1520_failure_analysis_does_not_invent_root_cause",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_reference_hypothesis_bookkeeping. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1521,
@@ -26092,14 +26162,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Human Factors Engineering",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1524_human_factors_flags_safety_critical",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1524_human_factors_flags_safety_critical",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_task_safety_marker. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1525,
@@ -26107,14 +26191,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Ergonomics",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1525_ergonomics_keeps_instrument_context",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1525_ergonomics_keeps_instrument_context",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_assessment_fields. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1526,
@@ -26122,14 +26220,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Industrial Design",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1526_industrial_design_not_release_ready",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1526_industrial_design_not_release_ready",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_concept_template. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1527,
@@ -26182,14 +26294,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Design for Six Sigma",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1530_dfss_open_ctq",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1530_dfss_open_ctq",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_CTQ_verification_plan. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1531,
@@ -26212,14 +26338,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "GD&T",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1532_gdt_invalid_frame",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1532_gdt_invalid_frame",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_frame_field_presence. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1533,
@@ -26257,14 +26397,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Quality Assurance",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1535_quality_assurance_traceability",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1535_quality_assurance_traceability",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_requirement_reference_coverage. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1536,
@@ -26407,14 +26561,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Environmental Testing",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1545_environmental_plan_not_fake_result",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1545_environmental_plan_not_fake_result",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_test_profile_template. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1546,
@@ -26422,14 +26590,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Vibration Testing",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1546_vibration_grms",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1546_vibration_grms",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_test_profile_template. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1547,
@@ -26452,14 +26634,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Thermal Cycling",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1548_thermal_cycling_plan_not_fake_result",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1548_thermal_cycling_plan_not_fake_result",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_test_profile_template. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1549,
@@ -26467,14 +26663,28 @@
       "category": "Specialized Domain Expertise",
       "requirement": "Humidity Testing",
       "description": "",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
         "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1549_humidity_plan_not_fake_result",
         "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
       },
-      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design."
+      "boundary": "Auditable engineering calculations with units, assumptions, standards and explicit safety limits. Qualified engineers validate materials, loads, tests, tolerances and certification; Atlas never controls machinery or certifies a design.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "0018948821fef06680c7b46d9cf9c0a43aa770da",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+          "test_path": "tests/modules/test_m20_engineering_1510_1559.py::test_1549_humidity_plan_not_fake_result",
+          "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
+        }
+      },
+      "current_scope": "Supplied diagnostics/templates only: supplied_test_profile_template. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
+        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+      }
     },
     {
       "id": 1550,
