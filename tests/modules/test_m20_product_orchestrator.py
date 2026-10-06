@@ -90,7 +90,7 @@ def test_default_executor_simulates_and_never_claims_external_effect():
     state = service.execution_state(goal.id)
     assert state["ledger"]["counts"]["simulated"] == 2
     assert state["ledger"]["counts"]["externally_executed"] == 0
-    assert state["ledger"]["highest_observed_state"] == "simulated"
+    assert state["ledger"]["highest_claimed_state"] == "simulated"
     assert "never promoted" in state["ledger"]["boundary"]
 
 
@@ -128,8 +128,8 @@ def test_evidenced_execution_and_verified_readback():
     ledger = service.execution_state(goal.id)["ledger"]
     assert ledger["counts"]["externally_executed"] == 1
     assert ledger["counts"]["independently_verified"] == 1
-    assert ledger["highest_observed_state"] == "independently_verified"
-    assert ledger["verified_fraction"] == 0.5
+    assert ledger["highest_claimed_state"] == "independently_verified"
+    assert ledger["claimed_verified_fraction"] == 0.5
 
 
 def test_approval_payload_carries_cited_steps_to_module_zero():

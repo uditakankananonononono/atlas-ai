@@ -432,3 +432,7 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 ## Refreshed whole-repo regression
 
 Current split-process regression run: 9453 passed, 14 skipped, 3 warnings across 495 test files / 19 batches. Batch0 initially exposed stale expectation for critical-thinking uncertainty=high; corrected to unquantified and complete=false to match the deliberate scope retraction, then re-ran that entire batch. Remaining batches passed unchanged. No live model or deployed integration inference.
+
+## Execution-state rollup is not evidence verification
+
+The execution-truth endpoint and ProductOrchestrator ledger accept caller/executor evidence ids and verifier labels but never retrieve or authenticate those artifacts. Renamed highest_observed_state and verified_fraction to highest_claimed_state and claimed_verified_fraction. All items explicitly carry state_is_caller_claim and evidence_verified=false; aggregate status is supplied_claim_rollup_only. A fabricated independent-verifier label can pass structural validation, but no longer produces an observed/verified output label. This is outcome-claim bookkeeping, not independent verification or deployed action proof. A new regression uses invented evidence to pin that boundary. Focused57 pass. The earlier9453 whole-repo run predates this rename. Runtime module prose and decision-artifact basis also corrected to reflect no default success predictions and heuristic ranking.

@@ -7,12 +7,11 @@ runner into one object the integrator binds per tenant. Every mutation
 lands in the repository, so a restarted process rehydrates tasks, plans,
 memories, methods, retrospectives and calibration history exactly.
 
-The Evaluate phase is deepened with explicit expectations: each executed
-step records a predicted success probability as a calibration claim before
-dispatch, the observed outcome resolves the claim, and a large miss is a
-*surprise* that triggers reflection and a replanning trace entry. Decision
-artifacts expose alternatives with their score decomposition - never hidden
-chain-of-thought (row M20-26).
+The Evaluate phase can resolve explicit caller predictions against dispatcher
+outcomes. It does not create a success prediction automatically or verify output
+quality. Claim references in node arguments are caller/model-controlled metadata,
+not authenticated prediction provenance. Candidate ranking is hand-written
+heuristic scoring, not fitted expected information gain or success probability.
 """
 from __future__ import annotations
 
@@ -65,7 +64,7 @@ class DecisionArtifact:
     chosen: AlternativeEvaluated | None
     alternatives: list[AlternativeEvaluated]
     decided_at: str
-    basis: str = "expected information gain, cost, progress probability"
+    basis: str = "hand-written information/progress weights minus supplied cost"
 
     def as_dict(self) -> dict[str, Any]:
         return {
