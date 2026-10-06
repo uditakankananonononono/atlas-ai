@@ -12,7 +12,13 @@ persistence, and the FastAPI surface.
 1. `from app.modules.m20_general_cognitive_worker import router, bind_service, CognitiveWorkerService`
    and `app.include_router(router)` (prefix is `/api/modules/20`). Add
    `MODULE_REGISTRY_ENTRY` to the module catalog.
-2. Bind production clients into `CognitiveWorkerService(...)`:
+2. Create a separate `CognitiveWorkerService(...)` for each authenticated tenant.
+   Bind with `bind_service(service, tenant_id="actual-tenant-id")`. Reusing the
+   same mutable service for two tenants is rejected. Unknown tenants fail503;
+   no automatic local fallback in authenticated mode. Bind tenant-scoped
+   persistence, tools, approval gates and clients too. The default `local`
+   binding is only for explicitly opted-in insecure local development.
+   Bind production clients into `CognitiveWorkerService(...)`:
    - `executive_model` / `planner_model`: the shared model router (Module 12).
    - `approval_gate`: Module 0's durable center (must satisfy the
      `ApprovalGate` protocol: `request() -> id`, `decision(id)`).
