@@ -12,7 +12,8 @@ def test_expanded_owner_spec_is_fully_rowized():
     assert len(rows) == 329
     assert [row['id'] for row in rows] == list(range(1, 330))
     assert Counter(row['module'] for row in rows) == EXPECTED
-    assert AUDIT['counts'] == {'verified-pushed': 320, 'missing': 9}
+    assert AUDIT['counts'] == {'verified-pushed': 319, 'missing': 9, 'UNSUPPORTED': 1}
+    assert [row['id'] for row in rows if row['status'] == 'UNSUPPORTED'] == [127]
 
 
 def test_rows_are_complete_unique_and_source_linked():
@@ -21,7 +22,7 @@ def test_rows_are_complete_unique_and_source_linked():
     assert len(requirements) == len(set(requirements))
     assert all(row['requirement'] and row['description'] and row['boundary'] for row in rows)
     assert all(row['source_message_ids'] == [SOURCE] for row in rows)
-    assert {row['status'] for row in rows} <= {'verified-pushed', 'thin', 'missing'}
+    assert {row['status'] for row in rows} <= {'verified-pushed', 'thin', 'missing', 'UNSUPPORTED'}
 
 
 def test_scale_targets_remain_literal_and_unverified():
