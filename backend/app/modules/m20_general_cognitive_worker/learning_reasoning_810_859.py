@@ -11,6 +11,7 @@ from .keyed_assessment import assess
 from .progress_measurement import measure_progress
 from .graph_transduction import transduce
 from .boolean_induction import induce
+from .interleaved_practice import interleave
 from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
@@ -34,7 +35,8 @@ def learning(row,p):
   try:out.update(schedule_reviews(p))
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==811:
-  skills=req(p,'skills',list);blocks=int(p.get('blocks',len(skills)*2));out['sequence']=[skills[(i+(i//len(skills)))%len(skills)] for i in range(blocks)];out['avoids_same_skill_runs']=len(set(skills))>1
+  try:out.update(interleave(p))
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==812:
   try:out['recall']=recall_practice(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
