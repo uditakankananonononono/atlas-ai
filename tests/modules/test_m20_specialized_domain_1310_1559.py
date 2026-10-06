@@ -42,7 +42,7 @@ def test_foundation_education_preserves_evidence_and_review_contract():
         "duration_minutes": 45, "source": SOURCE,
     })
     assert out.domain == "education" and out.result["unassessed_objective_ids"] == []
-    assert out.evaluation.status == "draft_for_review" and "objective_assessment_alignment" in out.evaluation.checks
+    assert out.evaluation.status == "draft_for_review" and "objective_assessment_alignment" in out.evaluation.diagnostic_fields
 
 
 def test_advanced_education_runs_risk_model_without_turning_it_into_fact():
@@ -84,3 +84,12 @@ def test_http_boundary_requires_tenant_and_actor_and_returns_typed_envelope():
     value = response.json()
     assert value["tenant_id"] == "tenant-1" and value["result"]["predicted_hot_temperature_c"] == 25
     assert value["side_effects"] == []
+
+
+def test_engineering_facade_preserves_reference_substitute_retraction():
+ from app.modules.m20_general_cognitive_worker.specialized_domain import analyze_specialized_domain
+ out=analyze_specialized_domain(row_id=1512,data={'mesh_results':[{'result':1},{'result':1}]},tenant_id='a',actor_id='u').to_dict()
+ assert out['result']['status']=='supplied_diagnostics_or_template_only'
+ assert out['result']['reference_operator']=='supplied_mesh_result_difference' and out['result']['named_capability_executed'] is False
+ assert out['limits'] and 'simulation run' in out['limits'][0]
+ assert 'checks' not in out['evaluation'] and 'diagnostic_fields' in out['evaluation']

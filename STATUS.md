@@ -518,3 +518,7 @@ Shear planes now positive exact integers1..10000 rather than truncated fractions
 ## Engineering diagnostic/template15-row retraction
 
 Mechanical requirement coverage, CAD reference ordering, submitted FEA mesh differences and CFD flow balances do not design CAD or run numerical field solvers. Likewise hypothesis references, safety markers, ergonomics/design/CTQ templates, GD&T field presence, QA requirement references and four environment profile templates do not execute their named engineering abilities. Explicit reference_operator/supplied_diagnostics_or_template_only/named_capability_executed=false for15branches; ledger PARTIAL preserves historical claims. Evaluation checks_performed renamed diagnostic_output_fields: listing return keys is not evidence of performed verification.74 focused pass. Other physics/statistical formulas remain narrow supplied-assumption support. Labels1746historical54SCOPED206PARTIAL4removed.
+
+## Engineering facade propagation repair
+
+Specialized-domain facade had discarded engineering status/reference_operator/named_capability_executed and ignored its boundary. Now preserves these in result and retains the engineering boundary in limits. Uniform facade evaluation checks renamed diagnostic_fields, with the HTTP response schema and tests changed together; engineering source uses diagnostic_output_fields rather than manufacturing performed checks from key names.82 focused facade/engineering tests pass, including HTTP response validation and row1512 retraction propagation. Does not promote original solver capability.
