@@ -135,3 +135,25 @@ def test_scheduler_priority_and_round_robin():
     done = TaskContext(goal="done", state=TaskState.SUCCEEDED)
     scheduler.add(done)
     assert done not in scheduler.active()
+
+
+def test_generated_plan_cache_never_reuses_different_goal_or_context():
+ class ContextModel:
+  def __init__(self):self.calls=0
+  def decompose(self,goal,*,context=''):
+   self.calls+=1
+   return [{'title':'read fixture','tool':'read_fixture','arguments':{'goal':goal,'context':context}}]
+ model=ContextModel();planner=HTNPlanner(model)
+ a='summarize colored blocks for alice';b='summarize colored blocks for bob'
+ planner.decompose(a,context='red')
+ assert planner.decompose(b,context='red')[0].arguments['goal']==b
+ assert planner.decompose(a,context='blue')[0].arguments['context']=='blue'
+ assert model.calls==3
+ planner.decompose(a,context='red');assert model.calls==3
+ assert len(planner.methods)==3
+
+
+def test_legacy_generated_method_without_scope_binding_never_matches():
+ planner=HTNPlanner()
+ planner.register_method(HTNMethod(name='learned:legacy',goal_pattern='read fixture',source=MethodSource.LEARNED,subtasks=[PlanNode(title='stale')]))
+ with pytest.raises(PlanError):planner.decompose('read fixture')
