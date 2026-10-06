@@ -339,18 +339,17 @@ class DeliberativeLoop:
         return result
 
     def _evaluate_expectation(self, context: TaskContext, node: PlanNode, record: ActionRecord) -> None:
-        """Surprise detection: results that contradict stored facts trigger
-        a world-model update (spec 4.2.4 Evaluate)."""
+        """Similarity is a retrieval lead, not verification or contradiction proof."""
         if not record.succeeded:
             return
-        contradictions = [
+        candidates = [
             fact for fact, score in self.semantic.query(node.title, limit=3)
             if score > 0.6 and fact.confidence < 0.5
         ]
-        for fact in contradictions:
-            self._trace("reflect", f"world-model update: low-confidence fact contradicted: {fact.content[:80]}",
+        for fact in candidates:
+            self._trace("reflect", f"related low-confidence fact needs evidence review; "
+                        f"no contradiction/confirmation inferred: {fact.content[:80]}",
                         task_id=context.id)
-            self.semantic.confirm(fact.id)
 
     def _reflect_on_failure(self, context: TaskContext, node: PlanNode, error: str) -> None:
         self.wm.put(MemoryChunk(

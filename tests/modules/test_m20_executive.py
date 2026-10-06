@@ -165,3 +165,17 @@ def test_run_all_cancelled_plan_never_reports_success():
  loop,_,_=build_loop()
  out=loop.run(TaskContext(goal='x',plan=[PlanNode(title='cancelled',state=TaskState.CANCELLED)]))
  assert out.state==TaskState.BLOCKED
+
+
+def test_successful_unrelated_tool_never_confirms_title_similar_fact():
+ from app.modules.m20_general_cognitive_worker.schemas import ActionRecord
+ loop,_,_=build_loop()
+ fact=loop.semantic.remember('research competitors',confidence=.1)
+ before=fact.last_confirmed_at
+ node=PlanNode(title='research competitors',tool='web_search')
+ context=TaskContext(goal='research competitors')
+ record=ActionRecord(tool='web_search',succeeded=True)
+ loop._evaluate_expectation(context,node,record)
+ assert loop.semantic.get(fact.id).last_confirmed_at==before
+ assert any('no contradiction/confirmation inferred' in t.detail for t in loop.traces)
+ assert not any('fact contradicted' in t.detail for t in loop.traces)
