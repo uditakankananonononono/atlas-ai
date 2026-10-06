@@ -4,9 +4,9 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1933,
+    "verified-pushed": 1912,
     "SCOPED": 48,
-    "PARTIAL": 25,
+    "PARTIAL": 46,
     "removed": 4,
     "thin": 0,
     "missing": 0
@@ -4240,14 +4240,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Novel Metaphor Generation",
       "description": "Creates unexpected comparisons that illuminate",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_260_novel_metaphor_generation_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_260_novel_metaphor_generation_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 261,
@@ -4255,14 +4269,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Narrative Arc Construction",
       "description": "Builds compelling story structures",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_261_narrative_arc_construction_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_261_narrative_arc_construction_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 262,
@@ -4270,14 +4298,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Character Development",
       "description": "Creates multi-dimensional fictional people",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_262_character_development_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_262_character_development_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 263,
@@ -4285,14 +4327,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Dialogue Writing",
       "description": "Generates natural conversation",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_263_dialogue_writing_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_263_dialogue_writing_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 264,
@@ -4300,14 +4356,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Worldbuilding",
       "description": "Creates coherent fictional universes",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_264_worldbuilding_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_264_worldbuilding_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 265,
@@ -4315,14 +4385,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Plot Twist Design",
       "description": "Surprises while maintaining plausibility",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_265_plot_twist_design_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_265_plot_twist_design_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 266,
@@ -4330,14 +4414,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Foreshadowing Placement",
       "description": "Plants subtle hints",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_266_foreshadowing_placement_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_266_foreshadowing_placement_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 267,
@@ -4345,14 +4443,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Tension Building",
       "description": "Creates and releases dramatic tension",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_267_tension_building_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_267_tension_building_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 268,
@@ -4360,14 +4472,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Pacing Control",
       "description": "Manages story rhythm",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_268_pacing_control_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_268_pacing_control_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 269,
@@ -4375,14 +4501,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Voice Development",
       "description": "Creates distinctive narrative voices",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_269_voice_development_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_269_voice_development_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 270,
@@ -4390,14 +4530,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Genre Blending",
       "description": "Combines conventions innovatively",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_270_genre_blending_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_270_genre_blending_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 271,
@@ -4405,14 +4559,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Trope Subversion",
       "description": "Plays with and against expectations",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_271_trope_subversion_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_271_trope_subversion_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 272,
@@ -4420,14 +4588,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Myth Creation",
       "description": "Invents foundational stories",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_272_myth_creation_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_272_myth_creation_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 273,
@@ -4435,14 +4617,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Poetry Generation",
       "description": "Creates verse in various forms",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_273_poetry_generation_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_273_poetry_generation_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 274,
@@ -4450,14 +4646,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Songwriting",
       "description": "Writes lyrics with meter and rhyme",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_274_songwriting_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_274_songwriting_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 275,
@@ -4465,14 +4675,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Screenplay Formatting",
       "description": "Structures for visual media",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_275_screenplay_formatting_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_275_screenplay_formatting_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 276,
@@ -4480,14 +4704,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Stage Play Construction",
       "description": "Handles theatrical constraints",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_276_stage_play_construction_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_276_stage_play_construction_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 277,
@@ -4495,14 +4733,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Comic Script Writing",
       "description": "Balances words and visuals",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_277_comic_script_writing_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_277_comic_script_writing_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 278,
@@ -4510,14 +4762,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Interactive Fiction",
       "description": "Creates branching narratives",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_278_interactive_fiction_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_278_interactive_fiction_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 279,
@@ -4525,14 +4791,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Game Narrative Design",
       "description": "Integrates story with mechanics",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_279_game_narrative_design_computes_from_inputs",
         "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_279_game_narrative_design_computes_from_inputs",
+          "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 280,
@@ -4540,14 +4820,28 @@
       "category": "Creative & Artistic Capabilities",
       "requirement": "Visual Storyboarding",
       "description": "Plans sequential visuals",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_280_visual_storyboarding_computes_from_inputs",
         "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_280_visual_storyboarding_computes_from_inputs",
+          "evidence_kind": "exact-requirement-path-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Supplied-text lexical/structural diagnostics or template formatting only; full named story generation/development not executed. No originality/quality validation or rendered visual storyboard.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_story_claim_boundary.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 281,

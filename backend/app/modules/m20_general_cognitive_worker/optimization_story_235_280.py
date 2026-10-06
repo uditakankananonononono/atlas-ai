@@ -25,7 +25,7 @@ ROWS={235:'Dual Decomposition',236:'ADMM',237:'Coordinate Descent',238:'Proximal
 FAMILY={i:('optimization' if i<260 else 'story') for i in ROWS}
 def slug(s:str)->str:return re.sub(r'[^a-z0-9]+','_',s.lower()).strip('_')
 KEYS={slug(v):k for k,v in ROWS.items()}
-def capabilities():return [{'row_id':i,'key':slug(n),'name':n,'family':FAMILY[i]} for i,n in ROWS.items()]
+def capabilities():return [{'row_id':i,'key':slug(n),'name':n,'family':FAMILY[i],'execution_kind':'restricted_optimization' if i<260 else 'supplied_text_diagnostics'} for i,n in ROWS.items()]
 
 def _source(p):
     s=p.get('source')
@@ -89,7 +89,7 @@ def _story(row,p):
     premise,ss=_scenes(p); words=[re.findall(r"[A-Za-z']+",s['text'].lower()) for s in ss]; flat=[w for z in words for w in z]
     tensions=[s['tension'] for s in ss]; durations=[s['duration'] for s in ss]; chars=[s['character'] for s in ss if s['character']]
     transitions=[tensions[i+1]-tensions[i] for i in range(len(ss)-1)]
-    common={'metrics':{'scene_count':len(ss),'word_count':len(flat),'mean_tension':_mean(tensions),'confidence':min(1.0,len(ss)/5)},'uncertainty':{'kind':'structural_heuristic','requires_human_editorial_review':True}}
+    common={'metrics':{'scene_count':len(ss),'word_count':len(flat),'mean_tension':_mean(tensions),'scene_sample_count_is_not_confidence':True},'uncertainty':{'kind':'structural_heuristic','requires_human_editorial_review':True}}
     motifs=Counter(flat)
     H={
 260:lambda:{'metaphors':[f"{p.get('target_domain','the premise')} is {p.get('source_domain','a tide')} because both {p.get('shared_structure','change under pressure')}"] ,'novelty_score':1/(1+sum(motifs[w] for w in set(re.findall(r'\w+',str(p.get('source_domain','')).lower()))))},
@@ -134,4 +134,4 @@ def execute(method,payload):
     if row is None:raise WorkbenchError(f'unknown method: {method}')
     if not isinstance(payload,dict):raise WorkbenchError('payload must be object')
     result=_opt(row,payload) if row<260 else _story(row,payload)
-    return {'row_id':row,'capability':ROWS[row],'family':FAMILY[row],'source':_source(payload),'result':result,'evaluation':{'algorithm_executed':True,'review_checks':['convergence','feasibility','sensitivity'] if row<260 else ['continuity','pacing','originality']},'uncertainty':{'human_review_required':True,'drivers':['caller-supplied data','model assumptions','heuristic diagnostics']},'boundary':'Computed only from supplied data; diagnostics and heuristic uncertainty require human review.'}
+    return {'row_id':row,'capability':ROWS[row],'family':FAMILY[row],'source':_source(payload),'result':result,'evaluation':{'algorithm_executed':row<260,'diagnostics_executed':row>=260,'named_generation_capability_executed':False if row>=260 else None,'review_checks':['convergence','feasibility','sensitivity'] if row<260 else ['continuity','pacing','originality']},'uncertainty':{'human_review_required':True,'drivers':['caller-supplied data','model assumptions','heuristic diagnostics']},'boundary':('Restricted optimization on supplied mathematical inputs; no universal optimizer claim.' if row<260 else 'Supplied-text diagnostics and template formatting only. Named story generation/development capability not executed. Lexical proxies are not novelty, originality or quality validation; no model-backed creative generation or rendered visual storyboard.')}

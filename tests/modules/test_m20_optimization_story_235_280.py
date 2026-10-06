@@ -106,67 +106,67 @@ def test_row_259_fictitious_play_computes_from_inputs():
  r=run(259); assert "exploitability" in r and r["uncertainty"]["solver_executed"]
 
 def test_row_260_novel_metaphor_generation_computes_from_inputs():
- r=run(260); assert "metaphors" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(260); assert "metaphors" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_261_narrative_arc_construction_computes_from_inputs():
- r=run(261); assert "arc_shape" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(261); assert "arc_shape" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_262_character_development_computes_from_inputs():
- r=run(262); assert "character_scene_counts" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(262); assert "character_scene_counts" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_263_dialogue_writing_computes_from_inputs():
- r=run(263); assert "lexical_distinctness" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(263); assert "lexical_distinctness" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_264_worldbuilding_computes_from_inputs():
- r=run(264); assert "locations" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(264); assert "locations" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_265_plot_twist_design_computes_from_inputs():
- r=run(265); assert "reversal_magnitude" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(265); assert "reversal_magnitude" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_266_foreshadowing_placement_computes_from_inputs():
- r=run(266); assert "motif_positions" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(266); assert "motif_positions" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_267_tension_building_computes_from_inputs():
- r=run(267); assert "tension_curve" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(267); assert "tension_curve" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_268_pacing_control_computes_from_inputs():
- r=run(268); assert "pace_variance" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(268); assert "pace_variance" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_269_voice_development_computes_from_inputs():
- r=run(269); assert "lexical_diversity" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(269); assert "lexical_diversity" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_270_genre_blending_computes_from_inputs():
- r=run(270); assert "genre_signals" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(270); assert "genre_signals" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_271_trope_subversion_computes_from_inputs():
- r=run(271); assert "expectation_present" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(271); assert "expectation_present" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_272_myth_creation_computes_from_inputs():
- r=run(272); assert "origin_markers" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(272); assert "origin_markers" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_273_poetry_generation_computes_from_inputs():
- r=run(273); assert "line_count" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(273); assert "line_count" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_274_songwriting_computes_from_inputs():
- r=run(274); assert "hook_repetitions" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(274); assert "hook_repetitions" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_275_screenplay_formatting_computes_from_inputs():
- r=run(275); assert "formatted_scenes" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(275); assert "formatted_scenes" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_276_stage_play_construction_computes_from_inputs():
- r=run(276); assert "live_complexity" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(276); assert "live_complexity" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_277_comic_script_writing_computes_from_inputs():
- r=run(277); assert "panel_plan" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(277); assert "panel_plan" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_278_interactive_fiction_computes_from_inputs():
- r=run(278); assert "reachable_scenes" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(278); assert "reachable_scenes" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_279_game_narrative_design_computes_from_inputs():
- r=run(279); assert "loop_alignment" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(279); assert "loop_alignment" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_row_280_visual_storyboarding_computes_from_inputs():
- r=run(280); assert "shots" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(280); assert "shots" in r and r["metrics"]["scene_sample_count_is_not_confidence"] is True and r["uncertainty"]
 
 def test_metrics_change_with_inputs():
  a=run(236); p=dict(OPT); p["linear"]=[2.,3.]; b=execute("admm",p)["result"]; assert a["solution"]!=b["solution"] and b["solution"]==pytest.approx([1.8,2.8],abs=1e-5)

@@ -254,3 +254,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - The remaining24 learning/reasoning branches are now explicitly planning_scaffold_only in API evaluation/catalog. capability_executed=false; named capability not executed, copied fields/static prompts are not reasoning evidence. Arbitrary nonempty inputs cannot turn them into executed capability claims.
 - Retracted their ledger historical verified-pushed status to PARTIAL with original claims/evidence preserved. This removes overstated claims, not missing implementation work. Complete input metric remains a nonempty-field ratio only, explicitly not validity or evidence quality.
 - Restricted computed rows remain marked as such, not full capability. Focused222; M20/ledger1665 passed. Current labels1933 historical,48SCOPED,25PARTIAL,4removed. Independent review and full original-spec breadth remain open.
+
+## Story capability claim retraction (rows260-280)
+
+- These21 branches compute supplied-text metrics, graph reachability or template formatting, not full named creative generation/development. API/catalog now labels supplied_text_diagnostics, named_generation_capability_executed=false. General algorithm_executed claim restricted to actual optimizer rows. Removed scene-count pseudo-confidence; more scenes do not establish confidence.
+- All21 ledger rows PARTIAL with historical evidence retained. Existing limited metric/template outputs remain available, but novelty/originality/quality proxy fields are not validated creative capability and no rendered visual storyboard was made. Named tests check the new boundary for every row.
+- Focused56; M20/ledger1667 passed. Current labels1912historical48SCOPED46PARTIAL4removed. Retraction is not completion; real model-backed creative breadth remains open.
