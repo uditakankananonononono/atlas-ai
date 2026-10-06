@@ -373,3 +373,7 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - SemanticMemory also had a fixed30-day half-life reliability number. Removed it: freshness is unavailable/null and model-driven due_for_refresh returns no schedule. Caller decay/confidence values remain stored metadata, not assessed truth/freshness. Explicit confirmation still records time. Knowledge-decay HTTP responses name prediction params as ignored and unavailable; age remains measured.
 - Fresh DeliberativeLoop.start resets incoming node states/attempts/approval ids/output before execution, so preset SUCCEEDED/CANCELLED does not establish work. run() rejects empty/all-cancelled plans as success. Continuation run/resume still relies on internal/durable plan-state integrity, not arbitrary caller authority; do not use it as a fresh untrusted-plan entrypoint.
 - Negative tests pin extreme caller decay, fresh-state reset and all-cancelled no-success. M20+ledger1750 pass with expected SCS warning. No row labels promoted. Independent review pending.
+
+## Low-priority money-name cleanup
+
+- Closed reviewer camelCase/plural gaps: split lower-to-upper boundaries before casefold; added orders/refunds/bill/topup/cashout/deposit/funds/money tokens. Focused53 pass. The same incomplete-name-vocabulary/trusted-metadata caveat still applies; this is defense-in-depth, not semantic effect detection.

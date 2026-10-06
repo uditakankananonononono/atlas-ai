@@ -84,3 +84,9 @@ def test_segmented_and_unicode_money_names_gate(name):
 def test_token_matching_does_not_mistake_substrings_for_money(name):
  from app.modules.m20_general_cognitive_worker.safety import requires_approval
  assert not requires_approval(name,Risk.READ,{})
+
+
+@pytest.mark.parametrize('name',['payInvoice','sendMoney','buyNow','paymentIntent','orders','refunds','bill','topup','cashout','deposit','funds'])
+def test_camelcase_and_common_money_aliases_gate(name):
+ from app.modules.m20_general_cognitive_worker.safety import requires_approval
+ assert requires_approval(name,Risk.READ,{})

@@ -121,7 +121,8 @@ def requires_approval(action_type: str, risk: Risk, payload: dict[str, Any]) -> 
     data gate even when a caller mislabels their risk tier."""
     if risk in (Risk.EXTERNAL, Risk.IRREVERSIBLE):
         return True
-    normalized_action = unicodedata.normalize("NFKC", action_type).casefold()
+    normalized_action = unicodedata.normalize("NFKC", action_type)
+    normalized_action = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", normalized_action).casefold()
     normalized_action = "".join(c for c in normalized_action if unicodedata.category(c) != "Cf")
     # Small, explicit Cyrillic confusable map is defense-in-depth, not a
     # promise to recognize every script or semantic alias.
@@ -129,7 +130,8 @@ def requires_approval(action_type: str, risk: Risk, payload: dict[str, Any]) -> 
         {"а":"a", "е":"e", "о":"o", "р":"p", "с":"c", "у":"y", "х":"x", "і":"i", "ј":"j", "ѕ":"s"}))
     tokens = set(re.findall(r"[^\W_]+", normalized_action, flags=re.UNICODE))
     money_tokens = {"pay", "payment", "buy", "purchase", "checkout", "order", "wire", "transfer",
-                    "charge", "refund", "payout", "withdraw", "donate", "subscribe", "settle", "tip", "upgrade"}
+                    "charge", "refund", "payout", "withdraw", "donate", "subscribe", "settle", "tip", "upgrade",
+                    "orders", "refunds", "bill", "topup", "cashout", "deposit", "funds", "money"}
     if tokens & money_tokens or normalized_action in FINANCIAL_ACTION_TYPES or normalized_action in PRIVATE_DATA_ACTION_TYPES:
         return True
     if payload.get("externally_visible"):
