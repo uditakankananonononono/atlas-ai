@@ -1569,10 +1569,12 @@ class Legal1260To1309Request(BaseModel):
     tenant_id: str = Field(min_length=1)
     data: dict[str, Any] = Field(default_factory=dict)
 @router.post('/legal-1260-1309/support')
-def legal_1260_1309_support(request: Legal1260To1309Request) -> dict[str, Any]:
-    try: result=_analyze_legal_feature(request.feature_id,request.data,tenant_id=request.tenant_id,actor_id=request.actor_id)
+def legal_1260_1309_support(request: Legal1260To1309Request,principal:TenantContext=Depends(require_tenant)) -> dict[str, Any]:
+    if request.tenant_id!=principal.tenant_id or request.actor_id!=principal.actor_id or request.data.get('tenant_id',principal.tenant_id)!=principal.tenant_id or request.data.get('actor_id',principal.actor_id)!=principal.actor_id:
+        raise HTTPException(403,'legal scope mismatches authenticated principal')
+    try: result=_analyze_legal_feature(request.feature_id,request.data,tenant_id=principal.tenant_id,actor_id=principal.actor_id)
     except ValueError as exc: raise HTTPException(status_code=422,detail=str(exc)) from exc
-    return {'module_id':20,'tenant_id':request.tenant_id,'actor_id':request.actor_id,'result':result,'requires_licensed_counsel':True}
+    return {'module_id':20,'tenant_id':principal.tenant_id,'actor_id':principal.actor_id,'result':result,'requires_licensed_counsel':True}
 
 class ExecutionTruthIn(BaseModel):
  items:list[dict[str,Any]]=Field(default_factory=list,max_length=10000)
