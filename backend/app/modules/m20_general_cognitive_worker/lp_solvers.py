@@ -110,3 +110,68 @@ def column_generation(p):
             'status':'optimal' if converged else 'iteration_limit','history':history,'reduced_costs':reduced.tolist(),
             'entering_column':entering,'equality_residual':float(np.linalg.norm(A@solution-b)),
             'uncertainty':{'solver_executed':True,'scope':'finite explicit column catalog, feasible initial restricted master, nonnegative equality-form LP'}}
+
+
+def benders(p):
+    """Continuous two-stage LP with complete simple recourse.
+
+    min c*x+q*y; box-bounded x, y>=h-T*x and y>=0, q>=0.
+    The master chooses x and recourse lower bound. Exact LP duals produce
+    optimality cuts. Complete recourse means no feasibility-cut claim.
+    """
+    try:
+        c=np.asarray(p['first_stage_cost'],dtype=float);q=np.asarray(p['recourse_cost'],dtype=float)
+        T=np.asarray(p['recourse_matrix'],dtype=float);h=np.asarray(p['recourse_rhs'],dtype=float)
+        box=np.asarray(p['box_bounds'],dtype=float);tol=float(p.get('tolerance',1e-7));limit=p.get('max_iterations',1000)
+    except (KeyError,ValueError,TypeError) as exc:raise ValueError('two-stage cost, recourse and box arrays required') from exc
+    if (c.ndim!=1 or q.ndim!=1 or not c.size or not q.size or h.shape!=q.shape or T.shape!=(q.size,c.size)
+        or box.shape!=(c.size,2) or np.any(box[:,0]>=box[:,1]) or np.any(q<0)
+        or not all(np.isfinite(v).all() for v in (c,q,T,h,box)) or not np.isfinite(tol) or tol<=0
+        or type(limit) is not int or not 1<=limit<=100000):raise ValueError('invalid finite two-stage dimensions, costs, box or iteration controls')
+    cuts=[];rhs=[];history=[];upper=float('inf');solution=None;recourse=None;converged=False
+    for iteration in range(1,limit+1):
+        master=linprog([*c,1.],A_ub=cuts or None,b_ub=rhs or None,bounds=[tuple(v) for v in box]+[(0,None)],method='highs')
+        if not master.success:raise ValueError('Benders master failed: '+master.message)
+        x=master.x[:-1];lower=float(master.fun)
+        residual=h-T@x
+        sub=linprog(q,A_ub=-np.eye(q.size),b_ub=-residual,bounds=(0,None),method='highs')
+        if not sub.success:raise ValueError('Benders recourse failed: '+sub.message)
+        value=float(c@x+sub.fun)
+        if value<upper:upper=value;solution=x.copy();recourse=sub.x.copy()
+        gap=max(0.,upper-lower)
+        pi=-sub.ineqlin.marginals;gradient=-T.T@pi
+        history.append({'iteration':iteration,'lower_bound':lower,'upper_bound':upper,'gap':gap,'dual_recourse':pi.tolist(),'cut_gradient':gradient.tolist()})
+        if gap<=tol:converged=True;break
+        cuts.append([*gradient,-1.]);rhs.append(float(gradient@x-sub.fun))
+    return {'solution':solution.tolist(),'recourse_solution':recourse.tolist(),'objective':upper,'lower_bound':lower,
+            'duality_gap':gap,'iterations':iteration,'converged':converged,'status':'optimal' if converged else 'iteration_limit',
+            'history':history,'cut_type':'optimality','uncertainty':{'solver_executed':True,'scope':'continuous box-bounded first stage, complete nonnegative simple linear recourse only'}}
+
+
+def lagrangian_binary_knapsack(p):
+    """Exact scalar Lagrangian dual of binary single-capacity minimization.
+
+    Each lambda makes binary coordinates independent. The dual is concave
+    piecewise linear; every slope breakpoint is evaluated, not a pretend
+    multiplier update. The dual can have an integrality gap; it is never
+    advertised as solving the primal integer problem when that gap remains.
+    """
+    try:
+        c=np.asarray(p['objective'],dtype=float);w=np.asarray(p['weights'],dtype=float);capacity=float(p['capacity'])
+    except (KeyError,TypeError,ValueError) as exc:raise ValueError('objective, positive weights and capacity required') from exc
+    if (c.ndim!=1 or not c.size or w.shape!=c.shape or not np.isfinite(c).all() or not np.isfinite(w).all()
+        or np.any(w<=0) or not np.isfinite(capacity) or capacity<0):raise ValueError('finite matching costs, positive weights and nonnegative capacity required')
+    candidates=sorted({0.,*(float(-cost/weight) for cost,weight in zip(c,w) if cost<0)})
+    history=[];lower=-float('inf');best_lambda=0.;upper=0.;best=np.zeros(c.size)
+    for multiplier in candidates:
+        adjusted=c+multiplier*w
+        x=(adjusted<0).astype(float)
+        value=float(np.minimum(adjusted,0).sum()-multiplier*capacity)
+        if value>lower:lower=value;best_lambda=multiplier
+        for trial in (x,(adjusted<=0).astype(float)):
+            if w@trial<=capacity+1e-9 and c@trial<upper:best=trial.copy();upper=float(c@trial)
+        history.append({'multiplier':multiplier,'dual_bound':value,'relaxed_solution':x.tolist(),'capacity_residual':float(w@x-capacity)})
+    gap=max(0.,upper-lower)
+    return {'solution':best.tolist(),'objective':upper,'lower_bound':lower,'duality_gap':gap,'multiplier':best_lambda,
+            'dual_optimal':True,'primal_optimal':gap<=1e-8,'status':'optimal' if gap<=1e-8 else 'dual_optimal_primal_gap',
+            'history':history,'lagrangian_value':lower,'uncertainty':{'solver_executed':True,'scope':'exact scalar dual for binary single positive-capacity constraint; primal candidate only when gap remains'}}

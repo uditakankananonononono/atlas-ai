@@ -10,7 +10,8 @@ from math import exp, log, sqrt
 import re
 from typing import Any, Callable
 from .admm import solve_quadratic_l1
-from .lp_solvers import cutting_planes, branch_and_bound, column_generation
+from .conic_solvers import semidefinite, second_order
+from .lp_solvers import cutting_planes, branch_and_bound, column_generation, benders, lagrangian_binary_knapsack
 from .convex_solvers import dual_decomposition, coordinate_descent, proximal_gradient, frank_wolfe
 
 class WorkbenchError(ValueError):
@@ -59,7 +60,7 @@ def _problem(p):
     return c,x,A,b,sense,{'objective_value':_dot(c,x),'max_violation':max(violations,default=0.0),'violation_count':sum(v>1e-9 for v in violations),'feasible':not any(v>1e-9 for v in violations),'constraint_residuals':residual}
 
 def _opt(row,p):
-    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe,240:cutting_planes,241:branch_and_bound,242:column_generation}
+    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe,240:cutting_planes,241:branch_and_bound,242:column_generation,243:benders,244:lagrangian_binary_knapsack,245:semidefinite,246:second_order}
     if row in solvers:
         try:return solvers[row](p)
         except (ValueError,KeyError,TypeError) as exc:raise WorkbenchError(str(exc)) from exc
@@ -71,10 +72,6 @@ def _opt(row,p):
     r=[_dot(a,x)-z for a,z in zip(A,b)]; grad=[c[j]+sum(max(0,q)*a[j] for q,a in zip(r,A)) for j in range(len(x))]
     common={'diagnostics':d,'metrics':{'gradient_norm':sqrt(_dot(grad,grad)),'confidence':_confidence(r or c)},'uncertainty':{'kind':'deterministic_input_diagnostic','solver_executed':False}}
     H={
-243:lambda:{'subproblem_feasible':d['feasible'],'cut_type':'optimality' if d['feasible'] else 'feasibility','cut_rhs':_dot(c,x) if d['feasible'] else d['max_violation']},
-244:lambda:{'lagrangian_value':_dot(c,x)+sum(max(0,q)*q for q in r),'subgradient':r,'multiplier_update':[max(0,step*q) for q in r]},
-245:lambda:{'symmetric':all(abs(A[i][j]-A[j][i])<1e-9 for i in range(len(A)) for j in range(len(A))) if A and len(A)==len(A[0]) else False,'gershgorin_lower_bound':min((A[i][i]-sum(abs(v) for j,v in enumerate(A[i]) if j!=i) for i in range(len(A))),default=0.0)},
-246:lambda:{'cone_lhs_norm':sqrt(_dot(x,x)),'cone_rhs':float(p.get('cone_rhs',0)),'cone_slack':float(p.get('cone_rhs',0))-sqrt(_dot(x,x))},
 247:lambda:{'positive_domain':all(v>0 for v in x),'log_variables':[log(v) for v in x] if all(v>0 for v in x) else [],'monomial_value':exp(sum(a*log(v) for a,v in zip(c,x))) if all(v>0 for v in x) else None},
 248:lambda:{'ratio':_dot(c,x)/float(p.get('denominator',0)) if float(p.get('denominator',0))>0 else None,'dinkelbach_residual':_dot(c,x)-float(p.get('parameter',0))*float(p.get('denominator',0))},
 249:lambda:{'leader_value':_dot(c,x),'follower_best_index':min(range(len(x)),key=lambda i:x[i]),'stationarity_residual':sqrt(_dot(grad,grad))},
