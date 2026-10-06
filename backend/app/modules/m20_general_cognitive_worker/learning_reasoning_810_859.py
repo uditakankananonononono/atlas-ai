@@ -10,6 +10,7 @@ from .support_progression import progress_support
 from .keyed_assessment import assess
 from .progress_measurement import measure_progress
 from .graph_transduction import transduce
+from .boolean_induction import induce
 from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
@@ -111,7 +112,9 @@ def reasoning(row,p):
  if row==850:
   try:out['abduction']=abductive_search(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
- if row==851:out['induction']={'observations':p.get('observations',[]),'pattern':p.get('pattern'),'sample_scope':p.get('sample_scope'),'exceptions':p.get('exceptions',[]),'generalization_strength':p.get('strength','uncalibrated')}
+ if row==851:
+  try:out['induction']=induce(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==852:
   try:out['deduction']=argument_validity(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc

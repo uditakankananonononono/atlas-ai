@@ -54,7 +54,7 @@ def test_847_fuzzy_operators():assert R('fuzzy_logic',memberships={'a':.2,'b':.7
 @pytest.mark.parametrize('n',['default_reasoning','non_monotonic_reasoning'])
 def test_848_849_defaults_are_revisable(n):assert R(n,facts=['bird'],defaults=[{'if':['bird'],'unless':['abnormal'],'then':'flies'}])['defaults']['cautious_conclusions']==['bird','flies']
 def test_850_abduction_not_proof():assert R('abductive_reasoning',observations=['wet'],rules=[{'if':['rain'],'then':'wet'}],hypotheses=[{'atom':'rain','cost':1}])['abduction']['best_explanations'][0]['hypotheses']==['rain']
-def test_851_induction_records_scope_exceptions_strength():assert set(R('inductive_reasoning')['induction'])>={'sample_scope','exceptions','generalization_strength'}
+def test_851_induction_searches_declared_hypotheses():assert R('inductive_reasoning',features=['a'],induction_observations=[{'evidence_id':'e','features':{'a':True},'label':True}])['induction']['hypotheses_evaluated']==3
 def test_852_deduction_separates_validity_truth():assert R('deductive_reasoning',formulas=['P',{'implies':['P','Q']}],conclusion='Q')['deduction']['validity'] and R('deductive_reasoning',formulas=['P'],conclusion='Q')['deduction']['soundness'] is None
 def test_853_transduction_scope_one_target():assert 'target instance graph only' in R('transductive_reasoning',nodes=['a','b'],similarity_matrix=[[0,1],[1,0]],observed_labels=[{'node_id':'a','label':'yes','evidence_id':'e1'}])['transduction']['scope']
 def test_854_dialectic_keeps_unresolved_conflict():assert R('dialectical_reasoning')['dialectic']['synthesis_must_preserve_unresolved_conflict']
