@@ -59,3 +59,20 @@ def test_source_selection_never_verifies_connection_from_caller_true():
  assert out['caller_all_connected_claim'] and not out['connection_claimed'] and not out['integration_state_verified']
  payload['sources'][0]['owner_confirmed']='false'
  with pytest.raises(ConceptError):execute('2010.1',payload)
+
+
+def test_signed_corpus_owner_and_tenant_isolation(monkeypatch,oidc_auth_headers):
+ from app.main import app
+ monkeypatch.delenv('ATLAS_DEV_NO_AUTH',raising=False)
+ c=TestClient(app);base='/api/v1/api/modules/20/atomic-concepts/139-160/'
+ victim=oidc_auth_headers('corpus-a','victim');attacker=oidc_auth_headers('corpus-a','attacker');other=oidc_auth_headers('corpus-b','victim')
+ payload={'owner_id':'victim','documents':[{'source_id':'private','kind':'essay','text':'private canary essay confidential ownership evidence never shared'}]}
+ assert c.post(base+'2010.4',headers=victim,json={'payload':payload}).status_code==200
+ denied=c.post(base+'2010.5',headers=attacker,json={'payload':{'owner_id':'victim','query':'private canary'}})
+ assert denied.status_code==403 and 'confidential ownership' not in denied.text
+ for headers in (attacker,other):
+  r=c.post(base+'2010.5',headers=headers,json={'payload':{'query':'private canary'}})
+  assert r.status_code==200 and r.json()['result']['citations']==[]
+ r=c.post(base+'2010.5',headers=victim,json={'payload':{'query':'private canary'}})
+ assert r.status_code==200 and len(r.json()['result']['citations'])==1
+ assert c.post(base+'2010.5',json={'payload':{'owner_id':'victim','query':'private'}}).status_code==401
