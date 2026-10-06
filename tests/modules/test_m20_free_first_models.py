@@ -75,10 +75,10 @@ def test_executive_reflect_returns_dict_and_degrades_without_models(monkeypatch)
 
 
 def test_adapter_works_inside_a_running_event_loop(monkeypatch):
-    _reply(monkeypatch, '{"ok": true}')
+    _reply(monkeypatch, '{"cause":"timeout","fix":"retry","retry":true}')
     async def inside():
         return ma.FreeFirstExecutiveModel(model_name="").complete("reflect", {})
-    assert asyncio.run(inside())["ok"] is True
+    assert asyncio.run(inside())["retry"] is True
 
 
 def test_routing_can_be_turned_off(monkeypatch):

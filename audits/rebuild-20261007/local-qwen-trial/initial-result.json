@@ -1,0 +1,37 @@
+{
+  "runner_commit": "8345f333951c661d166b00e6f9362e553768f292",
+  "weights_revision": "9217f5db79a29953eb74d5343926648285ec7e67",
+  "weights_sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+  "requests": [
+    {
+      "name": "planner",
+      "error": "PlanError: planner step must be an object",
+      "seconds": 3.1040460519998305
+    },
+    {
+      "name": "reason",
+      "output": {
+        "reason": "The fixture consists of three blocks with colors: red, green, and blue.",
+        "fix": "",
+        "retry": false,
+        "route": "openai_compat/qwen-trial"
+      },
+      "seconds": 1.6144948629998908
+    },
+    {
+      "name": "reflect",
+      "output": {
+        "reason": "Input fixture was empty",
+        "fix": "Ensure the input fixture has blocks before counting them",
+        "retry": false,
+        "route": "openai_compat/qwen-trial"
+      },
+      "seconds": 1.6572591770000145
+    }
+  ],
+  "scope": "small_pretrained_model_local_behavior_only",
+  "startup_seconds": 1.2656954060000771,
+  "peak_rss_kib": 599208,
+  "total_seconds": 10.512631027999987,
+  "exit_code": 0
+}

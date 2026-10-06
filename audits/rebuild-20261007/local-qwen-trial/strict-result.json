@@ -1,0 +1,35 @@
+{
+  "runner_commit": "8345f333951c661d166b00e6f9362e553768f292",
+  "weights_revision": "9217f5db79a29953eb74d5343926648285ec7e67",
+  "weights_sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+  "requests": [
+    {
+      "name": "planner",
+      "error": "PlanError: planner model returned no parseable JSON (openai_compat/qwen-trial)",
+      "seconds": 5.575976772999866
+    },
+    {
+      "name": "reason",
+      "output": {
+        "available": false,
+        "error": "executive model purpose schema mismatch",
+        "route": "openai_compat/qwen-trial"
+      },
+      "seconds": 2.352241809000134
+    },
+    {
+      "name": "reflect",
+      "output": {
+        "available": false,
+        "error": "executive model purpose schema mismatch",
+        "route": "openai_compat/qwen-trial"
+      },
+      "seconds": 2.2375594889999775
+    }
+  ],
+  "scope": "small_pretrained_model_local_behavior_only",
+  "startup_seconds": 0.8070638860001509,
+  "peak_rss_kib": 600704,
+  "total_seconds": 12.372734062000063,
+  "exit_code": 0
+}
