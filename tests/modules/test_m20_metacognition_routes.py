@@ -210,7 +210,7 @@ def test_row30_31_routes(client):
     c, _ = client
     r = c.post("/api/modules/20/meta/devils-advocate",
                json={"claim": "we will win", "assumptions": ["users want this"], "evidence": []})
-    assert r.json()["assumption_attacks"] and r.json()["residual_confidence"] < 0.9
+    assert r.json()["assumption_attacks"] and r.json()["residual_confidence"] is None
     s = c.post("/api/modules/20/meta/steelman",
                json={"opposing_position": "remote work hurts cohesion",
                       "known_facts": ["remote teams report lower cohesion"]})

@@ -655,7 +655,7 @@ _BIAS_MARKERS: dict[str, dict[str, Any]] = {
 class BiasFinding:
     bias: str
     evidence_span: str
-    severity: float
+    severity: float | None
     mitigation: str
 
 
@@ -672,7 +672,7 @@ class BiasDetector:
                     start = max(0, idx - 30)
                     findings.append(BiasFinding(
                         bias=bias, evidence_span=text[start:idx + len(marker) + 30].strip(),
-                        severity=0.6 if bias in ("overconfidence", "sunk_cost") else 0.4,
+                        severity=None,
                         mitigation=spec["mitigation"],
                     ))
                     break
@@ -682,7 +682,9 @@ class BiasDetector:
         findings = self.scan(text)
         return {
             "findings": [f.__dict__ for f in findings],
-            "corrected_prompt": (
+            "status": "marker_checklist_only", "capability_executed": False,
+            "limitations": "Literal marker matches and supplied mitigation templates, not bias diagnosis or corrected reasoning",
+            "suggested_review_prompt": (
                 "Re-state the analysis addressing each mitigation: "
                 + "; ".join(f.mitigation for f in findings)
             ) if findings else "",
@@ -695,9 +697,11 @@ class BiasDetector:
 @dataclass
 class GutAnswer:
     answer: str
-    confidence: float
+    confidence: float | None
     basis: str
     latency_class: str = "fast"
+    status: str = "cache_lookup_only"
+    capability_executed: bool = False
 
 
 class IntuitionEngine:
@@ -712,22 +716,23 @@ class IntuitionEngine:
             skill = skill_matches[0]
             return GutAnswer(
                 answer=f"use the {skill.name} procedure",
-                confidence=0.75, basis=f"matched skill {skill.name!r}",
+                confidence=None, basis=f"matched skill {skill.name!r}",
             )
         if fact_hits:
             fact, score = fact_hits[0]
-            return GutAnswer(answer=fact.content, confidence=min(0.7, 0.4 + score),
+            return GutAnswer(answer=fact.content, confidence=None,
                              basis="top semantic memory hit")
-        return GutAnswer(answer="", confidence=0.1, basis="no cached pattern")
+        return GutAnswer(answer="", confidence=None, basis="no cached pattern")
 
     def validate(self, gut: GutAnswer, slow_answer_fn: Callable[[], str]) -> dict[str, Any]:
         slow = slow_answer_fn()
         agree = bool(gut.answer) and gut.answer.strip().lower() in slow.strip().lower()
         result = {
-            "agree": agree,
+            "agree": agree, "comparison_method": "casefolded_substring",
+            "validated": False, "status": "text_comparison_only",
             "final_answer": slow if (not agree or not gut.answer) else gut.answer,
-            "note": ("gut contradicted or empty; slow reasoning wins"
-                     if not agree else "gut validated by slow reasoning"),
+            "note": ("supplied slow text selected; correctness unverified"
+                     if not agree else "substring overlap only; correctness unverified"),
             "gut_confidence": gut.confidence,
         }
         self.validations.append(result)
@@ -1051,7 +1056,9 @@ class PerspectiveView:
     focus: str
     supports: list[str]
     concerns: list[str]
-    score: float
+    score: float | None
+    status: str = "persona_checklist_only"
+    capability_executed: bool = False
 
 
 class PerspectiveSimulator:
@@ -1062,7 +1069,7 @@ class PerspectiveSimulator:
         for persona, lens in _PERSONAS.items():
             supports = [lens["support"]] if lens["support_when"](proposal) else []
             concerns = [lens["concern"]] if lens["concern_when"](proposal) else []
-            score = 0.5 + 0.25 * len(supports) - 0.25 * len(concerns)
+            score = None
             views.append(PerspectiveView(
                 persona=persona, focus=lens["focus"],
                 supports=supports, concerns=concerns, score=score,
@@ -1079,7 +1086,9 @@ class StressTestReport:
     assumption_attacks: list[dict[str, str]]
     evidence_gaps: list[str]
     alternative_explanations: list[str]
-    residual_confidence: float
+    residual_confidence: float | None
+    status: str = "assumption_checklist_only"
+    capability_executed: bool = False
 
 
 class DevilsAdvocate:
@@ -1098,15 +1107,11 @@ class DevilsAdvocate:
             gaps.append(f"{len(assumptions) - len(evidence)} assumption(s) lack direct evidence")
         if not any(tokenize(e) for e in evidence):
             gaps.append("evidence entries carry no checkable content")
-        tokens = [t for t in tokenize(claim) if len(t) > 4][:3]
-        alternatives = [
-            f"the observation is explained by an unrelated trend in {t}"
-            for t in tokens
-        ] or ["the observation is coincidence"]
-        residual = max(0.05, 0.9 - 0.15 * len(attacks) - 0.2 * len(gaps) + 0.05 * len(evidence))
+        # No invented alternative explanations or unsupported probability.
+        alternatives = []
         return StressTestReport(
             claim=claim, assumption_attacks=attacks, evidence_gaps=gaps,
-            alternative_explanations=alternatives, residual_confidence=round(residual, 3),
+            alternative_explanations=alternatives, residual_confidence=None,
         )
 
 
@@ -1117,6 +1122,8 @@ class SteelmanReport:
     supporting_points: list[str]
     concessions: list[str]
     response_skeleton: list[str]
+    status: str = "lexical_fact_selection_only"
+    capability_executed: bool = False
 
 
 class SteelmanEngine:
@@ -1129,10 +1136,7 @@ class SteelmanEngine:
             f for f in known_facts
             if len(set(tokenize(f)) & pos_tokens) >= max(1, len(pos_tokens) // 3)
         ]
-        strongest = (
-            f"Taken at its best: {opposing_position} - argued with the "
-            f"{len(supporting)} most aligned known facts, not the weakest version."
-        )
+        strongest = ""  # No generated or validated strongest argument.
         return SteelmanReport(
             opposing_position=opposing_position,
             strongest_form=strongest,

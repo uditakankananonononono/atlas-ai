@@ -167,7 +167,7 @@ def test_row19_bias_detection_and_correction():
     assert "sunk_cost" in biases and "overconfidence" in biases
     result = detector.scan_with_correction("everyone is doing it so we should too")
     assert result["findings"][0]["bias"] == "bandwagon"
-    assert "mitigation" in result["corrected_prompt"] or "evaluate" in result["corrected_prompt"]
+    assert "mitigation" in result["suggested_review_prompt"] or "evaluate" in result["suggested_review_prompt"]
     assert detector.scan("the data shows a modest effect") == []
 
 
@@ -176,11 +176,11 @@ def test_row20_intuition_fast_then_slow_validation():
     engine = IntuitionEngine()
     skill = Skill(name="interview-prep", goal_pattern="prepare for interviews", steps=[])
     gut = engine.gut("how do I prep for the interview?", skill_matches=[skill], fact_hits=[])
-    assert gut.confidence >= 0.7 and "interview-prep" in gut.answer
+    assert gut.confidence is None and "interview-prep" in gut.answer
     result = engine.validate(gut, lambda: "use the interview-prep procedure, then do a mock round")
     assert result["agree"] is True
     gut2 = engine.gut("totally novel question", skill_matches=[], fact_hits=[])
-    assert gut2.confidence <= 0.1
+    assert gut2.confidence is None
     result2 = engine.validate(gut2, lambda: "deliberate answer from slow reasoning")
     assert result2["agree"] is False
     assert result2["final_answer"] == "deliberate answer from slow reasoning"
@@ -294,7 +294,7 @@ def test_row29_cognitive_diversity_perspectives():
                           "upside": 2, "timeline_days": 180, "externally_visible": True})
     for view in risky:
         assert view.concerns, f"{view.persona} should have concerns"
-        assert view.score < 0.5
+        assert view.score is None and view.capability_executed is False
 
 
 def test_row30_devils_advocate_stress_test():
@@ -306,8 +306,8 @@ def test_row30_devils_advocate_stress_test():
     )
     assert len(report.assumption_attacks) == 3
     assert report.evidence_gaps  # 3 assumptions, 1 evidence
-    assert report.alternative_explanations
-    assert report.residual_confidence < 0.7
+    assert report.alternative_explanations == []
+    assert report.residual_confidence is None and report.capability_executed is False
 
 
 def test_row31_steelman_constructs_strongest_opposition():
