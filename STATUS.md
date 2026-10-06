@@ -152,3 +152,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Old depth-sweep tests submitted placeholder objectives/source labels to repaired measured/formal algorithms and expected support envelopes. They now explicitly require rejection for missing real observations/formulas/models on rows812/819/823/844/845/848/849/850/852. Actual named computation and mutation tests remain in their focused files. ADMM envelope test now supplies a real quadratic/L1 problem rather than unrelated generic optimization fields.
 - Clean-database migration test compares the upgraded revision with the actual Alembic graph head, retaining its required table/column checks. No migration changed to satisfy a stale historical head string.
 - Contract tests159 passed. First module batch had1402 passes,12 skipped and10 stale-contract failures before these changes; second independent module batch590 passed. Full module coverage still incomplete.
+
+## Broad-suite reconciliation
+
+- Updated M22 wiring fixture to preserve required GitHub/PyPI/npm collectors while admitting the existing source-collector set, checking unique names. HTTPS checks remain on the three URL-bearing base collectors; separate source-parser tests exercise the added collectors. No collector implementation changed.
+- All nine module-file batches completed passing after named legacy-contract repairs and local installation of declared free dependencies. Results are split-process suite evidence, not a single-process full-suite run. Exact file manifest and each batch log retained under audits/rebuild-20261007/suite-batches.
+- Root/platform817 passed; other integration/runtime/migration/commercial/self-improve suites58 passed. Skipped tests remain skipped, not verified. Passing legacy tests do not upgrade historical feature claims.
