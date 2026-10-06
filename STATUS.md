@@ -538,3 +538,7 @@ Current M20+atomic+ledger+gateway/default-auth2009pass after sibling principal r
 ## Locked-down API documentation boundary
 
 Middleware authentication intentionally covers every path except /health and /ready, including /docs and /openapi.json. Docs/schema are not anonymously public; signed token required. This changed prior unauthenticated access and is pinned by tests (health200, docs/schema401without token,200with token). Gateway7pass. Middleware and route both verify tokens, a current latency cost; no claim of a shared principal cache or production access rollout.
+
+## Root gateway/auth regression
+
+Root-level tests786pass after principal-bound limiter and authenticated-docs changes, no warning in this run. Wider earlier whole-repo9561 result predates these changes; current M20+atomic+gateway/auth2009 result predates the docs test only. Counts remain separate overlapping runs, not summed.
