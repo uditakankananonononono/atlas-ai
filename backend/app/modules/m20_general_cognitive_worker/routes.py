@@ -400,7 +400,7 @@ def row10_propose_improvement(request: ImprovementProposalRequest, service: Any 
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
     return {"proposal_id": proposal.id, "status": proposal.status.value,
-            "evidence": proposal.evidence}
+            "evidence": proposal.evidence,"approval_id":proposal.approval_id}
 
 
 @router.post("/meta/improvement/proposals/{proposal_id}/apply")

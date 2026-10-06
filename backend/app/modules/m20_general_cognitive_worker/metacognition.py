@@ -20,7 +20,7 @@ from typing import Any, Callable, Protocol, runtime_checkable
 from uuid import uuid4
 
 from .reasoning import hyperbolic_discount, minimax_regret, opportunity_cost
-from .schemas import Episode, PlanNode, Risk, TaskContext, TaskState
+from .schemas import Episode, PlanNode, Risk, TaskContext, TaskState, ApprovalGateRequest, ApprovalGateDecision
 from .embeddings import tokenize
 
 
@@ -62,6 +62,7 @@ class ImprovementProposal:
     expected_gain: float
     status: ProposalStatus = ProposalStatus.PROPOSED
     approval_id: str | None = None
+    target_version: int = 1
     created_at: datetime = field(default_factory=_now)
 
 
@@ -99,8 +100,9 @@ class ImprovementLoop:
 
     FORBIDDEN_TARGETS = {"constitutional_rules", "safety_gate", "tool_specs", "approval_gate"}
 
-    def __init__(self, registry: PromptRegistry) -> None:
+    def __init__(self, registry: PromptRegistry, approval_gate=None) -> None:
         self.registry = registry
+        self.approval_gate = approval_gate
         self.proposals: dict[str, ImprovementProposal] = {}
 
     def analyze(
@@ -132,16 +134,29 @@ class ImprovementLoop:
         proposal = ImprovementProposal(
             id=_uid(), target_name=target_name,
             current_content=template.content, proposed_content=proposed_content,
-            evidence=evidence, expected_gain=expected_gain,
+            evidence=evidence, expected_gain=expected_gain,target_version=template.version,
         )
+        if self.approval_gate is not None:
+            proposal.approval_id=self.approval_gate.request(ApprovalGateRequest(
+                action_type="gcw_prompt_improvement",summary="Review exact prompt revision: "+target_name,
+                payload={"proposal_id":proposal.id,"target_name":target_name,"version":template.version,
+                         "current_content":template.content,"proposed_content":proposed_content},risk=Risk.REVERSIBLE))
         self.proposals[proposal.id] = proposal
         return proposal
 
     def apply(self, proposal_id: str, *, approved: bool, approval_id: str | None = None) -> PromptTemplate:
         proposal = self.proposals[proposal_id]
+        if proposal.status == ProposalStatus.APPLIED:
+            raise PermissionError("proposal already applied; approval cannot be replayed")
         if not approved:
-            proposal.status = ProposalStatus.REJECTED
             raise PermissionError("improvement proposal requires human approval before applying")
+        if self.approval_gate is None or not proposal.approval_id or approval_id != proposal.approval_id:
+            raise PermissionError("exact proposal-bound approval required")
+        if self.approval_gate.decision(approval_id) != ApprovalGateDecision.APPROVED:
+            raise PermissionError("proposal approval is pending, rejected or expired")
+        current=self.registry.get(proposal.target_name)
+        if current is None or current.version != proposal.target_version or current.content != proposal.current_content:
+            raise PermissionError("reviewed target changed; create a fresh proposal")
         proposal.status = ProposalStatus.APPLIED
         proposal.approval_id = approval_id
         template = self.registry.register(PromptTemplate(

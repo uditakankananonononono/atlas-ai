@@ -143,7 +143,7 @@ class CognitiveWorkerService:
         self.creativity = CreativityMode()
         # Executive Function & Meta-Cognition engines (features-doc rows 10-34)
         self.prompt_registry = PromptRegistry()
-        self.improvement = ImprovementLoop(self.prompt_registry)
+        self.improvement = ImprovementLoop(self.prompt_registry,self.safety.approvals)
         self.meta_learner = MetaLearner()
         self.load_balancer = LoadBalancer()
         self.calibration = CalibrationEngine()

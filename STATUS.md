@@ -272,3 +272,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Parent relayed reviewer confirmation through88c24dd for temporal constraints (400-network HiGHS oracle, zero mismatches), Horn closure (300-program oracle, zero mismatches), strict model output and both claim-retraction batches. These scoped confirmations do not establish original-spec completion.
 - Private-routing boundary confirmed with configuration caveat: declared LOCAL/SELF_HOSTED route kind does not verify actual destination. README now names configurable OpenAI-compatible/Ollama endpoints and owner-controlled infrastructure requirement; URL ownership/locality remains unchecked.
 - Fuzzy, finite model, spatial, boolean induction, graph transduction, interleaving, keyed assessment and progress had test-pass confirmation only, not independent oracle/mutation attack. They retain SCOPED/pending review annotations.
+
+## Exact reviewed prompt-improvement boundary
+
+- Old ImprovementLoop.apply treated caller approved=true/arbitrary approval_id as approval while claiming a Module0 token. Proposal now creates an exact revision request through configured approval gate; apply requires that proposal's id and approved gate decision. No bound gate means fail closed.
+- Replay and changed-target version/content reject before mutation. Request includes exact current/proposed prompt content. Only prompt registry changes, not deployed code/safety rules/tool specs. Caller expected_gain remains unvalidated prediction; this is not actual autonomous self-improvement efficacy.
+- Named pending/foreign/made-up-token, replay and stale-version tests; existing route tests use real test-gate approval. Focused50 passed; M20 result retained in improvement-gate-m20.log. Production exact owner approval gate still must be bound per tenant by integrator.

@@ -26,7 +26,10 @@ from app.modules.m20_general_cognitive_worker.working_memory import WorkingMemor
 def test_row10_recursive_improvement_requires_approval_and_versions():
     registry = PromptRegistry()
     registry.register(PromptTemplate(name="orient_prompt", content="analyze the state"))
-    loop = ImprovementLoop(registry)
+    from app.modules.m20_general_cognitive_worker.safety import InMemoryApprovalGate
+    from app.modules.m20_general_cognitive_worker.schemas import ApprovalGateDecision
+    gate=InMemoryApprovalGate()
+    loop = ImprovementLoop(registry,gate)
     metrics = loop.analyze(
         tool_records=[type("R", (), {"succeeded": False})(), type("R", (), {"succeeded": True})()],
         episodes=[Episode(task_id="t", goal="g", outcome=EpisodeOutcome.SUCCEEDED)],
@@ -37,7 +40,8 @@ def test_row10_recursive_improvement_requires_approval_and_versions():
                             evidence=metrics, expected_gain=0.1)
     with pytest.raises(PermissionError):
         loop.apply(proposal.id, approved=False)
-    applied = loop.apply(proposal.id, approved=True, approval_id="appr-1")
+    gate.decide(proposal.approval_id,ApprovalGateDecision.APPROVED)
+    applied = loop.apply(proposal.id, approved=True, approval_id=proposal.approval_id)
     assert applied.version == 2 and "knowledge gaps" in applied.content
     assert registry.get("orient_prompt").version == 2
     with pytest.raises(ValueError):
