@@ -13,6 +13,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Depends
 from app.auth.context import TenantContext, require_tenant
+from app.auth.environment import insecure_development_auth_enabled
 from pydantic import BaseModel, Field
 
 from .foresight import SystemsModel
@@ -43,7 +44,7 @@ def bind_service(service, *, tenant_id: str = "local") -> None:
 
 def get_service(tenant: TenantContext = Depends(require_tenant)):
     service = _services.get(tenant.tenant_id)
-    if tenant.tenant_id == "local" and os.getenv("ATLAS_DEV_NO_AUTH") == "1" and os.getenv("ATLAS_ENV", "").lower() != "production":
+    if tenant.tenant_id == "local" and insecure_development_auth_enabled():
         service = _service
     if service is None:
         raise HTTPException(status_code=503, detail="GCW service not bound for authenticated tenant")

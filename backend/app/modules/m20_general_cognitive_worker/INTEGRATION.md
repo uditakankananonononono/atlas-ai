@@ -16,7 +16,10 @@ persistence, and the FastAPI surface.
    Bind with `bind_service(service, tenant_id="actual-tenant-id")`. Reusing the
    same mutable service for two tenants is rejected. Unknown tenants fail503;
    no automatic local fallback in authenticated mode. Bind tenant-scoped
-   persistence, tools, approval gates and clients too. The default `local`
+   persistence, tools, approval gates and clients too. Binding rejects a shared
+   top-level service instance, but cannot detect separate service instances sharing
+   a mutable backend store/DB namespace. Integrators must enforce tenant-keyed
+   reads/writes and isolation within every backing store and tool client. The default `local`
    binding is only for explicitly opted-in insecure local development.
    Bind production clients into `CognitiveWorkerService(...)`:
    - `executive_model` / `planner_model`: the shared model router (Module 12).
