@@ -242,3 +242,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Model adapters now parse a complete JSON payload (or single fenced payload), rejecting trailing bytes, duplicate keys, nonfinite constants and oversized responses. Planner rejects unknown tool names and invalid/empty/oversized step lists rather than letting unknown tools become plausible task plans. Tool-risk floors still enforced.
 - Executive malformed/nonobject JSON becomes explicit unavailable, not prose relabelled as successful reasoning. Local-model tests remain transport fixtures, not live weights/execution evidence.
 - Focused19 passed; M20 result logged in strict-model-m20.log. Remaining production-model availability and quality remain open.
+
+## Validated Horn rule inference (row838)
+
+- Old rule loop had real closure but silently stringified malformed/missing conclusions and ignored negation. Now validates positive symbolic rule/atom structure, rejects unless rather than silently treating defaults as unconditional, returns rule/premise proof links and query entailment.
+- Unsupported cycles derive nothing; not entailed does not mean false in the real world. Supplied facts/rules remain unverified premises. Restricted <=1000 facts/rules, no natural-language rule extraction or negation semantics.
+- Named multi-step conjunctive proof, unsupported cycle, fact-change and bad-rule rejection tests. Focused225; M20/ledger1662 passed. Row838SCOPED pending review;1957historical,48SCOPED,1PARTIAL,4removed labels.
