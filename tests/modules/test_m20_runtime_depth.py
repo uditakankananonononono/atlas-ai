@@ -209,6 +209,13 @@ def test_m20_10_invalid_decomposition_rejected():
 def mounted():
     gate = InMemoryApprovalGate()
     runtime, repo = make_runtime(gate=gate)
+    # Fixture output proves model invocation/wiring, not real model quality.
+    class FixtureExecutiveModel:
+        def complete(self, purpose, payload):
+            if purpose == "reason":
+                return {"available": True, "result": "fixture reasoning output for " + payload["step"]}
+            return {"retry": False}
+    runtime.loop.model = FixtureExecutiveModel()
 
     async def search(args):
         return {"results": ["competitor A raised prices"]}

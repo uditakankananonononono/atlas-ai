@@ -116,7 +116,7 @@ class FreeFirstExecutiveModel:
 
     def complete(self, purpose: str, payload: dict[str, Any]) -> dict[str, Any]:
         prompt = (
-            f"Task: {purpose}. Reply with ONLY a JSON object. For 'reflect' use "
+            f"Task: {purpose}. Reply with ONLY a JSON object. For 'reason' use a nonempty result string. For 'reflect' use "
             '{"cause": "...", "fix": "...", "retry": true|false}.\n'
             f"Input: {json.dumps(payload, default=str)[:6000]}"
         )
