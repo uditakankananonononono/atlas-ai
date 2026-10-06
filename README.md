@@ -42,6 +42,10 @@ npm run build
 
 Development infrastructure is available through `docker compose up --build`. The production topology is in `docker-compose.prod.yml`; it still needs provisioned infrastructure, migrations, TLS, live monitoring and backups before a 24/7 launch claim is valid.
 
+## Private GCW model routing boundary
+
+GCW planner and executive requests skip routes labeled hosted. LOCAL/SELF_HOSTED are declared route kinds, not verified network destinations: ATLAS_LOCAL_OPENAI_URL and the Ollama host can be configured to remote endpoints. Operators must keep every private-eligible endpoint under their own control; pointing one at a hosted third party sends private context there. No URL ownership or locality validation is currently enforced, and fixture tests do not prove that a live local model is running.
+
 ## Models (free-first)
 
 Atlas routes text generation free-first: Ollama or any OpenAI-compatible server on your own PC (llama.cpp, vLLM, LM Studio), then the Hugging Face free tier. Paid providers (OpenAI, Anthropic, Gemini, DeepSeek, Sakana Fugu) are optional config and stay off unless `ATLAS_ALLOW_PAID=true`. If no free route works, Atlas stops and says why. Named models: Inkling and Inkling-Small are open weights and wired. Fugu is a paid hosted API, not open weights. "Ultron" isn't one model, so it isn't wired. Details, sources and setup are in [`docs/OPEN_MODELS.md`](docs/OPEN_MODELS.md).
