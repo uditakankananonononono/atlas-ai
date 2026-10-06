@@ -236,3 +236,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - GCW planner/executive now explicitly request private routing. General named-model chain skips all hosted-free/hosted-paid routes for private tasks, regardless of token/paid flag, and stops if configured local/self-hosted routes fail. Other public callers retain their existing routing semantics.
 - Tests intercept provider calls: configured HF token plus paid flag does not receive private goal/context or reflection data; named Inkling uses only its self-hosted route. Local unavailable becomes honest planner error/executive unavailable, not a stub answer. Focused25 passed; combined M20/catalog/shared-layer result retained in private-model-m20.log.
 - These tests use transport fixtures and do not prove a live local model is installed or running. LOCAL/SELF_HOSTED are configuration labels; integrators must point endpoints at their owner-controlled infrastructure. No hosted model called in this repair, no keys collected or credits spent.
+
+## Strict model output boundary
+
+- Model adapters now parse a complete JSON payload (or single fenced payload), rejecting trailing bytes, duplicate keys, nonfinite constants and oversized responses. Planner rejects unknown tool names and invalid/empty/oversized step lists rather than letting unknown tools become plausible task plans. Tool-risk floors still enforced.
+- Executive malformed/nonobject JSON becomes explicit unavailable, not prose relabelled as successful reasoning. Local-model tests remain transport fixtures, not live weights/execution evidence.
+- Focused19 passed; M20 result logged in strict-model-m20.log. Remaining production-model availability and quality remain open.

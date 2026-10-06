@@ -35,12 +35,18 @@ def _run(coro):
 
 
 def extract_json(text: str) -> Any:
+    if not isinstance(text,str) or len(text)>100000:
+        raise ValueError("model output must be bounded text")
     fenced = re.search(r"```(?:json)?\s*(.*?)```", text, re.S)
-    body = fenced.group(1) if fenced else text
-    starts = [i for i in (body.find("["), body.find("{")) if i >= 0]
-    if not starts:
-        raise ValueError("no JSON in model output")
-    return json.JSONDecoder().raw_decode(body[min(starts):])[0]
+    body = (fenced.group(1) if fenced else text).strip()
+    def unique(pairs):
+        result={}
+        for key,value in pairs:
+            if key in result:raise ValueError("duplicate JSON key")
+            result[key]=value
+        return result
+    def invalid(value):raise ValueError("nonfinite JSON constant: "+value)
+    return json.loads(body,object_pairs_hook=unique,parse_constant=invalid)
 
 
 def _model_name() -> str | None:
@@ -87,14 +93,16 @@ class FreeFirstPlannerModel:
         except ValueError as exc:
             raise PlanError(f"planner model returned no parseable JSON ({provider}/{model})") from exc
         steps = data.get("steps") if isinstance(data, dict) else data
-        if not isinstance(steps, list):
-            raise PlanError("planner model JSON was not a list of steps")
+        if not isinstance(steps, list) or not 1<=len(steps)<=8:
+            raise PlanError("planner model must return1..8 concrete steps")
         risks = self.tool_risks
         for step in steps:
             if not isinstance(step, dict):
-                continue
+                raise PlanError("planner step must be an object")
             if step.get("tool") in (None, "null", ""):
                 step.pop("tool", None)
+            if step.get("tool") is not None and step["tool"] not in risks:
+                raise PlanError("planner selected unregistered tool")
             floor = risks.get(step.get("tool") or "")
             raw = step.get("risk", Risk.READ.value)
             if floor is not None and raw in {r.value for r in Risk} and _ORDER.index(Risk(raw)) < _ORDER.index(floor):
@@ -119,9 +127,9 @@ class FreeFirstExecutiveModel:
         try:
             data = extract_json(text)
         except ValueError:
-            data = {"text": text.strip()[:4000]}
+            return {"available":False,"error":"executive model returned invalid JSON","route":f"{provider}/{model}"}
         if not isinstance(data, dict):
-            data = {"value": data}
+            return {"available":False,"error":"executive model must return JSON object","route":f"{provider}/{model}"}
         data.setdefault("route", f"{provider}/{model}")
         return data
 

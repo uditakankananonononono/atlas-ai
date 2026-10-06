@@ -46,7 +46,7 @@ def test_planner_decomposes_through_real_htn_validation(monkeypatch):
 def test_planner_uses_live_registry_risks(monkeypatch):
     class Reg:
         def describe(self):
-            return [{"name": "send_email", "risk": "irreversible"}]
+            return [{"name": "send_email", "risk": "irreversible"},{"name":"web_search","risk":"read"}]
     _reply(monkeypatch, PLAN)
     model = ma.FreeFirstPlannerModel(model_name="")
     model.bind_registry(Reg())
