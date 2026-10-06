@@ -1,0 +1,44 @@
+import pytest
+from app.modules.m20_general_cognitive_worker.tools import ToolRegistry,ToolDispatcher,ToolBlockedError
+from app.modules.m20_general_cognitive_worker.safety import SafetyGate,InMemoryApprovalGate
+from app.modules.m20_general_cognitive_worker.schemas import ToolSpec,Risk,ApprovalGateDecision
+
+
+@pytest.mark.asyncio
+async def test_external_partial_failure_is_not_retried_under_one_approval():
+ calls=[]
+ async def effect(args):
+  calls.append(args.copy());raise RuntimeError('effect happened, acknowledgement lost')
+ r=ToolRegistry();r.register(ToolSpec(name='send_email',description='send',risk=Risk.EXTERNAL,max_retries=5),effect)
+ g=InMemoryApprovalGate();s=SafetyGate(approvals=g);args={'to':'a@example.org'}
+ _,token,_=s.preflight('send_email',Risk.EXTERNAL,args,task_id='a');g.decide(token,ApprovalGateDecision.APPROVED)
+ out=await ToolDispatcher(r,s).dispatch('send_email',args,task_id='a',granted_approval_id=token)
+ assert len(calls)==1
+ assert not out.succeeded
+ assert 'outcome unknown' in out.result_summary
+
+
+@pytest.mark.asyncio
+async def test_denial_without_token_or_violation_still_blocks_handler():
+ class DenyingGate:
+  def preflight(self,*args,**kwargs):return False,None,[]
+ calls=[]
+ async def handler(args):calls.append(args);return {}
+ r=ToolRegistry();r.register(ToolSpec(name='read',description='read',risk=Risk.READ),handler)
+ with pytest.raises(ToolBlockedError):await ToolDispatcher(r,DenyingGate()).dispatch('read',{})
+ assert not calls
+
+
+@pytest.mark.asyncio
+async def test_handler_sees_snapshot_not_mutated_caller_payload():
+ import asyncio
+ entered=asyncio.Event();resume=asyncio.Event();seen=[]
+ async def handler(args):
+  entered.set();await resume.wait();seen.append(args['nested']['to']);return {}
+ r=ToolRegistry();r.register(ToolSpec(name='send_email',description='send',risk=Risk.EXTERNAL),handler)
+ g=InMemoryApprovalGate(auto_decision=ApprovalGateDecision.APPROVED)
+ d=ToolDispatcher(r,SafetyGate(approvals=g));args={'nested':{'to':'reviewed'}}
+ task=asyncio.create_task(d.dispatch('send_email',args));await entered.wait()
+ args['nested']['to']='changed';resume.set();await task
+ assert seen==['reviewed']
+ assert d.records[0].arguments['nested']['to']=='reviewed'

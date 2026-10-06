@@ -10,10 +10,11 @@ and bounded retries, and records every call as an ActionRecord.
 from __future__ import annotations
 
 import asyncio
+import copy
 from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable
 
-from .safety import SafetyGate
+from .safety import SafetyGate, requires_approval
 from .schemas import ActionRecord, ApprovalGateDecision, Risk, ToolSpec
 
 ToolHandler = Callable[[dict[str, Any]], Awaitable[dict[str, Any]]]
@@ -117,6 +118,8 @@ class ToolDispatcher:
         granted_approval_id: str | None = None,
     ) -> ActionRecord:
         tool = self.registry.get(name)
+        # Detach nested caller data before review and execution can yield.
+        arguments = copy.deepcopy(arguments)
         context = context or {}
         missing = tool.check_preconditions(context)
         if missing:
@@ -128,15 +131,20 @@ class ToolDispatcher:
         )
         if violations:
             raise ToolBlockedError(name, [f"{v.rule_id}: {v.reason}" for v in violations])
-        if not may_proceed and approval_id is not None:
-            raise ApprovalPending(name, approval_id)
-        record = ActionRecord(tool=name, arguments=arguments, started_at=datetime.now(timezone.utc))
-        attempts = max(1, tool.spec.max_retries)
+        if not may_proceed:
+            if approval_id is not None:
+                raise ApprovalPending(name, approval_id)
+            raise ToolBlockedError(name, ["safety gate denied execution"])
+        record = ActionRecord(tool=name, arguments=copy.deepcopy(arguments), started_at=datetime.now(timezone.utc))
+        effectful = requires_approval(name, tool.spec.risk, arguments)
+        # A timeout/error may follow a completed effect. Retrying under one
+        # reviewed token can duplicate that effect; require reconciliation.
+        attempts = 1 if effectful else max(1, tool.spec.max_retries)
         last_error: Exception | None = None
         for _ in range(attempts):
             try:
                 result = await asyncio.wait_for(
-                    tool.handler(arguments), timeout=tool.spec.timeout_seconds,
+                    tool.handler(copy.deepcopy(arguments)), timeout=tool.spec.timeout_seconds,
                 )
                 record.succeeded = True
                 record.result_summary = str(result)[:500]
@@ -148,7 +156,8 @@ class ToolDispatcher:
             except Exception as exc:  # handler failure: retry within bound
                 last_error = exc
         record.succeeded = False
-        record.result_summary = f"failed after {attempts} attempt(s): {last_error}"
+        record.result_summary = (f"effect outcome unknown; not retried: {last_error}" if effectful else
+                                 f"failed after {attempts} attempt(s): {last_error}")
         record.finished_at = datetime.now(timezone.utc)
         self.records.append(record)
         return record
