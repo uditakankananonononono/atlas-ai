@@ -6,6 +6,7 @@ import re
 from typing import Any
 from .learning_calibration import calibrate_attempts
 from .spaced_review import schedule_reviews
+from .support_progression import progress_support
 from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
@@ -43,7 +44,9 @@ def learning(row,p):
   try:out['practice_plan']=deliberate_practice(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==820:out['chunks']=[{'label':c.get('label'),'elements':c.get('elements',[]),'organizing_principle':c.get('principle')} for c in req(p,'chunks',list)]
- if row in (821,822):out['support_levels']=[{'phase':'model','support':1.0},{'phase':'guided','support':.66},{'phase':'prompted','support':.33},{'phase':'independent','support':0.0}];out['fade_on_evidence_not_time']=True
+ if row in (821,822):
+  try:out.update(progress_support(p))
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==823:
   try:out['calibration']=calibrate_attempts(req(p,'attempts',list))
   except ValueError as exc:raise LearningReasoningError(str(exc)) from exc

@@ -168,4 +168,11 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 
 - Replaced arbitrary ease-multiplied first intervals and fixed default calendar anchor with source-grounded SM-2 state transitions: first interval1 day, second6 days, later ceil(previous interval*prior ease), grade-based ease update/floor, failure count reset, same-session repeat flag. Exact reference inspected: https://super-memory.com/english/ol/sm2.htm . Grades/times are evidence-linked caller inputs, not fabricated observations.
 - Requires timezone-aware review timestamp and actual prior repetition state. No missing dates defaulted to January2026. Computed due timestamps are plans, not scheduled notifications, and heuristically derived SM-2 does not prove user retention or optimal timing.
-- Exact interval/state/failure/quality tests reject bad grades, nonfinite ease, naive timestamps and missing evidence. Focused229 passed; M20/ledger1578 passed. Row810SCOPED pending independent review. Current row counts1971 historical verified-pushed,34 SCOPED,1 PARTIAL,4 removed.
+- Exact interval/state/failure/quality tests reject bad grades, nonfinite ease, naive timestamps and missing evidence. Focused229 passed; M20/ledger1583 passed. Row810SCOPED pending independent review. Current row counts1971 historical verified-pushed,34 SCOPED,1 PARTIAL,4 removed.
+
+## Evidence-driven support progression (rows821/822)
+
+- Replaced literal support-level flags with actual consecutive-success state transitions over an explicit supplied exercise catalog. Every attempt names a real task at the active level and unique scored evidence. Required success streak advances one level; failure restores one level and resets streak. Missing level tasks return empty, not generated filler. No latent mastery or empirically optimized threshold claim.
+- Added independent tests of advancement, failure rollback, duplicate/wrong-level evidence rejection and saturation at independent. Rows821/822 SCOPED pending review. Focused240 passed; updated M20/ledger result retained in support-m20.log.
+- Reviewer SM-2 mutation gap fixed: four distinct interval/ease cases now pin actual ceiling formula. Real constant17 mutation run fails4 tests with10 passing; source restored. Prior-ease convention remains explicit.
+- Frontend manifest boundary documented: CI and Docker use frontend/16.3.6. Root package/lock remains a legacy duplicate Next15/React19 and was not validated by frontend16 tests; no silent manifest merge.

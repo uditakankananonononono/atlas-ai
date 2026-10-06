@@ -20,7 +20,7 @@ def test_819_deliberate_targets_subskill_feedback_rest():
  o=L('deliberate_practice',scored_attempts=[{'evidence_id':'e','skill':'addition','succeeded':False,'feedback':'incorrect sum'}],exercise_catalog=[{'id':'1','skill':'addition','task':'2+2'}])['practice_plan'];assert o['target_subskills']==['addition'] and o['selected_exercises'][0]['id']=='1'
 def test_820_chunking_preserves_principle():assert L('chunking',chunks=[{'label':'x','elements':[1,2],'principle':'cause'}])['chunks'][0]['organizing_principle']=='cause'
 @pytest.mark.parametrize('n',['scaffolding','fading'])
-def test_821_822_support_fades_on_evidence(n):assert L(n)['support_levels'][-1]['support']==0 and L(n)['fade_on_evidence_not_time']
+def test_821_822_support_fades_on_evidence(n):assert L(n,support_catalog=[{'id':'1','task':'example','support_level':'model'}],support_attempts=[])['active_support']=='model'
 def test_823_metacognition_calibrates():
  o=L('metacognition',attempts=[{'id':'1','strategy':'retrieval','evidence_id':'scored-1','predicted_success':.8,'succeeded':False}])
  assert o['calibration']['brier_loss']==pytest.approx(.64)
@@ -78,8 +78,8 @@ def test_evaluation_and_tenant_are_explicit():
 def test_learning_reasoning_rejects_cross_tenant_reference():
  with pytest.raises(LearningReasoningError,match='cross-tenant'):
   execute('retrieval_practice',{'tenant_id':'a','resource_refs':[{'tenant_id':'b'}],'objective':'x','source':SRC})
-def test_821_scaffolding_support_fades_on_evidence(): assert L('scaffolding')['support_levels'][-1]['support']==0 and L('scaffolding')['fade_on_evidence_not_time']
-def test_822_fading_support_fades_on_evidence(): assert L('fading')['support_levels'][-1]['support']==0 and L('fading')['fade_on_evidence_not_time']
+def test_821_scaffolding_support_fades_on_evidence(): assert L('scaffolding',support_catalog=[{'id':'1','task':'example','support_level':'model'}],support_attempts=[])['support_levels'][-1]['support']==0 and L('scaffolding',support_catalog=[{'id':'1','task':'example','support_level':'model'}],support_attempts=[])['fade_on_evidence_not_time']
+def test_822_fading_support_fades_on_evidence(): assert L('fading',support_catalog=[{'id':'1','task':'example','support_level':'model'}],support_attempts=[])['support_levels'][-1]['support']==0 and L('fading',support_catalog=[{'id':'1','task':'example','support_level':'model'}],support_attempts=[])['fade_on_evidence_not_time']
 def test_827_self_assessment_requires_evidence(): assert L('self_assessment',criteria=['reasoning'],ratings={'reasoning':3})['assessment'][0]['missing_evidence']
 def test_828_peer_assessment_requires_evidence(): assert L('peer_assessment',criteria=['reasoning'],ratings={'reasoning':3})['assessment'][0]['missing_evidence']
 def test_829_formative_assessment_purpose(): assert L('formative_assessment',items=[{'objective_id':'o'}])['assessment_design']['purpose']=='feedback during learning'
