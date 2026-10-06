@@ -428,3 +428,7 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 
 - Renamed UCT root_value/root_standard_error to heuristic_root_value/heuristic_root_standard_error at the typed object and HTTP output, so bare keys do not imply predictive value. Technical-spec row185 explicitly labels supplied-input scoring and its caller-information-gain * caller-progress-probability - caller-cost arithmetic, not fitted prediction.
 - Expectation claim ids in node arguments remain caller/model-controlled metadata. They cannot establish confidence provenance; callers could associate an existing claim with a step. This affects descriptive calibration/reflection, not execution approval. Production provenance binding is not completed. Focused73 pass; independent review pending.
+
+## Refreshed whole-repo regression
+
+Current split-process regression run: 9453 passed, 14 skipped, 3 warnings across 495 test files / 19 batches. Batch0 initially exposed stale expectation for critical-thinking uncertainty=high; corrected to unquantified and complete=false to match the deliberate scope retraction, then re-ran that entire batch. Remaining batches passed unchanged. No live model or deployed integration inference.

@@ -105,4 +105,5 @@ def test_critical_thinking_row_861_is_method_specific_and_incomplete_when_eviden
     result = cognitive_execute(861, payload)
     assert result["evidence_gaps"] == ["assumptions", "alternatives", "judgment"]
     assert result["evaluation"]["stage_coverage"] == pytest.approx(0.4)
-    assert result["uncertainty"]["level"] == "high"
+    assert result["uncertainty"]["level"] == "unquantified"
+    assert result["complete"] is False
