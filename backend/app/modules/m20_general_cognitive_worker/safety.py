@@ -17,6 +17,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Callable, Protocol, runtime_checkable
 
+import json
+import threading
 from .schemas import ApprovalGateDecision, ApprovalGateRequest, Risk
 
 
@@ -187,6 +189,9 @@ class SafetyGate:
         self.rules = rules or ConstitutionalRules()
         self.approvals = approvals or InMemoryApprovalGate()
         self.sandbox = sandbox or SandboxPolicy()
+        self._effect_tokens = {}
+        self._consumed_tokens = set()
+        self._token_lock = threading.Lock()
 
     def preflight(
         self,
@@ -208,17 +213,30 @@ class SafetyGate:
         violations = self.rules.check(action_type, payload)
         if violations:
             return False, None, violations
+        try:
+            effect=json.dumps({"action":action_type,"risk":risk.value,"task_id":task_id,"payload":payload},
+                              sort_keys=True,separators=(",",":"),allow_nan=False)
+        except (TypeError,ValueError):
+            return False,None,[RuleViolation("effect_payload","effect payload must be canonical finite JSON")]
         if granted_approval_id is not None:
-            decision = self.approvals.decision(granted_approval_id)
-            if decision == ApprovalGateDecision.APPROVED:
-                return True, granted_approval_id, []
-            return False, granted_approval_id, []
+            with self._token_lock:
+                if self._effect_tokens.get(granted_approval_id) != effect or granted_approval_id in self._consumed_tokens:
+                    return False,granted_approval_id,[]
+                decision = self.approvals.decision(granted_approval_id)
+                if decision == ApprovalGateDecision.APPROVED:
+                    self._consumed_tokens.add(granted_approval_id)
+                    return True, granted_approval_id, []
+                return False, granted_approval_id, []
         if requires_approval(action_type, risk, payload):
             request = ApprovalGateRequest(
                 task_id=task_id, action_type=action_type,
                 summary=summary or action_type, payload=payload, risk=risk,
             )
             approval_id = self.approvals.request(request)
-            decision = self.approvals.decision(approval_id)
-            return decision == ApprovalGateDecision.APPROVED, approval_id, []
+            with self._token_lock:
+                self._effect_tokens[approval_id]=effect
+                decision = self.approvals.decision(approval_id)
+                allowed=decision == ApprovalGateDecision.APPROVED
+                if allowed:self._consumed_tokens.add(approval_id)
+                return allowed, approval_id, []
         return True, None, []
