@@ -156,3 +156,5 @@ Negotiation rows85-109 now PARTIAL supplied-input arithmetic/rubrics/templates o
 Ground-Horn proof correction rows1970/1971 now SCOPED; labels1818historical/52SCOPED/136PARTIAL/4removed. Restricted unit-fact entailment, not complete theorem proving.
 
 Cognition/affect1975-1977/2009 PARTIAL supplied calibration/quadrant rubrics. Latest labels1814historical/52SCOPED/140PARTIAL/4removed.
+
+Finite knapsack1992/1993 SCOPED to at most20 items. Latest labels1812historical/54SCOPED/140PARTIAL/4removed.

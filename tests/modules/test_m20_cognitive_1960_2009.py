@@ -57,8 +57,8 @@ def test_distinctive_value_per_row():
  assert _out("genetic_programming")["best_coefficients"]==[0,1] and _out("genetic_programming")["mse"]==pytest.approx(0)
  d=_out("digital_twins");assert d["rmse"]==pytest.approx((1/3)**.5) and d["bias"]==pytest.approx(1/3)
  assert _out("simulation")["terminal"]==pytest.approx(1.1**10) and _out("modeling")["terminal"]==pytest.approx(1.1**10)
- o=_out("optimization");assert o["chosen_indices"]==[1] and o["objective_value"]==8 and o["used_budget"]==3
- assert _out("operations_research")["objective_value"]==8
+ o=_out("optimization");assert o["chosen_indices"]==[0] and o["objective_value"]==10 and o["used_budget"]==5
+ assert _out("operations_research")["objective_value"]==10
  r=_out("decision_science")["ranked"];assert r[0]["name"]=="a" and r[0]["score"]==pytest.approx(.8)
  for m in ["systems_science","complexity_science","network_science"]:
   o=_out(m);assert o["density"]==pytest.approx(2/3) and o["degree_distribution"]=={"a":1,"b":2,"c":1}
@@ -115,3 +115,24 @@ def test_signal_quadrant_is_not_recognized_emotion_or_confidence(method):
  assert 'quadrant' not in out
  with pytest.raises(ValueError):run(method,{'signals':{'valence':2,'arousal':.8}})
  with pytest.raises(ValueError):run(method,{'signals':{}})
+
+@pytest.mark.parametrize('method',['optimization','operations_research'])
+def test_binary_knapsack_chooses_optimum_not_ratio_greedy(method):
+ out=run(method,{'values':[60,100,120],'costs':[10,20,30],'budget':50})['output']
+ assert out['chosen_indices']==[1,2] and out['objective_value']==220 and out['used_budget']==50
+ zero=run(method,{'values':[5,0],'costs':[0,0],'budget':0})['output']
+ assert zero['objective_value']==5 and zero['used_budget']==0
+ for data in ({'values':[1],'costs':[-1],'budget':2},{'values':[1],'costs':[1],'budget':-1},{'values':[1]*21,'costs':[1]*21,'budget':2}):
+  with pytest.raises(ValueError):run(method,data)
+
+
+def test_knapsack_matches_independent_integer_budget_dynamic_program():
+ import random
+ rng=random.Random(81)
+ for _ in range(15):
+  values=[rng.randrange(0,20) for i in range(7)];costs=[rng.randrange(0,8) for i in range(7)];budget=rng.randrange(0,20)
+  dp=[0]*(budget+1)
+  for v,c in zip(values,costs):
+   old=dp[:];dp=[max(old[b],old[b-c]+v) if b>=c else old[b] for b in range(budget+1)]
+  out=run('optimization',{'values':values,'costs':costs,'budget':budget})['output']
+  assert out['objective_value']==dp[budget] and out['used_budget']<=budget
