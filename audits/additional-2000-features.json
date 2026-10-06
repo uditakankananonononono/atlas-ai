@@ -3745,14 +3745,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Benders Decomposition",
       "description": "Separates complicating variables",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_243_benders_decomposition_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_243_benders_decomposition_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Actual continuous two-stage Benders with box first stage and complete simple nonnegative recourse. Restricted LP masters, exact recourse LP dual optimality cuts, lower/upper gap; no feasibility-cut claim.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_decomposition_solvers.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 244,
@@ -3760,14 +3774,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Lagrangian Relaxation",
       "description": "Relaxes constraints",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_244_lagrangian_relaxation_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_244_lagrangian_relaxation_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Exact scalar Lagrangian dual for single-capacity binary minimization, independent coordinate subproblems and breakpoint maximization. Primal candidate only; integrality gap is retained, not certified away.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_decomposition_solvers.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 245,
@@ -3775,14 +3803,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Semidefinite Programming",
       "description": "Optimizes over matrices",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_245_semidefinite_programming_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_245_semidefinite_programming_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Real CVXPY/SCS semidefinite optimization: linear symmetric-matrix objective, PSD cone, affine trace equalities. Numerical tolerances, eigenvalue/equality and solver residual certificates; not a novel custom solver.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_conic_solvers.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 246,
@@ -3790,14 +3832,28 @@
       "category": "Research & Scientific Discovery",
       "requirement": "Second-Order Cone Programming",
       "description": "Handles quadratic constraints",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "evidence": {
         "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
         "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_246_second_order_cone_programming_computes_from_inputs",
         "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ccb4b9769e9e7d2a22c781f0ba8d91f619733fce",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/optimization_story_235_280.py",
+          "test_path": "tests/modules/test_m20_optimization_story_235_280.py::test_row_246_second_order_cone_programming_computes_from_inputs",
+          "evidence_kind": "exact-requirement-matched-distinctive-behavior-node"
+        }
+      },
+      "current_scope": "Real CVXPY/SCS second-order cone optimization with affine SOC constraints, finite box bounds and linear objective. Numerical feasibility/duality evidence and inaccurate/infeasible status retained.",
+      "current_evidence": {
+        "test_path": "tests/modules/test_m20_conic_solvers.py",
+        "independent_review": "pending"
+      }
     },
     {
       "id": 247,
