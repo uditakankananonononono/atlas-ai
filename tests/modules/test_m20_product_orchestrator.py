@@ -252,3 +252,11 @@ def test_parallel_product_plan_consumers_execute_only_once():
   except OrchestrationConflictError:return False
  with ThreadPoolExecutor(max_workers=8) as pool:assert sum(pool.map(execute,range(32)))==1
  assert len(calls)==1
+
+
+def test_product_approval_expiry_is_enforced_even_if_injected_gate_says_approved():
+ from datetime import datetime,timedelta,timezone
+ service,gate=make_orchestrator();goal=registered_goal(service);service.build_plan(goal.id,plan_steps(goal))
+ token=service.request_approval(goal.id)['approval_id'];gate.decide(token,ApprovalGateDecision.APPROVED)
+ service._approval_expiries[token]=datetime.now(timezone.utc)-timedelta(seconds=1)
+ with pytest.raises(PermissionError,match='expired'):service.execute(goal.id,approval_id=token)

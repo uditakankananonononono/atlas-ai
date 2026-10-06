@@ -112,6 +112,7 @@ class ProductOrchestrator:
         self.approval_ttl_seconds = approval_ttl_seconds
         self.goals: dict[str, OrchestratedGoal] = {}
         self._reviewed_plans = {}
+        self._approval_expiries = {}
         self._spent_approvals = set()
         self._execution_lock = threading.Lock()
 
@@ -214,6 +215,7 @@ class ProductOrchestrator:
         )
         goal.approval_id = self.gate.request(request)
         self._reviewed_plans[goal.approval_id] = self._plan_binding(goal)
+        self._approval_expiries[goal.approval_id] = request.expires_at
         goal.status = "waiting_approval"
         return {"goal_id": goal.id, "approval_id": goal.approval_id}
 
@@ -238,6 +240,9 @@ class ProductOrchestrator:
             raise OrchestrationConflictError("already executed or attempted; approval spent")
         if self._reviewed_plans.get(approval_id) != self._plan_binding(goal):
             raise PermissionError("reviewed plan changed or unknown; fresh review required")
+        expiry = self._approval_expiries.get(approval_id)
+        if expiry is None or utcnow() >= expiry:
+            raise PermissionError("plan approval expired or expiry unknown; fresh review required")
         decision = self.gate.decision(approval_id)
         if decision != ApprovalGateDecision.APPROVED:
             raise PermissionError(f"plan execution is not approved (decision: {decision.value})")
