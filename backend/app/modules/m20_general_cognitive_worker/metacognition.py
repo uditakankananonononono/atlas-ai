@@ -12,6 +12,7 @@ from __future__ import annotations
 import math
 import random
 import re
+import threading
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
@@ -104,6 +105,9 @@ class ImprovementLoop:
         self.registry = registry
         self.approval_gate = approval_gate
         self.proposals: dict[str, ImprovementProposal] = {}
+        self._reviewed_revisions: dict[str, tuple] = {}
+        self._applied_revisions: set[str] = set()
+        self._revision_lock = threading.Lock()
 
     def analyze(
         self,
@@ -142,33 +146,41 @@ class ImprovementLoop:
                 payload={"proposal_id":proposal.id,"target_name":target_name,"version":template.version,
                          "current_content":template.content,"proposed_content":proposed_content},risk=Risk.REVERSIBLE))
         self.proposals[proposal.id] = proposal
+        self._reviewed_revisions[proposal.id] = (proposal.id, target_name, template.content,
+            proposed_content, template.version, template.kind, proposal.approval_id)
         return proposal
 
     def apply(self, proposal_id: str, *, approved: bool, approval_id: str | None = None) -> PromptTemplate:
-        proposal = self.proposals[proposal_id]
-        if proposal.status == ProposalStatus.APPLIED:
-            raise PermissionError("proposal already applied; approval cannot be replayed")
-        if not approved:
-            raise PermissionError("improvement proposal requires human approval before applying")
-        if self.approval_gate is None or not proposal.approval_id or approval_id != proposal.approval_id:
-            raise PermissionError("exact proposal-bound approval required")
-        if self.approval_gate.decision(approval_id) != ApprovalGateDecision.APPROVED:
-            raise PermissionError("proposal approval is pending, rejected or expired")
-        current=self.registry.get(proposal.target_name)
-        if current is None or current.version != proposal.target_version or current.content != proposal.current_content:
-            raise PermissionError("reviewed target changed; create a fresh proposal")
-        proposal.status = ProposalStatus.APPLIED
-        proposal.approval_id = approval_id
-        template = self.registry.register(PromptTemplate(
-            name=proposal.target_name, content=proposal.proposed_content,
-            kind=self.registry.get(proposal.target_name).kind,  # type: ignore[union-attr]
-        ))
-        self.registry.audit.append({
-            "at": _now().isoformat(), "event": "apply",
-            "proposal_id": proposal_id, "approval_id": approval_id,
-            "name": proposal.target_name, "version": template.version,
-        })
-        return template
+        # Public proposal objects are display records, not authority. Keep a
+        # separate immutable exact-revision snapshot and consume it once.
+        with self._revision_lock:
+            proposal = self.proposals[proposal_id]
+            reviewed = self._reviewed_revisions.get(proposal_id)
+            if reviewed is None or proposal_id in self._applied_revisions:
+                raise PermissionError("unknown or already applied revision")
+            pid, name, old, new, version, kind, token = reviewed
+            actual = (proposal.id, proposal.target_name, proposal.current_content,
+                      proposal.proposed_content, proposal.target_version, kind, proposal.approval_id)
+            if actual != reviewed:
+                raise PermissionError("proposal changed after review; create a fresh proposal")
+            if not approved:
+                raise PermissionError("improvement proposal requires human approval before applying")
+            if self.approval_gate is None or not token or approval_id != token:
+                raise PermissionError("exact proposal-bound approval required")
+            if self.approval_gate.decision(token) != ApprovalGateDecision.APPROVED:
+                raise PermissionError("proposal approval is pending, rejected or expired")
+            current = self.registry.get(name)
+            if current is None or (current.version, current.content, current.kind) != (version, old, kind):
+                raise PermissionError("reviewed target changed; create a fresh proposal")
+            self._applied_revisions.add(proposal_id)
+            template = self.registry.register(PromptTemplate(name=name, content=new, kind=kind))
+            proposal.status = ProposalStatus.APPLIED
+            self.registry.audit.append({
+                "at": _now().isoformat(), "event": "apply",
+                "proposal_id": pid, "approval_id": token,
+                "name": name, "version": template.version,
+            })
+            return template
 
 
 # ---------------------------------------------------------------- row 11 --
