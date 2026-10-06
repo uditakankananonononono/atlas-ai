@@ -127,7 +127,7 @@ def _emotion(cid,p):
    if s.get("type") not in allowed:continue
    confidence=float(s.get("confidence",0));
    if not 0<=confidence<=1:raise ConceptError("confidence must be in [0,1]")
-   out.append({"type":s["type"],"value":s.get("value"),"confidence":confidence,"interpretation":"tentative"})
+   out.append({"type":s["type"],"value":s.get("value"),"supplied_confidence":confidence,"interpretation":"tentative"})
   return {"recognized_signals":out,"emotion_claimed_as_fact":False,"diagnosis":None,"clarifying_question_required":not any(x["type"]=="explicit_self_report" for x in out),"research":RESEARCH["emotion"]}
  need(p,"context","candidate_responses");constraints=p.get("constraints",{});ranked=[]
  for r in p["candidate_responses"]:
@@ -152,9 +152,9 @@ class Corpus:
   selected=[]
   for s in p["sources"]:
    need(s,"source_id","title","owner_confirmed");
-   if not s["owner_confirmed"]:raise ConceptError("every selected source requires owner confirmation")
-   selected.append({"source_id":s["source_id"],"title":s["title"],"kind":kind,"connected":bool(s.get("connected",False)),"indexed":False})
-  return {"owner_id":p["owner_id"],"selected_sources":selected,"connection_claimed":all(x["connected"] for x in selected),"selection_persisted":False}
+   if s["owner_confirmed"] is not True:raise ConceptError("every selected source requires owner confirmation")
+   selected.append({"source_id":s["source_id"],"title":s["title"],"kind":kind,"caller_connected_claim":s.get("connected") is True,"indexed":False})
+  return {"owner_id":p["owner_id"],"selected_sources":selected,"connection_claimed":False,"integration_state_verified":False,"caller_all_connected_claim":all(x["caller_connected_claim"] for x in selected),"selection_persisted":False}
  def index(self,p:dict)->dict:
   need(p,"owner_id","documents");indexed=[]
   for d in p["documents"]:
@@ -162,7 +162,7 @@ class Corpus:
    if len(text)<20:raise ConceptError("document text is too short to index")
    chunks=[text[i:i+500] for i in range(0,len(text),450)];digest=sha256(text.encode()).hexdigest();self.documents[digest]={**d,"owner_id":p["owner_id"],"chunks":chunks}
    indexed.append({"document_id":digest,"source_id":d["source_id"],"kind":d["kind"],"chunk_count":len(chunks),"content_sha256":digest})
-  return {"indexed":indexed,"owner_id":p["owner_id"],"source_of_truth":True,"embedding_claimed":False}
+  return {"indexed":indexed,"owner_id":p["owner_id"],"source_of_truth":False,"corpus_contains_supplied_text":True,"external_source_verified":False,"embedding_claimed":False}
  def retrieve(self,p:dict)->dict:
   need(p,"owner_id","query");terms=set(re.findall(r"[a-z0-9]+",p["query"].lower()));hits=[]
   for doc_id,d in self.documents.items():
