@@ -260,3 +260,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - These21 branches compute supplied-text metrics, graph reachability or template formatting, not full named creative generation/development. API/catalog now labels supplied_text_diagnostics, named_generation_capability_executed=false. General algorithm_executed claim restricted to actual optimizer rows. Removed scene-count pseudo-confidence; more scenes do not establish confidence.
 - All21 ledger rows PARTIAL with historical evidence retained. Existing limited metric/template outputs remain available, but novelty/originality/quality proxy fields are not validated creative capability and no rendered visual storyboard was made. Named tests check the new boundary for every row.
 - Focused56; M20/ledger1667 passed. Current labels1912historical48SCOPED46PARTIAL4removed. Retraction is not completion; real model-backed creative breadth remains open.
+
+## Tool-selection relevance and score boundary
+
+- Selector no longer chooses a sole unrelated registered tool solely from its Beta prior/risk score and lack of a competitor. Zero capability-token match and zero supplied embedding similarity causes abstention even after100 successful outcomes. Existing eligible related-tool selection remains.
+- Score/margin explicitly heuristic, not calibrated statistical confidence or probability. Default embedder is hashed bag-of-words and can collide; positive similarity is not independently verified semantic relevance, and this repair does not make tool selection a learned language model. Approval/dispatcher gates remain separate.
+- Focused31 passed; M20 result logged. No external tool executed by these tests.

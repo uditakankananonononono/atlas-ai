@@ -5,8 +5,7 @@ The selector scores every registered tool for a plan step on four typed
 components - capability-token match, embedding similarity with the tool
 description, a risk-tier penalty, and a Beta(1,1) posterior over the tool's
 historical success - and reports the decomposition plus an explicit
-uncertainty margin. When the top two tools are statistically
-indistinguishable the selector asks a targeted clarifying question instead
+uncertainty margin. When the top two heuristic scores are close the selector asks a targeted clarifying question instead
 of guessing (row M20-30).
 """
 from __future__ import annotations
@@ -52,6 +51,8 @@ class ToolSelection:
             "margin": self.margin,
             "needs_clarification": self.needs_clarification,
             "clarifying_question": self.clarifying_question,
+            "score_kind":"heuristic lexical/embedding ranking, not calibrated statistical confidence",
+            "margin_is_not_probability":True,
         }
 
 
@@ -123,6 +124,11 @@ class ToolSelector:
     def select(self, step_description: str, *, context: dict[str, Any] | None = None) -> ToolSelection:
         scored = self.score_all(step_description, context=context)
         eligible = [s for s in scored if s.preconditions_met]
+        relevant=[s for s in eligible if s.capability_match>0 or s.description_similarity>0]
+        if eligible and not relevant:
+            return ToolSelection(chosen=None,candidates=scored,margin=0.0,needs_clarification=True,
+                                 clarifying_question="No registered tool matches the supplied step; what tool or task did you mean?")
+        eligible=relevant
         if not eligible:
             question = ""
             if scored:
