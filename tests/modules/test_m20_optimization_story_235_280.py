@@ -10,6 +10,8 @@ def run(row):
  name=next(x["key"] for x in capabilities() if x["row_id"]==row)
  p=dict(OPT if row<260 else STORY)
  if row==239:p["initial"]=[.5,.5]
+ if row==247:p.update(box_bounds=[[.1,10.]],posynomial_objective=[{'coefficient':1.,'exponents':[1.]},{'coefficient':1.,'exponents':[-1.]}])
+ if row==248:p.update(box_bounds=[[0.,2.]],numerator=[2.],denominator_coefficients=[1.],denominator_constant=1.)
  if row==245:p.update(matrix_objective=[[1.,0.],[0.,2.]],equality_matrices=[[[1.,0.],[0.,1.]]],equality_rhs=[1.])
  if row==246:p.update(objective=[-1.,0.],box_bounds=[[-2.,2.],[-2.,2.]],cones=[{'matrix':[[1.,0.],[0.,1.]],'offset':[0.,0.],'axis':[0.,0.],'constant':1.}])
  if row==243:p["box_bounds"]=[[0.,3.]]
@@ -58,10 +60,10 @@ def test_row_246_second_order_cone_programming_computes_from_inputs():
  r=run(246); assert r["converged"] and r["objective"]==pytest.approx(-1.,abs=1e-5) and r["cone_slack"]>=-1e-5
 
 def test_row_247_geometric_programming_computes_from_inputs():
- r=run(247); assert "monomial_value" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(247); assert r["converged"] and r["objective"]==pytest.approx(2.,abs=1e-5)
 
 def test_row_248_fractional_programming_computes_from_inputs():
- r=run(248); assert "ratio" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
+ r=run(248); assert r["converged"] and r["ratio"]==pytest.approx(4/3,abs=1e-7)
 
 def test_row_249_bilevel_optimization_computes_from_inputs():
  r=run(249); assert "stationarity_residual" in r and r["metrics"]["confidence"]>=0 and r["uncertainty"]
@@ -166,7 +168,7 @@ def test_metrics_change_with_inputs():
 def test_degenerate_and_infeasible_diagnostics():
  p=dict(OPT); p["initial"]=[0,0]; assert execute("branch_and_bound",p)["result"]["status"]=="optimal"
  p["initial"]=[2,2]; r=execute("cutting_plane_methods",p)["result"]; assert r["converged"] and r["cut_added"] and r["solution"]==pytest.approx([1.,2.],abs=.001)
- with pytest.raises(WorkbenchError,match="strictly positive"): execute("geometric_programming",{**OPT,"initial":[0,1]})
- with pytest.raises(WorkbenchError,match="denominator"): execute("fractional_programming",{**OPT,"denominator":0})
+ with pytest.raises(WorkbenchError,match="strictly positive"): execute("geometric_programming",{**OPT,"box_bounds":[[0,2]]})
+ with pytest.raises(WorkbenchError,match="denominator"): execute("fractional_programming",{**OPT,"box_bounds":[[0,2]],"numerator":[1],"denominator_coefficients":[1],"denominator_constant":0})
  with pytest.raises(WorkbenchError,match="outside scenes"): execute("interactive_fiction",{**STORY,"choices":[{"from":0,"to":9}]})
  with pytest.raises(WorkbenchError,match="dimensions"): execute("admm",{**OPT,"initial":[1]})
