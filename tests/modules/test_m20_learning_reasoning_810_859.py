@@ -9,7 +9,7 @@ def L(n,**x):
 def test_catalog_exact():assert [x['row_id'] for x in capabilities()]==list(range(810,860))
 def test_810_spaced_repetition_computes_due_and_lapse():assert L('spaced_repetition',items=[{'id':'x','quality':2}])['schedule'][0]['lapse']
 def test_811_interleaving_mixes_skills():assert len(set(L('interleaving',skills=['a','b'],blocks=4)['sequence']))==2
-def test_812_retrieval_is_closed_book_feedback_retry():assert L('retrieval_practice')['retrieval_cycle'][0]=='closed-book attempt'
+def test_812_retrieval_is_closed_book_feedback_retry():assert L('retrieval_practice',recall_items=[{'id':'1','question':'2+2','accepted_answers':['4'],'skill':'addition'}])['recall']['unattempted_items'][0]['question']=='2+2'
 def test_813_elaborative_why_and_conditions():assert 'under what conditions' in L('elaborative_interrogation',claims=['x'])['prompts'][0]
 def test_814_self_explanation_checks_steps():assert 'Why is this step valid?' in L('self_explanation')['self_explanation_prompts']
 def test_815_dual_coding_requires_mapping_not_decoration():assert L('dual_coding')['representations']['decorative_visuals_rejected']
@@ -17,7 +17,7 @@ def test_816_examples_mark_boundary_cases():assert L('concrete_examples',example
 def test_817_worked_example_requires_rationales_and_completion():assert L('worked_examples')['worked_example']['completion_problem_next']
 def test_818_problem_solving_represents_then_verifies():assert L('problem_solving')['problem_cycle']==['represent problem','identify constraints','generate strategies','execute','verify','reflect']
 def test_819_deliberate_targets_subskill_feedback_rest():
- o=L('deliberate_practice')['practice_plan'];assert o['immediate_specific_feedback'] and o['rest_and_recovery']
+ o=L('deliberate_practice',scored_attempts=[{'evidence_id':'e','skill':'addition','succeeded':False,'feedback':'incorrect sum'}],exercise_catalog=[{'id':'1','skill':'addition','task':'2+2'}])['practice_plan'];assert o['target_subskills']==['addition'] and o['selected_exercises'][0]['id']=='1'
 def test_820_chunking_preserves_principle():assert L('chunking',chunks=[{'label':'x','elements':[1,2],'principle':'cause'}])['chunks'][0]['organizing_principle']=='cause'
 @pytest.mark.parametrize('n',['scaffolding','fading'])
 def test_821_822_support_fades_on_evidence(n):assert L(n)['support_levels'][-1]['support']==0 and L(n)['fade_on_evidence_not_time']

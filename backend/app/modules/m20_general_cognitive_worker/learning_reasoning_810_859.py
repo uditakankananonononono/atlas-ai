@@ -5,6 +5,7 @@ from math import exp,log
 import re
 from typing import Any
 from .learning_calibration import calibrate_attempts
+from .measured_learning import recall_practice, deliberate_practice
 from .defeasible_reasoning import default_inference, abductive_search
 from .formal_reasoning import argument_validity, causal_effect, counterfactual
 class LearningReasoningError(ValueError):pass
@@ -31,14 +32,18 @@ def learning(row,p):
   out['schedule']=schedule
  if row==811:
   skills=req(p,'skills',list);blocks=int(p.get('blocks',len(skills)*2));out['sequence']=[skills[(i+(i//len(skills)))%len(skills)] for i in range(blocks)];out['avoids_same_skill_runs']=len(set(skills))>1
- if row==812:out['retrieval_cycle']=['closed-book attempt','confidence rating','check answer','correct errors','delayed retry'];out['prompts']=p.get('prompts',[])
+ if row==812:
+  try:out['recall']=recall_practice(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==813:out['prompts']=[f'Why is {x} true, and under what conditions?' for x in p.get('claims',[objective])]
  if row==814:out['self_explanation_prompts']=['What principle applies?','Why is this step valid?','How does it connect to the goal?','What remains uncertain?']
  if row==815:out['representations']={'verbal':p.get('verbal'),'visual':p.get('visual'),'mapping_required':True,'decorative_visuals_rejected':True}
  if row==816:out['examples']=[{'example':x,'feature_to_notice':x.get('feature') if isinstance(x,dict) else None,'boundary_case':bool(x.get('boundary_case')) if isinstance(x,dict) else False} for x in req(p,'examples',list)]
  if row==817:out['worked_example']={'problem':p.get('problem'),'steps':p.get('steps',[]),'rationales':p.get('rationales',[]),'self_explanation_at_each_step':True,'completion_problem_next':True}
  if row==818:out['problem_cycle']=['represent problem','identify constraints','generate strategies','execute','verify','reflect']
- if row==819:out['practice_plan']={'target_subskill':p.get('target_subskill'),'stretch_level':p.get('stretch_level','just beyond current consistency'),'repetitions':p.get('repetitions',5),'immediate_specific_feedback':True,'rest_and_recovery':True}
+ if row==819:
+  try:out['practice_plan']=deliberate_practice(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==820:out['chunks']=[{'label':c.get('label'),'elements':c.get('elements',[]),'organizing_principle':c.get('principle')} for c in req(p,'chunks',list)]
  if row in (821,822):out['support_levels']=[{'phase':'model','support':1.0},{'phase':'guided','support':.66},{'phase':'prompted','support':.33},{'phase':'independent','support':0.0}];out['fade_on_evidence_not_time']=True
  if row==823:
