@@ -106,6 +106,8 @@ class ProductOrchestrator:
         executors: dict[str, StepExecutor] | None = None,
         approval_ttl_seconds: int = 3600,
     ) -> None:
+        if type(approval_ttl_seconds) is not int or not 1 <= approval_ttl_seconds <= 86400:
+            raise ValueError("approval ttl must be an integer from1 to86400 seconds")
         self.tenant_id = tenant_id
         self.gate = approval_gate
         self.executors: dict[str, StepExecutor] = dict(executors or {})
@@ -230,9 +232,10 @@ class ProductOrchestrator:
 
     def execute(self, goal_id: str, *, approval_id: str) -> dict[str, Any]:
         with self._execution_lock:
-            return self._execute_locked(goal_id, approval_id=approval_id)
+            goal, reviewed = self._claim_execution(goal_id, approval_id=approval_id)
+        return self._execute_claimed(goal, reviewed)
 
-    def _execute_locked(self, goal_id: str, *, approval_id: str) -> dict[str, Any]:
+    def _claim_execution(self, goal_id: str, *, approval_id: str):
         goal = self._goal(goal_id)
         if goal.approval_id is None or approval_id != goal.approval_id:
             raise PermissionError("execution requires this goal's own approval request")
@@ -250,6 +253,9 @@ class ProductOrchestrator:
             raise OrchestrationConflictError("this approved plan was already executed; re-plan for another run")
         self._spent_approvals.add(approval_id)
         reviewed = json.loads(self._reviewed_plans[approval_id])
+        return goal, reviewed
+
+    def _execute_claimed(self, goal, reviewed):
         execution_steps = [PlanStep(**{**raw,"risk":Risk(raw["risk"])}) for raw in reviewed["steps"]]
         failures = 0
         for step in execution_steps:
