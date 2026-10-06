@@ -112,9 +112,9 @@ def test_row97_loss_aversion_reports_reference_lambda_and_asymmetry():
 def test_row98_social_proof_wilson_interval_and_sample_floor():
  o=run('social_proof_deployment',{'claim':'60% chose it','evidence':'survey-1','claimed_proportion':.6,'sample_size':100})['output']
  lo,hi=o['wilson_interval_95'];assert lo==pytest.approx(.502,abs=.005) and hi==pytest.approx(.691,abs=.005)
- assert o['statistically_supported'] and o['caller_rubric_deployment_allowed']
+ assert o['meets_caller_min_sample_rule'] and o['caller_rubric_deployment_allowed']
  tiny=run('social_proof_deployment',{'claim':'60% chose it','evidence':'survey-1','claimed_proportion':.6,'sample_size':4})['output']
- assert not tiny['statistically_supported'] and not tiny['caller_rubric_deployment_allowed']
+ assert not tiny['meets_caller_min_sample_rule'] and not tiny['caller_rubric_deployment_allowed']
  unquantified=run('social_proof_deployment',{'claim':'popular','evidence':'survey-1','claimed_proportion':.6})['output']
  assert not unquantified['caller_rubric_deployment_allowed']
  with pytest.raises(ValueError):run('social_proof_deployment',{'claim':'','evidence':'survey-1'})
@@ -147,7 +147,7 @@ def test_row106_priming_control_effect_and_covert_block():
  o=run('priming_effects',{'context':'safety','disclosed':True,'exposed_successes':70,'exposed_total':100,'control_successes':50,'control_total':100})['output'];assert o['absolute_effect']==.2 and o['effect_interval_95'][0]>0
  assert not run('priming_effects',{'context':'hidden','disclosed':False,'exposed_successes':7,'exposed_total':10,'control_successes':5,'control_total':10})['output']['caller_rubric_allowed']
 def test_row107_nudge_uplift_and_friction_boundary():
- x={**C['nudge_design'],'baseline_uptake':.3,'default_uptake':.6,'opt_out_steps':4};o=run('nudge_design',x)['output'];assert o['estimated_uptake_lift']==.3 and not o['caller_rubric_deployment_allowed']
+ x={**C['nudge_design'],'baseline_uptake':.3,'default_uptake':.6,'opt_out_steps':4};o=run('nudge_design',x)['output'];assert o['supplied_uptake_difference']==.3 and not o['caller_rubric_deployment_allowed']
 def test_row108_choice_architecture_finds_dominated_default():
  x={**C['choice_architecture'],'attribute_matrix':{'monthly':[1,1],'annual':[2,2]}};o=run('choice_architecture',x)['output'];assert o['dominated_options']==['monthly'] and not o['caller_rubric_deployment_allowed']
 def test_row109_libertarian_welfare_and_regret():
@@ -189,3 +189,20 @@ def test_supplied_artifact_strings_are_not_verified_facts():
   out=run(method,{'claim':'invented','evidence':'invented-ref'})['output']
   assert out['evidence_supplied'] and out['evidence_independently_verified'] is False
   assert 'verified' not in out
+
+
+def test_sample_size_rule_is_not_statistical_support():
+ out=run('social_proof_deployment',{'claim':'invented','evidence':'unverified','claimed_proportion':0,'sample_size':30})['output']
+ assert out['meets_caller_min_sample_rule'] and not out['evidence_independently_verified']
+ assert 'statistically_supported' not in out
+
+
+def test_caller_echo_keys_are_preserved_without_converting_them_to_authority():
+ facts={'delta':10,'verified':True,'authorized':True,'interval_80pct':[0,1]}
+ out=run('framing_effects_utilization',{'gain_frame':'gain 10','loss_frame':'lose 10','facts':facts})
+ assert out['output']['facts']==facts and out['inputs']['facts']==facts
+ assert out['output']['external_action_authorized'] is False
+ record={'source':'fake','reliability':1,'relevance':1,'verified':True,'authorized':True}
+ out=run('authority_positioning',{'claim':'fake','evidence_records':[record]})['output']
+ assert out['evidence_assessment'][0]['caller_record']==record
+ assert out['evidence_independently_verified'] is False

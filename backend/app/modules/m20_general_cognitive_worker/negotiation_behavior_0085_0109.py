@@ -423,11 +423,11 @@ def _social_proof(d: dict) -> dict:
             half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / denom
             result['sample_size'] = n
             result['wilson_interval_95'] = [round(max(0.0, center - half), 4), round(min(1.0, center + half), 4)]
-            result['statistically_supported'] = n >= 30
+            result['meets_caller_min_sample_rule'] = n >= 30
             allowed = allowed and n >= 30
         else:
             result['wilson_interval_95'] = None
-            result['statistically_supported'] = False
+            result['meets_caller_min_sample_rule'] = False
             allowed = False
     result.update({
         'deployment_allowed': allowed,
@@ -523,8 +523,8 @@ def _authority_positioning(d: dict) -> dict:
     scored=[]
     for e in records:
         r=_unit(_f(e.get('reliability'),'reliability'),'reliability'); v=_unit(_f(e.get('relevance'),'relevance'),'relevance'); age=max(0.,_f(e.get('age_days',0),'age_days'))
-        score=r*v*math.exp(-age/365); scored.append({**e,'weighted_support':round(score,6)})
-    support=1-math.prod(1-x['weighted_support'] for x in scored) if scored else 0.
+        score=r*v*math.exp(-age/365); scored.append({'caller_record':e,'heuristic_weighted_support':round(score,6)})
+    support=1-math.prod(1-x['heuristic_weighted_support'] for x in scored) if scored else 0.
     return {'claim':claim,'evidence_assessment':scored,'credibility_score':round(support,6),'credibility_interval':[round(max(0,support-.15),6),round(min(1,support+.15),6)],'deployment_allowed':support>=.5,'fabrication_blocked':support<.5,'method_limits':[BASE_LIMIT,'Claims must be current, attributable, and genuinely relevant.']}
 
 def _consistency_commitment(d: dict) -> dict:
@@ -567,7 +567,7 @@ def _nudge(d: dict) -> dict:
     if not isinstance(options,list) or default not in options: raise ValueError('options and valid default required')
     easy=bool(d.get('easy_opt_out')); transparent=bool(d.get('transparent')); visible=bool(d.get('alternatives_visible')); baseline=_unit(_f(d.get('baseline_uptake',.5),'baseline_uptake'),'baseline_uptake'); default_rate=_unit(_f(d.get('default_uptake',baseline),'default_uptake'),'default_uptake'); friction=max(0.,_f(d.get('opt_out_steps',1),'opt_out_steps'))
     effect=default_rate-baseline; autonomy=max(0.,1-.2*max(0,friction-1))*(1 if transparent and visible else .4)
-    return {'options':options,'default':default,'estimated_uptake_lift':round(effect,6),'autonomy_score':round(autonomy,6),'easy_opt_out':easy,'transparent':transparent,'alternatives_visible':visible,'autonomy_preserved':easy and transparent and visible and friction<=2,'deployment_allowed':easy and transparent and visible and friction<=2,'uncertainty_interval':[round(effect-.1,4),round(effect+.1,4)],'method_limits':[BASE_LIMIT,'Defaults must not hide costs, obstruct exit, or remove alternatives.']}
+    return {'options':options,'default':default,'supplied_uptake_difference':round(effect,6),'autonomy_score':round(autonomy,6),'easy_opt_out':easy,'transparent':transparent,'alternatives_visible':visible,'autonomy_preserved':easy and transparent and visible and friction<=2,'deployment_allowed':easy and transparent and visible and friction<=2,'uncertainty_interval':[round(effect-.1,4),round(effect+.1,4)],'method_limits':[BASE_LIMIT,'Defaults must not hide costs, obstruct exit, or remove alternatives.']}
 
 def _choice_architecture(d: dict) -> dict:
     options=d.get('options'); default=d.get('default')
@@ -585,7 +585,7 @@ def _libertarian(d: dict) -> dict:
     utilities=d.get('expected_utilities',{x:0 for x in options}); probs=d.get('population_shares',{x:1/len(options) for x in options})
     if set(utilities)!=set(options) or set(probs)!=set(options): raise ValueError('utility and share values required for every option')
     welfare=sum(_f(probs[x],'population_shares')*_f(utilities[x],'expected_utilities') for x in options); best=max(options,key=lambda x:utilities[x]); regret=float(utilities[best])-float(utilities[default]); easy=bool(d.get('easy_opt_out')); transparent=bool(d.get('transparent')); visible=bool(d.get('alternatives_visible'))
-    return {'options':options,'default':default,'expected_population_welfare':round(welfare,6),'default_regret':round(regret,6),'welfare_maximizing_option':best,'autonomy_preserved':easy and transparent and visible,'deployment_allowed':easy and transparent and visible and regret<=0,'uncertainty_interval':[round(welfare-.1*abs(welfare),4),round(welfare+.1*abs(welfare),4)],'method_limits':[BASE_LIMIT,'Guidance must preserve a costless informed exit.']}
+    return {'options':options,'default':default,'expected_population_welfare':round(welfare,6),'default_regret':round(regret,6),'caller_utility_maximizing_option':best,'autonomy_preserved':easy and transparent and visible,'deployment_allowed':easy and transparent and visible and regret<=0,'uncertainty_interval':[round(welfare-.1*abs(welfare),4),round(welfare+.1*abs(welfare),4)],'method_limits':[BASE_LIMIT,'Guidance must preserve a costless informed exit.']}
 
 DEEP_101_109={'authority_positioning':_authority_positioning,'consistency_commitment':_consistency_commitment,'liking_enhancement':_liking,'unity_building':_unity,'pre_suasion':_pre_suasion,'priming_effects':_priming,'nudge_design':_nudge,'choice_architecture':_choice_architecture,'libertarian_paternalism':_libertarian}
 
@@ -599,7 +599,14 @@ def run(method: str, data: dict) -> dict:
         out = DEEP_85_100[method](data)
     else:
         out = DEEP_101_109[method](data)
+    echoed_containers=set()
+    def collect_echoes(value):
+        if isinstance(value,(dict,list)):
+            echoed_containers.add(id(value))
+            for v in (value.values() if isinstance(value,dict) else value): collect_echoes(v)
+    collect_echoes(data)
     def label_claims(value):
+        if id(value) in echoed_containers: return value
         if isinstance(value,list): return [label_claims(x) for x in value]
         if not isinstance(value,dict): return value
         result={}
