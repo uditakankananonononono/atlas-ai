@@ -157,3 +157,15 @@ def test_legacy_generated_method_without_scope_binding_never_matches():
  planner=HTNPlanner()
  planner.register_method(HTNMethod(name='learned:legacy',goal_pattern='read fixture',source=MethodSource.LEARNED,subtasks=[PlanNode(title='stale')]))
  with pytest.raises(PlanError):planner.decompose('read fixture')
+
+@pytest.mark.parametrize('field,value', [('title',1),('title',' '),('tool',12),('arguments',[]),('arguments',None),('depends_on','a'),('depends_on',[1]),('max_attempts',True),('max_attempts',1.9),('max_attempts',0),('max_attempts',101),('id',False)])
+def test_planner_rejects_coerced_or_unbounded_step_fields(field,value):
+ step={'title':'fixture',field:value}
+ with pytest.raises(PlanError):HTNPlanner(FakePlannerModel([step])).decompose('goal')
+
+
+def test_planner_rejects_ambiguous_title_dependency():
+ steps=[{'id':'a','title':'same'},{'id':'b','title':'same'},{'title':'final','depends_on':['same']}]
+ with pytest.raises(PlanError,match='ambiguous'):HTNPlanner(FakePlannerModel(steps)).decompose('goal')
+ steps[-1]['depends_on']=['a']
+ assert len(HTNPlanner(FakePlannerModel(steps)).decompose('goal'))==3
