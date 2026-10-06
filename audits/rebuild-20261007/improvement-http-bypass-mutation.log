@@ -1,0 +1,97 @@
+FFFFF.                                                                   [100%]
+=================================== FAILURES ===================================
+_ test_mounted_route_pending_foreign_and_cross_owner_rejected_then_exact_once __
+
+bound = (<starlette.testclient.TestClient object at 0x7fd976ba9640>, {'a': <app.modules.m20_general_cognitive_worker.service.C...-FU0abVbXz_GA34tlAy3evx8rvgQZkayYgIEOMQJK2Dl661oX05jo2pzjlmGRDRqvt1sz2wmvW1unR-T14Y3UrqIwkZA_RIu7QV9j8oT6kbi4n3SBhng'})
+
+    def test_mounted_route_pending_foreign_and_cross_owner_rejected_then_exact_once(bound):
+     c,ss,a,b=bound;p=propose(c,a);other=propose(c,a,'other')
+>    assert apply(c,a,p).status_code==403
+E    AssertionError: assert 200 == 403
+E     +  where 200 = <Response [200 OK]>.status_code
+E     +    where <Response [200 OK]> = apply(<starlette.testclient.TestClient object at 0x7fd976ba9640>, {'Authorization': 'Bearer eyJhbGciOiAiUlMyNTYiLCAia2lkIjogInRlc3Qta2V5In0.eyJpc3MiOiAiaHR0cHM6Ly9pc3N1ZXIudGVzdCIsICJh...NqI50k66LkeCNQqttU6Ie4HUi_ZEky4Vnc-n5DIbRmRlOSzzfSXGVlFZnYaVE8hW3uGhymg3LWVXVscyMQUt-WOwRShOWRVL40yCuyEwHPUzizsuZANGg'}, {'approval_id': '3862f462-86f4-4c69-81ac-5fa95d85395b', 'evidence': {'calibration_error': None, 'episode_success_rate'...tool_calls': 0, 'tool_failure_rate': 0.0}, 'proposal_id': '45462cfe-df60-401d-92c7-a10e85ff6507', 'status': 'proposed'})
+
+tests/modules/test_m20_improvement_http_binding.py:34: AssertionError
+____ test_mounted_route_snapshot_and_stale_target_checks[proposal_content] _____
+
+bound = (<starlette.testclient.TestClient object at 0x7fd976bcd790>, {'a': <app.modules.m20_general_cognitive_worker.service.C...2Ok7wEbvTAjYtRruXDd6DsF4k2fsEbSTKr3n98owrgqk5OGOfAzK03S-ScTnRtm27lFLH5Mf2y7A2dQNxK5frYDdnj8a_LKTsfhj7LjwJsVRVQixiyog'})
+attack = 'proposal_content'
+
+    @pytest.mark.parametrize('attack',['proposal_content','proposal_token','target_content','target_kind'])
+    def test_mounted_route_snapshot_and_stale_target_checks(bound,attack):
+     c,ss,a,b=bound;p=propose(c,a);s=ss['a']
+     s.safety.approvals.decide(p['approval_id'],ApprovalGateDecision.APPROVED)
+     if attack=='proposal_content':s.improvement.proposals[p['proposal_id']].proposed_content='unreviewed'
+     if attack=='proposal_token':s.improvement.proposals[p['proposal_id']].approval_id='forged'
+     if attack=='target_content':s.prompt_registry.get('orient').content='newer-current'
+     if attack=='target_kind':s.prompt_registry.get('orient').kind='algorithm_parameter'
+>    assert apply(c,a,p).status_code==403
+E    AssertionError: assert 200 == 403
+E     +  where 200 = <Response [200 OK]>.status_code
+E     +    where <Response [200 OK]> = apply(<starlette.testclient.TestClient object at 0x7fd976bcd790>, {'Authorization': 'Bearer eyJhbGciOiAiUlMyNTYiLCAia2lkIjogInRlc3Qta2V5In0.eyJpc3MiOiAiaHR0cHM6Ly9pc3N1ZXIudGVzdCIsICJh...gly7TLkK_FDPROCGgc4_ds_V0VmJz-9JILDqRec-9ivhvdUwo3wkm0-Yh9eQmEIUg8y-6KThKBKA1wC2ksC-p6ydF6Btu74iLDlegIaoMzR2NtubMTLsQ'}, {'approval_id': '15459a8b-6ede-4749-b6ff-c651ebe3e242', 'evidence': {'calibration_error': None, 'episode_success_rate'...tool_calls': 0, 'tool_failure_rate': 0.0}, 'proposal_id': '60b264f5-f7e2-40cd-a355-5e5653ac66f5', 'status': 'proposed'})
+
+tests/modules/test_m20_improvement_http_binding.py:55: AssertionError
+_____ test_mounted_route_snapshot_and_stale_target_checks[proposal_token] ______
+
+bound = (<starlette.testclient.TestClient object at 0x7fd976bcdf40>, {'a': <app.modules.m20_general_cognitive_worker.service.C...y_qXDjz5dHDqCH5XFHgZtDrxOSOVLhcI5lDlte_6lOkg5ZV3qSjK-fS_NIV2TzskPZMGCW3ajBbQkgwomrNZKUvO4KLLNOpphtrRd3Wj2_PfrG8OBwug'})
+attack = 'proposal_token'
+
+    @pytest.mark.parametrize('attack',['proposal_content','proposal_token','target_content','target_kind'])
+    def test_mounted_route_snapshot_and_stale_target_checks(bound,attack):
+     c,ss,a,b=bound;p=propose(c,a);s=ss['a']
+     s.safety.approvals.decide(p['approval_id'],ApprovalGateDecision.APPROVED)
+     if attack=='proposal_content':s.improvement.proposals[p['proposal_id']].proposed_content='unreviewed'
+     if attack=='proposal_token':s.improvement.proposals[p['proposal_id']].approval_id='forged'
+     if attack=='target_content':s.prompt_registry.get('orient').content='newer-current'
+     if attack=='target_kind':s.prompt_registry.get('orient').kind='algorithm_parameter'
+>    assert apply(c,a,p).status_code==403
+E    AssertionError: assert 200 == 403
+E     +  where 200 = <Response [200 OK]>.status_code
+E     +    where <Response [200 OK]> = apply(<starlette.testclient.TestClient object at 0x7fd976bcdf40>, {'Authorization': 'Bearer eyJhbGciOiAiUlMyNTYiLCAia2lkIjogInRlc3Qta2V5In0.eyJpc3MiOiAiaHR0cHM6Ly9pc3N1ZXIudGVzdCIsICJh...K4yEIN9vimD_YVZiKzHZpUtajx-c928boxPh-uihX5FSJ6ALvbWsaGJQK48FsPGvYyOVccbgHydHVln8ZFA0bULpW7hxGn0pFeDLlTNQ6EwtezDTxoyog'}, {'approval_id': 'bf8940da-e3fc-4759-9cfe-3396f5db6fe5', 'evidence': {'calibration_error': None, 'episode_success_rate'...tool_calls': 0, 'tool_failure_rate': 0.0}, 'proposal_id': 'fb293629-410f-458d-aa3e-db2ca7dd4368', 'status': 'proposed'})
+
+tests/modules/test_m20_improvement_http_binding.py:55: AssertionError
+_____ test_mounted_route_snapshot_and_stale_target_checks[target_content] ______
+
+bound = (<starlette.testclient.TestClient object at 0x7fd974f4f980>, {'a': <app.modules.m20_general_cognitive_worker.service.C...ZCDKCZtMUjXu0juo4bEWWMUag0OfazlqG3-OgHHNtHTqoBpzsufk5eUq8Xu6hFZuH36LOgXs0y7rMTvdyZnyWmTq77NTKAVq3JS_E2dqs7odpac3TD_A'})
+attack = 'target_content'
+
+    @pytest.mark.parametrize('attack',['proposal_content','proposal_token','target_content','target_kind'])
+    def test_mounted_route_snapshot_and_stale_target_checks(bound,attack):
+     c,ss,a,b=bound;p=propose(c,a);s=ss['a']
+     s.safety.approvals.decide(p['approval_id'],ApprovalGateDecision.APPROVED)
+     if attack=='proposal_content':s.improvement.proposals[p['proposal_id']].proposed_content='unreviewed'
+     if attack=='proposal_token':s.improvement.proposals[p['proposal_id']].approval_id='forged'
+     if attack=='target_content':s.prompt_registry.get('orient').content='newer-current'
+     if attack=='target_kind':s.prompt_registry.get('orient').kind='algorithm_parameter'
+>    assert apply(c,a,p).status_code==403
+E    AssertionError: assert 200 == 403
+E     +  where 200 = <Response [200 OK]>.status_code
+E     +    where <Response [200 OK]> = apply(<starlette.testclient.TestClient object at 0x7fd974f4f980>, {'Authorization': 'Bearer eyJhbGciOiAiUlMyNTYiLCAia2lkIjogInRlc3Qta2V5In0.eyJpc3MiOiAiaHR0cHM6Ly9pc3N1ZXIudGVzdCIsICJh...dpM2wjfeVj6VhTTyr5BGKjA7dNHY7ZZKuzaJ-OUNA-iaEmyHBJ_5SgLHFfXZ8qCVa2lnEZi4wfOlmnOPhfQZlejoF6TxfLRmEWeIDrmQ7DT4fvNkE6YgA'}, {'approval_id': 'db9a032e-98ac-4f9e-a491-6f2fafcc4c04', 'evidence': {'calibration_error': None, 'episode_success_rate'...tool_calls': 0, 'tool_failure_rate': 0.0}, 'proposal_id': '4e3b3d6a-42ca-4e35-9f50-3d27f86bb6a4', 'status': 'proposed'})
+
+tests/modules/test_m20_improvement_http_binding.py:55: AssertionError
+_______ test_mounted_route_snapshot_and_stale_target_checks[target_kind] _______
+
+bound = (<starlette.testclient.TestClient object at 0x7fd974586e70>, {'a': <app.modules.m20_general_cognitive_worker.service.C...q22pZ6-arjzZunPWbmQI7D-LWlu-6poS4bnA38aG6AlQU0lS9zabhxC8_vwG1IyXxLnA8XTXx8M-dPmp9IKFFqyyuzSwu7DT5bpDFmo9bGxeZHCmmJvQ'})
+attack = 'target_kind'
+
+    @pytest.mark.parametrize('attack',['proposal_content','proposal_token','target_content','target_kind'])
+    def test_mounted_route_snapshot_and_stale_target_checks(bound,attack):
+     c,ss,a,b=bound;p=propose(c,a);s=ss['a']
+     s.safety.approvals.decide(p['approval_id'],ApprovalGateDecision.APPROVED)
+     if attack=='proposal_content':s.improvement.proposals[p['proposal_id']].proposed_content='unreviewed'
+     if attack=='proposal_token':s.improvement.proposals[p['proposal_id']].approval_id='forged'
+     if attack=='target_content':s.prompt_registry.get('orient').content='newer-current'
+     if attack=='target_kind':s.prompt_registry.get('orient').kind='algorithm_parameter'
+>    assert apply(c,a,p).status_code==403
+E    AssertionError: assert 200 == 403
+E     +  where 200 = <Response [200 OK]>.status_code
+E     +    where <Response [200 OK]> = apply(<starlette.testclient.TestClient object at 0x7fd974586e70>, {'Authorization': 'Bearer eyJhbGciOiAiUlMyNTYiLCAia2lkIjogInRlc3Qta2V5In0.eyJpc3MiOiAiaHR0cHM6Ly9pc3N1ZXIudGVzdCIsICJh...83KbWzMiLO9nUysmylkiQzi5fbAvOiQnk8v6K-tmDTWY_ll2V9H5hpLc4PJS8Fy0XjNCaTbgXey0t9WC8f2Y4fUNq_36_1C9IHwbf0vD1d0lJ9YGdq69A'}, {'approval_id': '8f2cd42c-cfe8-4751-8efe-638d1209af19', 'evidence': {'calibration_error': None, 'episode_success_rate'...tool_calls': 0, 'tool_failure_rate': 0.0}, 'proposal_id': '6a828705-3ea6-45a3-86cf-347c9936d762', 'status': 'proposed'})
+
+tests/modules/test_m20_improvement_http_binding.py:55: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_improvement_http_binding.py::test_mounted_route_pending_foreign_and_cross_owner_rejected_then_exact_once
+FAILED tests/modules/test_m20_improvement_http_binding.py::test_mounted_route_snapshot_and_stale_target_checks[proposal_content]
+FAILED tests/modules/test_m20_improvement_http_binding.py::test_mounted_route_snapshot_and_stale_target_checks[proposal_token]
+FAILED tests/modules/test_m20_improvement_http_binding.py::test_mounted_route_snapshot_and_stale_target_checks[target_content]
+FAILED tests/modules/test_m20_improvement_http_binding.py::test_mounted_route_snapshot_and_stale_target_checks[target_kind]
+5 failed, 1 passed in 6.70s
