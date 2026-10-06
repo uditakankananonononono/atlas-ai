@@ -10,6 +10,7 @@ from math import exp, log, sqrt
 import re
 from typing import Any, Callable
 from .admm import solve_quadratic_l1
+from .lp_solvers import cutting_planes, branch_and_bound, column_generation
 from .convex_solvers import dual_decomposition, coordinate_descent, proximal_gradient, frank_wolfe
 
 class WorkbenchError(ValueError):
@@ -58,7 +59,7 @@ def _problem(p):
     return c,x,A,b,sense,{'objective_value':_dot(c,x),'max_violation':max(violations,default=0.0),'violation_count':sum(v>1e-9 for v in violations),'feasible':not any(v>1e-9 for v in violations),'constraint_residuals':residual}
 
 def _opt(row,p):
-    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe}
+    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe,240:cutting_planes,241:branch_and_bound,242:column_generation}
     if row in solvers:
         try:return solvers[row](p)
         except (ValueError,KeyError,TypeError) as exc:raise WorkbenchError(str(exc)) from exc
@@ -70,9 +71,6 @@ def _opt(row,p):
     r=[_dot(a,x)-z for a,z in zip(A,b)]; grad=[c[j]+sum(max(0,q)*a[j] for q,a in zip(r,A)) for j in range(len(x))]
     common={'diagnostics':d,'metrics':{'gradient_norm':sqrt(_dot(grad,grad)),'confidence':_confidence(r or c)},'uncertainty':{'kind':'deterministic_input_diagnostic','solver_executed':False}}
     H={
-240:lambda:{'most_violated_constraint':(max(range(len(r)),key=r.__getitem__) if r else None),'cut_violation':max(r,default=0.0),'cut_added':bool(r and max(r)>0)},
-241:lambda:{'fractional_indices':[i for i,v in enumerate(x) if abs(v-round(v))>1e-9],'branch_index':next((i for i,v in enumerate(x) if abs(v-round(v))>1e-9),None),'relaxation_bound':_dot(c,x),'pruned_infeasible':not d['feasible']},
-242:lambda:{'reduced_costs':[c[j]-sum((p.get('duals') or [0]*len(A))[i]*A[i][j] for i in range(len(A))) for j in range(len(c))],'entering_column':min(range(len(c)),key=lambda j:c[j]-sum((p.get('duals') or [0]*len(A))[i]*A[i][j] for i in range(len(A))))},
 243:lambda:{'subproblem_feasible':d['feasible'],'cut_type':'optimality' if d['feasible'] else 'feasibility','cut_rhs':_dot(c,x) if d['feasible'] else d['max_violation']},
 244:lambda:{'lagrangian_value':_dot(c,x)+sum(max(0,q)*q for q in r),'subgradient':r,'multiplier_update':[max(0,step*q) for q in r]},
 245:lambda:{'symmetric':all(abs(A[i][j]-A[j][i])<1e-9 for i in range(len(A)) for j in range(len(A))) if A and len(A)==len(A[0]) else False,'gershgorin_lower_bound':min((A[i][i]-sum(abs(v) for j,v in enumerate(A[i]) if j!=i) for i in range(len(A))),default=0.0)},
