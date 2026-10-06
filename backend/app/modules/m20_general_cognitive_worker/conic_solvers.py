@@ -79,3 +79,39 @@ def second_order(p):
         r['box_violation']=float(max(0,np.max(box[:,0]-value),np.max(value-box[:,1])))
     else:r['cone_slack']=None;r['box_violation']=None
     return r
+
+
+def geometric(p):
+    """Posynomial minimization under posynomial <=1 and positive box bounds.
+
+    Monomial term = coefficient * product_j(x_j**exponent_j), coefficient>0.
+    Uses CVXPY's explicit log-log convex transformation, not a log label.
+    """
+    box=finite(p['box_bounds'],'positive box bounds',2)
+    if box.shape[1]!=2 or np.any(box<=0) or np.any(box[:,0]>=box[:,1]):raise ValueError('strictly positive nonempty box required')
+    n=box.shape[0];x=cp.Variable(n,pos=True)
+    def posynomial(terms):
+        if not isinstance(terms,list) or not terms:raise ValueError('posynomial must contain monomial terms')
+        expressions=[]
+        for term in terms:
+            coefficient=float(term['coefficient']);exponents=finite(term['exponents'],'monomial exponents',1)
+            if coefficient<=0 or not np.isfinite(coefficient) or exponents.size!=n:raise ValueError('positive coefficients and matching exponents required')
+            monomial=cp.Constant(coefficient)
+            for j,e in enumerate(exponents):monomial*=cp.power(x[j],float(e))
+            expressions.append(monomial)
+        return sum(expressions)
+    objective=posynomial(p['posynomial_objective'])
+    restrictions=p.get('posynomial_constraints',[])
+    if not isinstance(restrictions,list):raise ValueError('posynomial_constraints must be a list')
+    expressions=[posynomial(terms) for terms in restrictions]
+    prog=cp.Problem(cp.Minimize(objective),[x>=box[:,0],x<=box[:,1],*(e<=1 for e in expressions)])
+    if not prog.is_dgp():raise ValueError('program does not satisfy geometric convexity rules')
+    tol,limit=controls(p)
+    try:prog.solve(gp=True,solver='SCS',eps=tol,max_iters=limit,verbose=False)
+    except cp.error.SolverError as exc:raise ValueError('geometric solver failed: '+str(exc)) from exc
+    value=x.value
+    success=value is not None and np.isfinite(value).all()
+    return {'solution':value.tolist() if success else None,'objective':float(prog.value) if prog.value is not None and np.isfinite(prog.value) else None,
+            'status':prog.status,'converged':prog.status==cp.OPTIMAL,'solver':'SCS','iterations':prog.solver_stats.num_iters,
+            'constraint_violation':float(max([0.,*(float(e.value)-1 for e in expressions),*list(box[:,0]-value),*list(value-box[:,1])])) if success else None,
+            'uncertainty':{'solver_executed':True,'scope':'positive posynomial objective and <=1 posynomial constraints, finite strictly positive box; log-log convex transformation'}}

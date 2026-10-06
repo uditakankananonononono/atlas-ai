@@ -10,8 +10,8 @@ from math import exp, log, sqrt
 import re
 from typing import Any, Callable
 from .admm import solve_quadratic_l1
-from .conic_solvers import semidefinite, second_order
-from .lp_solvers import cutting_planes, branch_and_bound, column_generation, benders, lagrangian_binary_knapsack
+from .conic_solvers import semidefinite, second_order, geometric
+from .lp_solvers import cutting_planes, branch_and_bound, column_generation, benders, lagrangian_binary_knapsack, fractional_linear
 from .convex_solvers import dual_decomposition, coordinate_descent, proximal_gradient, frank_wolfe
 
 class WorkbenchError(ValueError):
@@ -60,7 +60,7 @@ def _problem(p):
     return c,x,A,b,sense,{'objective_value':_dot(c,x),'max_violation':max(violations,default=0.0),'violation_count':sum(v>1e-9 for v in violations),'feasible':not any(v>1e-9 for v in violations),'constraint_residuals':residual}
 
 def _opt(row,p):
-    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe,240:cutting_planes,241:branch_and_bound,242:column_generation,243:benders,244:lagrangian_binary_knapsack,245:semidefinite,246:second_order}
+    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe,240:cutting_planes,241:branch_and_bound,242:column_generation,243:benders,244:lagrangian_binary_knapsack,245:semidefinite,246:second_order,247:geometric,248:fractional_linear}
     if row in solvers:
         try:return solvers[row](p)
         except (ValueError,KeyError,TypeError) as exc:raise WorkbenchError(str(exc)) from exc
@@ -72,8 +72,6 @@ def _opt(row,p):
     r=[_dot(a,x)-z for a,z in zip(A,b)]; grad=[c[j]+sum(max(0,q)*a[j] for q,a in zip(r,A)) for j in range(len(x))]
     common={'diagnostics':d,'metrics':{'gradient_norm':sqrt(_dot(grad,grad)),'confidence':_confidence(r or c)},'uncertainty':{'kind':'deterministic_input_diagnostic','solver_executed':False}}
     H={
-247:lambda:{'positive_domain':all(v>0 for v in x),'log_variables':[log(v) for v in x] if all(v>0 for v in x) else [],'monomial_value':exp(sum(a*log(v) for a,v in zip(c,x))) if all(v>0 for v in x) else None},
-248:lambda:{'ratio':_dot(c,x)/float(p.get('denominator',0)) if float(p.get('denominator',0))>0 else None,'dinkelbach_residual':_dot(c,x)-float(p.get('parameter',0))*float(p.get('denominator',0))},
 249:lambda:{'leader_value':_dot(c,x),'follower_best_index':min(range(len(x)),key=lambda i:x[i]),'stationarity_residual':sqrt(_dot(grad,grad))},
 250:lambda:{'noisy_gradient_mean':[_mean(list(v)) for v in zip(*p.get('gradient_samples',[grad]))],'robbins_monro_step':step/sqrt(it),'sample_variance':_variance([z for q in p.get('gradient_samples',[grad]) for z in q])},
 251:lambda:{'round_loss':_dot(c,x),'best_fixed_loss':min(_nums(p.get('historical_losses',[0]),'historical_losses')),'regret':_dot(c,x)-min(_nums(p.get('historical_losses',[0]),'historical_losses'))},
@@ -86,8 +84,6 @@ def _opt(row,p):
 258:lambda:{'best_response_gaps':[max(row)-_mean(row) for row in _matrix(p.get('payoff_matrix',[[0]]),'payoff_matrix')],'equilibrium_gap':max((max(row)-_mean(row) for row in p.get('payoff_matrix',[[0]])),default=0)},
 259:lambda:{'empirical_frequencies':[(v+1)/(sum(_nums(p.get('action_counts',[0]),'action_counts'))+len(p.get('action_counts',[0]))) for v in _nums(p.get('action_counts',[0]),'action_counts')],'best_response':max(range(len(c)),key=lambda i:c[i]),'exploitability':max(c)-_mean(c)},
     }
-    if row==247 and not all(v>0 for v in x):raise WorkbenchError('geometric programming requires strictly positive initial values')
-    if row==248 and float(p.get('denominator',0))<=0:raise WorkbenchError('fractional programming denominator must be positive')
     if row in (252,) and not p.get('arm_rewards'):raise WorkbenchError('arm_rewards must be non-empty')
     if row==255 and len(p.get('means',[]))!=len(p.get('counts',[])):raise WorkbenchError('means and counts must align')
     if row==257 and len(p.get('learner_losses',[0]))!=len(p.get('comparator_losses',[0])):raise WorkbenchError('loss histories must align')

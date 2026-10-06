@@ -175,3 +175,43 @@ def lagrangian_binary_knapsack(p):
     return {'solution':best.tolist(),'objective':upper,'lower_bound':lower,'duality_gap':gap,'multiplier':best_lambda,
             'dual_optimal':True,'primal_optimal':gap<=1e-8,'status':'optimal' if gap<=1e-8 else 'dual_optimal_primal_gap',
             'history':history,'lagrangian_value':lower,'uncertainty':{'solver_executed':True,'scope':'exact scalar dual for binary single positive-capacity constraint; primal candidate only when gap remains'}}
+
+
+def fractional_linear(p):
+    """Dinkelbach iterations for maximum linear ratio on a finite box + Ax<=b.
+
+    The denominator is proven strictly positive by a separate LP before any
+    division. Each iteration solves the full parametric LP, not a residual
+    over an arbitrary caller-supplied point. Unbounded/nonpositive rejects.
+    """
+    try:
+        numerator=np.asarray(p['numerator'],dtype=float);denominator=np.asarray(p['denominator_coefficients'],dtype=float)
+        n0=float(p.get('numerator_constant',0));d0=float(p['denominator_constant'])
+        box=np.asarray(p['box_bounds'],dtype=float);tol=float(p.get('tolerance',1e-8));limit=p.get('max_iterations',1000)
+    except (KeyError,ValueError,TypeError) as exc:raise ValueError('numerator, denominator and box arrays required') from exc
+    n=numerator.size
+    if (numerator.ndim!=1 or not n or denominator.shape!=numerator.shape or box.shape!=(n,2) or np.any(box[:,0]>box[:,1])
+        or not all(np.isfinite(v).all() for v in (numerator,denominator,box)) or not np.isfinite([n0,d0,tol]).all()
+        or tol<=0 or type(limit) is not int or not 1<=limit<=100000):raise ValueError('invalid finite fractional dimensions, box and controls')
+    A=p.get('fractional_constraints');b=p.get('fractional_bounds')
+    if (A is None)!=(b is None):raise ValueError('fractional constraint matrix and bounds must occur together')
+    if A is not None:
+        A=np.asarray(A,dtype=float);b=np.asarray(b,dtype=float)
+        if A.ndim!=2 or b.ndim!=1 or A.shape!=(b.size,n) or not np.isfinite(A).all() or not np.isfinite(b).all():raise ValueError('invalid fractional constraints')
+    bounds=[tuple(row) for row in box]
+    check=linprog(denominator,A_ub=A,b_ub=b,bounds=bounds,method='highs')
+    if not check.success:raise ValueError('fractional feasible domain cannot be established: '+check.message)
+    minimum_denominator=float(check.fun+d0)
+    if minimum_denominator<=0:raise ValueError('denominator must be strictly positive over entire feasible domain')
+    parameter=0.;history=[];converged=False
+    for iteration in range(1,limit+1):
+        sub=linprog(-(numerator-parameter*denominator),A_ub=A,b_ub=b,bounds=bounds,method='highs')
+        if not sub.success:raise ValueError('fractional parametric LP failed: '+sub.message)
+        x=sub.x;top=float(numerator@x+n0);bottom=float(denominator@x+d0)
+        residual=top-parameter*bottom;ratio=top/bottom
+        history.append({'iteration':iteration,'parameter':parameter,'ratio':ratio,'dinkelbach_residual':residual,'solution':x.tolist()})
+        if abs(residual)<=tol:converged=True;break
+        parameter=ratio
+    return {'solution':x.tolist(),'objective':ratio,'ratio':ratio,'dinkelbach_residual':residual,'converged':converged,
+            'status':'optimal' if converged else 'iteration_limit','iterations':iteration,'history':history,'minimum_denominator':minimum_denominator,
+            'uncertainty':{'solver_executed':True,'scope':'linear fractional maximization on bounded linear feasible set with globally positive denominator'}}
