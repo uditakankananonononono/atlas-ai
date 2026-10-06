@@ -502,3 +502,7 @@ These branches organize submitted practice evidence but do not run tests, transf
 Renamed computed modernization slices[].ready to caller_diagnostic_ready; TDD red_evidence/green_change to caller_declared_red_evidence/caller_declared_green_change; refactoring new_behavior_allowed to caller_diagnostic_new_behavior_allowed. Direct construction labels rather than generic recursive echo rewriting preserve caller text/metadata. New regressions pin all three residuals. Focused+ledger112 pass. No capability promotion.
 
 Correction to nested review evidence: the first committed run actually111passed/1failed because test694 still expected the old ready key. Initial report of112pass was wrong. Corrected stale expectation and reran:112passed. This does not hide an implementation failure; the stale schema assertion and incorrect report are explicitly recorded here.
+
+## Latest regression after review corrections
+
+Current whole-repo run at8cde270: 9561 passed, 14 skipped, 3 warnings over495files/19isolated batches. First7batch fan-out hit120s timeout with incomplete2/4/6 logs; those three re-run to completion, no orphan pytest processes remained. All final batch results pass. Frontend16components/typecheck pass. No full-spec/model/deployment certification.

@@ -1,0 +1,20 @@
+
+> test:components
+> vitest run
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/sandbox/atlas-ai/frontend
+
+ ✓ components/ExecutiveDashboard.test.tsx (10 tests) 587ms
+ ✓ components/GoalWorkspace.test.tsx (4 tests) 1127ms
+   ✓ GoalWorkspace > registers a goal with its sources and then demands citations per step 374ms
+   ✓ GoalWorkspace > walks plan -> approval -> approved execution -> readback 361ms
+ ✓ components/AdmittedCaseReader.test.tsx (1 test) 90ms
+ ✓ components/StudyAbroadPlanning.test.tsx (1 test) 116ms
+
+ Test Files  4 passed (4)
+      Tests  16 passed (16)
+   Start at  04:13:25
+   Duration  6.45s (transform 331ms, setup 307ms, collect 1.22s, tests 1.92s, environment 1.87s, prepare 564ms)
+
