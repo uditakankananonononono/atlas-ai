@@ -10,14 +10,14 @@ def test_exact_substantive_row(method,row):
  r=run(method,C[method]);assert r['feature_row']==row and r['method']==method and r['output'] and r['output']['method_limits']
 def test_material_asymmetry_and_unverified_influence_are_blocked():
  assert run('information_asymmetry_exploitation',C['information_asymmetry_exploitation'])['output']['required_disclosures']==['defect']
- assert not run('social_proof_deployment',{'claim':'everyone buys this'})['output']['deployment_allowed']
- assert not run('scarcity_creation',{'claim':'last chance'})['output']['deployment_allowed']
+ assert not run('social_proof_deployment',{'claim':'everyone buys this'})['output']['caller_rubric_deployment_allowed']
+ assert not run('scarcity_creation',{'claim':'last chance'})['output']['caller_rubric_deployment_allowed']
 def test_threat_coercion_and_covert_priming_are_blocked():
- x=run('credible_threat_construction',{'proposed_consequence':'harm','lawful':False,'proportionate':False,'authorized':False})['output'];assert not x['may_communicate'] and len(x['blocked_reasons'])==3
- assert not run('priming_effects',{'context':'hidden cue','disclosed':False})['output']['allowed']
+ x=run('credible_threat_construction',{'proposed_consequence':'harm','lawful':False,'proportionate':False,'authorized':False})['output'];assert not x['caller_rubric_may_communicate'] and len(x['blocked_reasons'])==3
+ assert not run('priming_effects',{'context':'hidden cue','disclosed':False})['output']['caller_rubric_allowed']
 def test_choice_preserves_easy_informed_exit():
  assert run('nudge_design',C['nudge_design'])['output']['autonomy_preserved']
- bad=dict(C['nudge_design'],easy_opt_out=False);assert not run('nudge_design',bad)['output']['deployment_allowed']
+ bad=dict(C['nudge_design'],easy_opt_out=False);assert not run('nudge_design',bad)['output']['caller_rubric_deployment_allowed']
 def test_negative_paths_and_mounted_api():
  with pytest.raises(ValueError):run('zopa_mapping',{'seller_reservation':'x','buyer_reservation':10})
  with pytest.raises(ValueError):run('choice_architecture',{'options':['a'],'default':'b'})
@@ -34,7 +34,7 @@ def test_row85_asymmetry_index_severity_and_unknown_material():
  assert o['required_disclosures']==['defect'] and o['disclosed_material_facts']==['cost_floor']
  assert o['material_facts_not_yet_known_to_proposer']==['pending_bid']
  empty=run('information_asymmetry_exploitation',{'known_by_proposer':[],'shared_with_counterparty':[],'material_facts':[]})['output']
- assert empty['asymmetry_index']==0 and empty['confidence']<0.5 and not empty['exploitation_blocked']
+ assert empty['asymmetry_index']==0 and empty['confidence'] is None and not empty['exploitation_blocked']
  with pytest.raises(ValueError):run('information_asymmetry_exploitation',{'known_by_proposer':'defect','shared_with_counterparty':[],'material_facts':[]})
 def test_row86_adverse_selection_z_score_and_small_sample_uncertainty():
  o=run('adverse_selection_detection',{'offered_risk_scores':[.8,.9],'population_mean_risk':.5})['output']
@@ -63,7 +63,7 @@ def test_row89_commitment_device_strength_and_deadline_validation():
 def test_row90_threat_credibility_components():
  o=run('credible_threat_construction',{'proposed_consequence':'terminate per contract','lawful':True,'proportionate':True,'authorized':True})['output']
  assert o['credible'] and o['credibility_score']==1.0 and o['credibility_components']=={'lawful':True,'proportionate':True,'authorized':True}
- b=run('credible_threat_construction',{'proposed_consequence':'x','lawful':True,'proportionate':True,'authorized':False})['output'];assert not b['may_communicate'] and b['credibility_score']==pytest.approx(2/3,abs=1e-4) and b['blocked_reasons']==['not_authorized']
+ b=run('credible_threat_construction',{'proposed_consequence':'x','lawful':True,'proportionate':True,'authorized':False})['output'];assert not b['caller_rubric_may_communicate'] and b['credibility_score']==pytest.approx(2/3,abs=1e-4) and b['blocked_reasons']==['not_authorized']
 def test_row91_bargaining_power_weighted_score_and_interval():
  o=run('bargaining_power_assessment',{'alternative_strength':.8,'time_pressure':.2,'information_quality':.7,'dependence':.3})['output']
  expected=(.35*.8+.25*.7)/.6-(.2*.2+.2*.3)/.4
@@ -75,7 +75,7 @@ def test_row92_batna_sensitivity_and_fragility():
  assert o['batna']=='other' and o['batna_value']==7 and o['walk_away_threshold']==7
  assert o['runner_up_swing_to_flip']==2 and o['choice_fragility']=='robust'
  fragile=run('batna_identification',{'alternatives':['a','b'],'values':[10,10.05],'costs':[0,0]})['output']
- assert fragile['choice_fragility']=='fragile' and fragile['confidence']<0.5
+ assert fragile['choice_fragility']=='fragile' and fragile['confidence'] is None
  with pytest.raises(ValueError):run('batna_identification',{'alternatives':['a','b'],'values':[1],'costs':[0,0]})
 def test_row93_zopa_surplus_splits_and_no_deal_zone():
  o=run('zopa_mapping',{'seller_reservation':80,'buyer_reservation':100})['output']
@@ -95,13 +95,13 @@ def test_row95_anchoring_rejects_objective_outside_evidence():
  o=run('anchoring_strategy',{'objective_value':95,'evidence_low':80,'evidence_high':100})['output']
  assert o['evidence_based_anchor']==95 and o['estimated_adjustment_band']==5 and o['expected_settlement_zone']==[90,95]
  bad=run('anchoring_strategy',{'objective_value':130,'evidence_low':80,'evidence_high':100})['output']
- assert bad['evidence_based_anchor'] is None and not bad['deployment_allowed'] and 'rejection' in bad
+ assert bad['evidence_based_anchor'] is None and not bad['caller_rubric_deployment_allowed'] and 'rejection' in bad
  with pytest.raises(ValueError):run('anchoring_strategy',{'objective_value':95,'evidence_low':100,'evidence_high':80})
 def test_row96_framing_numeric_equivalence_gate():
  o=run('framing_effects_utilization',{'gain_frame':'gain 10','loss_frame':'lose 10','facts':{'delta':10}})['output']
- assert o['numeric_equivalence'] and o['consistent_with_facts'] and o['deployment_allowed']
+ assert o['numeric_equivalence'] and o['consistent_with_facts'] and o['caller_rubric_deployment_allowed']
  one_sided=run('framing_effects_utilization',{'gain_frame':'gain 10','loss_frame':'terrible outcome','facts':{'delta':10}})['output']
- assert not one_sided['numeric_equivalence'] and not one_sided['deployment_allowed']
+ assert not one_sided['numeric_equivalence'] and not one_sided['caller_rubric_deployment_allowed']
  with pytest.raises(ValueError):run('framing_effects_utilization',{'gain_frame':'x','loss_frame':'y','facts':{}})
 def test_row97_loss_aversion_reports_reference_lambda_and_asymmetry():
  o=run('loss_aversion_leverage',{'gain_frame':'keep 10','loss_frame':'lose 10','facts':{'delta':10}})['output']
@@ -112,31 +112,31 @@ def test_row97_loss_aversion_reports_reference_lambda_and_asymmetry():
 def test_row98_social_proof_wilson_interval_and_sample_floor():
  o=run('social_proof_deployment',{'claim':'60% chose it','evidence':'survey-1','claimed_proportion':.6,'sample_size':100})['output']
  lo,hi=o['wilson_interval_95'];assert lo==pytest.approx(.502,abs=.005) and hi==pytest.approx(.691,abs=.005)
- assert o['statistically_supported'] and o['deployment_allowed']
+ assert o['statistically_supported'] and o['caller_rubric_deployment_allowed']
  tiny=run('social_proof_deployment',{'claim':'60% chose it','evidence':'survey-1','claimed_proportion':.6,'sample_size':4})['output']
- assert not tiny['statistically_supported'] and not tiny['deployment_allowed']
+ assert not tiny['statistically_supported'] and not tiny['caller_rubric_deployment_allowed']
  unquantified=run('social_proof_deployment',{'claim':'popular','evidence':'survey-1','claimed_proportion':.6})['output']
- assert not unquantified['deployment_allowed']
+ assert not unquantified['caller_rubric_deployment_allowed']
  with pytest.raises(ValueError):run('social_proof_deployment',{'claim':'','evidence':'survey-1'})
  with pytest.raises(ValueError):run('social_proof_deployment',{'claim':'60% chose it','evidence':'s','claimed_proportion':.6,'sample_size':0})
 def test_row99_scarcity_arithmetic_verification():
  o=run('scarcity_creation',{'claim':'3 remain','evidence':'inventory snapshot','total_units':50,'sold_units':47,'claimed_remaining':3})['output']
- assert o['scarcity_arithmetic']['computed_remaining']==3 and o['arithmetic_consistent'] and o['deployment_allowed']
+ assert o['scarcity_arithmetic']['computed_remaining']==3 and o['arithmetic_consistent'] and o['caller_rubric_deployment_allowed']
  lying=run('scarcity_creation',{'claim':'3 remain','evidence':'snapshot','total_units':50,'sold_units':40,'claimed_remaining':3})['output']
- assert not lying['arithmetic_consistent'] and not lying['deployment_allowed'] and lying['fabrication_blocked']
+ assert not lying['arithmetic_consistent'] and not lying['caller_rubric_deployment_allowed'] and lying['fabrication_blocked']
  with pytest.raises(ValueError):run('scarcity_creation',{'claim':'x','total_units':5,'sold_units':9})
 def test_row100_reciprocity_obligation_risk_blocks_strings():
  o=run('reciprocity_triggers',{'benefit':'free guide','strings_attached':False})['output']
- assert o['allowed'] and o['obligation_risk_score']==0
+ assert o['caller_rubric_allowed'] and o['obligation_risk_score']==0
  quid=run('reciprocity_triggers',{'benefit':'free guide','strings_attached':True,'expected_return':'a referral'})['output']
- assert not quid['allowed'] and quid['blocked'] and quid['obligation_risk_score']==pytest.approx(1.0)
+ assert not quid['caller_rubric_allowed'] and quid['blocked'] and quid['obligation_risk_score']==pytest.approx(1.0)
 
 # Rows 101-109: distinct numerical engines and adversarial paths.
 def test_row101_authority_decay_and_fabrication_boundary():
- o=run('authority_positioning',{'claim':'licensed','evidence_records':[{'source':'registry','reliability':.9,'relevance':.8,'age_days':0}]})['output'];assert o['credibility_score']==pytest.approx(.72) and o['deployment_allowed']
- assert not run('authority_positioning',{'claim':'expert','evidence_records':[]})['output']['deployment_allowed']
+ o=run('authority_positioning',{'claim':'licensed','evidence_records':[{'source':'registry','reliability':.9,'relevance':.8,'age_days':0}]})['output'];assert o['credibility_score']==pytest.approx(.72) and o['caller_rubric_deployment_allowed']
+ assert not run('authority_positioning',{'claim':'expert','evidence_records':[]})['output']['caller_rubric_deployment_allowed']
 def test_row102_commitment_escalation_quantifies_pressure():
- o=run('consistency_commitment',{'prior_commitment':'trial','current_choice':'annual','freely_chosen':False,'commitment_scale':1,'requested_step':3})['output'];assert o['escalation_ratio']==3 and o['pressure_risk_score']==1 and not o['may_reference']
+ o=run('consistency_commitment',{'prior_commitment':'trial','current_choice':'annual','freely_chosen':False,'commitment_scale':1,'requested_step':3})['output'];assert o['escalation_ratio']==3 and o['pressure_risk_score']==1 and not o['caller_rubric_may_reference']
 def test_row103_liking_detects_fabricated_similarity():
  o=run('liking_enhancement',{'genuine_commonalities':['art'],'claimed_commonalities':['art','school']})['output'];assert o['authenticity_precision']==.5 and o['unsupported_claims']==['school'] and not o['usable']
 def test_row104_unity_scores_conflicting_goals():
@@ -145,10 +145,26 @@ def test_row105_presuasion_reports_attention_entropy():
  o=run('pre_suasion',{'context':'cost','disclosed':True,'attention_weights':[9,1]})['output'];assert o['salience_concentration']==.9 and o['attention_balance']<.5
 def test_row106_priming_control_effect_and_covert_block():
  o=run('priming_effects',{'context':'safety','disclosed':True,'exposed_successes':70,'exposed_total':100,'control_successes':50,'control_total':100})['output'];assert o['absolute_effect']==.2 and o['effect_interval_95'][0]>0
- assert not run('priming_effects',{'context':'hidden','disclosed':False,'exposed_successes':7,'exposed_total':10,'control_successes':5,'control_total':10})['output']['allowed']
+ assert not run('priming_effects',{'context':'hidden','disclosed':False,'exposed_successes':7,'exposed_total':10,'control_successes':5,'control_total':10})['output']['caller_rubric_allowed']
 def test_row107_nudge_uplift_and_friction_boundary():
- x={**C['nudge_design'],'baseline_uptake':.3,'default_uptake':.6,'opt_out_steps':4};o=run('nudge_design',x)['output'];assert o['estimated_uptake_lift']==.3 and not o['deployment_allowed']
+ x={**C['nudge_design'],'baseline_uptake':.3,'default_uptake':.6,'opt_out_steps':4};o=run('nudge_design',x)['output'];assert o['estimated_uptake_lift']==.3 and not o['caller_rubric_deployment_allowed']
 def test_row108_choice_architecture_finds_dominated_default():
- x={**C['choice_architecture'],'attribute_matrix':{'monthly':[1,1],'annual':[2,2]}};o=run('choice_architecture',x)['output'];assert o['dominated_options']==['monthly'] and not o['deployment_allowed']
+ x={**C['choice_architecture'],'attribute_matrix':{'monthly':[1,1],'annual':[2,2]}};o=run('choice_architecture',x)['output'];assert o['dominated_options']==['monthly'] and not o['caller_rubric_deployment_allowed']
 def test_row109_libertarian_welfare_and_regret():
- x={**C['libertarian_paternalism'],'expected_utilities':{'opt in':5,'opt out':2},'population_shares':{'opt in':.5,'opt out':.5}};o=run('libertarian_paternalism',x)['output'];assert o['expected_population_welfare']==3.5 and o['default_regret']==3 and not o['deployment_allowed']
+ x={**C['libertarian_paternalism'],'expected_utilities':{'opt in':5,'opt out':2},'population_shares':{'opt in':.5,'opt out':.5}};o=run('libertarian_paternalism',x)['output'];assert o['expected_population_welfare']==3.5 and o['default_regret']==3 and not o['caller_rubric_deployment_allowed']
+
+@pytest.mark.parametrize('method',list(C))
+def test_negotiation_diagnostics_do_not_authorize_effects_or_invent_confidence(method):
+ out=run(method,C[method])
+ assert out['status']=='supplied_input_arithmetic_and_rubrics_only' and out['capability_executed'] is False
+ result=out['output']
+ assert result['external_action_authorized'] is False and result['evidence_independently_verified'] is False
+ for key in ('confidence','uncertainty_interval','credibility_interval'):
+  assert result.get(key) is None
+ assert not set(result)&{'deployment_allowed','may_communicate','may_reference','allowed'}
+
+
+def test_supplied_priming_counts_are_not_a_causal_effect_estimate():
+ out=run('priming_effects',{'context':'safety','disclosed':True,'exposed_successes':70,'exposed_total':100,'control_successes':50,'control_total':100})['output']
+ assert out['absolute_effect']==.2 and out['descriptive_difference_available']
+ assert out['causal_estimate_available'] is False
