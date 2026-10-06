@@ -200,3 +200,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 - Replaced caller pattern/strength echo with exhaustive finite conjunction hypothesis search. Explicit complete boolean features and evidence-linked labels determine consistent version space, minimum observed training errors and simplest consistent rules. Unseen target consensus uses all consistent rules, preserving disagreement or inconsistent evidence as null.
 - Restricted to at most8 boolean features/6561 conjunctions and1000 observations, not universal induction or a trained neural model. No future accuracy, real-world truth, calibrated confidence or independent label provenance claim. Caller pattern/strength ignored.
 - Named tests learn positive/negated rules from changed labels, preserve unseen ambiguity and contradiction, reject duplicate/nonboolean observations. Focused224 passed; M20/ledger1618 passed. Row851SCOPED pending review; labels1963 historical,42SCOPED,1PARTIAL,4removed.
+
+## Actual exercise interleaving (row811)
+
+- Replaced repeated skill-index cycling and constant variety flag with a largest-remaining-count scheduler over actual supplied exercise records. Defers previous skill, uses every exercise exactly once; impossible imbalanced catalogs preserve unavoidable adjacent repeats and report that status rather than claiming success.
+- Named tests verify exact catalog conservation, no adjacent repeats, impossible-case visibility and64 small count combinations against the exact multiset feasibility inequality. No generated exercises, curriculum optimum or learning-gain claim. Row811SCOPED pending review.
+- Focused223 passed; M20/ledger1622 passed. Labels1962 historical,43SCOPED,1PARTIAL,4removed. Broad original breadth remains unfinished.
