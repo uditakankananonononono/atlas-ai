@@ -546,3 +546,7 @@ Root-level tests786pass after principal-bound limiter and authenticated-docs cha
 ## Legal1260-1309 template/reference retraction
 
 All50 legal branches share a supplied-field review template with different output keys/mechanism descriptions; no substantive named legal reasoning, actual authority retrieval/treatment/currency verification or evidentiary verification. Explicit supplied_legal_review_template_only/named_capability_executed=false/evidence_verified=false. Reference-field completeness no longer provenance_complete, and a matching authority id no longer sourced fact: supplied_reference_linked_unverified. Existing no-conclusion/no-effect/counsel-review limits retained. Ledger PARTIAL with history.66 focused+ledger pass. Labels1696historical54SCOPED256PARTIAL4removed.
+
+## Legal body-principal scope repair
+
+Legal facade previously attributed a valid authenticated caller's request to body tenant/actor, even if unrelated. Now requires body and nested data scope to match verified principal403, executes/readbacks verified identity. Signed actual-app test pins ta/alice vs tb/bob403, rightful200, nested spoof403/no-token401.61 focused tests pass after workspace recovery, one Starlette/AnyIO deprecation warning in newly built environment. Scanned central routes.py for request/body actor/tenant use: this was its remaining direct body-scope path. No production provider deployment claim.

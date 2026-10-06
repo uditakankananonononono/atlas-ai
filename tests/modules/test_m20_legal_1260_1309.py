@@ -59,13 +59,14 @@ def test_typed_validation_rejects_bad_date_url_empty_actor_and_unsupported_row()
  with pytest.raises(ValueError,match="actor_id"): analyze_legal_feature(1262,BASE,tenant_id="t",actor_id="")
  with pytest.raises(ValueError,match="between"): analyze_legal_feature(1310,BASE,tenant_id="t",actor_id="a")
 
-def test_exact_route_mount_returns_row_specific_artifact_and_rejects_cross_tenant():
+def test_exact_route_mount_returns_row_specific_artifact_and_rejects_cross_tenant(monkeypatch,oidc_auth_headers):
+ monkeypatch.delenv("ATLAS_DEV_NO_AUTH",raising=False)
  app=FastAPI(); app.include_router(router); client=TestClient(app)
  body={"feature_id":1301,"tenant_id":"tenant-a","actor_id":"reviewer-1","data":BASE}
- r=client.post("/api/modules/20/legal-1260-1309/support",json=body)
+ r=client.post("/api/modules/20/legal-1260-1309/support",headers=oidc_auth_headers("tenant-a","reviewer-1"),json=body)
  assert r.status_code==200 and r.json()["result"]["coding_validation_map"]["mechanism"]==SPECS[1301]["mechanism"]
  body["data"]={**BASE,"tenant_id":"tenant-b"}
- assert client.post("/api/modules/20/legal-1260-1309/support",json=body).status_code==422
+ assert client.post("/api/modules/20/legal-1260-1309/support",headers=oidc_auth_headers("tenant-a","reviewer-1"),json=body).status_code==403
 
 # Explicit row-level collection names make each ledger stamp independently auditable.
 def _row_case(fid):
@@ -85,3 +86,17 @@ def test_reference_presence_is_not_verified_legal_authority_or_fact():
  out=analyze_legal_feature(1260,d,tenant_id='t',actor_id='a')
  assert out['status']=='supplied_legal_review_template_only' and not out['named_capability_executed'] and not out['evidence_verified']
  assert all(not x['authority_independently_verified'] for x in out['provenance']['authorities'])
+
+
+def test_actual_app_legal_body_scope_cannot_spoof_principal(monkeypatch,oidc_auth_headers):
+ from app.main import app
+ monkeypatch.delenv('ATLAS_DEV_NO_AUTH',raising=False)
+ c=TestClient(app);path='/api/v1/api/modules/20/legal-1260-1309/support';auth=oidc_auth_headers('ta','alice')
+ body={'feature_id':1260,'tenant_id':'tb','actor_id':'bob','data':BASE}
+ assert c.post(path,headers=auth,json=body).status_code==403
+ body.update(tenant_id='ta',actor_id='alice')
+ r=c.post(path,headers=auth,json=body)
+ assert r.status_code==200 and r.json()['tenant_id']=='ta' and r.json()['actor_id']=='alice'
+ body['data']={**BASE,'actor_id':'bob'}
+ assert c.post(path,headers=auth,json=body).status_code==403
+ assert c.post(path,json=body).status_code==401
