@@ -16,3 +16,11 @@ def test_fabricated_evidence_labels_are_never_independent_verification():
  assert out['highest_claimed_state']=='independently_verified'
  assert out['items'][0]['state_is_caller_claim'] and out['items'][0]['evidence_verified'] is False
  assert 'highest_observed_state' not in out and 'verified_fraction' not in out
+
+
+def test_frontend_contract_fixture_is_generated_from_current_backend_shape():
+ import json
+ from pathlib import Path
+ fixture=Path(__file__).resolve().parents[2]/'frontend/components/fixtures/claimed-execution-ledger.json'
+ out=execution_truth_ledger([{'id':'s','claim':'Draft checklist','state':'independently_verified','evidence_ids':['invented-evidence'],'verifier':'unverified-label'}])
+ assert json.loads(fixture.read_text())==out

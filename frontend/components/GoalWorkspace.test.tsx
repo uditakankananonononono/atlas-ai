@@ -2,7 +2,8 @@ import {cleanup,render,screen,waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {afterEach,beforeEach,describe,expect,it,vi} from "vitest";
 import GoalWorkspace from "./GoalWorkspace";
-import {ApiError} from "./goal-workspace-api";
+import {ApiError,ExecutionState} from "./goal-workspace-api";
+import realLedger from "./fixtures/claimed-execution-ledger.json";
 
 const {apiMock}=vi.hoisted(()=>({apiMock:{
   createGoal:vi.fn(),getGoal:vi.fn(),buildPlan:vi.fn(),
@@ -15,13 +16,24 @@ vi.mock("./goal-workspace-api",async importOriginal=>{
 
 const goal={id:"goal-1",tenant_id:"t",statement:"Launch the cited pilot",status:"registered",created_at:"2026-09-23T00:00:00Z",sources:[{id:"src-1",uri:"https://example.test/spec",note:"spec"},{id:"src-2",uri:"https://example.test/metrics",note:""}],steps:[],approval_id:null};
 const plannedGoal={...goal,status:"planned",steps:[{id:"step-1",title:"Draft checklist",action_type:"draft_document",risk:"reversible",citations:["src-1"],detail:""}]};
-const emptyState={goal_id:"goal-1",tenant_id:"t",statement:goal.statement,status:"registered",approval_id:null,approval_decision:null,errors:{},ledger:{counts:{planned:0,simulated:0,externally_executed:0,independently_verified:0},highest_observed_state:null,items:[],verified_fraction:0,boundary:"Plans and simulations are never promoted."}};
-const executedState={...emptyState,status:"executed",approval_id:"ap-1",approval_decision:"approved",ledger:{...emptyState.ledger,counts:{planned:0,simulated:1,externally_executed:1,independently_verified:0},items:[{id:"step-1",claim:"Draft checklist",state:"externally_executed",evidence_ids:["ev-1"],verifier:null,source_module:"m20_product_orchestrator"}],verified_fraction:0}};
+const emptyState:ExecutionState={goal_id:"goal-1",tenant_id:"t",statement:goal.statement,status:"registered",approval_id:null,approval_decision:null,errors:{},ledger:{counts:{planned:0,simulated:0,externally_executed:0,independently_verified:0},highest_claimed_state:null,items:[],claimed_verified_fraction:0,status:"supplied_claim_rollup_only",evidence_verified:false,boundary:"Plans and simulations are never promoted."}};
+const executedState={...emptyState,status:"executed",approval_id:"ap-1",approval_decision:"approved",ledger:{...emptyState.ledger,counts:{planned:0,simulated:1,externally_executed:1,independently_verified:0},items:[{id:"step-1",claim:"Draft checklist",state:"externally_executed",state_is_caller_claim:true,evidence_verified:false,evidence_ids:["ev-1"],verifier:null,source_module:"m20_product_orchestrator"}],claimed_verified_fraction:0}};
 
 beforeEach(()=>{for(const fn of Object.values(apiMock))fn.mockReset()});
 afterEach(cleanup);
 
 describe("GoalWorkspace",()=>{
+ it("renders actual backend ledger output without upgrading invented verifier labels",async()=>{
+   apiMock.createGoal.mockResolvedValue(goal);apiMock.getGoal.mockResolvedValue(goal);
+   apiMock.executionState.mockResolvedValue({...emptyState,ledger:realLedger});
+   const user=userEvent.setup();render(<GoalWorkspace/>);
+   await user.type(screen.getByLabelText("Goal"),"Check claim");
+   await user.type(screen.getByLabelText(/Sources/),"https://example.test/spec");
+   await user.click(screen.getByRole("button",{name:"Register goal"}));
+   expect(await screen.findByText("claimed independently_verified (unverified claim)")).toHaveClass("text-slate-400");
+   expect(screen.getByText("claimed verifier unverified-label")).toHaveClass("text-slate-500");
+   expect(screen.getByText(/Evidence not verified/)).toBeInTheDocument();
+ });
  it("registers a goal with its sources and then demands citations per step",async()=>{
    apiMock.createGoal.mockResolvedValue(goal);
    apiMock.executionState.mockResolvedValue(emptyState);
@@ -73,7 +85,11 @@ describe("GoalWorkspace",()=>{
    apiMock.executionState.mockResolvedValue(executedState);
    await user.click(screen.getByRole("button",{name:"Execute approved plan"}));
    expect(apiMock.execute).toHaveBeenCalledWith("goal-1","ap-1");
-   await waitFor(()=>expect(screen.getByText("externally_executed: 1")).toBeInTheDocument());
+   await waitFor(()=>expect(screen.getByText("claimed externally_executed: 1")).toBeInTheDocument());
+   expect(screen.getByText("claimed externally_executed (unverified claim)")).toHaveClass("text-slate-400");
+   expect(screen.getByText(/supplied_claim_rollup_only. Evidence not verified/)).toBeInTheDocument();
+   expect(screen.getByText("claimed verified fraction 0")).toBeInTheDocument();
+   expect(screen.queryByText(/undefined/)).not.toBeInTheDocument();
    expect(screen.getByText(/evidence: ev-1/)).toBeInTheDocument();
  });
  it("shows the exact API failure instead of hiding it",async()=>{

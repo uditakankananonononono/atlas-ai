@@ -3,7 +3,7 @@ import {FormEvent,useCallback,useEffect,useMemo,useState} from "react";
 import {ApiError,ExecutionState,Goal,goalWorkspaceApi} from "./goal-workspace-api";
 
 type DraftStep={title:string;action_type:string;citations:string[]};
-const STATE_STYLE:Record<string,string>={planned:"text-slate-300",simulated:"text-cyan-300",externally_executed:"text-emerald-400",independently_verified:"text-emerald-300"};
+const STATE_STYLE:Record<string,string>={planned:"text-slate-300",simulated:"text-cyan-300",externally_executed:"text-slate-400",independently_verified:"text-slate-400"};
 
 export default function GoalWorkspace({apiBase="/api/v1/product-orchestrator"}:{apiBase?:string}){
   const api=useMemo(()=>goalWorkspaceApi(apiBase),[apiBase]);
@@ -74,8 +74,9 @@ export default function GoalWorkspace({apiBase="/api/v1/product-orchestrator"}:{
     {state&&<section className="rounded-xl bg-slate-900 p-4">
       <h2 className="text-lg font-semibold">Execution readback</h2>
       <p className="mt-1 text-xs text-slate-400">{state.ledger.boundary}</p>
-      <div className="mt-2 flex flex-wrap gap-3 text-sm">{Object.entries(state.ledger.counts).map(([k,v])=><span key={k} className={STATE_STYLE[k]??""}>{k}: {v}</span>)}<span className="text-slate-400">verified {state.ledger.verified_fraction}</span></div>
-      <ul className="mt-2 space-y-1 text-sm">{state.ledger.items.map(item=><li key={item.id} className="rounded bg-slate-800 p-2"><span className={STATE_STYLE[item.state]??""}>{item.state}</span> <strong className="ml-2">{item.claim}</strong>{item.evidence_ids.length>0&&<span className="ml-2 text-xs text-slate-500">evidence: {item.evidence_ids.join(", ")}</span>}{item.verifier&&<span className="ml-2 text-xs text-emerald-300">verified by {item.verifier}</span>}{state.errors[item.id]&&<span className="ml-2 text-xs text-red-300">{state.errors[item.id]}</span>}</li>)}</ul>
+      <p className="text-sm text-slate-400">{state.ledger.status}. Evidence {state.ledger.evidence_verified ? "verified" : "not verified"}.</p>
+      <div className="mt-2 flex flex-wrap gap-3 text-sm">{Object.entries(state.ledger.counts).map(([k,v])=><span key={k} className={STATE_STYLE[k]??""}>claimed {k}: {v}</span>)}<span className="text-slate-400">claimed verified fraction {state.ledger.claimed_verified_fraction}</span></div>
+      <ul className="mt-2 space-y-1 text-sm">{state.ledger.items.map(item=><li key={item.id} className="rounded bg-slate-800 p-2"><span className={STATE_STYLE[item.state]??""}>{item.state_is_caller_claim ? "claimed " : ""}{item.state} ({item.evidence_verified ? "evidence verified" : "unverified claim"})</span> <strong className="ml-2">{item.claim}</strong>{item.evidence_ids.length>0&&<span className="ml-2 text-xs text-slate-500">evidence: {item.evidence_ids.join(", ")}</span>}{item.verifier&&<span className="ml-2 text-xs text-slate-500">claimed verifier {item.verifier}</span>}{state.errors[item.id]&&<span className="ml-2 text-xs text-red-300">{state.errors[item.id]}</span>}</li>)}</ul>
       {state.ledger.items.length===0&&<p className="mt-2 text-sm text-slate-500">No steps yet - submit a cited plan first.</p>}
     </section>}</>}
   </main>;

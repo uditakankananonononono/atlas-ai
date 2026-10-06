@@ -3,8 +3,8 @@ import {authFetch} from "../lib/supabase";
 export type GoalSource={id:string;uri:string;note:string};
 export type PlanStep={id:string;title:string;action_type:string;risk:string;citations:string[];detail:string};
 export type Goal={id:string;tenant_id:string;statement:string;status:string;created_at:string;sources:GoalSource[];steps:PlanStep[];approval_id:string|null};
-export type LedgerItem={id:string;claim:string;state:string;evidence_ids:string[];verifier:string|null;source_module:string|null};
-export type ExecutionState={goal_id:string;tenant_id:string;statement:string;status:string;approval_id:string|null;approval_decision:string|null;errors:Record<string,string>;ledger:{counts:Record<string,number>;highest_observed_state:string|null;items:LedgerItem[];verified_fraction:number;boundary:string}};
+export type LedgerItem={id:string;claim:string;state:string;state_is_caller_claim:boolean;evidence_verified:boolean;evidence_ids:string[];verifier:string|null;source_module:string|null};
+export type ExecutionState={goal_id:string;tenant_id:string;statement:string;status:string;approval_id:string|null;approval_decision:string|null;errors:Record<string,string>;ledger:{counts:Record<string,number>;highest_claimed_state:string|null;items:LedgerItem[];claimed_verified_fraction:number;boundary:string;status:string;evidence_verified:boolean}};
 export class ApiError extends Error{constructor(public status:number,public detail:string){super(detail)}}
 async function req<T>(path:string,init?:RequestInit):Promise<T>{
   const r=await authFetch(path,init);
