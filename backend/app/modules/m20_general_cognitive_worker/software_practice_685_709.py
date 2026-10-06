@@ -83,7 +83,20 @@ DISPATCH={'example_mapping':_example,'behavior_driven_development':_bdd,'test_dr
 def software_practice_685_709(method:str,data:dict[str,Any])->dict[str,Any]:
  if method not in METHODS:raise ValueError(f'unsupported method: {method}')
  _need(method,data);result=DISPATCH[method](data)
+ # Declared flags and structural checks cannot certify repository behavior.
+ computed_claims={'ready_for_delivery','executable','executable_count','red_confirmed','green_confirmed','cycle_complete','executable_before_implementation','agreement_complete','tests_pass_before','tests_pass_after','behavior_preserved','old_removal_allowed','safe','unsafe_flag_names','server_authoritative','direct_push_protected','clean'}
+ def label_section(value):
+  return {('caller_diagnostic_'+k if k in computed_claims else k):v for k,v in value.items()}
+ result=label_section(result)
+ # Only computed annotations, not arbitrary caller metadata or echoed bodies.
+ if method=='behavior_driven_development':
+  result['scenarios']=[{('caller_diagnostic_executable' if k=='executable' else k):v for k,v in row.items()} for row in result['scenarios']]
+ if method=='feature_toggle':
+  result['flags']=[{('caller_diagnostic_safe' if k=='safe' else k):v for k,v in row.items()} for row in result['flags']]
+ result['repository_behavior_verified']=False
+ result['release_authorized']=False
  return {'method':method,'capability':NAMES[method],'result':result,
   'evaluation':{'required_fields':REQUIRED[method],'required_fields_present':True,'output_fields':sorted(result),'failure_tests':['missing required field','malformed method input','unsafe release or mutation claim'],'independent_verification_required':True},
-  'uncertainty':{'level':'medium','assumptions':data.get('assumptions',[]),'unknowns':data.get('unknowns',[]),'calibration':'Prepared evidence does not prove the practice was performed or that repository behavior is correct.'},
+  'status':'supplied_input_practice_diagnostics_only','capability_executed':False,'evidence_verified':False,
+  'uncertainty':{'level':'unquantified','assumptions':data.get('assumptions',[]),'unknowns':data.get('unknowns',[]),'calibration':'Prepared evidence does not prove the practice was performed or that repository behavior is correct.'},
   'boundary':'Prepared engineering evidence only. No merge, release, deployment, approval, or repository mutation is performed.','human_review_required':True}
