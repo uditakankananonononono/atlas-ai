@@ -2,8 +2,9 @@
   "schema_version": 1,
   "source": "User owner-channel expanded M1-M4, Tools and Claire specification, September 20 2026",
   "counts": {
-    "verified-pushed": 320,
-    "missing": 9
+    "verified-pushed": 319,
+    "missing": 9,
+    "UNSUPPORTED": 1
   },
   "rows": [
     {
@@ -2015,7 +2016,7 @@
       "module": "M1",
       "requirement": "Fine-tuned DeBERTa eligibility classification",
       "description": "Fine-tuned DeBERTa eligibility classification",
-      "status": "verified-pushed",
+      "status": "UNSUPPORTED",
       "evidence": {
         "commit": "4a647263fbb2b6ed9ec4178d5a9a07b7ac58d96e",
         "implementation_path": "backend/app/modules/m01_opportunity_discovery/expanded_spec_67_131.py",
@@ -2024,7 +2025,8 @@
       "boundary": "Source-grounded opportunity discovery with legal/public adapters, explicit provenance, uncertainty, deduplication and user review. No self-bots, login-driven mass scraping, evasion, fabricated eligibility or autonomous application effects.",
       "source_message_ids": [
         "wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA"
-      ]
+      ],
+      "claim_audit": "Re-audited on recon-482 (code read at e6a55a7, no model run): expanded_spec_67_131.py row 127 returns a deterministic interface (model label 'deberta-eligibility-interface'; label eligible/needs_information from required-vs-supplied applicant facts, human_review_required True); the cited test checks only that contract. No DeBERTa model is loaded in this path, no fine-tuned checkpoint or labelled data exists in the repo, and the separate zero-shot wrapper in classifier.py is unmounted. 'Fine-tuned DeBERTa eligibility classification' is therefore UNSUPPORTED; the deterministic interface is real but is not that claim. No training or labels fabricated."
     },
     {
       "id": 128,
