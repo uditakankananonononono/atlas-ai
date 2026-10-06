@@ -179,3 +179,16 @@ def test_successful_unrelated_tool_never_confirms_title_similar_fact():
  assert loop.semantic.get(fact.id).last_confirmed_at==before
  assert any('no contradiction/confirmation inferred' in t.detail for t in loop.traces)
  assert not any('fact contradicted' in t.detail for t in loop.traces)
+
+
+def test_shared_dispatcher_episodes_are_task_scoped_and_detached():
+ loop,_,_=build_loop()
+ a=loop.start(TaskContext(goal='a',plan=[PlanNode(title='a',tool='web_search',arguments={'fixture':'a'})]))
+ b=loop.start(TaskContext(goal='b',plan=[PlanNode(title='b',tool='web_search',arguments={'fixture':'b'})]))
+ assert a.state==b.state==TaskState.SUCCEEDED
+ a_episode=loop.episodic.for_task(a.id)[0];b_episode=loop.episodic.for_task(b.id)[0]
+ assert [x.arguments for x in a_episode.actions]==[{'fixture':'a'}]
+ assert [x.arguments for x in b_episode.actions]==[{'fixture':'b'}]
+ assert {x.task_id for x in b_episode.actions}=={b.id}
+ loop.dispatcher.records[-1].arguments['fixture']='changed'
+ assert b_episode.actions[0].arguments=={'fixture':'b'}

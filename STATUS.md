@@ -582,3 +582,7 @@ Second actual-model run startup0.81s peak600704KiB total12.37s: planner5.58s rej
 ## Expectation verification retraction
 
 Executive previously called semantic.confirm on title-similar low-confidence facts after any successful tool and logged them as contradicted, without comparing results with fact content. Removed false confirmation timestamp refresh/contradiction claim. Similarity lookup now only logs need for evidence review. No contradiction or fact truth evaluator is implemented here. Regression proves title-identical low-confidence fact retains last_confirmed_at after unrelated successful tool; focused executive/memory/runtime tests passed (see exact count in log).
+
+## Task-scoped episode provenance correction
+
+Shared executive previously copied the entire dispatcher's action history into each episode, falsely attributing earlier tasks' actions to later tasks. ActionRecord now carries dispatch task_id; closed episode selects matching task records and deep-copies them. Regression uses two tasks through one loop with distinct arguments, excludes earlier task actions and verifies later dispatcher mutation cannot rewrite stored episode actions. This fixes local task attribution, not authenticated effect receipts, outcome correctness or durable distributed lifecycle.

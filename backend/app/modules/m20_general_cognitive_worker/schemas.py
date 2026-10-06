@@ -115,6 +115,7 @@ class ActionRecord(BaseModel):
     """One executed action inside an episode or plan step."""
 
     tool: str
+    task_id: str | None = None
     arguments: dict[str, Any] = Field(default_factory=dict)
     result_summary: str = ""
     succeeded: bool = True
