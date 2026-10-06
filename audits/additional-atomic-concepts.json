@@ -622,7 +622,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: No collector process, no persisted consent scope or event store; it only filters event dicts the caller passes and reports local_only.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "7.6",
@@ -635,7 +644,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: No stored consented-event history; scores come only from events in the request, weights default in code.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "7.7",
@@ -648,7 +666,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Returns a deletion plan. No rows, derived embeddings or index entries are deleted and collection is not actually stopped.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "8.1",
@@ -661,7 +688,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: No embedding is computed: the caller supplies the vector; nothing is stored or indexed.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "8.2",
@@ -674,7 +710,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: No embedding is computed: the caller supplies the vector; nothing is stored or indexed.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "8.3",
@@ -687,7 +732,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: No embedding is computed: the caller supplies the vector; nothing is stored or indexed.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "8.4",
@@ -700,7 +754,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Returns a manifest with index_built false; no vector store or tenant-partitioned index exists.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "8.5",
@@ -713,7 +776,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Cosine ranking over entries the caller passes in; no memory store is queried and nothing consults it before an agent action.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "8.6",
@@ -726,7 +798,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Ranks caller-supplied options with caller-supplied signals; no persisted preference model and no default behavior is changed.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "9.1",
@@ -739,7 +820,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Computes occurrence dates only (schedule_created false); no persisted weekly schedule or reminder is created.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "9.2",
@@ -752,7 +842,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Formats caller-supplied actions; no store of completed actions is read.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "9.3",
@@ -765,7 +864,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Validates caller-supplied labels; labels are not persisted or tied to a review workflow.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "9.4",
@@ -778,7 +886,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Converts caller-supplied reviews to signal records; nothing is stored or fed to any trainer.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "9.5",
@@ -791,7 +908,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Returns a training proposal (split counts, metrics list); no reward model is trained or evaluated.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "9.6",
@@ -804,7 +930,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Computes a trend over caller-supplied scores; no evaluation runs are produced or stored over time.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "10.1",
@@ -817,7 +952,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Summarizes caller-supplied metric values; the agent does not collect its own performance metrics.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "10.2",
@@ -830,7 +974,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Builds a proposal record (hash, evidence, plan); no prompt registry entry, review queue or rewrite is created or applied.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "10.3",
@@ -843,7 +996,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Builds a proposal record; no algorithm change is reviewed, queued or applied.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "11.1",
@@ -856,7 +1018,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Intersects relation labels of caller-supplied cases; no pattern extraction from real data or stored pattern library.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "11.2",
@@ -869,7 +1040,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Checks a caller-supplied role mapping; no transfer is executed or validated on a target domain.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "13.1",
@@ -882,7 +1062,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Heuristic weighted score of caller-supplied coverage/freshness/agreement; not a calibrated estimate of the agent's own knowledge and not measured against outcomes.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "13.2",
@@ -895,7 +1084,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Flags a claim against a caller-supplied score; it does not gate any action (block_action_driving_claim false) and no score source exists.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "17.1",
@@ -908,7 +1106,16 @@
       "research_required": true,
       "implementation_path": null,
       "test_evidence": null,
-      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence."
+      "verification_standard": "Strongest honest real-world version; mounted boundary; distinctive invariants; negative/failure tests; literal scale or external effects require evidence.",
+      "claim_audit": {
+        "implementation_kind": "pure-analysis-wrapper",
+        "implementation_path": "backend/app/modules/m21_claire/atomic_concepts_47_69.py",
+        "mounted_route": "POST /api/v1/claire/atomic-concepts/47-69/analyze (booted app, no tenant dependency; compute only)",
+        "test_evidence": "tests/modules/test_m21_atomic_concepts_47_69.py",
+        "effects_performed": [],
+        "unfulfilled": "NOT DELIVERED: Thresholds caller-supplied challenge and skill numbers; no detection from user behavior or telemetry.",
+        "status_basis": "Honest status kept as missing; reviewed by code read of rows 7.5-17.1 and booted-app route probe, 2026-10-07. Not verified-pushed."
+      }
     },
     {
       "atomic_row_id": "17.2",
