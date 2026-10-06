@@ -110,7 +110,7 @@ def reasoning(row,p):
  if row==846:
   prior=float(p.get('prior',.5));likelihood=float(p.get('likelihood_given_h',.5));alt=float(p.get('likelihood_given_not_h',.5));den=prior*likelihood+(1-prior)*alt
   if not all(0<=x<=1 for x in (prior,likelihood,alt)) or not den:raise LearningReasoningError('invalid probabilities')
-  out['bayes']={'prior':prior,'posterior':prior*likelihood/den,'likelihoods':[likelihood,alt]}
+  out['bayes']={'prior':prior,'posterior':prior*likelihood/den,'likelihoods':[likelihood,alt],'status':'supplied_probability_bayes_calculation','assumptions_verified':False,'real_world_truth_verified':False}
  if row==847:
   try:out['fuzzy']=infer(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc

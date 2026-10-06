@@ -226,3 +226,19 @@ def test_1458_knowledge_tracing_distinctive_computation_moves():
  _assert_row_moves("knowledge_tracing",1458)
 def test_1459_affect_detection_distinctive_computation_moves():
  _assert_row_moves("affect_detection",1459)
+
+
+def test_bkt_outputs_expose_unfitted_parameters_and_conditional_scope():
+ out=analytics('knowledge_tracing')['result']
+ a=out['model_assumptions']
+ assert a=={'prior_mastery':.2,'learn_rate':.1,'slip':.1,'guess':.2,'parameter_source':'unfitted_example_defaults','fitted_to_data':False,'learner_mastery_verified':False}
+ state=out['knowledge_state'][0]
+ assert state['status']=='conditional_unfitted_model_calculation' and not state['learner_mastery_verified']
+ prior=.2;posterior=prior*.9/(prior*.9+(1-prior)*.2);m=posterior+(1-posterior)*.1
+ posterior=m*.1/(m*.1+(1-m)*.8);expected=posterior+(1-posterior)*.1
+ assert state['mastery_probability']==pytest.approx(round(expected,4))
+ supplied=analytics('knowledge_tracing',prior_mastery=.3,learn_rate=.2,slip=.15,guess=.25)['result']
+ assert supplied['model_assumptions']['parameter_source']=='caller'
+ assert supplied['model_assumptions']['fitted_to_data'] is False
+ for name in ('prior_mastery','learn_rate','slip','guess'):
+  with pytest.raises(EducationError):analytics('knowledge_tracing',**{name:float('nan')})

@@ -200,7 +200,10 @@ def _analytics(cap:Capability,p:dict[str,Any])->dict[str,Any]:
         out["frequent_patterns"]=[{"event_type":k,"support":v} for k,v in sorted(counts.items()) if v>=min_support]
     if cap.row_id in (1457,1458):
         prior=float(p.get("prior_mastery",.2)); learn=float(p.get("learn_rate",.1)); slip=float(p.get("slip",.1)); guess=float(p.get("guess",.2))
-        if not all(0<=x<=1 for x in (prior,learn,slip,guess)): raise EducationError("BKT probabilities must be in [0,1]")
+        if not all(math.isfinite(x) and 0<=x<=1 for x in (prior,learn,slip,guess)): raise EducationError("BKT probabilities must be in [0,1]")
+        out["model_assumptions"]={"prior_mastery":prior,"learn_rate":learn,"slip":slip,"guess":guess,
+            "parameter_source":"caller" if all(k in p for k in ("prior_mastery","learn_rate","slip","guess")) else "unfitted_example_defaults",
+            "fitted_to_data":False,"learner_mastery_verified":False}
         traces=[]
         for key in sorted(grouped):
             m=prior
@@ -208,7 +211,7 @@ def _analytics(cap:Capability,p:dict[str,Any])->dict[str,Any]:
                 correct=bool(e.get("correct")); likelihood=m*(1-slip)+(1-m)*guess if correct else m*slip+(1-m)*(1-guess)
                 posterior=(m*(1-slip)/likelihood) if correct and likelihood else (m*slip/likelihood if likelihood else m)
                 m=posterior+(1-posterior)*learn
-            traces.append({"learner_id":key[0],"skill":key[1],"mastery_probability":round(m,4),"model":"Bayesian knowledge tracing","not_a_grade":True})
+            traces.append({"learner_id":key[0],"skill":key[1],"mastery_probability":round(m,4),"model":"Bayesian knowledge tracing","not_a_grade":True,"status":"conditional_unfitted_model_calculation","learner_mastery_verified":False})
         out["knowledge_state"]=traces
     if cap.row_id==1459:
         allowed={"self_report","voluntary_check_in","interaction_signal"}; signals=[]

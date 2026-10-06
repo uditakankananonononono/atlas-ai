@@ -377,3 +377,9 @@ M20 is still open. Next: inspect all its overstated row branches against the sou
 ## Low-priority money-name cleanup
 
 - Closed reviewer camelCase/plural gaps: split lower-to-upper boundaries before casefold; added orders/refunds/bill/topup/cashout/deposit/funds/money tokens. Focused53 pass. The same incomplete-name-vocabulary/trusted-metadata caveat still applies; this is defense-in-depth, not semantic effect detection.
+
+## Cognitive-learning belief revision and education model assumptions
+
+- Row880's heuristic prior/reliability/direction blend is no longer a revised confidence probability. Reports belief_revision_model_unavailable with null revision/confidence, complete=false and named nonexecution. Prior remains caller supplied. Row880 PARTIAL.
+- Education rows1457/1458 retain real sequential Bayesian knowledge-tracing arithmetic, now SCOPED. Expose all prior/learn/slip/guess parameters and whether callers supplied every one; missing parameters use unfitted_example_defaults. No parameter fitting or independently verified learner mastery. Exact two-attempt manual arithmetic and changed caller parameters tested; nonfinite parameters reject. Probability is conditional on these assumptions, not a grade or measured real mastery.
+- Row846's Bayes computation explicitly labels caller-supplied probabilities/likelihoods and unverified assumptions/real-world truth. No inferred likelihood quality. Latest label counts1894 historical/50SCOPED/62PARTIAL/4removed. M20+ledger1762 pass before the added BKT exact test; focused post-test log retained. Independent review pending.
