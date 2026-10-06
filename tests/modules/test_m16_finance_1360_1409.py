@@ -33,8 +33,9 @@ def test_validation_rejects_bad_probability_and_alignment():
     with pytest.raises(ValueError): run("political_risk",{"scenario_probabilities":[.3,.3],"scenario_losses":[1,2]})
     with pytest.raises(ValueError): run("basket_options",{"spots":[1,2],"weights":[1],"strike":1})
 
-def test_routes_are_mounted_under_executive_dashboard_boundary():
-    c=TestClient(app); headers={"X-Tenant-ID":"t-finance","X-Actor-ID":"u-finance"}
+def test_routes_are_mounted_under_executive_dashboard_boundary(monkeypatch,oidc_auth_headers):
+    monkeypatch.delenv("ATLAS_DEV_NO_AUTH",raising=False)
+    c=TestClient(app); headers=oidc_auth_headers("t-finance","u-finance")
     methods=c.get("/api/v1/executive-dashboard/finance/methods",headers=headers)
     assert methods.status_code==200 and len(methods.json())==50
     r=c.post("/api/v1/executive-dashboard/finance/analyze",headers=headers,json={"method":"profitability","data":CASES["profitability"]})

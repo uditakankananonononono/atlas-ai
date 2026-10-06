@@ -42,8 +42,9 @@ def test_provenance_and_scope_required():
  with pytest.raises(CognitiveLearningError):execute(860,p)
  p=payload(860);del p['tenant_id']
  with pytest.raises(CognitiveLearningError,match='tenant_id'):execute(860,p)
-def test_exact_native_route_mount_and_header_scope():
- c=TestClient(app);p=payload(879);r=c.post('/api/v1/api/modules/20/cognitive-learning-860-909/879',headers={'X-Tenant-ID':'tenant-a','X-Actor-ID':'actor-a'},json={'payload':p});assert r.status_code==200 and r.json()['result']['prediction_error']==pytest.approx(.6)
+def test_exact_native_route_mount_and_header_scope(monkeypatch,oidc_auth_headers):
+ monkeypatch.delenv("ATLAS_DEV_NO_AUTH",raising=False)
+ c=TestClient(app);p=payload(879);r=c.post('/api/v1/api/modules/20/cognitive-learning-860-909/879',headers=oidc_auth_headers('tenant-a','actor-a'),json={'payload':p});assert r.status_code==200 and r.json()['result']['prediction_error']==pytest.approx(.6)
 def test_capabilities_lists_exact_rows():
  assert [x['row_id'] for x in capabilities()]==list(range(860,910))
 
@@ -172,3 +173,15 @@ def test_all_fifty_named_abilities_remain_nonexecuted_even_with_all_stages_suppl
  assert execute(888,payload(888))['result']['verified'] is False
  assert execute(861,payload(861))['result']['verdict'] is None
  assert all(not x['capability_executed'] for x in capabilities())
+
+
+def test_signed_sibling_routes_reject_spoof_scope_headers(monkeypatch,oidc_auth_headers):
+ monkeypatch.delenv('ATLAS_DEV_NO_AUTH',raising=False)
+ c=TestClient(app);good=oidc_auth_headers('ta','alice');bad={**good,'X-Tenant-ID':'tb','X-Actor-ID':'bob'}
+ paths=[('/api/v1/api/modules/20/cognitive-learning-860-909/879',{'payload':{}}),('/api/v1/api/modules/20/education/bayesian_knowledge_tracing',{'payload':{}}),('/api/v1/executive-dashboard/finance/analyze',{'method':'profitability','data':{}})]
+ for path,body in paths:
+  assert c.post(path,headers=bad,json=body).status_code==403
+  assert c.post(path,json=body).status_code==401
+ p=payload(879);p.pop('tenant_id');p.pop('actor_id')
+ r=c.post(paths[0][0],headers=good,json={'payload':p})
+ assert r.status_code==200 and r.json()['scope']=={'tenant_id':'ta','actor_id':'alice'}

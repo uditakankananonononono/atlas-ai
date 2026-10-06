@@ -234,7 +234,9 @@ def finance_methods():
     return [FinanceMethodInfo(method=m,feature_row=row) for m,row in ROWS.items()]
 
 @router.post("/finance/analyze")
-def finance_analyze(data:FinanceAnalysisIn,x_tenant_id:str=Header(min_length=1,alias="X-Tenant-ID"),x_actor_id:str=Header(min_length=1,alias="X-Actor-ID")):
+def finance_analyze(data:FinanceAnalysisIn,x_tenant_id:str|None=Header(None,alias="X-Tenant-ID"),x_actor_id:str|None=Header(None,alias="X-Actor-ID"),principal:TenantContext=Depends(require_tenant)):
+    if (x_tenant_id is not None and x_tenant_id!=principal.tenant_id) or (x_actor_id is not None and x_actor_id!=principal.actor_id):raise HTTPException(403,'scope header mismatches authenticated principal')
+    x_tenant_id=principal.tenant_id;x_actor_id=principal.actor_id
     from .finance import run
     try:
         result=run(data.method,data.data,data.seed)
