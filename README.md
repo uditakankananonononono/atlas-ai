@@ -22,6 +22,10 @@ Claire now also has a consent-first, actor-scoped owner interview with five fixe
 
 The previous README was stale. It still described the first foundation commit and called current modules stubs even after their implementations landed. It also claimed auth, tenant state, workers, providers, billing and deployment were all deferred, which is no longer true. This README replaces those claims rather than papering over remaining gaps.
 
+## Frontend manifest boundary
+
+The frontend/ package and its lockfile are used by CI and the frontend Docker build. The root package.json/lockfile are a legacy duplicate (Next15, React19); they are not the deployed frontend manifest and have not been validated by the frontend16 tests. Run npm commands in frontend/, not at repo root.
+
 ## Run locally
 
 ```bash

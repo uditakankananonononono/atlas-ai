@@ -88,7 +88,7 @@ def test_learning_rows_have_evaluation_and_uncertainty(row):
         if row == 847: payload["memberships"] = {"x": .5}
     else:
         payload["problem"] = "solve this"
-    if row in {810,812,819,823,844,845,848,849,850,852}:
+    if row in {810,812,819,821,822,823,844,845,848,849,850,852}:
         # These rebuilt operators require real observations/formulas/problems;
         # a source label and objective alone cannot establish execution.
         from app.modules.m20_general_cognitive_worker.learning_reasoning_810_859 import LearningReasoningError

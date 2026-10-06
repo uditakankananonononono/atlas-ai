@@ -28,3 +28,10 @@ def test_difficulty_changes_ease_not_fabricated_mastery():
 @pytest.mark.parametrize('changes',[{'quality':6},{'quality':True},{'ease':float('nan')},{'repetitions':-1},{'repetitions':1,'interval_days':0},{'reviewed_at':'2026-10-07'},{'evidence_id':None}])
 def test_invalid_or_unobserved_review_rejected(changes):
  with pytest.raises(ValueError):review(**changes)
+
+@pytest.mark.parametrize('interval,ease,expected',[(8,2.5,20),(7,1.3,10),(19,2.1,40),(3,1.7,6)])
+def test_later_interval_depends_on_both_prior_state_values(interval,ease,expected):
+ r=review(repetitions=4,interval_days=interval,ease=ease)
+ assert r['interval_days']==expected
+ assert r['previous_state']['interval_days']==interval
+ assert r['previous_state']['ease']==ease
