@@ -10,6 +10,7 @@ from math import exp, log, sqrt
 import re
 from typing import Any, Callable
 from .admm import solve_quadratic_l1
+from .bandits import epsilon_greedy, contextual_ucb, thompson, ucb
 from .learning_optimization import bilevel, stochastic_approximation, online_regression
 from .conic_solvers import semidefinite, second_order, geometric
 from .lp_solvers import cutting_planes, branch_and_bound, column_generation, benders, lagrangian_binary_knapsack, fractional_linear
@@ -61,7 +62,7 @@ def _problem(p):
     return c,x,A,b,sense,{'objective_value':_dot(c,x),'max_violation':max(violations,default=0.0),'violation_count':sum(v>1e-9 for v in violations),'feasible':not any(v>1e-9 for v in violations),'constraint_residuals':residual}
 
 def _opt(row,p):
-    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe,240:cutting_planes,241:branch_and_bound,242:column_generation,243:benders,244:lagrangian_binary_knapsack,245:semidefinite,246:second_order,247:geometric,248:fractional_linear,249:bilevel,250:stochastic_approximation,251:online_regression}
+    solvers={235:dual_decomposition,237:coordinate_descent,238:proximal_gradient,239:frank_wolfe,240:cutting_planes,241:branch_and_bound,242:column_generation,243:benders,244:lagrangian_binary_knapsack,245:semidefinite,246:second_order,247:geometric,248:fractional_linear,249:bilevel,250:stochastic_approximation,251:online_regression,252:epsilon_greedy,253:contextual_ucb,254:thompson,255:ucb}
     if row in solvers:
         try:return solvers[row](p)
         except (ValueError,KeyError,TypeError) as exc:raise WorkbenchError(str(exc)) from exc
@@ -73,17 +74,11 @@ def _opt(row,p):
     r=[_dot(a,x)-z for a,z in zip(A,b)]; grad=[c[j]+sum(max(0,q)*a[j] for q,a in zip(r,A)) for j in range(len(x))]
     common={'diagnostics':d,'metrics':{'gradient_norm':sqrt(_dot(grad,grad)),'confidence':_confidence(r or c)},'uncertainty':{'kind':'deterministic_input_diagnostic','solver_executed':False}}
     H={
-252:lambda:{'arm_means':[_mean(_nums(v,'arm_rewards',nonempty=False)) for v in p.get('arm_rewards',[])],'selected_arm':max(range(len(p.get('arm_rewards',[]))),key=lambda i:_mean(p['arm_rewards'][i])) if p.get('arm_rewards') else None},
-253:lambda:{'context_score':[_dot(_nums(w,'model_weights'),x) for w in p.get('model_weights',[])],'overlap_ok':all(float(q)>0 for q in p.get('propensities',[]))},
-254:lambda:{'posterior_means':[(a+s)/(a+b+s+f) for (a,b),(s,f) in zip(p.get('priors',[]),p.get('outcomes',[]))],'selected_arm':max(range(len(p.get('priors',[]))),key=lambda i:(p['priors'][i][0]+p['outcomes'][i][0])/sum(p['priors'][i]+p['outcomes'][i])) if p.get('priors') else None},
-255:lambda:{'ucb_scores':[float('inf') if n==0 else m+sqrt(2*log(max(2,it))/n) for m,n in zip(_nums(p.get('means',[]),'means',nonempty=False),_nums(p.get('counts',[]),'counts',nonempty=False))]},
 256:lambda:{'normalized_weights':(lambda ws:[w/sum(ws) for w in ws])([exp(-step*v) for v in _nums(p.get('expert_losses',[0]),'expert_losses')]),'aggregate_loss':_mean(_nums(p.get('expert_losses',[0]),'expert_losses'))},
 257:lambda:{'cumulative_regret':sum(_nums(p.get('learner_losses',[0]),'learner_losses'))-sum(_nums(p.get('comparator_losses',[0]),'comparator_losses')),'average_regret':(sum(p.get('learner_losses',[0]))-sum(p.get('comparator_losses',[0])))/len(p.get('learner_losses',[0]))},
 258:lambda:{'best_response_gaps':[max(row)-_mean(row) for row in _matrix(p.get('payoff_matrix',[[0]]),'payoff_matrix')],'equilibrium_gap':max((max(row)-_mean(row) for row in p.get('payoff_matrix',[[0]])),default=0)},
 259:lambda:{'empirical_frequencies':[(v+1)/(sum(_nums(p.get('action_counts',[0]),'action_counts'))+len(p.get('action_counts',[0]))) for v in _nums(p.get('action_counts',[0]),'action_counts')],'best_response':max(range(len(c)),key=lambda i:c[i]),'exploitability':max(c)-_mean(c)},
     }
-    if row in (252,) and not p.get('arm_rewards'):raise WorkbenchError('arm_rewards must be non-empty')
-    if row==255 and len(p.get('means',[]))!=len(p.get('counts',[])):raise WorkbenchError('means and counts must align')
     if row==257 and len(p.get('learner_losses',[0]))!=len(p.get('comparator_losses',[0])):raise WorkbenchError('loss histories must align')
     out=H[row]();out.update(common);return out
 
