@@ -162,3 +162,5 @@ Finite knapsack1992/1993 SCOPED to at most20 items. Latest labels1812historical/
 22 cognitive reference substitutes now PARTIAL with explicit reference_operator/named_capability_executed=false. Latest labels1790historical/54SCOPED/162PARTIAL/4removed.
 
 Reviewer follow-up:26 cognitive reference substitutes, latest labels1786historical/54SCOPED/166PARTIAL/4removed.
+
+Software practice685-709 PARTIAL supplied diagnostics/templates, no repository/test execution. Latest labels1761historical/54SCOPED/191PARTIAL/4removed.

@@ -4,8 +4,8 @@
   "source_revision_checked_at": "2026-09-20T19:11:47+05:30",
   "audited_head": "4f5370d6c7d715eed92e48be09ee5c09d9689d42",
   "counts": {
-    "verified-pushed": 1786,
-    "PARTIAL": 166,
+    "verified-pushed": 1761,
+    "PARTIAL": 191,
     "SCOPED": 54,
     "removed": 4,
     "thin": 0,
@@ -11735,13 +11735,26 @@
       "category": "Technical & Engineering",
       "requirement": "Example Mapping",
       "description": "Clarifies requirements",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 686,
@@ -11749,13 +11762,26 @@
       "category": "Technical & Engineering",
       "requirement": "Behavior-Driven Development",
       "description": "Specifies behavior",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 687,
@@ -11763,13 +11789,26 @@
       "category": "Technical & Engineering",
       "requirement": "Test-Driven Development",
       "description": "Writes tests first",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 688,
@@ -11777,13 +11816,26 @@
       "category": "Technical & Engineering",
       "requirement": "Acceptance Test-Driven Development",
       "description": "Tests from user perspective",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 689,
@@ -11791,13 +11843,26 @@
       "category": "Technical & Engineering",
       "requirement": "Refactoring",
       "description": "Improves without changing behavior",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 690,
@@ -11805,13 +11870,26 @@
       "category": "Technical & Engineering",
       "requirement": "Code Review",
       "description": "Improves quality",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 691,
@@ -11819,13 +11897,26 @@
       "category": "Technical & Engineering",
       "requirement": "Pair Programming",
       "description": "Collaborates on code",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 692,
@@ -11833,13 +11924,26 @@
       "category": "Technical & Engineering",
       "requirement": "Mob Programming",
       "description": "Teams on one problem",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 693,
@@ -11847,13 +11951,26 @@
       "category": "Technical & Engineering",
       "requirement": "Technical Debt Management",
       "description": "Balances speed and quality",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 694,
@@ -11861,13 +11978,26 @@
       "category": "Technical & Engineering",
       "requirement": "Legacy Code Modernization",
       "description": "Updates old systems",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 695,
@@ -11875,13 +12005,26 @@
       "category": "Technical & Engineering",
       "requirement": "Strangler Fig Pattern",
       "description": "Gradually replaces",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 696,
@@ -11889,13 +12032,26 @@
       "category": "Technical & Engineering",
       "requirement": "Branch by Abstraction",
       "description": "Enables large changes",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 697,
@@ -11903,13 +12059,26 @@
       "category": "Technical & Engineering",
       "requirement": "Feature Toggle",
       "description": "Controls deployment",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 698,
@@ -11917,13 +12086,26 @@
       "category": "Technical & Engineering",
       "requirement": "Trunk-Based Development",
       "description": "Integrates frequently",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 699,
@@ -11931,13 +12113,26 @@
       "category": "Technical & Engineering",
       "requirement": "Git Flow",
       "description": "Manages branches",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 700,
@@ -11945,13 +12140,26 @@
       "category": "Technical & Engineering",
       "requirement": "Semantic Versioning",
       "description": "Communicates changes",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 701,
@@ -11959,13 +12167,26 @@
       "category": "Technical & Engineering",
       "requirement": "Changelog Generation",
       "description": "Documents changes",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 702,
@@ -11973,13 +12194,26 @@
       "category": "Technical & Engineering",
       "requirement": "Release Notes",
       "description": "Informs users",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 703,
@@ -11987,13 +12221,26 @@
       "category": "Technical & Engineering",
       "requirement": "Documentation Generation",
       "description": "Creates docs",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 704,
@@ -12001,13 +12248,26 @@
       "category": "Technical & Engineering",
       "requirement": "API Documentation",
       "description": "Describes interfaces",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 705,
@@ -12015,13 +12275,26 @@
       "category": "Technical & Engineering",
       "requirement": "Architecture Decision Records",
       "description": "Documents decisions",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 706,
@@ -12029,13 +12302,26 @@
       "category": "Technical & Engineering",
       "requirement": "Code Comments",
       "description": "Explains code",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 707,
@@ -12043,13 +12329,26 @@
       "category": "Technical & Engineering",
       "requirement": "Naming Conventions",
       "description": "Creates consistency",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 708,
@@ -12057,13 +12356,26 @@
       "category": "Technical & Engineering",
       "requirement": "Code Formatting",
       "description": "Ensures style",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 709,
@@ -12071,13 +12383,26 @@
       "category": "Technical & Engineering",
       "requirement": "Linting",
       "description": "Catches issues",
-      "status": "verified-pushed",
+      "status": "PARTIAL",
       "evidence": {
         "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
         "test_path": "tests/modules/test_m20_software_practice_685_709.py"
       },
-      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion."
+      "boundary": "Auditable concept-specific support with explicit inputs, evidence, assumptions, uncertainty, limitations and human review. No fabricated evidence, manipulative or deceptive action, autonomous consequential effect, hidden capability claim or unverified completion assertion.",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "evidence": {
+          "commit": "ed80b867c906028e0496c15bf8b4e364428e72f5",
+          "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+          "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+        }
+      },
+      "current_scope": "Supplied-input software practice diagnostics, templates and arithmetic only. No test execution, code transformation, repository behavior verification, release or deployment. Caller pass/approval flags are diagnostic claims.",
+      "current_evidence": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/software_practice_685_709.py",
+        "test_path": "tests/modules/test_m20_software_practice_685_709.py"
+      }
     },
     {
       "id": 710,

@@ -41,14 +41,14 @@ def test_each_row_substantive_output(m):
 def test_each_row_rejects_missing_required_field(m):
  d=data(m);d.pop(REQUIRED[m][0]);
  with pytest.raises(ValueError,match='missing required'):S(m,d)
-def test_685_example_mapping_coverage():assert S('example_mapping',data('example_mapping'))['result']['ready_for_delivery']
+def test_685_example_mapping_coverage():assert S('example_mapping',data('example_mapping'))['result']['caller_diagnostic_ready_for_delivery']
 def test_686_bdd_missing_given_not_executable():
- d=data('behavior_driven_development');d['scenarios']=[{'when':'w','then':'t'}];assert not S('behavior_driven_development',d)['result']['scenarios'][0]['executable']
+ d=data('behavior_driven_development');d['scenarios']=[{'when':'w','then':'t'}];assert not S('behavior_driven_development',d)['result']['scenarios'][0]['caller_diagnostic_executable']
 def test_687_tdd_requires_observed_red_and_green():
- d=data('test_driven_development');assert not S('test_driven_development',d)['result']['cycle_complete'];d.update(red_confirmed=True,green_confirmed=True);assert S('test_driven_development',d)['result']['cycle_complete']
-def test_688_atdd_stakeholder_agreement():assert S('acceptance_test_driven_development',data('acceptance_test_driven_development'))['result']['agreement_complete']
+ d=data('test_driven_development');assert not S('test_driven_development',d)['result']['caller_diagnostic_cycle_complete'];d.update(red_confirmed=True,green_confirmed=True);assert S('test_driven_development',d)['result']['caller_diagnostic_cycle_complete']
+def test_688_atdd_stakeholder_agreement():assert S('acceptance_test_driven_development',data('acceptance_test_driven_development'))['result']['caller_diagnostic_agreement_complete']
 def test_689_refactoring_behavior_preservation():
- d=data('refactoring');d.update(tests_pass_before=True,tests_pass_after=True);assert S('refactoring',d)['result']['behavior_preserved']
+ d=data('refactoring');d.update(tests_pass_before=True,tests_pass_after=True);assert S('refactoring',d)['result']['caller_diagnostic_behavior_preserved']
 def test_690_review_blocks_unresolved_finding():
  d=data('code_review');d['findings']=[{'severity':'blocking','status':'open'}];assert len(S('code_review',d)['result']['unresolved_blockers'])==1
 @pytest.mark.parametrize('m,mode',[('pair_programming','pair'),('mob_programming','mob')])
@@ -57,9 +57,9 @@ def test_693_debt_priority():assert S('technical_debt_management',data('technica
 def test_694_legacy_slice_ready():assert S('legacy_code_modernization',data('legacy_code_modernization'))['result']['slices'][0]['ready']
 def test_695_strangler_route_migration():assert S('strangler_fig_pattern',data('strangler_fig_pattern'))['result']['migrated_routes']==['/a']
 def test_696_branch_abstraction_removal_gate():
- d=data('branch_by_abstraction');assert not S('branch_by_abstraction',d)['result']['old_removal_allowed']
+ d=data('branch_by_abstraction');assert not S('branch_by_abstraction',d)['result']['caller_diagnostic_old_removal_allowed']
 def test_697_toggle_requires_owner_expiry_kill_switch():
- d=data('feature_toggle');d['flags']=[{'name':'bad','default':False}];assert S('feature_toggle',d)['result']['unsafe_flag_names']==['bad']
+ d=data('feature_toggle');d['flags']=[{'name':'bad','default':False}];assert S('feature_toggle',d)['result']['caller_diagnostic_unsafe_flag_names']==['bad']
 def test_698_trunk_branch_age():
  d=data('trunk_based_development');d['branches']=[{'name':'old','age_hours':30}];assert S('trunk_based_development',d)['result']['too_old_names']==['old']
 def test_699_gitflow_requires_main_develop():
@@ -81,8 +81,22 @@ def test_707_naming_regex_violation():
  d=data('naming_conventions');d['identifiers']=[{'name':'BadName','kind':'variable'}];assert S('naming_conventions',d)['result']['violations']==['BadName']
 def test_708_formatting_semantics_guard():assert S('code_formatting',data('code_formatting'))['result']['semantics_must_not_change']
 def test_709_lint_blocking_errors():
- d=data('linting');d['findings']=[{'severity':'error'}];assert not S('linting',d)['result']['clean']
+ d=data('linting');d['findings']=[{'severity':'error'}];assert not S('linting',d)['result']['caller_diagnostic_clean']
 def test_route_mounted_and_negative_path():
  app=FastAPI();app.include_router(router);c=TestClient(app)
  assert c.post('/api/modules/20/software-practice/685-709/analyze',json={'method':'semantic_versioning','data':data('semantic_versioning')}).status_code==200
  assert c.post('/api/modules/20/software-practice/685-709/analyze',json={'method':'semantic_versioning','data':{}}).status_code==422
+
+@pytest.mark.parametrize('method',METHODS)
+def test_supplied_software_practice_diagnostics_never_certify_repository(method):
+ out=S(method,data(method))
+ assert out['status']=='supplied_input_practice_diagnostics_only' and out['capability_executed'] is False
+ assert not out['evidence_verified'] and not out['result']['repository_behavior_verified'] and not out['result']['release_authorized']
+ assert out['uncertainty']['level']=='unquantified'
+
+
+def test_caller_test_pass_claims_do_not_prove_behavior_preserved():
+ d=data('refactoring');d.update(tests_pass_before=True,tests_pass_after=True)
+ out=S('refactoring',d)['result']
+ assert out['caller_diagnostic_behavior_preserved'] and not out['repository_behavior_verified']
+ assert 'behavior_preserved' not in out
