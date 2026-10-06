@@ -60,3 +60,4 @@ def explicit_local_auth_opt_in(monkeypatch):
     # Legacy local-only fixtures intentionally use insecure development auth.
     # Tests of deployment defaults remove this explicit opt-in.
     monkeypatch.setenv("ATLAS_DEV_NO_AUTH", "1")
+    monkeypatch.setenv("ATLAS_ENV", "development")

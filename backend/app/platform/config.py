@@ -2,6 +2,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from urllib.parse import urlparse
+from app.auth.environment import atlas_environment
 
 class ConfigError(ValueError): pass
 
@@ -24,7 +25,7 @@ class ProductionConfig:
             value=e.get(name,"").strip()
             if not value: raise ConfigError(f"{name} is required")
             return value
-        environment=e.get("ATLAS_ENV","development")
+        environment=atlas_environment(e)
         database_url=e.get("ATLAS_DATABASE_URL","sqlite:///./atlas.db")
         redis_url=e.get("ATLAS_REDIS_URL","redis://localhost:6379/0")
         provider=e.get("ATLAS_SECRET_PROVIDER","environment")

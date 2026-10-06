@@ -1,7 +1,7 @@
 """Authenticated tenant context.
 
 OIDC authentication is required by default. Explicit ATLAS_DEV_NO_AUTH=1
-permits insecure local headers outside production and logs a warning.
+permits insecure local headers only in explicit development/local and logs a warning.
 """
 from __future__ import annotations
 import asyncio
@@ -17,6 +17,7 @@ import httpx
 from cryptography.hazmat.primitives.asymmetric import padding, rsa, ec
 from cryptography.hazmat.primitives import hashes
 from fastapi import Header, HTTPException
+from .environment import insecure_development_auth_enabled
 
 
 @dataclass(frozen=True)
@@ -140,7 +141,7 @@ async def require_tenant(
     x_atlas_tenant: str | None = Header(default=None),
     x_atlas_actor: str | None = Header(default=None),
 ) -> TenantContext:
-    if os.getenv("ATLAS_DEV_NO_AUTH") == "1" and os.getenv("ATLAS_ENV", "").lower() != "production":
+    if insecure_development_auth_enabled():
         logging.getLogger(__name__).warning("INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode")
         return TenantContext(x_atlas_tenant or "local", x_atlas_actor or "local-user")
     if not authorization or not authorization.startswith("Bearer "):
