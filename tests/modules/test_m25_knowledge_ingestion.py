@@ -231,3 +231,55 @@ def test_m25_hz13_manifest_tmp_name_unique_no_symlink_follow(tmp_path):
     assert (tmp_path/'tenant-a'/'s1'/'manifest.json.tmp').is_symlink()  # fixed name never used or replaced
     import json as J
     assert len(J.loads((tmp_path/'tenant-a'/'s1'/'manifest.json').read_text())['versions'])==1
+
+
+def test_m25_hz14_same_count_diverged_hash_refused(tmp_path):
+    # KILL: count-only comparison - disk v1 with a different hash was
+    # silently overwritten because the counts matched.
+    import json as J
+    p=pipe(tmp_path);ingest(p)
+    mpath=tmp_path/'tenant-a'/'s1'/'manifest.json'
+    disk=J.loads(mpath.read_text()); disk['versions'][0]['hash']='tampered'
+    mpath.write_text(J.dumps(disk))
+    # same pipeline: memory holds v1 so the count check passes and the
+    # equivalence comparison is what must fire
+    with pytest.raises(KnowledgeError,match='diverges'):ingest(p,text='changed')
+
+def test_m25_hz14_zero_version_identity_mismatch_refused(tmp_path):
+    # KILL: same-tenant zero-version re-registration with a different title
+    # silently overwrote the on-disk registration identity.
+    p=pipe(tmp_path);p.register(src())
+    changed=src(); changed.title='Different Title'
+    p2=pipe(tmp_path)
+    with pytest.raises(KnowledgeError,match='identity differs'):p2.register(changed)
+
+def test_m25_hz14_malformed_schema_variants_fail_closed(tmp_path):
+    # KILL: valid JSON with invalid schema - [] raised AttributeError,
+    # versions:null raised TypeError, versions:{} or missing versions were
+    # treated as zero and overwritten. All must fail closed with
+    # KnowledgeError, never be accepted as an arbitrary corrupt schema.
+    p=pipe(tmp_path);ingest(p)
+    mpath=tmp_path/'tenant-a'/'s1'/'manifest.json'
+    original=mpath.read_text()
+    for bad in ('[]','{"tenant_id":"tenant-a","source":{},"versions":null}',
+                '{"tenant_id":"tenant-a","source":{},"versions":{}}',
+                '{"tenant_id":"tenant-a","source":{}}',
+                '{"tenant_id":"other","source":{},"versions":[]}',
+                '{"tenant_id":"tenant-a","versions":[{"number":"1","hash":1}],"source":{}}'):
+        mpath.write_text(bad)
+        with pytest.raises(KnowledgeError,match='invalid on-disk manifest schema|tenant differs'):
+            pipe(tmp_path).register(src())
+        mpath.write_text(original)
+
+def test_m25_hz14_tmp_write_exclusive_nofollow(tmp_path, monkeypatch):
+    # KILL: tmp write_text was not exclusive/no-follow - a preexisting
+    # symlink at the chosen tmp name would be written through.
+    import uuid
+    monkeypatch.setattr(uuid,'uuid4',lambda:type('U',(),{'hex':'fixed'})())
+    p=pipe(tmp_path)
+    outside=tmp_path/'outside.txt'; outside.write_text('untouched')
+    target=tmp_path/'tenant-a'/'s1'
+    target.mkdir(parents=True)
+    (target/'manifest.json.tmp-fixed').symlink_to(outside)
+    with pytest.raises(OSError):ingest(p)
+    assert outside.read_text()=='untouched'
