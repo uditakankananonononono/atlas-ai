@@ -904,7 +904,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Internal tenant SQL sources/events/tasks/prefs/plans/blocks and BuiltInSolver with work/energy/focus/travel/prep/split seams exist. Full unified multi-provider cross-project scheduling operation remains unverified; no actual accounts/events/provider calls. Status unverified."
     },
     {
       "row": 82,
@@ -915,7 +915,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Google HTTP watch-channel webhook and incremental syncToken/recovery client plus CalDAV fetch path exist, not Pub/Sub or demonstrated Microsoft Graph subscription/Apple long-poll. Event SQL model has UID/summary/time/location/status/source, not full attendees/response/description fields. Google source stores refresh token yet watch/sync decrypt directly as access token; runtime refresh wiring unaccepted. No real calendar sync acceptance. Status unverified."
     },
     {
       "row": 83,
@@ -926,7 +926,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "BuiltInSolver protocol implementation uses priority/deadline ordering and energy/earliest placement with work/no-overlap/travel/prep/focus constraints; OptaPy is documented future plug-in, not runtime dependency. TaskSpec has no dependency list. One weekly plan rather than demonstrated top-three scored Dashboard schedules; apply marks local plan/tasks and delegates provider writes. No external propagation or solver optimality acceptance. Status unverified."
     },
     {
       "row": 84,
@@ -937,7 +937,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Conflict detection/proposals and request_reschedule alternatives exist; apply methods require approval. Continuous new-event solver triggers, notified autonomous low-priority moves and visual major-conflict workflow were not established in scoped read. No external reschedule/invitation/send effect tested. Status unverified."
     },
     {
       "row": 85,
@@ -948,7 +948,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "meeting_load computes event minutes/count/longest/short gaps; recon clips each duration to day/week boundaries, regression fails old cross-midnight counting. Concurrent events still sum meeting-minutes, not distinct occupied time. Configurable protected focus windows exist in solver. Actual vs planned automatic tracking, completion analytics, learned durations, weekly insights and provider booking protection remain unaccepted. No visual report/provider effect. Status unverified."
     },
     {
       "row": 86,
@@ -959,7 +959,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Scheduling slot/proposal APIs accept structured requests; end-to-end Email/Outreach natural-language meeting extraction, sender-confirmation approval and dispatched external event not established in scoped M11 read. No email/invite/calendar effect. Status unverified."
     },
     {
       "row": 87,

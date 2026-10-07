@@ -451,3 +451,16 @@ def test_meeting_load_report(tmp_path):
     assert monday_load.short_gaps == 1  # 15-minute gap between A and B
     assert report.days[1].meeting_minutes == 90
     assert report.total_meeting_minutes == 195
+
+def test_meeting_load_clips_cross_midnight_and_week_edges():
+ from types import SimpleNamespace
+ class Repo:
+  def list_events(self,**kwargs):
+   return [SimpleNamespace(start=datetime(2026,10,4,23,30,tzinfo=UTC),end=datetime(2026,10,5,0,30,tzinfo=UTC)),
+           SimpleNamespace(start=datetime(2026,10,5,23,30,tzinfo=UTC),end=datetime(2026,10,6,0,30,tzinfo=UTC)),
+           SimpleNamespace(start=datetime(2026,10,11,23,30,tzinfo=UTC),end=datetime(2026,10,12,0,30,tzinfo=UTC))]
+ service=Service(Repo(),FakeApprovalGate(),cipher=None)
+ report=service.meeting_load(date(2026,10,5))
+ assert report.total_meeting_minutes==120
+ assert [d.meeting_minutes for d in report.days]==[60,30,0,0,0,0,30]
+ assert report.days[0].longest_meeting_minutes==30
