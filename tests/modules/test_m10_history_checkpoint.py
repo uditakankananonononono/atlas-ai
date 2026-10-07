@@ -151,3 +151,47 @@ def test_null_watch_baseline_requires_decimal_and_no_unfinished_work_and_correct
  with repo.sessions() as db:
   rows=list(db.scalars(select(EmailEventRow).where(EmailEventRow.event=='account_saved').order_by(EmailEventRow.pk)))
   assert rows[-1].entity_id=='account' and all(r.entity_id!='provisional' for r in rows)
+
+
+def test_concurrent_watch_reconnect_and_checkpoint_never_overwrite_processed_history(repo):
+ from datetime import datetime,timezone
+ from concurrent.futures import ThreadPoolExecutor
+ from threading import Barrier
+ barrier=Barrier(3)
+ def watch():
+  barrier.wait(timeout=5)
+  SqlEmailRepository('a',repo.sessions).update_watch_expiration('account',datetime.now(timezone.utc),'999')
+ def reconnect():
+  barrier.wait(timeout=5)
+  SqlEmailRepository('a',repo.sessions).save_account(account_id='provisional',email_address='fixture@example.invalid',encrypted_refresh_token='new',history_id='888',watch_expiration=None)
+ def checkpoint():
+  barrier.wait(timeout=5)
+  return SqlEmailRepository('a',repo.sessions).checkpoint_history('account','100','101')
+ with ThreadPoolExecutor(max_workers=3) as pool:
+  futures=[pool.submit(watch),pool.submit(reconnect),pool.submit(checkpoint)]
+  assert [f.result(timeout=10) for f in futures]==[None,None,True]
+ final=repo.get_account('account')
+ assert final.history_id=='101' and final.encrypted_refresh_token=='new'
+ assert final.watch_expiration is not None and repo.get_account('provisional') is None
+
+
+def test_work_claim_blocks_concurrent_null_watch_initialization(repo,monkeypatch):
+ from datetime import datetime,timezone
+ from threading import Event
+ from concurrent.futures import ThreadPoolExecutor
+ with repo.sessions.begin() as db:db.get(GmailAccountRow,repo.get_account('account').pk).history_id=None
+ locked=Event();release=Event();attempt=Event();original=repo._lock_account
+ def hold(db,aid):
+  row=original(db,aid);locked.set();assert release.wait(timeout=5);return row
+ monkeypatch.setattr(repo,'_lock_account',hold)
+ def work():return repo.save_message(message_id='m',account_id='account',gmail_id='g',thread_id=None,history_id=None,subject='fixture',sender='s',recipients=[],snippet='',body_text='',received_at=None,labels=[],headers={},category='action_required',category_confidence=1,embedding=None,unsubscribe_url=None,draft_work={'actions':[]})
+ other=SqlEmailRepository('a',repo.sessions);otherlock=other._lock_account
+ def watching_lock(db,aid):attempt.set();return otherlock(db,aid)
+ monkeypatch.setattr(other,'_lock_account',watching_lock)
+ with ThreadPoolExecutor(max_workers=2) as pool:
+  insertion=pool.submit(work);assert locked.wait(timeout=5)
+  watch=pool.submit(other.update_watch_expiration,'account',datetime.now(timezone.utc),'999')
+  assert attempt.wait(timeout=5);release.set()
+  assert insertion.result(timeout=10);watch.result(timeout=10)
+ assert repo.get_account('account').history_id is None
+ assert repo.draft_work('m','account')['phase']=='ready'
