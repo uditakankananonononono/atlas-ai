@@ -20,7 +20,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.core.models import ApprovalRequest
 from pydantic import BaseModel, Field
 from app.auth.context import TenantContext, require_tenant
-from app.core.providers import ProviderError
+from app.core.providers import ProviderError, ProviderOutcomeUnknown
 
 from .adapters import PlatformCredentials, build_adapter
 from .analytics import ABTestStateError, ABTestNotFoundError, Analytics, SnapshotNotFoundError
@@ -177,7 +177,8 @@ def get_service(
 @router.post("/plans", response_model=ContentPlanOut, status_code=201)
 async def create_plan(request: ContentBriefIn, service: Service = Depends(get_service)) -> object:
     """Create a content plan from a brief (drafts only, nothing published)."""
-    return await service.create_plan(request.brief, request.platforms)
+    try:return await service.create_plan(request.brief, request.platforms)
+    except ProviderOutcomeUnknown as error:raise HTTPException(409,{"state":"unknown","reason":str(error),"retry_allowed":False}) from error
 
 
 @router.get("/plans/{plan_id}", response_model=ContentPlanOut)
@@ -288,6 +289,8 @@ async def revise_draft(plan_id: str, platform: Platform, request: RevisionIn, se
             status_code=422,
             detail=[{"code": i.code, "severity": i.severity, "message": i.message} for i in error.issues],
         ) from error
+    except ProviderOutcomeUnknown as error:
+        raise HTTPException(409,{"state":"unknown","reason":str(error),"retry_allowed":False}) from error
     except ProviderError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
 
@@ -341,6 +344,8 @@ async def _run_artifact(slug: str, request: ArtifactIn, service: Service) -> dic
         raise HTTPException(status_code=502, detail=str(error)) from error
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
+    except ProviderOutcomeUnknown as error:
+        raise HTTPException(409,{"state":"unknown","reason":str(error),"retry_allowed":False}) from error
     except ProviderError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
 
@@ -380,6 +385,8 @@ async def marketing_copywriting(request: CopywritingIn, service: Service = Depen
             status_code=422,
             detail=[{"code": i.code, "severity": i.severity, "message": i.message} for i in error.issues],
         ) from error
+    except ProviderOutcomeUnknown as error:
+        raise HTTPException(409,{"state":"unknown","reason":str(error),"retry_allowed":False}) from error
     except ProviderError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
 
@@ -397,6 +404,8 @@ async def marketing_editorial_calendar(request: EditorialCalendarIn, service: Se
         raise HTTPException(status_code=422, detail=f"invalid calendar input: {error}") from error
     except ArtifactParseError as error:
         raise HTTPException(status_code=502, detail=str(error)) from error
+    except ProviderOutcomeUnknown as error:
+        raise HTTPException(409,{"state":"unknown","reason":str(error),"retry_allowed":False}) from error
     except ProviderError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
 
@@ -423,6 +432,8 @@ async def _run_creative(slug: str, request: CreativeSpecIn, service: Service) ->
         return _artifact_out(artifact)
     except ArtifactParseError as error:
         raise HTTPException(status_code=502, detail=str(error)) from error
+    except ProviderOutcomeUnknown as error:
+        raise HTTPException(409,{"state":"unknown","reason":str(error),"retry_allowed":False}) from error
     except ProviderError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
 
@@ -533,6 +544,8 @@ async def capture_snapshot(request: SnapshotIn, service: Service = Depends(get_s
     """Daily pull: fetch + normalize + persist one metrics snapshot."""
     try:
         return await service.capture_metrics(request.platform, request.since_days)
+    except ProviderOutcomeUnknown as error:
+        raise HTTPException(409,{"state":"unknown","reason":str(error),"retry_allowed":False}) from error
     except ProviderError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
 
@@ -559,6 +572,8 @@ async def create_analysis(request: AnalyticsIn, service: Service = Depends(get_s
     """Pull official-API engagement metrics and return LLM suggestions."""
     try:
         return await service.analyze_engagement(request.platform, request.since_days)
+    except ProviderOutcomeUnknown as error:
+        raise HTTPException(409,{"state":"unknown","reason":str(error),"retry_allowed":False}) from error
     except ProviderError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
 

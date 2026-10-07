@@ -12,7 +12,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.auth.context import TenantContext, require_tenant
-from app.core.providers import ProviderError, generate
+from app.core.providers import ProviderError, ProviderOutcomeUnknown, generate
 
 from .schemas import (
     DigestProposalOut,
@@ -98,6 +98,8 @@ async def propose_digest(request: DigestRequestIn, service: Service = Depends(ge
         try:
             _, polished = await generate(service.digest_prompt(items), request.provider, request.model)
             body = polished
+        except ProviderOutcomeUnknown as error:
+            raise HTTPException(409,{"state":"unknown","reason":str(error),"retry_allowed":False}) from error
         except ProviderError:
             pass  # deterministic template remains the body
     approval = service.propose_digest(items=items, body=body, recipient=request.recipient)
