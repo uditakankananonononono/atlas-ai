@@ -558,3 +558,33 @@ def test_runtime_service_wires_exchange_with_mock_http(monkeypatch):
   await iterator.aclose()
  asyncio.run(run())
  assert len(requests)==1
+
+@pytest.mark.parametrize('value',['persistent-refresh','', ' ', None,123])
+def test_service_rejects_invalid_exchanged_token_before_provider(tmp_path,value):
+ google=FakeGoogleCalendarClient();svc,repo,_=make_service(tmp_path,google=google)
+ source=svc.register_google_source(GoogleSourceCreate(account_email='a@example.com',refresh_token='persistent-refresh',calendar_id='primary'))
+ async def exchange(refresh):return value
+ svc._google_access_token_provider=exchange
+ with pytest.raises(ValueError,match='invalid access token'):asyncio.run(svc.ensure_watch(source.id))
+ assert google.watch_calls==[]
+ with pytest.raises(ValueError,match='invalid access token'):asyncio.run(svc.sync_source(source.id))
+ assert google.sync_tokens_seen==[]
+
+@pytest.mark.parametrize('status,body',[(200,{'access_token':'persistent-refresh'}),(200,{'access_token':''}),(200,{'access_token':' '}),(200,{'access_token':123}),(200,{}),(400,{'error':'invalid_grant'}),(503,{})])
+def test_http_exchange_rejects_bad_response(status,body):
+ from app.modules.m11_calendar_intelligence.google_calendar import exchange_refresh_token,UpstreamServiceError
+ async def run():
+  async with httpx.AsyncClient(transport=httpx.MockTransport(lambda req:httpx.Response(status,json=body))) as client:
+   with pytest.raises(UpstreamServiceError):await exchange_refresh_token(client,'persistent-refresh',client_id='id',client_secret='secret')
+ asyncio.run(run())
+
+@pytest.mark.parametrize('client_id,client_secret',[('', 'secret'),('id',''),('','')])
+def test_http_exchange_missing_config_makes_no_request(client_id,client_secret):
+ from app.modules.m11_calendar_intelligence.google_calendar import exchange_refresh_token,UpstreamServiceError
+ calls=[]
+ def handler(req):calls.append(req);return httpx.Response(200,json={'access_token':'at'})
+ async def run():
+  async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+   with pytest.raises(UpstreamServiceError,match='configuration'):await exchange_refresh_token(client,'refresh',client_id=client_id,client_secret=client_secret)
+ asyncio.run(run())
+ assert calls==[]
