@@ -5,7 +5,11 @@ def safe_workflow_json(value):
     invalid=[]
     active=set()
     def walk(item,path,depth=0):
-        if item is None or type(item) in (str,bool,int):return item
+        if item is None or type(item) in (str,bool):return item
+        if type(item) is int:
+            try:str(item)
+            except ValueError:invalid.append(path);return None
+            return item
         if type(item) is float:
             if isfinite(item):return item
             invalid.append(path);return None

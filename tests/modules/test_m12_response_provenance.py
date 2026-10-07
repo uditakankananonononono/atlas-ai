@@ -323,3 +323,33 @@ def test_empty_returned_text_retained_without_inventing_missing_response():
  cat=[ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]
  result=asyncio.run(ResearchExecutor(ModelRouter(cat),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
  assert result.text=='' and result.model_id=='reported'
+
+@pytest.mark.parametrize('workflow',[True,False])
+@pytest.mark.parametrize('review',[True,False])
+def test_mounted_unrenderable_integer_evidence_is_loss_marked_not_500(workflow,review):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service,get_dag_engine
+ from app.modules.m12_ai_research_lab.workflow import DagEngine
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ import sys
+ if not sys.get_int_max_str_digits():pytest.skip('integer rendering limit disabled')
+ huge=10**(sys.get_int_max_str_digits()+1);calls=[]
+ result=ModelResult('retained','fixture',None if review else .9,usage={'input_tokens':huge})
+ class Service:
+  async def execute(self,*args):
+   calls.append(args)
+   if review:raise ConfidenceUnavailable(result)
+   return result
+ async def runner(*args):
+  returned=await Service().execute(*args)
+  return {'text':returned.text,'usage':returned.usage}
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:Service();app.dependency_overrides[get_dag_engine]=lambda:DagEngine(runner)
+ if workflow:response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/workflows/run',json={'yaml':'nodes: [{id: a, task: fixture}]'})
+ else:response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
+ assert response.status_code==422,response.text
+ detail=response.json()['detail'];assert detail['state']==('review_required' if review else 'invalid_output')
+ retained=detail['completed']['a'] if workflow and not review else detail['result']
+ assert retained['text']=='retained' and retained['usage']=={'input_tokens':None}
+ assert detail['invalid_json_paths'] and len(calls)==1
