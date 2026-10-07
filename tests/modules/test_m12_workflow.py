@@ -329,3 +329,16 @@ async def test_validator_node_config_rebinding_does_not_change_execution_or_sour
  wf=Workflow.from_yaml('nodes: [{id: a, task: fixture, config: {prompt: original}}]')
  await DagEngine(runner,validator=validator).run(wf,{})
  assert seen==['original'] and wf.nodes[0].config=={'prompt':'original'}
+
+@pytest.mark.asyncio
+async def test_running_workflow_uses_entry_node_config_snapshot_despite_caller_edit():
+ entered=asyncio.Event();release=asyncio.Event();seen=[]
+ async def runner(task,config,context):
+  seen.append(config['prompt'])
+  if task=='parent':entered.set();await release.wait()
+  return {}
+ wf=Workflow.from_yaml('nodes: [{id: a, task: parent, config: {prompt: original-a}}, {id: b, task: child, config: {prompt: original-b}, depends_on: [a]}]')
+ running=asyncio.create_task(DagEngine(runner).run(wf,{}))
+ await entered.wait();wf.nodes[1].config['prompt']='caller-edit';release.set()
+ await running
+ assert seen==['original-a','original-b'] and wf.nodes[1].config['prompt']=='caller-edit'

@@ -78,6 +78,7 @@ class DagEngine:
         self.runner=runner;self.limit=asyncio.Semaphore(max_concurrency);self.validator=validator
     async def run(self, wf: Workflow, inputs: dict[str,Any]) -> dict[str,dict[str,Any]]:
         inputs=dict(inputs)
+        wf=Workflow(wf.name,tuple(Node(node.id,node.task,node.depends_on,dict(node.config)) for node in wf.nodes))
         if self.validator is not None:
             for node in wf.nodes:self.validator(Node(node.id,node.task,node.depends_on,dict(node.config)),dict(inputs))
         nodes={n.id:n for n in wf.nodes}; results={}; pending=set(nodes)
