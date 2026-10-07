@@ -239,3 +239,28 @@ def test_hyperbolic_discount_rejects_invalid_numeric_inputs(value, delay, k):
 
 def test_hyperbolic_discount_finite_denominator_overflow_keeps_result():
     assert R.hyperbolic_discount(1e308, 2, 1e308) == pytest.approx(0.5)
+
+
+@pytest.mark.parametrize('swing', [float('nan'), float('inf'), -0.1, True])
+def test_sensitivity_swing_validates_before_evaluation(swing):
+    calls = []
+    with pytest.raises(ValueError):
+        R.sensitivity_analysis(lambda params: calls.append(params) or 1, {'x': 1}, swing=swing)
+    assert calls == []
+
+
+def test_sensitivity_callback_cannot_change_caller_parameters():
+    params = {'x': 2}
+    def evaluate(values):
+        result = values['x']
+        values['x'] = 99
+        return result
+    rows = R.sensitivity_analysis(evaluate, params, swing=0.5)
+    assert params == {'x': 2}
+    assert rows[0]['low_output'] == 1 and rows[0]['high_output'] == 3
+
+
+@pytest.mark.parametrize('output', [float('nan'), float('inf'), True])
+def test_sensitivity_invalid_evaluator_outputs_reject(output):
+    with pytest.raises(ValueError):
+        R.sensitivity_analysis(lambda values: output, {'x': 2})

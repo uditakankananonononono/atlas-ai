@@ -986,3 +986,7 @@ One actual failure retained: evenequalminimumsubnormalmedian lostto0 via divided
 ## Supplied hyperbolic discount numeric arithmetic
 
 Five reproduced failures retained: malformed/nonfinite/boolinputs and overflowingfinite denominator returns0instead ofrepresentable0.5. InitialunqualifiedfixtureNameError retainedseparately/correctedbefore actualreproduction. Finite numeric/notboolinputs; overflowpathdividesbeforemultiplication.158reasoning/foresightpass; recorded87adjacent2408pass2warnings44.06s. Supplied hyperbolicformula only, not inferreduserdiscountpreferences or temporaldecisionoptimization. Latestfull9944passsourcec5b11ab predatestenlaterfixes.
+
+## Supplied sensitivity callback validation
+
+Eight actual failures retained: invalidswing evaluatescallbackbeforevalidation, callbackrewritescallerparams, malformedoutputsaccepted. Finite numeric/notbool nonnegativeswing/params/perturbations validatedbeforeevaluation; detachedcallbackdicts andfiniteoutput/impactguards.166reasoningforesightpass; recorded87adjacent2416pass2warnings45.03s. One-at-a-time supplied-evaluator sensitivity only, not global sensitivity/causalproof. Arbitrarycallbackexternal effects cannotrollback. Latestfull9944passsourcec5b11ab predateselevenlaterfixes.
