@@ -57,8 +57,8 @@ async def test_submit_internal_keyerror_propagates_unmasked():
     with pytest.raises(KeyError,match="internal-payload-bug"):
         await service.submit("tenant-1","session-1","#go",{"a":"b"},"a1")
 def test_artifact_directory_rejects_path_bearing_tenant(tmp_path):
-    # The BridgedSessions/HybridSessions screenshot sites interpolate tenant_id
-    # into the artifact path; the shared helper is their only guard.
+    # The BridgedSessions/HybridSessions screenshot sites build the artifact
+    # path through this helper before any page lookup; it is their only guard.
     for bad in ("..","../evil","a/b","a\\b",""):
         with pytest.raises(ValueError):security.artifact_directory(tmp_path,bad,"session-1")
     ok=security.artifact_directory(tmp_path,"tenant-1","session-1")
@@ -66,11 +66,27 @@ def test_artifact_directory_rejects_path_bearing_tenant(tmp_path):
 @pytest.mark.asyncio
 async def test_screenshot_refuses_preexisting_symlinked_tenant_dir(tmp_path):
     # Segment charset alone trusts directory entries: a pre-existing symlink at
-    # root/<tenant> would let mkdir/write escape the root. Resolution-verified
+    # root/<tenant> would let mkdir/write escape the root. Resolution-time
     # containment must reject before any directory or file is created outside.
+    # Scope: pre-existing symlinks only, under a trusted root. A swap of the
+    # session directory for a symlink AFTER the check (TOCTOU race) is not
+    # caught - this is not atomic filesystem confinement.
     outside=tmp_path.parent/"outside-m13";outside.mkdir(exist_ok=True)
     root=tmp_path/"art";root.mkdir()
     (root/"tenant-1").symlink_to(outside,target_is_directory=True)
     service=Service(_NoSessions(),None,_NoStore(),artifact_root=str(root))
     with pytest.raises(ValueError):await service.screenshot("tenant-1","session-1")
     assert list(outside.iterdir())==[]
+
+@pytest.mark.asyncio
+async def test_bridge_screenshot_validates_tenant_before_page_lookup():
+    # A path-bearing tenant must be rejected by the containment helper BEFORE
+    # any page is opened: validation ordered after the page lookup would still
+    # reject, but only after touching the session. Establishes ordering only,
+    # not daemon confinement.
+    from app.modules.m13_browser_agent.session_bridge.dispatch import BridgedSessions
+    bridge=object.__new__(BridgedSessions)
+    async def _page(*a):raise AssertionError("page must not open for an invalid tenant")
+    bridge.page=_page
+    with pytest.raises(ValueError):
+        await bridge.screenshot("../evil","pc.dev01.local-form")

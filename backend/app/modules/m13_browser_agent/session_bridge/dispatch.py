@@ -235,10 +235,10 @@ class BridgedSessions:
         return str(result.get("html", ""))
 
     async def screenshot(self, tenant_id: str, session_id: str, mask_selectors: list[str] | None = None) -> str:
-        page = await self.page(tenant_id, session_id, True)
         import secrets as _secrets
         from ..security import artifact_directory
         path = str(artifact_directory("/tmp/atlas-browser", tenant_id, session_id) / f"{_secrets.token_hex(12)}.png")
+        page = await self.page(tenant_id, session_id, True)
         mask = [BridgedLocator(page, selector) for selector in (mask_selectors or [])]
         await page.screenshot(path=path, full_page=True, mask=mask)
         return path
