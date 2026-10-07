@@ -982,3 +982,7 @@ Four actual failures retained: bool/stringweightcoercion and unhandlednegative/u
 ## Supplied sampler subnormal median
 
 One actual failure retained: evenequalminimumsubnormalmedian lostto0 via divided operands. Signaware midpoint preserves equalminimumpositivevalue and avoidsoverflow forlargefinitepairs. 153foresight/reasoningpass; recorded87adjacent2403pass2warnings43.39s. Suppliedsampler descriptivestatistics only, not model/forecast validity. Latestfull9944passsourcec5b11ab predatesninelaterfixes.
+
+## Supplied hyperbolic discount numeric arithmetic
+
+Five reproduced failures retained: malformed/nonfinite/boolinputs and overflowingfinite denominator returns0instead ofrepresentable0.5. InitialunqualifiedfixtureNameError retainedseparately/correctedbefore actualreproduction. Finite numeric/notboolinputs; overflowpathdividesbeforemultiplication.158reasoning/foresightpass; recorded87adjacent2408pass2warnings44.06s. Supplied hyperbolicformula only, not inferreduserdiscountpreferences or temporaldecisionoptimization. Latestfull9944passsourcec5b11ab predatestenlaterfixes.

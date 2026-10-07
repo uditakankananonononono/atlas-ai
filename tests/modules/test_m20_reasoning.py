@@ -229,3 +229,13 @@ def test_binary_bayes_independent_decimal_posterior():
         specificity = Decimal("0.999")
         expected = sensitivity * prior / (sensitivity * prior + (1-specificity)*(1-prior))
     assert R.bayesian_update(float(prior), float(sensitivity), float(specificity)) == pytest.approx(float(expected))
+
+
+@pytest.mark.parametrize('value,delay,k', [(float('nan'), 1, .02), (1, float('inf'), .02), (True, 1, .02), (1, 1, True)])
+def test_hyperbolic_discount_rejects_invalid_numeric_inputs(value, delay, k):
+    with pytest.raises(ValueError):
+        R.hyperbolic_discount(value, delay, k)
+
+
+def test_hyperbolic_discount_finite_denominator_overflow_keeps_result():
+    assert R.hyperbolic_discount(1e308, 2, 1e308) == pytest.approx(0.5)

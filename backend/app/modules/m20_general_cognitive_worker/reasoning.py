@@ -43,9 +43,15 @@ def kelly_criterion(prob_win: float, win_odds: float) -> float:
 
 def hyperbolic_discount(value: float, delay_days: float, k: float = 0.02) -> float:
     """Temporal Discounting Optimization: V = A / (1 + kD)."""
+    if any(type(v) not in (int, float) or not math.isfinite(v) for v in (value, delay_days, k)):
+        raise ValueError("finite numeric value/delay/k required, not bool")
     if delay_days < 0 or k < 0:
         raise ValueError("delay and k must be non-negative")
-    return value / (1.0 + k * delay_days)
+    product = k * delay_days
+    if math.isfinite(product):
+        return value / (1.0 + product)
+    # Overflow implies nonzero k and delay; divide before multiplying.
+    return (value / k) / (delay_days + 1.0 / k)
 
 
 def bayesian_update(prior: float, sensitivity: float, specificity: float, *, positive: bool = True) -> float:
