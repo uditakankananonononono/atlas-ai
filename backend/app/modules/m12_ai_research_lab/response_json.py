@@ -1,5 +1,6 @@
 """JSON-safe diagnostic delivery, with every discarded value identified."""
 from math import isfinite
+import json
 
 def safe_workflow_json(value):
     invalid=[]
@@ -23,11 +24,11 @@ def safe_workflow_json(value):
         try:
             if isinstance(item,dict):
                 out={}
-                for key,child in item.items():
-                    if not isinstance(key,str):invalid.append(path+'.<nontext-key>');continue
+                for position,(key,child) in enumerate(item.items()):
+                    if type(key) is not str:invalid.append(path+f'.<nontext-key:{position}>');continue
                     try:key.encode('utf-8')
-                    except UnicodeEncodeError:invalid.append(path+'.<invalid-text-key>');continue
-                    out[key]=walk(child,path+'.'+key,depth+1)
+                    except UnicodeEncodeError:invalid.append(path+f'.<invalid-text-key:{position}>');continue
+                    out[key]=walk(child,path+'['+json.dumps(key,ensure_ascii=True)+']',depth+1)
                 return out
             return [walk(child,path+f'[{i}]',depth+1) for i,child in enumerate(item)]
         finally:active.remove(id(item))
