@@ -15,6 +15,11 @@ class RouteDecision:
 def _positive_finite_latency(value) -> bool:
     return type(value) in (int,float) and 0 < value <= 2**63-1 and (type(value) is int or isfinite(value))
 
+def _nonnegative_finite(value) -> bool:
+    if type(value) not in (int,float) or value < 0:return False
+    try:return isfinite(value)
+    except OverflowError:return False
+
 class ModelRouter:
     """Pluggable deterministic router. Replace score() with an ML policy without changing callers."""
     def __init__(self, catalog: list[ModelCapability]): self.catalog = catalog
@@ -22,6 +27,7 @@ class ModelRouter:
         reasons=[]
         if not m.enabled or req.task_type not in m.task_types: return float("-inf"), ["unsupported"]
         if req.required_model_ids and m.model_id not in req.required_model_ids: return float("-inf"), ["not allow-listed"]
+        if not _nonnegative_finite(req.budget_cents) or not _nonnegative_finite(m.cents_per_1k_tokens):return float("-inf"), ["invalid budget or unit price"]
         estimated=(req.output_tokens/1000)*m.cents_per_1k_tokens
         if m.max_output_tokens < req.output_tokens: return float("-inf"), ["output limit"]
         if estimated > req.budget_cents: return float("-inf"), ["budget"]
