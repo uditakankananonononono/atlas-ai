@@ -6,6 +6,23 @@ This prototype is not production clearance. A green local regression does not cl
 
 The PostgreSQL unknown-hold migration path is untested. The PostgreSQL-specific canary was skipped because `pgserver` is absent in both available interpreters. SQLite upgrade and hold-preserving downgrade refusal passed. PostgreSQL upgrade, restart retention of unresolved holds, and downgrade refusal while holds remain must be tested before production clearance.
 
+## Peer PostgreSQL scratch corroboration
+
+The peer reports 87 supplied canaries passed in its isolated checkout of our
+ebba4b3 bundle, including the PostgreSQL migration parameter using its available
+pgserver interpreter. This is attributed corroborating local scratch evidence,
+not our independent reproduction or production verification. The PostgreSQL
+unknown-hold migration production prerequisite remains open.
+
+## Known Alembic revision collision
+
+Our published `20261007_m20_model_unknown` revision has parent
+`20261007_m20_risk_register`. The peer revision with the same id has parent
+`20261007_m10_ingest_work` and a different migration body. Any future combination
+of those histories requires an explicit Alembic-chain integration decision.
+This is a known integration blocker; the decision is deferred. Do not rename
+our published revision id unilaterally.
+
 ## Nested-object mutation coverage
 
 The four mounted runtime routes for method activation and risk-register create,
