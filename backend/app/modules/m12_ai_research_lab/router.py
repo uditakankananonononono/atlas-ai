@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from math import exp, isfinite
-from .models import ModelCapability, RouteRequest
+from .models import ModelCapability, RouteRequest,TaskType
 
 class NoEligibleModel(RuntimeError): pass
 
@@ -26,6 +26,7 @@ class ModelRouter:
     def score(self, m: ModelCapability, req: RouteRequest) -> tuple[float, list[str]]:
         reasons=[]
         if type(m.enabled) is not bool:return float("-inf"), ["invalid enabled flag"]
+        if type(m.task_types) not in (set,frozenset) or any(type(task) is not TaskType for task in m.task_types):return float("-inf"), ["invalid task capabilities"]
         if not m.enabled or req.task_type not in m.task_types: return float("-inf"), ["unsupported"]
         if req.required_model_ids and m.model_id not in req.required_model_ids: return float("-inf"), ["not allow-listed"]
         if type(req.output_tokens) is not int or req.output_tokens<=0 or type(m.max_output_tokens) is not int or m.max_output_tokens<=0:return float("-inf"), ["invalid output token limits"]
