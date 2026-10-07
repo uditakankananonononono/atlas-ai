@@ -50,9 +50,11 @@ def _get_capped(client: httpx.Client, url: str, limit: int, started: float,
     iter_bytes BEFORE the budget check runs - this is a post-yield budget
     check: a chunk that arrives after the deadline is still received and
     only then rejected, and the check cannot interrupt a blocking socket
-    read. The per-request 8s timeout still governs each blocking phase, so
-    total wall time can exceed the nominal deadline (12s budget plus up to
-    one in-flight phase). The byte cap counts DECODED body bytes as yielded
+    read. No aggregate wall-clock bound is established: connect and read
+    subphases plus httpx raw-read buffering can accumulate before any decoded
+    chunk is yielded, and each blocking phase is separately bounded by the
+    per-request 8s timeout, not by the deadline. The byte cap counts DECODED
+    body bytes as yielded
     by httpx iter_bytes - not TLS/wire bytes. iter_bytes is pinned to
     READ_CHUNK, so at most limit + READ_CHUNK decoded bytes are pulled
     through the decode boundary before a cap abort; a transport that hands
