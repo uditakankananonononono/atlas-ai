@@ -22,6 +22,10 @@ class ApprovalStore:
             return None
         return ApprovalRequest(id=view["id"], module_id=view["module_id"], action_type=view["action_type"], payload=view["payload"], status=view["status"])
 
+    def matching_source_approvals(self,*,user_id:str,module_id:int,action_type:str,payload:dict)->builtins.list[ApprovalRequest]:
+        return [ApprovalRequest(id=v['id'],module_id=v['module_id'],action_type=v['action_type'],payload=v['payload'],status=v['status'])
+            for v in default_service().matching_source_approvals(user_id=user_id,module_id=module_id,action_type=action_type,payload=payload)]
+
     def register_callback(self, item_id: str, callback) -> None:
         """Run callback after Module 0 records a terminal decision."""
         default_service().register_callback(item_id, callback)

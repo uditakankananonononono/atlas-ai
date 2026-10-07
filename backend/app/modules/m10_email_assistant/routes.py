@@ -22,7 +22,7 @@ from .schemas import (
     PubSubPush,
     WatchRenewalResult,
 )
-from .service import AccountNotFoundError, PubSubVerificationError, Service
+from .service import AccountNotFoundError, PubSubVerificationError, DraftPipelineUnresolvedError, Service
 from .sql_repository import SqlEmailRepository
 
 router = APIRouter(prefix="/email-assistant", tags=["email-assistant"])
@@ -88,6 +88,15 @@ async def pubsub_push(
         raise HTTPException(status_code=404, detail="gmail account not connected") from exc
     except UpstreamServiceError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@router.post('/accounts/{account_id}/draft-work/{message_id}/reconcile-approval')
+async def reconcile_durable_approval(account_id:str,message_id:str,tenant:TenantContext=Depends(require_tenant),service:Service=Depends(get_service)):
+    """Read the tenant's durable approval source. No caller receipts or retry flag."""
+    if service.tenant_id!=tenant.tenant_id:raise HTTPException(403,'tenant service mismatch')
+    try:return await service.reconcile_saved_approval(message_id,account_id)
+    except LookupError as error:raise HTTPException(404,'owned draft work not found') from error
+    except DraftPipelineUnresolvedError as error:raise HTTPException(409,str(error)) from error
 
 
 @router.post("/watches/renew", response_model=WatchRenewalResult)

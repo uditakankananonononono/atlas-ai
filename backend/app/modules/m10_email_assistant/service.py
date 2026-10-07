@@ -288,18 +288,35 @@ class Service:
         row=self.repository.get_message(message_id)
         work=self.repository.draft_work(message_id,account_id)
         if row is None or row.account_id!=account_id or work is None or work['phase']!='approval_inflight':return False
-        lookup=getattr(self.approval_sink,'list',None)
+        lookup=getattr(self.approval_sink,'matching_source_approvals',None)
         if lookup is None:return False
         data=work['data']
         expected={'tenant_id':self.tenant_id,'account_id':account_id,'draft_id':data['draft_id'],
             'message_id':message_id,'gmail_id':row.gmail_id,'thread_id':row.thread_id,
             'to':data['to'],'subject':data['subject'],'body':data['body']}
-        matches=[item for item in lookup(user_id=self.tenant_id)
+        matches=[item for item in lookup(user_id=self.tenant_id,module_id=10,action_type='send_email_reply',payload=expected)
             if item.module_id==10 and item.action_type=='send_email_reply'
             and all(key in item.payload and item.payload[key]==value for key,value in expected.items())]
         if len(matches)!=1:return False
         data={**data,'approval_id':matches[0].id}
         return self.repository.transition_draft_work(message_id,account_id,'approval_inflight','approval_done',data)
+
+    async def reconcile_saved_approval(self,message_id:str,account_id:str)->dict:
+        """Resolve only saved approval phases. Cannot start or repeat model work."""
+        row=self.repository.get_message(message_id)
+        work=self.repository.draft_work(message_id,account_id)
+        if row is None or row.account_id!=account_id or work is None:raise LookupError('owned draft work not found')
+        if work['phase']=='approval_inflight':
+            if not self.reconcile_approval_claim(message_id,account_id):
+                return {'message_id':message_id,'phase':'approval_inflight','reconciled':False,'boundary':'no unique exact durable approval receipt; held, never refile'}
+            work=self.repository.draft_work(message_id,account_id)
+        if work['phase']=='approval_done':
+            raw=GmailRawMessage(gmail_id=row.gmail_id,thread_id=row.thread_id,history_id=row.history_id,
+                subject=row.subject,sender=row.sender,recipients=row.recipients,snippet=row.snippet,
+                body_text=row.body_text,labels=row.labels,headers=row.headers,received_at=None)
+            result=await self._resume_owned_draft(message_id,account_id,raw,'',work)
+            return {'message_id':message_id,'phase':self.repository.draft_work(message_id,account_id)['phase'],'reconciled':result is not None,'boundary':'local draft only; no send or model call'}
+        return {'message_id':message_id,'phase':work['phase'],'reconciled':work['phase']=='complete','boundary':'not a saved approval phase; no model retry or refiling'}
 
     async def recover_draft_pipeline(self,account_id:str)->int:
         """Resume durable safe phases only. In-flight model/approval stays held.

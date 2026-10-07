@@ -14,7 +14,7 @@ import asyncio,os
 from sqlalchemy import select,func
 from app.core.database import Base,engine,SessionLocal
 from app.core.approvals import ApprovalStore
-from app.modules.m00_approval_center.service import ApprovalRequestRow,ApprovalEventRow
+from app.modules.m00_approval_center.service import ApprovalRequestRow,ApprovalEventRow,default_service
 from app.modules.m10_email_assistant.sql_repository import SqlEmailRepository
 from app.modules.m10_email_assistant.service import Service
 from app.core.token_crypto import TokenCipher
@@ -48,6 +48,8 @@ else:
  if os.environ['KILL_PHASE']=='approval_inflight_receipt':
   assert work['phase']=='approval_inflight'
   assert not svc.reconcile_approval_claim(row.id,'wrong-account')
+  for i in range(105):default_service().submit(module_id=10,action_type='send_email_reply',user_id='tenant-fixture',payload={'fixture_noise':str(i)})
+  assert len(sink.list(user_id='tenant-fixture'))==100
   assert svc.reconcile_approval_claim(row.id,'account')
   work=repo.draft_work(row.id,'account')
  assert work['phase']=='approval_done'
@@ -56,13 +58,13 @@ else:
  assert observed is not None and observed.id==aid
  assert sink.get(aid,user_id='other') is None
  with SessionLocal() as db:
-  assert db.scalar(select(func.count()).select_from(ApprovalRequestRow))==1
-  assert db.scalar(select(func.count()).select_from(ApprovalEventRow))==1
+  assert db.scalar(select(func.count()).select_from(ApprovalRequestRow))==(106 if os.environ['KILL_PHASE']=='approval_inflight_receipt' else 1)
+  assert db.scalar(select(func.count()).select_from(ApprovalEventRow))==(106 if os.environ['KILL_PHASE']=='approval_inflight_receipt' else 1)
  assert asyncio.run(svc.recover_draft_pipeline('account'))==1
  assert repo.draft_work(row.id,'account')['phase']=='complete'
  assert len(repo.list_drafts())==1 and repo.list_drafts()[0].approval_id==aid
  assert asyncio.run(svc.recover_draft_pipeline('account'))==0
- with SessionLocal() as db:assert db.scalar(select(func.count()).select_from(ApprovalRequestRow))==1
+ with SessionLocal() as db:assert db.scalar(select(func.count()).select_from(ApprovalRequestRow))==(106 if os.environ['KILL_PHASE']=='approval_inflight_receipt' else 1)
 """
  env={**os.environ,'PYTHONPATH':'backend','ATLAS_DATABASE_URL':url,'ATLAS_ENV':'production','MODE':'kill','KILL_PHASE':kill_phase}
  killed=subprocess.run([sys.executable,'-c',script],env=env,capture_output=True,text=True,timeout=35)
