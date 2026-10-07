@@ -1,0 +1,60 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_____ test_failed_expectation_resolution_keeps_binding_for_retry[evaluate] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f0cc1ca71a0>
+operation = 'evaluate'
+
+    @pytest.mark.parametrize('operation',['evaluate','close'])
+    def test_failed_expectation_resolution_keeps_binding_for_retry(monkeypatch,operation):
+     runtime,repo=make_runtime();claim=runtime.calibration.assess_claim('fixture observed step',.9)
+     context=TaskContext(goal='fixture',state=TaskState.SUCCEEDED,plan=[PlanNode(title='observed',state=TaskState.SUCCEEDED,arguments={'_expectation_claim_id':claim.id})])
+     repo.save_task(context);runtime.scheduler.add(context)
+     original=repo.save_claim
+     def fail(value):raise RuntimeError('fixture resolution write unavailable')
+     monkeypatch.setattr(repo,'save_claim',fail)
+     with pytest.raises(RuntimeError):
+      if operation=='evaluate':runtime._evaluate_expectations(context)
+      else:runtime.close(context.id)
+>    assert context.plan[0].arguments.get('_expectation_claim_id')==claim.id
+E    AssertionError: assert None == '0777f21b-898b-4d8c-8b6f-cc80cdfc0daf'
+E     +  where None = <built-in method get of dict object at 0x7f0cc1b73080>('_expectation_claim_id')
+E     +    where <built-in method get of dict object at 0x7f0cc1b73080> = {}.get
+E     +      where {} = PlanNode(id='9af762f7-c0a4-4c54-8ebc-e34277a02663', title='observed', kind='task', tool=None, arguments={}, depends_on...state=<TaskState.SUCCEEDED: 'succeeded'>, max_attempts=3, attempts=0, approval_id=None, result_summary='', output=None).arguments
+E     +  and   '0777f21b-898b-4d8c-8b6f-cc80cdfc0daf' = Claim(id='0777f21b-898b-4d8c-8b6f-cc80cdfc0daf', text='fixture observed step', confidence=0.9, evidence_count=0, flagg...0, 7, 14, 51, 57, 862071, tzinfo=datetime.timezone.utc), status='observed_calibration_only', capability_executed=False).id
+
+tests/modules/test_m20_runtime_depth.py:2438: AssertionError
+______ test_failed_expectation_resolution_keeps_binding_for_retry[close] _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f0cc1b78830>
+operation = 'close'
+
+    @pytest.mark.parametrize('operation',['evaluate','close'])
+    def test_failed_expectation_resolution_keeps_binding_for_retry(monkeypatch,operation):
+     runtime,repo=make_runtime();claim=runtime.calibration.assess_claim('fixture observed step',.9)
+     context=TaskContext(goal='fixture',state=TaskState.SUCCEEDED,plan=[PlanNode(title='observed',state=TaskState.SUCCEEDED,arguments={'_expectation_claim_id':claim.id})])
+     repo.save_task(context);runtime.scheduler.add(context)
+     original=repo.save_claim
+     def fail(value):raise RuntimeError('fixture resolution write unavailable')
+     monkeypatch.setattr(repo,'save_claim',fail)
+     with pytest.raises(RuntimeError):
+      if operation=='evaluate':runtime._evaluate_expectations(context)
+      else:runtime.close(context.id)
+>    assert context.plan[0].arguments.get('_expectation_claim_id')==claim.id
+E    AssertionError: assert None == '817f4cc5-d683-4573-818d-34162886abd0'
+E     +  where None = <built-in method get of dict object at 0x7f0cc1a60e40>('_expectation_claim_id')
+E     +    where <built-in method get of dict object at 0x7f0cc1a60e40> = {}.get
+E     +      where {} = PlanNode(id='3b9c2d01-43a0-4e04-96ab-ff0eb655b362', title='observed', kind='task', tool=None, arguments={}, depends_on...state=<TaskState.SUCCEEDED: 'succeeded'>, max_attempts=3, attempts=0, approval_id=None, result_summary='', output=None).arguments
+E     +  and   '817f4cc5-d683-4573-818d-34162886abd0' = Claim(id='817f4cc5-d683-4573-818d-34162886abd0', text='fixture observed step', confidence=0.9, evidence_count=0, flagg...10, 7, 14, 51, 58, 14285, tzinfo=datetime.timezone.utc), status='observed_calibration_only', capability_executed=False).id
+
+tests/modules/test_m20_runtime_depth.py:2438: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_expectation_resolution_keeps_binding_for_retry[evaluate]
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_expectation_resolution_keeps_binding_for_retry[close]
+2 failed, 176 deselected, 1 warning in 2.25s
