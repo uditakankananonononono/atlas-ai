@@ -433,7 +433,7 @@ def test_account_message_migration_preserves_rows_and_refuses_lossy_downgrade(tm
 
 
 def test_same_tenant_two_account_history_ingest_preserves_approvals_and_retries(tmp_path):
- gmail=FakeGmailClient(history={'100':['same-id']},messages={'same-id':raw_message('same-id','Please respond',snippet='please reply',thread='same-thread')})
+ gmail=FakeGmailClient(history={'100':['same-id'],'101':['same-id']},messages={'same-id':raw_message('same-id','Please respond',snippet='please reply',thread='same-thread')})
  svc,repo,approvals,client=make_service(tmp_path,gmail=gmail)
  for account,email in [('a','a@example.com'),('b','b@example.com')]:
   repo.save_account(account_id=account,email_address=email,encrypted_refresh_token=svc.cipher.encrypt('fixture-refresh'),history_id='100',watch_expiration=None)
