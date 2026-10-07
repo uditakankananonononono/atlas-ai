@@ -43,6 +43,9 @@ class ResearchExecutor:
                 result.confidence=None;result.logprobs=[]
                 result.metadata.update({"review_required":True,"confidence_source":"unavailable","attempts":attempt+1,"history":history,**diagnostics})
                 raise ConfidenceUnavailable(result)
+            if result.confidence is None:
+                result.confidence=confidence
+                result.metadata["confidence_source"]="supplied_logprobs_mean_exp"
             history.append({"model":model.model_id,"confidence":confidence})
             if confidence >= self.policy.min_confidence:
                 result.metadata.update({"attempts":attempt+1,**diagnostics,"history":history}); return result

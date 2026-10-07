@@ -242,3 +242,22 @@ def test_single_run_limits_not_coerced_before_execution(field,invalid):
  response=TestClient(app).post('/ai-research-lab/run',json=body)
  assert response.status_code==422,response.text
  assert not calls
+
+@pytest.mark.parametrize('logprobs,review',[([0,-.2],False),([-3],True)])
+def test_effective_logprob_confidence_retained_with_derivation_marker(logprobs,review):
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ from app.modules.m12_ai_research_lab.executor import ConfidenceThresholdNotReached
+ from app.modules.m12_ai_research_lab.router import confidence_from_logprobs
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','first',None,list(logprobs),metadata={'confidence_source':'unavailable'})
+ cat=[ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]
+ executor=ResearchExecutor(ModelRouter(cat),Provider(),RetryPolicy(base_delay_seconds=0))
+ if review:
+  with pytest.raises(ConfidenceThresholdNotReached) as error:asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+  result=error.value.result
+ else:result=asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert result.confidence==confidence_from_logprobs(logprobs)
+ assert result.metadata['confidence_source']=='supplied_logprobs_mean_exp'
+ assert result.metadata['history'][0]['confidence']==result.confidence and result.logprobs==logprobs
+ assert len(calls)==1
