@@ -186,3 +186,35 @@ def test_step_records_carry_hashes():
     rec = res.steps[0]
     assert rec.input_hash and len(rec.input_hash) == 64
     assert rec.output_hash and len(rec.output_hash) == 64
+
+
+def test_commit_failure_releases_reservation_so_resume_reexecutes():
+    # The engine documents that a commit failure must not checkpoint the step
+    # "so resume re-executes it". That only holds if the failed step's budget
+    # reservation is dropped; a leaked reservation makes every resume die at
+    # reserve time with "already has an open reservation" instead.
+    router = ModelRouter([model(cost_in=1_000_000, cost_out=1_000_000)])
+    ledger = BudgetLedger(BudgetPolicy(per_run_limit_micro=250_000))
+    calls = []
+
+    def llm(params, ctx):
+        calls.append(1)
+        ctx.record_usage(300, 0)  # actual 300_000 micro exceeds the 250_000 per-run limit
+        return "answer"
+
+    wf = Workflow("w", (
+        WorkflowStep("gen", "llm",
+                     route_requirements=TaskRequirements(estimated_input_tokens=1)),
+    ))
+    eng = WorkflowEngine({"llm": llm}, router=router, ledger=ledger)
+    first = eng.run(wf, run_id="rc")
+    assert first.status == "failed"
+    assert "budget commit failed" in first.journal[-1].detail
+    assert ledger.status().reserved_micro == 0
+    second = eng.run(wf, run_id="rc")
+    assert second.status == "failed"
+    assert "budget commit failed" in second.journal[-1].detail
+    assert "budget reservation failed" not in second.journal[-1].detail
+    assert len(calls) == 2  # resume really re-executed the uncheckpointed step
+    assert ledger.status().reserved_micro == 0
+    assert ledger.status().spent_today_micro == 0
